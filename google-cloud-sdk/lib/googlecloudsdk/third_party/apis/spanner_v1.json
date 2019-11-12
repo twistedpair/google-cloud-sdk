@@ -269,7 +269,7 @@
       "type": "object",
       "properties": {
         "statements": {
-          "description": "DDL statements to be applied to the database.",
+          "description": "Required. DDL statements to be applied to the database.",
           "type": "array",
           "items": {
             "type": "string"
@@ -340,7 +340,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a user that has been recently deleted. For\n   example,`alice@example.com?uid=123456789012345678901`. If the user is\n   recovered, this value reverts to `user:{emailid}` and the recovered user\n   retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus\n   unique identifier) representing a service account that has been recently\n   deleted. For example,\n   `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.\n   If the service account is undeleted, this value reverts to\n   `serviceAccount:{emailid}` and the undeleted service account retains the\n   role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a Google group that has been recently\n   deleted. For example, `admins@example.com?uid=123456789012345678901`. If\n   the group is recovered, this value reverts to `group:{emailid}` and the\n   recovered group retains the role in the binding.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -532,7 +532,7 @@
           "type": "string"
         },
         "nodeCount": {
-          "description": "Required. The number of nodes allocated to this instance. This may be zero\nin API responses for instances that are not yet in state `READY`.\n\nSee [the\ndocumentation](https:\/\/cloud.google.com\/spanner\/docs\/instances#node_count)\nfor more information about nodes.",
+          "description": "The number of nodes allocated to this instance. This\nmay be zero in API responses for instances that are not yet in state\n`READY`.\n\nSee [the\ndocumentation](https:\/\/cloud.google.com\/spanner\/docs\/instances#node_count)\nfor more information about nodes.",
           "type": "integer",
           "format": "int32"
         },
@@ -554,6 +554,13 @@
           "description": "Cloud Labels are a flexible and lightweight mechanism for organizing cloud\nresources into groups that reflect a customer's organizational needs and\ndeployment strategies. Cloud Labels can be used to filter collections of\nresources. They can be used to control how resource metrics are aggregated.\nAnd they can be used as arguments to policy management rules (e.g. route,\nfirewall, load balancing, etc.).\n\n * Label keys must be between 1 and 63 characters long and must conform to\n   the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.\n * Label values must be between 0 and 63 characters long and must conform\n   to the regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.\n * No more than 64 labels can be associated with a given resource.\n\nSee https:\/\/goo.gl\/xmQnxf for more information on and examples of labels.\n\nIf you plan to use labels in your own code, please note that additional\ncharacters may be allowed in the future. And so you are advised to use an\ninternal label representation, such as JSON, which doesn't rely upon\nspecific characters being disallowed.  For example, representing labels\nas the string:  name + \"_\" + value  would prove problematic if we were to\nallow \"_\" in a future release.",
           "type": "object",
           "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "endpointUrls": {
+          "description": "Output only. The endpoint URLs based on the instance config.\nFor example, instances located in a specific cloud region (or multi region)\nsuch as nam3, would have a nam3 specific endpoint URL.\nThis URL is to be used implictly by SDK clients, with fallback to default\nURL. These endpoints are intended to optimize the network routing between\nthe client and the instance's serving resources.\nIf multiple endpoints are present,\nclient may establish connections using any of the given URLs.",
+          "type": "array",
+          "items": {
             "type": "string"
           }
         }
@@ -1129,18 +1136,18 @@
       "type": "object",
       "properties": {
         "transaction": {
-          "description": "The transaction to use. Must be a read-write transaction.\n\nTo protect against replays, single-use transactions are not supported. The\ncaller must either supply an existing transaction ID or begin a new\ntransaction.",
+          "description": "Required. The transaction to use. Must be a read-write transaction.\n\nTo protect against replays, single-use transactions are not supported. The\ncaller must either supply an existing transaction ID or begin a new\ntransaction.",
           "$ref": "TransactionSelector"
         },
         "statements": {
-          "description": "The list of statements to execute in this batch. Statements are executed\nserially, such that the effects of statement `i` are visible to statement\n`i+1`. Each statement must be a DML statement. Execution stops at the\nfirst failed statement; the remaining statements are not executed.\n\nCallers must provide at least one statement.",
+          "description": "Required. The list of statements to execute in this batch. Statements are executed\nserially, such that the effects of statement `i` are visible to statement\n`i+1`. Each statement must be a DML statement. Execution stops at the\nfirst failed statement; the remaining statements are not executed.\n\nCallers must provide at least one statement.",
           "type": "array",
           "items": {
             "$ref": "Statement"
           }
         },
         "seqno": {
-          "description": "A per-transaction sequence number used to identify this request. This field\nmakes each request idempotent such that if the request is received multiple\ntimes, at most one will succeed.\n\nThe sequence number must be monotonically increasing within the\ntransaction. If a request arrives for the first time with an out-of-order\nsequence number, the transaction may be aborted. Replays of previously\nhandled requests will yield the same response as the first execution.",
+          "description": "Required. A per-transaction sequence number used to identify this request. This field\nmakes each request idempotent such that if the request is received multiple\ntimes, at most one will succeed.\n\nThe sequence number must be monotonically increasing within the\ntransaction. If a request arrives for the first time with an out-of-order\nsequence number, the transaction may be aborted. Replays of previously\nhandled requests will yield the same response as the first execution.",
           "type": "string",
           "format": "int64"
         }
@@ -1208,7 +1215,7 @@
           "type": "string"
         },
         "columns": {
-          "description": "The columns of table to be returned for each row matching\nthis request.",
+          "description": "Required. The columns of table to be returned for each row matching\nthis request.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1436,7 +1443,7 @@
           "$ref": "TransactionSelector"
         },
         "sql": {
-          "description": "The query request to generate partitions for. The request will fail if\nthe query is not root partitionable. The query plan of a root\npartitionable query has a single distributed union operator. A distributed\nunion operator conceptually divides one or more tables into multiple\nsplits, remotely evaluates a subquery independently on each split, and\nthen unions all results.\n\nThis must not contain DML commands, such as INSERT, UPDATE, or\nDELETE. Use ExecuteStreamingSql with a\nPartitionedDml transaction for large, partition-friendly DML operations.",
+          "description": "Required. The query request to generate partitions for. The request will fail if\nthe query is not root partitionable. The query plan of a root\npartitionable query has a single distributed union operator. A distributed\nunion operator conceptually divides one or more tables into multiple\nsplits, remotely evaluates a subquery independently on each split, and\nthen unions all results.\n\nThis must not contain DML commands, such as INSERT, UPDATE, or\nDELETE. Use ExecuteStreamingSql with a\nPartitionedDml transaction for large, partition-friendly DML operations.",
           "type": "string"
         },
         "params": {

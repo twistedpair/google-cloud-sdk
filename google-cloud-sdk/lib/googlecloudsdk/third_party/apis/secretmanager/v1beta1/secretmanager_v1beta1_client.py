@@ -115,7 +115,7 @@ class SecretmanagerV1beta1(base_api.BaseApiClient):
           }
 
     def Access(self, request, global_params=None):
-      r"""Accesses an existing SecretVersion. This call returns the secret data.
+      r"""Accesses a SecretVersion. This call returns the secret data.
 
 `projects/*/secrets/*/versions/latest` is an alias to the `latest`
 SecretVersion.
@@ -147,9 +147,9 @@ SecretVersion.
     def Destroy(self, request, global_params=None):
       r"""Destroys a SecretVersion.
 
-The state of the SecretVersion after destroying
-will be will be DESTROYED,
-and the secret data will be irrevocably destroyed.
+Sets the state of the SecretVersion to
+DESTROYED and irrevocably destroys the
+secret data.
 
       Args:
         request: (SecretmanagerProjectsSecretsVersionsDestroyRequest) input message
@@ -178,8 +178,8 @@ and the secret data will be irrevocably destroyed.
     def Disable(self, request, global_params=None):
       r"""Disables a SecretVersion.
 
-The state of the SecretVersion after disabling
-will be DISABLED.
+Sets the state of the SecretVersion to
+DISABLED.
 
       Args:
         request: (SecretmanagerProjectsSecretsVersionsDisableRequest) input message
@@ -208,8 +208,8 @@ will be DISABLED.
     def Enable(self, request, global_params=None):
       r"""Enables a SecretVersion.
 
-The state of the SecretVersion after enabling
-will be ENABLED.
+Sets the state of the SecretVersion to
+ENABLED.
 
       Args:
         request: (SecretmanagerProjectsSecretsVersionsEnableRequest) input message
@@ -236,7 +236,7 @@ will be ENABLED.
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns metadata for a given SecretVersion.
+      r"""Gets metadata for a SecretVersion.
 
 `projects/*/secrets/*/versions/latest` is an alias to the `latest`
 SecretVersion.
@@ -266,7 +266,8 @@ SecretVersion.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists SecretVersions. This does not return secret data.
+      r"""Lists SecretVersions. This call does not return secret.
+data.
 
       Args:
         request: (SecretmanagerProjectsSecretsVersionsListRequest) input message
@@ -303,8 +304,8 @@ SecretVersion.
           }
 
     def AddVersion(self, request, global_params=None):
-      r"""Creates a new SecretVersion containing secret data and associates.
-it with an existing Secret.
+      r"""Creates a new SecretVersion containing secret data and attaches.
+it to an existing Secret.
 
       Args:
         request: (SecretmanagerProjectsSecretsAddVersionRequest) input message
@@ -385,7 +386,7 @@ it with an existing Secret.
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns metadata for a given Secret.
+      r"""Gets metadata for a given Secret.
 
       Args:
         request: (SecretmanagerProjectsSecretsGetRequest) input message
@@ -525,8 +526,8 @@ to the policy set on the associated Secret.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified secret.
-If the secret does not exist, this will return an empty set of
+      r"""Returns permissions that a caller has for the specified secret.
+If the secret does not exist, this call returns an empty set of
 permissions, not a NOT_FOUND error.
 
 Note: This operation is designed to be used for building permission-aware

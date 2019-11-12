@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import copy
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 
@@ -485,3 +486,47 @@ def IsGlobalHealthCheckRef(health_check_ref):
   """Returns True if the health check reference is global."""
 
   return health_check_ref.Collection() == 'compute.healthChecks'
+
+
+def AddHealthCheckLoggingRelatedArgs(parser):
+  """Adds parser arguments for health check log config."""
+
+  # The parser automatically adds support for --no-enable-logging. Argument
+  # value is set to false internally, if --no-enable-logging is specified.
+  parser.add_argument(
+      '--enable-logging',
+      action='store_true',
+      default=None,
+      help="""Enable logging of health check probe results to Stackdriver.
+      Logging is disabled by default.
+
+      Use --no-enable-logging to disable logging.""")
+
+
+def CreateLogConfig(client, args):
+  """Returns a HealthCheckLogconfig message if args are valid."""
+
+  messages = client.messages
+  log_config = None
+  if args.enable_logging is not None:
+    log_config = messages.HealthCheckLogConfig(enable=args.enable_logging)
+  return log_config
+
+
+def ModifyLogConfig(client, args, existing_log_config):
+  """Returns a modified HealthCheckLogconfig message."""
+
+  messages = client.messages
+  log_config = None
+  if not existing_log_config:
+    # If log config has not changed then return early.
+    if args.enable_logging is None:
+      return log_config
+    log_config = messages.HealthCheckLogConfig()
+  else:
+    log_config = copy.deepcopy(existing_log_config)
+
+  if args.enable_logging is not None:
+    log_config.enable = args.enable_logging
+
+  return log_config

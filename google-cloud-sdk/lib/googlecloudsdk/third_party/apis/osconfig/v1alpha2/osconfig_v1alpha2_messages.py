@@ -61,6 +61,11 @@ class AptSettings(_messages.Message):
       will be performed using `apt-get dist-upgrade` instead.
 
   Fields:
+    excludes: List of packages to exclude from update.
+    exclusivePackages: An exclusive list of packages to be updated. These are
+      the only packages that will be updated. If these packages are not
+      installed, they will be ignored. This field cannot be specified with any
+      other patch configuration fields.
     type: Optional. By changing the type to DIST, the patching will be
       performed using `apt-get dist-upgrade` instead.
   """
@@ -76,7 +81,9 @@ class AptSettings(_messages.Message):
     TYPE_UNSPECIFIED = 0
     DIST = 1
 
-  type = _messages.EnumField('TypeValueValuesEnum', 1)
+  excludes = _messages.StringField(1, repeated=True)
+  exclusivePackages = _messages.StringField(2, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class Assignment(_messages.Message):
@@ -818,8 +825,8 @@ class OsconfigProjectsPatchJobsInstanceDetailsListRequest(_messages.Message):
       Supports filtering results by instance zone, name, state, or
       failure_reason.
     pageSize: The maximum number of instance details records to return.
-    pageToken: A pagination token returned from a previous call that indicates
-      where this listing should continue from. This field is optional.
+    pageToken: Optional. A pagination token returned from a previous call that
+      indicates where this listing should continue from.
     parent: In the form of `projects/*/patchJobs/*`
   """
 
@@ -837,8 +844,8 @@ class OsconfigProjectsPatchJobsListRequest(_messages.Message):
       patch jobs to be included in the response. Currently, filtering is only
       available on the patch_deployment field.
     pageSize: The maximum number of instance status to return.
-    pageToken: A pagination token returned from a previous call that indicates
-      where this listing should continue from. This field is optional.
+    pageToken: Optional. A pagination token returned from a previous call that
+      indicates where this listing should continue from.
     parent: In the form of `projects/*`
   """
 
@@ -1325,9 +1332,6 @@ class RecurringSchedule(_messages.Message):
   Fields:
     endTime: Optional. The end time for a recurring schedule to be active.
     frequency: Required. The frequency unit of this recurring schedule.
-    isActive: Output only. Indicates whether this recurring schedule is
-      active. A recurring schedule may be inactive past end_time or by user
-      setting.
     lastExecuteTime: Output only. The last actual patch execution time for
       display.
     monthly: Required. Schedule with monthly executions.
@@ -1358,14 +1362,13 @@ class RecurringSchedule(_messages.Message):
 
   endTime = _messages.StringField(1)
   frequency = _messages.EnumField('FrequencyValueValuesEnum', 2)
-  isActive = _messages.BooleanField(3)
-  lastExecuteTime = _messages.StringField(4)
-  monthly = _messages.MessageField('MonthlySchedule', 5)
-  nextExecuteTime = _messages.StringField(6)
-  startTime = _messages.StringField(7)
-  timeOfDay = _messages.MessageField('TimeOfDay', 8)
-  timeZone = _messages.MessageField('TimeZone', 9)
-  weekly = _messages.MessageField('WeeklySchedule', 10)
+  lastExecuteTime = _messages.StringField(3)
+  monthly = _messages.MessageField('MonthlySchedule', 4)
+  nextExecuteTime = _messages.StringField(5)
+  startTime = _messages.StringField(6)
+  timeOfDay = _messages.MessageField('TimeOfDay', 7)
+  timeZone = _messages.MessageField('TimeZone', 8)
+  weekly = _messages.MessageField('WeeklySchedule', 9)
 
 
 class ReportPatchJobInstanceDetailsRequest(_messages.Message):
@@ -1985,7 +1988,10 @@ class WindowsUpdateSettings(_messages.Message):
   Fields:
     classifications: Only apply updates of these windows update
       classifications. If empty, all updates will be applied.
-    excludes: Optional list of KBs to exclude from update.
+    excludes: Optional. List of KBs to exclude from update.
+    exclusivePatches: An exclusive list of kbs to be updated. These are the
+      only patches that will be updated. This field must not be used with
+      other patch configurations.
   """
 
   class ClassificationsValueListEntryValuesEnum(_messages.Enum):
@@ -2016,6 +2022,7 @@ class WindowsUpdateSettings(_messages.Message):
 
   classifications = _messages.EnumField('ClassificationsValueListEntryValuesEnum', 1, repeated=True)
   excludes = _messages.StringField(2, repeated=True)
+  exclusivePatches = _messages.StringField(3, repeated=True)
 
 
 class YumRepository(_messages.Message):
@@ -2045,15 +2052,20 @@ class YumSettings(_messages.Message):
 
   Fields:
     excludes: List of packages to exclude from update. These packages will be
-      excluded by using the yum `--exclude` flag.
+      excluded by using the yum `--exclude` field.
+    exclusivePackages: An exclusive list of packages to be updated. These are
+      the only packages that will be updated. If these packages are not
+      installed, they will be ignored. This field must not be specified with
+      any other patch configuration fields.
     minimal: Optional. Will cause patch to run `yum update-minimal` instead.
     security: Optional. Adds the `--security` flag to `yum update`. Not
       supported on all platforms.
   """
 
   excludes = _messages.StringField(1, repeated=True)
-  minimal = _messages.BooleanField(2)
-  security = _messages.BooleanField(3)
+  exclusivePackages = _messages.StringField(2, repeated=True)
+  minimal = _messages.BooleanField(3)
+  security = _messages.BooleanField(4)
 
 
 class ZypperRepository(_messages.Message):
@@ -2083,6 +2095,11 @@ class ZypperSettings(_messages.Message):
   Fields:
     categories: Optional. Install only patches with these categories. Common
       categories include security, recommended, and feature.
+    excludes: List of patches to exclude from update.
+    exclusivePatches: An exclusive list of patches to be updated. These are
+      the only patches that will be installed using 'zypper patch
+      patch:<patch_name>' command. This field must not be used with any other
+      patch configuration fields.
     severities: Optional. Install only patches with these severities. Common
       severities include critical, important, moderate, and low.
     withOptional: Optional. Adds the `--with-optional` flag to `zypper patch`.
@@ -2090,9 +2107,11 @@ class ZypperSettings(_messages.Message):
   """
 
   categories = _messages.StringField(1, repeated=True)
-  severities = _messages.StringField(2, repeated=True)
-  withOptional = _messages.BooleanField(3)
-  withUpdate = _messages.BooleanField(4)
+  excludes = _messages.StringField(2, repeated=True)
+  exclusivePatches = _messages.StringField(3, repeated=True)
+  severities = _messages.StringField(4, repeated=True)
+  withOptional = _messages.BooleanField(5)
+  withUpdate = _messages.BooleanField(6)
 
 
 encoding.AddCustomJsonFieldMapping(

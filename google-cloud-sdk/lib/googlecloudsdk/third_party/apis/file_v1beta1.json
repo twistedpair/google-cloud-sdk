@@ -552,6 +552,10 @@
         "consumerDefinedName": {
           "description": "consumer_defined_name is the name that is set by the consumer. On the other\nhand Name field represents system-assigned id of an instance so consumers\nare not necessarily aware of it.\nconsumer_defined_name is used for notification\/UI purposes for consumer to\nrecognize their instances.",
           "type": "string"
+        },
+        "slmInstanceTemplate": {
+          "description": "Link to the SLM instance template. Only populated when updating SLM\ninstances via SSA's Actuation service adaptor.\nService producers with custom control plane (e.g. Cloud SQL) doesn't\nneed to populate this field. Instead they should use software_versions.",
+          "type": "string"
         }
       }
     },
@@ -645,19 +649,19 @@
     },
     "GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion": {
       "id": "GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion",
-      "description": "SloExclusion represents an excusion in SLI calculation applies to all SLOs.",
+      "description": "SloExclusion represents an exclusion in SLI calculation applies to all SLOs.",
       "type": "object",
       "properties": {
         "sliName": {
           "description": "Name of an SLI that this exclusion applies to. Can be left empty,\nsignaling that the instance should be excluded from all SLIs defined\nin the service SLO configuration.",
           "type": "string"
         },
-        "exclusionStartTime": {
+        "startTime": {
           "description": "Start time of the exclusion. No alignment (e.g. to a full minute) needed.",
           "type": "string",
           "format": "google-datetime"
         },
-        "exclusionDuration": {
+        "duration": {
           "description": "Exclusion duration. No restrictions on the possible values.\n\nWhen an ongoing operation is taking longer than initially expected,\nan existing entry in the exclusion list can be updated by extending the\nduration. This is supported by the subsystem exporting eligibility data\nas long as such extension is committed at least 10 minutes before the\noriginal exclusion expiration - otherwise it is possible that there will\nbe \"gaps\" in the exclusion application in the exported timeseries.",
           "type": "string",
           "format": "google-duration"

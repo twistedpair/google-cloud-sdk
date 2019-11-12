@@ -175,6 +175,19 @@ class AuthorizationLoggingOptions(_messages.Message):
   permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
 
 
+class AutoscalerDetails(_messages.Message):
+  r"""A AutoscalerDetails object.
+
+  Fields:
+    autoscalerName: The name of the Agones autoscaler.
+    scalingConfigName: The name of the scaling config (within the game server
+      config) that is used to create the autoscalar.
+  """
+
+  autoscalerName = _messages.StringField(1)
+  scalingConfigName = _messages.StringField(2)
+
+
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
@@ -193,9 +206,26 @@ class Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: The G Suite domain (primary) that represents all
-      the    users of that domain. For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding.  *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus    unique identifier) representing a service account that has been
+      recently    deleted. For example,    `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique    identifier) representing a Google group
+      that has been recently    deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If    the group is
+      recovered, this value reverts to `group:{emailid}` and the    recovered
+      group retains the role in the binding.   * `domain:{domain}`: The G
+      Suite domain (primary) that represents all the    users of that domain.
+      For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -448,6 +478,16 @@ class DataAccessOptions(_messages.Message):
   logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
+class DeployedState(_messages.Message):
+  r"""Encapsulates the expected deployed state.
+
+  Fields:
+    fleets: Details about fleets.
+  """
+
+  fleets = _messages.MessageField('FleetDetails', 1, repeated=True)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -503,6 +543,35 @@ class FleetAutoscalerSettings(_messages.Message):
   minReplicas = _messages.IntegerField(4)
 
 
+class FleetConfig(_messages.Message):
+  r"""A fleet config resource.
+
+  Fields:
+    fleetSpec: The fleet spec, which is sent to Agones to configure fleet.
+      Example spec can be found :
+      `https://agones.dev/site/docs/reference/fleet/`.
+  """
+
+  fleetSpec = _messages.StringField(1)
+
+
+class FleetDetails(_messages.Message):
+  r"""Details about the Agones fleet.
+
+  Fields:
+    autoscalerDetails: Details about the agones autoscaler.
+    fleetName: The name of the Agones game server fleet.
+    gameServerClusterName: The cluster name.
+    gameServerConfigName: The name of the game server config object whose
+      fleet spec is used to create the fleet.
+  """
+
+  autoscalerDetails = _messages.MessageField('AutoscalerDetails', 1)
+  fleetName = _messages.StringField(2)
+  gameServerClusterName = _messages.StringField(3)
+  gameServerConfigName = _messages.StringField(4)
+
+
 class GameServerCluster(_messages.Message):
   r"""A game server cluster resource.
 
@@ -514,11 +583,12 @@ class GameServerCluster(_messages.Message):
     connectionInfo: Game server cluster connection information. This
       information is used to manage game server clusters.
     createTime: Output only. The creation time.
+    etag: ETag of the resource.
     labels: The labels associated with this game server cluster. Each label is
       a key-value pair.
-    name: The resource name of the game server cluster, using the form:  `proj
-      ects/{project_id}/locations/{location}/realms/{realm_id}/gameServerClust
-      ers/{cluster_id}`. For example,  `projects/my-
+    name: Required. The resource name of the game server cluster, using the
+      form:  `projects/{project_id}/locations/{location}/realms/{realm_id}/gam
+      eServerClusters/{cluster_id}`. For example,  `projects/my-
       project/locations/{location}/realms/zanzibar/gameServerClusters/my-
       onprem-cluster`.
     updateTime: Output only. The last-modified time.
@@ -551,9 +621,10 @@ class GameServerCluster(_messages.Message):
 
   connectionInfo = _messages.MessageField('GameServerClusterConnectionInfo', 1)
   createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class GameServerClusterConnectionInfo(_messages.Message):
@@ -571,6 +642,102 @@ class GameServerClusterConnectionInfo(_messages.Message):
   namespace = _messages.StringField(2)
 
 
+class GameServerConfig(_messages.Message):
+  r"""A game server config resource.
+
+  Messages:
+    LabelsValue: The labels associated with this game server config. Each
+      label is a key-value pair.
+    ScalingConfigsValue: Optional. This contains the autoscaling settings.
+
+  Fields:
+    createTime: Output only. The creation time.
+    description: The description of the game server config.
+    fleetConfigs: The fleet specs contains list of fleet specs. In the Single
+      Cloud, there will be only one.
+    labels: The labels associated with this game server config. Each label is
+      a key-value pair.
+    name: The resource name of the game server config, using the form:  `proje
+      cts/{project_id}/locations/{location}/gameServerDeployments/{deployment_
+      id}/configs/{config_id}`. For example,  `projects/my-
+      project/locations/global/gameServerDeployments/my-game/configs/my-
+      config`.
+    scalingConfigs: Optional. This contains the autoscaling settings.
+    updateTime: Output only. The last-modified time.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels associated with this game server config. Each label is a
+    key-value pair.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ScalingConfigsValue(_messages.Message):
+    r"""Optional. This contains the autoscaling settings.
+
+    Messages:
+      AdditionalProperty: An additional property for a ScalingConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ScalingConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ScalingConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ScalingConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ScalingConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  fleetConfigs = _messages.MessageField('FleetConfig', 3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  scalingConfigs = _messages.MessageField('ScalingConfigsValue', 6)
+  updateTime = _messages.StringField(7)
+
+
+class GameServerConfigOverride(_messages.Message):
+  r"""A game server config override resource. This contains selector which
+  cluster it is applied and the setting which specifies the version.
+
+  Fields:
+    realmsSelector: A RealmSelector attribute.
+    setting: This used to deploy a particular game server config version
+  """
+
+  realmsSelector = _messages.MessageField('RealmSelector', 1)
+  setting = _messages.MessageField('Setting', 2)
+
+
 class GameServerDeployment(_messages.Message):
   r"""A game server deployment resource.
 
@@ -580,6 +747,7 @@ class GameServerDeployment(_messages.Message):
 
   Fields:
     createTime: Output only. The creation time.
+    etag: ETag of the resource.
     labels: The labels associated with this game server deployment. Each label
       is a key-value pair.
     name: The resource name of the game server deployment, using the form:  `p
@@ -618,10 +786,42 @@ class GameServerDeployment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  newGameServerTemplate = _messages.MessageField('GameServerTemplate', 4)
-  stableGameServerTemplate = _messages.MessageField('GameServerTemplate', 5)
+  etag = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  newGameServerTemplate = _messages.MessageField('GameServerTemplate', 5)
+  stableGameServerTemplate = _messages.MessageField('GameServerTemplate', 6)
+  updateTime = _messages.StringField(7)
+
+
+class GameServerDeploymentRollout(_messages.Message):
+  r"""This represents the rollout status. This is part of the  game server
+  deployment.
+
+  Fields:
+    createTime: Output only. The creation time.
+    defaultGameServerConfig: The default game server config points to the game
+      server config  that is applied everywhere realm/cluster. For example,
+      `projects/my-project/locations/global/gameServerDeployments/my-
+      game/configs/my-config`.
+    etag: ETag of the resource.
+    gameServerConfigOverrides: The game_server_config_overrides contains the
+      per game server config overrides. The overrides are processed in the
+      order they are listed. As soon as a match is found for cluster, the rest
+      of the list is not processed.
+    name: The resource name of the game server deployment rollout, using the
+      form:  `projects/{project_id}/locations/{location}/gameServerDeployments
+      /{deployment_id}/rollout`. For example,  `projects/my-
+      project/locations/{location}/gameServerDeployments/my-
+      deployment/rollout`.
+    updateTime: Output only. The last-modified time.
+  """
+
+  createTime = _messages.StringField(1)
+  defaultGameServerConfig = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  gameServerConfigOverrides = _messages.MessageField('GameServerConfigOverride', 4, repeated=True)
+  name = _messages.StringField(5)
   updateTime = _messages.StringField(6)
 
 
@@ -745,6 +945,77 @@ class GameservicesProjectsLocationsGameServerDeploymentsCommitRolloutRequest(_me
   name = _messages.StringField(2, required=True)
 
 
+class GameservicesProjectsLocationsGameServerDeploymentsConfigsCreateRequest(_messages.Message):
+  r"""A GameservicesProjectsLocationsGameServerDeploymentsConfigsCreateRequest
+  object.
+
+  Fields:
+    configId: Required. The ID of the game server config resource to be
+      created.
+    gameServerConfig: A GameServerConfig resource to be passed as the request
+      body.
+    parent: Required. The parent resource name, using the form:  `projects/{pr
+      oject_id}/locations/{location}/gameServerDeployments/{deployment_id}/`.
+  """
+
+  configId = _messages.StringField(1)
+  gameServerConfig = _messages.MessageField('GameServerConfig', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GameservicesProjectsLocationsGameServerDeploymentsConfigsDeleteRequest(_messages.Message):
+  r"""A GameservicesProjectsLocationsGameServerDeploymentsConfigsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the game server config to delete, using the
+      form:  `projects/{project_id}/locations/{location}/gameServerDeployments
+      /{deployment_id}/configs/{config_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GameservicesProjectsLocationsGameServerDeploymentsConfigsGetRequest(_messages.Message):
+  r"""A GameservicesProjectsLocationsGameServerDeploymentsConfigsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the game server config to retrieve, using the
+      form:  `projects/{project_id}/locations/{location}/gameServerDeployments
+      /{deployment_id}/configs/{config_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GameservicesProjectsLocationsGameServerDeploymentsConfigsListRequest(_messages.Message):
+  r"""A GameservicesProjectsLocationsGameServerDeploymentsConfigsListRequest
+  object.
+
+  Fields:
+    filter: Optional. The filter to apply to list results.
+    orderBy: Optional. Specifies the ordering of results following syntax at
+      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+    pageSize: Optional. The maximum number of items to return.  If
+      unspecified, server will pick an appropriate default. Server may return
+      fewer items than requested. A caller should only rely on response's
+      next_page_token to determine if there are more GameServerConfigs left to
+      be queried.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The parent resource name, using the form:  `projects/{pr
+      oject_id}/locations/{location}/gameServerDeployments/{deployment_id}/con
+      figs/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class GameservicesProjectsLocationsGameServerDeploymentsCreateRequest(_messages.Message):
   r"""A GameservicesProjectsLocationsGameServerDeploymentsCreateRequest
   object.
@@ -807,6 +1078,19 @@ class GameservicesProjectsLocationsGameServerDeploymentsGetRequest(_messages.Mes
   name = _messages.StringField(1, required=True)
 
 
+class GameservicesProjectsLocationsGameServerDeploymentsGetRolloutRequest(_messages.Message):
+  r"""A GameservicesProjectsLocationsGameServerDeploymentsGetRolloutRequest
+  object.
+
+  Fields:
+    name: Required. The name of the game server deployment to retrieve, using
+      the form:  `projects/{project_id}/locations/{location}/gameServerDeploym
+      ents/{deployment_id}/rollout`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class GameservicesProjectsLocationsGameServerDeploymentsListRequest(_messages.Message):
   r"""A GameservicesProjectsLocationsGameServerDeploymentsListRequest object.
 
@@ -851,6 +1135,33 @@ class GameservicesProjectsLocationsGameServerDeploymentsPatchRequest(_messages.M
   gameServerDeployment = _messages.MessageField('GameServerDeployment', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class GameservicesProjectsLocationsGameServerDeploymentsPreviewRolloutRequest(_messages.Message):
+  r"""A
+  GameservicesProjectsLocationsGameServerDeploymentsPreviewRolloutRequest
+  object.
+
+  Fields:
+    gameServerDeploymentRollout: A GameServerDeploymentRollout resource to be
+      passed as the request body.
+    name: The resource name of the game server deployment rollout, using the
+      form:  `projects/{project_id}/locations/{location}/gameServerDeployments
+      /{deployment_id}/rollout`. For example,  `projects/my-
+      project/locations/{location}/gameServerDeployments/my-
+      deployment/rollout`.
+    previewTime: Optional. The instant of time at which the preview needs to
+      be computed.
+    updateMask: Optional. Mask of fields to update. At least one path must be
+      supplied in this field. For the `FieldMask` definition, see  https:
+      //developers.google.com/protocol-buffers //
+      /docs/reference/google.protobuf#fieldmask
+  """
+
+  gameServerDeploymentRollout = _messages.MessageField('GameServerDeploymentRollout', 1)
+  name = _messages.StringField(2, required=True)
+  previewTime = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class GameservicesProjectsLocationsGameServerDeploymentsRevertRolloutRequest(_messages.Message):
@@ -933,6 +1244,29 @@ class GameservicesProjectsLocationsGameServerDeploymentsTestIamPermissionsReques
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class GameservicesProjectsLocationsGameServerDeploymentsUpdateRolloutRequest(_messages.Message):
+  r"""A GameservicesProjectsLocationsGameServerDeploymentsUpdateRolloutRequest
+  object.
+
+  Fields:
+    gameServerDeploymentRollout: A GameServerDeploymentRollout resource to be
+      passed as the request body.
+    name: The resource name of the game server deployment rollout, using the
+      form:  `projects/{project_id}/locations/{location}/gameServerDeployments
+      /{deployment_id}/rollout`. For example,  `projects/my-
+      project/locations/{location}/gameServerDeployments/my-
+      deployment/rollout`.
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. For the `FieldMask` definition, see  https:
+      //developers.google.com/protocol-buffers //
+      /docs/reference/google.protobuf#fieldmask
+  """
+
+  gameServerDeploymentRollout = _messages.MessageField('GameServerDeploymentRollout', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class GameservicesProjectsLocationsGetRequest(_messages.Message):
@@ -1116,9 +1450,9 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPatchRequest(_message
   Fields:
     gameServerCluster: A GameServerCluster resource to be passed as the
       request body.
-    name: The resource name of the game server cluster, using the form:  `proj
-      ects/{project_id}/locations/{location}/realms/{realm_id}/gameServerClust
-      ers/{cluster_id}`. For example,  `projects/my-
+    name: Required. The resource name of the game server cluster, using the
+      form:  `projects/{project_id}/locations/{location}/realms/{realm_id}/gam
+      eServerClusters/{cluster_id}`. For example,  `projects/my-
       project/locations/{location}/realms/zanzibar/gameServerClusters/my-
       onprem-cluster`.
     updateMask: Required. Mask of fields to update. At least one path must be
@@ -1130,6 +1464,72 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPatchRequest(_message
   gameServerCluster = _messages.MessageField('GameServerCluster', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class GameservicesProjectsLocationsRealmsGameServerClustersPreviewCreateRequest(_messages.Message):
+  r"""A
+  GameservicesProjectsLocationsRealmsGameServerClustersPreviewCreateRequest
+  object.
+
+  Fields:
+    gameServerCluster: A GameServerCluster resource to be passed as the
+      request body.
+    gameServerClusterId: Required. The ID of the game server cluster resource
+      to be created.
+    parent: Required. The parent resource name, using the form:
+      `projects/{project_id}/locations/{location}/realms/{realm-id}`.
+    previewTime: Optional. The instant of time at which the preview needs to
+      be computed.
+  """
+
+  gameServerCluster = _messages.MessageField('GameServerCluster', 1)
+  gameServerClusterId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  previewTime = _messages.StringField(4)
+
+
+class GameservicesProjectsLocationsRealmsGameServerClustersPreviewDeleteRequest(_messages.Message):
+  r"""A
+  GameservicesProjectsLocationsRealmsGameServerClustersPreviewDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the game server cluster to delete, using the
+      form:  `projects/{project_id}/locations/{location}/gameServerClusters/{c
+      luster_id}`
+    previewTime: Optional. The instant of time at which the preview needs to
+      be computed.
+  """
+
+  name = _messages.StringField(1, required=True)
+  previewTime = _messages.StringField(2)
+
+
+class GameservicesProjectsLocationsRealmsGameServerClustersPreviewUpdateRequest(_messages.Message):
+  r"""A
+  GameservicesProjectsLocationsRealmsGameServerClustersPreviewUpdateRequest
+  object.
+
+  Fields:
+    gameServerCluster: A GameServerCluster resource to be passed as the
+      request body.
+    name: Required. The resource name of the game server cluster, using the
+      form:  `projects/{project_id}/locations/{location}/realms/{realm_id}/gam
+      eServerClusters/{cluster_id}`. For example,  `projects/my-
+      project/locations/{location}/realms/zanzibar/gameServerClusters/my-
+      onprem-cluster`.
+    previewTime: Optional. The instant of time at which the preview needs to
+      be computed.
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. For the `FieldMask` definition, see  https:
+      //developers.google.com/protocol-buffers //
+      /docs/reference/google.protobuf#fieldmask
+  """
+
+  gameServerCluster = _messages.MessageField('GameServerCluster', 1)
+  name = _messages.StringField(2, required=True)
+  previewTime = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class GameservicesProjectsLocationsRealmsGetRequest(_messages.Message):
@@ -1184,6 +1584,27 @@ class GameservicesProjectsLocationsRealmsPatchRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   realm = _messages.MessageField('Realm', 2)
   updateMask = _messages.StringField(3)
+
+
+class GameservicesProjectsLocationsRealmsPreviewUpdateRequest(_messages.Message):
+  r"""A GameservicesProjectsLocationsRealmsPreviewUpdateRequest object.
+
+  Fields:
+    name: The resource name of the realm, using the form:
+      `projects/{project_id}/locations/{location}/realms/{realm_id}`. For
+      example, `projects/my-project/locations/{location}/realms/my-realm`.
+    previewTime: Optional. The instant of time at which the preview needs to
+      be computed.
+    realm: A Realm resource to be passed as the request body.
+    updateMask: Required. The update mask applies to the resource. For the
+      `FieldMask` definition, see  https: //developers.google.com/protocol-
+      buffers // /docs/reference/google.protobuf#fieldmask
+  """
+
+  name = _messages.StringField(1, required=True)
+  previewTime = _messages.StringField(2)
+  realm = _messages.MessageField('Realm', 3)
+  updateMask = _messages.StringField(4)
 
 
 class GameservicesProjectsLocationsScalingPoliciesCreateRequest(_messages.Message):
@@ -1350,6 +1771,21 @@ class ListGameServerClustersResponse(_messages.Message):
   """
 
   gameServerClusters = _messages.MessageField('GameServerCluster', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachableLocations = _messages.StringField(3, repeated=True)
+
+
+class ListGameServerConfigsResponse(_messages.Message):
+  r"""Response message for GameServerConfigsService.ListGameServerConfigs.
+
+  Fields:
+    gameServerConfigs: The list of game server configs.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachableLocations: List of locations that were not reachable.
+  """
+
+  gameServerConfigs = _messages.MessageField('GameServerConfig', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachableLocations = _messages.StringField(3, repeated=True)
 
@@ -1726,6 +2162,72 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
+class PreviewCreateGameServerClusterResponse(_messages.Message):
+  r"""Response message for
+  GameServerClustersService.PreviewCreateGameServerCluster.
+
+  Fields:
+    deployedState: The deployed state.
+    etag: The ETag of the game server cluster.
+  """
+
+  deployedState = _messages.MessageField('DeployedState', 1, repeated=True)
+  etag = _messages.StringField(2)
+
+
+class PreviewDeleteGameServerClusterResponse(_messages.Message):
+  r"""Response message for
+  GameServerClustersService.PreviewDeleteGameServerCluster.
+
+  Fields:
+    deployedState: The deployed state.
+    etag: The ETag of the game server cluster.
+  """
+
+  deployedState = _messages.MessageField('DeployedState', 1, repeated=True)
+  etag = _messages.StringField(2)
+
+
+class PreviewGameServerDeploymentRolloutResponse(_messages.Message):
+  r"""Response message for PreviewGameServerDeploymentRollout. This has
+  details about the fleet and the autoscaler.
+
+  Fields:
+    deployedState: The deployed state.
+    etag: ETag of the game server deployment.
+    unavailableLocations: Locations that could not be reached on this request.
+  """
+
+  deployedState = _messages.MessageField('DeployedState', 1)
+  etag = _messages.StringField(2)
+  unavailableLocations = _messages.StringField(3, repeated=True)
+
+
+class PreviewRealmUpdateResponse(_messages.Message):
+  r"""Response message for RealmsService.PreviewRealmUpdate.
+
+  Fields:
+    deployedState: The deployment state.
+    etag: ETag of the realm.
+  """
+
+  deployedState = _messages.MessageField('DeployedState', 1)
+  etag = _messages.StringField(2)
+
+
+class PreviewUpdateGameServerClusterResponse(_messages.Message):
+  r"""Response message for
+  GameServerClustersService.PreviewUpdateGameServerCluster
+
+  Fields:
+    deployedState: The deployed state.
+    etag: The ETag of the game server cluster.
+  """
+
+  deployedState = _messages.MessageField('DeployedState', 1, repeated=True)
+  etag = _messages.StringField(2)
+
+
 class Realm(_messages.Message):
   r"""A Realm resource.
 
@@ -1735,6 +2237,7 @@ class Realm(_messages.Message):
 
   Fields:
     createTime: Output only. The creation time.
+    etag: ETag of the resource.
     labels: The labels associated with this realm. Each label is a key-value
       pair.
     name: The resource name of the realm, using the form:
@@ -1772,10 +2275,21 @@ class Realm(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  timeZone = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  etag = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  timeZone = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
+class RealmSelector(_messages.Message):
+  r"""The realm selector, used to match realm resources.
+
+  Fields:
+    realms: A string attribute.
+  """
+
+  realms = _messages.StringField(1, repeated=True)
 
 
 class RevertRolloutRequest(_messages.Message):
@@ -1834,6 +2348,27 @@ class Rule(_messages.Message):
   logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
   notIn = _messages.StringField(6, repeated=True)
   permissions = _messages.StringField(7, repeated=True)
+
+
+class ScalingConfig(_messages.Message):
+  r"""A scaling config resource.
+
+  Fields:
+    fleetAutoscalerSpec: Required. Fleet autoscaler spec, which is sent to
+      Agones. Example spec can be found :
+      https://agones.dev/site/docs/reference/fleetautoscaler/
+    priority: Required. The priority of the scaling config. A smaller value
+      indicates a higher priority.
+    schedules: The schedules to which this scaling config applies.
+    selectors: Labels used to identify the clusters to which this scaling
+      config applies. A cluster is subject to this scaling config if its
+      labels match any of the selector entries.
+  """
+
+  fleetAutoscalerSpec = _messages.StringField(1)
+  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  schedules = _messages.MessageField('Schedule', 3, repeated=True)
+  selectors = _messages.MessageField('LabelSelector', 4, repeated=True)
 
 
 class ScalingPolicy(_messages.Message):
@@ -1953,6 +2488,16 @@ class SetRolloutTargetRequest(_messages.Message):
   """
 
   clusterPercentageSelector = _messages.MessageField('ClusterPercentageSelector', 1, repeated=True)
+
+
+class Setting(_messages.Message):
+  r"""A Setting object.
+
+  Fields:
+    configVersion: A string attribute.
+  """
+
+  configVersion = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):

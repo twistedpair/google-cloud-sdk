@@ -181,23 +181,27 @@ The default Kubernetes version is available using the following command.
   return parser.add_argument('--cluster-version', help=help, hidden=suppressed)
 
 
-def AddReleaseChannelFlag(parser):
+def AddReleaseChannelFlag(parser, is_update=False):
   """Adds a --release-channel flag to the given parser."""
-  help_text = """\
+  short_text = """\
 Release channel a cluster is subscribed to.
 
+"""
+  if is_update:
+    short_text = """\
+Subscribe or unsubscribe this cluster to a release channel.
+
+"""
+  help_text = short_text + """\
 When a cluster is subscribed to a release channel, Google maintains both the
 master version and the node version. Node auto-upgrade defaults to true and
 cannot be disabled. Updates to version related fields (e.g. --cluster-version)
 return an error.
 """
 
-  return parser.add_argument(
-      '--release-channel',
-      metavar='CHANNEL',
-      choices={
-          'rapid':
-              """\
+  choices = {
+      'rapid':
+          """\
 WARNING: 'rapid' is recommended for testing, and not for production workloads.
 Clusters on 'rapid' are not covered by GKE SLA.
 
@@ -206,21 +210,33 @@ components, before any other channel. 'rapid' is intended for early testers
 and developers who require new features. New upgrades will occur roughly
 weekly.
 """,
-          'regular':
-              """\
+      'regular':
+          """\
 Clusters subscribed to 'regular' receive versions that are considered GA
 quality. 'regular' is intended for production users who want to take
 advantage of new features. New upgrades will occur roughly every few
 weeks.
 """,
-          'stable':
-              """\
+      'stable':
+          """\
 Clusters subscribed to 'stable' receive versions that are known to be
 stable and reliable in production. 'stable' is intended for production
 users who need stability above all else, or for whom frequent upgrades
 are too risky. New upgrades will occur roughly every few months.
 """,
-      },
+  }
+
+  if is_update:
+    none_text = """\
+Use '--release-channel=None' to take a cluster off of a release channel.
+Clusters on 'rapid' cannot be taken off of the release channel.
+"""
+    choices['None'] = none_text
+
+  return parser.add_argument(
+      '--release-channel',
+      metavar='CHANNEL',
+      choices=choices,
       help=help_text,
       hidden=False)
 
@@ -815,12 +831,6 @@ info."""
       default=default,
       help=help_text,
       hidden=suppressed)
-
-
-# Warn GA customers about the future node auto-upgrade default value change.
-# At the same time we will release the actual change to Alpha/Beta in parallel.
-def WarnGAForFutureAutoUpgradeChange():
-  log.warning(util.WARN_GA_FUTURE_AUTOUPGRADE_CHANGE)
 
 
 def AddTagsFlag(parser, help_text):
@@ -1690,7 +1700,7 @@ def AddAddonsFlagsWithOptions(parser, addon_options):
       # TODO(b/65264376): Replace the doc link when a better doc is ready.
       help="""\
 Addons
-(https://cloud.google.com/kubernetes-engine/reference/rest/v1/projects.zones.clusters#AddonsConfig)
+(https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters#Cluster.AddonsConfig)
 are additional Kubernetes cluster components. Addons specified by this flag will
 be enabled. The others will be disabled. Default addons: {0}.
 """.format(', '.join(api_adapter.DEFAULT_ADDONS)))
@@ -2196,7 +2206,7 @@ def AddVerticalPodAutoscalingFlag(parser, hidden=False):
   parser.add_argument(
       '--enable-vertical-pod-autoscaling',
       default=None,
-      help='Enables vertical pod autoscaling for a cluster.',
+      help='Enable vertical pod autoscaling for a cluster.',
       hidden=hidden,
       action='store_true')
 

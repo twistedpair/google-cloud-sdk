@@ -29,14 +29,12 @@ from googlecloudsdk.api_lib.run import condition as run_condition
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import domain_mapping
 from googlecloudsdk.api_lib.run import global_methods
-from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import metric_names
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import route
 from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
-from googlecloudsdk.api_lib.util import exceptions as exceptions_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
@@ -482,12 +480,15 @@ class _SwitchToDigestChange(config_changes_mod.ConfigChanger):
       return resource
 
     # Mutates through to metadata: Save the by-tag user intent.
-    resource.annotations[configuration.USER_IMAGE_ANNOTATION] = (
+    resource.annotations[revision.USER_IMAGE_ANNOTATION] = (
+        self._base_revision.image)
+    resource.template.annotations[revision.USER_IMAGE_ANNOTATION] = (
         self._base_revision.image)
     resource.template.image = self._base_revision.image_digest
     return resource
 
 _CLIENT_NAME_ANNOTATION = 'run.googleapis.com/client-name'
+_CLIENT_NAME = 'gcloud'
 _CLIENT_VERSION_ANNOTATION = 'run.googleapis.com/client-version'
 
 
@@ -495,10 +496,11 @@ class _SetClientNameAndVersion(config_changes_mod.ConfigChanger):
   """Sets the client name and version annotations."""
 
   def Adjust(self, resource):
-    annotations = k8s_object.AnnotationsFromMetadata(resource.MessagesModule(),
-                                                     resource.metadata)
-    annotations[_CLIENT_NAME_ANNOTATION] = 'gcloud'
-    annotations[_CLIENT_VERSION_ANNOTATION] = config.CLOUD_SDK_VERSION
+    resource.annotations[_CLIENT_NAME_ANNOTATION] = _CLIENT_NAME
+    resource.template.annotations[_CLIENT_NAME_ANNOTATION] = _CLIENT_NAME
+    resource.annotations[_CLIENT_VERSION_ANNOTATION] = config.CLOUD_SDK_VERSION
+    resource.template.annotations[
+        _CLIENT_VERSION_ANNOTATION] = config.CLOUD_SDK_VERSION
     return resource
 
 
@@ -896,15 +898,7 @@ class ServerlessOperations(object):
               serv_create_req)
         return service.Service(raw_service, messages)
     except api_exceptions.HttpBadRequestError as e:
-      error_payload = exceptions_util.HttpErrorPayload(e)
-      if error_payload.field_violations:
-        if (serverless_exceptions.BadImageError.IMAGE_ERROR_FIELD
-            in error_payload.field_violations):
-          exceptions.reraise(serverless_exceptions.BadImageError(e))
-        elif (serverless_exceptions.MalformedLabelError.LABEL_ERROR_FIELD
-              in error_payload.field_violations):
-          exceptions.reraise(serverless_exceptions.MalformedLabelError(e))
-      exceptions.reraise(e)
+      exceptions.reraise(serverless_exceptions.HttpError(e))
     except api_exceptions.HttpNotFoundError as e:
       platform = properties.VALUES.run.platform.Get()
       error_msg = 'Deployment endpoint was not found.'

@@ -67,9 +67,26 @@ class Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: The G Suite domain (primary) that represents all
-      the    users of that domain. For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding.  *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus    unique identifier) representing a service account that has been
+      recently    deleted. For example,    `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique    identifier) representing a Google group
+      that has been recently    deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If    the group is
+      recovered, this value reverts to `group:{emailid}` and the    recovered
+      group retains the role in the binding.   * `domain:{domain}`: The G
+      Suite domain (primary) that represents all the    users of that domain.
+      For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -267,22 +284,22 @@ class ExecuteBatchDmlRequest(_messages.Message):
   r"""The request for ExecuteBatchDml.
 
   Fields:
-    seqno: A per-transaction sequence number used to identify this request.
-      This field makes each request idempotent such that if the request is
-      received multiple times, at most one will succeed.  The sequence number
-      must be monotonically increasing within the transaction. If a request
-      arrives for the first time with an out-of-order sequence number, the
-      transaction may be aborted. Replays of previously handled requests will
-      yield the same response as the first execution.
-    statements: The list of statements to execute in this batch. Statements
-      are executed serially, such that the effects of statement `i` are
-      visible to statement `i+1`. Each statement must be a DML statement.
+    seqno: Required. A per-transaction sequence number used to identify this
+      request. This field makes each request idempotent such that if the
+      request is received multiple times, at most one will succeed.  The
+      sequence number must be monotonically increasing within the transaction.
+      If a request arrives for the first time with an out-of-order sequence
+      number, the transaction may be aborted. Replays of previously handled
+      requests will yield the same response as the first execution.
+    statements: Required. The list of statements to execute in this batch.
+      Statements are executed serially, such that the effects of statement `i`
+      are visible to statement `i+1`. Each statement must be a DML statement.
       Execution stops at the first failed statement; the remaining statements
       are not executed.  Callers must provide at least one statement.
-    transaction: The transaction to use. Must be a read-write transaction.  To
-      protect against replays, single-use transactions are not supported. The
-      caller must either supply an existing transaction ID or begin a new
-      transaction.
+    transaction: Required. The transaction to use. Must be a read-write
+      transaction.  To protect against replays, single-use transactions are
+      not supported. The caller must either supply an existing transaction ID
+      or begin a new transaction.
   """
 
   seqno = _messages.IntegerField(1)
@@ -589,6 +606,13 @@ class Instance(_messages.Message):
     displayName: Required. The descriptive name for this instance as it
       appears in UIs. Must be unique per project and between 4 and 30
       characters in length.
+    endpointUrls: Output only. The endpoint URLs based on the instance config.
+      For example, instances located in a specific cloud region (or multi
+      region) such as nam3, would have a nam3 specific endpoint URL. This URL
+      is to be used implictly by SDK clients, with fallback to default URL.
+      These endpoints are intended to optimize the network routing between the
+      client and the instance's serving resources. If multiple endpoints are
+      present, client may establish connections using any of the given URLs.
     labels: Cloud Labels are a flexible and lightweight mechanism for
       organizing cloud resources into groups that reflect a customer's
       organizational needs and deployment strategies. Cloud Labels can be used
@@ -611,10 +635,10 @@ class Instance(_messages.Message):
       changed after the instance is created. Values are of the form
       `projects/<project>/instances/a-z*[a-z0-9]`. The final segment of the
       name must be between 2 and 64 characters in length.
-    nodeCount: Required. The number of nodes allocated to this instance. This
-      may be zero in API responses for instances that are not yet in state
-      `READY`.  See [the documentation](https://cloud.google.com/spanner/docs/
-      instances#node_count) for more information about nodes.
+    nodeCount: The number of nodes allocated to this instance. This may be
+      zero in API responses for instances that are not yet in state `READY`.
+      See [the documentation](https://cloud.google.com/spanner/docs/instances#
+      node_count) for more information about nodes.
     state: Output only. The current instance state. For CreateInstance, the
       state must be either omitted or set to `CREATING`. For UpdateInstance,
       the state must be either omitted or set to `READY`.
@@ -679,10 +703,11 @@ class Instance(_messages.Message):
 
   config = _messages.StringField(1)
   displayName = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  endpointUrls = _messages.StringField(3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class InstanceConfig(_messages.Message):
@@ -1135,9 +1160,9 @@ class PartitionQueryRequest(_messages.Message):
       parameters.
     partitionOptions: Additional options that affect how many partitions are
       created.
-    sql: The query request to generate partitions for. The request will fail
-      if the query is not root partitionable. The query plan of a root
-      partitionable query has a single distributed union operator. A
+    sql: Required. The query request to generate partitions for. The request
+      will fail if the query is not root partitionable. The query plan of a
+      root partitionable query has a single distributed union operator. A
       distributed union operator conceptually divides one or more tables into
       multiple splits, remotely evaluates a subquery independently on each
       split, and then unions all results.  This must not contain DML commands,
@@ -1508,8 +1533,8 @@ class ReadRequest(_messages.Message):
   r"""The request for Read and StreamingRead.
 
   Fields:
-    columns: The columns of table to be returned for each row matching this
-      request.
+    columns: Required. The columns of table to be returned for each row
+      matching this request.
     index: If non-empty, the name of an index on table. This index is used
       instead of the table primary key when interpreting key_set and sorting
       result rows. See key_set for further information.
@@ -3097,7 +3122,7 @@ class UpdateDatabaseDdlRequest(_messages.Message):
       identifier: `a-z*`. Note that automatically-generated operation IDs
       always begin with an underscore. If the named operation already exists,
       UpdateDatabaseDdl returns `ALREADY_EXISTS`.
-    statements: DDL statements to be applied to the database.
+    statements: Required. DDL statements to be applied to the database.
   """
 
   operationId = _messages.StringField(1)

@@ -29,9 +29,8 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_encoding
-
-import six
 
 
 _PUBSUB_MESSAGE_URL = 'type.googleapis.com/google.pubsub.v1.PubsubMessage'
@@ -345,10 +344,7 @@ def _EncodeMessageBody(message_body):
   Returns:
     String containing HTTP encoded message body.
   """
-  message_body_str = message_body
-  if not isinstance(message_body, six.string_types):
-    # TODO(b/143543614) audit usage of str
-    message_body_str = str(message_body, 'utf8')
+  message_body_str = encoding.Decode(message_body, encoding='utf8')
   return http_encoding.Encode(message_body_str)
 
 

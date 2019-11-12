@@ -121,9 +121,26 @@ class Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: The G Suite domain (primary) that represents all
-      the    users of that domain. For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding.  *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus    unique identifier) representing a service account that has been
+      recently    deleted. For example,    `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique    identifier) representing a Google group
+      that has been recently    deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If    the group is
+      recovered, this value reverts to `group:{emailid}` and the    recovered
+      group retains the role in the binding.   * `domain:{domain}`: The G
+      Suite domain (primary) that represents all the    users of that domain.
+      For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -379,8 +396,8 @@ class Replication(_messages.Message):
     policy: The policy for the replication of this Secret.  Updating the
       replication policy may not complete by the time the request has
       completed, but this field will always reflect it as being complete.
-    userManagedReplicaLocations: The canonical IDs for GCP locations to
-      replicate data into. For example: `"us-east1"`. Only valid when using
+    userManagedReplicaLocations: The canonical IDs of the locations into which
+      to replicate data. For example: `"us-east1"`. Only valid when using
       Policy.USER_MANAGED. Cannot be empty when using the USER_MANAGED policy.
   """
 
@@ -391,9 +408,9 @@ class Replication(_messages.Message):
 
     Values:
       POLICY_UNSPECIFIED: Not specified. This value is invalid.
-      AUTOMATIC: The Secret will be replicated without any restrictions.
-      USER_MANAGED: The Secret will be replicated into the locations specified
-        in Secret.policy.replica_locations.
+      AUTOMATIC: The Secret is replicated without any restrictions.
+      USER_MANAGED: The Secret is replicated into the locations specified in
+        Secret.policy.replica_locations.
     """
     POLICY_UNSPECIFIED = 0
     AUTOMATIC = 1
@@ -404,52 +421,43 @@ class Replication(_messages.Message):
 
 
 class Secret(_messages.Message):
-  r"""A Secret represents a logical secret whose value and versions can be
-  accessed.  A Secret is made up of zero or more SecretVersions that represent
-  the secret data.
+  r"""A Secret is a logical secret whose value and versions can be accessed.
+  A Secret is made up of zero or more SecretVersions that represent the secret
+  data.
 
   Messages:
-    LabelsValue: The labels associated with this Secret.  Label keys must be
-      between 1 and 63 characters long and must conform to the following
-      regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must
-      be between 0 and 63 characters long and must conform to the regular
-      expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?. A label value can be
-      empty.  No more than 256 labels can be associated with a given resource.
-      Clients should store labels in a representation such as JSON that does
-      not depend on specific characters being disallowed.  Example:
-      `"environment" : "dev"`
+    LabelsValue: The labels assigned to this Secret.  Label keys must be
+      between 1 and 63 characters long, have a UTF-8 encoding of maximum 128
+      bytes, and must conform to the following PCRE regular expression:
+      `\p{Ll}\p{Lo}{0,62}`  Label values must be between 0 and 63 characters
+      long, have a UTF-8 encoding of maximum 128 bytes, and must conform to
+      the following PCRE regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`  No
+      more than 64 labels can be assigned to a given resource.
 
   Fields:
     createTime: Output only. The time at which the Secret was created.
-    kmsKeyName: Optional. The resource name of the Cloud KMS CryptoKey to
-      encrypt secrets (CMEK).  The expected format is
-      `projects/*/locations*/keyRings/*/cryptoKeys/*`.
-    labels: The labels associated with this Secret.  Label keys must be
-      between 1 and 63 characters long and must conform to the following
-      regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must
-      be between 0 and 63 characters long and must conform to the regular
-      expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?. A label value can be
-      empty.  No more than 256 labels can be associated with a given resource.
-      Clients should store labels in a representation such as JSON that does
-      not depend on specific characters being disallowed.  Example:
-      `"environment" : "dev"`
+    labels: The labels assigned to this Secret.  Label keys must be between 1
+      and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and
+      must conform to the following PCRE regular expression:
+      `\p{Ll}\p{Lo}{0,62}`  Label values must be between 0 and 63 characters
+      long, have a UTF-8 encoding of maximum 128 bytes, and must conform to
+      the following PCRE regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`  No
+      more than 64 labels can be assigned to a given resource.
     name: Output only. The resource name of the Secret in the format
       `projects/*/secrets/*`.
-    replication: Required. The replication policy of the secret data
-      associated with the Secret.
+    replication: Required. The replication policy of the secret data attached
+      to the Secret.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""The labels associated with this Secret.  Label keys must be between 1
-    and 63 characters long and must conform to the following regular
-    expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must be
-    between 0 and 63 characters long and must conform to the regular
-    expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?. A label value can be
-    empty.  No more than 256 labels can be associated with a given resource.
-    Clients should store labels in a representation such as JSON that does not
-    depend on specific characters being disallowed.  Example: `"environment" :
-    "dev"`
+    r"""The labels assigned to this Secret.  Label keys must be between 1 and
+    63 characters long, have a UTF-8 encoding of maximum 128 bytes, and must
+    conform to the following PCRE regular expression: `\p{Ll}\p{Lo}{0,62}`
+    Label values must be between 0 and 63 characters long, have a UTF-8
+    encoding of maximum 128 bytes, and must conform to the following PCRE
+    regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`  No more than 64 labels
+    can be assigned to a given resource.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -472,15 +480,14 @@ class Secret(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  kmsKeyName = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  replication = _messages.MessageField('Replication', 5)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  replication = _messages.MessageField('Replication', 4)
 
 
 class SecretPayload(_messages.Message):
-  r"""A secret payload resource in the Secret Management API. This contains
-  the sensitive secret data that is associated with a SecretVersion.
+  r"""A secret payload resource in the Secret Manager API. This contains the
+  sensitive secret data that is associated with a SecretVersion.
 
   Fields:
     data: The secret data. Must be no larger than 1MiB.
@@ -499,10 +506,6 @@ class SecretVersion(_messages.Message):
     createTime: Output only. The time at which the SecretVersion was created.
     destroyTime: Output only. The time this SecretVersion was destroyed. Only
       present if state is DESTROYED.
-    kmsKeyVersionNames: Output only. The resource names of the Cloud KMS
-      CryptoKeyVersions used to encrypt this SecretVersion (CMEK).  The format
-      of CryptoKeyVersion names is
-      `projects/*/locations*/keyRings/*/cryptoKeys/*/versions/*`.
     name: Output only. The resource name of the SecretVersion in the format
       `projects/*/secrets/*/versions/*`.  SecretVersion IDs in a Secret start
       at 1 and are incremented for each subsequent version of the secret.
@@ -527,9 +530,8 @@ class SecretVersion(_messages.Message):
 
   createTime = _messages.StringField(1)
   destroyTime = _messages.StringField(2)
-  kmsKeyVersionNames = _messages.StringField(3, repeated=True)
-  name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class SecretmanagerProjectsLocationsGetRequest(_messages.Message):
@@ -632,9 +634,8 @@ class SecretmanagerProjectsSecretsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to be returned in a
-      single page. If set to 0, the server will decide the number of results
-      to return. If the number is greater than 25000, it will be capped at
-      25000.
+      single page. If set to 0, the server decides the number of results to
+      return. If the number is greater than 25000, it is capped at 25000.
     pageToken: Optional. Pagination token, returned earlier via
       ListSecretsResponse.next_page_token.
     parent: Required. The resource name of the project associated with the
@@ -762,9 +763,8 @@ class SecretmanagerProjectsSecretsVersionsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to be returned in a
-      single page. If set to 0, the server will decide the number of results
-      to return. If the number is greater than 25000, it will be capped at
-      25000.
+      single page. If set to 0, the server decides the number of results to
+      return. If the number is greater than 25000, it is capped at 25000.
     pageToken: Optional. Pagination token, returned earlier via
       ListSecretVersionsResponse.next_page_token][].
     parent: Required. The resource name of the Secret associated with the

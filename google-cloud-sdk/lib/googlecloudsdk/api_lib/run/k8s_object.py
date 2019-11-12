@@ -28,7 +28,20 @@ from googlecloudsdk.core.console import console_attr
 import six
 
 
-REGION_LABEL = 'cloud.googleapis.com/location'
+SERVING_GROUP = 'serving.knative.dev'
+AUTOSCALING_GROUP = 'autoscaling.knative.dev'
+EVENTING_GROUP = 'eventing.knative.dev'
+CLIENT_GROUP = 'client.knative.dev'
+
+GOOGLE_GROUP = 'cloud.googleapis.com'
+RUN_GROUP = 'run.googleapis.com'
+
+INTERNAL_GROUPS = (
+    CLIENT_GROUP, SERVING_GROUP, AUTOSCALING_GROUP, EVENTING_GROUP,
+    GOOGLE_GROUP)
+
+
+REGION_LABEL = GOOGLE_GROUP + '/location'
 
 
 def Meta(m):
@@ -254,6 +267,10 @@ class KubernetesObject(object):
     return self._m.metadata.ownerReferences
 
   @property
+  def is_managed(self):
+    return REGION_LABEL in self.labels
+
+  @property
   def region(self):
     self.AssertFullObject()
     return self.labels[REGION_LABEL]
@@ -297,12 +314,16 @@ class KubernetesObject(object):
     return LabelsFromMetadata(self._messages, self._m.metadata)
 
   @property
+  def ready_condition(self):
+    assert hasattr(self, 'READY_CONDITION')
+    if self.conditions and self.READY_CONDITION in self.conditions:
+      return self.conditions[self.READY_CONDITION]
+
+  @property
   def ready(self):
     assert hasattr(self, 'READY_CONDITION')
-    cond = self.conditions
-    if self.READY_CONDITION in cond:
-      return cond[self.READY_CONDITION]['status']
-    return None
+    if self.ready_condition:
+      return self.ready_condition['status']
 
   def _PickSymbol(self, best, alt, encoding):
     """Choose the best symbol (if it's in this encoding) or an alternate."""
@@ -315,16 +336,21 @@ class KubernetesObject(object):
   @property
   def ready_symbol(self):
     """Return a symbol summarizing the status of this object."""
+    return self.ReadySymbolAndColor()[0]
+
+  def ReadySymbolAndColor(self):
+    """Return a tuple of ready_symbol and display color for this object."""
     # NB: This can be overridden by subclasses to allow symbols for more
     # complex reasons the object isn't ready. Ex: Service overrides it to
     # provide '!' for "I'm serving, but not the revision you wanted."
     encoding = console_attr.GetConsoleAttr().GetEncoding()
     if self.ready is None:
-      return self._PickSymbol('\N{HORIZONTAL ELLIPSIS}', '.', encoding)
+      return self._PickSymbol(
+          '\N{HORIZONTAL ELLIPSIS}', '.', encoding), 'yellow'
     elif self.ready:
-      return self._PickSymbol('\N{HEAVY CHECK MARK}', '+', encoding)
+      return self._PickSymbol('\N{HEAVY CHECK MARK}', '+', encoding), 'green'
     else:
-      return 'X'
+      return 'X', 'red'
 
   def AsObjectReference(self):
     return self._messages.ObjectReference(

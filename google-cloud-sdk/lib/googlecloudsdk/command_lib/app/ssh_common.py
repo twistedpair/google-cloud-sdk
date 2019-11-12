@@ -68,8 +68,7 @@ class ConnectionDetails(object):
     return not self.__eq__(other)
 
   def __repr__(self):
-    # TODO(b/143543614) audit usage of str
-    return str('ConnectionDetails(**{})'.format(self.__dict__))
+    return 'ConnectionDetails(**{})'.format(self.__dict__)
 
 
 def _GetComputeProject(release_track):
@@ -162,4 +161,3 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
       'HostKeyAlias': _HOST_KEY_ALIAS.format(project=api_client.project,
                                              instance_id=instance_id)}
   return ConnectionDetails(remote, options)
-

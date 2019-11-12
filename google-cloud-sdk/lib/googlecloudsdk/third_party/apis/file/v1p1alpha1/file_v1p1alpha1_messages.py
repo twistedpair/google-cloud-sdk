@@ -404,6 +404,10 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       Producer shall not modify by itself. For update of a single entry in
       this map, the update field mask shall follow this sementics: go
       /advanced-field-masks
+    slmInstanceTemplate: Link to the SLM instance template. Only populated
+      when updating SLM instances via SSA's Actuation service adaptor. Service
+      producers with custom control plane (e.g. Cloud SQL) doesn't need to
+      populate this field. Instead they should use software_versions.
     sloMetadata: Output only. SLO metadata for instance classification in the
       Standardized dataplane SLO platform. See go/cloud-ssa-standard-slo for
       feature description.
@@ -615,11 +619,12 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
   producerMetadata = _messages.MessageField('ProducerMetadataValue', 7)
   provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 8, repeated=True)
   rolloutMetadata = _messages.MessageField('RolloutMetadataValue', 9)
-  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 10)
-  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  tenantProjectId = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  slmInstanceTemplate = _messages.StringField(10)
+  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 11)
+  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  tenantProjectId = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messages.Message):
@@ -733,32 +738,31 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility(_messages.Me
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion(_messages.Message):
-  r"""SloExclusion represents an excusion in SLI calculation applies to all
+  r"""SloExclusion represents an exclusion in SLI calculation applies to all
   SLOs.
 
   Fields:
-    exclusionDuration: Exclusion duration. No restrictions on the possible
-      values.  When an ongoing operation is taking longer than initially
-      expected, an existing entry in the exclusion list can be updated by
-      extending the duration. This is supported by the subsystem exporting
-      eligibility data as long as such extension is committed at least 10
-      minutes before the original exclusion expiration - otherwise it is
-      possible that there will be "gaps" in the exclusion application in the
-      exported timeseries.
-    exclusionStartTime: Start time of the exclusion. No alignment (e.g. to a
-      full minute) needed.
+    duration: Exclusion duration. No restrictions on the possible values.
+      When an ongoing operation is taking longer than initially expected, an
+      existing entry in the exclusion list can be updated by extending the
+      duration. This is supported by the subsystem exporting eligibility data
+      as long as such extension is committed at least 10 minutes before the
+      original exclusion expiration - otherwise it is possible that there will
+      be "gaps" in the exclusion application in the exported timeseries.
     reason: Human-readable reason for the exclusion. This should be a static
       string (e.g. "Disruptive update in progress") and should not contain
       dynamically generated data (e.g. instance name). Can be left empty.
     sliName: Name of an SLI that this exclusion applies to. Can be left empty,
       signaling that the instance should be excluded from all SLIs defined in
       the service SLO configuration.
+    startTime: Start time of the exclusion. No alignment (e.g. to a full
+      minute) needed.
   """
 
-  exclusionDuration = _messages.StringField(1)
-  exclusionStartTime = _messages.StringField(2)
-  reason = _messages.StringField(3)
-  sliName = _messages.StringField(4)
+  duration = _messages.StringField(1)
+  reason = _messages.StringField(2)
+  sliName = _messages.StringField(3)
+  startTime = _messages.StringField(4)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Message):

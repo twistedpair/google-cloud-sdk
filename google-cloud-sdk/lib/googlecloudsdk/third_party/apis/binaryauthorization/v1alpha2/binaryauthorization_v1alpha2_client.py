@@ -71,7 +71,7 @@ set.
         method_id=u'binaryauthorization.projects.attestors.attestations.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1alpha2/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'BinaryauthorizationProjectsAttestorsAttestationsGetIamPolicyRequest',
@@ -82,6 +82,8 @@ set.
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
+
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsAttestationsSetIamPolicyRequest) input message
@@ -257,7 +259,7 @@ set.
         method_id=u'binaryauthorization.projects.attestors.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1alpha2/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'BinaryauthorizationProjectsAttestorsGetIamPolicyRequest',
@@ -297,6 +299,8 @@ Returns INVALID_ARGUMENT if the project does not exist.
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+
       Args:
         request: (BinaryauthorizationProjectsAttestorsSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -318,6 +322,34 @@ existing policy.
         request_field=u'setIamPolicyRequest',
         request_type_name=u'BinaryauthorizationProjectsAttestorsSetIamPolicyRequest',
         response_type_name=u'IamPolicy',
+        supports_download=False,
+    )
+
+    def TestAttestationOccurrence(self, request, global_params=None):
+      r"""Returns whether the given Attestation for the given image URI.
+was signed by the given Attestor
+
+      Args:
+        request: (BinaryauthorizationProjectsAttestorsTestAttestationOccurrenceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestAttestationOccurrenceResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestAttestationOccurrence')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestAttestationOccurrence.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/attestors/{attestorsId}:testAttestationOccurrence',
+        http_method=u'POST',
+        method_id=u'binaryauthorization.projects.attestors.testAttestationOccurrence',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha2/{+name}:testAttestationOccurrence',
+        request_field=u'testAttestationOccurrenceRequest',
+        request_type_name=u'BinaryauthorizationProjectsAttestorsTestAttestationOccurrenceRequest',
+        response_type_name=u'TestAttestationOccurrenceResponse',
         supports_download=False,
     )
 
@@ -413,7 +445,7 @@ set.
         method_id=u'binaryauthorization.projects.policy.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1alpha2/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'BinaryauthorizationProjectsPolicyGetIamPolicyRequest',
@@ -424,6 +456,8 @@ set.
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
+
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
 
       Args:
         request: (BinaryauthorizationProjectsPolicySetIamPolicyRequest) input message
@@ -493,7 +527,12 @@ may "fail open" without warning.
           }
 
     def GetPolicy(self, request, global_params=None):
-      r"""Gets the policy for this project. Returns a default.
+      r"""A policy specifies the attestors that must attest to.
+a container image, before the project is allowed to deploy that
+image. There is at most one policy per project. All image admission
+requests are permitted if a project has no policy.
+
+Gets the policy for this project. Returns a default
 policy if the project does not have one.
 
       Args:

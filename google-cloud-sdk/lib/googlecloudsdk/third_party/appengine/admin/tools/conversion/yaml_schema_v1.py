@@ -170,4 +170,5 @@ SCHEMA = s.Message(
     threadsafe=s.Value(),
     version=s.Value('id', converter=c.ToJsonString),
     vm=s.Value(),
-    vm_settings=s.Map('beta_settings'))
+    vm_settings=s.Map('beta_settings'),
+    vpc_access_connector=s.Message(name=s.Value(converter=c.ToJsonString)))

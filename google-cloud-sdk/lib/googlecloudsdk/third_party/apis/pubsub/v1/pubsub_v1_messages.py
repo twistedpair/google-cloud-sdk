@@ -41,9 +41,26 @@ class Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: The G Suite domain (primary) that represents all
-      the    users of that domain. For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding.  *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus    unique identifier) representing a service account that has been
+      recently    deleted. For example,    `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique    identifier) representing a Google group
+      that has been recently    deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If    the group is
+      recovered, this value reverts to `group:{emailid}` and the    recovered
+      group retains the role in the binding.   * `domain:{domain}`: The G
+      Suite domain (primary) that represents all the    users of that domain.
+      For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -418,10 +435,12 @@ class PubsubMessage(_messages.Message):
   information about message limits.
 
   Messages:
-    AttributesValue: Optional attributes for this message.
+    AttributesValue: Attributes for this message. If this field is empty, the
+      message must contain non-empty data.
 
   Fields:
-    attributes: Optional attributes for this message.
+    attributes: Attributes for this message. If this field is empty, the
+      message must contain non-empty data.
     data: The message data field. If this field is empty, the message must
       contain at least one attribute.
     messageId: ID of this message, assigned by the server when the message is
@@ -446,7 +465,8 @@ class PubsubMessage(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributesValue(_messages.Message):
-    r"""Optional attributes for this message.
+    r"""Attributes for this message. If this field is empty, the message must
+    contain non-empty data.
 
     Messages:
       AdditionalProperty: An additional property for a AttributesValue object.
@@ -481,10 +501,10 @@ class PubsubProjectsSnapshotsCreateRequest(_messages.Message):
   Fields:
     createSnapshotRequest: A CreateSnapshotRequest resource to be passed as
       the request body.
-    name: Optional user-provided name for this snapshot. If the name is not
-      provided in the request, the server will assign a random name for this
-      snapshot on the same project as the subscription. Note that for REST API
-      requests, you must specify a name.  See the <a
+    name: User-provided name for this snapshot. If the name is not provided in
+      the request, the server will assign a random name for this snapshot on
+      the same project as the subscription. Note that for REST API requests,
+      you must specify a name.  See the <a
       href="https://cloud.google.com/pubsub/docs/admin#resource_names">
       resource name rules</a>. Format is
       `projects/{project}/snapshots/{snap}`.
@@ -1276,7 +1296,9 @@ class Subscription(_messages.Message):
       `expiration_policy` is not set, a *default policy* with `ttl` of 31 days
       will be used. The minimum allowed value for `expiration_policy.ttl` is 1
       day.
-    filter: An expression written in the Cloud Pub/Sub filter language.
+    filter: An expression written in the Cloud Pub/Sub filter language. If
+      non-empty, then only messages that match the filter will be delivered on
+      this subscription. If empty, then no messages are filtered out.
     labels: See <a href="https://cloud.google.com/pubsub/docs/labels">
       Creating and managing labels</a>.
     messageRetentionDuration: How long to retain unacknowledged messages in

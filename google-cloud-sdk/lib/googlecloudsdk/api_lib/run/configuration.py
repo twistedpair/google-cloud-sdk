@@ -23,10 +23,6 @@ from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
 
 
-# Annotation for the user-specified image.
-USER_IMAGE_ANNOTATION = 'client.knative.dev/user-image'
-
-
 class Configuration(k8s_object.KubernetesObject):
   """Wraps a Cloud Run Configuration message, making fields more convenient.
 
@@ -85,10 +81,6 @@ class Configuration(k8s_object.KubernetesObject):
   @property
   def resource_limits(self):
     return self.template.resource_limits
-
-  @property
-  def deprecated_string_concurrency(self):
-    return self.template.deprecated_string_concurrency
 
   @property
   def concurrency(self):

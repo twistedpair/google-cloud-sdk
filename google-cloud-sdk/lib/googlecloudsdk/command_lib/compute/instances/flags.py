@@ -999,8 +999,8 @@ def AddAddressArgs(parser,
       'no-address': None,
       'subnet': str,
   }
-  if instances:
-    multiple_network_interface_cards_spec['private-network-ip'] = str
+
+  multiple_network_interface_cards_spec['private-network-ip'] = str
 
   def ValidateNetworkTier(network_tier_input):
     network_tier = network_tier_input.upper()
@@ -1039,8 +1039,8 @@ def AddAddressArgs(parser,
         ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`. The default
         value is `PREMIUM`.
         """
-    if instances:
-      network_interface_help += """
+
+    network_interface_help += """
         *private-network-ip*::: Assigns the given RFC1918 IP address to the
         interface.
         """

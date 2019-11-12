@@ -555,7 +555,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a user that has been recently deleted. For\n   example,`alice@example.com?uid=123456789012345678901`. If the user is\n   recovered, this value reverts to `user:{emailid}` and the recovered user\n   retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus\n   unique identifier) representing a service account that has been recently\n   deleted. For example,\n   `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.\n   If the service account is undeleted, this value reverts to\n   `serviceAccount:{emailid}` and the undeleted service account retains the\n   role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a Google group that has been recently\n   deleted. For example, `admins@example.com?uid=123456789012345678901`. If\n   the group is recovered, this value reverts to `group:{emailid}` and the\n   recovered group retains the role in the binding.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -876,6 +876,20 @@
             "TYPE_UNSPECIFIED",
             "DIST"
           ]
+        },
+        "excludes": {
+          "description": "List of packages to exclude from update.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclusivePackages": {
+          "description": "An exclusive list of packages to be updated. These are the only packages\nthat will be updated. If these packages are not installed, they will be\nignored. This field cannot be specified with any other patch configuration\nfields.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -893,7 +907,14 @@
           "type": "boolean"
         },
         "excludes": {
-          "description": "List of packages to exclude from update. These packages will be excluded by\nusing the yum `--exclude` flag.",
+          "description": "List of packages to exclude from update. These packages will be excluded by\nusing the yum `--exclude` field.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclusivePackages": {
+          "description": "An exclusive list of packages to be updated. These are the only packages\nthat will be updated. If these packages are not installed, they will be\nignored. This field must not be specified with any other patch\nconfiguration fields.",
           "type": "array",
           "items": {
             "type": "string"
@@ -930,6 +951,20 @@
         },
         "severities": {
           "description": "Optional. Install only patches with these severities.\nCommon severities include critical, important, moderate, and low.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "excludes": {
+          "description": "List of patches to exclude from update.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclusivePatches": {
+          "description": "An exclusive list of patches to be updated. These are the only patches\nthat will be installed using 'zypper patch patch:<patch_name>' command.\nThis field must not be used with any other patch configuration fields.",
           "type": "array",
           "items": {
             "type": "string"
@@ -974,7 +1009,14 @@
           }
         },
         "excludes": {
-          "description": "Optional list of KBs to exclude from update.",
+          "description": "List of KBs to exclude from update.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclusivePatches": {
+          "description": "An exclusive list of kbs to be updated. These are the only patches\nthat will be updated. This field must not be used with other\npatch configurations.",
           "type": "array",
           "items": {
             "type": "string"
@@ -988,7 +1030,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Unique identifier for this patch job in the form\n`projects\/*\/patchJobs\/*`",
+          "description": "Unique identifier for this patch job in the form\n`projects\/*\/patchJobs\/*`",
           "type": "string"
         },
         "displayName": {
@@ -1000,17 +1042,17 @@
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. Time this PatchJob was created.",
+          "description": "Time this PatchJob was created.",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Last time this PatchJob was updated.",
+          "description": "Last time this PatchJob was updated.",
           "type": "string",
           "format": "google-datetime"
         },
         "state": {
-          "description": "Output only. The current state of the PatchJob.",
+          "description": "The current state of the PatchJob.",
           "enumDescriptions": [
             "State must be specified.",
             "The patch job was successfully initiated.",
@@ -1034,7 +1076,7 @@
           ]
         },
         "filter": {
-          "description": "Required. There must be at least one instance to patch for this job\nto succeed. This is the same filter used when listing compute instances.",
+          "description": "There must be at least one instance to patch for this job\nto succeed. This is the same filter used when listing compute instances.",
           "type": "string"
         },
         "patchConfig": {
@@ -1163,7 +1205,7 @@
       "type": "object",
       "properties": {
         "instanceSystemId": {
-          "description": "Required. The unique, system-generated identifier for the instance.\n\nThis is the immutable, auto-generated ID assigned to the instance upon\ncreation. This is needed here because GCE instance names are not\ntombstoned; it is possible to delete an instance and create a new one with\nthe same name; this provides a mechanism for this API to identify distinct\ninstances in this case.",
+          "description": "Required. The unique, system-generated identifier for the instance.\n\nThis is the unchangeable, auto-generated ID assigned to the instance upon\ncreation. This is needed here because GCE instance names are not\ntombstoned; it is possible to delete an instance and create a new one with\nthe same name; this provides a mechanism for this API to identify distinct\ninstances in this case.",
           "type": "string"
         },
         "patchJob": {

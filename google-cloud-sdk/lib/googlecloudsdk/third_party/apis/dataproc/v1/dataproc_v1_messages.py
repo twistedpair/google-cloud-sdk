@@ -152,9 +152,26 @@ class Binding(_messages.Message):
       serviceAccount:{emailid}: An email address that represents a service
       account. For example, my-other-app@appspot.gserviceaccount.com.
       group:{emailid}: An email address that represents a Google group.  For
-      example, admins@example.com. domain:{domain}: The G Suite domain
-      (primary) that represents all the  users of that domain. For example,
-      google.com or example.com.
+      example, admins@example.com. deleted:user:{emailid}?uid={uniqueid}: An
+      email address (plus unique  identifier) representing a user that has
+      been recently deleted. For
+      example,alice@example.com?uid=123456789012345678901. If the user is
+      recovered, this value reverts to user:{emailid} and the recovered user
+      retains the role in the binding.
+      deleted:serviceAccount:{emailid}?uid={uniqueid}: An email address (plus
+      unique identifier) representing a service account that has been recently
+      deleted. For example,  my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901.  If the
+      service account is undeleted, this value reverts to
+      serviceAccount:{emailid} and the undeleted service account retains the
+      role in the binding. deleted:group:{emailid}?uid={uniqueid}: An email
+      address (plus unique  identifier) representing a Google group that has
+      been recently  deleted. For example,
+      admins@example.com?uid=123456789012345678901. If  the group is
+      recovered, this value reverts to group:{emailid} and the  recovered
+      group retains the role in the binding. domain:{domain}: The G Suite
+      domain (primary) that represents all the  users of that domain. For
+      example, google.com or example.com.
     role: Role that is assigned to members. For example, roles/viewer,
       roles/editor, or roles/owner.
   """
@@ -1784,6 +1801,8 @@ class GceClusterConfig(_messages.Message):
       short name are valid. Examples: https://www.googleapis.com/compute/v1/pr
       ojects/[project_id]/regions/global/default
       projects/[project_id]/regions/global/default default
+    reservationAffinity: Optional. Reservation Affinity for consuming Zonal
+      reservation.
     serviceAccount: Optional. The service account of the instances. Defaults
       to the default Compute Engine service account. Custom service accounts
       need permissions equivalent to the following IAM roles:
@@ -1849,11 +1868,12 @@ class GceClusterConfig(_messages.Message):
   internalIpOnly = _messages.BooleanField(1)
   metadata = _messages.MessageField('MetadataValue', 2)
   networkUri = _messages.StringField(3)
-  serviceAccount = _messages.StringField(4)
-  serviceAccountScopes = _messages.StringField(5, repeated=True)
-  subnetworkUri = _messages.StringField(6)
-  tags = _messages.StringField(7, repeated=True)
-  zoneUri = _messages.StringField(8)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 4)
+  serviceAccount = _messages.StringField(5)
+  serviceAccountScopes = _messages.StringField(6, repeated=True)
+  subnetworkUri = _messages.StringField(7)
+  tags = _messages.StringField(8, repeated=True)
+  zoneUri = _messages.StringField(9)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -3161,6 +3181,39 @@ class RegexValidation(_messages.Message):
   regexes = _messages.StringField(1, repeated=True)
 
 
+class ReservationAffinity(_messages.Message):
+  r"""Reservation Affinity for consuming Zonal reservation.
+
+  Enums:
+    ConsumeReservationTypeValueValuesEnum: Optional. Type of reservation to
+      consume
+
+  Fields:
+    consumeReservationType: Optional. Type of reservation to consume
+    key: Optional. Corresponds to the label key of reservation resource.
+    values: Optional. Corresponds to the label values of reservation resource.
+  """
+
+  class ConsumeReservationTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of reservation to consume
+
+    Values:
+      TYPE_UNSPECIFIED: <no description>
+      NO_RESERVATION: Do not consume from any allocated capacity.
+      ANY_RESERVATION: Consume any reservation available.
+      SPECIFIC_RESERVATION: Must consume from a specific reservation. Must
+        specify key value fields for specifying the reservations.
+    """
+    TYPE_UNSPECIFIED = 0
+    NO_RESERVATION = 1
+    ANY_RESERVATION = 2
+    SPECIFIC_RESERVATION = 3
+
+  consumeReservationType = _messages.EnumField('ConsumeReservationTypeValueValuesEnum', 1)
+  key = _messages.StringField(2)
+  values = _messages.StringField(3, repeated=True)
+
+
 class SecurityConfig(_messages.Message):
   r"""Security related configuration, including Kerberos.
 
@@ -3224,6 +3277,7 @@ class SoftwareConfig(_messages.Message):
       DRUID: <no description>
       HIVE_WEBHCAT: <no description>
       JUPYTER: <no description>
+      KERBEROS: <no description>
       PRESTO: <no description>
       ZEPPELIN: <no description>
       ZOOKEEPER: <no description>
@@ -3236,12 +3290,13 @@ class SoftwareConfig(_messages.Message):
     DRUID = 2
     HIVE_WEBHCAT = 3
     JUPYTER = 4
-    PRESTO = 5
-    ZEPPELIN = 6
-    ZOOKEEPER = 7
-    SOLR = 8
-    HBASE = 9
-    RANGER = 10
+    KERBEROS = 5
+    PRESTO = 6
+    ZEPPELIN = 7
+    ZOOKEEPER = 8
+    SOLR = 9
+    HBASE = 10
+    RANGER = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):

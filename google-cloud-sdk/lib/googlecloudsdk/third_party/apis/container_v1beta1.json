@@ -676,6 +676,10 @@
         "cloudRunConfig": {
           "description": "Configuration for the Cloud Run addon. The `IstioConfig` addon must be\nenabled in order to enable Cloud Run addon. This option can only be enabled\nat cluster creation time.",
           "$ref": "CloudRunConfig"
+        },
+        "kalmConfig": {
+          "description": "Configuration for the KALM addon, which manages the lifecycle of k8s\napplications.",
+          "$ref": "KalmConfig"
         }
       }
     },
@@ -753,6 +757,17 @@
       "properties": {
         "disabled": {
           "description": "Whether Cloud Run addon is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "KalmConfig": {
+      "id": "KalmConfig",
+      "description": "Configuration options for the KALM addon.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether KALM is enabled for this cluster.",
           "type": "boolean"
         }
       }

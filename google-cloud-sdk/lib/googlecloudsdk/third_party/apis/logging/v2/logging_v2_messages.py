@@ -463,7 +463,8 @@ class LogBucket(_messages.Message):
       created, the location can not be changed.
     retentionDays: Logs will be retained by default for this amount of time,
       after which they will automatically be deleted. The minimum retention
-      period is 1 day.
+      period is 1 day. If this value is set to zero at bucket creation time,
+      the default time of 30 days will be used.
     updateTime: Output only. The last update timestamp of the bucket.
   """
 
@@ -791,7 +792,8 @@ class LogExclusion(_messages.Message):
       buckets:"resource.type=gcs_bucket severity<ERROR sample(insertId, 0.99)"
     name: Required. A client-assigned identifier, such as "load-balancer-
       exclusion". Identifiers are limited to 100 characters and can include
-      only letters, digits, underscores, hyphens, and periods.
+      only letters, digits, underscores, hyphens, and periods. First character
+      has to be alphanumeric.
     updateTime: Output only. The last update timestamp of the exclusion.This
       field may not be present for older exclusions.
   """
@@ -1059,7 +1061,7 @@ class LogSink(_messages.Message):
       project. Example: "my-syslog-errors-to-pubsub". Sink identifiers are
       limited to 100 characters and can include only the following characters:
       upper and lower-case alphanumeric characters, underscores, hyphens, and
-      periods.
+      periods. First character has to be alphanumeric.
     outputVersionFormat: Deprecated. The log entry format to use for this
       sink's exported log entries. The v2 format is used by default and cannot
       be changed.

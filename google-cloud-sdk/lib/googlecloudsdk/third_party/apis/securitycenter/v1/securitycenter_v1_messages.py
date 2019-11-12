@@ -198,9 +198,26 @@ class Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: The G Suite domain (primary) that represents all
-      the    users of that domain. For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding.  *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus    unique identifier) representing a service account that has been
+      recently    deleted. For example,    `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique    identifier) representing a Google group
+      that has been recently    deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If    the group is
+      recovered, this value reverts to `group:{emailid}` and the    recovered
+      group retains the role in the binding.   * `domain:{domain}`: The G
+      Suite domain (primary) that represents all the    users of that domain.
+      For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -752,6 +769,7 @@ class ListFindingsResult(_messages.Message):
 
   Fields:
     finding: Finding matching the search request.
+    resource: Output only. Resource that is associated with this finding.
     stateChange: State change of the finding between the points in time.
   """
 
@@ -776,7 +794,8 @@ class ListFindingsResult(_messages.Message):
     REMOVED = 4
 
   finding = _messages.MessageField('Finding', 1)
-  stateChange = _messages.EnumField('StateChangeValueValuesEnum', 2)
+  resource = _messages.MessageField('Resource', 2)
+  stateChange = _messages.EnumField('StateChangeValueValuesEnum', 3)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -994,6 +1013,28 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class Resource(_messages.Message):
+  r"""Information related to the Google Cloud Platform (GCP) resource that is
+  associated with this finding.
+
+  Fields:
+    name: The full resource name of the resource. See:
+      https://cloud.google.com/apis/design/resource_names#full_resource_name
+    parentDisplayName: The human readable name of resource's parent.
+    parentName: The full resource name of resource's parent.
+    projectDisplayName: The human readable name of project that the resource
+      belongs to.
+    projectName: The full resource name of project that the resource belongs
+      to.
+  """
+
+  name = _messages.StringField(1)
+  parentDisplayName = _messages.StringField(2)
+  parentName = _messages.StringField(3)
+  projectDisplayName = _messages.StringField(4)
+  projectName = _messages.StringField(5)
 
 
 class RunAssetDiscoveryRequest(_messages.Message):

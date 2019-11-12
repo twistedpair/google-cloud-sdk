@@ -125,10 +125,10 @@ def AddBucketLocationArg(parser, required, help_string):
       '--location', required=required, metavar='LOCATION', help=help_string)
 
 
-def GetProjectResource():
+def GetProjectResource(project):
   """Returns the resource for the current project."""
   return resources.REGISTRY.Parse(
-      properties.VALUES.core.project.Get(required=True),
+      project or properties.VALUES.core.project.Get(required=True),
       collection='cloudresourcemanager.projects')
 
 
@@ -187,7 +187,7 @@ def GetParentResourceFromArgs(args):
   elif args.billing_account:
     return GetBillingAccountResource(args.billing_account)
   else:
-    return GetProjectResource()
+    return GetProjectResource(args.project)
 
 
 def GetParentFromArgs(args):

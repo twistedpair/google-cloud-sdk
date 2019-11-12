@@ -32,6 +32,8 @@ CONTAINER_API_VERSION = 'v1beta1'
 SERVERLESS_API_NAME = 'run'
 SERVERLESS_API_VERSION = 'v1alpha1'
 
+_ALL_REGIONS = '-'
+
 
 def GetServerlessClientInstance():
   return apis.GetClientInstance(SERVERLESS_API_NAME, SERVERLESS_API_VERSION)
@@ -55,22 +57,25 @@ def ListRegions(client):
   return sorted([l.locationId for l in response.locations])
 
 
-def ListServices(client, locations):
+def ListServices(client, region=_ALL_REGIONS):
   """Get the global services for a OnePlatform project.
 
   Args:
     client: (base_api.BaseApiClient), instance of a client to use for the list
       request.
-    locations: (str), The relative name of the locations resource with either an
-      actual location name e.g. 'projects/my-project/locations/us-central1) to
-      query the specified location 'or a wildcard name, '-' (e.g.
-      'projects/my-project/locations/-') to query all locations.
+    region: (str) optional name of location to search for clusters in. If not
+      passed, this defaults to the global value for all locations.
 
   Returns:
     List of googlecloudsdk.api_lib.run import service.Service objects.
   """
+  project = properties.VALUES.core.project.Get(required=True)
+  locations = resources.REGISTRY.Parse(
+      region,
+      params={'projectsId': project},
+      collection='run.projects.locations')
   request = client.MESSAGES_MODULE.RunProjectsLocationsServicesListRequest(
-      parent=locations)
+      parent=locations.RelativeName())
   response = client.projects_locations_services.List(request)
 
   # Log the regions that did not respond.
@@ -114,7 +119,7 @@ def ListClusters(location=None):
   ]
 
 
-def ListVerifiedDomains(client, region='-'):
+def ListVerifiedDomains(client, region=_ALL_REGIONS):
   """Get all verified domains.
 
   Args:

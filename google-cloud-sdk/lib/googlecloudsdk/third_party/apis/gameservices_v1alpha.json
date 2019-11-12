@@ -349,7 +349,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the game server cluster, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm_id}\/gameServerClusters\/{cluster_id}`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/realms\/zanzibar\/gameServerClusters\/my-onprem-cluster`.",
+          "description": "Required. The resource name of the game server cluster, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm_id}\/gameServerClusters\/{cluster_id}`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/realms\/zanzibar\/gameServerClusters\/my-onprem-cluster`.",
           "type": "string"
         },
         "createTime": {
@@ -372,6 +372,10 @@
         "connectionInfo": {
           "description": "Game server cluster connection information. This information is used to\nmanage game server clusters.",
           "$ref": "GameServerClusterConnectionInfo"
+        },
+        "etag": {
+          "description": "ETag of the resource.",
+          "type": "string"
         }
       }
     },
@@ -398,6 +402,223 @@
         "cluster": {
           "description": "The full or partial name of a GKE cluster, using one of the following\nforms:\n<ul>\n   <li>`projects\/{project_id}\/locations\/{location}\/clusters\/{cluster_id}`\n   <\/li>\n   <li>`locations\/{location}\/clusters\/{cluster_id}`<\/li>\n   <li>`{cluster_id}`<\/li>\n<\/ul>\nIf project and location are not specified, the project and location of the\nGameServerCluster resource are used to generate the full name of the\nGKE cluster.",
           "type": "string"
+        }
+      }
+    },
+    "PreviewCreateGameServerClusterResponse": {
+      "id": "PreviewCreateGameServerClusterResponse",
+      "description": "Response message for\nGameServerClustersService.PreviewCreateGameServerCluster.",
+      "type": "object",
+      "properties": {
+        "deployedState": {
+          "description": "The deployed state.",
+          "type": "array",
+          "items": {
+            "$ref": "DeployedState"
+          }
+        },
+        "etag": {
+          "description": "The ETag of the game server cluster.",
+          "type": "string"
+        }
+      }
+    },
+    "DeployedState": {
+      "id": "DeployedState",
+      "description": "Encapsulates the expected deployed state.",
+      "type": "object",
+      "properties": {
+        "fleets": {
+          "description": "Details about fleets.",
+          "type": "array",
+          "items": {
+            "$ref": "FleetDetails"
+          }
+        }
+      }
+    },
+    "FleetDetails": {
+      "id": "FleetDetails",
+      "description": "Details about the Agones fleet.",
+      "type": "object",
+      "properties": {
+        "gameServerClusterName": {
+          "description": "The cluster name.",
+          "type": "string"
+        },
+        "fleetName": {
+          "description": "The name of the Agones game server fleet.",
+          "type": "string"
+        },
+        "gameServerConfigName": {
+          "description": "The name of the game server config object whose fleet spec\nis used to create the fleet.",
+          "type": "string"
+        },
+        "autoscalerDetails": {
+          "description": "Details about the agones autoscaler.",
+          "$ref": "AutoscalerDetails"
+        }
+      }
+    },
+    "AutoscalerDetails": {
+      "id": "AutoscalerDetails",
+      "type": "object",
+      "properties": {
+        "autoscalerName": {
+          "description": "The name of the Agones autoscaler.",
+          "type": "string"
+        },
+        "scalingConfigName": {
+          "description": "The name of the scaling config (within the game server config) that is\nused to create the autoscalar.",
+          "type": "string"
+        }
+      }
+    },
+    "PreviewDeleteGameServerClusterResponse": {
+      "id": "PreviewDeleteGameServerClusterResponse",
+      "description": "Response message for\nGameServerClustersService.PreviewDeleteGameServerCluster.",
+      "type": "object",
+      "properties": {
+        "deployedState": {
+          "description": "The deployed state.",
+          "type": "array",
+          "items": {
+            "$ref": "DeployedState"
+          }
+        },
+        "etag": {
+          "description": "The ETag of the game server cluster.",
+          "type": "string"
+        }
+      }
+    },
+    "PreviewUpdateGameServerClusterResponse": {
+      "id": "PreviewUpdateGameServerClusterResponse",
+      "description": "Response message for GameServerClustersService.PreviewUpdateGameServerCluster",
+      "type": "object",
+      "properties": {
+        "deployedState": {
+          "description": "The deployed state.",
+          "type": "array",
+          "items": {
+            "$ref": "DeployedState"
+          }
+        },
+        "etag": {
+          "description": "The ETag of the game server cluster.",
+          "type": "string"
+        }
+      }
+    },
+    "ListGameServerConfigsResponse": {
+      "id": "ListGameServerConfigsResponse",
+      "description": "Response message for\nGameServerConfigsService.ListGameServerConfigs.",
+      "type": "object",
+      "properties": {
+        "gameServerConfigs": {
+          "description": "The list of game server configs.",
+          "type": "array",
+          "items": {
+            "$ref": "GameServerConfig"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more\nresults in the list.",
+          "type": "string"
+        },
+        "unreachableLocations": {
+          "description": "List of locations that were not reachable.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GameServerConfig": {
+      "id": "GameServerConfig",
+      "description": "A game server config resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the game server config, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/configs\/{config_id}`.\nFor example,\n\n`projects\/my-project\/locations\/global\/gameServerDeployments\/my-game\/configs\/my-config`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The creation time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last-modified time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "The labels associated with this game server config. Each label is a\nkey-value pair.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "fleetConfigs": {
+          "description": "The fleet specs contains list of fleet specs. In the Single Cloud, there\nwill be only one.",
+          "type": "array",
+          "items": {
+            "$ref": "FleetConfig"
+          }
+        },
+        "scalingConfigs": {
+          "description": "Optional. This contains the autoscaling settings.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ScalingConfig"
+          }
+        },
+        "description": {
+          "description": "The description of the game server config.",
+          "type": "string"
+        }
+      }
+    },
+    "FleetConfig": {
+      "id": "FleetConfig",
+      "description": "A fleet config resource.",
+      "type": "object",
+      "properties": {
+        "fleetSpec": {
+          "description": "The fleet spec, which is sent to Agones to configure fleet.\nExample spec can be found :\n`https:\/\/agones.dev\/site\/docs\/reference\/fleet\/`.",
+          "type": "string"
+        }
+      }
+    },
+    "ScalingConfig": {
+      "id": "ScalingConfig",
+      "description": "A scaling config resource.",
+      "type": "object",
+      "properties": {
+        "fleetAutoscalerSpec": {
+          "description": "Required. Fleet autoscaler spec, which is sent to Agones.\nExample spec can be found :\nhttps:\/\/agones.dev\/site\/docs\/reference\/fleetautoscaler\/",
+          "type": "string"
+        },
+        "priority": {
+          "description": "Required. The priority of the scaling config. A smaller value indicates a higher\npriority.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "selectors": {
+          "description": "Labels used to identify the clusters to which this scaling config\napplies. A cluster is subject to this scaling config if its labels match\nany of the selector entries.",
+          "type": "array",
+          "items": {
+            "$ref": "LabelSelector"
+          }
+        },
+        "schedules": {
+          "description": "The schedules to which this scaling config applies.",
+          "type": "array",
+          "items": {
+            "$ref": "Schedule"
+          }
         }
       }
     },
@@ -459,6 +680,10 @@
         "newGameServerTemplate": {
           "description": "The GameServerTemplate whose rollout is ongoing.",
           "$ref": "GameServerTemplate"
+        },
+        "etag": {
+          "description": "ETag of the resource.",
+          "type": "string"
         }
       }
     },
@@ -501,6 +726,100 @@
           "description": "The percentage of game servers running this game server depolyment. The\npercentage is applied to game server clusters which contain all of the\nlabels in the cluster selector field.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "GameServerDeploymentRollout": {
+      "id": "GameServerDeploymentRollout",
+      "description": "This represents the rollout status. This is part of the  game server\ndeployment.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the game server deployment rollout, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/rollout`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/gameServerDeployments\/my-deployment\/rollout`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The creation time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last-modified time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "defaultGameServerConfig": {
+          "description": "The default game server config points to the game server config  that is\napplied everywhere realm\/cluster. For example,\n\n`projects\/my-project\/locations\/global\/gameServerDeployments\/my-game\/configs\/my-config`.",
+          "type": "string"
+        },
+        "gameServerConfigOverrides": {
+          "description": "The game_server_config_overrides contains the per game server config\noverrides. The overrides are processed in the order they are listed. As\nsoon as a match is found for cluster, the rest of the list is not\nprocessed.",
+          "type": "array",
+          "items": {
+            "$ref": "GameServerConfigOverride"
+          }
+        },
+        "etag": {
+          "description": "ETag of the resource.",
+          "type": "string"
+        }
+      }
+    },
+    "GameServerConfigOverride": {
+      "id": "GameServerConfigOverride",
+      "description": "A game server config override resource. This contains selector which cluster\nit is applied and the setting which specifies the version.",
+      "type": "object",
+      "properties": {
+        "realmsSelector": {
+          "$ref": "RealmSelector"
+        },
+        "setting": {
+          "description": "This used to deploy a particular game server config version",
+          "$ref": "Setting"
+        }
+      }
+    },
+    "RealmSelector": {
+      "id": "RealmSelector",
+      "description": "The realm selector, used to match realm resources.",
+      "type": "object",
+      "properties": {
+        "realms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Setting": {
+      "id": "Setting",
+      "type": "object",
+      "properties": {
+        "configVersion": {
+          "type": "string"
+        }
+      }
+    },
+    "PreviewGameServerDeploymentRolloutResponse": {
+      "id": "PreviewGameServerDeploymentRolloutResponse",
+      "description": "Response message for PreviewGameServerDeploymentRollout.\nThis has details about the fleet and the autoscaler.",
+      "type": "object",
+      "properties": {
+        "deployedState": {
+          "description": "The deployed state.",
+          "$ref": "DeployedState"
+        },
+        "unavailableLocations": {
+          "description": "Locations that could not be reached on this request.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "etag": {
+          "description": "ETag of the game server deployment.",
+          "type": "string"
         }
       }
     },
@@ -589,6 +908,25 @@
         },
         "timeZone": {
           "description": "Time zone where all realm-specific policies are evaluated. The value of\nthis field must be from the IANA time zone database:\nhttps:\/\/www.iana.org\/time-zones. If not specified, UTC is assumed by\ndefault.",
+          "type": "string"
+        },
+        "etag": {
+          "description": "ETag of the resource.",
+          "type": "string"
+        }
+      }
+    },
+    "PreviewRealmUpdateResponse": {
+      "id": "PreviewRealmUpdateResponse",
+      "description": "Response message for RealmsService.PreviewRealmUpdate.",
+      "type": "object",
+      "properties": {
+        "deployedState": {
+          "description": "The deployment state.",
+          "$ref": "DeployedState"
+        },
+        "etag": {
+          "description": "ETag of the realm.",
           "type": "string"
         }
       }
@@ -819,7 +1157,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a user that has been recently deleted. For\n   example,`alice@example.com?uid=123456789012345678901`. If the user is\n   recovered, this value reverts to `user:{emailid}` and the recovered user\n   retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus\n   unique identifier) representing a service account that has been recently\n   deleted. For example,\n   `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.\n   If the service account is undeleted, this value reverts to\n   `serviceAccount:{emailid}` and the undeleted service account retains the\n   role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a Google group that has been recently\n   deleted. For example, `admins@example.com?uid=123456789012345678901`. If\n   the group is recovered, this value reverts to `group:{emailid}` and the\n   recovered group retains the role in the binding.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -1688,6 +2026,31 @@
                   ],
                   "description": "Gets details of a single game server deployment."
                 },
+                "getRollout": {
+                  "id": "gameservices.projects.locations.gameServerDeployments.getRollout",
+                  "path": "v1alpha/{+name}/rollout",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/rollout",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the game server deployment to retrieve, using the\nform:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/rollout`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GameServerDeploymentRollout"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a rollout of a single game server deployment."
+                },
                 "create": {
                   "id": "gameservices.projects.locations.gameServerDeployments.create",
                   "path": "v1alpha/{+parent}/gameServerDeployments",
@@ -1780,6 +2143,80 @@
                   ],
                   "description": "Patches a game server deployment."
                 },
+                "updateRollout": {
+                  "id": "gameservices.projects.locations.gameServerDeployments.updateRollout",
+                  "path": "v1alpha/{+name}/rollout",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/rollout",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the game server deployment rollout, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/rollout`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/gameServerDeployments\/my-deployment\/rollout`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in\nthis field. For the `FieldMask` definition, see\n\nhttps:\n\/\/developers.google.com\/protocol-buffers\n\/\/ \/docs\/reference\/google.protobuf#fieldmask",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GameServerDeploymentRollout"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Patches the rollout of game server deployment."
+                },
+                "previewRollout": {
+                  "id": "gameservices.projects.locations.gameServerDeployments.previewRollout",
+                  "path": "v1alpha/{+name}/rollout:preview",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/rollout:preview",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the game server deployment rollout, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/rollout`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/gameServerDeployments\/my-deployment\/rollout`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Mask of fields to update. At least one path must be supplied in\nthis field. For the `FieldMask` definition, see\n\nhttps:\n\/\/developers.google.com\/protocol-buffers\n\/\/ \/docs\/reference\/google.protobuf#fieldmask",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "previewTime": {
+                      "description": "Optional. The instant of time at which the preview needs to be computed.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-datetime"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GameServerDeploymentRollout"
+                  },
+                  "response": {
+                    "$ref": "PreviewGameServerDeploymentRolloutResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Previews the rollout of game server deployment. This API does not\nmutate the rollout resource."
+                },
                 "startRollout": {
                   "id": "gameservices.projects.locations.gameServerDeployments.startRollout",
                   "path": "v1alpha/{+name}:startRollout",
@@ -1815,7 +2252,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the game server deployment, using the\nform:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`",
+                      "description": "Required. The name of the game server deployment, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -1871,7 +2308,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the game server deployment to deploy, using the\nform:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`",
+                      "description": "Required. The name of the game server deployment to deploy, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -1978,6 +2415,142 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
+                }
+              }
+              ,
+              "resources": {
+                "configs": {
+                  "methods": {
+                    "list": {
+                      "id": "gameservices.projects.locations.gameServerDeployments.configs.list",
+                      "path": "v1alpha/{+parent}/configs",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/configs",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource name, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/configs\/*`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of items to return.  If unspecified, server\nwill pick an appropriate default. Server may return fewer items than\nrequested. A caller should only rely on response's\nnext_page_token to\ndetermine if there are more GameServerConfigs left to be queried.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. The next_page_token value returned from a previous List request,\nif any.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Optional. The filter to apply to list results.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Optional. Specifies the ordering of results following syntax at\nhttps:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListGameServerConfigsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists game server configs in a given project, location, and game server\ndeployment."
+                    },
+                    "get": {
+                      "id": "gameservices.projects.locations.gameServerDeployments.configs.get",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/configs/{configsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the game server config to retrieve, using the\nform:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/configs\/{config_id}`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+\/configs\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GameServerConfig"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single game server config."
+                    },
+                    "create": {
+                      "id": "gameservices.projects.locations.gameServerDeployments.configs.create",
+                      "path": "v1alpha/{+parent}/configs",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/configs",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource name, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "configId": {
+                          "description": "Required. The ID of the game server config resource to be created.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GameServerConfig"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new game server config in a given project, location, and game\nserver deployment. Game server configs are immutable. A game server config,\nis not applied until it is rolled out. The rollout is managed\nby updating the game server rollout resource."
+                    },
+                    "delete": {
+                      "id": "gameservices.projects.locations.gameServerDeployments.configs.delete",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}/configs/{configsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the game server config to delete, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/configs\/{config_id}`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+\/configs\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single game server config. If a game server config referenced in\ngame server rollout, the deletion will fail since it will be in use."
+                    }
+                  }
                 }
               }
             },
@@ -2145,6 +2718,46 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Patches a single Realm."
+                },
+                "previewUpdate": {
+                  "id": "gameservices.projects.locations.realms.previewUpdate",
+                  "path": "v1alpha/{+name}:previewUpdate",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}:previewUpdate",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the realm, using the form:\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm_id}`. For\nexample, `projects\/my-project\/locations\/{location}\/realms\/my-realm`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. The update mask applies to the resource. For the `FieldMask`\ndefinition, see\n\nhttps:\n\/\/developers.google.com\/protocol-buffers\n\/\/ \/docs\/reference\/google.protobuf#fieldmask",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "previewTime": {
+                      "description": "Optional. The instant of time at which the preview needs to be computed.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-datetime"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Realm"
+                  },
+                  "response": {
+                    "$ref": "PreviewRealmUpdateResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Previews patches to a single Realm."
                 }
               }
               ,
@@ -2255,6 +2868,45 @@
                       ],
                       "description": "Creates a new game server cluster in a given project and location."
                     },
+                    "previewCreate": {
+                      "id": "gameservices.projects.locations.realms.gameServerClusters.previewCreate",
+                      "path": "v1alpha/{+parent}/gameServerClusters:previewCreate",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters:previewCreate",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource name, using the form:\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm-id}`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "gameServerClusterId": {
+                          "description": "Required. The ID of the game server cluster resource to be created.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "previewTime": {
+                          "description": "Optional. The instant of time at which the preview needs to be computed.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-datetime"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GameServerCluster"
+                      },
+                      "response": {
+                        "$ref": "PreviewCreateGameServerClusterResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Previews creation of a new game server cluster in a given project and\nlocation."
+                    },
                     "delete": {
                       "id": "gameservices.projects.locations.realms.gameServerClusters.delete",
                       "path": "v1alpha/{+name}",
@@ -2280,6 +2932,37 @@
                       ],
                       "description": "Deletes a single game server cluster."
                     },
+                    "previewDelete": {
+                      "id": "gameservices.projects.locations.realms.gameServerClusters.previewDelete",
+                      "path": "v1alpha/{+name}:previewDelete",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters/{gameServerClustersId}:previewDelete",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the game server cluster to delete, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerClusters\/{cluster_id}`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+\/gameServerClusters\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "previewTime": {
+                          "description": "Optional. The instant of time at which the preview needs to be computed.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-datetime"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "PreviewDeleteGameServerClusterResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Previews deletion of a single game server cluster."
+                    },
                     "patch": {
                       "id": "gameservices.projects.locations.realms.gameServerClusters.patch",
                       "path": "v1alpha/{+name}",
@@ -2287,7 +2970,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "The resource name of the game server cluster, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm_id}\/gameServerClusters\/{cluster_id}`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/realms\/zanzibar\/gameServerClusters\/my-onprem-cluster`.",
+                          "description": "Required. The resource name of the game server cluster, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm_id}\/gameServerClusters\/{cluster_id}`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/realms\/zanzibar\/gameServerClusters\/my-onprem-cluster`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+\/gameServerClusters\/[^\/]+$",
@@ -2313,6 +2996,46 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Patches a single game server cluster."
+                    },
+                    "previewUpdate": {
+                      "id": "gameservices.projects.locations.realms.gameServerClusters.previewUpdate",
+                      "path": "v1alpha/{+name}:previewUpdate",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/realms/{realmsId}/gameServerClusters/{gameServerClustersId}:previewUpdate",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the game server cluster, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm_id}\/gameServerClusters\/{cluster_id}`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/realms\/zanzibar\/gameServerClusters\/my-onprem-cluster`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+\/gameServerClusters\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in\nthis field. For the `FieldMask` definition, see\n\nhttps:\n\/\/developers.google.com\/protocol-buffers\n\/\/ \/docs\/reference\/google.protobuf#fieldmask",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "previewTime": {
+                          "description": "Optional. The instant of time at which the preview needs to be computed.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-datetime"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GameServerCluster"
+                      },
+                      "response": {
+                        "$ref": "PreviewUpdateGameServerClusterResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Previews updating a GameServerCluster."
                     }
                   }
                 }

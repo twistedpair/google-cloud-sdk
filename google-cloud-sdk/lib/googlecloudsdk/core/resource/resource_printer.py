@@ -175,6 +175,10 @@ _FORMATTERS = {
 }
 
 
+def RegisterFormatter(format_name, printer):
+  _FORMATTERS[format_name] = printer
+
+
 def GetFormatRegistry():
   """Returns the (format-name => Printer) format registry dictionary.
 

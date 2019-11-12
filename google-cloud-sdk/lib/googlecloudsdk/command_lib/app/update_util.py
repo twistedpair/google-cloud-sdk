@@ -20,9 +20,16 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.app.api import appengine_app_update_api_client
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import progress_tracker
+
+
+_APP_UPDATE_COS_WARNING = """\
+Starting 2019-11-01, Container-Optimized OS is the default VM image type of App Engine Flex deployments.
+The flag `--no-use-container-optimized-os` is deprecated and will not have an effect.
+"""
 
 
 def AddAppUpdateFlags(parser, enable_use_container_optimized_os=False):
@@ -34,7 +41,10 @@ def AddAppUpdateFlags(parser, enable_use_container_optimized_os=False):
                            'on new deployments.')
   if enable_use_container_optimized_os:
     parser.add_argument('--use-container-optimized-os',
-                        action=arg_parsers.StoreTrueFalseAction,
+                        action=actions.DeprecationAction(
+                            '--use-container-optimized-os',
+                            warn=_APP_UPDATE_COS_WARNING,
+                            action=arg_parsers.StoreTrueFalseAction),
                         help='Enables/disables Container-Optimized OS as Flex '
                              'base VM image by default on new deployments.')
 
@@ -53,6 +63,8 @@ def PatchApplication(
   api_client = appengine_app_update_api_client.GetApiClientForTrack(
       release_track)
 
+  if use_container_optimized_os is not None:
+    log.warning(_APP_UPDATE_COS_WARNING)
   if (split_health_checks is not None
       or use_container_optimized_os is not None):
     with progress_tracker.ProgressTracker(

@@ -58,7 +58,7 @@ def _IntOrAny():
   return _Parse
 
 
-def _BinarySizeAsStr(default_unit, lower_bound=None, upper_bound=None):
+def _BinarySize(default_unit, lower_bound=None, upper_bound=None):
   """Parses the value as a binary size converted to the default unit."""
   # pylint: disable=protected-access
   bytes_per_unit = scaled_integer.GetBinaryUnitSize(default_unit)
@@ -68,7 +68,7 @@ def _BinarySizeAsStr(default_unit, lower_bound=None, upper_bound=None):
         lower_bound=lower_bound, upper_bound=upper_bound,
         default_unit=default_unit)(value)
     converted_size = size // bytes_per_unit
-    return six.text_type(converted_size)
+    return converted_size
   return _Parse
 
 
@@ -147,9 +147,9 @@ def AddDiskArgToParser(parser):
       type=arg_parsers.ArgDict(
           spec={
               'type': _Choice(['local-ssd']),
-              'size': _BinarySizeAsStr(
+              'size': _BinarySize(
                   'GB', lower_bound='375GB', upper_bound='375GB'),
-              'count': str,
+              'count': int,
           },
           required_keys=[
               'type',

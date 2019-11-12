@@ -703,7 +703,7 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
 
   Enums:
     ViewValueValuesEnum: The view to be applied to the returned tables'
-      fields. Defaults to `NAME_ONLY` if unspecified; no others are currently
+      fields. Only NAME_ONLY view (default) and REPLICATION_VIEW are
       supported.
 
   Fields:
@@ -717,13 +717,13 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
     pageToken: The value of `next_page_token` returned by a previous call.
     parent: The unique name of the instance for which tables should be listed.
       Values are of the form `projects/<project>/instances/<instance>`.
-    view: The view to be applied to the returned tables' fields. Defaults to
-      `NAME_ONLY` if unspecified; no others are currently supported.
+    view: The view to be applied to the returned tables' fields. Only
+      NAME_ONLY view (default) and REPLICATION_VIEW are supported.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""The view to be applied to the returned tables' fields. Defaults to
-    `NAME_ONLY` if unspecified; no others are currently supported.
+    r"""The view to be applied to the returned tables' fields. Only NAME_ONLY
+    view (default) and REPLICATION_VIEW are supported.
 
     Values:
       VIEW_UNSPECIFIED: <no description>
@@ -864,9 +864,26 @@ class Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: The G Suite domain (primary) that represents all
-      the    users of that domain. For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding.  *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus    unique identifier) representing a service account that has been
+      recently    deleted. For example,    `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique    identifier) representing a Google group
+      that has been recently    deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If    the group is
+      recovered, this value reverts to `group:{emailid}` and the    recovered
+      group retains the role in the binding.   * `domain:{domain}`: The G
+      Suite domain (primary) that represents all the    users of that domain.
+      For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -1030,7 +1047,8 @@ class CreateBackupMetadata(_messages.Message):
   r"""Metadata type for the operation returned by CreateBackup.
 
   Fields:
-    endTime: If set, the time at which this operation finished.
+    endTime: If set, the time at which this operation finished or was
+      cancelled.
     name: The name of the backup being created.
     sourceTable: The name of the table the backup is created from.
     startTime: The time at which this operation started.

@@ -4981,6 +4981,21 @@ class GoogleCloudVisionV1p4beta1BoundingPoly(_messages.Message):
   vertices = _messages.MessageField('GoogleCloudVisionV1p4beta1Vertex', 2, repeated=True)
 
 
+class GoogleCloudVisionV1p4beta1Celebrity(_messages.Message):
+  r"""A Celebrity is a group of Faces with an identity.
+
+  Fields:
+    description: The Celebrity's description.
+    displayName: The Celebrity's display name.
+    name: The resource name of the preloaded Celebrity. Has the format
+      `builtin/{mid}`.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
 class GoogleCloudVisionV1p4beta1ColorInfo(_messages.Message):
   r"""Color information consists of RGB channels, score, and the fraction of
   the image that the color occupies in the image.
@@ -5113,6 +5128,10 @@ class GoogleCloudVisionV1p4beta1FaceAnnotation(_messages.Message):
     panAngle: Yaw angle, which indicates the leftward/rightward angle that the
       face is pointing relative to the vertical plane perpendicular to the
       image. Range [-180,180].
+    recognitionResult: Additional recognition information. Only computed if
+      image_context.face_recognition_params is provided, **and** a match is
+      found to a Celebrity in the input CelebritySet. This field is sorted in
+      order of decreasing confidence values.
     rollAngle: Roll angle, which indicates the amount of clockwise/anti-
       clockwise rotation of the face relative to the image vertical about the
       axis perpendicular to the face. Range [-180,180].
@@ -5260,11 +5279,12 @@ class GoogleCloudVisionV1p4beta1FaceAnnotation(_messages.Message):
   landmarkingConfidence = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
   landmarks = _messages.MessageField('GoogleCloudVisionV1p4beta1FaceAnnotationLandmark', 9, repeated=True)
   panAngle = _messages.FloatField(10, variant=_messages.Variant.FLOAT)
-  rollAngle = _messages.FloatField(11, variant=_messages.Variant.FLOAT)
-  sorrowLikelihood = _messages.EnumField('SorrowLikelihoodValueValuesEnum', 12)
-  surpriseLikelihood = _messages.EnumField('SurpriseLikelihoodValueValuesEnum', 13)
-  tiltAngle = _messages.FloatField(14, variant=_messages.Variant.FLOAT)
-  underExposedLikelihood = _messages.EnumField('UnderExposedLikelihoodValueValuesEnum', 15)
+  recognitionResult = _messages.MessageField('GoogleCloudVisionV1p4beta1FaceRecognitionResult', 11, repeated=True)
+  rollAngle = _messages.FloatField(12, variant=_messages.Variant.FLOAT)
+  sorrowLikelihood = _messages.EnumField('SorrowLikelihoodValueValuesEnum', 13)
+  surpriseLikelihood = _messages.EnumField('SurpriseLikelihoodValueValuesEnum', 14)
+  tiltAngle = _messages.FloatField(15, variant=_messages.Variant.FLOAT)
+  underExposedLikelihood = _messages.EnumField('UnderExposedLikelihoodValueValuesEnum', 16)
 
 
 class GoogleCloudVisionV1p4beta1FaceAnnotationLandmark(_messages.Message):
@@ -5356,6 +5376,18 @@ class GoogleCloudVisionV1p4beta1FaceAnnotationLandmark(_messages.Message):
 
   position = _messages.MessageField('GoogleCloudVisionV1p4beta1Position', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class GoogleCloudVisionV1p4beta1FaceRecognitionResult(_messages.Message):
+  r"""Information about a face's identity.
+
+  Fields:
+    celebrity: The Celebrity that this face was matched to.
+    confidence: Recognition confidence. Range [0, 1].
+  """
+
+  celebrity = _messages.MessageField('GoogleCloudVisionV1p4beta1Celebrity', 1)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p4beta1GcsDestination(_messages.Message):

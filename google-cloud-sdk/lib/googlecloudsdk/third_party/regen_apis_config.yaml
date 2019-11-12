@@ -98,10 +98,6 @@ apis:
     v1alpha1:
       discovery_doc: billingbudgets_v1alpha1.json
       default: true
-  bio:
-    v1:
-      discovery_doc: bio_v1.json
-      default: true
   buildartifacts:
     v1alpha2:
       discovery_doc: buildartifacts_v1alpha2.json
@@ -168,8 +164,15 @@ apis:
   cloudidentity:
     v1alpha1:
       discovery_doc: cloudidentity_v1alpha1.json
+      resources:
+    v1beta1:
+      discovery_doc: cloudidentity_v1beta1.json
       default: true
       resources:
+        groups:
+          path: groups/{groupId}
+        groups.memberships:
+          path: groups/{groupId}/memberships/{membershipId}
   cloudiot:
     v1:
       discovery_doc: cloudiot_v1.json
@@ -549,6 +552,9 @@ apis:
     v1beta1:
       discovery_doc: runtimeconfig_v1beta1.json
   secretmanager:
+    v1alpha:
+      discovery_doc: secretmanager_v1alpha.json
+      default: true
     v1beta1:
       discovery_doc: secretmanager_v1beta1.json
   securitycenter:

@@ -7055,6 +7055,13 @@
             "LIKELY",
             "VERY_LIKELY"
           ]
+        },
+        "recognitionResult": {
+          "description": "Additional recognition information. Only computed if\nimage_context.face_recognition_params is provided, **and** a match is found\nto a Celebrity in the input CelebritySet. This field is\nsorted in order of decreasing confidence values.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVisionV1p4beta1FaceRecognitionResult"
+          }
         }
       }
     },
@@ -7166,6 +7173,41 @@
           "description": "Z coordinate (or depth).",
           "type": "number",
           "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVisionV1p4beta1FaceRecognitionResult": {
+      "id": "GoogleCloudVisionV1p4beta1FaceRecognitionResult",
+      "description": "Information about a face's identity.",
+      "type": "object",
+      "properties": {
+        "celebrity": {
+          "description": "The Celebrity that this face was matched to.",
+          "$ref": "GoogleCloudVisionV1p4beta1Celebrity"
+        },
+        "confidence": {
+          "description": "Recognition confidence. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVisionV1p4beta1Celebrity": {
+      "id": "GoogleCloudVisionV1p4beta1Celebrity",
+      "description": "A Celebrity is a group of Faces with an identity.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the preloaded Celebrity. Has the format\n`builtin\/{mid}`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The Celebrity's display name.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The Celebrity's description.",
+          "type": "string"
         }
       }
     },

@@ -933,6 +933,36 @@ is the parent resource, without the operations collection id.
       self._upload_configs = {
           }
 
+    def Explain(self, request, global_params=None):
+      r"""Performs explanation on the data in the request.
+AI Platform implements a custom `explain` verb on top of an HTTP POST
+method. <p>For details of the request and response format, see the **guide
+to the [explain request format](/ml-engine/docs/v1/explain-request)**.
+
+      Args:
+        request: (MlProjectsExplainRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleApiHttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Explain')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Explain.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}:explain',
+        http_method=u'POST',
+        method_id=u'ml.projects.explain',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:explain',
+        request_field=u'googleCloudMlV1ExplainRequest',
+        request_type_name=u'MlProjectsExplainRequest',
+        response_type_name=u'GoogleApiHttpBody',
+        supports_download=False,
+    )
+
     def GetConfig(self, request, global_params=None):
       r"""Get the service account information associated with your project. You need.
 this information in order to grant the service account permissions for

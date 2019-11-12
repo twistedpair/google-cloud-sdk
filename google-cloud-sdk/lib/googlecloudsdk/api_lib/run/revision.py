@@ -28,6 +28,9 @@ SERVICE_LABEL = 'serving.knative.dev/service'
 # Used to force a new revision, and also to tie a particular request for changes
 # to a particular created revision.
 NONCE_LABEL = 'client.knative.dev/nonce'
+# Annotation for the user-specified image.
+USER_IMAGE_ANNOTATION = k8s_object.CLIENT_GROUP + '/user-image'
+CLOUDSQL_ANNOTATION = k8s_object.RUN_GROUP + '/cloudsql-instances'
 
 
 class Revision(k8s_object.KubernetesObject):
@@ -99,6 +102,39 @@ class Revision(k8s_object.KubernetesObject):
   def image(self, value):
     self.container.image = value
 
+  def UserImage(self, service_user_image=None):
+    """Human-readable "what's deployed".
+
+    Sometimes references a client.knative.dev/user-image annotation on the
+    revision or service to determine what the user intended to deploy. In that
+    case, we can display that, and show the user the hash prefix as a note that
+    it's at that specific hash.
+
+    Arguments:
+      service_user_image: Optional[str], the contents of the user image annot
+        on the service.
+    Returns:
+      a string representing the user deployment intent.
+    """
+    if not self.image:
+      return None
+    if '@' not in self.image:
+      return self.image
+    user_image = (
+        self.annotations.get(USER_IMAGE_ANNOTATION) or service_user_image)
+    if not user_image:
+      return self.image
+    # The image should  be in the format base@sha256:hashhashhash
+    base, h = self.image.split('@')
+    if ':' in h:
+      _, h = h.split(':')
+    if not user_image.startswith(base):
+      # The user-image is out of date.
+      return self.image
+    if len(h) > 8:
+      h = h[:8] + '...'
+    return user_image + ' at ' + h
+
   @property
   def active(self):
     cond = self.conditions
@@ -158,18 +194,6 @@ class Revision(k8s_object.KubernetesObject):
     )
 
   @property
-  def deprecated_string_concurrency(self):
-    """The string-enum concurrency model in the revisionTemplate.
-
-    This is deprecated in favor of the numeric field containerConcurrency
-    """
-    return self.spec.concurrencyModel
-
-  @deprecated_string_concurrency.setter
-  def deprecated_string_concurrency(self, value):
-    self.spec.concurrencyModel = value
-
-  @property
   def concurrency(self):
     """The concurrency number in the revisionTemplate.
 
@@ -181,6 +205,13 @@ class Revision(k8s_object.KubernetesObject):
 
   @concurrency.setter
   def concurrency(self, value):
+    # Clear the old, deperecated string field
+    try:
+      self.spec.concurrencyModel = None
+    except AttributeError:
+      # This field only exists in the v1alpha1 spec, if we're working with a
+      # different version, this is safe to ignore
+      pass
     self.spec.containerConcurrency = value
 
   @property
@@ -237,6 +268,14 @@ class Revision(k8s_object.KubernetesObject):
                                              self.container.volumeMounts,
                                              self._messages.VolumeMount)
 
+  def MountedVolumeJoin(self, subgroup=None):
+    vols = self.volumes
+    mounts = self.volume_mounts
+    if subgroup:
+      vols = getattr(vols, subgroup)
+      mounts = getattr(mounts, subgroup)
+    return {path: vols.get(vol) for path, vol in mounts.items()}
+
 
 class EnvVarsAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
   """Wraps a list of env vars in a dict-like object.
@@ -273,7 +312,7 @@ class EnvVarsAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
 
   @property
   def secrets(self):
-    """Mutable dict-like object for volumes with a secret source type."""
+    """Mutable dict-like object for vars with a secret source type."""
     def _FilterSecretEnvVars(env_var):
       return (env_var.valueFrom is not None and
               env_var.valueFrom.secretKeyRef is not None)
@@ -286,7 +325,7 @@ class EnvVarsAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
 
   @property
   def config_maps(self):
-    """Mutable dict-like object for volumes with a config map source type."""
+    """Mutable dict-like object for vars with a config map source type."""
     def _FilterConfigMapEnvVars(env_var):
       return (env_var.valueFrom is not None and
               env_var.valueFrom.configMapKeyRef is not None)

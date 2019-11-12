@@ -97,18 +97,6 @@ class DomainMappingCreationError(exceptions.Error):
   """An error was encountered during the creation of a domain mapping."""
 
 
-class BadImageError(exceptions_util.HttpException):
-  """Invalid image provided in the revision template."""
-
-  # The relevant field that'll have a violation.
-  IMAGE_ERROR_FIELD = 'spec.revisionTemplate.spec.container.image'
-
-  def __init__(self, http_exception):
-    super(BadImageError, self).__init__(
-        http_exception,
-        '{{field_violations.{}}}'.format(self.IMAGE_ERROR_FIELD))
-
-
 class NoTLSError(exceptions.Error):
   """TLS 1.2 support is required to connect to GKE.
 
@@ -118,16 +106,16 @@ class NoTLSError(exceptions.Error):
   """
 
 
-class MalformedLabelError(exceptions_util.HttpException):
-  """Invalid label key or value provided in the service metadata."""
+class HttpError(exceptions_util.HttpException):
+  """More prettily prints apitools HttpError."""
 
-  # The relevant field that'll have a violation.
-  LABEL_ERROR_FIELD = 'label'
-
-  def __init__(self, http_exception):
-    super(MalformedLabelError, self).__init__(
-        http_exception,
-        '{{field_violations.{}}}'.format(self.LABEL_ERROR_FIELD))
+  def __init__(self, error):
+    super(HttpError, self).__init__(error)
+    if self.payload.field_violations:
+      self.error_format = '\n'.join([
+          '{{field_violations.{}}}'.format(k)
+          for k in self.payload.field_violations.keys()
+      ])
 
 
 class KubernetesError(exceptions.Error):

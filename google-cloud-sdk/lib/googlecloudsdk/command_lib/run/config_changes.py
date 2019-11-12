@@ -22,7 +22,6 @@ from __future__ import unicode_literals
 import abc
 import copy
 
-from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import service
@@ -94,6 +93,12 @@ class ReplaceServiceChange(ConfigChanger):
     """
     if resource.metadata.resourceVersion:
       self._service.metadata.resourceVersion = resource.metadata.resourceVersion
+      # Knative will complain if you try to edit (incl remove) serving annots.
+      # So replicate them here.
+      if not resource.is_managed:
+        for k, v in resource.annotations.items():
+          if k.startswith(k8s_object.SERVING_GROUP):
+            self._service.annotations[k] = v
     return self._service
 
 
@@ -178,9 +183,9 @@ class ImageChange(ConfigChanger):
     self.image = image
 
   def Adjust(self, resource):
-    annotations = k8s_object.AnnotationsFromMetadata(
-        resource.MessagesModule(), resource.metadata)
-    annotations[configuration.USER_IMAGE_ANNOTATION] = (
+    resource.annotations[revision.USER_IMAGE_ANNOTATION] = (
+        self.image)
+    resource.template.annotations[revision.USER_IMAGE_ANNOTATION] = (
         self.image)
     resource.template.image = self.image
     return resource
@@ -358,8 +363,6 @@ class ResourceChanges(ConfigChanger):
       resource.template.resource_limits['cpu'] = self._cpu
     return resource
 
-_CLOUDSQL_ANNOTATION = 'run.googleapis.com/cloudsql-instances'
-
 
 class CloudSQLChanges(ConfigChanger):
   """Represents the intent to update the Cloug SQL instances."""
@@ -403,7 +406,8 @@ class CloudSQLChanges(ConfigChanger):
 
   def Adjust(self, resource):
     def GetCurrentInstances():
-      annotation_val = resource.template.annotations.get(_CLOUDSQL_ANNOTATION)
+      annotation_val = resource.template.annotations.get(
+          revision.CLOUDSQL_ANNOTATION)
       if annotation_val:
         return annotation_val.split(',')
       return []
@@ -411,7 +415,8 @@ class CloudSQLChanges(ConfigChanger):
     instances = repeated.ParsePrimitiveArgs(
         self, 'cloudsql-instances', GetCurrentInstances)
     if instances is not None:
-      resource.template.annotations[_CLOUDSQL_ANNOTATION] = ','.join(instances)
+      resource.template.annotations[
+          revision.CLOUDSQL_ANNOTATION] = ','.join(instances)
     return resource
 
   def _Augment(self, instance_str):
@@ -439,19 +444,11 @@ class ConcurrencyChanges(ConfigChanger):
   """Represents the user intent to update concurrency preference."""
 
   def __init__(self, concurrency):
-    self._concurrency = None if concurrency == 'default' else concurrency
+    self._concurrency = None if concurrency == 'default' else int(concurrency)
 
   def Adjust(self, resource):
     """Mutates the given config's resource limits to match what's desired."""
-    if self._concurrency is None:
-      resource.template.deprecated_string_concurrency = None
-      resource.template.concurrency = None
-    elif isinstance(self._concurrency, int):
-      resource.template.concurrency = self._concurrency
-      resource.template.deprecated_string_concurrency = None
-    else:
-      resource.template.deprecated_string_concurrency = self._concurrency
-      resource.template.concurrency = None
+    resource.template.concurrency = self._concurrency
     return resource
 
 

@@ -22,6 +22,11 @@ _cloudsdk_which() {
   which "$1" 2>/dev/null || command -v "$1" 2>/dev/null
 }
 
+# Check whether passed in python command reports major version 3.
+_is_python3() {
+  echo "$("$1" -V 2>&1)" | grep -E "Python 3" > /dev/null
+}
+
 # For Python 3, gsutil requires Python 3.5+.
 _py3_interpreter_compat_with_gsutil () {
   # Some environments (e.g. macOS) don't support grep -P, so we use grep -E.
@@ -190,9 +195,28 @@ if [ -z "$CLOUDSDK_GSUTIL_PYTHON" ]; then
   fi
 fi
 
+# bq requires python2 so it can not use CLOUDSDK_PYTHON which may be python3.
+if [ -z "$CLOUDSDK_BQ_PYTHON" ]; then
+  # if python2 exists then plain python may point to a version != 2
+  if _cloudsdk_which python2 >/dev/null; then
+    CLOUDSDK_BQ_PYTHON=python2
+  elif _cloudsdk_which python2.7 >/dev/null; then
+    # this is what some OS X versions call their built-in Python
+    CLOUDSDK_BQ_PYTHON=python2.7
+  elif _cloudsdk_which python >/dev/null; then
+    # Use unversioned python if it exists.
+    CLOUDSDK_BQ_PYTHON=python
+  else
+    # This won't work because it wasn't found above, but at this point this
+    # is our best guess for the error message.
+    CLOUDSDK_BQ_PYTHON=python
+  fi
+fi
+
 export CLOUDSDK_ROOT_DIR
 export CLOUDSDK_PYTHON_ARGS
 export CLOUDSDK_GSUTIL_PYTHON
+export CLOUDSDK_BQ_PYTHON
 
 # </cloud-sdk-sh-preamble>
 

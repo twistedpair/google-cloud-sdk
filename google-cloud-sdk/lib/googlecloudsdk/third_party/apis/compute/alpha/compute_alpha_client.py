@@ -125,7 +125,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of accelerator types. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of accelerator types.
 
       Args:
         request: (ComputeAcceleratorTypesAggregatedListRequest) input message
@@ -151,7 +151,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified accelerator type. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified accelerator type.
 
       Args:
         request: (ComputeAcceleratorTypesGetRequest) input message
@@ -177,7 +177,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of accelerator types available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of accelerator types available to the specified project.
 
       Args:
         request: (ComputeAcceleratorTypesListRequest) input message
@@ -213,7 +213,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of addresses. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of addresses.
 
       Args:
         request: (ComputeAddressesAggregatedListRequest) input message
@@ -239,7 +239,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified address resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified address resource.
 
       Args:
         request: (ComputeAddressesDeleteRequest) input message
@@ -265,7 +265,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified address resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified address resource.
 
       Args:
         request: (ComputeAddressesGetRequest) input message
@@ -291,7 +291,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an address resource in the specified project by using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates an address resource in the specified project by using the data included in the request.
 
       Args:
         request: (ComputeAddressesInsertRequest) input message
@@ -317,7 +317,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of addresses contained within the specified region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of addresses contained within the specified region.
 
       Args:
         request: (ComputeAddressesListRequest) input message
@@ -343,7 +343,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on an Address. To learn more about labels, read the Labeling Resources documentation. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the labels on an Address. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeAddressesSetLabelsRequest) input message
@@ -369,7 +369,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeAddressesTestIamPermissionsRequest) input message
@@ -405,7 +405,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of autoscalers. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of autoscalers.
 
       Args:
         request: (ComputeAutoscalersAggregatedListRequest) input message
@@ -431,7 +431,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified autoscaler. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified autoscaler.
 
       Args:
         request: (ComputeAutoscalersDeleteRequest) input message
@@ -457,7 +457,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified autoscaler resource. Gets a list of available autoscalers by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified autoscaler resource. Gets a list of available autoscalers by making a list() request.
 
       Args:
         request: (ComputeAutoscalersGetRequest) input message
@@ -483,7 +483,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an autoscaler in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates an autoscaler in the specified project using the data included in the request.
 
       Args:
         request: (ComputeAutoscalersInsertRequest) input message
@@ -509,7 +509,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of autoscalers contained within the specified zone. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of autoscalers contained within the specified zone.
 
       Args:
         request: (ComputeAutoscalersListRequest) input message
@@ -535,7 +535,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeAutoscalersPatchRequest) input message
@@ -561,7 +561,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeAutoscalersTestIamPermissionsRequest) input message
@@ -587,7 +587,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an autoscaler in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates an autoscaler in the specified project using the data included in the request.
 
       Args:
         request: (ComputeAutoscalersUpdateRequest) input message
@@ -623,7 +623,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AddSignedUrlKey(self, request, global_params=None):
-      r"""Adds a key for validating requests with signed URLs for this backend bucket. (== suppress_warning http-rest-shadowed ==).
+      r"""Adds a key for validating requests with signed URLs for this backend bucket.
 
       Args:
         request: (ComputeBackendBucketsAddSignedUrlKeyRequest) input message
@@ -649,7 +649,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified BackendBucket resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified BackendBucket resource.
 
       Args:
         request: (ComputeBackendBucketsDeleteRequest) input message
@@ -675,7 +675,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def DeleteSignedUrlKey(self, request, global_params=None):
-      r"""Deletes a key for validating requests with signed URLs for this backend bucket. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes a key for validating requests with signed URLs for this backend bucket.
 
       Args:
         request: (ComputeBackendBucketsDeleteSignedUrlKeyRequest) input message
@@ -701,7 +701,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified BackendBucket resource. Gets a list of available backend buckets by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified BackendBucket resource. Gets a list of available backend buckets by making a list() request.
 
       Args:
         request: (ComputeBackendBucketsGetRequest) input message
@@ -727,7 +727,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeBackendBucketsGetIamPolicyRequest) input message
@@ -753,7 +753,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a BackendBucket resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a BackendBucket resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeBackendBucketsInsertRequest) input message
@@ -779,7 +779,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of BackendBucket resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of BackendBucket resources available to the specified project.
 
       Args:
         request: (ComputeBackendBucketsListRequest) input message
@@ -805,7 +805,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified BackendBucket resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified BackendBucket resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeBackendBucketsPatchRequest) input message
@@ -831,7 +831,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeBackendBucketsSetIamPolicyRequest) input message
@@ -857,7 +857,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeBackendBucketsTestIamPermissionsRequest) input message
@@ -883,7 +883,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified BackendBucket resource with the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified BackendBucket resource with the data included in the request.
 
       Args:
         request: (ComputeBackendBucketsUpdateRequest) input message
@@ -919,7 +919,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AddSignedUrlKey(self, request, global_params=None):
-      r"""Adds a key for validating requests with signed URLs for this backend service. (== suppress_warning http-rest-shadowed ==).
+      r"""Adds a key for validating requests with signed URLs for this backend service.
 
       Args:
         request: (ComputeBackendServicesAddSignedUrlKeyRequest) input message
@@ -945,7 +945,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all BackendService resources, regional and global, available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of all BackendService resources, regional and global, available to the specified project.
 
       Args:
         request: (ComputeBackendServicesAggregatedListRequest) input message
@@ -971,7 +971,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified BackendService resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified BackendService resource.
 
       Args:
         request: (ComputeBackendServicesDeleteRequest) input message
@@ -997,7 +997,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def DeleteSignedUrlKey(self, request, global_params=None):
-      r"""Deletes a key for validating requests with signed URLs for this backend service. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes a key for validating requests with signed URLs for this backend service.
 
       Args:
         request: (ComputeBackendServicesDeleteSignedUrlKeyRequest) input message
@@ -1023,7 +1023,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified BackendService resource. Gets a list of available backend services. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified BackendService resource. Gets a list of available backend services.
 
       Args:
         request: (ComputeBackendServicesGetRequest) input message
@@ -1049,7 +1049,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def GetHealth(self, request, global_params=None):
-      r"""Gets the most recent health check results for this BackendService. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the most recent health check results for this BackendService.
 
       Args:
         request: (ComputeBackendServicesGetHealthRequest) input message
@@ -1075,7 +1075,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a backend service. Read  Restrictions and Guidelines for more information. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a backend service. Read  Restrictions and Guidelines for more information.
 
       Args:
         request: (ComputeBackendServicesInsertRequest) input message
@@ -1101,7 +1101,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of BackendService resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of BackendService resources available to the specified project.
 
       Args:
         request: (ComputeBackendServicesListRequest) input message
@@ -1127,7 +1127,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeBackendServicesPatchRequest) input message
@@ -1153,7 +1153,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetSecurityPolicy(self, request, global_params=None):
-      r"""Sets the security policy for the specified backend service. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the security policy for the specified backend service.
 
       Args:
         request: (ComputeBackendServicesSetSecurityPolicyRequest) input message
@@ -1179,7 +1179,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeBackendServicesTestIamPermissionsRequest) input message
@@ -1205,7 +1205,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
 
       Args:
         request: (ComputeBackendServicesUpdateRequest) input message
@@ -1241,7 +1241,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of disk types. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of disk types.
 
       Args:
         request: (ComputeDiskTypesAggregatedListRequest) input message
@@ -1267,7 +1267,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified disk type. Gets a list of available disk types by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified disk type. Gets a list of available disk types by making a list() request.
 
       Args:
         request: (ComputeDiskTypesGetRequest) input message
@@ -1293,7 +1293,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of disk types available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of disk types available to the specified project.
 
       Args:
         request: (ComputeDiskTypesListRequest) input message
@@ -1329,7 +1329,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AddResourcePolicies(self, request, global_params=None):
-      r"""Adds existing resource policies to a disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation. (== suppress_warning http-rest-shadowed ==).
+      r"""Adds existing resource policies to a disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation.
 
       Args:
         request: (ComputeDisksAddResourcePoliciesRequest) input message
@@ -1355,7 +1355,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of persistent disks. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of persistent disks.
 
       Args:
         request: (ComputeDisksAggregatedListRequest) input message
@@ -1381,7 +1381,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def CreateSnapshot(self, request, global_params=None):
-      r"""Creates a snapshot of a specified persistent disk. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a snapshot of a specified persistent disk.
 
       Args:
         request: (ComputeDisksCreateSnapshotRequest) input message
@@ -1407,7 +1407,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified persistent disk. Deleting a disk removes its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified persistent disk. Deleting a disk removes its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
 
       Args:
         request: (ComputeDisksDeleteRequest) input message
@@ -1433,7 +1433,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns a specified persistent disk. Gets a list of available persistent disks by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns a specified persistent disk. Gets a list of available persistent disks by making a list() request.
 
       Args:
         request: (ComputeDisksGetRequest) input message
@@ -1459,7 +1459,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeDisksGetIamPolicyRequest) input message
@@ -1485,7 +1485,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a persistent disk in the specified project using the data in the request. You can create a disk with a sourceImage, a sourceSnapshot, or create an empty 500 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a persistent disk in the specified project using the data in the request. You can create a disk with a sourceImage, a sourceSnapshot, or create an empty 500 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
 
       Args:
         request: (ComputeDisksInsertRequest) input message
@@ -1511,7 +1511,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of persistent disks contained within the specified zone. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of persistent disks contained within the specified zone.
 
       Args:
         request: (ComputeDisksListRequest) input message
@@ -1537,7 +1537,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def RemoveResourcePolicies(self, request, global_params=None):
-      r"""Removes resource policies from a disk. (== suppress_warning http-rest-shadowed ==).
+      r"""Removes resource policies from a disk.
 
       Args:
         request: (ComputeDisksRemoveResourcePoliciesRequest) input message
@@ -1563,7 +1563,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Resize(self, request, global_params=None):
-      r"""Resizes the specified persistent disk. You can only increase the size of the disk. (== suppress_warning http-rest-shadowed ==).
+      r"""Resizes the specified persistent disk. You can only increase the size of the disk.
 
       Args:
         request: (ComputeDisksResizeRequest) input message
@@ -1589,7 +1589,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeDisksSetIamPolicyRequest) input message
@@ -1615,7 +1615,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a disk. To learn more about labels, read the Labeling Resources documentation. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the labels on a disk. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeDisksSetLabelsRequest) input message
@@ -1641,7 +1641,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeDisksTestIamPermissionsRequest) input message
@@ -1677,7 +1677,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified externalVpnGateway. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified externalVpnGateway.
 
       Args:
         request: (ComputeExternalVpnGatewaysDeleteRequest) input message
@@ -1703,7 +1703,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified externalVpnGateway. Get a list of available externalVpnGateways by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified externalVpnGateway. Get a list of available externalVpnGateways by making a list() request.
 
       Args:
         request: (ComputeExternalVpnGatewaysGetRequest) input message
@@ -1729,7 +1729,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a ExternalVpnGateway in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a ExternalVpnGateway in the specified project using the data included in the request.
 
       Args:
         request: (ComputeExternalVpnGatewaysInsertRequest) input message
@@ -1755,7 +1755,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of ExternalVpnGateway available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of ExternalVpnGateway available to the specified project.
 
       Args:
         request: (ComputeExternalVpnGatewaysListRequest) input message
@@ -1781,7 +1781,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on an ExternalVpnGateway. To learn more about labels, read the Labeling Resources documentation. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the labels on an ExternalVpnGateway. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeExternalVpnGatewaysSetLabelsRequest) input message
@@ -1807,7 +1807,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeExternalVpnGatewaysTestIamPermissionsRequest) input message
@@ -1843,7 +1843,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified firewall. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified firewall.
 
       Args:
         request: (ComputeFirewallsDeleteRequest) input message
@@ -1869,7 +1869,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified firewall. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified firewall.
 
       Args:
         request: (ComputeFirewallsGetRequest) input message
@@ -1895,7 +1895,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a firewall rule in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a firewall rule in the specified project using the data included in the request.
 
       Args:
         request: (ComputeFirewallsInsertRequest) input message
@@ -1921,7 +1921,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of firewall rules available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of firewall rules available to the specified project.
 
       Args:
         request: (ComputeFirewallsListRequest) input message
@@ -1947,7 +1947,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified firewall rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified firewall rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeFirewallsPatchRequest) input message
@@ -1973,7 +1973,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeFirewallsTestIamPermissionsRequest) input message
@@ -1999,7 +1999,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified firewall rule with the data included in the request. Note that all fields will be updated if using PUT, even fields that are not specified. To update individual fields, please use PATCH instead. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified firewall rule with the data included in the request. Note that all fields will be updated if using PUT, even fields that are not specified. To update individual fields, please use PATCH instead.
 
       Args:
         request: (ComputeFirewallsUpdateRequest) input message
@@ -2035,7 +2035,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of forwarding rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of forwarding rules.
 
       Args:
         request: (ComputeForwardingRulesAggregatedListRequest) input message
@@ -2061,7 +2061,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified ForwardingRule resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified ForwardingRule resource.
 
       Args:
         request: (ComputeForwardingRulesDeleteRequest) input message
@@ -2087,7 +2087,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified ForwardingRule resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified ForwardingRule resource.
 
       Args:
         request: (ComputeForwardingRulesGetRequest) input message
@@ -2113,7 +2113,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a ForwardingRule resource in the specified project and region using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a ForwardingRule resource in the specified project and region using the data included in the request.
 
       Args:
         request: (ComputeForwardingRulesInsertRequest) input message
@@ -2139,7 +2139,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of ForwardingRule resources available to the specified project and region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of ForwardingRule resources available to the specified project and region.
 
       Args:
         request: (ComputeForwardingRulesListRequest) input message
@@ -2165,7 +2165,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified forwarding rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. Currently, you can only patch the network_tier field. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified forwarding rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. Currently, you can only patch the network_tier field.
 
       Args:
         request: (ComputeForwardingRulesPatchRequest) input message
@@ -2191,7 +2191,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeForwardingRulesSetLabelsRequest) input message
@@ -2217,7 +2217,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetTarget(self, request, global_params=None):
-      r"""Changes target URL for forwarding rule. The new target should be of the same type as the old target. (== suppress_warning http-rest-shadowed ==).
+      r"""Changes target URL for forwarding rule. The new target should be of the same type as the old target.
 
       Args:
         request: (ComputeForwardingRulesSetTargetRequest) input message
@@ -2243,7 +2243,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeForwardingRulesTestIamPermissionsRequest) input message
@@ -2279,7 +2279,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified address resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified address resource.
 
       Args:
         request: (ComputeGlobalAddressesDeleteRequest) input message
@@ -2305,7 +2305,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified address resource. Gets a list of available addresses by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified address resource. Gets a list of available addresses by making a list() request.
 
       Args:
         request: (ComputeGlobalAddressesGetRequest) input message
@@ -2331,7 +2331,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an address resource in the specified project by using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates an address resource in the specified project by using the data included in the request.
 
       Args:
         request: (ComputeGlobalAddressesInsertRequest) input message
@@ -2357,7 +2357,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of global addresses. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of global addresses.
 
       Args:
         request: (ComputeGlobalAddressesListRequest) input message
@@ -2383,7 +2383,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeGlobalAddressesSetLabelsRequest) input message
@@ -2409,7 +2409,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeGlobalAddressesTestIamPermissionsRequest) input message
@@ -2445,7 +2445,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified GlobalForwardingRule resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified GlobalForwardingRule resource.
 
       Args:
         request: (ComputeGlobalForwardingRulesDeleteRequest) input message
@@ -2471,7 +2471,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified GlobalForwardingRule resource. Gets a list of available forwarding rules by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified GlobalForwardingRule resource. Gets a list of available forwarding rules by making a list() request.
 
       Args:
         request: (ComputeGlobalForwardingRulesGetRequest) input message
@@ -2497,7 +2497,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a GlobalForwardingRule resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a GlobalForwardingRule resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeGlobalForwardingRulesInsertRequest) input message
@@ -2523,7 +2523,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of GlobalForwardingRule resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of GlobalForwardingRule resources available to the specified project.
 
       Args:
         request: (ComputeGlobalForwardingRulesListRequest) input message
@@ -2549,7 +2549,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified forwarding rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. Currently, you can only patch the network_tier field. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified forwarding rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. Currently, you can only patch the network_tier field.
 
       Args:
         request: (ComputeGlobalForwardingRulesPatchRequest) input message
@@ -2575,7 +2575,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetLabelsRequest) input message
@@ -2601,7 +2601,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def SetTarget(self, request, global_params=None):
-      r"""Changes target URL for the GlobalForwardingRule resource. The new target should be of the same type as the old target. (== suppress_warning http-rest-shadowed ==).
+      r"""Changes target URL for the GlobalForwardingRule resource. The new target should be of the same type as the old target.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetTargetRequest) input message
@@ -2627,7 +2627,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeGlobalForwardingRulesTestIamPermissionsRequest) input message
@@ -2663,7 +2663,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AttachNetworkEndpoints(self, request, global_params=None):
-      r"""Attach a network endpoint to the specified network endpoint group. (== suppress_warning http-rest-shadowed ==).
+      r"""Attach a network endpoint to the specified network endpoint group.
 
       Args:
         request: (ComputeGlobalNetworkEndpointGroupsAttachNetworkEndpointsRequest) input message
@@ -2689,7 +2689,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified network endpoint group.Note that the NEG cannot be deleted if there are backend services referencing it. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified network endpoint group.Note that the NEG cannot be deleted if there are backend services referencing it.
 
       Args:
         request: (ComputeGlobalNetworkEndpointGroupsDeleteRequest) input message
@@ -2715,7 +2715,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def DetachNetworkEndpoints(self, request, global_params=None):
-      r"""Detach the network endpoint from the specified network endpoint group. (== suppress_warning http-rest-shadowed ==).
+      r"""Detach the network endpoint from the specified network endpoint group.
 
       Args:
         request: (ComputeGlobalNetworkEndpointGroupsDetachNetworkEndpointsRequest) input message
@@ -2741,7 +2741,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
 
       Args:
         request: (ComputeGlobalNetworkEndpointGroupsGetRequest) input message
@@ -2767,7 +2767,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a network endpoint group in the specified project using the parameters that are included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a network endpoint group in the specified project using the parameters that are included in the request.
 
       Args:
         request: (ComputeGlobalNetworkEndpointGroupsInsertRequest) input message
@@ -2793,7 +2793,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of network endpoint groups that are located in the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of network endpoint groups that are located in the specified project.
 
       Args:
         request: (ComputeGlobalNetworkEndpointGroupsListRequest) input message
@@ -2819,7 +2819,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def ListNetworkEndpoints(self, request, global_params=None):
-      r"""Lists the network endpoints in the specified network endpoint group. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists the network endpoints in the specified network endpoint group.
 
       Args:
         request: (ComputeGlobalNetworkEndpointGroupsListNetworkEndpointsRequest) input message
@@ -2855,7 +2855,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all operations. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of all operations.
 
       Args:
         request: (ComputeGlobalOperationsAggregatedListRequest) input message
@@ -2881,7 +2881,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Operations resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified Operations resource.
 
       Args:
         request: (ComputeGlobalOperationsDeleteRequest) input message
@@ -2907,7 +2907,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves the specified Operations resource. Gets a list of operations by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the specified Operations resource. Gets a list of operations by making a list() request.
 
       Args:
         request: (ComputeGlobalOperationsGetRequest) input message
@@ -2933,7 +2933,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of Operation resources contained within the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of Operation resources contained within the specified project.
 
       Args:
         request: (ComputeGlobalOperationsListRequest) input message
@@ -2959,7 +2959,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Wait(self, request, global_params=None):
-      r"""Waits for the specified Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE. (== suppress_warning http-rest-shadowed ==).
+      r"""Waits for the specified Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE.
 
       Args:
         request: (ComputeGlobalOperationsWaitRequest) input message
@@ -2995,7 +2995,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Operations resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified Operations resource.
 
       Args:
         request: (ComputeGlobalOrganizationOperationsDeleteRequest) input message
@@ -3013,7 +3013,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         ordered_params=[u'operation'],
         path_params=[u'operation'],
         query_params=[u'parentId'],
-        relative_path=u'projects/locations/global/operations/{operation}',
+        relative_path=u'locations/global/operations/{operation}',
         request_field='',
         request_type_name=u'ComputeGlobalOrganizationOperationsDeleteRequest',
         response_type_name=u'ComputeGlobalOrganizationOperationsDeleteResponse',
@@ -3021,7 +3021,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves the specified Operations resource. Gets a list of operations by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the specified Operations resource. Gets a list of operations by making a list() request.
 
       Args:
         request: (ComputeGlobalOrganizationOperationsGetRequest) input message
@@ -3039,7 +3039,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         ordered_params=[u'operation'],
         path_params=[u'operation'],
         query_params=[u'parentId'],
-        relative_path=u'projects/locations/global/operations/{operation}',
+        relative_path=u'locations/global/operations/{operation}',
         request_field='',
         request_type_name=u'ComputeGlobalOrganizationOperationsGetRequest',
         response_type_name=u'Operation',
@@ -3047,7 +3047,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of Operation resources contained within the specified organization. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of Operation resources contained within the specified organization.
 
       Args:
         request: (ComputeGlobalOrganizationOperationsListRequest) input message
@@ -3065,7 +3065,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         ordered_params=[],
         path_params=[],
         query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'parentId'],
-        relative_path=u'projects/locations/global/operations',
+        relative_path=u'locations/global/operations',
         request_field='',
         request_type_name=u'ComputeGlobalOrganizationOperationsListRequest',
         response_type_name=u'OperationList',
@@ -3073,7 +3073,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Wait(self, request, global_params=None):
-      r"""Waits for the specified Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE. (== suppress_warning http-rest-shadowed ==).
+      r"""Waits for the specified Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE.
 
       Args:
         request: (ComputeGlobalOrganizationOperationsWaitRequest) input message
@@ -3091,7 +3091,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         ordered_params=[u'operation'],
         path_params=[u'operation'],
         query_params=[u'parentId'],
-        relative_path=u'projects/locations/global/operations/{operation}/wait',
+        relative_path=u'locations/global/operations/{operation}/wait',
         request_field='',
         request_type_name=u'ComputeGlobalOrganizationOperationsWaitRequest',
         response_type_name=u'Operation',
@@ -3109,7 +3109,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified global PublicDelegatedPrefix. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified global PublicDelegatedPrefix.
 
       Args:
         request: (ComputeGlobalPublicDelegatedPrefixesDeleteRequest) input message
@@ -3135,7 +3135,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified global PublicDelegatedPrefix resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified global PublicDelegatedPrefix resource.
 
       Args:
         request: (ComputeGlobalPublicDelegatedPrefixesGetRequest) input message
@@ -3161,7 +3161,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a global PublicDelegatedPrefix in the specified project using the parameters that are included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a global PublicDelegatedPrefix in the specified project using the parameters that are included in the request.
 
       Args:
         request: (ComputeGlobalPublicDelegatedPrefixesInsertRequest) input message
@@ -3187,7 +3187,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the global PublicDelegatedPrefixes for a project. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists the global PublicDelegatedPrefixes for a project.
 
       Args:
         request: (ComputeGlobalPublicDelegatedPrefixesListRequest) input message
@@ -3213,7 +3213,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified global PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches the specified global PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeGlobalPublicDelegatedPrefixesPatchRequest) input message
@@ -3249,7 +3249,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all HealthCheck resources, regional and global, available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of all HealthCheck resources, regional and global, available to the specified project.
 
       Args:
         request: (ComputeHealthChecksAggregatedListRequest) input message
@@ -3275,7 +3275,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified HealthCheck resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified HealthCheck resource.
 
       Args:
         request: (ComputeHealthChecksDeleteRequest) input message
@@ -3301,7 +3301,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request.
 
       Args:
         request: (ComputeHealthChecksGetRequest) input message
@@ -3327,7 +3327,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a HealthCheck resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a HealthCheck resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeHealthChecksInsertRequest) input message
@@ -3353,7 +3353,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of HealthCheck resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of HealthCheck resources available to the specified project.
 
       Args:
         request: (ComputeHealthChecksListRequest) input message
@@ -3379,7 +3379,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a HealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates a HealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeHealthChecksPatchRequest) input message
@@ -3405,7 +3405,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeHealthChecksTestIamPermissionsRequest) input message
@@ -3431,7 +3431,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a HealthCheck resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates a HealthCheck resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeHealthChecksUpdateRequest) input message
@@ -3467,7 +3467,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified HttpHealthCheck resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified HttpHealthCheck resource.
 
       Args:
         request: (ComputeHttpHealthChecksDeleteRequest) input message
@@ -3493,7 +3493,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified HttpHealthCheck resource. Gets a list of available HTTP health checks by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified HttpHealthCheck resource. Gets a list of available HTTP health checks by making a list() request.
 
       Args:
         request: (ComputeHttpHealthChecksGetRequest) input message
@@ -3519,7 +3519,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a HttpHealthCheck resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a HttpHealthCheck resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeHttpHealthChecksInsertRequest) input message
@@ -3545,7 +3545,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of HttpHealthCheck resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of HttpHealthCheck resources available to the specified project.
 
       Args:
         request: (ComputeHttpHealthChecksListRequest) input message
@@ -3571,7 +3571,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a HttpHealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates a HttpHealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeHttpHealthChecksPatchRequest) input message
@@ -3597,7 +3597,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeHttpHealthChecksTestIamPermissionsRequest) input message
@@ -3623,7 +3623,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a HttpHealthCheck resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates a HttpHealthCheck resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeHttpHealthChecksUpdateRequest) input message
@@ -3659,7 +3659,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified HttpsHealthCheck resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified HttpsHealthCheck resource.
 
       Args:
         request: (ComputeHttpsHealthChecksDeleteRequest) input message
@@ -3685,7 +3685,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified HttpsHealthCheck resource. Gets a list of available HTTPS health checks by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified HttpsHealthCheck resource. Gets a list of available HTTPS health checks by making a list() request.
 
       Args:
         request: (ComputeHttpsHealthChecksGetRequest) input message
@@ -3711,7 +3711,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a HttpsHealthCheck resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a HttpsHealthCheck resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeHttpsHealthChecksInsertRequest) input message
@@ -3737,7 +3737,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of HttpsHealthCheck resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of HttpsHealthCheck resources available to the specified project.
 
       Args:
         request: (ComputeHttpsHealthChecksListRequest) input message
@@ -3763,7 +3763,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a HttpsHealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates a HttpsHealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeHttpsHealthChecksPatchRequest) input message
@@ -3789,7 +3789,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeHttpsHealthChecksTestIamPermissionsRequest) input message
@@ -3815,7 +3815,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a HttpsHealthCheck resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates a HttpsHealthCheck resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeHttpsHealthChecksUpdateRequest) input message
@@ -3851,7 +3851,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified image. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified image.
 
       Args:
         request: (ComputeImagesDeleteRequest) input message
@@ -3879,7 +3879,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     def Deprecate(self, request, global_params=None):
       r"""Sets the deprecation status of an image.
 
-If an empty request body is given, clears the deprecation status instead. (== suppress_warning http-rest-shadowed ==)
+If an empty request body is given, clears the deprecation status instead.
 
       Args:
         request: (ComputeImagesDeprecateRequest) input message
@@ -3905,7 +3905,7 @@ If an empty request body is given, clears the deprecation status instead. (== su
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified image. Gets a list of available images by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified image. Gets a list of available images by making a list() request.
 
       Args:
         request: (ComputeImagesGetRequest) input message
@@ -3931,7 +3931,7 @@ If an empty request body is given, clears the deprecation status instead. (== su
     )
 
     def GetFromFamily(self, request, global_params=None):
-      r"""Returns the latest image that is part of an image family and is not deprecated. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the latest image that is part of an image family and is not deprecated.
 
       Args:
         request: (ComputeImagesGetFromFamilyRequest) input message
@@ -3957,7 +3957,7 @@ If an empty request body is given, clears the deprecation status instead. (== su
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeImagesGetIamPolicyRequest) input message
@@ -3983,7 +3983,7 @@ If an empty request body is given, clears the deprecation status instead. (== su
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an image in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates an image in the specified project using the data included in the request.
 
       Args:
         request: (ComputeImagesInsertRequest) input message
@@ -4009,7 +4009,7 @@ If an empty request body is given, clears the deprecation status instead. (== su
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of custom images available to the specified project. Custom images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 8. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of custom images available to the specified project. Custom images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 8. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
 
       Args:
         request: (ComputeImagesListRequest) input message
@@ -4035,7 +4035,7 @@ If an empty request body is given, clears the deprecation status instead. (== su
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeImagesSetIamPolicyRequest) input message
@@ -4061,7 +4061,7 @@ If an empty request body is given, clears the deprecation status instead. (== su
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on an image. To learn more about labels, read the Labeling Resources documentation. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the labels on an image. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeImagesSetLabelsRequest) input message
@@ -4087,7 +4087,7 @@ If an empty request body is given, clears the deprecation status instead. (== su
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeImagesTestIamPermissionsRequest) input message
@@ -4127,7 +4127,7 @@ If an empty request body is given, clears the deprecation status instead. (== su
 
 If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
-You can specify a maximum of 1000 instances with this method per request. (== suppress_warning http-rest-shadowed ==)
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeInstanceGroupManagersAbandonInstancesRequest) input message
@@ -4153,7 +4153,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of managed instance groups and groups them by zone. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of managed instance groups and groups them by zone.
 
       Args:
         request: (ComputeInstanceGroupManagersAggregatedListRequest) input message
@@ -4179,7 +4179,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
     )
 
     def ApplyUpdatesToInstances(self, request, global_params=None):
-      r"""Apply changes to selected instances on the managed instance group. This method can be used to apply new overrides and/or new versions. (== suppress_warning http-rest-shadowed ==).
+      r"""Apply changes to selected instances on the managed instance group. This method can be used to apply new overrides and/or new versions.
 
       Args:
         request: (ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest) input message
@@ -4205,7 +4205,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
     )
 
     def CreateInstances(self, request, global_params=None):
-      r"""Creates instances with per-instance configs in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates instances with per-instance configs in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
 
       Args:
         request: (ComputeInstanceGroupManagersCreateInstancesRequest) input message
@@ -4231,7 +4231,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified managed instance group and all of the instances in that group. Note that the instance group must not belong to a backend service. Read  Deleting an instance group for more information. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified managed instance group and all of the instances in that group. Note that the instance group must not belong to a backend service. Read  Deleting an instance group for more information.
 
       Args:
         request: (ComputeInstanceGroupManagersDeleteRequest) input message
@@ -4261,7 +4261,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
 
 If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
-You can specify a maximum of 1000 instances with this method per request. (== suppress_warning http-rest-shadowed ==)
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeInstanceGroupManagersDeleteInstancesRequest) input message
@@ -4287,7 +4287,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
     )
 
     def DeletePerInstanceConfigs(self, request, global_params=None):
-      r"""Deletes selected per-instance configs for the managed instance group. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes selected per-instance configs for the managed instance group.
 
       Args:
         request: (ComputeInstanceGroupManagersDeletePerInstanceConfigsRequest) input message
@@ -4313,7 +4313,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns all of the details about the specified managed instance group. Gets a list of available managed instance groups by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns all of the details about the specified managed instance group. Gets a list of available managed instance groups by making a list() request.
 
       Args:
         request: (ComputeInstanceGroupManagersGetRequest) input message
@@ -4341,7 +4341,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
     def Insert(self, request, global_params=None):
       r"""Creates a managed instance group using the information that you specify in the request. After the group is created, instances in the group are created using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.
 
-A managed instance group can have up to 1000 VM instances per group. Please contact Cloud Support if you need an increase in this limit. (== suppress_warning http-rest-shadowed ==)
+A managed instance group can have up to 1000 VM instances per group. Please contact Cloud Support if you need an increase in this limit.
 
       Args:
         request: (ComputeInstanceGroupManagersInsertRequest) input message
@@ -4367,7 +4367,7 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of managed instance groups that are contained within the specified project and zone. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of managed instance groups that are contained within the specified project and zone.
 
       Args:
         request: (ComputeInstanceGroupManagersListRequest) input message
@@ -4393,7 +4393,7 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
     )
 
     def ListErrors(self, request, global_params=None):
-      r"""Lists all errors thrown by actions on instances for a given managed instance group. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists all errors thrown by actions on instances for a given managed instance group.
 
       Args:
         request: (ComputeInstanceGroupManagersListErrorsRequest) input message
@@ -4419,7 +4419,7 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
     )
 
     def ListManagedInstances(self, request, global_params=None):
-      r"""Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action.
 
       Args:
         request: (ComputeInstanceGroupManagersListManagedInstancesRequest) input message
@@ -4445,7 +4445,7 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
     )
 
     def ListPerInstanceConfigs(self, request, global_params=None):
-      r"""Lists all of the per-instance configs defined for the managed instance group. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists all of the per-instance configs defined for the managed instance group.
 
       Args:
         request: (ComputeInstanceGroupManagersListPerInstanceConfigsRequest) input message
@@ -4471,7 +4471,7 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInstanceGroupManagersPatchRequest) input message
@@ -4497,7 +4497,7 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
     )
 
     def PatchPerInstanceConfigs(self, request, global_params=None):
-      r"""Insert or patch (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch. (== suppress_warning http-rest-shadowed ==).
+      r"""Insert or patch (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch.
 
       Args:
         request: (ComputeInstanceGroupManagersPatchPerInstanceConfigsRequest) input message
@@ -4527,7 +4527,7 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
 
 If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
-You can specify a maximum of 1000 instances with this method per request. (== suppress_warning http-rest-shadowed ==)
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeInstanceGroupManagersRecreateInstancesRequest) input message
@@ -4561,7 +4561,7 @@ When resizing down, the instance group arbitrarily chooses the order in which VM
 
 This list is subject to change.
 
-If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. (== suppress_warning http-rest-shadowed ==)
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeInstanceGroupManagersResizeRequest) input message
@@ -4591,7 +4591,7 @@ If the group is part of a backend service that has enabled connection draining, 
 
 If you increase the size of the instance group, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating, creatingWithoutRetries, or deleting actions with the get or listmanagedinstances method.
 
-If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. (== suppress_warning http-rest-shadowed ==)
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeInstanceGroupManagersResizeAdvancedRequest) input message
@@ -4617,7 +4617,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetAutoHealingPolicies(self, request, global_params=None):
-      r"""Modifies the autohealing policies. [Deprecated] This method is deprecated. Please use Patch instead. (== suppress_warning http-rest-shadowed ==).
+      r"""Modifies the autohealing policies. [Deprecated] This method is deprecated. Please use Patch instead.
 
       Args:
         request: (ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest) input message
@@ -4643,7 +4643,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetInstanceTemplate(self, request, global_params=None):
-      r"""Specifies the instance template to use when creating new instances in this group. The templates for existing instances in the group do not change unless you recreate them. (== suppress_warning http-rest-shadowed ==).
+      r"""Specifies the instance template to use when creating new instances in this group. The templates for existing instances in the group do not change unless you recreate them.
 
       Args:
         request: (ComputeInstanceGroupManagersSetInstanceTemplateRequest) input message
@@ -4669,7 +4669,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetTargetPools(self, request, global_params=None):
-      r"""Modifies the target pools to which all instances in this managed instance group are assigned. The target pools automatically apply to all of the instances in the managed instance group. This operation is marked DONE when you make the request even if the instances have not yet been added to their target pools. The change might take some time to apply to all of the instances in the group depending on the size of the group. (== suppress_warning http-rest-shadowed ==).
+      r"""Modifies the target pools to which all instances in this managed instance group are assigned. The target pools automatically apply to all of the instances in the managed instance group. This operation is marked DONE when you make the request even if the instances have not yet been added to their target pools. The change might take some time to apply to all of the instances in the group depending on the size of the group.
 
       Args:
         request: (ComputeInstanceGroupManagersSetTargetPoolsRequest) input message
@@ -4695,7 +4695,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeInstanceGroupManagersTestIamPermissionsRequest) input message
@@ -4721,7 +4721,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listManagedInstances method. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listManagedInstances method.
 
       Args:
         request: (ComputeInstanceGroupManagersUpdateRequest) input message
@@ -4747,7 +4747,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def UpdatePerInstanceConfigs(self, request, global_params=None):
-      r"""Insert or update (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch. (== suppress_warning http-rest-shadowed ==).
+      r"""Insert or update (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch.
 
       Args:
         request: (ComputeInstanceGroupManagersUpdatePerInstanceConfigsRequest) input message
@@ -4783,7 +4783,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AddInstances(self, request, global_params=None):
-      r"""Adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. Read  Adding instances for more information. (== suppress_warning http-rest-shadowed ==).
+      r"""Adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. Read  Adding instances for more information.
 
       Args:
         request: (ComputeInstanceGroupsAddInstancesRequest) input message
@@ -4809,7 +4809,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of instance groups and sorts them by zone. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of instance groups and sorts them by zone.
 
       Args:
         request: (ComputeInstanceGroupsAggregatedListRequest) input message
@@ -4835,7 +4835,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified instance group. The instances in the group are not deleted. Note that instance group must not belong to a backend service. Read  Deleting an instance group for more information. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified instance group. The instances in the group are not deleted. Note that instance group must not belong to a backend service. Read  Deleting an instance group for more information.
 
       Args:
         request: (ComputeInstanceGroupsDeleteRequest) input message
@@ -4861,7 +4861,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified instance group. Gets a list of available instance groups by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified instance group. Gets a list of available instance groups by making a list() request.
 
       Args:
         request: (ComputeInstanceGroupsGetRequest) input message
@@ -4887,7 +4887,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an instance group in the specified project using the parameters that are included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates an instance group in the specified project using the parameters that are included in the request.
 
       Args:
         request: (ComputeInstanceGroupsInsertRequest) input message
@@ -4913,7 +4913,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of instance groups that are located in the specified project and zone. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of instance groups that are located in the specified project and zone.
 
       Args:
         request: (ComputeInstanceGroupsListRequest) input message
@@ -4939,7 +4939,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListInstances(self, request, global_params=None):
-      r"""Lists the instances in the specified instance group. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists the instances in the specified instance group.
 
       Args:
         request: (ComputeInstanceGroupsListInstancesRequest) input message
@@ -4967,7 +4967,7 @@ If the group is part of a backend service that has enabled connection draining, 
     def RemoveInstances(self, request, global_params=None):
       r"""Removes one or more instances from the specified instance group, but does not delete those instances.
 
-If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted. (== suppress_warning http-rest-shadowed ==)
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeInstanceGroupsRemoveInstancesRequest) input message
@@ -4993,7 +4993,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetNamedPorts(self, request, global_params=None):
-      r"""Sets the named ports for the specified instance group. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the named ports for the specified instance group.
 
       Args:
         request: (ComputeInstanceGroupsSetNamedPortsRequest) input message
@@ -5019,7 +5019,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeInstanceGroupsTestIamPermissionsRequest) input message
@@ -5055,7 +5055,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified instance template. Deleting an instance template is permanent and cannot be undone. It is not possible to delete templates that are already in use by a managed instance group. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified instance template. Deleting an instance template is permanent and cannot be undone. It is not possible to delete templates that are already in use by a managed instance group.
 
       Args:
         request: (ComputeInstanceTemplatesDeleteRequest) input message
@@ -5081,7 +5081,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified instance template. Gets a list of available instance templates by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified instance template. Gets a list of available instance templates by making a list() request.
 
       Args:
         request: (ComputeInstanceTemplatesGetRequest) input message
@@ -5107,7 +5107,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeInstanceTemplatesGetIamPolicyRequest) input message
@@ -5133,7 +5133,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an instance template in the specified project using the data that is included in the request. If you are creating a new template to update an existing instance group, your new instance template must use the same network or, if applicable, the same subnetwork as the original template. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates an instance template in the specified project using the data that is included in the request. If you are creating a new template to update an existing instance group, your new instance template must use the same network or, if applicable, the same subnetwork as the original template.
 
       Args:
         request: (ComputeInstanceTemplatesInsertRequest) input message
@@ -5159,7 +5159,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of instance templates that are contained within the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of instance templates that are contained within the specified project.
 
       Args:
         request: (ComputeInstanceTemplatesListRequest) input message
@@ -5185,7 +5185,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeInstanceTemplatesSetIamPolicyRequest) input message
@@ -5211,7 +5211,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeInstanceTemplatesTestIamPermissionsRequest) input message
@@ -5247,7 +5247,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AddAccessConfig(self, request, global_params=None):
-      r"""Adds an access config to an instance's network interface. (== suppress_warning http-rest-shadowed ==).
+      r"""Adds an access config to an instance's network interface.
 
       Args:
         request: (ComputeInstancesAddAccessConfigRequest) input message
@@ -5273,7 +5273,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def AddResourcePolicies(self, request, global_params=None):
-      r"""Adds existing resource policies to an instance. You can only add one policy right now which will be applied to this instance for scheduling live migrations. (== suppress_warning http-rest-shadowed ==).
+      r"""Adds existing resource policies to an instance. You can only add one policy right now which will be applied to this instance for scheduling live migrations.
 
       Args:
         request: (ComputeInstancesAddResourcePoliciesRequest) input message
@@ -5299,7 +5299,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves aggregated list of all of the instances in your project across all regions and zones. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves aggregated list of all of the instances in your project across all regions and zones.
 
       Args:
         request: (ComputeInstancesAggregatedListRequest) input message
@@ -5325,7 +5325,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def AttachDisk(self, request, global_params=None):
-      r"""Attaches an existing Disk resource to an instance. You must first create the disk before you can attach it. It is not possible to create and attach a disk at the same time. For more information, read Adding a persistent disk to your instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Attaches an existing Disk resource to an instance. You must first create the disk before you can attach it. It is not possible to create and attach a disk at the same time. For more information, read Adding a persistent disk to your instance.
 
       Args:
         request: (ComputeInstancesAttachDiskRequest) input message
@@ -5351,7 +5351,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Instance resource. For more information, see Stopping or Deleting an Instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified Instance resource. For more information, see Stopping or Deleting an Instance.
 
       Args:
         request: (ComputeInstancesDeleteRequest) input message
@@ -5377,7 +5377,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def DeleteAccessConfig(self, request, global_params=None):
-      r"""Deletes an access config from an instance's network interface. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes an access config from an instance's network interface.
 
       Args:
         request: (ComputeInstancesDeleteAccessConfigRequest) input message
@@ -5403,7 +5403,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def DetachDisk(self, request, global_params=None):
-      r"""Detaches a disk from an instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Detaches a disk from an instance.
 
       Args:
         request: (ComputeInstancesDetachDiskRequest) input message
@@ -5429,7 +5429,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Instance resource. Gets a list of available instances by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified Instance resource. Gets a list of available instances by making a list() request.
 
       Args:
         request: (ComputeInstancesGetRequest) input message
@@ -5455,7 +5455,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetEffectiveFirewalls(self, request, global_params=None):
-      r"""Returns effective firewalls applied to an interface of the instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns effective firewalls applied to an interface of the instance.
 
       Args:
         request: (ComputeInstancesGetEffectiveFirewallsRequest) input message
@@ -5481,7 +5481,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetGuestAttributes(self, request, global_params=None):
-      r"""Returns the specified guest attributes entry. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified guest attributes entry.
 
       Args:
         request: (ComputeInstancesGetGuestAttributesRequest) input message
@@ -5507,7 +5507,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeInstancesGetIamPolicyRequest) input message
@@ -5533,7 +5533,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetSerialPortOutput(self, request, global_params=None):
-      r"""Returns the last 1 MB of serial port output from the specified instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the last 1 MB of serial port output from the specified instance.
 
       Args:
         request: (ComputeInstancesGetSerialPortOutputRequest) input message
@@ -5559,7 +5559,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetShieldedInstanceIdentity(self, request, global_params=None):
-      r"""Returns the Shielded Instance Identity of an instance (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the Shielded Instance Identity of an instance.
 
       Args:
         request: (ComputeInstancesGetShieldedInstanceIdentityRequest) input message
@@ -5585,7 +5585,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetShieldedVmIdentity(self, request, global_params=None):
-      r"""Returns the Shielded VM Identity of an instance (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the Shielded VM Identity of an instance.
 
       Args:
         request: (ComputeInstancesGetShieldedVmIdentityRequest) input message
@@ -5611,7 +5611,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an instance resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates an instance resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeInstancesInsertRequest) input message
@@ -5637,7 +5637,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of instances contained within the specified zone. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of instances contained within the specified zone.
 
       Args:
         request: (ComputeInstancesListRequest) input message
@@ -5663,7 +5663,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListReferrers(self, request, global_params=None):
-      r"""Retrieves the list of referrers to instances contained within the specified zone. For more information, read Viewing Referrers to VM Instances. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of referrers to instances contained within the specified zone. For more information, read Viewing Referrers to VM Instances.
 
       Args:
         request: (ComputeInstancesListReferrersRequest) input message
@@ -5689,7 +5689,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def RemoveResourcePolicies(self, request, global_params=None):
-      r"""Removes resource policies from an instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Removes resource policies from an instance.
 
       Args:
         request: (ComputeInstancesRemoveResourcePoliciesRequest) input message
@@ -5715,7 +5715,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Reset(self, request, global_params=None):
-      r"""Performs a reset on the instance. This is a hard reset the VM does not do a graceful shutdown. For more information, see Resetting an instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Performs a reset on the instance. This is a hard reset the VM does not do a graceful shutdown. For more information, see Resetting an instance.
 
       Args:
         request: (ComputeInstancesResetRequest) input message
@@ -5741,7 +5741,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Resume(self, request, global_params=None):
-      r"""Resumes an instance that was suspended using the instances().suspend method. (== suppress_warning http-rest-shadowed ==).
+      r"""Resumes an instance that was suspended using the instances().suspend method.
 
       Args:
         request: (ComputeInstancesResumeRequest) input message
@@ -5767,7 +5767,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetDeletionProtection(self, request, global_params=None):
-      r"""Sets deletion protection on the instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets deletion protection on the instance.
 
       Args:
         request: (ComputeInstancesSetDeletionProtectionRequest) input message
@@ -5793,7 +5793,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetDiskAutoDelete(self, request, global_params=None):
-      r"""Sets the auto-delete flag for a disk attached to an instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the auto-delete flag for a disk attached to an instance.
 
       Args:
         request: (ComputeInstancesSetDiskAutoDeleteRequest) input message
@@ -5819,7 +5819,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeInstancesSetIamPolicyRequest) input message
@@ -5845,7 +5845,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets labels on an instance. To learn more about labels, read the Labeling Resources documentation. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets labels on an instance. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeInstancesSetLabelsRequest) input message
@@ -5871,7 +5871,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetMachineResources(self, request, global_params=None):
-      r"""Changes the number and/or type of accelerator for a stopped instance to the values specified in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Changes the number and/or type of accelerator for a stopped instance to the values specified in the request.
 
       Args:
         request: (ComputeInstancesSetMachineResourcesRequest) input message
@@ -5897,7 +5897,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetMachineType(self, request, global_params=None):
-      r"""Changes the machine type for a stopped instance to the machine type specified in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Changes the machine type for a stopped instance to the machine type specified in the request.
 
       Args:
         request: (ComputeInstancesSetMachineTypeRequest) input message
@@ -5923,7 +5923,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetMetadata(self, request, global_params=None):
-      r"""Sets metadata for the specified instance to the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets metadata for the specified instance to the data included in the request.
 
       Args:
         request: (ComputeInstancesSetMetadataRequest) input message
@@ -5949,7 +5949,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetMinCpuPlatform(self, request, global_params=None):
-      r"""Changes the minimum CPU platform that this instance should use. This method can only be called on a stopped instance. For more information, read Specifying a Minimum CPU Platform. (== suppress_warning http-rest-shadowed ==).
+      r"""Changes the minimum CPU platform that this instance should use. This method can only be called on a stopped instance. For more information, read Specifying a Minimum CPU Platform.
 
       Args:
         request: (ComputeInstancesSetMinCpuPlatformRequest) input message
@@ -5975,7 +5975,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetName(self, request, global_params=None):
-      r"""Sets name of an instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets name of an instance.
 
       Args:
         request: (ComputeInstancesSetNameRequest) input message
@@ -6001,7 +6001,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetScheduling(self, request, global_params=None):
-      r"""Sets an instance's scheduling options. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets an instance's scheduling options.
 
       Args:
         request: (ComputeInstancesSetSchedulingRequest) input message
@@ -6027,7 +6027,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetServiceAccount(self, request, global_params=None):
-      r"""Sets the service account on the instance. For more information, read Changing the service account and access scopes for an instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the service account on the instance. For more information, read Changing the service account and access scopes for an instance.
 
       Args:
         request: (ComputeInstancesSetServiceAccountRequest) input message
@@ -6053,7 +6053,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetShieldedInstanceIntegrityPolicy(self, request, global_params=None):
-      r"""Sets the Shielded Instance integrity policy for an instance. You can only use this method on a running instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the Shielded Instance integrity policy for an instance. You can only use this method on a running instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInstancesSetShieldedInstanceIntegrityPolicyRequest) input message
@@ -6079,7 +6079,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetShieldedVmIntegrityPolicy(self, request, global_params=None):
-      r"""Sets the Shielded VM integrity policy for a VM instance. You can only use this method on a running VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the Shielded VM integrity policy for a VM instance. You can only use this method on a running VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInstancesSetShieldedVmIntegrityPolicyRequest) input message
@@ -6105,7 +6105,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetTags(self, request, global_params=None):
-      r"""Sets network tags for the specified instance to the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets network tags for the specified instance to the data included in the request.
 
       Args:
         request: (ComputeInstancesSetTagsRequest) input message
@@ -6131,7 +6131,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SimulateMaintenanceEvent(self, request, global_params=None):
-      r"""Simulates a maintenance event on the instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Simulates a maintenance event on the instance.
 
       Args:
         request: (ComputeInstancesSimulateMaintenanceEventRequest) input message
@@ -6157,7 +6157,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Start(self, request, global_params=None):
-      r"""Starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
 
       Args:
         request: (ComputeInstancesStartRequest) input message
@@ -6183,7 +6183,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def StartWithEncryptionKey(self, request, global_params=None):
-      r"""Starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
 
       Args:
         request: (ComputeInstancesStartWithEncryptionKeyRequest) input message
@@ -6209,7 +6209,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Stop(self, request, global_params=None):
-      r"""Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.
 
       Args:
         request: (ComputeInstancesStopRequest) input message
@@ -6235,7 +6235,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Suspend(self, request, global_params=None):
-      r"""This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. (== suppress_warning http-rest-shadowed ==).
+      r"""This method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances incur reduced per-minute, virtual machine usage charges while they are suspended. Any resources the virtual machine is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.
 
       Args:
         request: (ComputeInstancesSuspendRequest) input message
@@ -6261,7 +6261,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeInstancesTestIamPermissionsRequest) input message
@@ -6287,7 +6287,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def UpdateAccessConfig(self, request, global_params=None):
-      r"""Updates the specified access config from an instance's network interface with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified access config from an instance's network interface with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInstancesUpdateAccessConfigRequest) input message
@@ -6313,7 +6313,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def UpdateDisplayDevice(self, request, global_params=None):
-      r"""Updates the Display config for a VM instance. You can only use this method on a stopped VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the Display config for a VM instance. You can only use this method on a stopped VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInstancesUpdateDisplayDeviceRequest) input message
@@ -6339,7 +6339,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def UpdateNetworkInterface(self, request, global_params=None):
-      r"""Updates an instance's network interface. This method follows PATCH semantics. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates an instance's network interface. This method follows PATCH semantics.
 
       Args:
         request: (ComputeInstancesUpdateNetworkInterfaceRequest) input message
@@ -6365,7 +6365,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def UpdateShieldedInstanceConfig(self, request, global_params=None):
-      r"""Updates the Shielded Instance config for an instance. You can only use this method on a stopped instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the Shielded Instance config for an instance. You can only use this method on a stopped instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInstancesUpdateShieldedInstanceConfigRequest) input message
@@ -6391,7 +6391,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def UpdateShieldedVmConfig(self, request, global_params=None):
-      r"""Updates the Shielded VM config for a VM instance. You can only use this method on a stopped VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the Shielded VM config for a VM instance. You can only use this method on a stopped VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInstancesUpdateShieldedVmConfigRequest) input message
@@ -6427,7 +6427,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of interconnect attachments. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of interconnect attachments.
 
       Args:
         request: (ComputeInterconnectAttachmentsAggregatedListRequest) input message
@@ -6453,7 +6453,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified interconnect attachment. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified interconnect attachment.
 
       Args:
         request: (ComputeInterconnectAttachmentsDeleteRequest) input message
@@ -6479,7 +6479,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified interconnect attachment. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified interconnect attachment.
 
       Args:
         request: (ComputeInterconnectAttachmentsGetRequest) input message
@@ -6505,7 +6505,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeInterconnectAttachmentsGetIamPolicyRequest) input message
@@ -6531,7 +6531,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an InterconnectAttachment in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates an InterconnectAttachment in the specified project using the data included in the request.
 
       Args:
         request: (ComputeInterconnectAttachmentsInsertRequest) input message
@@ -6557,7 +6557,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of interconnect attachments contained within the specified region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of interconnect attachments contained within the specified region.
 
       Args:
         request: (ComputeInterconnectAttachmentsListRequest) input message
@@ -6583,7 +6583,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified interconnect attachment with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified interconnect attachment with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInterconnectAttachmentsPatchRequest) input message
@@ -6609,7 +6609,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeInterconnectAttachmentsSetIamPolicyRequest) input message
@@ -6635,7 +6635,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on an InterconnectAttachment. To learn more about labels, read the Labeling Resources documentation. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the labels on an InterconnectAttachment. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeInterconnectAttachmentsSetLabelsRequest) input message
@@ -6661,7 +6661,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeInterconnectAttachmentsTestIamPermissionsRequest) input message
@@ -6697,7 +6697,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Get(self, request, global_params=None):
-      r"""Returns the details for the specified interconnect location. Gets a list of available interconnect locations by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the details for the specified interconnect location. Gets a list of available interconnect locations by making a list() request.
 
       Args:
         request: (ComputeInterconnectLocationsGetRequest) input message
@@ -6723,7 +6723,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of interconnect locations available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of interconnect locations available to the specified project.
 
       Args:
         request: (ComputeInterconnectLocationsListRequest) input message
@@ -6749,7 +6749,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeInterconnectLocationsTestIamPermissionsRequest) input message
@@ -6785,7 +6785,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified interconnect. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified interconnect.
 
       Args:
         request: (ComputeInterconnectsDeleteRequest) input message
@@ -6811,7 +6811,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified interconnect. Get a list of available interconnects by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified interconnect. Get a list of available interconnects by making a list() request.
 
       Args:
         request: (ComputeInterconnectsGetRequest) input message
@@ -6837,7 +6837,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetDiagnostics(self, request, global_params=None):
-      r"""Returns the interconnectDiagnostics for the specified interconnect. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the interconnectDiagnostics for the specified interconnect.
 
       Args:
         request: (ComputeInterconnectsGetDiagnosticsRequest) input message
@@ -6863,7 +6863,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeInterconnectsGetIamPolicyRequest) input message
@@ -6889,7 +6889,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a Interconnect in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a Interconnect in the specified project using the data included in the request.
 
       Args:
         request: (ComputeInterconnectsInsertRequest) input message
@@ -6915,7 +6915,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of interconnect available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of interconnect available to the specified project.
 
       Args:
         request: (ComputeInterconnectsListRequest) input message
@@ -6941,7 +6941,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInterconnectsPatchRequest) input message
@@ -6967,7 +6967,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeInterconnectsSetIamPolicyRequest) input message
@@ -6993,7 +6993,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on an Interconnect. To learn more about labels, read the Labeling Resources documentation. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the labels on an Interconnect. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeInterconnectsSetLabelsRequest) input message
@@ -7019,7 +7019,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeInterconnectsTestIamPermissionsRequest) input message
@@ -7055,7 +7055,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Get(self, request, global_params=None):
-      r"""Return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code. (== suppress_warning http-rest-shadowed ==).
+      r"""Return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code.
 
       Args:
         request: (ComputeLicenseCodesGetRequest) input message
@@ -7081,7 +7081,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeLicenseCodesGetIamPolicyRequest) input message
@@ -7107,7 +7107,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeLicenseCodesSetIamPolicyRequest) input message
@@ -7133,7 +7133,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeLicenseCodesTestIamPermissionsRequest) input message
@@ -7169,7 +7169,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified license. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified license.
 
       Args:
         request: (ComputeLicensesDeleteRequest) input message
@@ -7195,7 +7195,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified License resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified License resource.
 
       Args:
         request: (ComputeLicensesGetRequest) input message
@@ -7221,7 +7221,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeLicensesGetIamPolicyRequest) input message
@@ -7247,7 +7247,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Create a License resource in the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Create a License resource in the specified project.
 
       Args:
         request: (ComputeLicensesInsertRequest) input message
@@ -7273,7 +7273,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
 
       Args:
         request: (ComputeLicensesListRequest) input message
@@ -7299,7 +7299,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeLicensesSetIamPolicyRequest) input message
@@ -7325,7 +7325,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeLicensesTestIamPermissionsRequest) input message
@@ -7361,7 +7361,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified machine image. Deleting a machine image is permanent and cannot be undone. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified machine image. Deleting a machine image is permanent and cannot be undone.
 
       Args:
         request: (ComputeMachineImagesDeleteRequest) input message
@@ -7387,7 +7387,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified machine image. Gets a list of available machine images by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified machine image. Gets a list of available machine images by making a list() request.
 
       Args:
         request: (ComputeMachineImagesGetRequest) input message
@@ -7413,7 +7413,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeMachineImagesGetIamPolicyRequest) input message
@@ -7439,7 +7439,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a machine image in the specified project using the data that is included in the request. If you are creating a new machine image to update an existing instance, your new machine image should use the same network or, if applicable, the same subnetwork as the original instance. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a machine image in the specified project using the data that is included in the request. If you are creating a new machine image to update an existing instance, your new machine image should use the same network or, if applicable, the same subnetwork as the original instance.
 
       Args:
         request: (ComputeMachineImagesInsertRequest) input message
@@ -7465,7 +7465,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of machine images that are contained within the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of machine images that are contained within the specified project.
 
       Args:
         request: (ComputeMachineImagesListRequest) input message
@@ -7491,7 +7491,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeMachineImagesSetIamPolicyRequest) input message
@@ -7517,7 +7517,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeMachineImagesTestIamPermissionsRequest) input message
@@ -7553,7 +7553,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of machine types. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of machine types.
 
       Args:
         request: (ComputeMachineTypesAggregatedListRequest) input message
@@ -7579,7 +7579,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified machine type. Gets a list of available machine types by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified machine type. Gets a list of available machine types by making a list() request.
 
       Args:
         request: (ComputeMachineTypesGetRequest) input message
@@ -7605,7 +7605,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of machine types available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of machine types available to the specified project.
 
       Args:
         request: (ComputeMachineTypesListRequest) input message
@@ -7641,7 +7641,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of network endpoint groups and sorts them by zone. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of network endpoint groups and sorts them by zone.
 
       Args:
         request: (ComputeNetworkEndpointGroupsAggregatedListRequest) input message
@@ -7667,7 +7667,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def AttachNetworkEndpoints(self, request, global_params=None):
-      r"""Attach a list of network endpoints to the specified network endpoint group. (== suppress_warning http-rest-shadowed ==).
+      r"""Attach a list of network endpoints to the specified network endpoint group.
 
       Args:
         request: (ComputeNetworkEndpointGroupsAttachNetworkEndpointsRequest) input message
@@ -7693,7 +7693,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified network endpoint group. The network endpoints in the NEG and the VM instances they belong to are not terminated when the NEG is deleted. Note that the NEG cannot be deleted if there are backend services referencing it. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified network endpoint group. The network endpoints in the NEG and the VM instances they belong to are not terminated when the NEG is deleted. Note that the NEG cannot be deleted if there are backend services referencing it.
 
       Args:
         request: (ComputeNetworkEndpointGroupsDeleteRequest) input message
@@ -7719,7 +7719,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def DetachNetworkEndpoints(self, request, global_params=None):
-      r"""Detach a list of network endpoints from the specified network endpoint group. (== suppress_warning http-rest-shadowed ==).
+      r"""Detach a list of network endpoints from the specified network endpoint group.
 
       Args:
         request: (ComputeNetworkEndpointGroupsDetachNetworkEndpointsRequest) input message
@@ -7745,7 +7745,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
 
       Args:
         request: (ComputeNetworkEndpointGroupsGetRequest) input message
@@ -7771,7 +7771,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a network endpoint group in the specified project using the parameters that are included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a network endpoint group in the specified project using the parameters that are included in the request.
 
       Args:
         request: (ComputeNetworkEndpointGroupsInsertRequest) input message
@@ -7797,7 +7797,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of network endpoint groups that are located in the specified project and zone. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of network endpoint groups that are located in the specified project and zone.
 
       Args:
         request: (ComputeNetworkEndpointGroupsListRequest) input message
@@ -7823,7 +7823,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListNetworkEndpoints(self, request, global_params=None):
-      r"""Lists the network endpoints in the specified network endpoint group. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists the network endpoints in the specified network endpoint group.
 
       Args:
         request: (ComputeNetworkEndpointGroupsListNetworkEndpointsRequest) input message
@@ -7849,7 +7849,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeNetworkEndpointGroupsTestIamPermissionsRequest) input message
@@ -7885,7 +7885,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AddPeering(self, request, global_params=None):
-      r"""Adds a peering to the specified network. (== suppress_warning http-rest-shadowed ==).
+      r"""Adds a peering to the specified network.
 
       Args:
         request: (ComputeNetworksAddPeeringRequest) input message
@@ -7911,7 +7911,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified network. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified network.
 
       Args:
         request: (ComputeNetworksDeleteRequest) input message
@@ -7937,7 +7937,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified network. Gets a list of available networks by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified network. Gets a list of available networks by making a list() request.
 
       Args:
         request: (ComputeNetworksGetRequest) input message
@@ -7963,7 +7963,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetEffectiveFirewalls(self, request, global_params=None):
-      r"""Returns the effective firewalls on a given network. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the effective firewalls on a given network.
 
       Args:
         request: (ComputeNetworksGetEffectiveFirewallsRequest) input message
@@ -7989,7 +7989,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a network in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a network in the specified project using the data included in the request.
 
       Args:
         request: (ComputeNetworksInsertRequest) input message
@@ -8015,7 +8015,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of networks available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of networks available to the specified project.
 
       Args:
         request: (ComputeNetworksListRequest) input message
@@ -8041,7 +8041,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListIpAddresses(self, request, global_params=None):
-      r"""Lists the internal IP addresses in the specified network. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists the internal IP addresses in the specified network.
 
       Args:
         request: (ComputeNetworksListIpAddressesRequest) input message
@@ -8067,7 +8067,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListIpOwners(self, request, global_params=None):
-      r"""Lists the internal IP owners in the specified network. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists the internal IP owners in the specified network.
 
       Args:
         request: (ComputeNetworksListIpOwnersRequest) input message
@@ -8093,7 +8093,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListPeeringRoutes(self, request, global_params=None):
-      r"""Lists the peering routes exchanged over peering connection. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists the peering routes exchanged over peering connection.
 
       Args:
         request: (ComputeNetworksListPeeringRoutesRequest) input message
@@ -8119,7 +8119,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified network with the data included in the request. Only the following fields can be modified: routingConfig.routingMode. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches the specified network with the data included in the request. Only the following fields can be modified: routingConfig.routingMode.
 
       Args:
         request: (ComputeNetworksPatchRequest) input message
@@ -8145,7 +8145,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def RemovePeering(self, request, global_params=None):
-      r"""Removes a peering from the specified network. (== suppress_warning http-rest-shadowed ==).
+      r"""Removes a peering from the specified network.
 
       Args:
         request: (ComputeNetworksRemovePeeringRequest) input message
@@ -8171,7 +8171,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SwitchToCustomMode(self, request, global_params=None):
-      r"""Switches the network mode from auto subnet mode to custom subnet mode. (== suppress_warning http-rest-shadowed ==).
+      r"""Switches the network mode from auto subnet mode to custom subnet mode.
 
       Args:
         request: (ComputeNetworksSwitchToCustomModeRequest) input message
@@ -8197,7 +8197,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeNetworksTestIamPermissionsRequest) input message
@@ -8223,7 +8223,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def UpdatePeering(self, request, global_params=None):
-      r"""Updates the specified network peering with the data included in the request Only the following fields can be modified: NetworkPeering.export_custom_routes, and NetworkPeering.import_custom_routes (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified network peering with the data included in the request Only the following fields can be modified: NetworkPeering.export_custom_routes, and NetworkPeering.import_custom_routes.
 
       Args:
         request: (ComputeNetworksUpdatePeeringRequest) input message
@@ -8259,7 +8259,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AddNodes(self, request, global_params=None):
-      r"""Adds specified number of nodes to the node group. (== suppress_warning http-rest-shadowed ==).
+      r"""Adds specified number of nodes to the node group.
 
       Args:
         request: (ComputeNodeGroupsAddNodesRequest) input message
@@ -8285,7 +8285,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group.
 
       Args:
         request: (ComputeNodeGroupsAggregatedListRequest) input message
@@ -8311,7 +8311,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified NodeGroup resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified NodeGroup resource.
 
       Args:
         request: (ComputeNodeGroupsDeleteRequest) input message
@@ -8337,7 +8337,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def DeleteNodes(self, request, global_params=None):
-      r"""Deletes specified nodes from the node group. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes specified nodes from the node group.
 
       Args:
         request: (ComputeNodeGroupsDeleteNodesRequest) input message
@@ -8363,7 +8363,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified NodeGroup. Get a list of available NodeGroups by making a list() request. Note: the "nodes" field should not be used. Use nodeGroups.listNodes instead. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified NodeGroup. Get a list of available NodeGroups by making a list() request. Note: the "nodes" field should not be used. Use nodeGroups.listNodes instead.
 
       Args:
         request: (ComputeNodeGroupsGetRequest) input message
@@ -8389,7 +8389,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeNodeGroupsGetIamPolicyRequest) input message
@@ -8415,7 +8415,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a NodeGroup resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a NodeGroup resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeNodeGroupsInsertRequest) input message
@@ -8441,7 +8441,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of node groups available to the specified project. Note: use nodeGroups.listNodes for more details about each group. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of node groups available to the specified project. Note: use nodeGroups.listNodes for more details about each group.
 
       Args:
         request: (ComputeNodeGroupsListRequest) input message
@@ -8467,7 +8467,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListNodes(self, request, global_params=None):
-      r"""Lists nodes in the node group. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists nodes in the node group.
 
       Args:
         request: (ComputeNodeGroupsListNodesRequest) input message
@@ -8493,7 +8493,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patch the node group. (== suppress_warning http-rest-shadowed ==).
+      r"""Patch the node group.
 
       Args:
         request: (ComputeNodeGroupsPatchRequest) input message
@@ -8519,7 +8519,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetAutoscalingPolicy(self, request, global_params=None):
-      r"""Sets the autoscaling policy of the node group. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the autoscaling policy of the node group.
 
       Args:
         request: (ComputeNodeGroupsSetAutoscalingPolicyRequest) input message
@@ -8545,7 +8545,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeNodeGroupsSetIamPolicyRequest) input message
@@ -8571,7 +8571,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetNodeTemplate(self, request, global_params=None):
-      r"""Updates the node template of the node group. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the node template of the node group.
 
       Args:
         request: (ComputeNodeGroupsSetNodeTemplateRequest) input message
@@ -8597,7 +8597,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeNodeGroupsTestIamPermissionsRequest) input message
@@ -8633,7 +8633,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of node templates. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of node templates.
 
       Args:
         request: (ComputeNodeTemplatesAggregatedListRequest) input message
@@ -8659,7 +8659,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified NodeTemplate resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified NodeTemplate resource.
 
       Args:
         request: (ComputeNodeTemplatesDeleteRequest) input message
@@ -8685,7 +8685,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified node template. Gets a list of available node templates by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified node template. Gets a list of available node templates by making a list() request.
 
       Args:
         request: (ComputeNodeTemplatesGetRequest) input message
@@ -8711,7 +8711,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeNodeTemplatesGetIamPolicyRequest) input message
@@ -8737,7 +8737,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a NodeTemplate resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a NodeTemplate resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeNodeTemplatesInsertRequest) input message
@@ -8763,7 +8763,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of node templates available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of node templates available to the specified project.
 
       Args:
         request: (ComputeNodeTemplatesListRequest) input message
@@ -8789,7 +8789,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeNodeTemplatesSetIamPolicyRequest) input message
@@ -8815,7 +8815,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeNodeTemplatesTestIamPermissionsRequest) input message
@@ -8851,7 +8851,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of node types. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of node types.
 
       Args:
         request: (ComputeNodeTypesAggregatedListRequest) input message
@@ -8877,7 +8877,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified node type. Gets a list of available node types by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified node type. Gets a list of available node types by making a list() request.
 
       Args:
         request: (ComputeNodeTypesGetRequest) input message
@@ -8903,7 +8903,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of node types available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of node types available to the specified project.
 
       Args:
         request: (ComputeNodeTypesListRequest) input message
@@ -8939,7 +8939,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AddAssociation(self, request, global_params=None):
-      r"""Inserts an association for the specified security policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Inserts an association for the specified security policy.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesAddAssociationRequest) input message
@@ -8957,7 +8957,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'replaceExistingAssociation', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/addAssociation',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/addAssociation',
         request_field=u'securityPolicyAssociation',
         request_type_name=u'ComputeOrganizationSecurityPoliciesAddAssociationRequest',
         response_type_name=u'Operation',
@@ -8965,7 +8965,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def AddRule(self, request, global_params=None):
-      r"""Inserts a rule into a security policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Inserts a rule into a security policy.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesAddRuleRequest) input message
@@ -8983,7 +8983,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/addRule',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/addRule',
         request_field=u'securityPolicyRule',
         request_type_name=u'ComputeOrganizationSecurityPoliciesAddRuleRequest',
         response_type_name=u'Operation',
@@ -8991,7 +8991,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def CopyRules(self, request, global_params=None):
-      r"""Copies rules to the specified security policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Copies rules to the specified security policy.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesCopyRulesRequest) input message
@@ -9009,7 +9009,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'requestId', u'sourceSecurityPolicy'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/copyRules',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/copyRules',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesCopyRulesRequest',
         response_type_name=u'Operation',
@@ -9017,7 +9017,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified policy.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesDeleteRequest) input message
@@ -9035,7 +9035,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesDeleteRequest',
         response_type_name=u'Operation',
@@ -9043,7 +9043,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""List all of the ordered rules present in a single specified policy. (== suppress_warning http-rest-shadowed ==).
+      r"""List all of the ordered rules present in a single specified policy.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetRequest) input message
@@ -9061,7 +9061,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesGetRequest',
         response_type_name=u'SecurityPolicy',
@@ -9069,7 +9069,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetAssociation(self, request, global_params=None):
-      r"""Gets an association with the specified name. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets an association with the specified name.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetAssociationRequest) input message
@@ -9087,7 +9087,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'name'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/getAssociation',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/getAssociation',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesGetAssociationRequest',
         response_type_name=u'SecurityPolicyAssociation',
@@ -9095,7 +9095,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetRule(self, request, global_params=None):
-      r"""Gets a rule at the specified priority. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets a rule at the specified priority.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesGetRuleRequest) input message
@@ -9113,7 +9113,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'priority'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/getRule',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/getRule',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesGetRuleRequest',
         response_type_name=u'SecurityPolicyRule',
@@ -9121,7 +9121,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new policy in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a new policy in the specified project using the data included in the request.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesInsertRequest) input message
@@ -9139,7 +9139,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[],
         path_params=[],
         query_params=[u'parentId', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies',
+        relative_path=u'locations/global/securityPolicies',
         request_field=u'securityPolicy',
         request_type_name=u'ComputeOrganizationSecurityPoliciesInsertRequest',
         response_type_name=u'Operation',
@@ -9147,7 +9147,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""List all the policies that have been configured for the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""List all the policies that have been configured for the specified project.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesListRequest) input message
@@ -9165,7 +9165,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[],
         path_params=[],
         query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'parentId'],
-        relative_path=u'projects/locations/global/securityPolicies',
+        relative_path=u'locations/global/securityPolicies',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesListRequest',
         response_type_name=u'SecurityPolicyList',
@@ -9173,7 +9173,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListAssociations(self, request, global_params=None):
-      r"""Lists associations of a specified target, i.e., organization or folder. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists associations of a specified target, i.e., organization or folder.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesListAssociationsRequest) input message
@@ -9191,7 +9191,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[],
         path_params=[],
         query_params=[u'targetResource'],
-        relative_path=u'projects/locations/global/securityPolicies/listAssociations',
+        relative_path=u'locations/global/securityPolicies/listAssociations',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesListAssociationsRequest',
         response_type_name=u'OrganizationSecurityPoliciesListAssociationsResponse',
@@ -9199,7 +9199,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Move(self, request, global_params=None):
-      r"""Moves the specified security policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Moves the specified security policy.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesMoveRequest) input message
@@ -9217,7 +9217,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'parentId', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/move',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/move',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesMoveRequest',
         response_type_name=u'Operation',
@@ -9225,7 +9225,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified policy with the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches the specified policy with the data included in the request.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesPatchRequest) input message
@@ -9243,7 +9243,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}',
         request_field=u'securityPolicyResource',
         request_type_name=u'ComputeOrganizationSecurityPoliciesPatchRequest',
         response_type_name=u'Operation',
@@ -9251,7 +9251,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def PatchRule(self, request, global_params=None):
-      r"""Patches a rule at the specified priority. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches a rule at the specified priority.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesPatchRuleRequest) input message
@@ -9269,7 +9269,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'priority', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/patchRule',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/patchRule',
         request_field=u'securityPolicyRule',
         request_type_name=u'ComputeOrganizationSecurityPoliciesPatchRuleRequest',
         response_type_name=u'Operation',
@@ -9277,7 +9277,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def RemoveAssociation(self, request, global_params=None):
-      r"""Removes an association for the specified security policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Removes an association for the specified security policy.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesRemoveAssociationRequest) input message
@@ -9295,7 +9295,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'name', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/removeAssociation',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/removeAssociation',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesRemoveAssociationRequest',
         response_type_name=u'Operation',
@@ -9303,7 +9303,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def RemoveRule(self, request, global_params=None):
-      r"""Deletes a rule at the specified priority. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes a rule at the specified priority.
 
       Args:
         request: (ComputeOrganizationSecurityPoliciesRemoveRuleRequest) input message
@@ -9321,7 +9321,7 @@ If the group is part of a backend service that has enabled connection draining, 
         ordered_params=[u'securityPolicy'],
         path_params=[u'securityPolicy'],
         query_params=[u'priority', u'requestId'],
-        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/removeRule',
+        relative_path=u'locations/global/securityPolicies/{securityPolicy}/removeRule',
         request_field='',
         request_type_name=u'ComputeOrganizationSecurityPoliciesRemoveRuleRequest',
         response_type_name=u'Operation',
@@ -9339,7 +9339,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of packetMirrorings. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of packetMirrorings.
 
       Args:
         request: (ComputePacketMirroringsAggregatedListRequest) input message
@@ -9365,7 +9365,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified PacketMirroring resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified PacketMirroring resource.
 
       Args:
         request: (ComputePacketMirroringsDeleteRequest) input message
@@ -9391,7 +9391,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified PacketMirroring resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified PacketMirroring resource.
 
       Args:
         request: (ComputePacketMirroringsGetRequest) input message
@@ -9417,7 +9417,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a PacketMirroring resource in the specified project and region using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a PacketMirroring resource in the specified project and region using the data included in the request.
 
       Args:
         request: (ComputePacketMirroringsInsertRequest) input message
@@ -9443,7 +9443,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of PacketMirroring resources available to the specified project and region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of PacketMirroring resources available to the specified project and region.
 
       Args:
         request: (ComputePacketMirroringsListRequest) input message
@@ -9469,7 +9469,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified PacketMirroring resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches the specified PacketMirroring resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 
       Args:
         request: (ComputePacketMirroringsPatchRequest) input message
@@ -9495,7 +9495,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputePacketMirroringsTestIamPermissionsRequest) input message
@@ -9531,7 +9531,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def DisableXpnHost(self, request, global_params=None):
-      r"""Disable this project as a shared VPC host project. (== suppress_warning http-rest-shadowed ==).
+      r"""Disable this project as a shared VPC host project.
 
       Args:
         request: (ComputeProjectsDisableXpnHostRequest) input message
@@ -9557,7 +9557,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def DisableXpnResource(self, request, global_params=None):
-      r"""Disable a service resource (also known as service project) associated with this host project. (== suppress_warning http-rest-shadowed ==).
+      r"""Disable a service resource (also known as service project) associated with this host project.
 
       Args:
         request: (ComputeProjectsDisableXpnResourceRequest) input message
@@ -9583,7 +9583,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def EnableXpnHost(self, request, global_params=None):
-      r"""Enable this project as a shared VPC host project. (== suppress_warning http-rest-shadowed ==).
+      r"""Enable this project as a shared VPC host project.
 
       Args:
         request: (ComputeProjectsEnableXpnHostRequest) input message
@@ -9609,7 +9609,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def EnableXpnResource(self, request, global_params=None):
-      r"""Enable service resource (a.k.a service project) for a host project, so that subnets in the host project can be used by instances in the service project. (== suppress_warning http-rest-shadowed ==).
+      r"""Enable service resource (a.k.a service project) for a host project, so that subnets in the host project can be used by instances in the service project.
 
       Args:
         request: (ComputeProjectsEnableXpnResourceRequest) input message
@@ -9635,7 +9635,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Project resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified Project resource.
 
       Args:
         request: (ComputeProjectsGetRequest) input message
@@ -9661,7 +9661,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetXpnHost(self, request, global_params=None):
-      r"""Gets the shared VPC host project that this project links to. May be empty if no link exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the shared VPC host project that this project links to. May be empty if no link exists.
 
       Args:
         request: (ComputeProjectsGetXpnHostRequest) input message
@@ -9687,7 +9687,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetXpnResources(self, request, global_params=None):
-      r"""Gets service resources (a.k.a service project) associated with this host project. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets service resources (a.k.a service project) associated with this host project.
 
       Args:
         request: (ComputeProjectsGetXpnResourcesRequest) input message
@@ -9713,7 +9713,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListXpnHosts(self, request, global_params=None):
-      r"""Lists all shared VPC host projects visible to the user in an organization. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists all shared VPC host projects visible to the user in an organization.
 
       Args:
         request: (ComputeProjectsListXpnHostsRequest) input message
@@ -9739,7 +9739,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def MoveDisk(self, request, global_params=None):
-      r"""Moves a persistent disk from one zone to another. (== suppress_warning http-rest-shadowed ==).
+      r"""Moves a persistent disk from one zone to another.
 
       Args:
         request: (ComputeProjectsMoveDiskRequest) input message
@@ -9765,7 +9765,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def MoveInstance(self, request, global_params=None):
-      r"""Moves an instance and its attached persistent disks from one zone to another. (== suppress_warning http-rest-shadowed ==).
+      r"""Moves an instance and its attached persistent disks from one zone to another.
 
       Args:
         request: (ComputeProjectsMoveInstanceRequest) input message
@@ -9791,7 +9791,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetCommonInstanceMetadata(self, request, global_params=None):
-      r"""Sets metadata common to all instances within the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets metadata common to all instances within the specified project using the data included in the request.
 
       Args:
         request: (ComputeProjectsSetCommonInstanceMetadataRequest) input message
@@ -9817,7 +9817,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetDefaultNetworkTier(self, request, global_params=None):
-      r"""Sets the default network tier of the project. The default network tier is used when an address/forwardingRule/instance is created without specifying the network tier field. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the default network tier of the project. The default network tier is used when an address/forwardingRule/instance is created without specifying the network tier field.
 
       Args:
         request: (ComputeProjectsSetDefaultNetworkTierRequest) input message
@@ -9843,7 +9843,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetDefaultServiceAccount(self, request, global_params=None):
-      r"""Sets the default service account of the project. The default service account is used when a VM instance is created with the service account email address set to "default". (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the default service account of the project. The default service account is used when a VM instance is created with the service account email address set to "default".
 
       Args:
         request: (ComputeProjectsSetDefaultServiceAccountRequest) input message
@@ -9869,7 +9869,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetUsageExportBucket(self, request, global_params=None):
-      r"""Enables the usage export feature and sets the usage export bucket where reports are stored. If you provide an empty request body using this method, the usage export feature will be disabled. (== suppress_warning http-rest-shadowed ==).
+      r"""Enables the usage export feature and sets the usage export bucket where reports are stored. If you provide an empty request body using this method, the usage export feature will be disabled.
 
       Args:
         request: (ComputeProjectsSetUsageExportBucketRequest) input message
@@ -9905,7 +9905,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified PublicAdvertisedPrefix (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified PublicAdvertisedPrefix.
 
       Args:
         request: (ComputePublicAdvertisedPrefixesDeleteRequest) input message
@@ -9931,7 +9931,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified PublicAdvertisedPrefix resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified PublicAdvertisedPrefix resource.
 
       Args:
         request: (ComputePublicAdvertisedPrefixesGetRequest) input message
@@ -9957,7 +9957,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a PublicAdvertisedPrefix in the specified project using the parameters that are included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a PublicAdvertisedPrefix in the specified project using the parameters that are included in the request.
 
       Args:
         request: (ComputePublicAdvertisedPrefixesInsertRequest) input message
@@ -9983,7 +9983,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the PublicAdvertisedPrefixes for a project. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists the PublicAdvertisedPrefixes for a project.
 
       Args:
         request: (ComputePublicAdvertisedPrefixesListRequest) input message
@@ -10009,7 +10009,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 
       Args:
         request: (ComputePublicAdvertisedPrefixesPatchRequest) input message
@@ -10045,7 +10045,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Lists all PublicDelegatedPrefix resources owned by the specific project across all scopes. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists all PublicDelegatedPrefix resources owned by the specific project across all scopes.
 
       Args:
         request: (ComputePublicDelegatedPrefixesAggregatedListRequest) input message
@@ -10071,7 +10071,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified PublicDelegatedPrefix in the given region. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified PublicDelegatedPrefix in the given region.
 
       Args:
         request: (ComputePublicDelegatedPrefixesDeleteRequest) input message
@@ -10097,7 +10097,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified PublicDelegatedPrefix resource in the given region. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified PublicDelegatedPrefix resource in the given region.
 
       Args:
         request: (ComputePublicDelegatedPrefixesGetRequest) input message
@@ -10123,7 +10123,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a PublicDelegatedPrefix in the specified project in the given region using the parameters that are included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a PublicDelegatedPrefix in the specified project in the given region using the parameters that are included in the request.
 
       Args:
         request: (ComputePublicDelegatedPrefixesInsertRequest) input message
@@ -10149,7 +10149,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the PublicDelegatedPrefixes for a project in the given region. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists the PublicDelegatedPrefixes for a project in the given region.
 
       Args:
         request: (ComputePublicDelegatedPrefixesListRequest) input message
@@ -10175,7 +10175,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches the specified PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 
       Args:
         request: (ComputePublicDelegatedPrefixesPatchRequest) input message
@@ -10211,7 +10211,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified autoscaler. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified autoscaler.
 
       Args:
         request: (ComputeRegionAutoscalersDeleteRequest) input message
@@ -10237,7 +10237,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified autoscaler. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified autoscaler.
 
       Args:
         request: (ComputeRegionAutoscalersGetRequest) input message
@@ -10263,7 +10263,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an autoscaler in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates an autoscaler in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRegionAutoscalersInsertRequest) input message
@@ -10289,7 +10289,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of autoscalers contained within the specified region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of autoscalers contained within the specified region.
 
       Args:
         request: (ComputeRegionAutoscalersListRequest) input message
@@ -10315,7 +10315,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRegionAutoscalersPatchRequest) input message
@@ -10341,7 +10341,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeRegionAutoscalersTestIamPermissionsRequest) input message
@@ -10367,7 +10367,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an autoscaler in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates an autoscaler in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRegionAutoscalersUpdateRequest) input message
@@ -10403,7 +10403,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified regional BackendService resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified regional BackendService resource.
 
       Args:
         request: (ComputeRegionBackendServicesDeleteRequest) input message
@@ -10429,7 +10429,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified regional BackendService resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified regional BackendService resource.
 
       Args:
         request: (ComputeRegionBackendServicesGetRequest) input message
@@ -10455,7 +10455,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetHealth(self, request, global_params=None):
-      r"""Gets the most recent health check results for this regional BackendService. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the most recent health check results for this regional BackendService.
 
       Args:
         request: (ComputeRegionBackendServicesGetHealthRequest) input message
@@ -10481,7 +10481,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a regional BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a regional backend service. Read  Restrictions and Guidelines for more information. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a regional BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a regional backend service. Read  Restrictions and Guidelines for more information.
 
       Args:
         request: (ComputeRegionBackendServicesInsertRequest) input message
@@ -10507,7 +10507,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of regional BackendService resources available to the specified project in the given region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of regional BackendService resources available to the specified project in the given region.
 
       Args:
         request: (ComputeRegionBackendServicesListRequest) input message
@@ -10533,7 +10533,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRegionBackendServicesPatchRequest) input message
@@ -10559,7 +10559,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeRegionBackendServicesTestIamPermissionsRequest) input message
@@ -10585,7 +10585,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.
 
       Args:
         request: (ComputeRegionBackendServicesUpdateRequest) input message
@@ -10621,7 +10621,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of commitments. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of commitments.
 
       Args:
         request: (ComputeRegionCommitmentsAggregatedListRequest) input message
@@ -10647,7 +10647,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified commitment resource. Gets a list of available commitments by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified commitment resource. Gets a list of available commitments by making a list() request.
 
       Args:
         request: (ComputeRegionCommitmentsGetRequest) input message
@@ -10673,7 +10673,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a commitment in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a commitment in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRegionCommitmentsInsertRequest) input message
@@ -10699,7 +10699,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of commitments contained within the specified region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of commitments contained within the specified region.
 
       Args:
         request: (ComputeRegionCommitmentsListRequest) input message
@@ -10725,7 +10725,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeRegionCommitmentsTestIamPermissionsRequest) input message
@@ -10751,7 +10751,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def UpdateReservations(self, request, global_params=None):
-      r"""Update the shape of reservations for GPUS/Local SSDs of reservations within the commitments. (== suppress_warning http-rest-shadowed ==).
+      r"""Update the shape of reservations for GPUS/Local SSDs of reservations within the commitments.
 
       Args:
         request: (ComputeRegionCommitmentsUpdateReservationsRequest) input message
@@ -10787,7 +10787,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified regional disk type. Gets a list of available disk types by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified regional disk type. Gets a list of available disk types by making a list() request.
 
       Args:
         request: (ComputeRegionDiskTypesGetRequest) input message
@@ -10813,7 +10813,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of regional disk types available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of regional disk types available to the specified project.
 
       Args:
         request: (ComputeRegionDiskTypesListRequest) input message
@@ -10849,7 +10849,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AddResourcePolicies(self, request, global_params=None):
-      r"""Adds existing resource policies to a regional disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation. (== suppress_warning http-rest-shadowed ==).
+      r"""Adds existing resource policies to a regional disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation.
 
       Args:
         request: (ComputeRegionDisksAddResourcePoliciesRequest) input message
@@ -10875,7 +10875,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def CreateSnapshot(self, request, global_params=None):
-      r"""Creates a snapshot of this regional disk. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a snapshot of this regional disk.
 
       Args:
         request: (ComputeRegionDisksCreateSnapshotRequest) input message
@@ -10901,7 +10901,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified regional persistent disk. Deleting a regional disk removes all the replicas of its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified regional persistent disk. Deleting a regional disk removes all the replicas of its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
 
       Args:
         request: (ComputeRegionDisksDeleteRequest) input message
@@ -10927,7 +10927,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns a specified regional persistent disk. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns a specified regional persistent disk.
 
       Args:
         request: (ComputeRegionDisksGetRequest) input message
@@ -10953,7 +10953,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeRegionDisksGetIamPolicyRequest) input message
@@ -10979,7 +10979,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a persistent regional disk in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a persistent regional disk in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRegionDisksInsertRequest) input message
@@ -11005,7 +11005,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of persistent disks contained within the specified region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of persistent disks contained within the specified region.
 
       Args:
         request: (ComputeRegionDisksListRequest) input message
@@ -11031,7 +11031,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def RemoveResourcePolicies(self, request, global_params=None):
-      r"""Removes resource policies from a regional disk. (== suppress_warning http-rest-shadowed ==).
+      r"""Removes resource policies from a regional disk.
 
       Args:
         request: (ComputeRegionDisksRemoveResourcePoliciesRequest) input message
@@ -11057,7 +11057,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Resize(self, request, global_params=None):
-      r"""Resizes the specified regional persistent disk. (== suppress_warning http-rest-shadowed ==).
+      r"""Resizes the specified regional persistent disk.
 
       Args:
         request: (ComputeRegionDisksResizeRequest) input message
@@ -11083,7 +11083,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeRegionDisksSetIamPolicyRequest) input message
@@ -11109,7 +11109,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on the target regional disk. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the labels on the target regional disk.
 
       Args:
         request: (ComputeRegionDisksSetLabelsRequest) input message
@@ -11135,7 +11135,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeRegionDisksTestIamPermissionsRequest) input message
@@ -11171,7 +11171,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified regional HealthCheckService. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified regional HealthCheckService.
 
       Args:
         request: (ComputeRegionHealthCheckServicesDeleteRequest) input message
@@ -11197,7 +11197,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified regional HealthCheckService resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified regional HealthCheckService resource.
 
       Args:
         request: (ComputeRegionHealthCheckServicesGetRequest) input message
@@ -11223,7 +11223,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a regional HealthCheckService resource in the specified project and region using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a regional HealthCheckService resource in the specified project and region using the data included in the request.
 
       Args:
         request: (ComputeRegionHealthCheckServicesInsertRequest) input message
@@ -11249,7 +11249,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the HealthCheckService resources that have been configured for the specified project in the given region. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists all the HealthCheckService resources that have been configured for the specified project in the given region.
 
       Args:
         request: (ComputeRegionHealthCheckServicesListRequest) input message
@@ -11275,7 +11275,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeRegionHealthCheckServicesTestIamPermissionsRequest) input message
@@ -11311,7 +11311,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified HealthCheck resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified HealthCheck resource.
 
       Args:
         request: (ComputeRegionHealthChecksDeleteRequest) input message
@@ -11337,7 +11337,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request.
 
       Args:
         request: (ComputeRegionHealthChecksGetRequest) input message
@@ -11363,7 +11363,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a HealthCheck resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a HealthCheck resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRegionHealthChecksInsertRequest) input message
@@ -11389,7 +11389,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of HealthCheck resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of HealthCheck resources available to the specified project.
 
       Args:
         request: (ComputeRegionHealthChecksListRequest) input message
@@ -11415,7 +11415,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a HealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates a HealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRegionHealthChecksPatchRequest) input message
@@ -11441,7 +11441,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeRegionHealthChecksTestIamPermissionsRequest) input message
@@ -11467,7 +11467,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a HealthCheck resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates a HealthCheck resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRegionHealthChecksUpdateRequest) input message
@@ -11507,7 +11507,7 @@ If the group is part of a backend service that has enabled connection draining, 
 
 If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
-You can specify a maximum of 1000 instances with this method per request. (== suppress_warning http-rest-shadowed ==)
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersAbandonInstancesRequest) input message
@@ -11533,7 +11533,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
     )
 
     def ApplyUpdatesToInstances(self, request, global_params=None):
-      r"""Apply updates to selected instances the managed instance group. (== suppress_warning http-rest-shadowed ==).
+      r"""Apply updates to selected instances the managed instance group.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest) input message
@@ -11559,7 +11559,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
     )
 
     def CreateInstances(self, request, global_params=None):
-      r"""Creates instances with per-instance configs in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates instances with per-instance configs in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersCreateInstancesRequest) input message
@@ -11585,7 +11585,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified managed instance group and all of the instances in that group. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified managed instance group and all of the instances in that group.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersDeleteRequest) input message
@@ -11615,7 +11615,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
 
 If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
-You can specify a maximum of 1000 instances with this method per request. (== suppress_warning http-rest-shadowed ==)
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersDeleteInstancesRequest) input message
@@ -11641,7 +11641,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
     )
 
     def DeletePerInstanceConfigs(self, request, global_params=None):
-      r"""Deletes selected per-instance configs for the managed instance group. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes selected per-instance configs for the managed instance group.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersDeletePerInstanceConfigsRequest) input message
@@ -11667,7 +11667,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns all of the details about the specified managed instance group. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns all of the details about the specified managed instance group.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersGetRequest) input message
@@ -11695,7 +11695,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
     def Insert(self, request, global_params=None):
       r"""Creates a managed instance group using the information that you specify in the request. After the group is created, instances in the group are created using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.
 
-A regional managed instance group can contain up to 2000 instances. (== suppress_warning http-rest-shadowed ==)
+A regional managed instance group can contain up to 2000 instances.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersInsertRequest) input message
@@ -11721,7 +11721,7 @@ A regional managed instance group can contain up to 2000 instances. (== suppress
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of managed instance groups that are contained within the specified region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of managed instance groups that are contained within the specified region.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersListRequest) input message
@@ -11747,7 +11747,7 @@ A regional managed instance group can contain up to 2000 instances. (== suppress
     )
 
     def ListErrors(self, request, global_params=None):
-      r"""Lists all errors thrown by actions on instances for a given regional managed instance group. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists all errors thrown by actions on instances for a given regional managed instance group.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersListErrorsRequest) input message
@@ -11773,7 +11773,7 @@ A regional managed instance group can contain up to 2000 instances. (== suppress
     )
 
     def ListManagedInstances(self, request, global_params=None):
-      r"""Lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersListManagedInstancesRequest) input message
@@ -11799,7 +11799,7 @@ A regional managed instance group can contain up to 2000 instances. (== suppress
     )
 
     def ListPerInstanceConfigs(self, request, global_params=None):
-      r"""Lists all of the per-instance configs defined for the managed instance group. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists all of the per-instance configs defined for the managed instance group.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest) input message
@@ -11825,7 +11825,7 @@ A regional managed instance group can contain up to 2000 instances. (== suppress
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersPatchRequest) input message
@@ -11851,7 +11851,7 @@ A regional managed instance group can contain up to 2000 instances. (== suppress
     )
 
     def PatchPerInstanceConfigs(self, request, global_params=None):
-      r"""Insert or patch (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch. (== suppress_warning http-rest-shadowed ==).
+      r"""Insert or patch (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersPatchPerInstanceConfigsRequest) input message
@@ -11881,7 +11881,7 @@ A regional managed instance group can contain up to 2000 instances. (== suppress
 
 If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
-You can specify a maximum of 1000 instances with this method per request. (== suppress_warning http-rest-shadowed ==)
+You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersRecreateInstancesRequest) input message
@@ -11911,7 +11911,7 @@ You can specify a maximum of 1000 instances with this method per request. (== su
 
 The resize operation is marked DONE if the resize request is successful. The underlying actions take additional time. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method.
 
-If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. (== suppress_warning http-rest-shadowed ==)
+If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersResizeRequest) input message
@@ -11937,7 +11937,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetAutoHealingPolicies(self, request, global_params=None):
-      r"""Modifies the autohealing policy for the instances in this managed instance group. [Deprecated] This method is deprecated. Please use Patch instead. (== suppress_warning http-rest-shadowed ==).
+      r"""Modifies the autohealing policy for the instances in this managed instance group. [Deprecated] This method is deprecated. Please use Patch instead.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest) input message
@@ -11963,7 +11963,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetInstanceTemplate(self, request, global_params=None):
-      r"""Sets the instance template to use when creating new instances or recreating instances in this group. Existing instances are not affected. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the instance template to use when creating new instances or recreating instances in this group. Existing instances are not affected.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersSetInstanceTemplateRequest) input message
@@ -11989,7 +11989,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetTargetPools(self, request, global_params=None):
-      r"""Modifies the target pools to which all new instances in this group are assigned. Existing instances in the group are not affected. (== suppress_warning http-rest-shadowed ==).
+      r"""Modifies the target pools to which all new instances in this group are assigned. Existing instances in the group are not affected.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersSetTargetPoolsRequest) input message
@@ -12015,7 +12015,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersTestIamPermissionsRequest) input message
@@ -12041,7 +12041,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersUpdateRequest) input message
@@ -12067,7 +12067,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def UpdatePerInstanceConfigs(self, request, global_params=None):
-      r"""Insert or update (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch. (== suppress_warning http-rest-shadowed ==).
+      r"""Insert or update (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersUpdatePerInstanceConfigsRequest) input message
@@ -12103,7 +12103,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified instance group resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified instance group resource.
 
       Args:
         request: (ComputeRegionInstanceGroupsGetRequest) input message
@@ -12129,7 +12129,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of instance group resources contained within the specified region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of instance group resources contained within the specified region.
 
       Args:
         request: (ComputeRegionInstanceGroupsListRequest) input message
@@ -12155,7 +12155,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListInstances(self, request, global_params=None):
-      r"""Lists the instances in the specified instance group and displays information about the named ports. Depending on the specified options, this method can list all instances or only the instances that are running. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists the instances in the specified instance group and displays information about the named ports. Depending on the specified options, this method can list all instances or only the instances that are running.
 
       Args:
         request: (ComputeRegionInstanceGroupsListInstancesRequest) input message
@@ -12181,7 +12181,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetNamedPorts(self, request, global_params=None):
-      r"""Sets the named ports for the specified regional instance group. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the named ports for the specified regional instance group.
 
       Args:
         request: (ComputeRegionInstanceGroupsSetNamedPortsRequest) input message
@@ -12207,7 +12207,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeRegionInstanceGroupsTestIamPermissionsRequest) input message
@@ -12243,7 +12243,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified NotificationEndpoint in the given region (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified NotificationEndpoint in the given region.
 
       Args:
         request: (ComputeRegionNotificationEndpointsDeleteRequest) input message
@@ -12269,7 +12269,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified NotificationEndpoint resource in the given region. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified NotificationEndpoint resource in the given region.
 
       Args:
         request: (ComputeRegionNotificationEndpointsGetRequest) input message
@@ -12295,7 +12295,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Create a NotificationEndpoint in the specified project in the given region using the parameters that are included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Create a NotificationEndpoint in the specified project in the given region using the parameters that are included in the request.
 
       Args:
         request: (ComputeRegionNotificationEndpointsInsertRequest) input message
@@ -12321,7 +12321,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the NotificationEndpoints for a project in the given region. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists the NotificationEndpoints for a project in the given region.
 
       Args:
         request: (ComputeRegionNotificationEndpointsListRequest) input message
@@ -12347,7 +12347,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeRegionNotificationEndpointsTestIamPermissionsRequest) input message
@@ -12383,7 +12383,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified region-specific Operations resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified region-specific Operations resource.
 
       Args:
         request: (ComputeRegionOperationsDeleteRequest) input message
@@ -12409,7 +12409,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves the specified region-specific Operations resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the specified region-specific Operations resource.
 
       Args:
         request: (ComputeRegionOperationsGetRequest) input message
@@ -12435,7 +12435,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of Operation resources contained within the specified region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of Operation resources contained within the specified region.
 
       Args:
         request: (ComputeRegionOperationsListRequest) input message
@@ -12461,7 +12461,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Wait(self, request, global_params=None):
-      r"""Waits for the specified region-specific Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE. (== suppress_warning http-rest-shadowed ==).
+      r"""Waits for the specified region-specific Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE.
 
       Args:
         request: (ComputeRegionOperationsWaitRequest) input message
@@ -12497,7 +12497,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified SslCertificate resource in the region. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified SslCertificate resource in the region.
 
       Args:
         request: (ComputeRegionSslCertificatesDeleteRequest) input message
@@ -12523,7 +12523,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified SslCertificate resource in the specified region. Get a list of available SSL certificates by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified SslCertificate resource in the specified region. Get a list of available SSL certificates by making a list() request.
 
       Args:
         request: (ComputeRegionSslCertificatesGetRequest) input message
@@ -12549,7 +12549,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a SslCertificate resource in the specified project and region using the data included in the request (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a SslCertificate resource in the specified project and region using the data included in the request.
 
       Args:
         request: (ComputeRegionSslCertificatesInsertRequest) input message
@@ -12575,7 +12575,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of SslCertificate resources available to the specified project in the specified region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of SslCertificate resources available to the specified project in the specified region.
 
       Args:
         request: (ComputeRegionSslCertificatesListRequest) input message
@@ -12601,7 +12601,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource and region. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource and region.
 
       Args:
         request: (ComputeRegionSslCertificatesTestIamPermissionsRequest) input message
@@ -12637,7 +12637,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified TargetHttpProxy resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified TargetHttpProxy resource.
 
       Args:
         request: (ComputeRegionTargetHttpProxiesDeleteRequest) input message
@@ -12663,7 +12663,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified TargetHttpProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified TargetHttpProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request.
 
       Args:
         request: (ComputeRegionTargetHttpProxiesGetRequest) input message
@@ -12689,7 +12689,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetHttpProxy resource in the specified project and region using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a TargetHttpProxy resource in the specified project and region using the data included in the request.
 
       Args:
         request: (ComputeRegionTargetHttpProxiesInsertRequest) input message
@@ -12715,7 +12715,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of TargetHttpProxy resources available to the specified project in the specified region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of TargetHttpProxy resources available to the specified project in the specified region.
 
       Args:
         request: (ComputeRegionTargetHttpProxiesListRequest) input message
@@ -12741,7 +12741,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetUrlMap(self, request, global_params=None):
-      r"""Changes the URL map for TargetHttpProxy. (== suppress_warning http-rest-shadowed ==).
+      r"""Changes the URL map for TargetHttpProxy.
 
       Args:
         request: (ComputeRegionTargetHttpProxiesSetUrlMapRequest) input message
@@ -12767,7 +12767,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeRegionTargetHttpProxiesTestIamPermissionsRequest) input message
@@ -12803,7 +12803,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified TargetHttpsProxy resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified TargetHttpsProxy resource.
 
       Args:
         request: (ComputeRegionTargetHttpsProxiesDeleteRequest) input message
@@ -12829,7 +12829,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified TargetHttpsProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified TargetHttpsProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request.
 
       Args:
         request: (ComputeRegionTargetHttpsProxiesGetRequest) input message
@@ -12855,7 +12855,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetHttpsProxy resource in the specified project and region using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a TargetHttpsProxy resource in the specified project and region using the data included in the request.
 
       Args:
         request: (ComputeRegionTargetHttpsProxiesInsertRequest) input message
@@ -12881,7 +12881,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of TargetHttpsProxy resources available to the specified project in the specified region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of TargetHttpsProxy resources available to the specified project in the specified region.
 
       Args:
         request: (ComputeRegionTargetHttpsProxiesListRequest) input message
@@ -12907,7 +12907,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetSslCertificates(self, request, global_params=None):
-      r"""Replaces SslCertificates for TargetHttpsProxy. (== suppress_warning http-rest-shadowed ==).
+      r"""Replaces SslCertificates for TargetHttpsProxy.
 
       Args:
         request: (ComputeRegionTargetHttpsProxiesSetSslCertificatesRequest) input message
@@ -12933,7 +12933,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetUrlMap(self, request, global_params=None):
-      r"""Changes the URL map for TargetHttpsProxy. (== suppress_warning http-rest-shadowed ==).
+      r"""Changes the URL map for TargetHttpsProxy.
 
       Args:
         request: (ComputeRegionTargetHttpsProxiesSetUrlMapRequest) input message
@@ -12959,7 +12959,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeRegionTargetHttpsProxiesTestIamPermissionsRequest) input message
@@ -12995,7 +12995,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified UrlMap resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified UrlMap resource.
 
       Args:
         request: (ComputeRegionUrlMapsDeleteRequest) input message
@@ -13021,7 +13021,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request.
 
       Args:
         request: (ComputeRegionUrlMapsGetRequest) input message
@@ -13047,7 +13047,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a UrlMap resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a UrlMap resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRegionUrlMapsInsertRequest) input message
@@ -13073,7 +13073,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def InvalidateCache(self, request, global_params=None):
-      r"""Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap. (== suppress_warning http-rest-shadowed ==).
+      r"""Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.
 
       Args:
         request: (ComputeRegionUrlMapsInvalidateCacheRequest) input message
@@ -13099,7 +13099,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of UrlMap resources available to the specified project in the specified region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of UrlMap resources available to the specified project in the specified region.
 
       Args:
         request: (ComputeRegionUrlMapsListRequest) input message
@@ -13125,7 +13125,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRegionUrlMapsPatchRequest) input message
@@ -13151,7 +13151,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeRegionUrlMapsTestIamPermissionsRequest) input message
@@ -13177,7 +13177,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified UrlMap resource with the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified UrlMap resource with the data included in the request.
 
       Args:
         request: (ComputeRegionUrlMapsUpdateRequest) input message
@@ -13203,7 +13203,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Validate(self, request, global_params=None):
-      r"""Runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap. (== suppress_warning http-rest-shadowed ==).
+      r"""Runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
 
       Args:
         request: (ComputeRegionUrlMapsValidateRequest) input message
@@ -13239,7 +13239,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Region resource. Gets a list of available regions by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified Region resource. Gets a list of available regions by making a list() request.
 
       Args:
         request: (ComputeRegionsGetRequest) input message
@@ -13265,7 +13265,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of region resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of region resources available to the specified project.
 
       Args:
         request: (ComputeRegionsListRequest) input message
@@ -13301,7 +13301,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of reservations. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of reservations.
 
       Args:
         request: (ComputeReservationsAggregatedListRequest) input message
@@ -13327,7 +13327,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified reservation. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified reservation.
 
       Args:
         request: (ComputeReservationsDeleteRequest) input message
@@ -13353,7 +13353,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves information about the specified reservation. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves information about the specified reservation.
 
       Args:
         request: (ComputeReservationsGetRequest) input message
@@ -13379,7 +13379,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeReservationsGetIamPolicyRequest) input message
@@ -13405,7 +13405,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new reservation. For more information, read Reserving zonal resources. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a new reservation. For more information, read Reserving zonal resources.
 
       Args:
         request: (ComputeReservationsInsertRequest) input message
@@ -13431,7 +13431,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""A list of all the reservations that have been configured for the specified project in specified zone. (== suppress_warning http-rest-shadowed ==).
+      r"""A list of all the reservations that have been configured for the specified project in specified zone.
 
       Args:
         request: (ComputeReservationsListRequest) input message
@@ -13457,7 +13457,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Resize(self, request, global_params=None):
-      r"""Resizes the reservation (applicable to standalone reservations only). For more information, read Modifying reservations. (== suppress_warning http-rest-shadowed ==).
+      r"""Resizes the reservation (applicable to standalone reservations only). For more information, read Modifying reservations.
 
       Args:
         request: (ComputeReservationsResizeRequest) input message
@@ -13483,7 +13483,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeReservationsSetIamPolicyRequest) input message
@@ -13509,7 +13509,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeReservationsTestIamPermissionsRequest) input message
@@ -13545,7 +13545,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of resource policies. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of resource policies.
 
       Args:
         request: (ComputeResourcePoliciesAggregatedListRequest) input message
@@ -13571,7 +13571,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified resource policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified resource policy.
 
       Args:
         request: (ComputeResourcePoliciesDeleteRequest) input message
@@ -13597,7 +13597,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves all information of the specified resource policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves all information of the specified resource policy.
 
       Args:
         request: (ComputeResourcePoliciesGetRequest) input message
@@ -13623,7 +13623,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeResourcePoliciesGetIamPolicyRequest) input message
@@ -13649,7 +13649,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new resource policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a new resource policy.
 
       Args:
         request: (ComputeResourcePoliciesInsertRequest) input message
@@ -13675,7 +13675,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""A list all the resource policies that have been configured for the specified project in specified region. (== suppress_warning http-rest-shadowed ==).
+      r"""A list all the resource policies that have been configured for the specified project in specified region.
 
       Args:
         request: (ComputeResourcePoliciesListRequest) input message
@@ -13701,7 +13701,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeResourcePoliciesSetIamPolicyRequest) input message
@@ -13727,7 +13727,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeResourcePoliciesTestIamPermissionsRequest) input message
@@ -13763,7 +13763,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of routers. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of routers.
 
       Args:
         request: (ComputeRoutersAggregatedListRequest) input message
@@ -13789,7 +13789,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Router resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified Router resource.
 
       Args:
         request: (ComputeRoutersDeleteRequest) input message
@@ -13815,7 +13815,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Router resource. Gets a list of available routers by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified Router resource. Gets a list of available routers by making a list() request.
 
       Args:
         request: (ComputeRoutersGetRequest) input message
@@ -13841,7 +13841,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetNatMappingInfo(self, request, global_params=None):
-      r"""Retrieves runtime Nat mapping information of VM endpoints. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves runtime Nat mapping information of VM endpoints.
 
       Args:
         request: (ComputeRoutersGetNatMappingInfoRequest) input message
@@ -13867,7 +13867,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetRouterStatus(self, request, global_params=None):
-      r"""Retrieves runtime information of the specified router. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves runtime information of the specified router.
 
       Args:
         request: (ComputeRoutersGetRouterStatusRequest) input message
@@ -13893,7 +13893,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a Router resource in the specified project and region using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a Router resource in the specified project and region using the data included in the request.
 
       Args:
         request: (ComputeRoutersInsertRequest) input message
@@ -13919,7 +13919,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of Router resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of Router resources available to the specified project.
 
       Args:
         request: (ComputeRoutersListRequest) input message
@@ -13945,7 +13945,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRoutersPatchRequest) input message
@@ -13971,7 +13971,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Preview(self, request, global_params=None):
-      r"""Preview fields auto-generated during router create and update operations. Calling this method does NOT create or update the router. (== suppress_warning http-rest-shadowed ==).
+      r"""Preview fields auto-generated during router create and update operations. Calling this method does NOT create or update the router.
 
       Args:
         request: (ComputeRoutersPreviewRequest) input message
@@ -13997,7 +13997,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeRoutersTestIamPermissionsRequest) input message
@@ -14023,7 +14023,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified Router resource with the data included in the request. This method conforms to PUT semantics, which requests that the state of the target resource be created or replaced with the state defined by the representation enclosed in the request message payload. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified Router resource with the data included in the request. This method conforms to PUT semantics, which requests that the state of the target resource be created or replaced with the state defined by the representation enclosed in the request message payload.
 
       Args:
         request: (ComputeRoutersUpdateRequest) input message
@@ -14059,7 +14059,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Route resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified Route resource.
 
       Args:
         request: (ComputeRoutesDeleteRequest) input message
@@ -14085,7 +14085,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Route resource. Gets a list of available routes by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified Route resource. Gets a list of available routes by making a list() request.
 
       Args:
         request: (ComputeRoutesGetRequest) input message
@@ -14111,7 +14111,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a Route resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a Route resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeRoutesInsertRequest) input message
@@ -14137,7 +14137,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of Route resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of Route resources available to the specified project.
 
       Args:
         request: (ComputeRoutesListRequest) input message
@@ -14163,7 +14163,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeRoutesTestIamPermissionsRequest) input message
@@ -14199,7 +14199,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AddRule(self, request, global_params=None):
-      r"""Inserts a rule into a security policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Inserts a rule into a security policy.
 
       Args:
         request: (ComputeSecurityPoliciesAddRuleRequest) input message
@@ -14225,7 +14225,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified policy.
 
       Args:
         request: (ComputeSecurityPoliciesDeleteRequest) input message
@@ -14251,7 +14251,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""List all of the ordered rules present in a single specified policy. (== suppress_warning http-rest-shadowed ==).
+      r"""List all of the ordered rules present in a single specified policy.
 
       Args:
         request: (ComputeSecurityPoliciesGetRequest) input message
@@ -14277,7 +14277,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetRule(self, request, global_params=None):
-      r"""Gets a rule at the specified priority. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets a rule at the specified priority.
 
       Args:
         request: (ComputeSecurityPoliciesGetRuleRequest) input message
@@ -14303,7 +14303,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new policy in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a new policy in the specified project using the data included in the request.
 
       Args:
         request: (ComputeSecurityPoliciesInsertRequest) input message
@@ -14329,7 +14329,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""List all the policies that have been configured for the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""List all the policies that have been configured for the specified project.
 
       Args:
         request: (ComputeSecurityPoliciesListRequest) input message
@@ -14355,7 +14355,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListPreconfiguredExpressionSets(self, request, global_params=None):
-      r"""Gets the current list of preconfigured Web Application Firewall (WAF) expressions. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the current list of preconfigured Web Application Firewall (WAF) expressions.
 
       Args:
         request: (ComputeSecurityPoliciesListPreconfiguredExpressionSetsRequest) input message
@@ -14381,7 +14381,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified policy with the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches the specified policy with the data included in the request.
 
       Args:
         request: (ComputeSecurityPoliciesPatchRequest) input message
@@ -14407,7 +14407,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def PatchRule(self, request, global_params=None):
-      r"""Patches a rule at the specified priority. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches a rule at the specified priority.
 
       Args:
         request: (ComputeSecurityPoliciesPatchRuleRequest) input message
@@ -14433,7 +14433,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def RemoveRule(self, request, global_params=None):
-      r"""Deletes a rule at the specified priority. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes a rule at the specified priority.
 
       Args:
         request: (ComputeSecurityPoliciesRemoveRuleRequest) input message
@@ -14459,7 +14459,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeSecurityPoliciesSetLabelsRequest) input message
@@ -14485,7 +14485,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeSecurityPoliciesTestIamPermissionsRequest) input message
@@ -14523,7 +14523,7 @@ If the group is part of a backend service that has enabled connection draining, 
     def Delete(self, request, global_params=None):
       r"""Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.
 
-For more information, see Deleting snapshots. (== suppress_warning http-rest-shadowed ==)
+For more information, see Deleting snapshots.
 
       Args:
         request: (ComputeSnapshotsDeleteRequest) input message
@@ -14549,7 +14549,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Snapshot resource. Gets a list of available snapshots by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified Snapshot resource. Gets a list of available snapshots by making a list() request.
 
       Args:
         request: (ComputeSnapshotsGetRequest) input message
@@ -14575,7 +14575,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeSnapshotsGetIamPolicyRequest) input message
@@ -14601,7 +14601,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of Snapshot resources contained within the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of Snapshot resources contained within the specified project.
 
       Args:
         request: (ComputeSnapshotsListRequest) input message
@@ -14627,7 +14627,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeSnapshotsSetIamPolicyRequest) input message
@@ -14653,7 +14653,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a snapshot. To learn more about labels, read the Labeling Resources documentation. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the labels on a snapshot. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeSnapshotsSetLabelsRequest) input message
@@ -14679,7 +14679,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeSnapshotsTestIamPermissionsRequest) input message
@@ -14715,7 +14715,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all SslCertificate resources, regional and global, available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of all SslCertificate resources, regional and global, available to the specified project.
 
       Args:
         request: (ComputeSslCertificatesAggregatedListRequest) input message
@@ -14741,7 +14741,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified SslCertificate resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified SslCertificate resource.
 
       Args:
         request: (ComputeSslCertificatesDeleteRequest) input message
@@ -14767,7 +14767,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified SslCertificate resource. Gets a list of available SSL certificates by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified SslCertificate resource. Gets a list of available SSL certificates by making a list() request.
 
       Args:
         request: (ComputeSslCertificatesGetRequest) input message
@@ -14793,7 +14793,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a SslCertificate resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a SslCertificate resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeSslCertificatesInsertRequest) input message
@@ -14819,7 +14819,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of SslCertificate resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of SslCertificate resources available to the specified project.
 
       Args:
         request: (ComputeSslCertificatesListRequest) input message
@@ -14845,7 +14845,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeSslCertificatesTestIamPermissionsRequest) input message
@@ -14881,7 +14881,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
 
       Args:
         request: (ComputeSslPoliciesDeleteRequest) input message
@@ -14907,7 +14907,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Get(self, request, global_params=None):
-      r"""Lists all of the ordered rules present in a single specified policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists all of the ordered rules present in a single specified policy.
 
       Args:
         request: (ComputeSslPoliciesGetRequest) input message
@@ -14933,7 +14933,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Insert(self, request, global_params=None):
-      r"""Returns the specified SSL policy resource. Gets a list of available SSL policies by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified SSL policy resource. Gets a list of available SSL policies by making a list() request.
 
       Args:
         request: (ComputeSslPoliciesInsertRequest) input message
@@ -14959,7 +14959,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the SSL policies that have been configured for the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists all the SSL policies that have been configured for the specified project.
 
       Args:
         request: (ComputeSslPoliciesListRequest) input message
@@ -14985,7 +14985,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def ListAvailableFeatures(self, request, global_params=None):
-      r"""Lists all features that can be specified in the SSL policy when using custom profile. (== suppress_warning http-rest-shadowed ==).
+      r"""Lists all features that can be specified in the SSL policy when using custom profile.
 
       Args:
         request: (ComputeSslPoliciesListAvailableFeaturesRequest) input message
@@ -15011,7 +15011,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified SSL policy with the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches the specified SSL policy with the data included in the request.
 
       Args:
         request: (ComputeSslPoliciesPatchRequest) input message
@@ -15037,7 +15037,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeSslPoliciesTestIamPermissionsRequest) input message
@@ -15073,7 +15073,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of subnetworks. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of subnetworks.
 
       Args:
         request: (ComputeSubnetworksAggregatedListRequest) input message
@@ -15099,7 +15099,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified subnetwork. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified subnetwork.
 
       Args:
         request: (ComputeSubnetworksDeleteRequest) input message
@@ -15125,7 +15125,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def ExpandIpCidrRange(self, request, global_params=None):
-      r"""Expands the IP CIDR range of the subnetwork to a specified value. (== suppress_warning http-rest-shadowed ==).
+      r"""Expands the IP CIDR range of the subnetwork to a specified value.
 
       Args:
         request: (ComputeSubnetworksExpandIpCidrRangeRequest) input message
@@ -15151,7 +15151,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified subnetwork. Gets a list of available subnetworks list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified subnetwork. Gets a list of available subnetworks list() request.
 
       Args:
         request: (ComputeSubnetworksGetRequest) input message
@@ -15177,7 +15177,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (ComputeSubnetworksGetIamPolicyRequest) input message
@@ -15203,7 +15203,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a subnetwork in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a subnetwork in the specified project using the data included in the request.
 
       Args:
         request: (ComputeSubnetworksInsertRequest) input message
@@ -15229,7 +15229,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of subnetworks available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of subnetworks available to the specified project.
 
       Args:
         request: (ComputeSubnetworksListRequest) input message
@@ -15255,7 +15255,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def ListUsable(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all usable subnetworks in the project. The list contains all of the subnetworks in the project and the subnetworks that were shared by a Shared VPC host project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of all usable subnetworks in the project. The list contains all of the subnetworks in the project and the subnetworks that were shared by a Shared VPC host project.
 
       Args:
         request: (ComputeSubnetworksListUsableRequest) input message
@@ -15281,7 +15281,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified subnetwork with the data included in the request. Only certain fields can up updated with a patch request as indicated in the field descriptions. You must specify the current fingeprint of the subnetwork resource being patched. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches the specified subnetwork with the data included in the request. Only certain fields can up updated with a patch request as indicated in the field descriptions. You must specify the current fingeprint of the subnetwork resource being patched.
 
       Args:
         request: (ComputeSubnetworksPatchRequest) input message
@@ -15307,7 +15307,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (ComputeSubnetworksSetIamPolicyRequest) input message
@@ -15333,7 +15333,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetPrivateIpGoogleAccess(self, request, global_params=None):
-      r"""Set whether VMs in this subnet can access Google services without assigning external IP addresses through Private Google Access. (== suppress_warning http-rest-shadowed ==).
+      r"""Set whether VMs in this subnet can access Google services without assigning external IP addresses through Private Google Access.
 
       Args:
         request: (ComputeSubnetworksSetPrivateIpGoogleAccessRequest) input message
@@ -15359,7 +15359,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeSubnetworksTestIamPermissionsRequest) input message
@@ -15395,7 +15395,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all TargetHttpProxy resources, regional and global, available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of all TargetHttpProxy resources, regional and global, available to the specified project.
 
       Args:
         request: (ComputeTargetHttpProxiesAggregatedListRequest) input message
@@ -15421,7 +15421,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified TargetHttpProxy resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified TargetHttpProxy resource.
 
       Args:
         request: (ComputeTargetHttpProxiesDeleteRequest) input message
@@ -15447,7 +15447,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified TargetHttpProxy resource. Gets a list of available target HTTP proxies by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified TargetHttpProxy resource. Gets a list of available target HTTP proxies by making a list() request.
 
       Args:
         request: (ComputeTargetHttpProxiesGetRequest) input message
@@ -15473,7 +15473,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetHttpProxy resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a TargetHttpProxy resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeTargetHttpProxiesInsertRequest) input message
@@ -15499,7 +15499,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of TargetHttpProxy resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of TargetHttpProxy resources available to the specified project.
 
       Args:
         request: (ComputeTargetHttpProxiesListRequest) input message
@@ -15525,7 +15525,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetUrlMap(self, request, global_params=None):
-      r"""Changes the URL map for TargetHttpProxy. (== suppress_warning http-rest-shadowed ==).
+      r"""Changes the URL map for TargetHttpProxy.
 
       Args:
         request: (ComputeTargetHttpProxiesSetUrlMapRequest) input message
@@ -15551,7 +15551,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeTargetHttpProxiesTestIamPermissionsRequest) input message
@@ -15587,7 +15587,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project.
 
       Args:
         request: (ComputeTargetHttpsProxiesAggregatedListRequest) input message
@@ -15613,7 +15613,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified TargetHttpsProxy resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified TargetHttpsProxy resource.
 
       Args:
         request: (ComputeTargetHttpsProxiesDeleteRequest) input message
@@ -15639,7 +15639,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified TargetHttpsProxy resource. Gets a list of available target HTTPS proxies by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified TargetHttpsProxy resource. Gets a list of available target HTTPS proxies by making a list() request.
 
       Args:
         request: (ComputeTargetHttpsProxiesGetRequest) input message
@@ -15665,7 +15665,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetHttpsProxy resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a TargetHttpsProxy resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeTargetHttpsProxiesInsertRequest) input message
@@ -15691,7 +15691,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of TargetHttpsProxy resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of TargetHttpsProxy resources available to the specified project.
 
       Args:
         request: (ComputeTargetHttpsProxiesListRequest) input message
@@ -15717,7 +15717,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetQuicOverride(self, request, global_params=None):
-      r"""Sets the QUIC override policy for TargetHttpsProxy. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the QUIC override policy for TargetHttpsProxy.
 
       Args:
         request: (ComputeTargetHttpsProxiesSetQuicOverrideRequest) input message
@@ -15743,7 +15743,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetSslCertificates(self, request, global_params=None):
-      r"""Replaces SslCertificates for TargetHttpsProxy. (== suppress_warning http-rest-shadowed ==).
+      r"""Replaces SslCertificates for TargetHttpsProxy.
 
       Args:
         request: (ComputeTargetHttpsProxiesSetSslCertificatesRequest) input message
@@ -15769,7 +15769,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetSslPolicy(self, request, global_params=None):
-      r"""Sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the HTTPS proxy load balancer. They do not affect the connection between the load balancer and the backends. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the HTTPS proxy load balancer. They do not affect the connection between the load balancer and the backends.
 
       Args:
         request: (ComputeTargetHttpsProxiesSetSslPolicyRequest) input message
@@ -15795,7 +15795,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetUrlMap(self, request, global_params=None):
-      r"""Changes the URL map for TargetHttpsProxy. (== suppress_warning http-rest-shadowed ==).
+      r"""Changes the URL map for TargetHttpsProxy.
 
       Args:
         request: (ComputeTargetHttpsProxiesSetUrlMapRequest) input message
@@ -15821,7 +15821,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeTargetHttpsProxiesTestIamPermissionsRequest) input message
@@ -15857,7 +15857,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of target instances. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of target instances.
 
       Args:
         request: (ComputeTargetInstancesAggregatedListRequest) input message
@@ -15883,7 +15883,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified TargetInstance resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified TargetInstance resource.
 
       Args:
         request: (ComputeTargetInstancesDeleteRequest) input message
@@ -15909,7 +15909,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified TargetInstance resource. Gets a list of available target instances by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified TargetInstance resource. Gets a list of available target instances by making a list() request.
 
       Args:
         request: (ComputeTargetInstancesGetRequest) input message
@@ -15935,7 +15935,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetInstance resource in the specified project and zone using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a TargetInstance resource in the specified project and zone using the data included in the request.
 
       Args:
         request: (ComputeTargetInstancesInsertRequest) input message
@@ -15961,7 +15961,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of TargetInstance resources available to the specified project and zone. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of TargetInstance resources available to the specified project and zone.
 
       Args:
         request: (ComputeTargetInstancesListRequest) input message
@@ -15987,7 +15987,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeTargetInstancesTestIamPermissionsRequest) input message
@@ -16023,7 +16023,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
           }
 
     def AddHealthCheck(self, request, global_params=None):
-      r"""Adds health check URLs to a target pool. (== suppress_warning http-rest-shadowed ==).
+      r"""Adds health check URLs to a target pool.
 
       Args:
         request: (ComputeTargetPoolsAddHealthCheckRequest) input message
@@ -16049,7 +16049,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def AddInstance(self, request, global_params=None):
-      r"""Adds an instance to a target pool. (== suppress_warning http-rest-shadowed ==).
+      r"""Adds an instance to a target pool.
 
       Args:
         request: (ComputeTargetPoolsAddInstanceRequest) input message
@@ -16075,7 +16075,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of target pools. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of target pools.
 
       Args:
         request: (ComputeTargetPoolsAggregatedListRequest) input message
@@ -16101,7 +16101,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified target pool. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified target pool.
 
       Args:
         request: (ComputeTargetPoolsDeleteRequest) input message
@@ -16127,7 +16127,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified target pool. Gets a list of available target pools by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified target pool. Gets a list of available target pools by making a list() request.
 
       Args:
         request: (ComputeTargetPoolsGetRequest) input message
@@ -16153,7 +16153,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def GetHealth(self, request, global_params=None):
-      r"""Gets the most recent health check results for each IP for the instance that is referenced by the given target pool. (== suppress_warning http-rest-shadowed ==).
+      r"""Gets the most recent health check results for each IP for the instance that is referenced by the given target pool.
 
       Args:
         request: (ComputeTargetPoolsGetHealthRequest) input message
@@ -16179,7 +16179,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a target pool in the specified project and region using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a target pool in the specified project and region using the data included in the request.
 
       Args:
         request: (ComputeTargetPoolsInsertRequest) input message
@@ -16205,7 +16205,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of target pools available to the specified project and region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of target pools available to the specified project and region.
 
       Args:
         request: (ComputeTargetPoolsListRequest) input message
@@ -16231,7 +16231,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def RemoveHealthCheck(self, request, global_params=None):
-      r"""Removes health check URL from a target pool. (== suppress_warning http-rest-shadowed ==).
+      r"""Removes health check URL from a target pool.
 
       Args:
         request: (ComputeTargetPoolsRemoveHealthCheckRequest) input message
@@ -16257,7 +16257,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def RemoveInstance(self, request, global_params=None):
-      r"""Removes instance URL from a target pool. (== suppress_warning http-rest-shadowed ==).
+      r"""Removes instance URL from a target pool.
 
       Args:
         request: (ComputeTargetPoolsRemoveInstanceRequest) input message
@@ -16283,7 +16283,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetBackup(self, request, global_params=None):
-      r"""Changes a backup target pool's configurations. (== suppress_warning http-rest-shadowed ==).
+      r"""Changes a backup target pool's configurations.
 
       Args:
         request: (ComputeTargetPoolsSetBackupRequest) input message
@@ -16309,7 +16309,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeTargetPoolsTestIamPermissionsRequest) input message
@@ -16345,7 +16345,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified TargetSslProxy resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified TargetSslProxy resource.
 
       Args:
         request: (ComputeTargetSslProxiesDeleteRequest) input message
@@ -16371,7 +16371,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified TargetSslProxy resource. Gets a list of available target SSL proxies by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified TargetSslProxy resource. Gets a list of available target SSL proxies by making a list() request.
 
       Args:
         request: (ComputeTargetSslProxiesGetRequest) input message
@@ -16397,7 +16397,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetSslProxy resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a TargetSslProxy resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeTargetSslProxiesInsertRequest) input message
@@ -16423,7 +16423,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of TargetSslProxy resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of TargetSslProxy resources available to the specified project.
 
       Args:
         request: (ComputeTargetSslProxiesListRequest) input message
@@ -16449,7 +16449,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetBackendService(self, request, global_params=None):
-      r"""Changes the BackendService for TargetSslProxy. (== suppress_warning http-rest-shadowed ==).
+      r"""Changes the BackendService for TargetSslProxy.
 
       Args:
         request: (ComputeTargetSslProxiesSetBackendServiceRequest) input message
@@ -16475,7 +16475,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetProxyHeader(self, request, global_params=None):
-      r"""Changes the ProxyHeaderType for TargetSslProxy. (== suppress_warning http-rest-shadowed ==).
+      r"""Changes the ProxyHeaderType for TargetSslProxy.
 
       Args:
         request: (ComputeTargetSslProxiesSetProxyHeaderRequest) input message
@@ -16501,7 +16501,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetSslCertificates(self, request, global_params=None):
-      r"""Changes SslCertificates for TargetSslProxy. (== suppress_warning http-rest-shadowed ==).
+      r"""Changes SslCertificates for TargetSslProxy.
 
       Args:
         request: (ComputeTargetSslProxiesSetSslCertificatesRequest) input message
@@ -16527,7 +16527,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetSslPolicy(self, request, global_params=None):
-      r"""Sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the SSL proxy load balancer. They do not affect the connection between the load balancer and the backends. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the SSL proxy load balancer. They do not affect the connection between the load balancer and the backends.
 
       Args:
         request: (ComputeTargetSslProxiesSetSslPolicyRequest) input message
@@ -16553,7 +16553,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeTargetSslProxiesTestIamPermissionsRequest) input message
@@ -16589,7 +16589,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified TargetTcpProxy resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified TargetTcpProxy resource.
 
       Args:
         request: (ComputeTargetTcpProxiesDeleteRequest) input message
@@ -16615,7 +16615,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified TargetTcpProxy resource. Gets a list of available target TCP proxies by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified TargetTcpProxy resource. Gets a list of available target TCP proxies by making a list() request.
 
       Args:
         request: (ComputeTargetTcpProxiesGetRequest) input message
@@ -16641,7 +16641,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a TargetTcpProxy resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a TargetTcpProxy resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeTargetTcpProxiesInsertRequest) input message
@@ -16667,7 +16667,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of TargetTcpProxy resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of TargetTcpProxy resources available to the specified project.
 
       Args:
         request: (ComputeTargetTcpProxiesListRequest) input message
@@ -16693,7 +16693,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetBackendService(self, request, global_params=None):
-      r"""Changes the BackendService for TargetTcpProxy. (== suppress_warning http-rest-shadowed ==).
+      r"""Changes the BackendService for TargetTcpProxy.
 
       Args:
         request: (ComputeTargetTcpProxiesSetBackendServiceRequest) input message
@@ -16719,7 +16719,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetProxyHeader(self, request, global_params=None):
-      r"""Changes the ProxyHeaderType for TargetTcpProxy. (== suppress_warning http-rest-shadowed ==).
+      r"""Changes the ProxyHeaderType for TargetTcpProxy.
 
       Args:
         request: (ComputeTargetTcpProxiesSetProxyHeaderRequest) input message
@@ -16745,7 +16745,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeTargetTcpProxiesTestIamPermissionsRequest) input message
@@ -16781,7 +16781,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of target VPN gateways. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of target VPN gateways.
 
       Args:
         request: (ComputeTargetVpnGatewaysAggregatedListRequest) input message
@@ -16807,7 +16807,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified target VPN gateway. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified target VPN gateway.
 
       Args:
         request: (ComputeTargetVpnGatewaysDeleteRequest) input message
@@ -16833,7 +16833,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified target VPN gateway. Gets a list of available target VPN gateways by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified target VPN gateway. Gets a list of available target VPN gateways by making a list() request.
 
       Args:
         request: (ComputeTargetVpnGatewaysGetRequest) input message
@@ -16859,7 +16859,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a target VPN gateway in the specified project and region using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a target VPN gateway in the specified project and region using the data included in the request.
 
       Args:
         request: (ComputeTargetVpnGatewaysInsertRequest) input message
@@ -16885,7 +16885,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of target VPN gateways available to the specified project and region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of target VPN gateways available to the specified project and region.
 
       Args:
         request: (ComputeTargetVpnGatewaysListRequest) input message
@@ -16911,7 +16911,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a TargetVpnGateway. To learn more about labels, read the Labeling Resources documentation. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the labels on a TargetVpnGateway. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeTargetVpnGatewaysSetLabelsRequest) input message
@@ -16937,7 +16937,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeTargetVpnGatewaysTestIamPermissionsRequest) input message
@@ -16973,7 +16973,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all UrlMap resources, regional and global, available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of all UrlMap resources, regional and global, available to the specified project.
 
       Args:
         request: (ComputeUrlMapsAggregatedListRequest) input message
@@ -16999,7 +16999,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified UrlMap resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified UrlMap resource.
 
       Args:
         request: (ComputeUrlMapsDeleteRequest) input message
@@ -17025,7 +17025,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request.
 
       Args:
         request: (ComputeUrlMapsGetRequest) input message
@@ -17051,7 +17051,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a UrlMap resource in the specified project using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a UrlMap resource in the specified project using the data included in the request.
 
       Args:
         request: (ComputeUrlMapsInsertRequest) input message
@@ -17077,7 +17077,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def InvalidateCache(self, request, global_params=None):
-      r"""Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap. (== suppress_warning http-rest-shadowed ==).
+      r"""Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.
 
       Args:
         request: (ComputeUrlMapsInvalidateCacheRequest) input message
@@ -17103,7 +17103,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of UrlMap resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of UrlMap resources available to the specified project.
 
       Args:
         request: (ComputeUrlMapsListRequest) input message
@@ -17129,7 +17129,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeUrlMapsPatchRequest) input message
@@ -17155,7 +17155,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeUrlMapsTestIamPermissionsRequest) input message
@@ -17181,7 +17181,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified UrlMap resource with the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Updates the specified UrlMap resource with the data included in the request.
 
       Args:
         request: (ComputeUrlMapsUpdateRequest) input message
@@ -17207,7 +17207,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Validate(self, request, global_params=None):
-      r"""Runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap. (== suppress_warning http-rest-shadowed ==).
+      r"""Runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
 
       Args:
         request: (ComputeUrlMapsValidateRequest) input message
@@ -17243,7 +17243,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of VPN gateways. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of VPN gateways.
 
       Args:
         request: (ComputeVpnGatewaysAggregatedListRequest) input message
@@ -17269,7 +17269,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified VPN gateway. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified VPN gateway.
 
       Args:
         request: (ComputeVpnGatewaysDeleteRequest) input message
@@ -17295,7 +17295,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified VPN gateway. Gets a list of available VPN gateways by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified VPN gateway. Gets a list of available VPN gateways by making a list() request.
 
       Args:
         request: (ComputeVpnGatewaysGetRequest) input message
@@ -17321,7 +17321,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def GetStatus(self, request, global_params=None):
-      r"""Returns the status for the specified VPN gateway. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the status for the specified VPN gateway.
 
       Args:
         request: (ComputeVpnGatewaysGetStatusRequest) input message
@@ -17347,7 +17347,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a VPN gateway in the specified project and region using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a VPN gateway in the specified project and region using the data included in the request.
 
       Args:
         request: (ComputeVpnGatewaysInsertRequest) input message
@@ -17373,7 +17373,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of VPN gateways available to the specified project and region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of VPN gateways available to the specified project and region.
 
       Args:
         request: (ComputeVpnGatewaysListRequest) input message
@@ -17399,7 +17399,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a VpnGateway. To learn more about labels, read the Labeling Resources documentation. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the labels on a VpnGateway. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeVpnGatewaysSetLabelsRequest) input message
@@ -17425,7 +17425,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeVpnGatewaysTestIamPermissionsRequest) input message
@@ -17461,7 +17461,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of VPN tunnels. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves an aggregated list of VPN tunnels.
 
       Args:
         request: (ComputeVpnTunnelsAggregatedListRequest) input message
@@ -17487,7 +17487,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified VpnTunnel resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified VpnTunnel resource.
 
       Args:
         request: (ComputeVpnTunnelsDeleteRequest) input message
@@ -17513,7 +17513,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified VpnTunnel resource. Gets a list of available VPN tunnels by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified VpnTunnel resource. Gets a list of available VPN tunnels by making a list() request.
 
       Args:
         request: (ComputeVpnTunnelsGetRequest) input message
@@ -17539,7 +17539,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a VpnTunnel resource in the specified project and region using the data included in the request. (== suppress_warning http-rest-shadowed ==).
+      r"""Creates a VpnTunnel resource in the specified project and region using the data included in the request.
 
       Args:
         request: (ComputeVpnTunnelsInsertRequest) input message
@@ -17565,7 +17565,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of VpnTunnel resources contained in the specified project and region. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of VpnTunnel resources contained in the specified project and region.
 
       Args:
         request: (ComputeVpnTunnelsListRequest) input message
@@ -17591,7 +17591,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a VpnTunnel. To learn more about labels, read the Labeling Resources documentation. (== suppress_warning http-rest-shadowed ==).
+      r"""Sets the labels on a VpnTunnel. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeVpnTunnelsSetLabelsRequest) input message
@@ -17617,7 +17617,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (ComputeVpnTunnelsTestIamPermissionsRequest) input message
@@ -17653,7 +17653,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified zone-specific Operations resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Deletes the specified zone-specific Operations resource.
 
       Args:
         request: (ComputeZoneOperationsDeleteRequest) input message
@@ -17679,7 +17679,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves the specified zone-specific Operations resource. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the specified zone-specific Operations resource.
 
       Args:
         request: (ComputeZoneOperationsGetRequest) input message
@@ -17705,7 +17705,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves a list of Operation resources contained within the specified zone. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves a list of Operation resources contained within the specified zone.
 
       Args:
         request: (ComputeZoneOperationsListRequest) input message
@@ -17731,7 +17731,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def Wait(self, request, global_params=None):
-      r"""Waits for the specified zone-specific Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE. (== suppress_warning http-rest-shadowed ==).
+      r"""Waits for the specified zone-specific Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE.
 
       Args:
         request: (ComputeZoneOperationsWaitRequest) input message
@@ -17767,7 +17767,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
           }
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Zone resource. Gets a list of available zones by making a list() request. (== suppress_warning http-rest-shadowed ==).
+      r"""Returns the specified Zone resource. Gets a list of available zones by making a list() request.
 
       Args:
         request: (ComputeZonesGetRequest) input message
@@ -17793,7 +17793,7 @@ For more information, see Deleting snapshots. (== suppress_warning http-rest-sha
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of Zone resources available to the specified project. (== suppress_warning http-rest-shadowed ==).
+      r"""Retrieves the list of Zone resources available to the specified project.
 
       Args:
         request: (ComputeZonesListRequest) input message

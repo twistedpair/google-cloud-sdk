@@ -23,21 +23,23 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import resources
 
 
-def WaitForOperation(operation, message):
+def WaitForOperation(operation, message, service):
   """Waits for the given google.longrunning.Operation to complete.
 
   Args:
     operation: The operation to poll.
     message: String to display for default progress_tracker.
+    service: The service to get the resource after the long running operation
+             completes.
 
   Raises:
     apitools.base.py.HttpError: if the request returns an HTTP error
 
   Returns:
-    The created Label Key resource.
+    The created LabelKey or LabelValue resource.
   """
   operation_ref = resources.REGISTRY.Parse(
       operation.name, collection='labelmanager.operations')
-  poller = waiter.CloudOperationPoller(labelmanager.LabelKeysService(),
+  poller = waiter.CloudOperationPoller(service,
                                        labelmanager.OperationsService())
   return waiter.WaitFor(poller, operation_ref, message)

@@ -204,10 +204,10 @@ SERVICE_ACCOUNT = 'serviceAccount'
 SCOPES = 'scopes'
 AUTOPROVISIONING_LOCATIONS = 'autoprovisioningLocations'
 DEFAULT_ADDONS = [INGRESS, HPA]
-ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, NETWORK_POLICY]
-BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [ISTIO, CLOUDRUN]
+ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, NETWORK_POLICY, CLOUDRUN]
+BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [ISTIO, APPLICATIONMANAGER]
 ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [
-    NODELOCALDNS, CONFIGCONNECTOR, GCEPDCSIDRIVER, APPLICATIONMANAGER
+    NODELOCALDNS, CONFIGCONNECTOR, GCEPDCSIDRIVER
 ]
 
 
@@ -588,7 +588,8 @@ class UpdateClusterOptions(object):
                min_memory=None,
                max_memory=None,
                min_accelerator=None,
-               max_accelerator=None):
+               max_accelerator=None,
+               release_channel=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -638,6 +639,7 @@ class UpdateClusterOptions(object):
     self.max_memory = max_memory
     self.min_accelerator = min_accelerator
     self.max_accelerator = max_accelerator
+    self.release_channel = release_channel
 
 
 class SetMasterAuthOptions(object):
@@ -1401,10 +1403,30 @@ class APIAdapter(object):
       cluster.masterAuthorizedNetworksConfig = authorized_networks
 
   def CreateCluster(self, cluster_ref, options):
+    """Handles CreateCluster options that are specific to a release track.
+
+    Overridden in each release track.
+
+    Args:
+      cluster_ref: Name and location of the cluster.
+      options: An UpdateClusterOptions containining the user-specified options.
+
+    Returns:
+      The operation to be executed.
+    """
     cluster = self.CreateClusterCommon(cluster_ref, options)
     if options.enable_autoprovisioning is not None:
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
           cluster_ref, options, False)
+    if options.addons:
+      # CloudRun is disabled by default.
+      if CLOUDRUN in options.addons:
+        if not options.enable_stackdriver_kubernetes:
+          raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
+        if INGRESS not in options.addons:
+          raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
+        cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
+            disabled=False)
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -1690,6 +1712,12 @@ class APIAdapter(object):
       #   Nothing to update
       # to catch this error.
       raise util.Error(NOTHING_TO_UPDATE_ERROR_MSG)
+
+    if options.disable_addons is not None:
+      if options.disable_addons.get(CLOUDRUN) is not None:
+        update.desiredAddonsConfig.cloudRunConfig = (
+            self.messages.CloudRunConfig(
+                disabled=options.disable_addons.get(CLOUDRUN)))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -2557,6 +2585,11 @@ class V1Beta1Adapter(V1Adapter):
           desiredShieldedNodes=self.messages.ShieldedNodes(
               enabled=options.enable_shielded_nodes))
 
+    if options.release_channel is not None:
+      update = self.messages.ClusterUpdate(
+          desiredReleaseChannel=_GetReleaseChannelForClusterUpdate(
+              options, self.messages))
+
     if not update:
       # if reached here, it's possible:
       # - someone added update flags but not handled
@@ -2582,6 +2615,10 @@ class V1Beta1Adapter(V1Adapter):
         update.desiredAddonsConfig.cloudRunConfig = (
             self.messages.CloudRunConfig(
                 disabled=options.disable_addons.get(CLOUDRUN)))
+      if options.disable_addons.get(APPLICATIONMANAGER) is not None:
+        update.desiredAddonsConfig.kalmConfig = (
+            self.messages.KalmConfig(
+                enabled=(not options.disable_addons.get(APPLICATIONMANAGER))))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -2757,6 +2794,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           disabled=options.disable_default_snat)
       update = self.messages.ClusterUpdate(
           desiredDefaultSnatStatus=disable_default_snat)
+
+    if options.release_channel is not None:
+      update = self.messages.ClusterUpdate(
+          desiredReleaseChannel=_GetReleaseChannelForClusterUpdate(
+              options, self.messages))
 
     if not update:
       # if reached here, it's possible:
@@ -3048,6 +3090,18 @@ def _AddReleaseChannelToCluster(cluster, options, messages):
     }
     cluster.releaseChannel = messages.ReleaseChannel(
         channel=channels[options.release_channel])
+
+
+def _GetReleaseChannelForClusterUpdate(options, messages):
+  """Gets the ReleaseChannel from update options."""
+  if options.release_channel is not None:
+    channels = {
+        'rapid': messages.ReleaseChannel.ChannelValueValuesEnum.RAPID,
+        'regular': messages.ReleaseChannel.ChannelValueValuesEnum.REGULAR,
+        'stable': messages.ReleaseChannel.ChannelValueValuesEnum.STABLE,
+        'None': messages.ReleaseChannel.ChannelValueValuesEnum.UNSPECIFIED,
+    }
+    return messages.ReleaseChannel(channel=channels[options.release_channel])
 
 
 def ProjectLocation(project, location):

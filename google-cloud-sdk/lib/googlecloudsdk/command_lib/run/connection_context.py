@@ -232,8 +232,7 @@ class _KubeconfigConnectionContext(ConnectionInfo):
           with _OverrideEndpointOverrides(self.endpoint):
             yield self
       except httplib2.SSLHandshakeError as e:
-        # TODO(b/143543614) audit usage of str
-        if 'CERTIFICATE_VERIFY_FAILED' in str(e):
+        if 'CERTIFICATE_VERIFY_FAILED' in six.text_type(e):
           raise gke.NoCaCertError(
               'Missing or invalid [certificate-authority] or '
               '[certificate-authority-data] field in kubeconfig file.')
@@ -246,14 +245,20 @@ class _KubeconfigConnectionContext(ConnectionInfo):
       raise ValueError(
           'Kubeconfig authentication requires a client certificate '
           'authentication method.')
-    # Import http only when needed, as it depends on credential infrastructure
-    # which is not needed in all cases.
-    from googlecloudsdk.core import http as http_core  # pylint: disable=g-import-not-at-top
-    http_client = http_core.Http(
-        response_encoding=http_core.ENCODING,
+    if self.client_cert_domain:
+      # Import http only when needed, as it depends on credential infrastructure
+      # which is not needed in all cases.
+      from googlecloudsdk.core import http as http_core  # pylint: disable=g-import-not-at-top
+      http_client = http_core.Http(
+          response_encoding=http_core.ENCODING,
+          ca_certs=self.ca_certs)
+      http_client.add_certificate(
+          self.client_key, self.client_cert, self.client_cert_domain)
+      return http_client
+    from googlecloudsdk.core.credentials import http as http_creds  # pylint: disable=g-import-not-at-top
+    http_client = http_creds.Http(
+        response_encoding=http_creds.ENCODING,
         ca_certs=self.ca_certs)
-    http_client.add_certificate(
-        self.client_key, self.client_cert, self.client_cert_domain)
     return http_client
 
   @property

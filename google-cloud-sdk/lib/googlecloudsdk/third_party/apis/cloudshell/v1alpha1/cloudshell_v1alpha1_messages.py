@@ -148,7 +148,8 @@ class Environment(_messages.Message):
   Fields:
     dockerImage: Required. Full path to the Docker image used to run this
       environment, e.g. "gcr.io/dev-con/cloud-devshell:latest".
-    id: Output only. The environment's identifier, which is always "default".
+    id: Output only. The environment's identifier, unique among the user's
+      environments.
     name: Output only. Full name of this resource, in the format
       `users/{owner_email}/environments/{environment_id}`. `{owner_email}` is
       the email address of the user to whom this environment belongs, and

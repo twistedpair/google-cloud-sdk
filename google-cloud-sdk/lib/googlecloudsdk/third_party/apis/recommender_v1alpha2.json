@@ -179,14 +179,16 @@
             "Unspecified category.",
             "The insight is related to cost.",
             "The insight is related to security.",
-            "The insight is related to performance."
+            "The insight is related to performance.",
+            "This insight is related to manageability."
           ],
           "type": "string",
           "enum": [
             "CATEGORY_UNSPECIFIED",
             "COST",
             "SECURITY",
-            "PERFORMANCE"
+            "PERFORMANCE",
+            "MANAGEABILITY"
           ]
         },
         "etag": {
@@ -380,14 +382,16 @@
             "Default unspecified category. Don't use directly.",
             "Indicates a potential increase or decrease in cost.",
             "Indicates a potential increase or decrease in security.",
-            "Indicates a potential increase or decrease in performance."
+            "Indicates a potential increase or decrease in performance.",
+            "Indicates a potential increase or decrease in manageability."
           ],
           "type": "string",
           "enum": [
             "CATEGORY_UNSPECIFIED",
             "COST",
             "SECURITY",
-            "PERFORMANCE"
+            "PERFORMANCE",
+            "MANAGEABILITY"
           ]
         },
         "costProjection": {
@@ -467,7 +471,11 @@
       "type": "object",
       "properties": {
         "action": {
-          "description": "Type of this operation. Contains one of 'and', 'remove', 'replace', 'move',\n'copy', 'test' and custom operations. This field is case-insensitive and\nalways populated.",
+          "description": "Type of this operation. Contains one of 'and', 'remove', 'replace', 'move',\n'copy', 'test' and 'custom' operations. This field is case-insensitive and\nalways populated.",
+          "type": "string"
+        },
+        "customAction": {
+          "description": "Needed if action is 'custom'. The subtype of a custom action.\ni.e. ('navigate-to-page'). This field is also case-insensitive.",
           "type": "string"
         },
         "resourceType": {

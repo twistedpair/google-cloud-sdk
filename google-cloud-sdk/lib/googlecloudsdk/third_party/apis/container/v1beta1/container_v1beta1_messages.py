@@ -43,6 +43,8 @@ class AddonsConfig(_messages.Message):
       services in a cluster.
     istioConfig: Configuration for Istio, an open platform to connect, manage,
       and secure microservices.
+    kalmConfig: Configuration for the KALM addon, which manages the lifecycle
+      of k8s applications.
     kubernetesDashboard: Configuration for the Kubernetes Dashboard. This
       addon is deprecated, and will be disabled in 1.15. It is recommended to
       use the Cloud Console to manage and monitor your Kubernetes clusters,
@@ -57,8 +59,9 @@ class AddonsConfig(_messages.Message):
   horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 2)
   httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 3)
   istioConfig = _messages.MessageField('IstioConfig', 4)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 5)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 6)
+  kalmConfig = _messages.MessageField('KalmConfig', 5)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 6)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 7)
 
 
 class AuthenticatorGroupsConfig(_messages.Message):
@@ -1513,6 +1516,16 @@ class Jwk(_messages.Message):
   use = _messages.StringField(7)
   x = _messages.StringField(8)
   y = _messages.StringField(9)
+
+
+class KalmConfig(_messages.Message):
+  r"""Configuration options for the KALM addon.
+
+  Fields:
+    enabled: Whether KALM is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class KubernetesDashboard(_messages.Message):

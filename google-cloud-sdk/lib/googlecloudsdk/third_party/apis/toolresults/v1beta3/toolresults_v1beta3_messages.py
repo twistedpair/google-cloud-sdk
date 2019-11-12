@@ -1251,7 +1251,7 @@ class StepLabelsEntry(_messages.Message):
 
 
 class SuccessDetail(_messages.Message):
-  r"""Details for an outcome with a SUCCESS outcome summary.
+  r"""Details for an outcome with a SUCCESS outcome summary. LINT.IfChange
 
   Fields:
     otherNativeCrash: If a native process other than the app crashed.

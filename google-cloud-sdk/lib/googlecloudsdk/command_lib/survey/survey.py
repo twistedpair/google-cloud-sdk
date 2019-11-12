@@ -26,7 +26,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import encoding
-from googlecloudsdk.core.util import files as files_util
+from googlecloudsdk.core.util import pkg_resources
 
 
 class Error(exceptions.Error):
@@ -36,11 +36,6 @@ class Error(exceptions.Error):
 
 class QuestionTypeNotDefinedError(Error):
   """Raises when question type is not defined in the question module."""
-  pass
-
-
-class SurveyContentNotDefinedError(Error):
-  """Raises when survey is not defined in the contents folder."""
   pass
 
 
@@ -88,12 +83,8 @@ class Survey(object):
     """Loads the survey yaml file and return the parsed data."""
     survey_file = os.path.join(_GetSurveyContentDirectory(),
                                self.name + '.yaml')
-    if not os.path.isfile(survey_file):
-      raise SurveyContentNotDefinedError(
-          'Cannot find survey {}.yaml in contents folder.'.format(
-              self.name))
-    with files_util.FileReader(survey_file) as fp:
-      return yaml.load(fp)
+    survey_data = pkg_resources.GetResourceFromFile(survey_file)
+    return yaml.load(survey_data)
 
   def _LoadQuestions(self):
     """Generator of questions in this survey."""

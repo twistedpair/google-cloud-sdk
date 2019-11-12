@@ -2854,6 +2854,7 @@ class TableFieldSchema(_messages.Message):
   Messages:
     CategoriesValue: [Optional] The categories attached to this field, used
       for field-level access control.
+    PolicyTagsValue: A PolicyTagsValue object.
 
   Fields:
     categories: [Optional] The categories attached to this field, used for
@@ -2867,6 +2868,7 @@ class TableFieldSchema(_messages.Message):
     name: [Required] The field name. The name must contain only letters (a-z,
       A-Z), numbers (0-9), or underscores (_), and must start with a letter or
       underscore. The maximum length is 128 characters.
+    policyTags: A PolicyTagsValue attribute.
     type: [Required] The field data type. Possible values include STRING,
       BYTES, INTEGER, INT64 (same as INTEGER), FLOAT, FLOAT64 (same as FLOAT),
       BOOLEAN, BOOL (same as BOOLEAN), TIMESTAMP, DATE, TIME, DATETIME, RECORD
@@ -2886,12 +2888,24 @@ class TableFieldSchema(_messages.Message):
 
     names = _messages.StringField(1, repeated=True)
 
+  class PolicyTagsValue(_messages.Message):
+    r"""A PolicyTagsValue object.
+
+    Fields:
+      names: A list of category resource names. For example,
+        "projects/1/location/eu/taxonomies/2/policyTags/3". At most 1 policy
+        tag is allowed.
+    """
+
+    names = _messages.StringField(1, repeated=True)
+
   categories = _messages.MessageField('CategoriesValue', 1)
   description = _messages.StringField(2)
   fields = _messages.MessageField('TableFieldSchema', 3, repeated=True)
   mode = _messages.StringField(4)
   name = _messages.StringField(5)
-  type = _messages.StringField(6)
+  policyTags = _messages.MessageField('PolicyTagsValue', 6)
+  type = _messages.StringField(7)
 
 
 class TableList(_messages.Message):

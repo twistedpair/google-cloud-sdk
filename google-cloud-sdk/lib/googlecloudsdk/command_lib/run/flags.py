@@ -107,7 +107,7 @@ def GetManagedArgGroup(parser):
   return _GetOrAddArgGroup(
       parser,
       _ARG_GROUP_HELP_TEXT.format(
-          platform='\'--platform=managed\'',
+          platform='`--platform=managed`',
           platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['managed']))
 
 
@@ -116,7 +116,7 @@ def GetGkeArgGroup(parser):
   return _GetOrAddArgGroup(
       parser,
       _ARG_GROUP_HELP_TEXT.format(
-          platform='\'--platform=gke\'',
+          platform='`--platform=gke`',
           platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['gke']))
 
 
@@ -125,7 +125,7 @@ def GetKubernetesArgGroup(parser):
   return _GetOrAddArgGroup(
       parser,
       _ARG_GROUP_HELP_TEXT.format(
-          platform='\'--platform=kubernetes\'',
+          platform='`--platform=kubernetes`',
           platform_desc=_PLATFORM_SHORT_DESCRIPTIONS['kubernetes']))
 
 
@@ -134,7 +134,7 @@ def GetClusterArgGroup(parser):
   return _GetOrAddArgGroup(
       parser,
       _ARG_GROUP_HELP_TEXT.format(
-          platform='\'--platform=gke\' or \'--platform=kubernetes\'',
+          platform='`--platform=gke` or `--platform=kubernetes`',
           platform_desc='{} or {}'.format(
               _PLATFORM_SHORT_DESCRIPTIONS['gke'],
               _PLATFORM_SHORT_DESCRIPTIONS['kubernetes'])))
@@ -178,21 +178,6 @@ def AddRegionArg(parser):
       '--region',
       help='Region in which the resource can be found. '
       'Alternatively, set the property [run/region].')
-
-
-# TODO(b/118339293): When global list endpoint ready, stop hardcoding regions.
-def AddRegionArgWithDefault(parser):
-  """Add a region arg which defaults to us-central1.
-
-  This is used by commands which list global resources.
-
-  Args:
-    parser: ArgumentParser, The calliope argparse parser.
-  """
-  parser.add_argument(
-      '--region',
-      default='us-central1',
-      help='Region in which to list the resources.')
 
 
 def AddFunctionArg(parser):
@@ -360,9 +345,20 @@ def AddCpuFlag(parser):
       'Ex: .5, 500m, 2.')
 
 
+def _ConcurrencyValue(value):
+  """Returns True if value is an int > 0 or 'default'."""
+  try:
+    return value == 'default' or int(value) > 0
+  except ValueError:
+    return False
+
+
 def AddConcurrencyFlag(parser):
   parser.add_argument(
       '--concurrency',
+      type=arg_parsers.CustomFunctionValidator(
+          _ConcurrencyValue,
+          'must be an integer greater than 0 or "default".'),
       help='Set the number of concurrent requests allowed per '
       'container instance. A concurrency of 0 or unspecified indicates '
       'any number of concurrent requests are allowed. To unset '
@@ -818,14 +814,8 @@ def GetConfigurationChanges(args):
   if 'memory' in args and args.memory:
     changes.append(config_changes.ResourceChanges(memory=args.memory))
   if 'concurrency' in args and args.concurrency:
-    try:
-      c = int(args.concurrency)
-    except ValueError:
-      c = args.concurrency
-      if c != 'default':
-        log.warning('Specifying concurrency as Single or Multi is deprecated; '
-                    'an integer is preferred.')
-    changes.append(config_changes.ConcurrencyChanges(concurrency=c))
+    changes.append(config_changes.ConcurrencyChanges(
+        concurrency=args.concurrency))
   if 'timeout' in args and args.timeout:
     try:
       # A bare number is interpreted as seconds.
@@ -1234,7 +1224,7 @@ def GetPlatformFallback():
   return properties.VALUES.run.platform.Get()
 
 
-def GetPlatform(args):
+def GetPlatform(args, validate=True):
   """Returns the platform to run on."""
   platform = properties.VALUES.run.platform.Get()
   if platform is None:
@@ -1259,13 +1249,14 @@ def GetPlatform(args):
               '\n'.join(
                   ['- {}: {}'.format(k, v) for k, v in _PLATFORMS.items()])))
 
-  if platform == 'managed':
-    VerifyOnePlatformFlags(args)
-  elif platform == 'gke':
-    VerifyGKEFlags(args)
-  elif platform == 'kubernetes':
-    VerifyKubernetesFlags(args)
-  else:
+  if validate:
+    if platform == 'managed':
+      VerifyOnePlatformFlags(args)
+    elif platform == 'gke':
+      VerifyGKEFlags(args)
+    elif platform == 'kubernetes':
+      VerifyKubernetesFlags(args)
+  if platform not in _PLATFORMS:
     raise ArgumentError(
         'Invalid target platform specified: [{}].\n'
         'Available platforms:\n{}'.format(
@@ -1302,10 +1293,28 @@ def IsManaged(args):
   return GetPlatform(args) == 'managed'
 
 
-def ValidatePlatformIsManaged(platform):
+def ValidatePlatformIsManaged(unused_ref, args, req):
+  """Validate the specified platform is managed.
+
+  This method is referenced by the declaritive iam commands which only work
+  against the managed platform.
+
+  Args:
+    unused_ref: ref to the service.
+    args: Namespace, The args namespace.
+    req: The request to be made.
+
+  Returns:
+    Unmodified request
+  """
+  # We don't want to validate any platforms other than managed, because only
+  # the managed platform can be used here. If a non-managed platform is
+  # specified, the error raised should reflect the bad platform, not other args.
+  platform = GetPlatform(args, validate=False)
   if platform != 'managed':
     raise calliope_exceptions.BadArgumentException(
         '--platform', 'The platform [{}] is not supported by this operation. '
         'Specify `--platform managed` or run '
         '`gcloud config set run/platform managed`.'.format(platform))
-  return platform
+  VerifyOnePlatformFlags(args)
+  return req

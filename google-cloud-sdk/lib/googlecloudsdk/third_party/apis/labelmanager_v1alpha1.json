@@ -111,26 +111,26 @@
   "schemas": {
     "CreateLabelBindingRequest": {
       "id": "CreateLabelBindingRequest",
-      "description": "The request message to create a binding.",
+      "description": "The request message to create a LabelBinding.",
       "type": "object",
       "properties": {
         "labelBinding": {
-          "description": "The binding to be created.",
+          "description": "The LabelBinding to be created.",
           "$ref": "LabelBinding"
         }
       }
     },
     "LabelBinding": {
       "id": "LabelBinding",
-      "description": "A Binding represents a connection between a label value and a cloud\nresource. Once a binding is created the label value is applied to all\nthe descendents of the cloud resource. The label binding is owned by the\nlabel value.",
+      "description": "A LabelBinding represents a connection between a LabelValue and a cloud\nresource (project, folder, org). Once a LabelBinding is created, the\nLabelValue is applied to all the descendents of the cloud resource. The\nLabelBinding is owned by the LabelValue.",
       "type": "object",
       "properties": {
         "labelValue": {
-          "description": "The label value of the binding.\nMust be of the form \"labelValues\/456.",
+          "description": "The LabelValue of the LabelBinding.\nMust be of the form \"labelValues\/456.",
           "type": "string"
         },
         "resource": {
-          "description": "The full resource name of the node the label is bound to.\nE.g. \/\/library.googleapis.com\/shelves\/shelf1\/books\/book2\"\nE.g. \/\/cloudresourcemanager.googleapis.com\/organizations\/123",
+          "description": "The full resource name of the resource the LabelValue is bound to.\nE.g. \/\/cloudresourcemanager.googleapis.com\/organizations\/123",
           "type": "string"
         }
       }
@@ -148,14 +148,14 @@
       "type": "object",
       "properties": {
         "bindings": {
-          "description": "A possibly paginated list of bindings for the specified label value or\nresource.",
+          "description": "A possibly paginated list of LabelBindings for the specified LabelValue or\nresource.",
           "type": "array",
           "items": {
             "$ref": "LabelBinding"
           }
         },
         "nextPageToken": {
-          "description": "A pagination token returned from a previous call to `ListLabelBindings`\nthat indicates from where listing should continue. This is currently not\nused, but the server may at any point start supplying a valid token.\nThis field is optional.",
+          "description": "Optional. A pagination token returned from a previous call to `ListLabelBindings`\nthat indicates from where listing should continue. This is currently not\nused, but the server may at any point start supplying a valid token.",
           "type": "string"
         }
       }
@@ -228,125 +228,49 @@
       "type": "object",
       "properties": {
         "keys": {
-          "description": "List of label keys that live under the specified parent in the request.",
+          "description": "List of LabelKeys that live under the specified parent in the request.",
           "type": "array",
           "items": {
             "$ref": "LabelKey"
           }
         },
         "nextPageToken": {
-          "description": "A pagination token returned from a previous call to `ListLabelKeys`\nthat indicates from where listing should continue. This is currently not\nused, but the server may at any point start supplying a valid token.\nThis field is optional.",
+          "description": "Optional. A pagination token returned from a previous call to `ListLabelKeys`\nthat indicates from where listing should continue. This is currently not\nused, but the server may at any point start supplying a valid token.",
           "type": "string"
         }
       }
     },
     "LabelKey": {
       "id": "LabelKey",
-      "description": "A label key, used to group a set of label values.",
+      "description": "A LabelKey, used to group a set of LabelValues.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name for label key. Must be in the format labelKeys\/123.\n\nImmutable.",
+          "description": "Resource name for LabelKey. Must be in the format labelKeys\/123.\n\nImmutable.",
           "type": "string"
         },
         "parent": {
-          "description": "The resource name of the new label key's parent.\nMust be of the form `folders\/{folder_id}` or `organizations\/{org_id}`.\n\nImmutable.",
+          "description": "The resource name of the new LabelKey's parent.\nMust be of the form `organizations\/{org_id}`.\n\nImmutable.",
           "type": "string"
         },
         "displayName": {
-          "description": "Required user-assigned display name for label key. Display name should be\nunique for label keys within the same parent resource.\n\nThe display name must be 1-63 characters, beginning and ending with\nan alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_),\ndots (.), and alphanumerics between.\n\nRead-write.",
+          "description": "Required. User-assigned display name for LabelKey. Display name should be\nunique for LabelKeys within the same parent resource.\n\nThe display name must be 1-63 characters, beginning and ending with\nan alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_),\ndots (.), and alphanumerics between.\n\nRead-write.",
           "type": "string"
         },
         "description": {
-          "description": "Optional user-assigned description of the label key.\nMust not exceed 256 characters.\n\nRead-write.",
+          "description": "Optional. User-assigned description of the LabelKey. Must not exceed 256 characters.\n\nRead-write.",
           "type": "string"
         },
         "etag": {
-          "description": "Entity tag passed to prevent race conditions. Always set in server\nresponses, and optionally set by user for UpdateLabelKey.\nSee UpdateLabelKeyRequest for details.",
+          "description": "Optional. Entity tag which users can pass to prevent race conditions. This field is\nalways set in server responses. See UpdateLabelKeyRequest for details.",
           "type": "string"
         },
         "state": {
-          "description": "Output only. Label key lifecycle state.",
+          "description": "Output only. LabelKey lifecycle state.",
           "enumDescriptions": [
             "Unspecified state.  This is only used\/useful for distinguishing\nunset values.",
             "The normal and active state.",
-            "The label key  has been marked for deletion by the user\n(by invoking:\nDeleteLabelKey)\nor by the system (Google Cloud Platform).\n\nThis can generally be reversed by invoking:\n[google.labelmanager.v1alpha1.LabelManager.UndeleteLabelKey]"
-          ],
-          "type": "string",
-          "enum": [
-            "LIFECYCLE_STATE_UNSPECIFIED",
-            "ACTIVE",
-            "DELETE_REQUESTED"
-          ]
-        },
-        "createTime": {
-          "description": "Output only.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "deleteTime": {
-          "description": "Output only.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "UndeleteLabelKeyRequest": {
-      "id": "UndeleteLabelKeyRequest",
-      "description": "The request message for undeleting a label key.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "ListLabelValuesResponse": {
-      "id": "ListLabelValuesResponse",
-      "description": "The ListLabelValues response.",
-      "type": "object",
-      "properties": {
-        "values": {
-          "description": "A possibly paginated list of labels that are direct descendants of\nthe specified parent label key.",
-          "type": "array",
-          "items": {
-            "$ref": "LabelValue"
-          }
-        },
-        "nextPageToken": {
-          "description": "A pagination token returned from a previous call to `ListLabelValues`\nthat indicates from where listing should continue. This is currently not\nused, but the server may at any point start supplying a valid token.\nThis field is optional.",
-          "type": "string"
-        }
-      }
-    },
-    "LabelValue": {
-      "id": "LabelValue",
-      "description": "A label value is a child of a particular label key. This is used to group\ncloud resources for the purpose of controlling them via policies.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Resource name for label value in the format labelValues\/456.\n\nImmutable.",
-          "type": "string"
-        },
-        "parent": {
-          "description": "The resource name of the new label value's parent label key.\nMust be of the form `labelKeys\/{label_key_id}`.\n\nImmutable.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "Required user-assigned display name for label value. Display name should be\nunique for label values within the same parent label key.\n\nThe display name must be 63 characters or less, beginning and ending with\nan alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_),\ndots (.), and alphanumerics between.\n\nRead-write.",
-          "type": "string"
-        },
-        "description": {
-          "description": "Optional user-assigned description of the label key.\nMust not exceed 256 characters.\n\nRead-write.",
-          "type": "string"
-        },
-        "etag": {
-          "description": "Entity tag passed to prevent race conditions. Always set in server\nresponses, and optionally set by user for UpdateLabelValue.\nSee UpdateLabelValueRequest for details.",
-          "type": "string"
-        },
-        "state": {
-          "description": "Output only. Label value lifecycle state.",
-          "enumDescriptions": [
-            "Unspecified state.  This is only used\/useful for distinguishing\nunset values.",
-            "The normal and active state.",
-            "The label key or value has been marked for deletion by the user\n(by invoking:\nDeleteLabelValue)\nor by the system (Google Cloud Platform).\n\nThis can generally be reversed by invoking:\n[google.labelmanager.v1alpha1.LabelManager.UndeleteLabelValue]"
+            "The LabelKey has been marked for deletion by the user\n(by invoking:\nDeleteLabelKey)\nor by the system (Google Cloud Platform).\n\nThis can generally be reversed by invoking:\n[google.labelmanager.v1alpha1.LabelManager.UndeleteLabelKey]"
           ],
           "type": "string",
           "enum": [
@@ -361,7 +285,83 @@
           "format": "google-datetime"
         },
         "deleteTime": {
-          "description": "Output only.",
+          "description": "Output only. Deletion time. This field is cleared on undelete.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "UndeleteLabelKeyRequest": {
+      "id": "UndeleteLabelKeyRequest",
+      "description": "The request message for undeleting a LabelKey.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListLabelValuesResponse": {
+      "id": "ListLabelValuesResponse",
+      "description": "The ListLabelValues response.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "A possibly paginated list of LabelValues that are direct descendants of\nthe specified parent LabelKey.",
+          "type": "array",
+          "items": {
+            "$ref": "LabelValue"
+          }
+        },
+        "nextPageToken": {
+          "description": "Optional. A pagination token returned from a previous call to `ListLabelValues`\nthat indicates from where listing should continue. This is currently not\nused, but the server may at any point start supplying a valid token.",
+          "type": "string"
+        }
+      }
+    },
+    "LabelValue": {
+      "id": "LabelValue",
+      "description": "A LabelValue is a child of a particular LabelKey. This is used to group\ncloud resources for the purpose of controlling them via policies.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for LabelValue in the format labelValues\/456.\n\nImmutable.",
+          "type": "string"
+        },
+        "parent": {
+          "description": "The resource name of the new LabelValue's parent LabelKey.\nMust be of the form `labelKeys\/{label_key_id}`.\n\nImmutable.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. User-assigned display name for LabelValue. Display name should be\nunique for LabelValues within the same parent LabelKey.\n\nThe display name must be 63 characters or less, beginning and ending with\nan alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_),\ndots (.), and alphanumerics between.\n\nRead-write.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. User-assigned description of the LabelValue.\nMust not exceed 256 characters.\n\nRead-write.",
+          "type": "string"
+        },
+        "etag": {
+          "description": "Optional. Entity tag which users can pass to prevent race conditions. This field is\nalways set in server responses. See UpdateLabelValueRequest for details.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. LabelValue lifecycle state.",
+          "enumDescriptions": [
+            "Unspecified state.  This is only used\/useful for distinguishing\nunset values.",
+            "The normal and active state.",
+            "The LabelValue has been marked for deletion by the user\n(by invoking:\nDeleteLabelValue)\nor by the system (Google Cloud Platform).\n\nThis can generally be reversed by invoking:\n[google.labelmanager.v1alpha1.LabelManager.UndeleteLabelValue]"
+          ],
+          "type": "string",
+          "enum": [
+            "LIFECYCLE_STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETE_REQUESTED"
+          ]
+        },
+        "createTime": {
+          "description": "Output only. Creation time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Output only. Deletion time. This value is cleared on undelete.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -369,7 +369,7 @@
     },
     "UndeleteLabelValueRequest": {
       "id": "UndeleteLabelValueRequest",
-      "description": "The request message for undeleting a label value.",
+      "description": "The request message for undeleting a LabelValue.",
       "type": "object",
       "properties": {
       }
@@ -431,7 +431,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a user that has been recently deleted. For\n   example,`alice@example.com?uid=123456789012345678901`. If the user is\n   recovered, this value reverts to `user:{emailid}` and the recovered user\n   retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus\n   unique identifier) representing a service account that has been recently\n   deleted. For example,\n   `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.\n   If the service account is undeleted, this value reverts to\n   `serviceAccount:{emailid}` and the undeleted service account retains the\n   role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a Google group that has been recently\n   deleted. For example, `admins@example.com?uid=123456789012345678901`. If\n   the group is recovered, this value reverts to `group:{emailid}` and the\n   recovered group retains the role in the binding.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -558,12 +558,12 @@
               "type": "string"
             },
             "labelBinding.labelValue": {
-              "description": "The label value of the binding.\nMust be of the form \"labelValues\/456.",
+              "description": "The LabelValue of the LabelBinding.\nMust be of the form \"labelValues\/456.",
               "location": "query",
               "type": "string"
             },
             "labelBinding.resource": {
-              "description": "The full resource name of the node the label is bound to.\nE.g. \/\/library.googleapis.com\/shelves\/shelf1\/books\/book2\"\nE.g. \/\/cloudresourcemanager.googleapis.com\/organizations\/123",
+              "description": "The full resource name of the resource the LabelValue is bound to.\nE.g. \/\/cloudresourcemanager.googleapis.com\/organizations\/123",
               "location": "query",
               "type": "string"
             }
@@ -577,7 +577,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Deletes a binding between a label value and a cloud resource\n(project, folder, org)."
+          "description": "Deletes a binding between a LabelValue and a cloud resource\n(project, folder, org)."
         },
         "list": {
           "id": "labelmanager.labelValues.list",
@@ -586,18 +586,18 @@
           "httpMethod": "GET",
           "parameters": {
             "parent": {
-              "description": "Resource name for label key, parent of the label values to be listed,\nin the format labelKeys\/123.",
+              "description": "Resource name for LabelKey, parent of the LabelValues to be listed,\nin the format labelKeys\/123.",
               "location": "query",
               "type": "string"
             },
             "pageSize": {
-              "description": "The maximum number of label values to return in the response.\nThis field is optional. This is currently not used by the server and will\nreturn the full page even if a size is specified currently.",
+              "description": "Optional. The maximum number of LabelValues to return in the response.\nThis is currently not used by the server and will return the full page even\nif a size is specified currently.",
               "location": "query",
               "type": "integer",
               "format": "int32"
             },
             "pageToken": {
-              "description": "A pagination token returned from a previous call to `ListLabelValues`\nthat indicates where this listing should continue from. This is currently\nnot used by the server.\n\nThis field is optional.",
+              "description": "Optional. A pagination token returned from a previous call to `ListLabelValues`\nthat indicates where this listing should continue from. This is currently\nnot used by the server.",
               "location": "query",
               "type": "string"
             }
@@ -610,7 +610,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Lists all label values for a specific label key."
+          "description": "Lists all LabelValues for a specific LabelKey."
         },
         "get": {
           "id": "labelmanager.labelValues.get",
@@ -619,7 +619,7 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "Resource name for label value to be fetched in the format labelValues\/456.",
+              "description": "Resource name for LabelValue to be fetched in the format labelValues\/456.",
               "location": "path",
               "required": true,
               "pattern": "^labelValues\/[^\/]+$",
@@ -635,7 +635,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Retrieves label value. This method will return PERMISSION_DENIED if the\nvalue does not exist or the user does not have permission to view it."
+          "description": "Retrieves LabelValue. This method will return PERMISSION_DENIED if the\nLabelValue does not exist or the user does not have permission to view it."
         },
         "create": {
           "id": "labelmanager.labelValues.create",
@@ -655,7 +655,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Creates a label value as a child of the specified label key. If a another\nrequest with the same parameters is sent while the original request is in\nprocess the second request will receive an error."
+          "description": "Creates a LabelValue as a child of the specified LabelKey. If a another\nrequest with the same parameters is sent while the original request is in\nprocess the second request will receive an error. A maximum of 300\nLabelValues (with any lifecycle state) can exist under a LabelKey at any\ngiven time."
         },
         "patch": {
           "id": "labelmanager.labelValues.patch",
@@ -664,7 +664,7 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "Resource name for label value in the format labelValues\/456.\n\nImmutable.",
+              "description": "Resource name for LabelValue in the format labelValues\/456.\n\nImmutable.",
               "location": "path",
               "required": true,
               "pattern": "^labelValues\/[^\/]+$",
@@ -698,7 +698,7 @@
           "httpMethod": "DELETE",
           "parameters": {
             "name": {
-              "description": "Resource name for label value to be deleted in the format labelValues\/456.",
+              "description": "Resource name for LabelValue to be deleted in the format labelValues\/456.",
               "location": "path",
               "required": true,
               "pattern": "^labelValues\/[^\/]+$",
@@ -714,7 +714,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Requests deletion of a LabelValue. The Label Value is moved into the\nDELETE_REQUESTED state\nimmediately, and is deleted approximately 30 days later. The Label Value\ncannot have any bindings when it is deleted."
+          "description": "Requests deletion of a LabelValue. The LabelValue is moved into the\nDELETE_REQUESTED state\nimmediately, and is deleted approximately 30 days later. The LabelValue\ncannot have any bindings when it is deleted."
         },
         "undelete": {
           "id": "labelmanager.labelValues.undelete",
@@ -723,7 +723,7 @@
           "httpMethod": "POST",
           "parameters": {
             "name": {
-              "description": "Resource name for label value to be un-deleted in the format\nlabelValues\/456.",
+              "description": "Resource name for LabelValue to be un-deleted in the format\nlabelValues\/456.",
               "location": "path",
               "required": true,
               "pattern": "^labelValues\/[^\/]+$",
@@ -742,7 +742,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Cancels the deletion request for a Label Value. This method may only be\ncalled on a Label Value in the\nDELETE_REQUESTED state.\nIn order to succeed, the Label Value's parent must be in the\nACTIVE state."
+          "description": "Cancels the deletion request for a LabelValue. This method may only be\ncalled on a LabelValue in the\nDELETE_REQUESTED state.\nIn order to succeed, the LabelValue's parent must be in the\nACTIVE state."
         }
       }
       ,
@@ -773,7 +773,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Binds a label value to a cloud resource (project, folder, org)."
+              "description": "Binds a LabelValue to a cloud resource (project, folder, org)."
             },
             "list": {
               "id": "labelmanager.labelValues.labelBindings.list",
@@ -787,23 +787,23 @@
                   "type": "string"
                 },
                 "label": {
-                  "description": "The name of the label value should be of the form \"labelvalues\/123\"",
+                  "description": "The name of the LabelValue should be of the form \"labelValues\/123\"",
                   "location": "query",
                   "type": "string"
                 },
                 "resource": {
-                  "description": "The full name of the resource should be of the form \"type\/id\". E.g.\nE.g. \/\/library.googleapis.com\/shelves\/shelf1\/books\/book2\"\nE.g. \/\/cloudresourcemanager.googleapis.com\/organizations\/123",
+                  "description": "The full name of the resource should be of the form \"type\/id\". E.g.\nE.g. \/\/cloudresourcemanager.googleapis.com\/organizations\/123",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of bindingss to return in the response.\nThis field is optional. This is currently not used by the server and will\nreturn the full page even if a size is specified currently.",
+                  "description": "Optional. The maximum number of LabelBindings to return in the response. This is\ncurrently not used by the server and will return the full page even if a\nsize is specified.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "A pagination token returned from a previous call to `ListLabelBindings`\nthat indicates where this listing should continue from. This is currently\nnot used by the server. This field is optional.",
+                  "description": "Optional. A pagination token returned from a previous call to `ListLabelBindings`\nthat indicates where this listing should continue from. This is currently\nnot used by the server.",
                   "location": "query",
                   "type": "string"
                 }
@@ -817,7 +817,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Lists the bindings for the given label value."
+              "description": "Lists the bindings for the given LabelValue or\ncloud resource (project, folder, org)."
             }
           }
         }
@@ -861,18 +861,18 @@
           "httpMethod": "GET",
           "parameters": {
             "parent": {
-              "description": "The resource name of the new label key's parent.\nMust be of the form `folders\/{folder_id}` or `organizations\/{org_id}`.",
+              "description": "The resource name of the new LabelKey's parent.\nMust be of the form `folders\/{folder_id}` or `organizations\/{org_id}`.",
               "location": "query",
               "type": "string"
             },
             "pageSize": {
-              "description": "The maximum number of label keys to return in the response.\nThis field is optional. This is currently not used by the server and will\nreturn the full page even if a size is specified currently.",
+              "description": "Optional. The maximum number of LabelKeys to return in the response.\nThis is currently not used by the server and will return the full page even\nif a size is specified currently.",
               "location": "query",
               "type": "integer",
               "format": "int32"
             },
             "pageToken": {
-              "description": "A pagination token returned from a previous call to `ListLabelKey`\nthat indicates where this listing should continue from. This is currently\nnot used by the server. This field is optional.",
+              "description": "Optional. A pagination token returned from a previous call to `ListLabelKey`\nthat indicates where this listing should continue from. This is currently\nnot used by the server.",
               "location": "query",
               "type": "string"
             }
@@ -885,7 +885,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Lists all label keys for a parent resource."
+          "description": "Lists all LabelKeys for a parent resource."
         },
         "get": {
           "id": "labelmanager.labelKeys.get",
@@ -894,7 +894,7 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "Resource name for label key to be fetched in the format labelKeys\/123.",
+              "description": "Resource name for LabelKey to be fetched in the format labelKeys\/123.",
               "location": "path",
               "required": true,
               "pattern": "^labelKeys\/[^\/]+$",
@@ -910,7 +910,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Retrieves a label key. This method will return PERMISSION_DENIED if the\nkey does not exist or the user does not have permission to view it."
+          "description": "Retrieves a LabelKey. This method will return PERMISSION_DENIED if the\nkey does not exist or the user does not have permission to view it."
         },
         "create": {
           "id": "labelmanager.labelKeys.create",
@@ -930,7 +930,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Creates a new label key. If a another request with the same parameters is\nsent while the original request is in process the second request\nwill receive an error."
+          "description": "Creates a new LabelKey. If another request with the same parameters is\nsent while the original request is in process, the second request\nwill receive an error. A maximum of 300 LabelKeys (with any lifecycle\nstate) can exist under a parent at any given time."
         },
         "patch": {
           "id": "labelmanager.labelKeys.patch",
@@ -939,7 +939,7 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "Resource name for label key. Must be in the format labelKeys\/123.\n\nImmutable.",
+              "description": "Resource name for LabelKey. Must be in the format labelKeys\/123.\n\nImmutable.",
               "location": "path",
               "required": true,
               "pattern": "^labelKeys\/[^\/]+$",
@@ -973,7 +973,7 @@
           "httpMethod": "DELETE",
           "parameters": {
             "name": {
-              "description": "Resource name for label key to be deleted in the format labelKeys\/123.\nThe label key cannot be a parent of any label values to be deleted\nsuccessfully.",
+              "description": "Resource name for LabelKey to be deleted in the format labelKeys\/123.\nThe LabelKey cannot be a parent of any LabelValues in the active state\nto be deleted successfully.",
               "location": "path",
               "required": true,
               "pattern": "^labelKeys\/[^\/]+$",
@@ -989,7 +989,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Requests deletion of a LabelKey. The Label Key is moved into the\nDELETE_REQUESTED state\nimmediately, and is deleted approximately 30 days later. The Label Key\ncannot have any child label values in the\nACTIVE state."
+          "description": "Requests deletion of a LabelKey. The LabelKey is moved into the\nDELETE_REQUESTED state\nimmediately, and is deleted approximately 30 days later. The LabelKey\ncannot be deleted if it has any child LabelValues in the\nACTIVE state."
         },
         "undelete": {
           "id": "labelmanager.labelKeys.undelete",
@@ -998,7 +998,7 @@
           "httpMethod": "POST",
           "parameters": {
             "name": {
-              "description": "Resource name for label key to be un-deleted in the format labelKeys\/123.",
+              "description": "Resource name for LabelKey to be un-deleted in the format labelKeys\/123.\nThe parent of this LabelKey must be in the active state.",
               "location": "path",
               "required": true,
               "pattern": "^labelKeys\/[^\/]+$",
@@ -1017,7 +1017,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Cancels the deletion request for a Label Key. This method may only be\ncalled on a Label Key in the\nDELETE_REQUESTED state.\nIn order to succeed, the Label Key's parent must be in the active state."
+          "description": "Cancels the deletion request for a LabelKey. This method may only be\ncalled on a LabelKey in the\nDELETE_REQUESTED state.\nIn order to succeed, the LabelKey's parent must be in the active state."
         },
         "setIamPolicy": {
           "id": "labelmanager.labelKeys.setIamPolicy",

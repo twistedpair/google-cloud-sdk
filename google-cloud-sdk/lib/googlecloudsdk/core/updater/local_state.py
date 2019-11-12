@@ -611,7 +611,11 @@ class InstallationState(object):
       for d in to_compile:
         # Using rx to skip unused Python3 directory vendored with gsutil's copy
         # of httplib2.
-        compileall.compile_dir(d, rx=re.compile('python3'), quiet=True)
+        # Using 2 for quiet, in python 2.7 this value is used as a bool in the
+        # implementation and bool(2) is True. Starting in python 3.5 this
+        # parameter was changed to a multilevel value, where 1 hides files
+        # being processed and 2 suppresses output.
+        compileall.compile_dir(d, rx=re.compile('python3'), quiet=2)
 
 
 class InstallationManifest(object):

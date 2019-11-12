@@ -264,6 +264,16 @@ class GoogleCloudMlV1Config(_messages.Message):
   tpuServiceAccount = _messages.StringField(1)
 
 
+class GoogleCloudMlV1ExplainRequest(_messages.Message):
+  r"""Request for explanations to be issued against a trained model.
+
+  Fields:
+    httpBody: Required. The explanation request body.
+  """
+
+  httpBody = _messages.MessageField('GoogleApiHttpBody', 1)
+
+
 class GoogleCloudMlV1ExplanationConfig(_messages.Message):
   r"""Message holding configuration options for explaining model predictions.
   Currently, the only supported mechanism to explain a model's prediction is
@@ -2145,9 +2155,26 @@ class GoogleIamV1Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: The G Suite domain (primary) that represents all
-      the    users of that domain. For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding.  *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus    unique identifier) representing a service account that has been
+      recently    deleted. For example,    `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique    identifier) representing a Google group
+      that has been recently    deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If    the group is
+      recovered, this value reverts to `group:{emailid}` and the    recovered
+      group retains the role in the binding.   * `domain:{domain}`: The G
+      Suite domain (primary) that represents all the    users of that domain.
+      For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -2466,6 +2493,20 @@ class GoogleTypeExpr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class MlProjectsExplainRequest(_messages.Message):
+  r"""A MlProjectsExplainRequest object.
+
+  Fields:
+    googleCloudMlV1ExplainRequest: A GoogleCloudMlV1ExplainRequest resource to
+      be passed as the request body.
+    name: Required. The resource name of a model or a version.  Authorization:
+      requires the `predict` permission on the specified resource.
+  """
+
+  googleCloudMlV1ExplainRequest = _messages.MessageField('GoogleCloudMlV1ExplainRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class MlProjectsGetConfigRequest(_messages.Message):

@@ -49,8 +49,9 @@ class BillingbudgetsV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new budget if none exists. There is a limit of 1,000 budgets.
-per billing account.
+      r"""Creates a new budget. See.
+<a href="https://cloud.google.com/billing/quotas">Quotas and limits</a>
+for more information.
 
       Args:
         request: (BillingbudgetsBillingAccountsBudgetsCreateRequest) input message
@@ -131,7 +132,7 @@ per billing account.
     )
 
     def List(self, request, global_params=None):
-      r"""Returns the budgets for a billing account.
+      r"""Returns a list of budgets for a billing account.
 
       Args:
         request: (BillingbudgetsBillingAccountsBudgetsListRequest) input message

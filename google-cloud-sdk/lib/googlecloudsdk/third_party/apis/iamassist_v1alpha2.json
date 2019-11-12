@@ -512,7 +512,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a user that has been recently deleted. For\n   example,`alice@example.com?uid=123456789012345678901`. If the user is\n   recovered, this value reverts to `user:{emailid}` and the recovered user\n   retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus\n   unique identifier) representing a service account that has been recently\n   deleted. For example,\n   `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.\n   If the service account is undeleted, this value reverts to\n   `serviceAccount:{emailid}` and the undeleted service account retains the\n   role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a Google group that has been recently\n   deleted. For example, `admins@example.com?uid=123456789012345678901`. If\n   the group is recovered, this value reverts to `group:{emailid}` and the\n   recovered group retains the role in the binding.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -661,6 +661,13 @@
           "items": {
             "$ref": "GoogleIamAssistV1alpha2ReplayDiff"
           }
+        },
+        "errors": {
+          "description": "List of errors encountered during replay.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleIamAssistV1alpha2ReplayError"
+          }
         }
       }
     },
@@ -688,6 +695,11 @@
           "description": "Timestamp of newest log entry queried.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "replayErrorCount": {
+          "description": "Number of logs with error during replay.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -703,6 +715,11 @@
         "accessDiff": {
           "description": "The difference in AccessState between replays.",
           "$ref": "GoogleIamAssistV1alpha2ReplayDiffAccessStateDiff"
+        },
+        "lastAccessTime": {
+          "description": "Newest Timestamp at which access_tuple was seen.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -743,6 +760,39 @@
             "ACCESS_STATE_UNSPECIFIED",
             "GRANTED",
             "NOT_GRANTED",
+            "UNKNOWN_CONDITIONAL",
+            "UNKNOWN_INFO_DENIED"
+          ]
+        }
+      }
+    },
+    "GoogleIamAssistV1alpha2ReplayError": {
+      "id": "GoogleIamAssistV1alpha2ReplayError",
+      "type": "object",
+      "properties": {
+        "accessTuple": {
+          "description": "The access tuple with a error during replay.",
+          "$ref": "GoogleIamAssistV1alpha2AccessTuple"
+        },
+        "newestTime": {
+          "description": "Newest Timestamp at which access_tuple was seen.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "code": {
+          "description": "Specific error code indicating what went wrong.",
+          "enumDescriptions": [
+            "Reserved",
+            "An invalid AccessTuple was provided.\nThis can be caused by\n\n1) An invalidly formatted principal, resource, or permission.\n\n2) Providing a permission that is not relevant to the provided resource\ntype, e.g. permission buckets.list on a VM instance.",
+            "Caller does not have permission to retrieve this resource's IAM policy.",
+            "Both the baseline and the simulated Access State were\nUNKNOWN_CONDITIONAL.",
+            "Both the baseline and the simulated Access State were\nUNKNOWN_INFO_DENIED."
+          ],
+          "type": "string",
+          "enum": [
+            "ERROR_CODE_UNSPECIFIED",
+            "INVALID_ACCESS_TUPLE",
+            "PERMISSION_DENIED",
             "UNKNOWN_CONDITIONAL",
             "UNKNOWN_INFO_DENIED"
           ]

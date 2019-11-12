@@ -30,19 +30,19 @@ class InvalidInputError(LabelManagerError):
   """Exception for invalid input."""
 
 
-def GetLabelKeyDisplayName(display_name, label_parent):
-  """Returns the label key with display_name under label_parent if it exists.
+def GetLabelKeyFromDisplayName(display_name, label_parent):
+  """Returns the LabelKey with display_name under label_parent if it exists.
 
   Args:
-    display_name: String, display name of the label key
-    label_parent: String, resource name of the parent of the label key
+    display_name: String, display name of the LabelKey
+    label_parent: String, resource name of the parent of the LabelKey
 
   Raises:
     InvalidInputError: if the specified display_name does not exist under the
     label_parent
 
   Returns:
-    The resource name of the label key associated with the display_name
+    The resource name of the LabelKey associated with the display_name
   """
   labelkeys_service = labelmanager.LabelKeysService()
   labelmanager_messages = labelmanager.LabelManagerMessages()
@@ -58,3 +58,33 @@ def GetLabelKeyDisplayName(display_name, label_parent):
   raise InvalidInputError(
       'Invalid display_name for label key [{}] in parent [{}]'.format(
           display_name, label_parent))
+
+
+def GetLabelValueFromDisplayName(display_name, label_key):
+  """Returns the LabelValue with display_name under label_key if it exists.
+
+  Args:
+    display_name: String, display name of the LabelValue
+    label_key: String, resource name of the parent of the LabelKey
+
+  Raises:
+    InvalidInputError: if the specified display_name does not exist under the
+    label_key
+
+  Returns:
+    The resource name of the LabelValue associated with the display_name
+  """
+  labelvalues_service = labelmanager.LabelValuesService()
+  labelmanager_messages = labelmanager.LabelManagerMessages()
+
+  list_request = labelmanager_messages.LabelmanagerLabelValuesListRequest(
+      parent=label_key)
+  response = labelvalues_service.List(list_request)
+
+  for value in response.values:
+    if value.displayName == display_name:
+      return value.name
+
+  raise InvalidInputError(
+      'Invalid display_name for label value [{}] in parent [{}]'.format(
+          display_name, label_key))

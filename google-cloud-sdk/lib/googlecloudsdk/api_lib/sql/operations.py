@@ -27,6 +27,8 @@ from googlecloudsdk.core.console import progress_tracker as console_progress_tra
 from googlecloudsdk.core.util import retry
 
 _MS_PER_SECOND = 1000
+# Ten mins, based off of the max time it usually takes to create a SQL instance.
+_INSTANCE_CREATION_TIMEOUT_SECONDS = 600
 
 
 class _BaseOperations(object):
@@ -42,7 +44,7 @@ class _BaseOperations(object):
                        sql_client,
                        operation_ref,
                        message,
-                       max_wait_seconds=300):
+                       max_wait_seconds=_INSTANCE_CREATION_TIMEOUT_SECONDS):
     """Wait for a Cloud SQL operation to complete.
 
     No operation is done instantly. Wait for it to finish following this logic:

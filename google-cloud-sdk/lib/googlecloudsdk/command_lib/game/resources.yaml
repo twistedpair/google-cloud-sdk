@@ -79,6 +79,19 @@ deployment:
     attribute_name: deployment
     help: Cloud Game Servers Deployment.
 
+config:
+  name: game server config
+  collection: gameservices.projects.locations.gameServerDeployments.configs
+  request_id_field: configId
+  attributes:
+  - *project
+  - *location
+  - *deployment
+  - &config
+    parameter_name: configsId
+    attribute_name: config
+    help: Cloud Game Servers Configs.
+
 scaling_policy:
   name: scaling policy
   collection: gameservices.projects.locations.scalingPolicies

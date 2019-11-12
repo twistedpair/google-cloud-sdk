@@ -122,7 +122,7 @@
     },
     "GoogleCloudBillingBudgetsV1alpha1Budget": {
       "id": "GoogleCloudBillingBudgetsV1alpha1Budget",
-      "description": "A budget is a plan that describes what the user expects to spend on Cloud\nprojects, plus rules to execute as spend is tracked against that plan,\ne.g. alert at 90% of $100 target.\nCurrently all plans are monthly budgets so the usage period(s) tracked are\nimplied (calendar months of usage back-to-back).",
+      "description": "A budget is a plan that describes what you expect to spend on Cloud\nprojects, plus the rules to execute as spend is tracked against that plan,\n(for example, send an alert when 90% of the target spend is met).\nCurrently all plans are monthly budgets so the usage period(s) tracked are\nimplied (calendar months of usage back-to-back).",
       "type": "object",
       "properties": {
         "name": {
@@ -231,7 +231,7 @@
     },
     "GoogleCloudBillingBudgetsV1alpha1LastPeriodAmount": {
       "id": "GoogleCloudBillingBudgetsV1alpha1LastPeriodAmount",
-      "description": "Describes a plan to target last period's spend.\nThere are no options yet. The amount is automatically 100% of last period's\nspend.\nFuture configuration will go here (e.g. configuring the percentage).",
+      "description": "Describes a budget amount targeted to last period's spend.\nAt this time, the amount is automatically 100% of last period's spend;\nthat is, there are no other options yet.\nFuture configuration will be described here (for example, configuring a\npercentage of last period's spend).",
       "type": "object",
       "properties": {
       }
@@ -268,7 +268,7 @@
       "type": "object",
       "properties": {
         "pubsubTopic": {
-          "description": "Required. The name of the Cloud Pub\/Sub topic where budget related messages will be\npublished, in the form `projects\/{project_id}\/topics\/{topic_id}`.\nUpdates are sent at regular intervals to the topic.\nWhen a topic is set for a budget, the `pubsub.topics.publish` IAM\npermission must be granted on the topic (or the parent project of the\ntopic) to `billing-budget-alert@system.gserviceaccount.com`.\nIf this permission is not present when a topic is provided at the time of\nbudget creation or updating, the API call will fail with PERMISSION_DENIED.\nSee https:\/\/cloud.google.com\/pubsub\/docs\/access-control for more details on\nPub\/Sub roles and permissions.",
+          "description": "Required. The name of the Cloud Pub\/Sub topic where budget related messages will be\npublished, in the form `projects\/{project_id}\/topics\/{topic_id}`. Updates\nare sent at regular intervals to the topic.\nThe topic needs to be created before the budget is created; see\nhttps:\/\/cloud.google.com\/billing\/docs\/how-to\/budgets#manage-notifications\nfor more details.\nCaller is expected to have\n`pubsub.topics.setIamPolicy` permission on the topic when it's set for a\nbudget, otherwise, the API call will fail with PERMISSION_DENIED. See\nhttps:\/\/cloud.google.com\/pubsub\/docs\/access-control for more details on\nPub\/Sub roles and permissions.",
           "type": "string"
         },
         "schemaVersion": {
@@ -331,7 +331,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. the name of the billing account to create the budget in. Values\nare of the form `billingAccounts\/{billingAccountId}`.",
+                  "description": "Required. The name of the billing account to create the budget in. Values\nare of the form `billingAccounts\/{billingAccountId}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+$",
@@ -350,7 +350,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates a new budget if none exists. There is a limit of 1,000 budgets\nper billing account."
+              "description": "Creates a new budget. See\n<a href=\"https:\/\/cloud.google.com\/billing\/quotas\">Quotas and limits<\/a>\nfor more information."
             },
             "patch": {
               "id": "billingbudgets.billingAccounts.budgets.patch",
@@ -439,7 +439,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Returns the budgets for a billing account."
+              "description": "Returns a list of budgets for a billing account."
             },
             "delete": {
               "id": "billingbudgets.billingAccounts.budgets.delete",

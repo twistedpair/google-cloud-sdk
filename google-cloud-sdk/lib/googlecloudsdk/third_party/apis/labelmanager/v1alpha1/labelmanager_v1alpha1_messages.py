@@ -101,9 +101,26 @@ class Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: The G Suite domain (primary) that represents all
-      the    users of that domain. For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding.  *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus    unique identifier) representing a service account that has been
+      recently    deleted. For example,    `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique    identifier) representing a Google group
+      that has been recently    deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If    the group is
+      recovered, this value reverts to `group:{emailid}` and the    recovered
+      group retains the role in the binding.   * `domain:{domain}`: The G
+      Suite domain (primary) that represents all the    users of that domain.
+      For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -114,10 +131,10 @@ class Binding(_messages.Message):
 
 
 class CreateLabelBindingRequest(_messages.Message):
-  r"""The request message to create a binding.
+  r"""The request message to create a LabelBinding.
 
   Fields:
-    labelBinding: The binding to be created.
+    labelBinding: The LabelBinding to be created.
   """
 
   labelBinding = _messages.MessageField('LabelBinding', 1)
@@ -158,17 +175,16 @@ class Expr(_messages.Message):
 
 
 class LabelBinding(_messages.Message):
-  r"""A Binding represents a connection between a label value and a cloud
-  resource. Once a binding is created the label value is applied to all the
-  descendents of the cloud resource. The label binding is owned by the label
-  value.
+  r"""A LabelBinding represents a connection between a LabelValue and a cloud
+  resource (project, folder, org). Once a LabelBinding is created, the
+  LabelValue is applied to all the descendents of the cloud resource. The
+  LabelBinding is owned by the LabelValue.
 
   Fields:
-    labelValue: The label value of the binding. Must be of the form
+    labelValue: The LabelValue of the LabelBinding. Must be of the form
       "labelValues/456.
-    resource: The full resource name of the node the label is bound to. E.g.
-      //library.googleapis.com/shelves/shelf1/books/book2" E.g.
-      //cloudresourcemanager.googleapis.com/organizations/123
+    resource: The full resource name of the resource the LabelValue is bound
+      to. E.g. //cloudresourcemanager.googleapis.com/organizations/123
   """
 
   labelValue = _messages.StringField(1)
@@ -176,40 +192,40 @@ class LabelBinding(_messages.Message):
 
 
 class LabelKey(_messages.Message):
-  r"""A label key, used to group a set of label values.
+  r"""A LabelKey, used to group a set of LabelValues.
 
   Enums:
-    StateValueValuesEnum: Output only. Label key lifecycle state.
+    StateValueValuesEnum: Output only. LabelKey lifecycle state.
 
   Fields:
-    createTime: Output only.
-    deleteTime: Output only.
-    description: Optional user-assigned description of the label key. Must not
+    createTime: Output only. Creation time.
+    deleteTime: Output only. Deletion time. This field is cleared on undelete.
+    description: Optional. User-assigned description of the LabelKey. Must not
       exceed 256 characters.  Read-write.
-    displayName: Required user-assigned display name for label key. Display
-      name should be unique for label keys within the same parent resource.
+    displayName: Required. User-assigned display name for LabelKey. Display
+      name should be unique for LabelKeys within the same parent resource.
       The display name must be 1-63 characters, beginning and ending with an
       alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_),
       dots (.), and alphanumerics between.  Read-write.
-    etag: Entity tag passed to prevent race conditions. Always set in server
-      responses, and optionally set by user for UpdateLabelKey. See
+    etag: Optional. Entity tag which users can pass to prevent race
+      conditions. This field is always set in server responses. See
       UpdateLabelKeyRequest for details.
-    name: Resource name for label key. Must be in the format labelKeys/123.
+    name: Resource name for LabelKey. Must be in the format labelKeys/123.
       Immutable.
-    parent: The resource name of the new label key's parent. Must be of the
-      form `folders/{folder_id}` or `organizations/{org_id}`.  Immutable.
-    state: Output only. Label key lifecycle state.
+    parent: The resource name of the new LabelKey's parent. Must be of the
+      form `organizations/{org_id}`.  Immutable.
+    state: Output only. LabelKey lifecycle state.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Label key lifecycle state.
+    r"""Output only. LabelKey lifecycle state.
 
     Values:
       LIFECYCLE_STATE_UNSPECIFIED: Unspecified state.  This is only
         used/useful for distinguishing unset values.
       ACTIVE: The normal and active state.
-      DELETE_REQUESTED: The label key  has been marked for deletion by the
-        user (by invoking: DeleteLabelKey) or by the system (Google Cloud
+      DELETE_REQUESTED: The LabelKey has been marked for deletion by the user
+        (by invoking: DeleteLabelKey) or by the system (Google Cloud
         Platform).  This can generally be reversed by invoking:
         [google.labelmanager.v1alpha1.LabelManager.UndeleteLabelKey]
     """
@@ -228,42 +244,42 @@ class LabelKey(_messages.Message):
 
 
 class LabelValue(_messages.Message):
-  r"""A label value is a child of a particular label key. This is used to
-  group cloud resources for the purpose of controlling them via policies.
+  r"""A LabelValue is a child of a particular LabelKey. This is used to group
+  cloud resources for the purpose of controlling them via policies.
 
   Enums:
-    StateValueValuesEnum: Output only. Label value lifecycle state.
+    StateValueValuesEnum: Output only. LabelValue lifecycle state.
 
   Fields:
     createTime: Output only. Creation time.
-    deleteTime: Output only.
-    description: Optional user-assigned description of the label key. Must not
-      exceed 256 characters.  Read-write.
-    displayName: Required user-assigned display name for label value. Display
-      name should be unique for label values within the same parent label key.
+    deleteTime: Output only. Deletion time. This value is cleared on undelete.
+    description: Optional. User-assigned description of the LabelValue. Must
+      not exceed 256 characters.  Read-write.
+    displayName: Required. User-assigned display name for LabelValue. Display
+      name should be unique for LabelValues within the same parent LabelKey.
       The display name must be 63 characters or less, beginning and ending
       with an alphanumeric character ([a-z0-9A-Z]) with dashes (-),
       underscores (_), dots (.), and alphanumerics between.  Read-write.
-    etag: Entity tag passed to prevent race conditions. Always set in server
-      responses, and optionally set by user for UpdateLabelValue. See
+    etag: Optional. Entity tag which users can pass to prevent race
+      conditions. This field is always set in server responses. See
       UpdateLabelValueRequest for details.
-    name: Resource name for label value in the format labelValues/456.
+    name: Resource name for LabelValue in the format labelValues/456.
       Immutable.
-    parent: The resource name of the new label value's parent label key. Must
-      be of the form `labelKeys/{label_key_id}`.  Immutable.
-    state: Output only. Label value lifecycle state.
+    parent: The resource name of the new LabelValue's parent LabelKey. Must be
+      of the form `labelKeys/{label_key_id}`.  Immutable.
+    state: Output only. LabelValue lifecycle state.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Label value lifecycle state.
+    r"""Output only. LabelValue lifecycle state.
 
     Values:
       LIFECYCLE_STATE_UNSPECIFIED: Unspecified state.  This is only
         used/useful for distinguishing unset values.
       ACTIVE: The normal and active state.
-      DELETE_REQUESTED: The label key or value has been marked for deletion by
-        the user (by invoking: DeleteLabelValue) or by the system (Google
-        Cloud Platform).  This can generally be reversed by invoking:
+      DELETE_REQUESTED: The LabelValue has been marked for deletion by the
+        user (by invoking: DeleteLabelValue) or by the system (Google Cloud
+        Platform).  This can generally be reversed by invoking:
         [google.labelmanager.v1alpha1.LabelManager.UndeleteLabelValue]
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
@@ -284,9 +300,9 @@ class LabelmanagerLabelKeysDeleteRequest(_messages.Message):
   r"""A LabelmanagerLabelKeysDeleteRequest object.
 
   Fields:
-    name: Resource name for label key to be deleted in the format
-      labelKeys/123. The label key cannot be a parent of any label values to
-      be deleted successfully.
+    name: Resource name for LabelKey to be deleted in the format
+      labelKeys/123. The LabelKey cannot be a parent of any LabelValues in the
+      active state to be deleted successfully.
   """
 
   name = _messages.StringField(1, required=True)
@@ -314,7 +330,7 @@ class LabelmanagerLabelKeysGetRequest(_messages.Message):
   r"""A LabelmanagerLabelKeysGetRequest object.
 
   Fields:
-    name: Resource name for label key to be fetched in the format
+    name: Resource name for LabelKey to be fetched in the format
       labelKeys/123.
   """
 
@@ -325,13 +341,13 @@ class LabelmanagerLabelKeysListRequest(_messages.Message):
   r"""A LabelmanagerLabelKeysListRequest object.
 
   Fields:
-    pageSize: The maximum number of label keys to return in the response. This
-      field is optional. This is currently not used by the server and will
-      return the full page even if a size is specified currently.
-    pageToken: A pagination token returned from a previous call to
+    pageSize: Optional. The maximum number of LabelKeys to return in the
+      response. This is currently not used by the server and will return the
+      full page even if a size is specified currently.
+    pageToken: Optional. A pagination token returned from a previous call to
       `ListLabelKey` that indicates where this listing should continue from.
-      This is currently not used by the server. This field is optional.
-    parent: The resource name of the new label key's parent. Must be of the
+      This is currently not used by the server.
+    parent: The resource name of the new LabelKey's parent. Must be of the
       form `folders/{folder_id}` or `organizations/{org_id}`.
   """
 
@@ -345,7 +361,7 @@ class LabelmanagerLabelKeysPatchRequest(_messages.Message):
 
   Fields:
     labelKey: A LabelKey resource to be passed as the request body.
-    name: Resource name for label key. Must be in the format labelKeys/123.
+    name: Resource name for LabelKey. Must be in the format labelKeys/123.
       Immutable.
     updateMask: Fields to be updated
   """
@@ -389,8 +405,8 @@ class LabelmanagerLabelKeysUndeleteRequest(_messages.Message):
   r"""A LabelmanagerLabelKeysUndeleteRequest object.
 
   Fields:
-    name: Resource name for label key to be un-deleted in the format
-      labelKeys/123.
+    name: Resource name for LabelKey to be un-deleted in the format
+      labelKeys/123. The parent of this LabelKey must be in the active state.
     undeleteLabelKeyRequest: A UndeleteLabelKeyRequest resource to be passed
       as the request body.
   """
@@ -403,10 +419,10 @@ class LabelmanagerLabelValuesDeleteLabelBindingsRequest(_messages.Message):
   r"""A LabelmanagerLabelValuesDeleteLabelBindingsRequest object.
 
   Fields:
-    labelBinding_labelValue: The label value of the binding. Must be of the
-      form "labelValues/456.
-    labelBinding_resource: The full resource name of the node the label is
-      bound to. E.g. //library.googleapis.com/shelves/shelf1/books/book2" E.g.
+    labelBinding_labelValue: The LabelValue of the LabelBinding. Must be of
+      the form "labelValues/456.
+    labelBinding_resource: The full resource name of the resource the
+      LabelValue is bound to. E.g.
       //cloudresourcemanager.googleapis.com/organizations/123
     labelValuesId: A string attribute.
   """
@@ -420,7 +436,7 @@ class LabelmanagerLabelValuesDeleteRequest(_messages.Message):
   r"""A LabelmanagerLabelValuesDeleteRequest object.
 
   Fields:
-    name: Resource name for label value to be deleted in the format
+    name: Resource name for LabelValue to be deleted in the format
       labelValues/456.
   """
 
@@ -431,7 +447,7 @@ class LabelmanagerLabelValuesGetRequest(_messages.Message):
   r"""A LabelmanagerLabelValuesGetRequest object.
 
   Fields:
-    name: Resource name for label value to be fetched in the format
+    name: Resource name for LabelValue to be fetched in the format
       labelValues/456.
   """
 
@@ -455,17 +471,16 @@ class LabelmanagerLabelValuesLabelBindingsListRequest(_messages.Message):
   r"""A LabelmanagerLabelValuesLabelBindingsListRequest object.
 
   Fields:
-    label: The name of the label value should be of the form "labelvalues/123"
+    label: The name of the LabelValue should be of the form "labelValues/123"
     labelValuesId: A string attribute.
-    pageSize: The maximum number of bindingss to return in the response. This
-      field is optional. This is currently not used by the server and will
-      return the full page even if a size is specified currently.
-    pageToken: A pagination token returned from a previous call to
+    pageSize: Optional. The maximum number of LabelBindings to return in the
+      response. This is currently not used by the server and will return the
+      full page even if a size is specified.
+    pageToken: Optional. A pagination token returned from a previous call to
       `ListLabelBindings` that indicates where this listing should continue
-      from. This is currently not used by the server. This field is optional.
+      from. This is currently not used by the server.
     resource: The full name of the resource should be of the form "type/id".
-      E.g. E.g. //library.googleapis.com/shelves/shelf1/books/book2" E.g.
-      //cloudresourcemanager.googleapis.com/organizations/123
+      E.g. E.g. //cloudresourcemanager.googleapis.com/organizations/123
   """
 
   label = _messages.StringField(1)
@@ -479,13 +494,13 @@ class LabelmanagerLabelValuesListRequest(_messages.Message):
   r"""A LabelmanagerLabelValuesListRequest object.
 
   Fields:
-    pageSize: The maximum number of label values to return in the response.
-      This field is optional. This is currently not used by the server and
-      will return the full page even if a size is specified currently.
-    pageToken: A pagination token returned from a previous call to
+    pageSize: Optional. The maximum number of LabelValues to return in the
+      response. This is currently not used by the server and will return the
+      full page even if a size is specified currently.
+    pageToken: Optional. A pagination token returned from a previous call to
       `ListLabelValues` that indicates where this listing should continue
-      from. This is currently not used by the server.  This field is optional.
-    parent: Resource name for label key, parent of the label values to be
+      from. This is currently not used by the server.
+    parent: Resource name for LabelKey, parent of the LabelValues to be
       listed, in the format labelKeys/123.
   """
 
@@ -499,7 +514,7 @@ class LabelmanagerLabelValuesPatchRequest(_messages.Message):
 
   Fields:
     labelValue: A LabelValue resource to be passed as the request body.
-    name: Resource name for label value in the format labelValues/456.
+    name: Resource name for LabelValue in the format labelValues/456.
       Immutable.
     updateMask: Fields to be updated.
   """
@@ -513,7 +528,7 @@ class LabelmanagerLabelValuesUndeleteRequest(_messages.Message):
   r"""A LabelmanagerLabelValuesUndeleteRequest object.
 
   Fields:
-    name: Resource name for label value to be un-deleted in the format
+    name: Resource name for LabelValue to be un-deleted in the format
       labelValues/456.
     undeleteLabelValueRequest: A UndeleteLabelValueRequest resource to be
       passed as the request body.
@@ -537,12 +552,12 @@ class ListLabelBindingsResponse(_messages.Message):
   r"""The ListLabelBindings response
 
   Fields:
-    bindings: A possibly paginated list of bindings for the specified label
-      value or resource.
-    nextPageToken: A pagination token returned from a previous call to
-      `ListLabelBindings` that indicates from where listing should continue.
-      This is currently not used, but the server may at any point start
-      supplying a valid token. This field is optional.
+    bindings: A possibly paginated list of LabelBindings for the specified
+      LabelValue or resource.
+    nextPageToken: Optional. A pagination token returned from a previous call
+      to `ListLabelBindings` that indicates from where listing should
+      continue. This is currently not used, but the server may at any point
+      start supplying a valid token.
   """
 
   bindings = _messages.MessageField('LabelBinding', 1, repeated=True)
@@ -553,12 +568,12 @@ class ListLabelKeysResponse(_messages.Message):
   r"""The ListLabelKeys response message.
 
   Fields:
-    keys: List of label keys that live under the specified parent in the
+    keys: List of LabelKeys that live under the specified parent in the
       request.
-    nextPageToken: A pagination token returned from a previous call to
-      `ListLabelKeys` that indicates from where listing should continue. This
-      is currently not used, but the server may at any point start supplying a
-      valid token. This field is optional.
+    nextPageToken: Optional. A pagination token returned from a previous call
+      to `ListLabelKeys` that indicates from where listing should continue.
+      This is currently not used, but the server may at any point start
+      supplying a valid token.
   """
 
   keys = _messages.MessageField('LabelKey', 1, repeated=True)
@@ -569,12 +584,12 @@ class ListLabelValuesResponse(_messages.Message):
   r"""The ListLabelValues response.
 
   Fields:
-    nextPageToken: A pagination token returned from a previous call to
-      `ListLabelValues` that indicates from where listing should continue.
+    nextPageToken: Optional. A pagination token returned from a previous call
+      to `ListLabelValues` that indicates from where listing should continue.
       This is currently not used, but the server may at any point start
-      supplying a valid token. This field is optional.
-    values: A possibly paginated list of labels that are direct descendants of
-      the specified parent label key.
+      supplying a valid token.
+    values: A possibly paginated list of LabelValues that are direct
+      descendants of the specified parent LabelKey.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -909,11 +924,11 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class UndeleteLabelKeyRequest(_messages.Message):
-  r"""The request message for undeleting a label key."""
+  r"""The request message for undeleting a LabelKey."""
 
 
 class UndeleteLabelValueRequest(_messages.Message):
-  r"""The request message for undeleting a label value."""
+  r"""The request message for undeleting a LabelValue."""
 
 
 encoding.AddCustomJsonFieldMapping(

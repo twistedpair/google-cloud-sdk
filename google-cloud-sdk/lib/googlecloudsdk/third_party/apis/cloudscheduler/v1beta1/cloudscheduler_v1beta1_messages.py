@@ -766,10 +766,12 @@ class PubsubMessage(_messages.Message):
   information about message limits.
 
   Messages:
-    AttributesValue: Optional attributes for this message.
+    AttributesValue: Attributes for this message. If this field is empty, the
+      message must contain non-empty data.
 
   Fields:
-    attributes: Optional attributes for this message.
+    attributes: Attributes for this message. If this field is empty, the
+      message must contain non-empty data.
     data: The message data field. If this field is empty, the message must
       contain at least one attribute.
     messageId: ID of this message, assigned by the server when the message is
@@ -784,7 +786,8 @@ class PubsubMessage(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributesValue(_messages.Message):
-    r"""Optional attributes for this message.
+    r"""Attributes for this message. If this field is empty, the message must
+    contain non-empty data.
 
     Messages:
       AdditionalProperty: An additional property for a AttributesValue object.

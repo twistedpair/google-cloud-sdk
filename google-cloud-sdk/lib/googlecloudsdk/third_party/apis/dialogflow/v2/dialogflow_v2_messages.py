@@ -1590,11 +1590,13 @@ class GoogleCloudDialogflowV2IntentMessage(_messages.Message):
 
   Fields:
     basicCard: The basic card response for Actions on Google.
+    browseCarouselCard: Browse carousel card for Actions on Google.
     card: The card response.
     carouselSelect: The carousel card response for Actions on Google.
     image: The image response.
     linkOutSuggestion: The link out suggestion chip for Actions on Google.
     listSelect: The list card response for Actions on Google.
+    mediaContent: The media content card for Actions on Google.
     payload: Returns a response containing a custom, platform-specific
       payload. See the Intent.Message.Platform type for a description of the
       structure that may be required for your platform.
@@ -1602,6 +1604,7 @@ class GoogleCloudDialogflowV2IntentMessage(_messages.Message):
     quickReplies: The quick replies response.
     simpleResponses: The voice and text-only responses for Actions on Google.
     suggestions: The suggestion chips for Actions on Google.
+    tableCard: Table card for Actions on Google.
     text: The text response.
   """
 
@@ -1681,17 +1684,20 @@ class GoogleCloudDialogflowV2IntentMessage(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   basicCard = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageBasicCard', 1)
-  card = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageCard', 2)
-  carouselSelect = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageCarouselSelect', 3)
-  image = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageImage', 4)
-  linkOutSuggestion = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageLinkOutSuggestion', 5)
-  listSelect = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageListSelect', 6)
-  payload = _messages.MessageField('PayloadValue', 7)
-  platform = _messages.EnumField('PlatformValueValuesEnum', 8)
-  quickReplies = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageQuickReplies', 9)
-  simpleResponses = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageSimpleResponses', 10)
-  suggestions = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageSuggestions', 11)
-  text = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageText', 12)
+  browseCarouselCard = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageBrowseCarouselCard', 2)
+  card = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageCard', 3)
+  carouselSelect = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageCarouselSelect', 4)
+  image = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageImage', 5)
+  linkOutSuggestion = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageLinkOutSuggestion', 6)
+  listSelect = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageListSelect', 7)
+  mediaContent = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageMediaContent', 8)
+  payload = _messages.MessageField('PayloadValue', 9)
+  platform = _messages.EnumField('PlatformValueValuesEnum', 10)
+  quickReplies = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageQuickReplies', 11)
+  simpleResponses = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageSimpleResponses', 12)
+  suggestions = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageSuggestions', 13)
+  tableCard = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageTableCard', 14)
+  text = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageText', 15)
 
 
 class GoogleCloudDialogflowV2IntentMessageBasicCard(_messages.Message):
@@ -1733,6 +1739,102 @@ class GoogleCloudDialogflowV2IntentMessageBasicCardButtonOpenUriAction(_messages
   """
 
   uri = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV2IntentMessageBrowseCarouselCard(_messages.Message):
+  r"""Browse Carousel Card for Actions on Google.
+  https://developers.google.com/actions/assistant/responses#browsing_carousel
+
+  Enums:
+    ImageDisplayOptionsValueValuesEnum: Optional. Settings for displaying the
+      image. Applies to every image in items.
+
+  Fields:
+    imageDisplayOptions: Optional. Settings for displaying the image. Applies
+      to every image in items.
+    items: Required. List of items in the Browse Carousel Card. Minimum of two
+      items, maximum of ten.
+  """
+
+  class ImageDisplayOptionsValueValuesEnum(_messages.Enum):
+    r"""Optional. Settings for displaying the image. Applies to every image in
+    items.
+
+    Values:
+      IMAGE_DISPLAY_OPTIONS_UNSPECIFIED: Fill the gaps between the image and
+        the image container with gray bars.
+      GRAY: Fill the gaps between the image and the image container with gray
+        bars.
+      WHITE: Fill the gaps between the image and the image container with
+        white bars.
+      CROPPED: Image is scaled such that the image width and height match or
+        exceed the container dimensions. This may crop the top and bottom of
+        the image if the scaled image height is greater than the container
+        height, or crop the left and right of the image if the scaled image
+        width is greater than the container width. This is similar to "Zoom
+        Mode" on a widescreen TV when playing a 4:3 video.
+      BLURRED_BACKGROUND: Pad the gaps between image and image frame with a
+        blurred copy of the same image.
+    """
+    IMAGE_DISPLAY_OPTIONS_UNSPECIFIED = 0
+    GRAY = 1
+    WHITE = 2
+    CROPPED = 3
+    BLURRED_BACKGROUND = 4
+
+  imageDisplayOptions = _messages.EnumField('ImageDisplayOptionsValueValuesEnum', 1)
+  items = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageBrowseCarouselCardBrowseCarouselCardItem', 2, repeated=True)
+
+
+class GoogleCloudDialogflowV2IntentMessageBrowseCarouselCardBrowseCarouselCardItem(_messages.Message):
+  r"""Browsing carousel tile
+
+  Fields:
+    description: Optional. Description of the carousel item. Maximum of four
+      lines of text.
+    footer: Optional. Text that appears at the bottom of the Browse Carousel
+      Card. Maximum of one line of text.
+    image: Optional. Hero image for the carousel item.
+    openUriAction: Required. Action to present to the user.
+    title: Required. Title of the carousel item. Maximum of two lines of text.
+  """
+
+  description = _messages.StringField(1)
+  footer = _messages.StringField(2)
+  image = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageImage', 3)
+  openUriAction = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageBrowseCarouselCardBrowseCarouselCardItemOpenUrlAction', 4)
+  title = _messages.StringField(5)
+
+
+class GoogleCloudDialogflowV2IntentMessageBrowseCarouselCardBrowseCarouselCardItemOpenUrlAction(_messages.Message):
+  r"""Actions on Google action to open a given url.
+
+  Enums:
+    UrlTypeHintValueValuesEnum: Optional. Specifies the type of viewer that is
+      used when opening the URL. Defaults to opening via web browser.
+
+  Fields:
+    url: Required. URL
+    urlTypeHint: Optional. Specifies the type of viewer that is used when
+      opening the URL. Defaults to opening via web browser.
+  """
+
+  class UrlTypeHintValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the type of viewer that is used when opening the
+    URL. Defaults to opening via web browser.
+
+    Values:
+      URL_TYPE_HINT_UNSPECIFIED: Unspecified
+      AMP_ACTION: Url would be an amp action
+      AMP_CONTENT: URL that points directly to AMP content, or to a canonical
+        URL which refers to AMP content via <link rel="amphtml">.
+    """
+    URL_TYPE_HINT_UNSPECIFIED = 0
+    AMP_ACTION = 1
+    AMP_CONTENT = 2
+
+  url = _messages.StringField(1)
+  urlTypeHint = _messages.EnumField('UrlTypeHintValueValuesEnum', 2)
 
 
 class GoogleCloudDialogflowV2IntentMessageCard(_messages.Message):
@@ -1788,6 +1890,38 @@ class GoogleCloudDialogflowV2IntentMessageCarouselSelectItem(_messages.Message):
   image = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageImage', 2)
   info = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageSelectItemInfo', 3)
   title = _messages.StringField(4)
+
+
+class GoogleCloudDialogflowV2IntentMessageColumnProperties(_messages.Message):
+  r"""Column properties for TableCard.
+
+  Enums:
+    HorizontalAlignmentValueValuesEnum: Optional. Defines text alignment for
+      all cells in this column.
+
+  Fields:
+    header: Required. Column heading.
+    horizontalAlignment: Optional. Defines text alignment for all cells in
+      this column.
+  """
+
+  class HorizontalAlignmentValueValuesEnum(_messages.Enum):
+    r"""Optional. Defines text alignment for all cells in this column.
+
+    Values:
+      HORIZONTAL_ALIGNMENT_UNSPECIFIED: Text is aligned to the leading edge of
+        the column.
+      LEADING: Text is aligned to the leading edge of the column.
+      CENTER: Text is centered in the column.
+      TRAILING: Text is aligned to the trailing edge of the column.
+    """
+    HORIZONTAL_ALIGNMENT_UNSPECIFIED = 0
+    LEADING = 1
+    CENTER = 2
+    TRAILING = 3
+
+  header = _messages.StringField(1)
+  horizontalAlignment = _messages.EnumField('HorizontalAlignmentValueValuesEnum', 2)
 
 
 class GoogleCloudDialogflowV2IntentMessageImage(_messages.Message):
@@ -1846,6 +1980,50 @@ class GoogleCloudDialogflowV2IntentMessageListSelectItem(_messages.Message):
   image = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageImage', 2)
   info = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageSelectItemInfo', 3)
   title = _messages.StringField(4)
+
+
+class GoogleCloudDialogflowV2IntentMessageMediaContent(_messages.Message):
+  r"""The media content card for Actions on Google.
+
+  Enums:
+    MediaTypeValueValuesEnum: Optional. What type of media is the content (ie
+      "audio").
+
+  Fields:
+    mediaObjects: Required. List of media objects.
+    mediaType: Optional. What type of media is the content (ie "audio").
+  """
+
+  class MediaTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. What type of media is the content (ie "audio").
+
+    Values:
+      RESPONSE_MEDIA_TYPE_UNSPECIFIED: Unspecified.
+      AUDIO: Response media type is audio.
+    """
+    RESPONSE_MEDIA_TYPE_UNSPECIFIED = 0
+    AUDIO = 1
+
+  mediaObjects = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageMediaContentResponseMediaObject', 1, repeated=True)
+  mediaType = _messages.EnumField('MediaTypeValueValuesEnum', 2)
+
+
+class GoogleCloudDialogflowV2IntentMessageMediaContentResponseMediaObject(_messages.Message):
+  r"""Response media object for media content card.
+
+  Fields:
+    contentUrl: Required. Url where the media is stored.
+    description: Optional. Description of media card.
+    icon: Optional. Icon to display above media content.
+    largeImage: Optional. Image to display above media content.
+    name: Required. Name of media card.
+  """
+
+  contentUrl = _messages.StringField(1)
+  description = _messages.StringField(2)
+  icon = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageImage', 3)
+  largeImage = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageImage', 4)
+  name = _messages.StringField(5)
 
 
 class GoogleCloudDialogflowV2IntentMessageQuickReplies(_messages.Message):
@@ -1924,6 +2102,49 @@ class GoogleCloudDialogflowV2IntentMessageSuggestions(_messages.Message):
   """
 
   suggestions = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageSuggestion', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2IntentMessageTableCard(_messages.Message):
+  r"""Table card for Actions on Google.
+
+  Fields:
+    buttons: Optional. List of buttons for the card.
+    columnProperties: Optional. Display properties for the columns in this
+      table.
+    image: Optional. Image which should be displayed on the card.
+    rows: Optional. Rows in this table of data.
+    subtitle: Optional. Subtitle to the title.
+    title: Required. Title of the card.
+  """
+
+  buttons = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageBasicCardButton', 1, repeated=True)
+  columnProperties = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageColumnProperties', 2, repeated=True)
+  image = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageImage', 3)
+  rows = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageTableCardRow', 4, repeated=True)
+  subtitle = _messages.StringField(5)
+  title = _messages.StringField(6)
+
+
+class GoogleCloudDialogflowV2IntentMessageTableCardCell(_messages.Message):
+  r"""Cell of TableCardRow.
+
+  Fields:
+    text: Required. Text in this cell.
+  """
+
+  text = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV2IntentMessageTableCardRow(_messages.Message):
+  r"""Row of TableCard.
+
+  Fields:
+    cells: Optional. List of cells that make up this row.
+    dividerAfter: Optional. Whether to add a visual divider after this row.
+  """
+
+  cells = _messages.MessageField('GoogleCloudDialogflowV2IntentMessageTableCardCell', 1, repeated=True)
+  dividerAfter = _messages.BooleanField(2)
 
 
 class GoogleCloudDialogflowV2IntentMessageText(_messages.Message):
@@ -2644,7 +2865,8 @@ class GoogleCloudDialogflowV2VoiceSelectionParams(_messages.Message):
 
   Fields:
     name: Optional. The name of the voice. If not set, the service will choose
-      a voice based on the other parameters such as language_code and gender.
+      a voice based on the other parameters such as language_code and
+      ssml_gender.
     ssmlGender: Optional. The preferred gender of the voice. If not set, the
       service will choose a voice based on the other parameters such as
       language_code and name. Note that this is only a preference, not

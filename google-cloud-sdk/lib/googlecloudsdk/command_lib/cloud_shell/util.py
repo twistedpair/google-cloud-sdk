@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import base64
+import datetime
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
@@ -28,6 +29,8 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import store
 
 DEFAULT_ENVIRONMENT_NAME = 'users/me/environments/default'
+
+MIN_CREDS_EXPIRY = datetime.timedelta(minutes=30)
 
 
 class UnsupportedPlatform(exceptions.Error):
@@ -96,9 +99,9 @@ def PrepareEnvironment(args):
 
   # If the environment doesn't have the public key, push it
   key_parts = keys.GetPublicKey().ToEntry().split(' ')
+  key_format = ValidateKeyType(key_parts[0].replace('-', '_').upper(), messages)
   key = messages.PublicKey(
-      format=messages.PublicKey.FormatValueValuesEnum(key_parts[0].replace(
-          '-', '_').upper()),
+      format=key_format,
       key=base64.b64decode(key_parts[1]),
   )
   has_key = False
@@ -119,6 +122,10 @@ def PrepareEnvironment(args):
     log.Print('Starting your Cloud Shell machine...')
 
     creds = store.LoadIfEnabled()
+    if creds is not None and creds.token_expiry - creds.token_expiry.utcnow(
+    ) < MIN_CREDS_EXPIRY:
+      store.Refresh(creds)
+
     access_token = None
     if creds is not None:
       access_token = creds.get_access_token().access_token
@@ -146,11 +153,26 @@ def PrepareEnvironment(args):
   )
 
 
+def ValidateKeyType(key_format, messages):
+  try:
+    return messages.PublicKey.FormatValueValuesEnum(key_format)
+  except TypeError:
+    raise ssh.InvalidKeyError('{} format of the key is not supported '
+                              'yet.'.format(key_format))
+
+
 def AuthorizeEnvironment():
+  """Pushes gcloud credentials to the user's environment."""
+
   client = apis.GetClientInstance('cloudshell', 'v1alpha1')
   messages = apis.GetMessagesModule('cloudshell', 'v1alpha1')
 
+  # Load creds and refresh them if they're about to expire
   creds = store.LoadIfEnabled()
+  if creds is not None and creds.token_expiry - creds.token_expiry.utcnow(
+  ) < MIN_CREDS_EXPIRY:
+    store.Refresh(creds)
+
   access_token = None
   if creds is not None:
     access_token = creds.get_access_token().access_token

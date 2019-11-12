@@ -80,6 +80,11 @@ class AptSettings(_messages.Message):
       will be performed using `apt-get dist-upgrade` instead.
 
   Fields:
+    excludes: List of packages to exclude from update.
+    exclusivePackages: An exclusive list of packages to be updated. These are
+      the only packages that will be updated. If these packages are not
+      installed, they will be ignored. This field cannot be specified with any
+      other patch configuration fields.
     type: Optional. By changing the type to DIST, the patching will be
       performed using `apt-get dist-upgrade` instead.
   """
@@ -95,7 +100,9 @@ class AptSettings(_messages.Message):
     TYPE_UNSPECIFIED = 0
     DIST = 1
 
-  type = _messages.EnumField('TypeValueValuesEnum', 1)
+  excludes = _messages.StringField(1, repeated=True)
+  exclusivePackages = _messages.StringField(2, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class Assignment(_messages.Message):
@@ -241,9 +248,26 @@ class Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: The G Suite domain (primary) that represents all
-      the    users of that domain. For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding.  *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus    unique identifier) representing a service account that has been
+      recently    deleted. For example,    `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique    identifier) representing a Google group
+      that has been recently    deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If    the group is
+      recovered, this value reverts to `group:{emailid}` and the    recovered
+      group retains the role in the binding.   * `domain:{domain}`: The G
+      Suite domain (primary) that represents all the    users of that domain.
+      For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -1234,10 +1258,10 @@ class PatchJob(_messages.Message):
   through instance details, use ListPatchJobInstanceDetails.
 
   Enums:
-    StateValueValuesEnum: Output only. The current state of the PatchJob.
+    StateValueValuesEnum: The current state of the PatchJob.
 
   Fields:
-    createTime: Output only. Time this PatchJob was created.
+    createTime: Time this PatchJob was created.
     description: Description of the patch job. Length of the description is
       limited to 1024 characters.
     displayName: Display name for this patch job. This is not a unique
@@ -1248,21 +1272,20 @@ class PatchJob(_messages.Message):
       job will time out.
     errorMessage: If this patch job failed, this message will provide
       information about the failure.
-    filter: Required. There must be at least one instance to patch for this
-      job to succeed. This is the same filter used when listing compute
-      instances.
+    filter: There must be at least one instance to patch for this job to
+      succeed. This is the same filter used when listing compute instances.
     instanceDetailsSummary: Summary of instance details.
-    name: Output only. Unique identifier for this patch job in the form
+    name: Unique identifier for this patch job in the form
       `projects/*/patchJobs/*`
     patchConfig: Patch configuration being applied.
     percentComplete: Reflects the overall progress of the patch job in the
       range of 0.0 being no progress to 100.0 being complete.
-    state: Output only. The current state of the PatchJob.
-    updateTime: Output only. Last time this PatchJob was updated.
+    state: The current state of the PatchJob.
+    updateTime: Last time this PatchJob was updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The current state of the PatchJob.
+    r"""The current state of the PatchJob.
 
     Values:
       STATE_UNSPECIFIED: State must be specified.
@@ -1469,11 +1492,11 @@ class ReportPatchJobInstanceDetailsRequest(_messages.Message):
       identity where the audience is 'osconfig.googleapis.com' and the format
       is 'full'.
     instanceSystemId: Required. The unique, system-generated identifier for
-      the instance.  This is the immutable, auto-generated ID assigned to the
-      instance upon creation. This is needed here because GCE instance names
-      are not tombstoned; it is possible to delete an instance and create a
-      new one with the same name; this provides a mechanism for this API to
-      identify distinct instances in this case.
+      the instance.  This is the unchangeable, auto-generated ID assigned to
+      the instance upon creation. This is needed here because GCE instance
+      names are not tombstoned; it is possible to delete an instance and
+      create a new one with the same name; this provides a mechanism for this
+      API to identify distinct instances in this case.
     patchJob: Unique identifier of the patch job this request applies to.
     state: State of current patch execution on the instance.
   """
@@ -1694,7 +1717,10 @@ class WindowsUpdateSettings(_messages.Message):
   Fields:
     classifications: Only apply updates of these windows update
       classifications. If empty, all updates will be applied.
-    excludes: Optional list of KBs to exclude from update.
+    excludes: List of KBs to exclude from update.
+    exclusivePatches: An exclusive list of kbs to be updated. These are the
+      only patches that will be updated. This field must not be used with
+      other patch configurations.
   """
 
   class ClassificationsValueListEntryValuesEnum(_messages.Enum):
@@ -1725,6 +1751,7 @@ class WindowsUpdateSettings(_messages.Message):
 
   classifications = _messages.EnumField('ClassificationsValueListEntryValuesEnum', 1, repeated=True)
   excludes = _messages.StringField(2, repeated=True)
+  exclusivePatches = _messages.StringField(3, repeated=True)
 
 
 class YumPackageConfig(_messages.Message):
@@ -1772,15 +1799,20 @@ class YumSettings(_messages.Message):
 
   Fields:
     excludes: List of packages to exclude from update. These packages will be
-      excluded by using the yum `--exclude` flag.
+      excluded by using the yum `--exclude` field.
+    exclusivePackages: An exclusive list of packages to be updated. These are
+      the only packages that will be updated. If these packages are not
+      installed, they will be ignored. This field must not be specified with
+      any other patch configuration fields.
     minimal: Optional. Will cause patch to run `yum update-minimal` instead.
     security: Optional. Adds the `--security` flag to `yum update`. Not
       supported on all platforms.
   """
 
   excludes = _messages.StringField(1, repeated=True)
-  minimal = _messages.BooleanField(2)
-  security = _messages.BooleanField(3)
+  exclusivePackages = _messages.StringField(2, repeated=True)
+  minimal = _messages.BooleanField(3)
+  security = _messages.BooleanField(4)
 
 
 class ZypperPackageConfig(_messages.Message):
@@ -1827,6 +1859,11 @@ class ZypperSettings(_messages.Message):
   Fields:
     categories: Optional. Install only patches with these categories. Common
       categories include security, recommended, and feature.
+    excludes: List of patches to exclude from update.
+    exclusivePatches: An exclusive list of patches to be updated. These are
+      the only patches that will be installed using 'zypper patch
+      patch:<patch_name>' command. This field must not be used with any other
+      patch configuration fields.
     severities: Optional. Install only patches with these severities. Common
       severities include critical, important, moderate, and low.
     withOptional: Optional. Adds the `--with-optional` flag to `zypper patch`.
@@ -1834,9 +1871,11 @@ class ZypperSettings(_messages.Message):
   """
 
   categories = _messages.StringField(1, repeated=True)
-  severities = _messages.StringField(2, repeated=True)
-  withOptional = _messages.BooleanField(3)
-  withUpdate = _messages.BooleanField(4)
+  excludes = _messages.StringField(2, repeated=True)
+  exclusivePatches = _messages.StringField(3, repeated=True)
+  severities = _messages.StringField(4, repeated=True)
+  withOptional = _messages.BooleanField(5)
+  withUpdate = _messages.BooleanField(6)
 
 
 encoding.AddCustomJsonFieldMapping(

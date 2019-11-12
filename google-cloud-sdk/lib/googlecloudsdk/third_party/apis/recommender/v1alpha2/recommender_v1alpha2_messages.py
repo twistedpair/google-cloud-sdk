@@ -46,11 +46,14 @@ class GoogleCloudRecommenderV1alpha2Impact(_messages.Message):
       COST: Indicates a potential increase or decrease in cost.
       SECURITY: Indicates a potential increase or decrease in security.
       PERFORMANCE: Indicates a potential increase or decrease in performance.
+      MANAGEABILITY: Indicates a potential increase or decrease in
+        manageability.
     """
     CATEGORY_UNSPECIFIED = 0
     COST = 1
     SECURITY = 2
     PERFORMANCE = 3
+    MANAGEABILITY = 4
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   costProjection = _messages.MessageField('GoogleCloudRecommenderV1alpha2CostProjection', 2)
@@ -99,11 +102,13 @@ class GoogleCloudRecommenderV1alpha2Insight(_messages.Message):
       COST: The insight is related to cost.
       SECURITY: The insight is related to security.
       PERFORMANCE: The insight is related to performance.
+      MANAGEABILITY: This insight is related to manageability.
     """
     CATEGORY_UNSPECIFIED = 0
     COST = 1
     SECURITY = 2
     PERFORMANCE = 3
+    MANAGEABILITY = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ContentValue(_messages.Message):
@@ -511,8 +516,10 @@ class GoogleCloudRecommenderV1alpha2Operation(_messages.Message):
 
   Fields:
     action: Type of this operation. Contains one of 'and', 'remove',
-      'replace', 'move', 'copy', 'test' and custom operations. This field is
+      'replace', 'move', 'copy', 'test' and 'custom' operations. This field is
       case-insensitive and always populated.
+    customAction: Needed if action is 'custom'. The subtype of a custom
+      action. i.e. ('navigate-to-page'). This field is also case-insensitive.
     path: Path to the target field being operated on. If the operation is at
       the resource level, then path should be "/". This field is always
       populated.
@@ -618,15 +625,16 @@ class GoogleCloudRecommenderV1alpha2Operation(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   action = _messages.StringField(1)
-  path = _messages.StringField(2)
-  pathFilters = _messages.MessageField('PathFiltersValue', 3)
-  pathValueMatchers = _messages.MessageField('PathValueMatchersValue', 4)
-  resource = _messages.StringField(5)
-  resourceType = _messages.StringField(6)
-  sourcePath = _messages.StringField(7)
-  sourceResource = _messages.StringField(8)
-  value = _messages.MessageField('extra_types.JsonValue', 9)
-  valueMatcher = _messages.MessageField('GoogleCloudRecommenderV1alpha2ValueMatcher', 10)
+  customAction = _messages.StringField(2)
+  path = _messages.StringField(3)
+  pathFilters = _messages.MessageField('PathFiltersValue', 4)
+  pathValueMatchers = _messages.MessageField('PathValueMatchersValue', 5)
+  resource = _messages.StringField(6)
+  resourceType = _messages.StringField(7)
+  sourcePath = _messages.StringField(8)
+  sourceResource = _messages.StringField(9)
+  value = _messages.MessageField('extra_types.JsonValue', 10)
+  valueMatcher = _messages.MessageField('GoogleCloudRecommenderV1alpha2ValueMatcher', 11)
 
 
 class GoogleCloudRecommenderV1alpha2OperationGroup(_messages.Message):

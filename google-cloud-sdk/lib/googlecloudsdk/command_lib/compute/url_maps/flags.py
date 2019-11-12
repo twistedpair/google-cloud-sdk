@@ -87,7 +87,7 @@ def UrlMapArgumentForTargetProxy(required=True,
                                  include_l7_internal_load_balancing=False):
   return compute_flags.ResourceArgument(
       name='--url-map',
-      resource_name='url map',
+      resource_name='URL map',
       completer=UrlMapsCompleterAlpha
       if include_l7_internal_load_balancing else UrlMapsCompleter,
       plural=False,

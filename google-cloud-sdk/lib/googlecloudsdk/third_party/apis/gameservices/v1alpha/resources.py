@@ -63,6 +63,18 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  PROJECTS_LOCATIONS_GAMESERVERDEPLOYMENTS_CONFIGS = (
+      'projects.locations.gameServerDeployments.configs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'gameServerDeployments/{gameServerDeploymentsId}/configs/'
+              '{configsId}',
+      },
+      [u'name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

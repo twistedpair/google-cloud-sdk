@@ -64,7 +64,8 @@ class Action(_messages.Message):
     alwaysRun: By default, after an action fails, no further actions are run.
       This flag indicates that this action must be run even if the pipeline
       has already failed. This is useful for actions that copy output files
-      off of the VM or for debugging.
+      off of the VM or for debugging. Note that no actions will be run if
+      image prefetching fails.
     commands: If specified, overrides the `CMD` specified in the container. If
       the container also has an `ENTRYPOINT` the values are used as entrypoint
       arguments. Otherwise, they are used as a command and arguments to run

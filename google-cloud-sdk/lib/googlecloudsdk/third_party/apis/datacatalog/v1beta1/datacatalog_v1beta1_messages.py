@@ -30,9 +30,26 @@ class Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: The G Suite domain (primary) that represents all
-      the    users of that domain. For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding.  *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus    unique identifier) representing a service account that has been
+      recently    deleted. For example,    `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique    identifier) representing a Google group
+      that has been recently    deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If    the group is
+      recovered, this value reverts to `group:{emailid}` and the    recovered
+      group retains the role in the binding.   * `domain:{domain}`: The G
+      Suite domain (primary) that represents all the    users of that domain.
+      For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -55,7 +72,8 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
     sqlResource: The SQL name of the entry. SQL names are case-sensitive.
       Examples:    * `cloud_pubsub.project_id.topic_id`   *
       ``pubsub.project_id.`topic.id.with.dots` ``   *
-      `bigquery.project_id.dataset_id.table_id`   *
+      `bigquery.table.project_id.dataset_id.table_id`   *
+      `bigquery.dataset.project_id.dataset_id`   *
       `datacatalog.project_id.location_id.entry_group_id.entry_id`  `*_id`s
       shoud satisfy the standard SQL rules for identifiers.
       https://cloud.google.com/bigquery/docs/reference/standard-sql/lexical.
@@ -69,7 +87,9 @@ class DatacatalogProjectsLocationsEntryGroupsCreateRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsEntryGroupsCreateRequest object.
 
   Fields:
-    entryGroupId: Required. The id of the entry group to create.
+    entryGroupId: Required. The id of the entry group to create. The id must
+      begin with a letter or underscore, contain only English letters, numbers
+      and underscores, and be at most 64 characters.
     googleCloudDatacatalogV1beta1EntryGroup: A
       GoogleCloudDatacatalogV1beta1EntryGroup resource to be passed as the
       request body.
@@ -824,12 +844,12 @@ class GoogleCloudDatacatalogV1beta1FieldTypeEnumTypeEnumValue(_messages.Message)
 
 
 class GoogleCloudDatacatalogV1beta1GcsFileSpec(_messages.Message):
-  r"""Specifications of a single file in GCS.
+  r"""Specifications of a single file in Cloud Storage.
 
   Fields:
     filePath: Required. The full file path. Example:
       `gs://bucket_name/a/b.txt`.
-    gcsTimestamps: Output only. Timestamps about the GCS file.
+    gcsTimestamps: Output only. Timestamps about the Cloud Storage file.
     sizeBytes: Output only. The size of the file, in bytes.
   """
 
@@ -1046,7 +1066,9 @@ class GoogleCloudDatacatalogV1beta1TableSpec(_messages.Message):
 
 class GoogleCloudDatacatalogV1beta1Tag(_messages.Message):
   r"""Tags are used to attach custom metadata to Data Catalog resources. Tags
-  conform to the specifications within their tag template.
+  conform to the specifications within their tag template.  See [Data Catalog
+  IAM](/data-catalog/docs/concepts/iam) for information on the permissions
+  needed to create or view tags.
 
   Messages:
     FieldsValue: Required. This maps the ID of a tag field to the value of and

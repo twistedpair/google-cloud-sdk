@@ -401,11 +401,15 @@ def WaitForOperations(
         # is delete because there will be no resource left.
         if not _IsDeleteOp(operation.operationType):
           request = data.ResourceGetRequest()
-          resource_requests.append((resource_service, 'Get', request))
+          # Some operations do not have target and should not send get request.
+          if request:
+            resource_requests.append((resource_service, 'Get', request))
 
-        log.status.write('{0} [{1}].\n'.format(
-            _HumanFriendlyNameForOpPastTense(
-                operation.operationType).capitalize(), operation.targetLink))
+        # Only log when there is target link in the operation.
+        if operation.targetLink:
+          log.status.write('{0} [{1}].\n'.format(
+              _HumanFriendlyNameForOpPastTense(
+                  operation.operationType).capitalize(), operation.targetLink))
 
       else:
         # The operation has not reached the DONE state, so we add a

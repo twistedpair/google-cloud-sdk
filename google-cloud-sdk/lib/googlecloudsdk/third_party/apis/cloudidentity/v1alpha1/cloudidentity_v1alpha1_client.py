@@ -49,7 +49,7 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Membership.
+      r"""Creates a `Membership`.
 
       Args:
         request: (CloudidentityGroupsMembershipsCreateRequest) input message
@@ -76,7 +76,7 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Membership.
+      r"""Deletes a `Membership`.
 
       Args:
         request: (CloudidentityGroupsMembershipsDeleteRequest) input message
@@ -103,7 +103,7 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a Membership.
+      r"""Retrieves a `Membership`.
 
       Args:
         request: (CloudidentityGroupsMembershipsGetRequest) input message
@@ -130,7 +130,7 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List Memberships within a Group.
+      r"""List the `Membership`s within a `Group`.
 
       Args:
         request: (CloudidentityGroupsMembershipsListRequest) input message
@@ -157,9 +157,9 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
     )
 
     def Lookup(self, request, global_params=None):
-      r"""Looks up [resource.
-name](https://cloud.google.com/apis/design/resource_names) of a Membership
-within a Group by member's EntityKey.
+      r"""Looks up the [resource.
+name](https://cloud.google.com/apis/design/resource_names) of a
+`Membership` by its `EntityKey`.
 
       Args:
         request: (CloudidentityGroupsMembershipsLookupRequest) input message
@@ -186,7 +186,7 @@ within a Group by member's EntityKey.
     )
 
     def ModifyMembershipRoles(self, request, global_params=None):
-      r"""Modify membership roles.
+      r"""Modifies the `MembershipRole`s of a `Membership`.
 
       Args:
         request: (CloudidentityGroupsMembershipsModifyMembershipRolesRequest) input message
@@ -213,7 +213,7 @@ within a Group by member's EntityKey.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a Membership.
+      r"""Updates a `Membership`.
 
       Args:
         request: (CloudidentityGroupsMembershipsPatchRequest) input message
@@ -250,7 +250,7 @@ within a Group by member's EntityKey.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Group.
+      r"""Creates a `Group`.
 
       Args:
         request: (CloudidentityGroupsCreateRequest) input message
@@ -276,7 +276,7 @@ within a Group by member's EntityKey.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Group.
+      r"""Deletes a `Group`.
 
       Args:
         request: (CloudidentityGroupsDeleteRequest) input message
@@ -303,7 +303,7 @@ within a Group by member's EntityKey.
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a Group.
+      r"""Retrieves a `Group`.
 
       Args:
         request: (CloudidentityGroupsGetRequest) input message
@@ -330,7 +330,7 @@ within a Group by member's EntityKey.
     )
 
     def List(self, request, global_params=None):
-      r"""List groups within a customer or a domain.
+      r"""List the `Group`s within a customer or namespace.
 
       Args:
         request: (CloudidentityGroupsListRequest) input message
@@ -356,9 +356,9 @@ within a Group by member's EntityKey.
     )
 
     def Lookup(self, request, global_params=None):
-      r"""Looks up [resource.
-name](https://cloud.google.com/apis/design/resource_names) of a Group by
-its EntityKey.
+      r"""Looks up the [resource.
+name](https://cloud.google.com/apis/design/resource_names) of a `Group` by
+its `EntityKey`.
 
       Args:
         request: (CloudidentityGroupsLookupRequest) input message
@@ -384,7 +384,7 @@ its EntityKey.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a Group.
+      r"""Updates a `Group`.
 
       Args:
         request: (CloudidentityGroupsPatchRequest) input message
@@ -411,7 +411,7 @@ its EntityKey.
     )
 
     def Search(self, request, global_params=None):
-      r"""Searches for Groups.
+      r"""Searches for `Group`s matching a specified query.
 
       Args:
         request: (CloudidentityGroupsSearchRequest) input message

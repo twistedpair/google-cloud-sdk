@@ -152,9 +152,26 @@ class Binding(_messages.Message):
       serviceAccount:{emailid}: An email address that represents a service
       account. For example, my-other-app@appspot.gserviceaccount.com.
       group:{emailid}: An email address that represents a Google group.  For
-      example, admins@example.com. domain:{domain}: The G Suite domain
-      (primary) that represents all the  users of that domain. For example,
-      google.com or example.com.
+      example, admins@example.com. deleted:user:{emailid}?uid={uniqueid}: An
+      email address (plus unique  identifier) representing a user that has
+      been recently deleted. For
+      example,alice@example.com?uid=123456789012345678901. If the user is
+      recovered, this value reverts to user:{emailid} and the recovered user
+      retains the role in the binding.
+      deleted:serviceAccount:{emailid}?uid={uniqueid}: An email address (plus
+      unique identifier) representing a service account that has been recently
+      deleted. For example,  my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901.  If the
+      service account is undeleted, this value reverts to
+      serviceAccount:{emailid} and the undeleted service account retains the
+      role in the binding. deleted:group:{emailid}?uid={uniqueid}: An email
+      address (plus unique  identifier) representing a Google group that has
+      been recently  deleted. For example,
+      admins@example.com?uid=123456789012345678901. If  the group is
+      recovered, this value reverts to group:{emailid} and the  recovered
+      group retains the role in the binding. domain:{domain}: The G Suite
+      domain (primary) that represents all the  users of that domain. For
+      example, google.com or example.com.
     role: Role that is assigned to members. For example, roles/viewer,
       roles/editor, or roles/owner.
   """
@@ -3460,6 +3477,7 @@ class SoftwareConfig(_messages.Message):
       DRUID: <no description>
       HIVE_WEBHCAT: <no description>
       JUPYTER: <no description>
+      KERBEROS: <no description>
       PRESTO: <no description>
       ZEPPELIN: <no description>
       ZOOKEEPER: <no description>
@@ -3472,12 +3490,13 @@ class SoftwareConfig(_messages.Message):
     DRUID = 2
     HIVE_WEBHCAT = 3
     JUPYTER = 4
-    PRESTO = 5
-    ZEPPELIN = 6
-    ZOOKEEPER = 7
-    SOLR = 8
-    HBASE = 9
-    RANGER = 10
+    KERBEROS = 5
+    PRESTO = 6
+    ZEPPELIN = 7
+    ZOOKEEPER = 8
+    SOLR = 9
+    HBASE = 10
+    RANGER = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):

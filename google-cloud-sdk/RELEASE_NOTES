@@ -5,6 +5,95 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 271.0.0 (2019-11-12)
+
+### Breaking Changes
+
+*   **(Kubernetes Engine)** Enabled node auto-upgrade by default for clusters and node-pools created
+    with `gcloud container <clusters|node-pools> create`. To disable manually,
+    use `--no-enable-autoupgrade` flag.
+
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.77.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>
+
+### App Engine Flexible Environment
+
+* Deprecated `--use-container-optimized-os` flag of `gcloud beta app update`.
+
+### BigQuery
+
+* Updated the BigQuery CLI to handle ASSERT statements.
+* Modified JSON mode such that failed child job results aren't printed.
+* Enabled v2 API for enabling/disabling materialized view refresh.
+* Added Reservation API v1beta1 support.
+
+### Cloud Functions
+
+* Promoted the following commands to GA:
+  `gcloud functions add-iam-policy-binding`,
+  `gcloud functions remove-iam-policy-binding`,
+  `gcloud functions set-iam-policy`,
+  and `gcloud functions get-iam-policy`.
+
+### Cloud Run
+
+* Removed the ability to specify deprecated string values like "Single" to
+  `--concurrency` flag in `gcloud beta run deploy` and `gcloud beta run services
+  update`. Instead, please specify an integer value for this field or "default".
+* Changed the default describe format for services to be human-readable. To
+  use the previous yaml describe format, pass the flag `--format=yaml`.
+
+### Compute Engine
+
+* Added `--private-network-ip` flag to `gcloud compute instance-templates create` command.
+* Added `--private-network-ip` flag to `gcloud compute instance-templates create-with-container` command.
+* Promoted `gcloud compute backend-services export` command to GA.
+* Promoted `gcloud compute backend-services import` command to GA.
+* Promoted `gcloud compute forwarding-rules export` command to GA.
+* Promoted `gcloud compute forwarding-rules import` command to GA.
+* Promoted `gcloud compute url-maps export` command to GA.
+* Promoted `gcloud compute url-maps import` command to GA.
+* Promoted `--storage-location` flag of `gcloud compute images create` and
+ `gcloud compute images import` to GA.
+* Promoted `gcloud compute instance-groups managed create-instance` command
+ to beta.
+
+### Kubernetes Engine
+
+*   Promoted `--enable-vertical-pod-autoscaling` flag of
+    `gcloud container clusters create` and `gloud container clusters update` to
+    GA.
+*   Added `--release-channel` flag to `gcloud beta container clusters update`
+    for subscribing an existing cluster to a release channel or removing a
+    cluster from a release channel.
+*   Promoted Cloud Run for Anthos on Google Cloud to GA. Use
+    `--addons=CloudRun` with `gcloud container clusters create` or
+    `--update-addons=CloudRun=ENABLED` with `gcloud container clusters update`.
+*   Promoted the GKE `ApplicationManager` add-on of `gcloud container clusters
+    create` and `gcloud container clusters update` to beta. This add-on is
+    disabled by default.
+      * Use `--addons=ApplicationManager` to enable the add-on during cluster
+        creation.
+      * Use `--update-addons=ApplicationManager=ENABLED|DISABLED` to
+        enable/disable the add-on for existing GKE clusters.
+*   Promoted `--shielded-secure-boot` and `--shielded-integrity-monitoring`
+    flags of `gcloud container clusters create` and `gloud container clusters
+    update` to GA.
+
+### Pubsub Emulator
+
+* Released Cloud Pub/Sub emulator v0.1.0
+  * First versioned release.
+  * Build system changes.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 270.0.0 (2019-11-05)
 
 ### AI Platform
@@ -15,7 +104,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### App Engine
 
-* 
+*
 * Updated the Python SDK to version 1.9.87.
   Please visit the following release notes for details:
   <https://cloud.google.com/appengine/docs/python/release-notes>
@@ -53,7 +142,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Storage
 
-* 
+*
 * Updated gsutil component to 4.46.
 
 ### Compute Engine
@@ -98,8 +187,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
     *   `--add-maintenance-exclusion-end`
     *   `--clear-maintenance-window`
     *   `--remove-maintenance-exclusion`
-*   Promoted `--security-group` flag of `gcloud container clusters create` to GA.
-    This flag enables support for Google Groups in Kubernetes RBAC rules.
 *   Promoted `--database-encryption-key` for `gcloud container clusters
     create|update`, and `--disable-database-encryption` for `gcloud container
     clusters update` to GA.
@@ -181,7 +268,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Storage
 
-* 
+*
 * Updated gsutil component to 4.45.
 
 ### Compute Engine

@@ -55,6 +55,7 @@ from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files
+import six
 
 
 _TASK_CONSOLE_LINK = """\
@@ -306,8 +307,7 @@ class ServiceDeployer(object):
             all_services, new_version, self.api_client,
             self.deploy_options.stop_previous_version)
       except apitools_exceptions.HttpError as err:
-        # TODO(b/143543614) audit usage of str
-        err_str = str(core_api_exceptions.HttpException(err))
+        err_str = six.text_type(core_api_exceptions.HttpException(err))
         raise VersionPromotionError(err_str)
     elif self.deploy_options.stop_previous_version:
       log.info('Not stopping previous version because new version was '

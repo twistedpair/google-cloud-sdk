@@ -18,12 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import base64
+import binascii
 import json
 
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as cloud_resources
 from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.util import encoding as core_encoding
@@ -75,7 +76,6 @@ class APIAdapter(object):
     Raises:
       Error: if the API call to generate connect agent manifest failed.
     """
-    project = properties.VALUES.core.project.GetOrFail()
     # Can't directly use the generated API client given that it currently
     # doesn't support nested messages. See the discussion here:
     # https://groups.google.com/a/google.com/forum/#!msg/cloud-sdk-eng/hwdwUTEmvlw/fRdrvK26AAAJ
@@ -117,6 +117,14 @@ class ConnectAgentOption(object):
                registry,
                image_pull_secret_content,
                membership_ref):
+    # TODO(b/143641551): make sure GKE On-Prem is compatible with non-base64
+    # encoded string before removing this check.
+    if proxy:
+      try:
+        base64.standard_b64decode(proxy)
+      # Python 2 and Python 3 use different errors.
+      except (TypeError, binascii.Error):
+        proxy = base64.standard_b64encode(proxy.encode('ascii'))
     self.name = name
     self.proxy = proxy
     self.namespace = namespace

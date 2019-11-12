@@ -78,6 +78,12 @@ class Service(k8s_object.KubernetesObject):
       return ret
 
   @property
+  def template_annotations(self):
+    self.AssertFullObject()
+    return k8s_object.AnnotationsFromMetadata(
+        self._messages, self.template.metadata)
+
+  @property
   def revision_labels(self):
     return self.template.labels
 
@@ -109,13 +115,12 @@ class Service(k8s_object.KubernetesObject):
   def domain(self, domain):
     self._m.status.url = self._m.status.domain = domain
 
-  @property
-  def ready_symbol(self):
+  def ReadySymbolAndColor(self):
     if (self.ready is False and  # pylint: disable=g-bool-id-comparison
         self.latest_ready_revision and
         self.latest_created_revision != self.latest_ready_revision):
-      return '!'
-    return super(Service, self).ready_symbol
+      return '!', 'yellow'
+    return super(Service, self).ReadySymbolAndColor()
 
   @property
   def last_modifier(self):
@@ -135,3 +140,8 @@ class Service(k8s_object.KubernetesObject):
   @property
   def vpc_connector(self):
     return self.annotations.get(u'run.googleapis.com/vpc-access-connector')
+
+  def UserImage(self):
+    """Human-readable "what's deployed"."""
+    user_image = self.annotations.get(revision.USER_IMAGE_ANNOTATION)
+    return self.template.UserImage(user_image)

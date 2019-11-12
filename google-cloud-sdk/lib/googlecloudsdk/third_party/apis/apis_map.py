@@ -178,14 +178,6 @@ MAP = {
                 messages_modulepath='binaryauthorization_v1beta1_messages',
                 default_version=False),
     },
-    'bio': {
-        'v1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.bio.v1',
-                client_classpath='bio_v1_client.BioV1',
-                messages_modulepath='bio_v1_messages',
-                default_version=True),
-    },
     'buildartifacts': {
         'v1alpha2':
             APIDef(
@@ -278,6 +270,12 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.cloudidentity.v1alpha1',
                 client_classpath='cloudidentity_v1alpha1_client.CloudidentityV1alpha1',
                 messages_modulepath='cloudidentity_v1alpha1_messages',
+                default_version=False),
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.cloudidentity.v1beta1',
+                client_classpath='cloudidentity_v1beta1_client.CloudidentityV1beta1',
+                messages_modulepath='cloudidentity_v1beta1_messages',
                 default_version=True),
     },
     'cloudiot': {
@@ -975,7 +973,7 @@ MAP = {
                 client_classpath='secretmanager_v1alpha_client.SecretmanagerV1alpha',
                 messages_modulepath='secretmanager_v1alpha_messages',
                 default_version=True),
-         'v1beta1':
+        'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.secretmanager.v1beta1',
                 client_classpath='secretmanager_v1beta1_client.SecretmanagerV1beta1',

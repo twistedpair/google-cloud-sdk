@@ -283,6 +283,20 @@
             "TYPE_UNSPECIFIED",
             "DIST"
           ]
+        },
+        "excludes": {
+          "description": "List of packages to exclude from update.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclusivePackages": {
+          "description": "An exclusive list of packages to be updated. These are the only packages\nthat will be updated. If these packages are not installed, they will be\nignored. This field cannot be specified with any other patch configuration\nfields.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -300,7 +314,14 @@
           "type": "boolean"
         },
         "excludes": {
-          "description": "List of packages to exclude from update. These packages will be excluded by\nusing the yum `--exclude` flag.",
+          "description": "List of packages to exclude from update. These packages will be excluded by\nusing the yum `--exclude` field.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclusivePackages": {
+          "description": "An exclusive list of packages to be updated. These are the only packages\nthat will be updated. If these packages are not installed, they will be\nignored. This field must not be specified with any other patch\nconfiguration fields.",
           "type": "array",
           "items": {
             "type": "string"
@@ -337,6 +358,20 @@
         },
         "severities": {
           "description": "Optional. Install only patches with these severities.\nCommon severities include critical, important, moderate, and low.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "excludes": {
+          "description": "List of patches to exclude from update.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclusivePatches": {
+          "description": "An exclusive list of patches to be updated. These are the only patches\nthat will be installed using 'zypper patch patch:<patch_name>' command.\nThis field must not be used with any other patch configuration fields.",
           "type": "array",
           "items": {
             "type": "string"
@@ -381,7 +416,14 @@
           }
         },
         "excludes": {
-          "description": "Optional list of KBs to exclude from update.",
+          "description": "Optional. List of KBs to exclude from update.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclusivePatches": {
+          "description": "An exclusive list of kbs to be updated. These are the only patches\nthat will be updated. This field must not be used with other\npatch configurations.",
           "type": "array",
           "items": {
             "type": "string"
@@ -950,10 +992,6 @@
           "description": "Output only. The next expected patch execution time for display.",
           "type": "string",
           "format": "google-datetime"
-        },
-        "isActive": {
-          "description": "Output only. Indicates whether this recurring schedule is active.\nA recurring schedule may be inactive past end_time or by user setting.",
-          "type": "boolean"
         }
       }
     },
@@ -1955,7 +1993,7 @@
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "A pagination token returned from a previous call\nthat indicates where this listing should continue from.\nThis field is optional.",
+                  "description": "Optional. A pagination token returned from a previous call\nthat indicates where this listing should continue from.",
                   "location": "query",
                   "type": "string"
                 },
@@ -2002,7 +2040,7 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A pagination token returned from a previous call\nthat indicates where this listing should continue from.\nThis field is optional.",
+                      "description": "Optional. A pagination token returned from a previous call\nthat indicates where this listing should continue from.",
                       "location": "query",
                       "type": "string"
                     },

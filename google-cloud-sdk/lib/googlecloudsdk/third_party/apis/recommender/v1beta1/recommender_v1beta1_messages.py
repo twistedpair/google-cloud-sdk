@@ -46,11 +46,14 @@ class GoogleCloudRecommenderV1beta1Impact(_messages.Message):
       COST: Indicates a potential increase or decrease in cost.
       SECURITY: Indicates a potential increase or decrease in security.
       PERFORMANCE: Indicates a potential increase or decrease in performance.
+      MANAGEABILITY: Indicates a potential increase or decrease in
+        manageability.
     """
     CATEGORY_UNSPECIFIED = 0
     COST = 1
     SECURITY = 2
     PERFORMANCE = 3
+    MANAGEABILITY = 4
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   costProjection = _messages.MessageField('GoogleCloudRecommenderV1beta1CostProjection', 2)
