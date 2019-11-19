@@ -27631,7 +27631,7 @@ class Network(_messages.Message):
 
 
 class NetworkEndpoint(_messages.Message):
-  r"""The network endpoint.
+  r"""The network endpoint. Next ID: 7
 
   Fields:
     instance: The name for a specific VM instance that the IP address belongs
@@ -27657,6 +27657,7 @@ class NetworkEndpointGroup(_messages.Message):
   r"""Represents a collection of network endpoints.  For more information read
   Setting up network endpoint groups in load balancing. (== resource_for
   v1.networkEndpointGroups ==) (== resource_for beta.networkEndpointGroups ==)
+  Next ID: 21
 
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
@@ -29271,7 +29272,7 @@ class NodeTemplate(_messages.Message):
   r"""Represent a sole-tenant Node Template resource.  You can use a template
   to define properties for nodes in a node group. For more information, read
   Creating node groups and instances. (== resource_for beta.nodeTemplates ==)
-  (== resource_for v1.nodeTemplates ==) (== NextID: 16 ==)
+  (== resource_for v1.nodeTemplates ==) (== NextID: 17 ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the node template. One

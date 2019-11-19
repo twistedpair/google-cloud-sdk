@@ -92,6 +92,7 @@ def FunctionExitAction(func):
   """
 
   class Action(argparse.Action):
+    """The action created for FunctionExitAction."""
 
     def __init__(self, **kwargs):
       kwargs['nargs'] = 0
@@ -406,6 +407,7 @@ def RenderDocumentAction(command, default_style=None):
   """
 
   class Action(argparse.Action):
+    """The action created for RenderDocumentAction."""
 
     def __init__(self, **kwargs):
       if default_style:
@@ -481,8 +483,7 @@ def GetCommandMetaData(command):
   for arg in command.GetAllAvailableFlags():
     for arg_name in arg.option_strings:
       command_metadata.flags.append(arg_name)
-      if (isinstance(arg, argparse._StoreTrueAction) or
-          isinstance(arg, argparse._StoreFalseAction)):
+      if isinstance(arg, argparse._StoreConstAction):
         command_metadata.bool_flags.append(arg_name)
   command_metadata.is_group = command.is_group
   return command_metadata

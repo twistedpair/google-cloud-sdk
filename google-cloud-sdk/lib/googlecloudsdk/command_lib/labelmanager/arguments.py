@@ -131,18 +131,20 @@ def AddLabelKeyArgToParser(parser, required=True, message=''):
       required=required,
       metavar='LABEL_KEY',
       help=('Display name or numeric id of the parent LabelKey. Numeric ids '
-            'should be of the form labelKeys/{numeric_id} ' + message))
+            'should be of the form labelKeys/{numeric_id}. ' + message))
 
 
-def AddResoruceArgToParser(parser):
+def AddResourceArgToParser(
+    parser,
+    required=True,
+    message=('Fully qualified name of the resource the LabelValue should '
+             'be bound to.')):
   """Adds argument for the LabelKey to the parser.
 
   Args:
     parser: ArgumentInterceptor, An argparse parser.
+    required: Boolean, to enforce --resource as a required flag.
+    message: String, help text for flag.
   """
   parser.add_argument(
-      '--resource',
-      required=True,
-      metavar='RESOURCE',
-      help=('Fully qualified name of the resource the LabelValue should '
-            'be bound to.'))
+      '--resource', required=required, metavar='RESOURCE', help=message)

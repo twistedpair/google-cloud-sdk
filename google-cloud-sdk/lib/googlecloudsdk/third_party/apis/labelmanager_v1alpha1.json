@@ -431,7 +431,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a user that has been recently deleted. For\n   example,`alice@example.com?uid=123456789012345678901`. If the user is\n   recovered, this value reverts to `user:{emailid}` and the recovered user\n   retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus\n   unique identifier) representing a service account that has been recently\n   deleted. For example,\n   `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.\n   If the service account is undeleted, this value reverts to\n   `serviceAccount:{emailid}` and the undeleted service account retains the\n   role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a Google group that has been recently\n   deleted. For example, `admins@example.com?uid=123456789012345678901`. If\n   the group is recovered, this value reverts to `group:{emailid}` and the\n   recovered group retains the role in the binding.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -544,285 +544,6 @@
     }
   },
   "resources": {
-    "labelValues": {
-      "methods": {
-        "deleteLabelBindings": {
-          "id": "labelmanager.labelValues.deleteLabelBindings",
-          "path": "v1alpha1/labelValues/{labelValuesId}/labelBindings",
-          "flatPath": "v1alpha1/labelValues/{labelValuesId}/labelBindings",
-          "httpMethod": "DELETE",
-          "parameters": {
-            "labelValuesId": {
-              "location": "path",
-              "required": true,
-              "type": "string"
-            },
-            "labelBinding.labelValue": {
-              "description": "The LabelValue of the LabelBinding.\nMust be of the form \"labelValues\/456.",
-              "location": "query",
-              "type": "string"
-            },
-            "labelBinding.resource": {
-              "description": "The full resource name of the resource the LabelValue is bound to.\nE.g. \/\/cloudresourcemanager.googleapis.com\/organizations\/123",
-              "location": "query",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "labelValuesId"
-          ],
-          "response": {
-            "$ref": "Empty"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Deletes a binding between a LabelValue and a cloud resource\n(project, folder, org)."
-        },
-        "list": {
-          "id": "labelmanager.labelValues.list",
-          "path": "v1alpha1/labelValues",
-          "flatPath": "v1alpha1/labelValues",
-          "httpMethod": "GET",
-          "parameters": {
-            "parent": {
-              "description": "Resource name for LabelKey, parent of the LabelValues to be listed,\nin the format labelKeys\/123.",
-              "location": "query",
-              "type": "string"
-            },
-            "pageSize": {
-              "description": "Optional. The maximum number of LabelValues to return in the response.\nThis is currently not used by the server and will return the full page even\nif a size is specified currently.",
-              "location": "query",
-              "type": "integer",
-              "format": "int32"
-            },
-            "pageToken": {
-              "description": "Optional. A pagination token returned from a previous call to `ListLabelValues`\nthat indicates where this listing should continue from. This is currently\nnot used by the server.",
-              "location": "query",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-          ],
-          "response": {
-            "$ref": "ListLabelValuesResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Lists all LabelValues for a specific LabelKey."
-        },
-        "get": {
-          "id": "labelmanager.labelValues.get",
-          "path": "v1alpha1/{+name}",
-          "flatPath": "v1alpha1/labelValues/{labelValuesId}",
-          "httpMethod": "GET",
-          "parameters": {
-            "name": {
-              "description": "Resource name for LabelValue to be fetched in the format labelValues\/456.",
-              "location": "path",
-              "required": true,
-              "pattern": "^labelValues\/[^\/]+$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "LabelValue"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Retrieves LabelValue. This method will return PERMISSION_DENIED if the\nLabelValue does not exist or the user does not have permission to view it."
-        },
-        "create": {
-          "id": "labelmanager.labelValues.create",
-          "path": "v1alpha1/labelValues",
-          "flatPath": "v1alpha1/labelValues",
-          "httpMethod": "POST",
-          "parameters": {
-          },
-          "parameterOrder": [
-          ],
-          "request": {
-            "$ref": "LabelValue"
-          },
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Creates a LabelValue as a child of the specified LabelKey. If a another\nrequest with the same parameters is sent while the original request is in\nprocess the second request will receive an error. A maximum of 300\nLabelValues (with any lifecycle state) can exist under a LabelKey at any\ngiven time."
-        },
-        "patch": {
-          "id": "labelmanager.labelValues.patch",
-          "path": "v1alpha1/{+name}",
-          "flatPath": "v1alpha1/labelValues/{labelValuesId}",
-          "httpMethod": "PATCH",
-          "parameters": {
-            "name": {
-              "description": "Resource name for LabelValue in the format labelValues\/456.\n\nImmutable.",
-              "location": "path",
-              "required": true,
-              "pattern": "^labelValues\/[^\/]+$",
-              "type": "string"
-            },
-            "updateMask": {
-              "description": "Fields to be updated.",
-              "location": "query",
-              "type": "string",
-              "format": "google-fieldmask"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "request": {
-            "$ref": "LabelValue"
-          },
-          "response": {
-            "$ref": "LabelValue"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Updates the attributes of the LabelValue resource."
-        },
-        "delete": {
-          "id": "labelmanager.labelValues.delete",
-          "path": "v1alpha1/{+name}",
-          "flatPath": "v1alpha1/labelValues/{labelValuesId}",
-          "httpMethod": "DELETE",
-          "parameters": {
-            "name": {
-              "description": "Resource name for LabelValue to be deleted in the format labelValues\/456.",
-              "location": "path",
-              "required": true,
-              "pattern": "^labelValues\/[^\/]+$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Requests deletion of a LabelValue. The LabelValue is moved into the\nDELETE_REQUESTED state\nimmediately, and is deleted approximately 30 days later. The LabelValue\ncannot have any bindings when it is deleted."
-        },
-        "undelete": {
-          "id": "labelmanager.labelValues.undelete",
-          "path": "v1alpha1/{+name}:undelete",
-          "flatPath": "v1alpha1/labelValues/{labelValuesId}:undelete",
-          "httpMethod": "POST",
-          "parameters": {
-            "name": {
-              "description": "Resource name for LabelValue to be un-deleted in the format\nlabelValues\/456.",
-              "location": "path",
-              "required": true,
-              "pattern": "^labelValues\/[^\/]+$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "request": {
-            "$ref": "UndeleteLabelValueRequest"
-          },
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Cancels the deletion request for a LabelValue. This method may only be\ncalled on a LabelValue in the\nDELETE_REQUESTED state.\nIn order to succeed, the LabelValue's parent must be in the\nACTIVE state."
-        }
-      }
-      ,
-      "resources": {
-        "labelBindings": {
-          "methods": {
-            "create": {
-              "id": "labelmanager.labelValues.labelBindings.create",
-              "path": "v1alpha1/labelValues/{labelValuesId}/labelBindings",
-              "flatPath": "v1alpha1/labelValues/{labelValuesId}/labelBindings",
-              "httpMethod": "POST",
-              "parameters": {
-                "labelValuesId": {
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "labelValuesId"
-              ],
-              "request": {
-                "$ref": "CreateLabelBindingRequest"
-              },
-              "response": {
-                "$ref": "LabelBinding"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Binds a LabelValue to a cloud resource (project, folder, org)."
-            },
-            "list": {
-              "id": "labelmanager.labelValues.labelBindings.list",
-              "path": "v1alpha1/labelValues/{labelValuesId}/labelBindings",
-              "flatPath": "v1alpha1/labelValues/{labelValuesId}/labelBindings",
-              "httpMethod": "GET",
-              "parameters": {
-                "labelValuesId": {
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "label": {
-                  "description": "The name of the LabelValue should be of the form \"labelValues\/123\"",
-                  "location": "query",
-                  "type": "string"
-                },
-                "resource": {
-                  "description": "The full name of the resource should be of the form \"type\/id\". E.g.\nE.g. \/\/cloudresourcemanager.googleapis.com\/organizations\/123",
-                  "location": "query",
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "Optional. The maximum number of LabelBindings to return in the response. This is\ncurrently not used by the server and will return the full page even if a\nsize is specified.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "pageToken": {
-                  "description": "Optional. A pagination token returned from a previous call to `ListLabelBindings`\nthat indicates where this listing should continue from. This is currently\nnot used by the server.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "labelValuesId"
-              ],
-              "response": {
-                "$ref": "ListLabelBindingsResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Lists the bindings for the given LabelValue or\ncloud resource (project, folder, org)."
-            }
-          }
-        }
-      }
-    },
     "operations": {
       "methods": {
         "get": {
@@ -1105,6 +826,291 @@
             "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
+        }
+      }
+    },
+    "labelValues": {
+      "methods": {
+        "list": {
+          "id": "labelmanager.labelValues.list",
+          "path": "v1alpha1/labelValues",
+          "flatPath": "v1alpha1/labelValues",
+          "httpMethod": "GET",
+          "parameters": {
+            "parent": {
+              "description": "Resource name for LabelKey, parent of the LabelValues to be listed,\nin the format labelKeys\/123.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "Optional. The maximum number of LabelValues to return in the response.\nThis is currently not used by the server and will return the full page even\nif a size is specified currently.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "Optional. A pagination token returned from a previous call to `ListLabelValues`\nthat indicates where this listing should continue from. This is currently\nnot used by the server.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ListLabelValuesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Lists all LabelValues for a specific LabelKey."
+        },
+        "get": {
+          "id": "labelmanager.labelValues.get",
+          "path": "v1alpha1/{+name}",
+          "flatPath": "v1alpha1/labelValues/{labelValuesId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Resource name for LabelValue to be fetched in the format labelValues\/456.",
+              "location": "path",
+              "required": true,
+              "pattern": "^labelValues\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "LabelValue"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Retrieves LabelValue. This method will return PERMISSION_DENIED if the\nLabelValue does not exist or the user does not have permission to view it."
+        },
+        "create": {
+          "id": "labelmanager.labelValues.create",
+          "path": "v1alpha1/labelValues",
+          "flatPath": "v1alpha1/labelValues",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "LabelValue"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Creates a LabelValue as a child of the specified LabelKey. If a another\nrequest with the same parameters is sent while the original request is in\nprocess the second request will receive an error. A maximum of 300\nLabelValues (with any lifecycle state) can exist under a LabelKey at any\ngiven time."
+        },
+        "patch": {
+          "id": "labelmanager.labelValues.patch",
+          "path": "v1alpha1/{+name}",
+          "flatPath": "v1alpha1/labelValues/{labelValuesId}",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "Resource name for LabelValue in the format labelValues\/456.\n\nImmutable.",
+              "location": "path",
+              "required": true,
+              "pattern": "^labelValues\/[^\/]+$",
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "Fields to be updated.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "LabelValue"
+          },
+          "response": {
+            "$ref": "LabelValue"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Updates the attributes of the LabelValue resource."
+        },
+        "delete": {
+          "id": "labelmanager.labelValues.delete",
+          "path": "v1alpha1/{+name}",
+          "flatPath": "v1alpha1/labelValues/{labelValuesId}",
+          "httpMethod": "DELETE",
+          "parameters": {
+            "name": {
+              "description": "Resource name for LabelValue to be deleted in the format labelValues\/456.",
+              "location": "path",
+              "required": true,
+              "pattern": "^labelValues\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Requests deletion of a LabelValue. The LabelValue is moved into the\nDELETE_REQUESTED state\nimmediately, and is deleted approximately 30 days later. The LabelValue\ncannot have any bindings when it is deleted."
+        },
+        "undelete": {
+          "id": "labelmanager.labelValues.undelete",
+          "path": "v1alpha1/{+name}:undelete",
+          "flatPath": "v1alpha1/labelValues/{labelValuesId}:undelete",
+          "httpMethod": "POST",
+          "parameters": {
+            "name": {
+              "description": "Resource name for LabelValue to be un-deleted in the format\nlabelValues\/456.",
+              "location": "path",
+              "required": true,
+              "pattern": "^labelValues\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "UndeleteLabelValueRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Cancels the deletion request for a LabelValue. This method may only be\ncalled on a LabelValue in the\nDELETE_REQUESTED state.\nIn order to succeed, the LabelValue's parent must be in the\nACTIVE state."
+        }
+      }
+      ,
+      "resources": {
+        "labelBindings": {
+          "methods": {
+            "create": {
+              "id": "labelmanager.labelValues.labelBindings.create",
+              "path": "v1alpha1/labelValues/{labelValuesId}/labelBindings",
+              "flatPath": "v1alpha1/labelValues/{labelValuesId}/labelBindings",
+              "httpMethod": "POST",
+              "parameters": {
+                "labelValuesId": {
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "labelValuesId"
+              ],
+              "request": {
+                "$ref": "CreateLabelBindingRequest"
+              },
+              "response": {
+                "$ref": "LabelBinding"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Binds a LabelValue to a cloud resource (project, folder, org)."
+            },
+            "delete": {
+              "id": "labelmanager.labelValues.labelBindings.delete",
+              "path": "v1alpha1/labelValues/{labelValuesId}/labelBindings/{labelBindingsId}",
+              "flatPath": "v1alpha1/labelValues/{labelValuesId}/labelBindings/{labelBindingsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "labelValuesId": {
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "labelBindingsId": {
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "labelBinding.labelValue": {
+                  "description": "The LabelValue of the LabelBinding.\nMust be of the form \"labelValues\/456.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "labelBinding.resource": {
+                  "description": "The full resource name of the resource the LabelValue is bound to.\nE.g. \/\/cloudresourcemanager.googleapis.com\/organizations\/123",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "labelValuesId",
+                "labelBindingsId"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Deletes a binding between a LabelValue and a cloud resource\n(project, folder, org)."
+            },
+            "list": {
+              "id": "labelmanager.labelValues.labelBindings.list",
+              "path": "v1alpha1/labelValues/{labelValuesId}/labelBindings",
+              "flatPath": "v1alpha1/labelValues/{labelValuesId}/labelBindings",
+              "httpMethod": "GET",
+              "parameters": {
+                "labelValuesId": {
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "label": {
+                  "description": "The name of the LabelValue should be of the form \"labelValues\/123\"",
+                  "location": "query",
+                  "type": "string"
+                },
+                "resource": {
+                  "description": "The full name of the resource should be of the form \"type\/id\". E.g.\nE.g. \/\/cloudresourcemanager.googleapis.com\/organizations\/123",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional. The maximum number of LabelBindings to return in the response. This is\ncurrently not used by the server and will return the full page even if a\nsize is specified.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Optional. A pagination token returned from a previous call to `ListLabelBindings`\nthat indicates where this listing should continue from. This is currently\nnot used by the server.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "labelValuesId"
+              ],
+              "response": {
+                "$ref": "ListLabelBindingsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists the LabelBindings for the given LabelValue or\ncloud resource (project, folder, org).\n\nListing LabelBindings for LabelValue with id 123 will map to:\n\/v1alpha1\/labelValues\/123\/labelBindings\nList LabelBindings for project resource with id 456 will map to:\n\/v1alpha1\/labelValues\/-\/labelBindings?resource=\/\/cloudresourcemanager.googleapis.com\/projects\/456\n\nFor additional details see:\nhttps:\/\/cloud.google.com\/apis\/design\/design_patterns#list_sub-collections"
+            }
+          }
         }
       }
     }

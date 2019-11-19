@@ -75,11 +75,13 @@ class AptSettings(_messages.Message):
     using `apt-get dist-upgrade` instead.
 
     Values:
-      TYPE_UNSPECIFIED: By default, a full upgrade will be performed.
-      DIST: run `apt-get dist-upgrade` instead.
+      TYPE_UNSPECIFIED: By default, upgrade will be performed.
+      DIST: Runs `apt-get dist-upgrade`.
+      UPGRADE: Runs `apt-get upgrade`.
     """
     TYPE_UNSPECIFIED = 0
     DIST = 1
+    UPGRADE = 2
 
   excludes = _messages.StringField(1, repeated=True)
   exclusivePackages = _messages.StringField(2, repeated=True)
@@ -1254,6 +1256,9 @@ class PatchJobInstanceDetails(_messages.Message):
       TIMED_OUT: The instance exceeded the time out while applying the patch.
       RUNNING_PRE_PATCH_STEP: The instance is running the pre-patch step.
       RUNNING_POST_PATCH_STEP: The instance is running the post-patch step.
+      NO_AGENT_DETECTED: The service could not detect the presence of the
+        agent. Check to ensure that the agent is installed, running, and able
+        to communicate with the service.
     """
     PATCH_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1270,6 +1275,7 @@ class PatchJobInstanceDetails(_messages.Message):
     TIMED_OUT = 12
     RUNNING_PRE_PATCH_STEP = 13
     RUNNING_POST_PATCH_STEP = 14
+    NO_AGENT_DETECTED = 15
 
   attemptCount = _messages.IntegerField(1)
   failureReason = _messages.StringField(2)
@@ -1292,6 +1298,9 @@ class PatchJobInstanceDetailsSummary(_messages.Message):
       patches.
     instancesFailed: Number of instances that failed.
     instancesInactive: Number of instances that are inactive.
+    instancesNoAgentDetected: Number of instances that do not appear to be
+      running the agent. Check to ensure that the agent is installed, running,
+      and able to communicate with the service.
     instancesNotified: Number of instances notified about patch job.
     instancesPending: Number of instances pending patch job.
     instancesRebooting: Number of instances rebooting.
@@ -1311,15 +1320,16 @@ class PatchJobInstanceDetailsSummary(_messages.Message):
   instancesDownloadingPatches = _messages.IntegerField(3)
   instancesFailed = _messages.IntegerField(4)
   instancesInactive = _messages.IntegerField(5)
-  instancesNotified = _messages.IntegerField(6)
-  instancesPending = _messages.IntegerField(7)
-  instancesRebooting = _messages.IntegerField(8)
-  instancesRunningPostPatchStep = _messages.IntegerField(9)
-  instancesRunningPrePatchStep = _messages.IntegerField(10)
-  instancesStarted = _messages.IntegerField(11)
-  instancesSucceeded = _messages.IntegerField(12)
-  instancesSucceededRebootRequired = _messages.IntegerField(13)
-  instancesTimedOut = _messages.IntegerField(14)
+  instancesNoAgentDetected = _messages.IntegerField(6)
+  instancesNotified = _messages.IntegerField(7)
+  instancesPending = _messages.IntegerField(8)
+  instancesRebooting = _messages.IntegerField(9)
+  instancesRunningPostPatchStep = _messages.IntegerField(10)
+  instancesRunningPrePatchStep = _messages.IntegerField(11)
+  instancesStarted = _messages.IntegerField(12)
+  instancesSucceeded = _messages.IntegerField(13)
+  instancesSucceededRebootRequired = _messages.IntegerField(14)
+  instancesTimedOut = _messages.IntegerField(15)
 
 
 class RecurringSchedule(_messages.Message):
@@ -1414,6 +1424,9 @@ class ReportPatchJobInstanceDetailsRequest(_messages.Message):
       TIMED_OUT: The instance exceeded the time out while applying the patch.
       RUNNING_PRE_PATCH_STEP: The instance is running the pre-patch step.
       RUNNING_POST_PATCH_STEP: The instance is running the post-patch step.
+      NO_AGENT_DETECTED: The service could not detect the presence of the
+        agent. Check to ensure that the agent is installed, running, and able
+        to communicate with the service.
     """
     PATCH_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1430,6 +1443,7 @@ class ReportPatchJobInstanceDetailsRequest(_messages.Message):
     TIMED_OUT = 12
     RUNNING_PRE_PATCH_STEP = 13
     RUNNING_POST_PATCH_STEP = 14
+    NO_AGENT_DETECTED = 15
 
   attemptCount = _messages.IntegerField(1)
   failureReason = _messages.StringField(2)

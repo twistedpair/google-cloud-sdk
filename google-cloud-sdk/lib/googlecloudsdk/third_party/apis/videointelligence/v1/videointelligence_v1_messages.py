@@ -2116,6 +2116,49 @@ class GoogleCloudVideointelligenceV1p3beta1AnnotateVideoResponse(_messages.Messa
   annotationResults = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1VideoAnnotationResults', 1, repeated=True)
 
 
+class GoogleCloudVideointelligenceV1p3beta1Celebrity(_messages.Message):
+  r"""Celebrity definition.
+
+  Fields:
+    description: Textual description of additional information about the
+      celebrity, if applicable.
+    displayName: The celebrity name.
+    name: The resource name of the celebrity. Have the format `video-
+      intelligence/kg-mid` indicates a celebrity from preloaded gallery. kg-
+      mid is the id in Google knowledge graph, which is unique for the
+      celebrity.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
+class GoogleCloudVideointelligenceV1p3beta1CelebrityRecognitionAnnotation(_messages.Message):
+  r"""Celebrity recognition annotation per video.
+
+  Fields:
+    celebrityTracks: The tracks detected from the input video, including
+      recognized celebrities and other detected faces in the video.
+  """
+
+  celebrityTracks = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1CelebrityTrack', 1, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p3beta1CelebrityTrack(_messages.Message):
+  r"""The annotation result of a celebrity face track. RecognizedCelebrity
+  field could be empty if the face track does not have any matched
+  celebrities.
+
+  Fields:
+    celebrities: Top N match of the celebrities for the face in this track.
+    faceTrack: A track of a person's face.
+  """
+
+  celebrities = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1RecognizedCelebrity', 1, repeated=True)
+  faceTrack = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1Track', 2)
+
+
 class GoogleCloudVideointelligenceV1p3beta1DetectedAttribute(_messages.Message):
   r"""A generic detected attribute represented by name in string format.
 
@@ -2345,6 +2388,18 @@ class GoogleCloudVideointelligenceV1p3beta1ObjectTrackingFrame(_messages.Message
   timeOffset = _messages.StringField(2)
 
 
+class GoogleCloudVideointelligenceV1p3beta1RecognizedCelebrity(_messages.Message):
+  r"""The recognized celebrity with confidence score.
+
+  Fields:
+    celebrity: The recognized celebrity.
+    confidence: Recognition confidence. Range [0, 1].
+  """
+
+  celebrity = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1Celebrity', 1)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
 class GoogleCloudVideointelligenceV1p3beta1SpeechRecognitionAlternative(_messages.Message):
   r"""Alternative hypotheses (a.k.a. n-best list).
 
@@ -2532,6 +2587,7 @@ class GoogleCloudVideointelligenceV1p3beta1VideoAnnotationProgress(_messages.Mes
       TEXT_DETECTION: OCR text detection and tracking.
       OBJECT_TRACKING: Object detection and tracking.
       LOGO_RECOGNITION: Logo detection, tracking, and recognition.
+      CELEBRITY_RECOGNITION: Celebrity recognition.
     """
     FEATURE_UNSPECIFIED = 0
     LABEL_DETECTION = 1
@@ -2541,6 +2597,7 @@ class GoogleCloudVideointelligenceV1p3beta1VideoAnnotationProgress(_messages.Mes
     TEXT_DETECTION = 5
     OBJECT_TRACKING = 6
     LOGO_RECOGNITION = 7
+    CELEBRITY_RECOGNITION = 8
 
   feature = _messages.EnumField('FeatureValueValuesEnum', 1)
   inputUri = _messages.StringField(2)
@@ -2554,6 +2611,7 @@ class GoogleCloudVideointelligenceV1p3beta1VideoAnnotationResults(_messages.Mess
   r"""Annotation results for a single video.
 
   Fields:
+    celebrityRecognitionAnnotations: Celebrity recognition annotations.
     error: If set, indicates an error. Note that for a single
       `AnnotateVideoRequest` some videos may succeed and some may fail.
     explicitAnnotation: Explicit content annotation.
@@ -2592,20 +2650,21 @@ class GoogleCloudVideointelligenceV1p3beta1VideoAnnotationResults(_messages.Mess
       associated with it.
   """
 
-  error = _messages.MessageField('GoogleRpcStatus', 1)
-  explicitAnnotation = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1ExplicitContentAnnotation', 2)
-  frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelAnnotation', 3, repeated=True)
-  inputUri = _messages.StringField(4)
-  logoRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LogoRecognitionAnnotation', 5, repeated=True)
-  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1ObjectTrackingAnnotation', 6, repeated=True)
-  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1VideoSegment', 7)
-  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelAnnotation', 8, repeated=True)
-  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelAnnotation', 9, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1VideoSegment', 10, repeated=True)
-  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelAnnotation', 11, repeated=True)
-  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelAnnotation', 12, repeated=True)
-  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1SpeechTranscription', 13, repeated=True)
-  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1TextAnnotation', 14, repeated=True)
+  celebrityRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1CelebrityRecognitionAnnotation', 1)
+  error = _messages.MessageField('GoogleRpcStatus', 2)
+  explicitAnnotation = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1ExplicitContentAnnotation', 3)
+  frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelAnnotation', 4, repeated=True)
+  inputUri = _messages.StringField(5)
+  logoRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LogoRecognitionAnnotation', 6, repeated=True)
+  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1ObjectTrackingAnnotation', 7, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1VideoSegment', 8)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelAnnotation', 9, repeated=True)
+  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelAnnotation', 10, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1VideoSegment', 11, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelAnnotation', 12, repeated=True)
+  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1LabelAnnotation', 13, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1SpeechTranscription', 14, repeated=True)
+  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1TextAnnotation', 15, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1p3beta1VideoSegment(_messages.Message):

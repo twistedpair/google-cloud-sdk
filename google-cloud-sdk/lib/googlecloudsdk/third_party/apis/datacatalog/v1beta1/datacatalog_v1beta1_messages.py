@@ -554,6 +554,280 @@ class DatacatalogProjectsLocationsTagTemplatesTestIamPermissionsRequest(_message
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class DatacatalogProjectsLocationsTaxonomiesCreateRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesCreateRequest object.
+
+  Fields:
+    googleCloudDatacatalogV1beta1Taxonomy: A
+      GoogleCloudDatacatalogV1beta1Taxonomy resource to be passed as the
+      request body.
+    parent: Required. Resource name of the project that the newly created
+      taxonomy belongs to.
+  """
+
+  googleCloudDatacatalogV1beta1Taxonomy = _messages.MessageField('GoogleCloudDatacatalogV1beta1Taxonomy', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DatacatalogProjectsLocationsTaxonomiesDeleteRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesDeleteRequest object.
+
+  Fields:
+    name: Required. Resource name of the taxonomy to be deleted. All policy
+      tags in this taxonomy will also be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatacatalogProjectsLocationsTaxonomiesExportRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesExportRequest object.
+
+  Fields:
+    parent: Required. Resource name of the project that taxonomies to be
+      exported will share.
+    serializedTaxonomies: Export taxonomies as serialized taxonomies.
+    taxonomies: Required. Resource names of the taxonomies to be exported.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  serializedTaxonomies = _messages.BooleanField(2)
+  taxonomies = _messages.StringField(3, repeated=True)
+
+
+class DatacatalogProjectsLocationsTaxonomiesGetIamPolicyRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DatacatalogProjectsLocationsTaxonomiesGetRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesGetRequest object.
+
+  Fields:
+    name: Required. Resource name of the taxonomy to be returned.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatacatalogProjectsLocationsTaxonomiesImportRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesImportRequest object.
+
+  Fields:
+    googleCloudDatacatalogV1beta1ImportTaxonomiesRequest: A
+      GoogleCloudDatacatalogV1beta1ImportTaxonomiesRequest resource to be
+      passed as the request body.
+    parent: Required. Resource name of project that the newly created
+      taxonomies will belong to.
+  """
+
+  googleCloudDatacatalogV1beta1ImportTaxonomiesRequest = _messages.MessageField('GoogleCloudDatacatalogV1beta1ImportTaxonomiesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DatacatalogProjectsLocationsTaxonomiesListRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return. If not set, defaults to
+      50.
+    pageToken: The next_page_token value returned from a previous list
+      request, if any. If not set, defaults to an empty string.
+    parent: Required. Resource name of a project to list the taxonomies of.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DatacatalogProjectsLocationsTaxonomiesPatchRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesPatchRequest object.
+
+  Fields:
+    googleCloudDatacatalogV1beta1Taxonomy: A
+      GoogleCloudDatacatalogV1beta1Taxonomy resource to be passed as the
+      request body.
+    name: Output only. Resource name of the taxonomy, whose format is:
+      "projects/{project_number}/locations/{location_id}/taxonomies/{id}".
+    updateMask: The update mask applies to the resource. For the `FieldMask`
+      definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask If not set, defaults to
+      all of the fields that are allowed to update.
+  """
+
+  googleCloudDatacatalogV1beta1Taxonomy = _messages.MessageField('GoogleCloudDatacatalogV1beta1Taxonomy', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class DatacatalogProjectsLocationsTaxonomiesPolicyTagsCreateRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesPolicyTagsCreateRequest object.
+
+  Fields:
+    googleCloudDatacatalogV1beta1PolicyTag: A
+      GoogleCloudDatacatalogV1beta1PolicyTag resource to be passed as the
+      request body.
+    parent: Required. Resource name of the taxonomy that the newly created
+      policy tag belongs to.
+  """
+
+  googleCloudDatacatalogV1beta1PolicyTag = _messages.MessageField('GoogleCloudDatacatalogV1beta1PolicyTag', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DatacatalogProjectsLocationsTaxonomiesPolicyTagsDeleteRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesPolicyTagsDeleteRequest object.
+
+  Fields:
+    name: Required. Resource name of the policy tag to be deleted. All its
+      descendant policy tags will also be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetIamPolicyRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetIamPolicyRequest
+  object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetRequest object.
+
+  Fields:
+    name: Required. Resource name of the policy tag to be returned.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatacatalogProjectsLocationsTaxonomiesPolicyTagsListRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesPolicyTagsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return. If not set, defaults to
+      50.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any. If not set, defaults to an empty string.
+    parent: Required. Resource name of a taxonomy to list the policy tags of.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DatacatalogProjectsLocationsTaxonomiesPolicyTagsPatchRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesPolicyTagsPatchRequest object.
+
+  Fields:
+    googleCloudDatacatalogV1beta1PolicyTag: A
+      GoogleCloudDatacatalogV1beta1PolicyTag resource to be passed as the
+      request body.
+    name: Output only. Resource name of the policy tag, whose format is: "proj
+      ects/{project_number}/locations/{location_id}/taxonomies/{taxonomy_id}/p
+      olicyTags/{id}".
+    updateMask: The update mask applies to the resource. Only display_name,
+      description and parent_policy_tag can be updated and thus can be listed
+      in the mask. If update_mask is not provided, all allowed fields (i.e.
+      display_name, description and parent) will be updated. For more
+      information including the `FieldMask` definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask If not set, defaults to
+      all of the fields that are allowed to update.
+  """
+
+  googleCloudDatacatalogV1beta1PolicyTag = _messages.MessageField('GoogleCloudDatacatalogV1beta1PolicyTag', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class DatacatalogProjectsLocationsTaxonomiesPolicyTagsSetIamPolicyRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesPolicyTagsSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DatacatalogProjectsLocationsTaxonomiesPolicyTagsTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  DatacatalogProjectsLocationsTaxonomiesPolicyTagsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class DatacatalogProjectsLocationsTaxonomiesSetIamPolicyRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DatacatalogProjectsLocationsTaxonomiesTestIamPermissionsRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -783,6 +1057,16 @@ class GoogleCloudDatacatalogV1beta1EntryGroup(_messages.Message):
   name = _messages.StringField(4)
 
 
+class GoogleCloudDatacatalogV1beta1ExportTaxonomiesResponse(_messages.Message):
+  r"""Response message for ExportTaxonomies.
+
+  Fields:
+    taxonomies: List of taxonomies and policy tags in a tree structure.
+  """
+
+  taxonomies = _messages.MessageField('GoogleCloudDatacatalogV1beta1SerializedTaxonomy', 1, repeated=True)
+
+
 class GoogleCloudDatacatalogV1beta1FieldType(_messages.Message):
   r"""A GoogleCloudDatacatalogV1beta1FieldType object.
 
@@ -878,6 +1162,49 @@ class GoogleCloudDatacatalogV1beta1GcsFilesetSpec(_messages.Message):
   sampleGcsFileSpecs = _messages.MessageField('GoogleCloudDatacatalogV1beta1GcsFileSpec', 2, repeated=True)
 
 
+class GoogleCloudDatacatalogV1beta1ImportTaxonomiesRequest(_messages.Message):
+  r"""Request message for ImportTaxonomies.
+
+  Fields:
+    inlineSource: Inline source used for taxonomies import
+  """
+
+  inlineSource = _messages.MessageField('GoogleCloudDatacatalogV1beta1InlineSource', 1)
+
+
+class GoogleCloudDatacatalogV1beta1ImportTaxonomiesResponse(_messages.Message):
+  r"""Response message for ImportTaxonomies.
+
+  Fields:
+    taxonomies: Taxonomies that were imported.
+  """
+
+  taxonomies = _messages.MessageField('GoogleCloudDatacatalogV1beta1Taxonomy', 1, repeated=True)
+
+
+class GoogleCloudDatacatalogV1beta1InlineSource(_messages.Message):
+  r"""Inline source used for taxonomies import.
+
+  Fields:
+    taxonomies: Required. Taxonomies to be imported.
+  """
+
+  taxonomies = _messages.MessageField('GoogleCloudDatacatalogV1beta1SerializedTaxonomy', 1, repeated=True)
+
+
+class GoogleCloudDatacatalogV1beta1ListPolicyTagsResponse(_messages.Message):
+  r"""Response message for ListPolicyTags.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    policyTags: Policy Tags that are in this taxonomy.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  policyTags = _messages.MessageField('GoogleCloudDatacatalogV1beta1PolicyTag', 2, repeated=True)
+
+
 class GoogleCloudDatacatalogV1beta1ListTagsResponse(_messages.Message):
   r"""Response message for ListTags.
 
@@ -889,6 +1216,53 @@ class GoogleCloudDatacatalogV1beta1ListTagsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   tags = _messages.MessageField('GoogleCloudDatacatalogV1beta1Tag', 2, repeated=True)
+
+
+class GoogleCloudDatacatalogV1beta1ListTaxonomiesResponse(_messages.Message):
+  r"""Response message for ListTaxonomies.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    taxonomies: Taxonomies that the project contains.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  taxonomies = _messages.MessageField('GoogleCloudDatacatalogV1beta1Taxonomy', 2, repeated=True)
+
+
+class GoogleCloudDatacatalogV1beta1PolicyTag(_messages.Message):
+  r"""Denotes one policy tag in a taxonomy (e.g. ssn). Policy Tags can be
+  defined in a hierarchy. For example, consider the following hierachy:
+  Geolocation                    |   ------------------------------------   |
+  |                 | LatLong          City              ZipCode PolicyTag
+  "Geolocation" contains three child policy tags: "LatLong", "City", and
+  "ZipCode".
+
+  Fields:
+    childPolicyTags: Output only. Resource names of child policy tags of this
+      policy tag.
+    description: Description of the policy tag. The length of the description
+      is limited to 2000 bytes when encoded in UTF-8. If not set, defaults to
+      an empty description.
+    displayName: Required. Human readable name of this policy tag. Max 200
+      bytes when encoded in UTF-8.
+    name: Output only. Resource name of the policy tag, whose format is: "proj
+      ects/{project_number}/locations/{location_id}/taxonomies/{taxonomy_id}/p
+      olicyTags/{id}".
+    parentPolicyTag: Resource name of the parent policy tag to this policy tag
+      (e.g. for policy tag "LatLong" in the example above, this field contains
+      the resource name of policy tag "Geolocation"). If empty, it means this
+      policy tag is a top level policy tag (e.g. this field is empty for
+      policy tag "Geolocation" in the example above). If not set, defaults to
+      an empty string.
+  """
+
+  childPolicyTags = _messages.StringField(1, repeated=True)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  parentPolicyTag = _messages.StringField(5)
 
 
 class GoogleCloudDatacatalogV1beta1RenameTagTemplateFieldRequest(_messages.Message):
@@ -1032,6 +1406,41 @@ class GoogleCloudDatacatalogV1beta1SearchCatalogResult(_messages.Message):
   relativeResourceName = _messages.StringField(2)
   searchResultSubtype = _messages.StringField(3)
   searchResultType = _messages.EnumField('SearchResultTypeValueValuesEnum', 4)
+
+
+class GoogleCloudDatacatalogV1beta1SerializedPolicyTag(_messages.Message):
+  r"""Message representing one policy tag when exported as a nested proto.
+
+  Fields:
+    childPolicyTags: Children of the policy tag if any.
+    description: Description of the serialized policy tag. The length of the
+      description is limited to 2000 bytes when encoded in UTF-8. If not set,
+      defaults to an empty description.
+    displayName: Required. Display name of the policy tag. Max 200 bytes when
+      encoded in UTF-8.
+  """
+
+  childPolicyTags = _messages.MessageField('GoogleCloudDatacatalogV1beta1SerializedPolicyTag', 1, repeated=True)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+
+
+class GoogleCloudDatacatalogV1beta1SerializedTaxonomy(_messages.Message):
+  r"""Message capturing a taxonomy and its policy tag hierarchy as a nested
+  proto. Used for taxonomy import/export and mutation.
+
+  Fields:
+    description: Description of the serialized taxonomy. The length of the
+      description is limited to 2000 bytes when encoded in UTF-8. If not set,
+      defaults to an empty description.
+    displayName: Required. Display name of the taxonomy. Max 200 bytes when
+      encoded in UTF-8.
+    policyTags: Top level policy tags associated with the taxonomy if any.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  policyTags = _messages.MessageField('GoogleCloudDatacatalogV1beta1SerializedPolicyTag', 3, repeated=True)
 
 
 class GoogleCloudDatacatalogV1beta1SystemTimestamps(_messages.Message):
@@ -1242,6 +1651,43 @@ class GoogleCloudDatacatalogV1beta1TagTemplateField(_messages.Message):
   displayName = _messages.StringField(1)
   name = _messages.StringField(2)
   type = _messages.MessageField('GoogleCloudDatacatalogV1beta1FieldType', 3)
+
+
+class GoogleCloudDatacatalogV1beta1Taxonomy(_messages.Message):
+  r"""A taxonomy is a collection of policy tags of business significance,
+  typically associated with the substance of the policy tag (e.g. credit card,
+  SSN), or how it is used (e.g. account name, user ID).
+
+  Enums:
+    ActivatedPolicyTypesValueListEntryValuesEnum:
+
+  Fields:
+    activatedPolicyTypes: Optional. A list of policy types that are activated
+      for the taxonomy. If not set, defaults to an empty list of activated
+      policy types.
+    description: Optional. Description of the taxonomy. The length of the
+      description is limited to 2000 bytes when encoded in UTF-8. If not set,
+      defaults to an empty description.
+    displayName: Required. Human readable name of this taxonomy. Max 200 bytes
+      when encoded in UTF-8.
+    name: Output only. Resource name of the taxonomy, whose format is:
+      "projects/{project_number}/locations/{location_id}/taxonomies/{id}".
+  """
+
+  class ActivatedPolicyTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""ActivatedPolicyTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      POLICY_TYPE_UNSPECIFIED: <no description>
+      FINE_GRAINED_ACCESS_CONTROL: <no description>
+    """
+    POLICY_TYPE_UNSPECIFIED = 0
+    FINE_GRAINED_ACCESS_CONTROL = 1
+
+  activatedPolicyTypes = _messages.EnumField('ActivatedPolicyTypesValueListEntryValuesEnum', 1, repeated=True)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
 
 
 class GoogleCloudDatacatalogV1beta1ViewSpec(_messages.Message):

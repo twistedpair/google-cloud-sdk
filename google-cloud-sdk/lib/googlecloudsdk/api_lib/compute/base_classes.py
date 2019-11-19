@@ -290,32 +290,32 @@ def GetGlobalListerHelp(resource):
   if resource == 'routes':
     detailed_help = {
         'brief': 'List non-dynamic Google Compute Engine ' + resource,
-        'DESCRIPTION': """\
-        *{{command}}* displays all custom static, subnet, and peering {0} in
-        VPC networks in a project.
+        'DESCRIPTION': """
+*{{command}}* displays all custom static, subnet, and peering {0} in
+VPC networks in a project.
 
-        To list custom dynamic routes learned by Cloud Routers, query the
-        status of the Cloud Router that learned the route using
-        `gcloud compute routers get-status`. For more details, refer
-        to https://cloud.google.com/vpc/docs/using-routes#listingroutes.
-        """.format(resource),
-        'EXAMPLES': """\
-        To list all non-dynamic {0} in a project in table form, run:
+To list custom dynamic routes learned by Cloud Routers, query the
+status of the Cloud Router that learned the route using
+`gcloud compute routers get-status`. For more details, refer
+to https://cloud.google.com/vpc/docs/using-routes#listingroutes.
+""".format(resource),
+        'EXAMPLES': """
+To list all non-dynamic {0} in a project in table form, run:
 
-            $ {{command}}
+    $ {{command}}
 
-       To list the URIs of all non-dynamic {0} in a project, run:
+To list the URIs of all non-dynamic {0} in a project, run:
 
-            $ {{command}} --uri
-       """.format(resource)
+    $ {{command}} --uri
+""".format(resource)
     }
   else:
     detailed_help = {
         'brief': 'List Google Compute Engine ' + resource,
-        'DESCRIPTION': """\
+        'DESCRIPTION': """
 *{{command}}* displays all Google Compute Engine {0} in a project.
 """.format(resource),
-        'EXAMPLES': """\
+        'EXAMPLES': """
 To list all {0} in a project in table form, run:
 
   $ {{command}}
@@ -367,13 +367,13 @@ def GetRegionalListerHelp(resource):
   """Returns the detailed help dict for a regional list command."""
   return {
       'brief': 'List Google Compute Engine ' + resource,
-      'DESCRIPTION': """\
+      'DESCRIPTION': """
 *{{command}}* displays all Google Compute Engine {0} in a project.
 
 By default, {0} from all regions are listed. The results can be
 narrowed down using a filter: `--filter="region:( REGION ... )"`.
 """.format(resource),
-      'EXAMPLES': """\
+      'EXAMPLES': """
 To list all {0} in a project in table form, run:
 
   $ {{command}}
@@ -422,13 +422,13 @@ def GetZonalListerHelp(resource):
   """Returns the detailed help dict for a zonal list command."""
   return {
       'brief': 'List Google Compute Engine ' + resource,
-      'DESCRIPTION': """\
+      'DESCRIPTION': """
 *{{command}}* displays all Google Compute Engine {0} in a project.
 
 By default, {0} from all zones are listed. The results can be narrowed
 down using a filter: `--filter="zone:( ZONE ... )"`.
 """.format(resource),
-      'EXAMPLES': """\
+      'EXAMPLES': """
 To list all {0} in a project in table form, run:
 
   $ {{command}}
@@ -585,22 +585,19 @@ class MultiScopeLister(BaseLister):
 def GetMultiScopeListerHelp(resource, scopes):
   """Returns the detailed help dict for a global and regional list command."""
 
-  zone_example_text = """\
-
+  zone_example_text = """
 To list all {0} in zones ``us-central1-b''
 and ``europe-west1-d'', given they are zonal resources, run:
 
   $ {{command}} --filter="zone:( europe-west1-d us-central1-b )"
 """
-  region_example_text = """\
-
+  region_example_text = """
 To list all {0} in the ``us-central1'' and ``europe-west1'' regions,
 given they are regional resources, run:
 
   $ {{command}} --filter="region:( europe-west1 us-central1 )"
 """
-  global_example_text = """\
-
+  global_example_text = """
 To list all global {0} in a project, run:
 
   $ {{command}} --global
@@ -625,13 +622,13 @@ To list all global {0} in a project, run:
 
   return {
       'brief': 'List Google Compute Engine ' + resource,
-      'DESCRIPTION': """\
+      'DESCRIPTION': """
 *{{command}}* displays all Google Compute Engine {0} in a project.
 
 By default, {1} are listed. The results can be narrowed down by
 providing the {2} flag.
 """.format(resource, default_result_text, allowed_flags_text),
-      'EXAMPLES': ("""\
+      'EXAMPLES': ("""
 To list all {0} in a project in table form, run:
 
   $ {{command}}
@@ -749,20 +746,16 @@ def GetMultiScopeDescriberHelp(resource, scopes):
   """
   article = text.GetArticle(resource)
   zone_example_text = """\
-
 To get details about a zonal {0} in the ``us-central1-b'' zone, run:
 
-  $ {{command}} --zone us-central1-b
+  $ {{command}} --zone=us-central1-b
 """
   region_example_text = """\
+To get details about a regional {0} in the ``us-central1'' regions, run:
 
-To get details about a regional {0} in the ``us-central1'' regions,
-run:
-
-  $ {{command}} --region us-central1
+  $ {{command}} --region=us-central1
 """
   global_example_text = """\
-
 To get details about a global {0}, run:
 
   $ {{command}} --global
@@ -770,17 +763,13 @@ To get details about a global {0}, run:
   return {
       'brief': ('Display detailed information about {0} {1}'
                 .format(article, resource)),
-      'DESCRIPTION': """\
+      'DESCRIPTION': """
 *{{command}}* displays all data associated with {0} {1} in a project.
 """.format(article, resource),
-      'EXAMPLES': ("""\
-"""
-                   + (global_example_text
-                      if ScopeType.global_scope in scopes else '')
-                   + (region_example_text
-                      if ScopeType.regional_scope in scopes else '')
-                   + (zone_example_text
-                      if ScopeType.zonal_scope in scopes else ''))
+      'EXAMPLES': (
+          (global_example_text if ScopeType.global_scope in scopes else '')
+          + (region_example_text if ScopeType.regional_scope in scopes else '')
+          + (zone_example_text if ScopeType.zonal_scope in scopes else ''))
                   .format(resource),
   }
 

@@ -868,13 +868,15 @@
         "type": {
           "description": "Optional. By changing the type to DIST, the patching will be performed\nusing `apt-get dist-upgrade` instead.",
           "enumDescriptions": [
-            "By default, a full upgrade will be performed.",
-            "run `apt-get dist-upgrade` instead."
+            "By default, upgrade will be performed.",
+            "Runs `apt-get dist-upgrade`.",
+            "Runs `apt-get upgrade`."
           ],
           "type": "string",
           "enum": [
             "TYPE_UNSPECIFIED",
-            "DIST"
+            "DIST",
+            "UPGRADE"
           ]
         },
         "excludes": {

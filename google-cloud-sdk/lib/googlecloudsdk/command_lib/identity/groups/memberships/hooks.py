@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Declarative hooks for Cloud Identity Groups CLI."""
+"""Declarative hooks for Cloud Identity Groups Memberships CLI."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
@@ -21,11 +21,31 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.identity import cloudidentity_client as ci_client
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.identity.groups import hooks as groups_hooks
+from googlecloudsdk.core.util import times
 
 _CIG_API_VERSION = 'v1alpha1'
 
 
 # request hooks
+def SetMembership(unused_ref, unused_args, request):
+  """Set Membership in request.
+
+  Args:
+    unused_ref: unused.
+    unused_args: unused.
+    request: The request to modify.
+
+  Returns:
+    The updated request.
+
+  """
+
+  messages = ci_client.GetMessages()
+  request.membership = messages.Membership()
+
+  return request
+
+
 def SetEntityKey(unused_ref, args, request):
   """Set EntityKey in group resource.
 
@@ -33,12 +53,16 @@ def SetEntityKey(unused_ref, args, request):
     unused_ref: unused.
     args: The argparse namespace.
     request: The request to modify.
+
   Returns:
     The updated request.
+
   """
 
-  if hasattr(request, 'member_email') and args.IsSpecified('member_email'):
-    request.membership.preferredMemberKey.id = args.member_email
+  messages = ci_client.GetMessages()
+  if hasattr(args, 'member_email') and args.IsSpecified('member_email'):
+    entity_key = messages.EntityKey(id=args.member_email)
+    request.membership.preferredMemberKey = entity_key
 
   return request
 
@@ -50,8 +74,10 @@ def SetPageSize(unused_ref, args, request):
     unused_ref: unused.
     args: The argparse namespace.
     request: The request to modify.
+
   Returns:
     The updated request.
+
   """
 
   if hasattr(args, 'page_size') and args.IsSpecified('page_size'):
@@ -67,8 +93,10 @@ def SetMembershipParent(unused_ref, args, request):
     unused_ref: unused.
     args: The argparse namespace.
     request: The request to modify.
+
   Returns:
     The updated request.
+
   """
 
   if args.IsSpecified('group_email'):
@@ -86,8 +114,10 @@ def SetMembershipResourceName(unused_ref, args, request):
     unused_ref: unused.
     args: The argparse namespace.
     request: The request to modify.
+
   Returns:
     The updated request.
+
   """
 
   name = ''
@@ -98,77 +128,127 @@ def SetMembershipResourceName(unused_ref, args, request):
     raise exceptions.InvalidArgumentException(
         'Must specify group-email and member-email argument.')
 
-  if hasattr(request, 'group'):
-    request.group.name = name
-  else:
-    request.name = name
+  request.name = name
+
+  if hasattr(request, 'membership'):
+    request.membership.name = name
 
   return request
 
 
-def SetMembershipUpdateMask(unused_ref, args, request):
-  """Set the update mask on the request based on the args.
+def SetMembershipRoles(unused_ref, args, request):
+  """Set MembershipRoles to request.membership.roles.
 
   Args:
     unused_ref: unused.
     args: The argparse namespace.
     request: The request to modify.
+
   Returns:
     The updated request.
-  Raises:
-    InvalidArgumentException: If no fields are specified to update.
+
   """
-  update_mask = []
 
-  if args.IsSpecified('roles'):
-    update_mask.append('roles')
+  if not hasattr(args, 'roles') or not args.IsSpecified('roles'):
+    empty_list = []
+    request.membership.roles = ReformatMembershipRoles(empty_list)
+  else:
+    request.membership.roles = ReformatMembershipRoles(args.roles)
 
-  if (args.IsSpecified('expiration')
-      or args.IsSpecified('clear_expiration')):
-    update_mask.append('expiry_detail')
+  return request
 
-  # TODO(b/139939605): Add PosixGroups check once it is added.
 
-  if not update_mask:
-    raise exceptions.InvalidArgumentException(
-        'Must specify at least one field mask.')
+def SetExpiryDetail(unused_ref, args, request):
+  """Set expiration to request.membership.expiryDetail.
 
-  request.updateMask = ','.join(update_mask)
+  Args:
+    unused_ref: unused.
+    args: The argparse namespace.
+    request: The request to modify.
+
+  Returns:
+    The updated request.
+
+  """
+
+  if hasattr(args, 'expiration') and args.IsSpecified('expiration'):
+    request.membership.expiryDetail = ReformatExpiryDetail(args.expiration)
+
+  return request
+
+
+def UpdateMembershipRoles(unused_ref, args, request):
+  """Update MembershipRoles to request.membership.roles.
+
+  Args:
+    unused_ref: unused.
+    args: The argparse namespace.
+    request: The request to modify.
+
+  Returns:
+    The updated request.
+
+  """
+
+  if hasattr(args, 'roles') and args.IsSpecified('roles'):
+    request.membership.roles = ReformatMembershipRoles(args.roles)
 
   return request
 
 
 # processor hooks
-def ReformatExpiryDetail(expiration):
-  """Reformat expiration string to ExpiryDetail object.
+def UpdateRolesToAdd(arg_list):
+  """Update roles to add to modifyMembershipRolesRequest.addRoles.
 
   Args:
-    expiration: expiration string.
+    arg_list: list of roles to add in string.
   Returns:
-    ExpiryDetail object that contains the expiration data.
+    List of MembershipRoles to add.
   """
 
-  messages = ci_client.GetMessages()
-  expiration_ts = expiration
-  return messages.ExpiryDetail(expireTime=expiration_ts)
-
-
-def ReformatMembershipRoles(roles_list):
-  """Reformat roles string to MembershipRoles object list.
-
-  Args:
-    roles_list: list of roles in a string format.
-  Returns:
-    List of MembershipRoles object.
-  """
-
-  messages = ci_client.GetMessages()
   roles = []
-  for role in roles_list:
-    new_membership_role = messages.MembershipRole(name=role)
-    roles.append(new_membership_role)
+  messages = ci_client.GetMessages()
+  for arg in arg_list:
+    membership_role = messages.MembershipRole(name=arg)
+    roles.append(membership_role)
 
   return roles
+
+
+def UpdateRolesParamsToUpdate(arg_dict):
+  """Update roles params to update to modifyMembershipRolesRequest.updateRolesParams.
+
+  Args:
+    arg_dict: ArgDicts, RolesParams to update.
+    (e.g. OrderedDict([(u'OWNER', u'expiration=4d')]))
+  Returns:
+    List of updateRolesParams to update.
+  """
+
+  roles_params = []
+  messages = ci_client.GetMessages()
+  arg_name = '--update-roles-params'
+  for role, params in arg_dict.items():
+    # Tokenize params to name and value
+    # Example params: expiration=6m
+    # ==> name: expiration, value: 6m
+    # TODO(b/142829363): Implement to support multiple params if necessary.
+    param_name, param_value = TokenizeParams(params, arg_name)
+
+    # Instantiate MembershipRole object.
+    expiry_detail = ReformatExpiryDetail(param_value)
+    membership_role = messages.MembershipRole(
+        name=role, expiryDetail=expiry_detail)
+
+    # Create 'update_mask' string
+    update_mask = GetUpdateMask(param_name, arg_name)
+
+    update_membership_roles_params = messages.ModifyMembershipRolesRequestUpdateMembershipRolesParams(
+        fieldMask=update_mask, membershipRole=membership_role)
+
+    roles_params.append(update_membership_roles_params)
+
+  return roles_params
 
 
 # private methods
@@ -204,3 +284,99 @@ def ConvertEmailToMembershipResourceName(
                'arguments:{}, {}').format(group_email, member_email)
 
   raise exceptions.InvalidArgumentException(parameter_name, error_msg)
+
+
+def ReformatExpiryDetail(expiration):
+  """Reformat expiration string to ExpiryDetail object.
+
+  Args:
+    expiration: expiration string.
+
+  Returns:
+    ExpiryDetail object that contains the expiration data.
+
+  """
+
+  messages = ci_client.GetMessages()
+  duration = 'P' + expiration
+  expiration_ts = FormatDateTime(duration)
+  return messages.MembershipRoleExpiryDetail(expireTime=expiration_ts)
+
+
+def ReformatMembershipRoles(roles_list):
+  """Reformat roles string to MembershipRoles object list.
+
+  Args:
+    roles_list: list of roles in a string format.
+
+  Returns:
+    List of MembershipRoles object.
+
+  """
+
+  messages = ci_client.GetMessages()
+  roles = []
+  if not roles_list:
+    # If no MembershipRole is provided, 'MEMBER' is used as a default value.
+    roles.append(messages.MembershipRole(name='MEMBER'))
+    return roles
+
+  for role in roles_list:
+    new_membership_role = messages.MembershipRole(name=role)
+    roles.append(new_membership_role)
+
+  return roles
+
+
+def GetUpdateMask(role_param, arg_name):
+  """Set the update mask on the request based on the role param.
+
+  Args:
+    role_param: The param that needs to be updated for a specified role.
+    arg_name: The argument name
+
+  Returns:
+    Update mask
+
+  Raises:
+    InvalidArgumentException: If no fields are specified to update.
+
+  """
+  update_mask = []
+
+  if role_param == 'expiration':
+    update_mask.append('expiry_detail.expire_time')
+
+  if not update_mask:
+    raise exceptions.InvalidArgumentException(
+        arg_name, 'Must specify at least one field mask.')
+
+  return ','.join(update_mask)
+
+
+def FormatDateTime(duration):
+  """Return RFC3339 string for datetime that is now + given duration.
+
+  Args:
+    duration: string ISO 8601 duration, e.g. 'P5D' for period 5 days.
+
+  Returns:
+    string timestamp
+
+  """
+
+  # We use a format that preserves +00:00 for UTC to match timestamp format
+  # returned by container API.
+  fmt = '%Y-%m-%dT%H:%M:%S.%3f%Oz'
+
+  return times.FormatDateTime(
+      times.ParseDateTime(duration, tzinfo=times.UTC), fmt=fmt)
+
+
+def TokenizeParams(params, arg_name):
+  token_list = params.split('=')
+  if len(token_list) == 2:
+    return token_list[0], token_list[1]
+
+  raise exceptions.InvalidArgumentException(
+      arg_name, 'Invalid format of params: ' + params)

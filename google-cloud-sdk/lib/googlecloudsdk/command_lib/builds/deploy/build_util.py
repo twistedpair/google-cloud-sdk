@@ -59,20 +59,29 @@ _K8S_ANNOTATIONS_SUB_VAR = '_K8S_ANNOTATIONS'
 _K8S_NAMESPACE_SUB_VAR = '_K8S_NAMESPACE'
 _PREVIEW_EXPIRY_SUB_VAR = '_PREVIEW_EXPIRY'
 
+_EXPANDED_CONFIGS_PATH_DYNAMIC = _EXPANDED_CONFIGS_PATH.format(
+    '$' + _OUTPUT_BUCKET_PATH_SUB_VAR, '$BUILD_ID')
+_SUGGESTED_CONFIGS_PATH_DYNAMIC = _SUGGESTED_CONFIGS_PATH.format(
+    '$' + _OUTPUT_BUCKET_PATH_SUB_VAR, '$BUILD_ID')
+
 _SAVE_CONFIGS_SCRIPT = '''
 set -e
 
-gsutil cp -r output/suggested gs://{0}
-echo "Copied suggested base configs to gs://{0}"
-echo "View suggested base configs at https://console.cloud.google.com/storage/browser/{0}/"
-gsutil cp -r output/expanded gs://{1}
-echo "Copied expanded configs to gs://{1}"
-echo "View expanded configs at https://console.cloud.google.com/storage/browser/{1}/"
+if [[ "${output_bucket_path}" ]]; then
+  gsutil -m cp output/expanded/* gs://{expanded}
+  echo "Copied expanded configs to gs://{expanded}"
+  echo "View expanded configs at https://console.cloud.google.com/storage/browser/{expanded}/"
+  if [[ ! "${k8s_yaml_path}" ]]; then
+    gsutil -m cp output/suggested/* gs://{suggested}
+    echo "Copied suggested base configs to gs://{suggested}"
+    echo "View suggested base configs at https://console.cloud.google.com/storage/browser/{suggested}/"
+  fi
+fi
 '''.format(
-    _SUGGESTED_CONFIGS_PATH.format(
-        '$' + _OUTPUT_BUCKET_PATH_SUB_VAR, '$BUILD_ID'),
-    _EXPANDED_CONFIGS_PATH.format(
-        '$' + _OUTPUT_BUCKET_PATH_SUB_VAR, '$BUILD_ID'),
+    output_bucket_path=_OUTPUT_BUCKET_PATH_SUB_VAR,
+    expanded=_EXPANDED_CONFIGS_PATH_DYNAMIC,
+    k8s_yaml_path=_K8S_YAML_PATH_SUB_VAR,
+    suggested=_SUGGESTED_CONFIGS_PATH_DYNAMIC,
 )
 
 _PREPARE_PREVIEW_DEPLOY_SCRIPT = '''
@@ -175,7 +184,7 @@ done <<< $$NAMESPACES
 _BUILD_BUILD_STEP_ID = 'Build'
 _PUSH_BUILD_STEP_ID = 'Push'
 _PREPARE_DEPLOY_BUILD_STEP_ID = 'Prepare deploy'
-_SAVE_CONFIGS_BUILD_STEP_ID = 'Save configs'
+_SAVE_CONFIGS_BUILD_STEP_ID = 'Save generated Kubernetes configs'
 _APPLY_DEPLOY_BUILD_STEP_ID = 'Apply deploy'
 _ANNOTATE_PREVIEW_NAMESPACE_BUILD_STEP_ID = 'Annotate preview namespace'
 _CLEANUP_PREVIEW_BUILD_STEP_ID = 'Delete expired preview environments'
@@ -366,6 +375,16 @@ def CreateBuild(
 
   build.options = messages.BuildOptions()
   build.options.substitutionOption = messages.BuildOptions.SubstitutionOptionValueValuesEnum.ALLOW_LOOSE
+
+  if build_and_push:
+    build.images = [image]
+
+  build.artifacts = messages.Artifacts(
+      objects=messages.ArtifactObjects(
+          location='gs://' + _EXPANDED_CONFIGS_PATH_DYNAMIC,
+          paths=['output/expanded/*']
+      )
+  )
 
   return build
 
@@ -582,6 +601,13 @@ def CreatePRPreviewBuildTrigger(
       options=messages.BuildOptions(
           substitutionOption=messages.BuildOptions
           .SubstitutionOptionValueValuesEnum.ALLOW_LOOSE
+      ),
+      images=[_IMAGE],
+      artifacts=messages.Artifacts(
+          objects=messages.ArtifactObjects(
+              location='gs://' + _EXPANDED_CONFIGS_PATH_DYNAMIC,
+              paths=['output/expanded/*']
+          )
       )
   )
 
@@ -804,7 +830,7 @@ def _SaveConfigsBuildStep(messages):
   return messages.BuildStep(
       id=_SAVE_CONFIGS_BUILD_STEP_ID,
       name='gcr.io/cloud-builders/gsutil',
-      entrypoint='sh',
+      entrypoint='bash',
       args=[
           '-c',
           _SAVE_CONFIGS_SCRIPT

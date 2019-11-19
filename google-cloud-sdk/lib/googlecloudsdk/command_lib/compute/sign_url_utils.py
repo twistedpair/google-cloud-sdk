@@ -25,6 +25,7 @@ import time
 
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import http
+from googlecloudsdk.core.util import encoding
 import six.moves.urllib.parse
 
 _URL_SCHEME_MUST_BE_HTTP_HTTPS_MESSAGE = (
@@ -109,7 +110,7 @@ def SignUrl(url, key_name, encoded_key_value, validity_seconds):
   signature = _GetSignature(
       base64.urlsafe_b64decode(encoded_key_value), url_to_sign.encode('utf-8'))
   return '{url}&Signature={signature}'.format(
-      url=url_to_sign, signature=signature)
+      url=url_to_sign, signature=encoding.Decode(signature))
 
 
 def ValidateSignedUrl(signed_url):

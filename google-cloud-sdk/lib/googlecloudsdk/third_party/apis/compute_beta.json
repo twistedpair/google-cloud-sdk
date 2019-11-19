@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20191107",
+ "revision": "20191108",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -13131,7 +13131,7 @@
   "NetworkEndpoint": {
    "id": "NetworkEndpoint",
    "type": "object",
-   "description": "The network endpoint.",
+   "description": "The network endpoint. Next ID: 7",
    "properties": {
     "instance": {
      "type": "string",
@@ -13151,7 +13151,7 @@
   "NetworkEndpointGroup": {
    "id": "NetworkEndpointGroup",
    "type": "object",
-   "description": "Represents a collection of network endpoints.\n\nFor more information read Setting up network endpoint groups in load balancing. (== resource_for v1.networkEndpointGroups ==) (== resource_for beta.networkEndpointGroups ==)",
+   "description": "Represents a collection of network endpoints.\n\nFor more information read Setting up network endpoint groups in load balancing. (== resource_for v1.networkEndpointGroups ==) (== resource_for beta.networkEndpointGroups ==) Next ID: 21",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -14570,7 +14570,7 @@
   "NodeTemplate": {
    "id": "NodeTemplate",
    "type": "object",
-   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==) (== NextID: 16 ==)",
+   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==) (== NextID: 17 ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -20750,6 +20750,10 @@
      "type": "string",
      "description": "The size of the disk in base-2 GB.",
      "format": "int64"
+    },
+    "diskType": {
+     "type": "string",
+     "description": "[Output Only] URL of the disk type resource. For example: projects/project/zones/zone/diskTypes/pd-standard or pd-ssd"
     },
     "guestOsFeatures": {
      "type": "array",

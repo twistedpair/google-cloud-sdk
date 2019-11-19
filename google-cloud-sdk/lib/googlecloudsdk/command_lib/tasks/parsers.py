@@ -271,17 +271,12 @@ def ParseCreateTaskArgs(args, task_type, messages,
         pullMessage=_ParsePullMessageArgs(args, task_type, messages),
         appEngineHttpRequest=_ParseAlphaAppEngineHttpRequestArgs(
             args, task_type, messages))
-  elif release_track == base.ReleaseTrack.BETA:
+  else:
     return messages.Task(
         scheduleTime=args.schedule_time,
         appEngineHttpRequest=_ParseAppEngineHttpRequestArgs(args, task_type,
                                                             messages),
         httpRequest=_ParseHttpRequestArgs(args, task_type, messages))
-  else:
-    return messages.Task(
-        scheduleTime=args.schedule_time,
-        appEngineHttpRequest=_ParseAppEngineHttpRequestArgs(args, task_type,
-                                                            messages))
 
 
 def CheckUpdateArgsSpecified(args, queue_type,

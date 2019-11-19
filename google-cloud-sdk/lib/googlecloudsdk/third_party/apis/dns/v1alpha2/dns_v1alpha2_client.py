@@ -35,6 +35,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.activePeeringZones = self.ActivePeeringZonesService(self)
     self.changes = self.ChangesService(self)
     self.dnsKeys = self.DnsKeysService(self)
     self.managedZoneOperations = self.ManagedZoneOperationsService(self)
@@ -42,6 +43,96 @@ class DnsV1alpha2(base_api.BaseApiClient):
     self.policies = self.PoliciesService(self)
     self.projects = self.ProjectsService(self)
     self.resourceRecordSets = self.ResourceRecordSetsService(self)
+
+  class ActivePeeringZonesService(base_api.BaseApiService):
+    """Service class for the activePeeringZones resource."""
+
+    _NAME = u'activePeeringZones'
+
+    def __init__(self, client):
+      super(DnsV1alpha2.ActivePeeringZonesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Deactivate(self, request, global_params=None):
+      r"""! Deactivate a Peering Zone if it's not already deactivated. Returns an.
+! error if the managed zone cannot be found, is not a peering zone. If the
+! zone is already deactivated, returns false for deactivate_succeeded field.
+
+      Args:
+        request: (DnsActivePeeringZonesDeactivateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PeeringZoneDeactivateResponse) The response message.
+      """
+      config = self.GetMethodConfig('Deactivate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Deactivate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'dns.activePeeringZones.deactivate',
+        ordered_params=[u'project', u'peeringZoneId'],
+        path_params=[u'peeringZoneId', u'project'],
+        query_params=[u'clientOperationId'],
+        relative_path=u'dns/v1alpha2/projects/{project}/activePeeringZones/{peeringZoneId}',
+        request_field='',
+        request_type_name=u'DnsActivePeeringZonesDeactivateRequest',
+        response_type_name=u'PeeringZoneDeactivateResponse',
+        supports_download=False,
+    )
+
+    def GetPeeringZoneInfo(self, request, global_params=None):
+      r"""! Fetch the representation of an existing PeeringZone.
+
+      Args:
+        request: (DnsActivePeeringZonesGetPeeringZoneInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ManagedZone) The response message.
+      """
+      config = self.GetMethodConfig('GetPeeringZoneInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetPeeringZoneInfo.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dns.activePeeringZones.getPeeringZoneInfo',
+        ordered_params=[u'peeringZoneId', u'project'],
+        path_params=[u'peeringZoneId'],
+        query_params=[u'clientOperationId', u'project'],
+        relative_path=u'dns/v1alpha2/activePeeringZones/{peeringZoneId}',
+        request_field='',
+        request_type_name=u'DnsActivePeeringZonesGetPeeringZoneInfoRequest',
+        response_type_name=u'ManagedZone',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""! Enumerate PeeringZones that target a given network via dns peering.
+
+      Args:
+        request: (DnsActivePeeringZonesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PeeringZonesListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dns.activePeeringZones.list',
+        ordered_params=[u'project', u'targetNetwork'],
+        path_params=[u'project', u'targetNetwork'],
+        query_params=[u'maxResults', u'pageToken'],
+        relative_path=u'dns/v1alpha2/projects/{project}/activePeeringZones/{targetNetwork}',
+        request_field='',
+        request_type_name=u'DnsActivePeeringZonesListRequest',
+        response_type_name=u'PeeringZonesListResponse',
+        supports_download=False,
+    )
 
   class ChangesService(base_api.BaseApiService):
     """Service class for the changes resource."""

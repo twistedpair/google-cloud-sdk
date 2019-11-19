@@ -15,12 +15,14 @@
 """Library for manipulating serverless local development setup."""
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import print_function
 from __future__ import unicode_literals
 
 import base64
 import os
 import os.path
 import re
+
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
@@ -244,7 +246,9 @@ def LocalDevelopmentSecretSpec(key):
     Dictionary representing yaml dictionary.
   """
   yaml_config = yaml.load(_SECRET_TEMPLATE)
-  yaml_config['stringData'] = {'local_development_service_account.json': key}
+  yaml_config['data'] = {
+      'local_development_service_account.json': _Utf8ToBase64(key)
+  }
   return yaml_config
 
 

@@ -2376,3 +2376,19 @@ def AddUpdateContainerArgs(parser, container_mount_disk_enabled=False):
       parser,
       container_mount_disk_enabled=container_mount_disk_enabled)
   _AddContainerArgs(parser)
+
+
+def AddPostKeyRevocationActionTypeArgs(parser):
+  """Helper to add --post-key-revocation-action-type flag."""
+  parser.add_argument(
+      '--post-key-revocation-action-type',
+      choices=['noop', 'shutdown'],
+      metavar='POLICY',
+      required=False,
+      hidden=True,
+      help="""\
+      The instance will be shut down when the KMS key of one of its disk is
+      revoked, if set to `SHUTDOWN`.
+
+      Default setting is `NOOP`.
+      """)

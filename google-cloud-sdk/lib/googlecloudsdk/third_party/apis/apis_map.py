@@ -852,6 +852,12 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.osconfig.v1alpha2',
                 client_classpath='osconfig_v1alpha2_client.OsconfigV1alpha2',
                 messages_modulepath='osconfig_v1alpha2_messages',
+                default_version=False),
+        'v1beta':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.osconfig.v1beta',
+                client_classpath='osconfig_v1beta_client.OsconfigV1beta',
+                messages_modulepath='osconfig_v1beta_messages',
                 default_version=True),
     },
     'oslogin': {
@@ -891,6 +897,12 @@ MAP = {
                 default_version=True),
     },
     'recommender': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.recommender.v1',
+                client_classpath='recommender_v1_client.RecommenderV1',
+                messages_modulepath='recommender_v1_messages',
+                default_version=False),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.recommender.v1alpha1',

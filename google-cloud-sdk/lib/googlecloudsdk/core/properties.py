@@ -255,6 +255,8 @@ class _Sections(object):
     builds: Section, The section containing builds properties for the Cloud SDK.
     build_artifacts: Section, The section containing build artifacts properties
       for the Cloud SDK.
+    artifacts: Section, The section containing artifacts properties for the
+      Cloud SDK.
     component_manager: Section, The section containing properties for the
       component_manager.
     composer: Section, The section containing composer properties for the Cloud
@@ -328,6 +330,7 @@ class _Sections(object):
     self.api_client_overrides = _SectionApiClientOverrides()
     self.api_endpoint_overrides = _SectionApiEndpointOverrides()
     self.app = _SectionApp()
+    self.artifacts = _SectionArtifacts()
     self.auth = _SectionAuth()
     self.billing = _SectionBilling()
     self.builds = _SectionBuilds()
@@ -375,6 +378,7 @@ class _Sections(object):
         self.auth,
         self.billing,
         self.builds,
+        self.artifacts,
         self.build_artifacts,
         self.component_manager,
         self.composer,
@@ -1001,6 +1005,26 @@ class _SectionBuildArtifacts(_Section):
         help_text='Default repository to use when working with Cloud '
         'Build Artifacts resources. When a `repository` is required but not '
         'provided by a flag, the command will fall back to this value, if set.')
+
+
+class _SectionArtifacts(_Section):
+  """Contains the properties for the 'artifacts' section."""
+
+  def __init__(self):
+    super(_SectionArtifacts, self).__init__('artifacts')
+
+    self.repository = self._Add(
+        'repository',
+        help_text='Default repository to use when working with Artifact '
+        'Registry resources. When a `repository` value is required but not '
+        'provided, the command will fall back to this value, if set.')
+
+    self.location = self._Add(
+        'location',
+        help_text='Default location to use when working with Artifact Registry '
+        'resources. When a `location` value is required but not provided, the '
+        'command will fall back to this value, if set. If this value is unset, '
+        'the default location is `global` when `location` value is optional.')
 
 
 class _SectionContainer(_Section):

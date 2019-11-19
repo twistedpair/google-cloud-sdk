@@ -2745,6 +2745,10 @@
             "$ref": "GoogleCloudVideointelligenceV1p3beta1_LogoRecognitionAnnotation"
           }
         },
+        "celebrityRecognitionAnnotations": {
+          "description": "Celebrity recognition annotations.",
+          "$ref": "GoogleCloudVideointelligenceV1p3beta1_CelebrityRecognitionAnnotation"
+        },
         "error": {
           "description": "If set, indicates an error. Note that for a single `AnnotateVideoRequest`\nsome videos may succeed and some may fail.",
           "$ref": "GoogleRpc_Status"
@@ -3231,6 +3235,73 @@
         }
       }
     },
+    "GoogleCloudVideointelligenceV1p3beta1_CelebrityRecognitionAnnotation": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_CelebrityRecognitionAnnotation",
+      "description": "Celebrity recognition annotation per video.",
+      "type": "object",
+      "properties": {
+        "celebrityTracks": {
+          "description": "The tracks detected from the input video, including recognized celebrities\nand other detected faces in the video.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p3beta1_CelebrityTrack"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_CelebrityTrack": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_CelebrityTrack",
+      "description": "The annotation result of a celebrity face track. RecognizedCelebrity field\ncould be empty if the face track does not have any matched celebrities.",
+      "type": "object",
+      "properties": {
+        "celebrities": {
+          "description": "Top N match of the celebrities for the face in this track.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p3beta1_RecognizedCelebrity"
+          }
+        },
+        "faceTrack": {
+          "description": "A track of a person's face.",
+          "$ref": "GoogleCloudVideointelligenceV1p3beta1_Track"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_RecognizedCelebrity": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_RecognizedCelebrity",
+      "description": "The recognized celebrity with confidence score.",
+      "type": "object",
+      "properties": {
+        "celebrity": {
+          "description": "The recognized celebrity.",
+          "$ref": "GoogleCloudVideointelligenceV1p3beta1_Celebrity"
+        },
+        "confidence": {
+          "description": "Recognition confidence. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_Celebrity": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_Celebrity",
+      "description": "Celebrity definition.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the celebrity. Have the format\n`video-intelligence\/kg-mid` indicates a celebrity from preloaded gallery.\nkg-mid is the id in Google knowledge graph, which is unique for the\ncelebrity.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The celebrity name.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Textual description of additional information about the celebrity, if\napplicable.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudVideointelligenceV1p3beta1_AnnotateVideoProgress": {
       "id": "GoogleCloudVideointelligenceV1p3beta1_AnnotateVideoProgress",
       "description": "Video annotation progress. Included in the `metadata`\nfield of the `Operation` returned by the `GetOperation`\ncall of the `google::longrunning::Operations` service.",
@@ -3279,7 +3350,8 @@
             "Speech transcription.",
             "OCR text detection and tracking.",
             "Object detection and tracking.",
-            "Logo detection, tracking, and recognition."
+            "Logo detection, tracking, and recognition.",
+            "Celebrity recognition."
           ],
           "type": "string",
           "enum": [
@@ -3290,7 +3362,8 @@
             "SPEECH_TRANSCRIPTION",
             "TEXT_DETECTION",
             "OBJECT_TRACKING",
-            "LOGO_RECOGNITION"
+            "LOGO_RECOGNITION",
+            "CELEBRITY_RECOGNITION"
           ]
         },
         "segment": {

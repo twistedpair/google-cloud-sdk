@@ -85,6 +85,60 @@ class ChangesListResponse(_messages.Message):
   nextPageToken = _messages.StringField(4)
 
 
+class DnsActivePeeringZonesDeactivateRequest(_messages.Message):
+  r"""A DnsActivePeeringZonesDeactivateRequest object.
+
+  Fields:
+    clientOperationId: ! For mutating operation requests only. An optional
+      identifier ! specified by the client. Must be unique for operation
+      resources in the ! Operations collection.
+    peeringZoneId: ! The unique peering zone id of the consumer peering zone
+      to be deactivated.
+    project: ! The project ID for the producer project targeted by the
+      consumer ! peering zone to be deactivated.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  peeringZoneId = _messages.IntegerField(2, required=True)
+  project = _messages.StringField(3, required=True)
+
+
+class DnsActivePeeringZonesGetPeeringZoneInfoRequest(_messages.Message):
+  r"""A DnsActivePeeringZonesGetPeeringZoneInfoRequest object.
+
+  Fields:
+    clientOperationId: ! For mutating operation requests only. An optional
+      identifier ! specified by the client. Must be unique for operation
+      resources in the ! Operations collection.
+    peeringZoneId: ! ManagedZoneId addressed by this request
+    project: ! Identifies the producer project targeted by the peering zone in
+      this ! request.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  peeringZoneId = _messages.IntegerField(2, required=True)
+  project = _messages.StringField(3, required=True)
+
+
+class DnsActivePeeringZonesListRequest(_messages.Message):
+  r"""A DnsActivePeeringZonesListRequest object.
+
+  Fields:
+    maxResults: ! Optional. Maximum number of results to be returned. If
+      unspecified, the ! server will decide how many results to return.
+    pageToken: ! Optional. A tag returned by a previous list request that was
+      truncated. ! Use this parameter to continue a previous list request.
+    project: ! Identifies the producer project addressed by this request.
+    targetNetwork: ! Identifies the target network addressed by this request
+      by network name.
+  """
+
+  maxResults = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
+  targetNetwork = _messages.StringField(4, required=True)
+
+
 class DnsChangesCreateRequest(_messages.Message):
   r"""A DnsChangesCreateRequest object.
 
@@ -1167,6 +1221,45 @@ class OperationManagedZoneContext(_messages.Message):
 
   newValue = _messages.MessageField('ManagedZone', 1)
   oldValue = _messages.MessageField('ManagedZone', 2)
+
+
+class PeeringZoneDeactivateResponse(_messages.Message):
+  r"""A PeeringZoneDeactivateResponse object.
+
+  Fields:
+    deactivateSucceeded: True if the zone is deactivated by this request,
+      false if the zone exists and is of type peering zone but was already
+      deactivated.
+    header: A ResponseHeader attribute.
+  """
+
+  deactivateSucceeded = _messages.BooleanField(1)
+  header = _messages.MessageField('ResponseHeader', 2)
+
+
+class PeeringZonesListResponse(_messages.Message):
+  r"""A PeeringZonesListResponse object.
+
+  Fields:
+    header: A ResponseHeader attribute.
+    kind: A string attribute.
+    nextPageToken: ! The presence of this field indicates that there exist
+      more results ! following your last page of results in pagination order.
+      To fetch them, ! make another list request using this value as your page
+      token. ! ! In this way you can retrieve the complete contents of even
+      very large ! collections one page at a time. However, if the contents of
+      the collection ! change between the first and last paginated list
+      request, the set of all ! elements returned will be an inconsistent view
+      of the collection. There is ! no way to retrieve a consistent snapshot
+      of a collection larger than the ! maximum page size.
+    peeringZones: ! The active peering zone resources matching the request. !
+      Each ManagedZone has only the id field set.
+  """
+
+  header = _messages.MessageField('ResponseHeader', 1)
+  kind = _messages.StringField(2, default=u'dns#peeringZonesListResponse')
+  nextPageToken = _messages.StringField(3)
+  peeringZones = _messages.MessageField('ManagedZone', 4, repeated=True)
 
 
 class PoliciesDeleteResponse(_messages.Message):

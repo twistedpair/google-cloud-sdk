@@ -32,24 +32,24 @@ from six.moves import range  # pylint: disable=redefined-builtin
 
 INSTANCE_GROUP_GET_NAMED_PORT_DETAILED_HELP = {
     'brief': 'Lists the named ports for an instance group resource',
-    'DESCRIPTION': """\
-        Named ports are key:value pairs metadata representing
-        the service name and the port that it's running on. Named ports
-        can be assigned to an instance group, which indicates that the service
-        is available on all instances in the group. This information is used
-        by the HTTP Load Balancing service.
+    'DESCRIPTION': """
+Named ports are key:value pairs metadata representing
+the service name and the port that it's running on. Named ports
+can be assigned to an instance group, which indicates that the service
+is available on all instances in the group. This information is used
+by the HTTP Load Balancing service.
 
-        *{command}* lists the named ports (name and port tuples)
-        for an instance group.
-        """,
-    'EXAMPLES': """\
-        For example, to list named ports for an instance group:
+*{command}* lists the named ports (name and port tuples)
+for an instance group.
+""",
+    'EXAMPLES': """
+For example, to list named ports for an instance group:
 
-          $ {command} example-instance-group --zone us-central1-a
+  $ {command} example-instance-group --zone=us-central1-a
 
-        The above example lists named ports assigned to an instance
-        group named 'example-instance-group' in the ``us-central1-a'' zone.
-        """,
+The above example lists named ports assigned to an instance
+group named 'example-instance-group' in the ``us-central1-a'' zone.
+""",
 }
 
 # max_langth limit of instances field in InstanceGroupManagers*InstancesRequest
@@ -214,34 +214,34 @@ def ValidateAndParseNamedPortsArgs(messages, named_ports):
 
 SET_NAMED_PORTS_HELP = {
     'brief': 'Sets the list of named ports for an instance group',
-    'DESCRIPTION': """\
-        Named ports are key:value pairs metadata representing
-        the service name and the port that it's running on. Named ports
-        can be assigned to an instance group, which
-        indicates that the service is available on all instances in the
-        group. This information is used by the HTTP Load Balancing
-        service.
+    'DESCRIPTION': """
+Named ports are key:value pairs metadata representing
+the service name and the port that it's running on. Named ports
+can be assigned to an instance group, which
+indicates that the service is available on all instances in the
+group. This information is used by the HTTP Load Balancing
+service.
 
-        *{command}* sets the list of named ports for all instances
-        in an instance group.
+*{command}* sets the list of named ports for all instances
+in an instance group.
 
-        Note: Running this command will clear all existing named ports.
-        """,
-    'EXAMPLES': """\
-        For example, to apply the named ports to an entire instance group:
+Note: Running this command will clear all existing named ports.
+""",
+    'EXAMPLES': """
+For example, to apply the named ports to an entire instance group:
 
-          $ {command} example-instance-group --named-ports example-service:1111 --zone us-central1-a
+  $ {command} example-instance-group --named-ports=example-service:1111 --zone=us-central1-a
 
-        The above example will assign a name 'example-service' for port 1111
-        to the instance group called 'example-instance-group' in the
-        ``us-central1-a'' zone. The command removes any named ports that are
-        already set for this instance group.
+The above example will assign a name 'example-service' for port 1111
+to the instance group called 'example-instance-group' in the
+``us-central1-a'' zone. The command removes any named ports that are
+already set for this instance group.
 
-        To clear named ports from instance group provide empty named ports
-        list as parameter:
+To clear named ports from instance group provide empty named ports
+list as parameter:
 
-          $ {command} example-instance-group --named-ports "" --zone us-central1-a
-        """,
+  $ {command} example-instance-group --named-ports="" --zone=us-central1-a
+""",
 }
 
 

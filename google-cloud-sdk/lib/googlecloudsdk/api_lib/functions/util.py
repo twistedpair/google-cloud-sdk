@@ -267,10 +267,15 @@ def _GetViolationsFromError(error):
     String of newline-separated violations descriptions.
   """
   error_payload = exceptions_util.HttpErrorPayload(error)
-  field_errors = error_payload.field_violations
-  if not field_errors:
-    return ''
-  return '\n'.join(field_errors.values()) + '\n'
+  errors = []
+  errors.extend(
+      ['{}:\n{}'.format(k, v) for k, v in error_payload.violations.items()])
+  errors.extend([
+      '{}:\n{}'.format(k, v) for k, v in error_payload.field_violations.items()
+  ])
+  if errors:
+    return '\n'.join(errors) + '\n'
+  return ''
 
 
 def _GetPermissionErrorDetails(error_info):

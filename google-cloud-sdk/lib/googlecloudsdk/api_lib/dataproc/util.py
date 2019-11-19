@@ -325,6 +325,7 @@ class NoOpProgressDisplay(object):
 
 def WaitForJobTermination(dataproc,
                           job,
+                          job_ref,
                           message,
                           goal_state,
                           error_state=None,
@@ -335,8 +336,10 @@ def WaitForJobTermination(dataproc,
   """Poll dataproc Job until its status is terminal or timeout reached.
 
   Args:
-    dataproc: wrapper for datarpoc resources, client and messages
+    dataproc: wrapper for dataproc resources, client and messages
     job: The job to wait to finish.
+    job_ref: Parsed dataproc.projects.regions.jobs resource containing a
+        projectId, region, and jobId.
     message: str, message to display to user while polling.
     goal_state: JobStatus.StateValueValuesEnum, the state to define success
     error_state: JobStatus.StateValueValuesEnum, the state to define failure
@@ -347,13 +350,11 @@ def WaitForJobTermination(dataproc,
     timeout_s: number, time out for job completion. None means no timeout.
 
   Returns:
-    Operation: the return value of the last successful operations.get
-    request.
+    Job: the return value of the last successful jobs.get request.
 
   Raises:
-    OperationError: if the operation times out or finishes with an error.
+    JobError: if the job finishes with an error.
   """
-  job_ref = ParseJob(job.reference.jobId, dataproc)
   request = dataproc.messages.DataprocProjectsRegionsJobsGetRequest(
       projectId=job_ref.projectId, region=job_ref.region, jobId=job_ref.jobId)
   driver_log_stream = None
@@ -470,6 +471,10 @@ def ResolveRegion(release_track):
 
 
 # You probably want to use flags.AddClusterResourceArgument instead.
+# If calling this method, you *must* have called flags.AddRegionFlag first to
+# ensure a --region flag is stored into properties, which ResolveRegion
+# depends on. This is also mutually incompatible with any usage of args.CONCEPTS
+# which use --region as a resource attribute.
 def ParseCluster(name, dataproc):
   ref = dataproc.resources.Parse(
       name,
@@ -482,6 +487,10 @@ def ParseCluster(name, dataproc):
 
 
 # You probably want to use flags.AddJobResourceArgument instead.
+# If calling this method, you *must* have called flags.AddRegionFlag first to
+# ensure a --region flag is stored into properties, which ResolveRegion
+# depends on. This is also mutually incompatible with any usage of args.CONCEPTS
+# which use --region as a resource attribute.
 def ParseJob(job_id, dataproc):
   ref = dataproc.resources.Parse(
       job_id,

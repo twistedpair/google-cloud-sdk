@@ -125,7 +125,11 @@ class FileReadError(exceptions.Error):
 
 
 class ManifestError(exceptions.Error):
-  """Error indicating the a problem parsing or using the manifest."""
+  """Error indicating a problem parsing or using the manifest."""
+
+
+class ExperimentsError(exceptions.Error):
+  """Error indicating a problem parsing or using the experiment config."""
 
 
 class CloudBuildLoadError(exceptions.Error):
@@ -475,6 +479,88 @@ class Manifest(object):
       log.debug('Resolved runtime [%s] has no build configuration',
                 current_runtime)
       return BuilderReference(current_runtime, None, deprecation_msg)
+
+
+class Experiments(object):
+  """Runtime experiment configs as read from a gs:// or a file:// source.
+
+  The experiment config file follows the following protoish schema:
+
+  # Used to determine if this client can parse this manifest. If the number is
+  # less than or equal to the version this client knows about, it is compatible.
+  int schema_version; # Required
+
+  # Map of experiments and their rollout percentage.
+  # The key is the name of the experiment, the value is an integer between 0
+  # and 100 representing the rollout percentage
+  # In case no experiments are defined, an empty 'experiments:' section needs to
+  # be present.
+  <String, Number> experiments
+  """
+  SCHEMA_VERSION = 1
+  CONFIG_FILE = 'experiments.yaml'
+  TRIGGER_BUILD_SERVER_SIDE = 'trigger_build_server_side'
+
+  @classmethod
+  def LoadFromURI(cls, dir_uri):
+    """Loads a runtime experiment config from a gs:// or file:// path.
+
+    Args:
+      dir_uri: str, A gs:// or file:// URI pointing to a folder that contains
+        the file called Experiments.CONFIG_FILE
+
+    Returns:
+      Experiments, the loaded runtime experiments config.
+    """
+    uri = _Join(dir_uri, cls.CONFIG_FILE)
+    log.debug('Loading runtimes experiment config from [%s]', uri)
+    try:
+      with _Read(uri) as f:
+        data = yaml.load(f, file_hint=uri)
+      return cls(uri, data)
+    except FileReadError as e:
+      raise ExperimentsError(
+          'Unable to read the runtimes experiment config: [{}], error: {}'
+          .format(uri, e))
+
+  def __init__(self, uri, data):
+    """Use LoadFromFile, not this constructor directly."""
+    self._uri = uri
+    self._data = data
+    required_version = self._data.get('schema_version', None)
+    if required_version is None:
+      raise ExperimentsError(
+          'Unable to parse the runtimes experiment config due to missing '
+          'schema_version field: [{}]'.format(uri))
+    if required_version > Experiments.SCHEMA_VERSION:
+      raise ExperimentsError(
+          'Unable to parse the runtimes experiments config. Your client '
+          'supports schema version [{supported}] but requires [{required}]. '
+          'Please update your SDK to a newer version.'.format(
+              supported=Manifest.SCHEMA_VERSION, required=required_version))
+
+  def Experiments(self):
+    """Get all experiments and their rollout percentage.
+
+    Returns:
+      dict[str,int] Experiments and their rollout state.
+    """
+    return self._data.get('experiments')
+
+  def GetExperimentPercentWithDefault(self, experiment, default=0):
+    """Get the rollout percentage of an experiment or return 'default'.
+
+    Args:
+      experiment: the name of the experiment
+      default: the value to return if the experiment was not found
+
+    Returns:
+      int the percent of the experiment
+    """
+    try:
+      return self._data.get('experiments')[experiment]
+    except KeyError:
+      return default
 
 
 class Resolver(object):

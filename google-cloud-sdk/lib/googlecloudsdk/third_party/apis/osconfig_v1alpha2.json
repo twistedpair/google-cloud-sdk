@@ -275,13 +275,15 @@
         "type": {
           "description": "Optional. By changing the type to DIST, the patching will be performed\nusing `apt-get dist-upgrade` instead.",
           "enumDescriptions": [
-            "By default, a full upgrade will be performed.",
-            "run `apt-get dist-upgrade` instead."
+            "By default, upgrade will be performed.",
+            "Runs `apt-get dist-upgrade`.",
+            "Runs `apt-get upgrade`."
           ],
           "type": "string",
           "enum": [
             "TYPE_UNSPECIFIED",
-            "DIST"
+            "DIST",
+            "UPGRADE"
           ]
         },
         "excludes": {
@@ -668,6 +670,11 @@
           "description": "Number of instances that are running the post-patch step.",
           "type": "string",
           "format": "int64"
+        },
+        "instancesNoAgentDetected": {
+          "description": "Number of instances that do not appear to be running the agent. Check to\nensure that the agent is installed, running, and able to communicate with\nthe service.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -726,7 +733,8 @@
             "The instance acked the notification and will start shortly.",
             "The instance exceeded the time out while applying the patch.",
             "The instance is running the pre-patch step.",
-            "The instance is running the post-patch step."
+            "The instance is running the post-patch step.",
+            "The service could not detect the presence of the agent. Check to ensure\nthat the agent is installed, running, and able to communicate with the\nservice."
           ],
           "type": "string",
           "enum": [
@@ -744,7 +752,8 @@
             "ACKED",
             "TIMED_OUT",
             "RUNNING_PRE_PATCH_STEP",
-            "RUNNING_POST_PATCH_STEP"
+            "RUNNING_POST_PATCH_STEP",
+            "NO_AGENT_DETECTED"
           ]
         },
         "failureReason": {
@@ -843,7 +852,8 @@
             "The instance acked the notification and will start shortly.",
             "The instance exceeded the time out while applying the patch.",
             "The instance is running the pre-patch step.",
-            "The instance is running the post-patch step."
+            "The instance is running the post-patch step.",
+            "The service could not detect the presence of the agent. Check to ensure\nthat the agent is installed, running, and able to communicate with the\nservice."
           ],
           "type": "string",
           "enum": [
@@ -861,7 +871,8 @@
             "ACKED",
             "TIMED_OUT",
             "RUNNING_PRE_PATCH_STEP",
-            "RUNNING_POST_PATCH_STEP"
+            "RUNNING_POST_PATCH_STEP",
+            "NO_AGENT_DETECTED"
           ]
         },
         "failureReason": {

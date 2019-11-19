@@ -101,26 +101,9 @@ class Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example,`alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding.  *
-      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
-      (plus    unique identifier) representing a service account that has been
-      recently    deleted. For example,    `my-other-
-      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
-      service account is undeleted, this value reverts to
-      `serviceAccount:{emailid}` and the undeleted service account retains the
-      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
-      email address (plus unique    identifier) representing a Google group
-      that has been recently    deleted. For example,
-      `admins@example.com?uid=123456789012345678901`. If    the group is
-      recovered, this value reverts to `group:{emailid}` and the    recovered
-      group retains the role in the binding.   * `domain:{domain}`: The G
-      Suite domain (primary) that represents all the    users of that domain.
-      For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.
+      * `domain:{domain}`: The G Suite domain (primary) that represents all
+      the    users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -415,23 +398,6 @@ class LabelmanagerLabelKeysUndeleteRequest(_messages.Message):
   undeleteLabelKeyRequest = _messages.MessageField('UndeleteLabelKeyRequest', 2)
 
 
-class LabelmanagerLabelValuesDeleteLabelBindingsRequest(_messages.Message):
-  r"""A LabelmanagerLabelValuesDeleteLabelBindingsRequest object.
-
-  Fields:
-    labelBinding_labelValue: The LabelValue of the LabelBinding. Must be of
-      the form "labelValues/456.
-    labelBinding_resource: The full resource name of the resource the
-      LabelValue is bound to. E.g.
-      //cloudresourcemanager.googleapis.com/organizations/123
-    labelValuesId: A string attribute.
-  """
-
-  labelBinding_labelValue = _messages.StringField(1)
-  labelBinding_resource = _messages.StringField(2)
-  labelValuesId = _messages.StringField(3, required=True)
-
-
 class LabelmanagerLabelValuesDeleteRequest(_messages.Message):
   r"""A LabelmanagerLabelValuesDeleteRequest object.
 
@@ -465,6 +431,25 @@ class LabelmanagerLabelValuesLabelBindingsCreateRequest(_messages.Message):
 
   createLabelBindingRequest = _messages.MessageField('CreateLabelBindingRequest', 1)
   labelValuesId = _messages.StringField(2, required=True)
+
+
+class LabelmanagerLabelValuesLabelBindingsDeleteRequest(_messages.Message):
+  r"""A LabelmanagerLabelValuesLabelBindingsDeleteRequest object.
+
+  Fields:
+    labelBinding_labelValue: The LabelValue of the LabelBinding. Must be of
+      the form "labelValues/456.
+    labelBinding_resource: The full resource name of the resource the
+      LabelValue is bound to. E.g.
+      //cloudresourcemanager.googleapis.com/organizations/123
+    labelBindingsId: A string attribute.
+    labelValuesId: A string attribute.
+  """
+
+  labelBinding_labelValue = _messages.StringField(1)
+  labelBinding_resource = _messages.StringField(2)
+  labelBindingsId = _messages.StringField(3, required=True)
+  labelValuesId = _messages.StringField(4, required=True)
 
 
 class LabelmanagerLabelValuesLabelBindingsListRequest(_messages.Message):

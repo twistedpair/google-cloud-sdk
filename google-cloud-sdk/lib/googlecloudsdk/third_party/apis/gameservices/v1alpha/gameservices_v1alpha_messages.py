@@ -206,26 +206,9 @@ class Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example,`alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding.  *
-      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
-      (plus    unique identifier) representing a service account that has been
-      recently    deleted. For example,    `my-other-
-      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
-      service account is undeleted, this value reverts to
-      `serviceAccount:{emailid}` and the undeleted service account retains the
-      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
-      email address (plus unique    identifier) representing a Google group
-      that has been recently    deleted. For example,
-      `admins@example.com?uid=123456789012345678901`. If    the group is
-      recovered, this value reverts to `group:{emailid}` and the    recovered
-      group retains the role in the binding.   * `domain:{domain}`: The G
-      Suite domain (primary) that represents all the    users of that domain.
-      For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.
+      * `domain:{domain}`: The G Suite domain (primary) that represents all
+      the    users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -522,6 +505,69 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class FetchDeploymentStateRequest(_messages.Message):
+  r"""Request message for GameServerDeploymentsService.FetchDeploymentState.
+  """
+
+
+
+class FetchDeploymentStateResponse(_messages.Message):
+  r"""Response message for GameServerDeploymentsService.FetchDeploymentState.
+
+  Fields:
+    details: The details of a deployment in a given location.
+    unavailable: List of locations that could not be reached.
+  """
+
+  details = _messages.MessageField('Fleet', 1, repeated=True)
+  unavailable = _messages.StringField(2, repeated=True)
+
+
+class Fleet(_messages.Message):
+  r"""A Fleet object.
+
+  Fields:
+    agonesSpec: The Agones fleet spec. This is sent because it is possible
+      that we may no longer have the corresponding game server config in our
+      systems.
+    allocatedCount: The number of allocated servers. These are servers
+      allocated to game sessions.
+    availableCount: The number of available servers. The are no players
+      connected to this servers.
+    cluster: The cluster name.
+    fleetAutoscaler: Detailed information about the autoscalers.
+    gameServerConfigName: The name of the game server config object whose
+      fleet spec is used to create the fleet. This config may no longer exist
+      in the system.
+    name: The name of the Agones game server fleet.
+  """
+
+  agonesSpec = _messages.StringField(1)
+  allocatedCount = _messages.IntegerField(2)
+  availableCount = _messages.IntegerField(3)
+  cluster = _messages.StringField(4)
+  fleetAutoscaler = _messages.MessageField('FleetAutoscaler', 5)
+  gameServerConfigName = _messages.StringField(6)
+  name = _messages.StringField(7)
+
+
+class FleetAutoscaler(_messages.Message):
+  r"""Details about the autoscaler.
+
+  Fields:
+    autoscalerName: The name of the Agones autoscaler.
+    fleetAutoscalerSpec: The autoscaler spec. This is sent because it is
+      possible that we may no longer have the corresponding game server config
+      in our systems.
+    scalingConfigName: The name of the scaling config (within the game server
+      config) that is used to create the autoscalar.
+  """
+
+  autoscalerName = _messages.StringField(1)
+  fleetAutoscalerSpec = _messages.StringField(2)
+  scalingConfigName = _messages.StringField(3)
+
+
 class FleetAutoscalerSettings(_messages.Message):
   r"""Fleet autoscaling parameters.
 
@@ -648,7 +694,6 @@ class GameServerConfig(_messages.Message):
   Messages:
     LabelsValue: The labels associated with this game server config. Each
       label is a key-value pair.
-    ScalingConfigsValue: Optional. This contains the autoscaling settings.
 
   Fields:
     createTime: Output only. The creation time.
@@ -691,37 +736,12 @@ class GameServerConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ScalingConfigsValue(_messages.Message):
-    r"""Optional. This contains the autoscaling settings.
-
-    Messages:
-      AdditionalProperty: An additional property for a ScalingConfigsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type ScalingConfigsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ScalingConfigsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A ScalingConfig attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('ScalingConfig', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   fleetConfigs = _messages.MessageField('FleetConfig', 3, repeated=True)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  scalingConfigs = _messages.MessageField('ScalingConfigsValue', 6)
+  scalingConfigs = _messages.MessageField('ScalingConfig', 6, repeated=True)
   updateTime = _messages.StringField(7)
 
 
@@ -730,12 +750,12 @@ class GameServerConfigOverride(_messages.Message):
   cluster it is applied and the setting which specifies the version.
 
   Fields:
+    configVersion: A string attribute.
     realmsSelector: A RealmSelector attribute.
-    setting: This used to deploy a particular game server config version
   """
 
-  realmsSelector = _messages.MessageField('RealmSelector', 1)
-  setting = _messages.MessageField('Setting', 2)
+  configVersion = _messages.StringField(1)
+  realmsSelector = _messages.MessageField('RealmSelector', 2)
 
 
 class GameServerDeployment(_messages.Message):
@@ -795,7 +815,7 @@ class GameServerDeployment(_messages.Message):
 
 
 class GameServerDeploymentRollout(_messages.Message):
-  r"""This represents the rollout status. This is part of the  game server
+  r"""This represents the rollout state. This is part of the  game server
   deployment.
 
   Fields:
@@ -1047,6 +1067,22 @@ class GameservicesProjectsLocationsGameServerDeploymentsDeleteRequest(_messages.
   name = _messages.StringField(1, required=True)
 
 
+class GameservicesProjectsLocationsGameServerDeploymentsFetchDeploymentStateRequest(_messages.Message):
+  r"""A GameservicesProjectsLocationsGameServerDeploymentsFetchDeploymentState
+  Request object.
+
+  Fields:
+    fetchDeploymentStateRequest: A FetchDeploymentStateRequest resource to be
+      passed as the request body.
+    name: Required. The name of the game server deployment, using the form:  `
+      projects/{project_id}/locations/{location}/gameServerDeployments/{deploy
+      ment_id}`
+  """
+
+  fetchDeploymentStateRequest = _messages.MessageField('FetchDeploymentStateRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class GameservicesProjectsLocationsGameServerDeploymentsGetIamPolicyRequest(_messages.Message):
   r"""A GameservicesProjectsLocationsGameServerDeploymentsGetIamPolicyRequest
   object.
@@ -1151,7 +1187,8 @@ class GameservicesProjectsLocationsGameServerDeploymentsPreviewRolloutRequest(_m
       project/locations/{location}/gameServerDeployments/my-
       deployment/rollout`.
     previewTime: Optional. The instant of time at which the preview needs to
-      be computed.
+      be computed. If unspecified, defaults to the time after the suggested
+      rollout finishes.
     updateMask: Optional. Mask of fields to update. At least one path must be
       supplied in this field. For the `FieldMask` definition, see  https:
       //developers.google.com/protocol-buffers //
@@ -2133,8 +2170,9 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten. Due to blind-set semantics of an
-      etag-less policy, 'setIamPolicy' will not fail even if either of
-      incoming or stored policy does not meet the version requirements.
+      etag-less policy, 'setIamPolicy' will not fail even if the incoming
+      policy version does not meet the requirements for modifying the stored
+      policy.
     iamOwned: A boolean attribute.
     rules: If more than one rule is specified, the rules are applied in the
       following manner: - All matching LOG rules are always applied. - If any
@@ -2147,11 +2185,11 @@ class Policy(_messages.Message):
       3. Requests specifying an invalid value will be rejected.  Operations
       affecting conditional bindings must specify version 3. This can be
       either setting a conditional policy, modifying a conditional binding, or
-      removing a conditional binding from the stored conditional policy.
-      Operations on non-conditional policies may specify any valid value or
-      leave the field unset.  If no etag is provided in the call to
-      `setIamPolicy`, any version compliance checks on the incoming and/or
-      stored policy is skipped.
+      removing a binding (conditional or unconditional) from the stored
+      conditional policy. Operations on non-conditional policies may specify
+      any valid value or leave the field unset.  If no etag is provided in the
+      call to `setIamPolicy`, version compliance checks against the stored
+      policy is skipped.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -2171,7 +2209,7 @@ class PreviewCreateGameServerClusterResponse(_messages.Message):
     etag: The ETag of the game server cluster.
   """
 
-  deployedState = _messages.MessageField('DeployedState', 1, repeated=True)
+  deployedState = _messages.MessageField('DeployedState', 1)
   etag = _messages.StringField(2)
 
 
@@ -2184,7 +2222,7 @@ class PreviewDeleteGameServerClusterResponse(_messages.Message):
     etag: The ETag of the game server cluster.
   """
 
-  deployedState = _messages.MessageField('DeployedState', 1, repeated=True)
+  deployedState = _messages.MessageField('DeployedState', 1)
   etag = _messages.StringField(2)
 
 
@@ -2195,12 +2233,12 @@ class PreviewGameServerDeploymentRolloutResponse(_messages.Message):
   Fields:
     deployedState: The deployed state.
     etag: ETag of the game server deployment.
-    unavailableLocations: Locations that could not be reached on this request.
+    unavailable: Locations that could not be reached on this request.
   """
 
   deployedState = _messages.MessageField('DeployedState', 1)
   etag = _messages.StringField(2)
-  unavailableLocations = _messages.StringField(3, repeated=True)
+  unavailable = _messages.StringField(3, repeated=True)
 
 
 class PreviewRealmUpdateResponse(_messages.Message):
@@ -2224,7 +2262,7 @@ class PreviewUpdateGameServerClusterResponse(_messages.Message):
     etag: The ETag of the game server cluster.
   """
 
-  deployedState = _messages.MessageField('DeployedState', 1, repeated=True)
+  deployedState = _messages.MessageField('DeployedState', 1)
   etag = _messages.StringField(2)
 
 
@@ -2357,6 +2395,7 @@ class ScalingConfig(_messages.Message):
     fleetAutoscalerSpec: Required. Fleet autoscaler spec, which is sent to
       Agones. Example spec can be found :
       https://agones.dev/site/docs/reference/fleetautoscaler/
+    name: Required. The name of the ScalingConfig
     priority: Required. The priority of the scaling config. A smaller value
       indicates a higher priority.
     schedules: The schedules to which this scaling config applies.
@@ -2366,9 +2405,10 @@ class ScalingConfig(_messages.Message):
   """
 
   fleetAutoscalerSpec = _messages.StringField(1)
-  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  schedules = _messages.MessageField('Schedule', 3, repeated=True)
-  selectors = _messages.MessageField('LabelSelector', 4, repeated=True)
+  name = _messages.StringField(2)
+  priority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  schedules = _messages.MessageField('Schedule', 4, repeated=True)
+  selectors = _messages.MessageField('LabelSelector', 5, repeated=True)
 
 
 class ScalingPolicy(_messages.Message):
@@ -2488,16 +2528,6 @@ class SetRolloutTargetRequest(_messages.Message):
   """
 
   clusterPercentageSelector = _messages.MessageField('ClusterPercentageSelector', 1, repeated=True)
-
-
-class Setting(_messages.Message):
-  r"""A Setting object.
-
-  Fields:
-    configVersion: A string attribute.
-  """
-
-  configVersion = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):

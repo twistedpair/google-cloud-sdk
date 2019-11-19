@@ -276,6 +276,7 @@ class TopicsClient(object):
   def Patch(self,
             topic_ref,
             labels=None,
+            kms_key_name=None,
             recompute_message_storage_policy=False,
             message_storage_policy_allowed_regions=None):
     """Updates a Topic.
@@ -283,6 +284,8 @@ class TopicsClient(object):
     Args:
       topic_ref (Resource): Resource reference for the topic to be updated.
       labels (LabelsValue): The Cloud labels for the topic.
+      kms_key_name (str): The full resource name of the Cloud KMS key to
+        associate with the topic, or None.
       recompute_message_storage_policy (bool): True to have the API recalculate
         the message storage policy.
       message_storage_policy_allowed_regions (list[str]): List of Cloud regions
@@ -296,6 +299,9 @@ class TopicsClient(object):
     update_settings = []
     if labels:
       update_settings.append(_TopicUpdateSetting('labels', labels))
+
+    if kms_key_name:
+      update_settings.append(_TopicUpdateSetting('kmsKeyName', kms_key_name))
 
     if recompute_message_storage_policy:
       update_settings.append(_TopicUpdateSetting('messageStoragePolicy', None))

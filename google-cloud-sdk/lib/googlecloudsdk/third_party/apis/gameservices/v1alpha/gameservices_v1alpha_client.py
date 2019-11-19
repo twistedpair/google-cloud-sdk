@@ -406,6 +406,35 @@ server template.
         supports_download=False,
     )
 
+    def FetchDeploymentState(self, request, global_params=None):
+      r"""Retrieves information about the current state of the deployment, e.g. it.
+gathers all the fleets and autoscalars for this deployment.
+This includes fleets running older version of the deployment.
+
+      Args:
+        request: (GameservicesProjectsLocationsGameServerDeploymentsFetchDeploymentStateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchDeploymentStateResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchDeploymentState')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchDeploymentState.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha/projects/{projectsId}/locations/{locationsId}/gameServerDeployments/{gameServerDeploymentsId}:fetchDeploymentState',
+        http_method=u'POST',
+        method_id=u'gameservices.projects.locations.gameServerDeployments.fetchDeploymentState',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha/{+name}:fetchDeploymentState',
+        request_field=u'fetchDeploymentStateRequest',
+        request_type_name=u'GameservicesProjectsLocationsGameServerDeploymentsFetchDeploymentStateRequest',
+        response_type_name=u'FetchDeploymentStateResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single game server deployment.
 

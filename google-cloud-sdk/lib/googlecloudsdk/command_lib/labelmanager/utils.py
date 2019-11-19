@@ -86,5 +86,56 @@ def GetLabelValueFromDisplayName(display_name, label_key):
       return value.name
 
   raise InvalidInputError(
-      'Invalid display_name for label value [{}] in parent [{}]'.format(
+      'Invalid display_name for LabelValue [{}] in parent [{}]'.format(
           display_name, label_key))
+
+
+def GetLabelValueIfArgsAreValid(args):
+  """Returns the LabelValue if valid arguments are passed and it exists.
+
+  Args:
+    args: Command line arguments for a gcloud LabelValue command.
+
+  Raises:
+    InvalidInputError: - if --label-parent is given but --label-key is not
+                         given
+                       - if the specified --label-key as a display name does not
+                         exist under the --label-parent
+                       - if LABEL_VALUE_ID as a display_name does not exist
+                         under --label-key.
+
+  Returns:
+    The resource name of the LabelValue associated with the LABEL_VALUE_ID
+    determined from args in the form labelValues/{numeric_id}.
+  """
+  label_value_id = args.LABEL_VALUE_ID
+
+  if args.IsSpecified('label_parent') and not args.IsSpecified('label_key'):
+    raise InvalidInputError(
+        '--label-key must be specified if --label-parent is set.')
+
+  if args.IsSpecified('label_key'):
+    if args.IsSpecified('label_parent'):
+      label_key = GetLabelKeyFromDisplayName(args.label_key, args.label_parent)
+    else:
+      label_key = args.label_key
+    return GetLabelValueFromDisplayName(label_value_id, label_key)
+
+  return label_value_id
+
+
+def GetIdFromResourceName(name):
+  """Returns the numeric id of the given resource name.
+
+  Args:
+    name: String, resource name of a given resource, either in short form or as
+    its fully qualified resource name:
+    https://cloud.google.com/apis/design/resource_names.
+
+  Returns:
+    The substring after the last '/' in the given string. Since we
+    only call this method on resource names, this should extract the numeric
+    id from the given resource name.
+  """
+  last_slash_index = name.rfind('/')
+  return name[last_slash_index+1:]

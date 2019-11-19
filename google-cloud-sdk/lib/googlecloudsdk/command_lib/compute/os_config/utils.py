@@ -28,7 +28,7 @@ import six
 
 
 class InstanceDetailsStates(Enum):
-  """Indicate instance progress during a patch job execution."""
+  """Indicates instance progress during a patch job execution."""
   NOTIFIED = 1
   PATCHING = 2
   FINISHED = 3
@@ -49,6 +49,7 @@ INSTANCE_DETAILS_KEY_MAP = {
     'instancesTimedOut': InstanceDetailsStates.FINISHED,
     'instancesRunningPrePatchStep': InstanceDetailsStates.PATCHING,
     'instancesRunningPostPatchStep': InstanceDetailsStates.PATCHING,
+    'instancesNoAgentDetected': InstanceDetailsStates.FINISHED,
 }
 
 _GCS_PREFIXES = ('gs://', 'https://www.googleapis.com/storage/v1/',
@@ -56,42 +57,42 @@ _GCS_PREFIXES = ('gs://', 'https://www.googleapis.com/storage/v1/',
 
 
 def GetParentUriPath(parent_name, parent_id):
-  """Return the URI path of a GCP parent resource."""
+  """Returns the URI path of a GCP parent resource."""
   return '/'.join([parent_name, parent_id])
 
 
 def GetProjectUriPath(project):
-  """Return the URI path of a GCP project."""
+  """Returns the URI path of a GCP project."""
   return GetParentUriPath('projects', project)
 
 
 def GetFolderUriPath(folder):
-  """Return the URI path of a GCP folder."""
+  """Returns the URI path of a GCP folder."""
   return GetParentUriPath('folders', folder)
 
 
 def GetOrganizationUriPath(organization):
-  """Return the URI path of a GCP organization."""
+  """Returns the URI path of a GCP organization."""
   return GetParentUriPath('organizations', organization)
 
 
 def GetPatchJobUriPath(project, patch_job):
-  """Return the URI path of an osconfig patch job."""
+  """Returns the URI path of an osconfig patch job."""
   return '/'.join(['projects', project, 'patchJobs', patch_job])
 
 
 def GetPatchJobName(patch_job_uri):
-  """Return the name of a patch job from its URI."""
+  """Returns the name of a patch job from its URI."""
   return patch_job_uri.split('/')[3]
 
 
 def GetGuestPolicyRelativePath(parent, guest_policy):
-  """Return the relative path of an osconfig guest policy."""
+  """Returns the relative path of an osconfig guest policy."""
   return '/'.join([parent, 'guestPolicies', guest_policy])
 
 
 def AddResourceParentArgs(parser, noun, verb):
-  """Add project, folder, and organization flags to the parser."""
+  """Adds project, folder, and organization flags to the parser."""
   parent_resource_group = parser.add_group(
       help='The scope of the {} which defaults to project if unspecified.'
       .format(noun),
@@ -114,13 +115,18 @@ def AddResourceParentArgs(parser, noun, verb):
   )
 
 
+def GetPatchDeploymentUriPath(project, patch_deployment):
+  """Returns the URI path of an osconfig patch deployment."""
+  return '/'.join(['projects', project, 'patchDeployments', patch_deployment])
+
+
 def GetGuestPolicyUriPath(parent_type, parent_name, policy_id):
-  """Return the URI path of an osconfig guest policy."""
+  """Returns the URI path of an osconfig guest policy."""
   return '/'.join([parent_type, parent_name, 'guestPolicies', policy_id])
 
 
 def GetResourceAndUpdateFieldsFromFile(file_path, resource_message_type):
-  """Return the resource message and update fields in file."""
+  """Returns the resource message and update fields in file."""
   try:
     resource_to_parse = yaml.load_path(file_path)
   except yaml.YAMLParseError as e:

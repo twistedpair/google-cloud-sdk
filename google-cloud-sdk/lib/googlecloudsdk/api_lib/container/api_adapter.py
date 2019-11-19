@@ -192,6 +192,7 @@ MAX_AUTHORIZED_NETWORKS_CIDRS = 50
 INGRESS = 'HttpLoadBalancing'
 HPA = 'HorizontalPodAutoscaling'
 DASHBOARD = 'KubernetesDashboard'
+CLOUDBUILD = 'CloudBuild'
 CLOUDRUN = 'CloudRun'
 CONFIGCONNECTOR = 'ConfigConnector'
 GCEPDCSIDRIVER = 'GcePersistentDiskCsiDriver'
@@ -207,7 +208,7 @@ DEFAULT_ADDONS = [INGRESS, HPA]
 ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, NETWORK_POLICY, CLOUDRUN]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [ISTIO, APPLICATIONMANAGER]
 ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [
-    NODELOCALDNS, CONFIGCONNECTOR, GCEPDCSIDRIVER
+    NODELOCALDNS, CONFIGCONNECTOR, GCEPDCSIDRIVER, CLOUDBUILD
 ]
 
 
@@ -1006,6 +1007,7 @@ class APIAdapter(object):
           enable_config_connector=(CONFIGCONNECTOR in options.addons),
           enable_gcepd_csi_driver=(GCEPDCSIDRIVER in options.addons),
           enable_application_manager=(APPLICATIONMANAGER in options.addons),
+          enable_cloud_build=(CLOUDBUILD in options.addons),
       )
       cluster.addonsConfig = addons
 
@@ -1582,7 +1584,8 @@ class APIAdapter(object):
           disable_ingress=options.disable_addons.get(INGRESS),
           disable_hpa=options.disable_addons.get(HPA),
           disable_dashboard=options.disable_addons.get(DASHBOARD),
-          disable_network_policy=options.disable_addons.get(NETWORK_POLICY))
+          disable_network_policy=options.disable_addons.get(NETWORK_POLICY),
+          )
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
     elif options.enable_autoscaling is not None:
       # For update, we can either enable or disable.
@@ -1750,7 +1753,8 @@ class APIAdapter(object):
                     enable_node_local_dns=None,
                     enable_config_connector=None,
                     enable_gcepd_csi_driver=None,
-                    enable_application_manager=None):
+                    enable_application_manager=None,
+                    enable_cloud_build=None):
     """Generates an AddonsConfig object given specific parameters.
 
     Args:
@@ -1762,6 +1766,7 @@ class APIAdapter(object):
       enable_config_connector: whether to enable ConfigConnector.
       enable_gcepd_csi_driver: whether to enable GcePersistentDiskCsiDriver.
       enable_application_manager: whether to enable ApplicationManager.
+      enable_cloud_build: whether to enable CloudBuild.
 
     Returns:
       An AddonsConfig object that contains the options defining what addons to
@@ -1791,6 +1796,8 @@ class APIAdapter(object):
           enabled=True)
     if enable_application_manager:
       addons.kalmConfig = self.messages.KalmConfig(enabled=True)
+    if enable_cloud_build:
+      addons.cloudBuildConfig = self.messages.CloudBuildConfig(enabled=True)
 
     return addons
 
@@ -2542,7 +2549,11 @@ class V1Beta1Adapter(V1Adapter):
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
             disabled=False)
-      # Istio is disabled by default
+      # CloudBuild is disabled by default.
+      if CLOUDBUILD in options.addons:
+        cluster.addonsConfig.cloudBuildConfig = self.messages.CloudBuildConfig(
+            enabled=True)
+      # Istio is disabled by default.
       if ISTIO in options.addons:
         istio_auth = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_NONE
         mtls = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_MUTUAL_TLS
@@ -2619,6 +2630,10 @@ class V1Beta1Adapter(V1Adapter):
         update.desiredAddonsConfig.kalmConfig = (
             self.messages.KalmConfig(
                 enabled=(not options.disable_addons.get(APPLICATIONMANAGER))))
+      if options.disable_addons.get(CLOUDBUILD) is not None:
+        update.desiredAddonsConfig.cloudBuildConfig = (
+            self.messages.CloudBuildConfig(
+                enabled=(not options.disable_addons.get(CLOUDBUILD))))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -2714,6 +2729,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             options.enable_cloud_run_alpha is not None else False
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
             disabled=False, enableAlphaFeatures=enable_alpha_features)
+      # Cloud Build is disabled by default.
+      if CLOUDBUILD in options.addons:
+        cluster.addonsConfig.cloudBuildConfig = self.messages.CloudBuildConfig(
+            enabled=True)
       # Istio is disabled by default
       if ISTIO in options.addons:
         istio_auth = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_NONE
@@ -2829,6 +2848,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         update.desiredAddonsConfig.kalmConfig = (
             self.messages.KalmConfig(
                 enabled=(not options.disable_addons.get(APPLICATIONMANAGER))))
+      if options.disable_addons.get(CLOUDBUILD) is not None:
+        update.desiredAddonsConfig.cloudBuildConfig = (
+            self.messages.CloudBuildConfig(
+                enabled=(not options.disable_addons.get(CLOUDBUILD))))
     if options.update_nodes and options.concurrent_node_count:
       update.concurrentNodeCount = options.concurrent_node_count
 

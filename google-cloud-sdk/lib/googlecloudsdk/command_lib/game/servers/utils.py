@@ -76,3 +76,12 @@ def ParseLabels(ref, cluster_labels, messages=None):
   label_selector.labels = selectors
 
   return label_selector
+
+
+def _GetDefaultVersion():
+  return apis.ResolveVersion(GAME_SERVICES_API)
+
+
+def GetMessages(version=None):
+  version = version or _GetDefaultVersion()
+  return apis.GetMessagesModule(GAME_SERVICES_API, version)

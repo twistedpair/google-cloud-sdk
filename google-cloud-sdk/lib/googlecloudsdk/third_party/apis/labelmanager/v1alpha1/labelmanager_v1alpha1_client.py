@@ -349,9 +349,44 @@ In order to succeed, the LabelKey's parent must be in the active state.
         supports_download=False,
     )
 
+    def Delete(self, request, global_params=None):
+      r"""Deletes a binding between a LabelValue and a cloud resource.
+(project, folder, org).
+
+      Args:
+        request: (LabelmanagerLabelValuesLabelBindingsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'labelmanager.labelValues.labelBindings.delete',
+        ordered_params=[u'labelValuesId', u'labelBindingsId'],
+        path_params=[u'labelBindingsId', u'labelValuesId'],
+        query_params=[u'labelBinding_labelValue', u'labelBinding_resource'],
+        relative_path=u'v1alpha1/labelValues/{labelValuesId}/labelBindings/{labelBindingsId}',
+        request_field='',
+        request_type_name=u'LabelmanagerLabelValuesLabelBindingsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
-      r"""Lists the bindings for the given LabelValue or.
+      r"""Lists the LabelBindings for the given LabelValue or.
 cloud resource (project, folder, org).
+
+Listing LabelBindings for LabelValue with id 123 will map to:
+/v1alpha1/labelValues/123/labelBindings
+List LabelBindings for project resource with id 456 will map to:
+/v1alpha1/labelValues/-/labelBindings?resource=//cloudresourcemanager.googleapis.com/projects/456
+
+For additional details see:
+https://cloud.google.com/apis/design/design_patterns#list_sub-collections
 
       Args:
         request: (LabelmanagerLabelValuesLabelBindingsListRequest) input message
@@ -443,33 +478,6 @@ cannot have any bindings when it is deleted.
         request_field='',
         request_type_name=u'LabelmanagerLabelValuesDeleteRequest',
         response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def DeleteLabelBindings(self, request, global_params=None):
-      r"""Deletes a binding between a LabelValue and a cloud resource.
-(project, folder, org).
-
-      Args:
-        request: (LabelmanagerLabelValuesDeleteLabelBindingsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('DeleteLabelBindings')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    DeleteLabelBindings.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'labelmanager.labelValues.deleteLabelBindings',
-        ordered_params=[u'labelValuesId'],
-        path_params=[u'labelValuesId'],
-        query_params=[u'labelBinding_labelValue', u'labelBinding_resource'],
-        relative_path=u'v1alpha1/labelValues/{labelValuesId}/labelBindings',
-        request_field='',
-        request_type_name=u'LabelmanagerLabelValuesDeleteLabelBindingsRequest',
-        response_type_name=u'Empty',
         supports_download=False,
     )
 

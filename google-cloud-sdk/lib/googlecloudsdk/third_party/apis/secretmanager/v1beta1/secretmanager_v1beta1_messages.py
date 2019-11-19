@@ -103,6 +103,13 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class Automatic(_messages.Message):
+  r"""A replication policy that replicates the Secret payload without any
+  restrictions.
+  """
+
+
+
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
@@ -384,40 +391,29 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class Replica(_messages.Message):
+  r"""Represents a Replica for this Secret.
+
+  Fields:
+    location: The canonical IDs of the location to replicate data. For
+      example: `"us-east1"`.
+  """
+
+  location = _messages.StringField(1)
+
+
 class Replication(_messages.Message):
   r"""A policy that defines the replication configuration of data.
 
-  Enums:
-    PolicyValueValuesEnum: The policy for the replication of this Secret.
-      Updating the replication policy may not complete by the time the request
-      has completed, but this field will always reflect it as being complete.
-
   Fields:
-    policy: The policy for the replication of this Secret.  Updating the
-      replication policy may not complete by the time the request has
-      completed, but this field will always reflect it as being complete.
-    userManagedReplicaLocations: The canonical IDs of the locations into which
-      to replicate data. For example: `"us-east1"`. Only valid when using
-      Policy.USER_MANAGED. Cannot be empty when using the USER_MANAGED policy.
+    automatic: The Secret will automatically be replicated without any
+      restrictions.
+    userManaged: The Secret will only be replicated into the locations
+      specified.
   """
 
-  class PolicyValueValuesEnum(_messages.Enum):
-    r"""The policy for the replication of this Secret.  Updating the
-    replication policy may not complete by the time the request has completed,
-    but this field will always reflect it as being complete.
-
-    Values:
-      POLICY_UNSPECIFIED: Not specified. This value is invalid.
-      AUTOMATIC: The Secret is replicated without any restrictions.
-      USER_MANAGED: The Secret is replicated into the locations specified in
-        Secret.policy.replica_locations.
-    """
-    POLICY_UNSPECIFIED = 0
-    AUTOMATIC = 1
-    USER_MANAGED = 2
-
-  policy = _messages.EnumField('PolicyValueValuesEnum', 1)
-  userManagedReplicaLocations = _messages.StringField(2, repeated=True)
+  automatic = _messages.MessageField('Automatic', 1)
+  userManaged = _messages.MessageField('UserManaged', 2)
 
 
 class Secret(_messages.Message):
@@ -445,8 +441,9 @@ class Secret(_messages.Message):
       more than 64 labels can be assigned to a given resource.
     name: Output only. The resource name of the Secret in the format
       `projects/*/secrets/*`.
-    replication: Required. The replication policy of the secret data attached
-      to the Secret.
+    replication: Required. Immutable. The replication policy of the secret
+      data attached to the Secret.  The replication policy cannot be changed
+      after the Secret has been created.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -879,6 +876,18 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class UserManaged(_messages.Message):
+  r"""A replication policy that replicates the Secret payload into the
+  locations specified in Secret.replication.user_managed.replicas
+
+  Fields:
+    replicas: Required. The list of Replicas for this Secret.  Cannot be
+      empty.
+  """
+
+  replicas = _messages.MessageField('Replica', 1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

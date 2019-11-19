@@ -370,6 +370,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsBucketsUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}:undelete',
+        http_method=u'POST',
+        method_id=u'logging.billingAccounts.locations.buckets.undelete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}:undelete',
+        request_field='',
+        request_type_name=u'LoggingBillingAccountsLocationsBucketsUndeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
   class BillingAccountsLocationsService(base_api.BaseApiService):
     """Service class for the billingAccounts_locations resource."""
 
@@ -1123,6 +1150,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days.
+
+      Args:
+        request: (LoggingFoldersLocationsBucketsUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}:undelete',
+        http_method=u'POST',
+        method_id=u'logging.folders.locations.buckets.undelete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}:undelete',
+        request_field='',
+        request_type_name=u'LoggingFoldersLocationsBucketsUndeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
   class FoldersLocationsService(base_api.BaseApiService):
     """Service class for the folders_locations resource."""
 
@@ -1524,6 +1578,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days.
+
+      Args:
+        request: (LoggingLocationsBucketsUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}:undelete',
+        http_method=u'POST',
+        method_id=u'logging.locations.buckets.undelete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}:undelete',
+        request_field='',
+        request_type_name=u'LoggingLocationsBucketsUndeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
   class LocationsService(base_api.BaseApiService):
     """Service class for the locations resource."""
 
@@ -1921,6 +2002,33 @@ class LoggingV2(base_api.BaseApiClient):
         request_field=u'logBucket',
         request_type_name=u'LoggingOrganizationsLocationsBucketsPatchRequest',
         response_type_name=u'LogBucket',
+        supports_download=False,
+    )
+
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days.
+
+      Args:
+        request: (LoggingOrganizationsLocationsBucketsUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}:undelete',
+        http_method=u'POST',
+        method_id=u'logging.organizations.locations.buckets.undelete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}:undelete',
+        request_field='',
+        request_type_name=u'LoggingOrganizationsLocationsBucketsUndeleteRequest',
+        response_type_name=u'Empty',
         supports_download=False,
     )
 
@@ -2521,6 +2629,33 @@ class LoggingV2(base_api.BaseApiClient):
         request_field=u'logBucket',
         request_type_name=u'LoggingProjectsLocationsBucketsPatchRequest',
         response_type_name=u'LogBucket',
+        supports_download=False,
+    )
+
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days.
+
+      Args:
+        request: (LoggingProjectsLocationsBucketsUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}:undelete',
+        http_method=u'POST',
+        method_id=u'logging.projects.locations.buckets.undelete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}:undelete',
+        request_field='',
+        request_type_name=u'LoggingProjectsLocationsBucketsUndeleteRequest',
+        response_type_name=u'Empty',
         supports_download=False,
     )
 

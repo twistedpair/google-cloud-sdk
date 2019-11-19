@@ -1058,6 +1058,10 @@ class PushFilter(_messages.Message):
 class RepoSource(_messages.Message):
   r"""Location of the source in a Google Cloud Source Repository.
 
+  Messages:
+    SubstitutionsValue: Substitutions to use in a triggered build. Should only
+      be used with RunBuildTrigger
+
   Fields:
     branchName: Regex matching branches to build.  The syntax of the regular
       expressions accepted is the syntax accepted by RE2 and described at
@@ -1070,17 +1074,46 @@ class RepoSource(_messages.Message):
       omitted, the project ID requesting the build is assumed.
     repoName: Name of the Cloud Source Repository. If omitted, the name
       "default" is assumed.
+    substitutions: Substitutions to use in a triggered build. Should only be
+      used with RunBuildTrigger
     tagName: Regex matching tags to build.  The syntax of the regular
       expressions accepted is the syntax accepted by RE2 and described at
       https://github.com/google/re2/wiki/Syntax
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SubstitutionsValue(_messages.Message):
+    r"""Substitutions to use in a triggered build. Should only be used with
+    RunBuildTrigger
+
+    Messages:
+      AdditionalProperty: An additional property for a SubstitutionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type SubstitutionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SubstitutionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   branchName = _messages.StringField(1)
   commitSha = _messages.StringField(2)
   dir = _messages.StringField(3)
   projectId = _messages.StringField(4)
   repoName = _messages.StringField(5)
-  tagName = _messages.StringField(6)
+  substitutions = _messages.MessageField('SubstitutionsValue', 6)
+  tagName = _messages.StringField(7)
 
 
 class Results(_messages.Message):

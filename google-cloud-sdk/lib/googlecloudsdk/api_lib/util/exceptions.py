@@ -121,6 +121,7 @@ class HttpErrorPayload(string.Formatter):
     api_version: The url version.
     content: The dumped JSON content.
     details: A list of {'@type': TYPE, 'detail': STRING} typed details.
+    violations: map of subject to error message for that subject.
     field_violations: map of field name to error message for that field.
     error_info: content['error'].
     instance_name: The url instance name.
@@ -164,6 +165,7 @@ class HttpErrorPayload(string.Formatter):
     self.api_version = ''
     self.content = {}
     self.details = []
+    self.violations = {}
     self.field_violations = {}
     self.error_info = None
     self.instance_name = ''
@@ -210,6 +212,9 @@ class HttpErrorPayload(string.Formatter):
     if name.startswith('field_violations.'):
       _, field = name.split('.', 1)
       value = self.field_violations.get(field)
+    elif name.startswith('violations.'):
+      _, subject = name.split('.', 1)
+      value = self.violations.get(subject)
     elif '.' in name:
       if name.startswith('.'):
         # Only check self.content.
@@ -259,6 +264,7 @@ class HttpErrorPayload(string.Formatter):
         self.status_description = self.error_info.get('status', '')
       self.status_message = self.error_info.get('message', '')
       self.details = self.error_info.get('details', [])
+      self.violations = self._ExtractViolations(self.details)
       self.field_violations = self._ExtractFieldViolations(self.details)
     except (KeyError, TypeError, ValueError):
       self.status_message = content
@@ -333,6 +339,38 @@ class HttpErrorPayload(string.Formatter):
       return description
     # Example: 'HTTPError 403'
     return 'HTTPError {0}'.format(self.status_code)
+
+  def _ExtractViolations(self, details):
+    """Extracts a map of violations from the given error's details.
+
+    Args:
+      details: JSON-parsed details field from parsed json of error.
+
+    Returns:
+      Map[str, str] sub -> error description. The iterator of it is ordered by
+      the order the subjects first appear in the errror.
+    """
+    results = collections.OrderedDict()
+    for detail in details:
+      if 'violations' not in detail:
+        continue
+      violations = detail['violations']
+      if not isinstance(violations, list):
+        continue
+      sub = detail.get('subject')
+      for violation in violations:
+        try:
+          local_sub = violation.get('subject')
+          subject = sub or local_sub
+          if subject:
+            if subject in results:
+              results[subject] += '\n' + violation['description']
+            else:
+              results[subject] = violation['description']
+        except (KeyError, TypeError):
+          # If violation or description are the wrong type or don't exist.
+          pass
+    return results
 
   def _ExtractFieldViolations(self, details):
     """Extracts a map of field violations from the given error's details.

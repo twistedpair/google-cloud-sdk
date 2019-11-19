@@ -60,6 +60,46 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS = (
+      'organizations.locations',
+      'organizations/{organizationsId}/locations/{locationsId}',
+      {},
+      [u'organizationsId', u'locationsId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_DEIDENTIFYTEMPLATES = (
+      'organizations.locations.deidentifyTemplates',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'deidentifyTemplates/{deidentifyTemplatesId}',
+      },
+      [u'name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_INSPECTTEMPLATES = (
+      'organizations.locations.inspectTemplates',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'inspectTemplates/{inspectTemplatesId}',
+      },
+      [u'name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_STOREDINFOTYPES = (
+      'organizations.locations.storedInfoTypes',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'storedInfoTypes/{storedInfoTypesId}',
+      },
+      [u'name'],
+      True
+  )
   ORGANIZATIONS_STOREDINFOTYPES = (
       'organizations.storedInfoTypes',
       '{+name}',
@@ -129,6 +169,68 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/jobTriggers/{jobTriggersId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      [u'projectsId', u'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_DEIDENTIFYTEMPLATES = (
+      'projects.locations.deidentifyTemplates',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'deidentifyTemplates/{deidentifyTemplatesId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DLPJOBS = (
+      'projects.locations.dlpJobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/dlpJobs/'
+              '{dlpJobsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_INSPECTTEMPLATES = (
+      'projects.locations.inspectTemplates',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'inspectTemplates/{inspectTemplatesId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_JOBTRIGGERS = (
+      'projects.locations.jobTriggers',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/jobTriggers/'
+              '{jobTriggersId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_STOREDINFOTYPES = (
+      'projects.locations.storedInfoTypes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/storedInfoTypes/'
+              '{storedInfoTypesId}',
       },
       [u'name'],
       True

@@ -1053,7 +1053,8 @@ invalidate old credentials."""
 
 
 def AddMaintenanceWindowGroup(parser,
-                              hidden=False):
+                              hidden=False,
+                              recurring_windows_hidden=False):
   """Adds a mutex for --maintenance-window and --maintenance-window-*."""
   maintenance_group = parser.add_group(hidden=hidden, mutex=True)
   maintenance_group.help = """\
@@ -1061,7 +1062,8 @@ One of either maintenance-window or the group of maintenance-window flags can
 be set.
 """
   AddDailyMaintenanceWindowFlag(maintenance_group)
-  AddRecurringMaintenanceWindowFlags(maintenance_group, hidden=hidden)
+  AddRecurringMaintenanceWindowFlags(maintenance_group,
+                                     hidden=recurring_windows_hidden)
 
 
 def AddDailyMaintenanceWindowFlag(parser,

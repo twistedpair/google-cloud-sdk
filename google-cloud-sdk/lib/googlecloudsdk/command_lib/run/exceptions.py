@@ -97,6 +97,10 @@ class DomainMappingCreationError(exceptions.Error):
   """An error was encountered during the creation of a domain mapping."""
 
 
+class PlatformError(exceptions.Error):
+  """Command not supported for the platform."""
+
+
 class NoTLSError(exceptions.Error):
   """TLS 1.2 support is required to connect to GKE.
 

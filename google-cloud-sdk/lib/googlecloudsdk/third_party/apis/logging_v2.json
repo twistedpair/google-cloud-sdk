@@ -1570,10 +1570,6 @@
               "response": {
                 "$ref": "LogBucket"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/logging.admin"
-              ],
               "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
             },
             "delete": {
@@ -1601,6 +1597,32 @@
                 "https://www.googleapis.com/auth/logging.admin"
               ],
               "description": "Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty and locked, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned"
+            },
+            "undelete": {
+              "id": "logging.locations.buckets.undelete",
+              "path": "v2/{+name}:undelete",
+              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}:undelete",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The full resource name of the bucket to undelete.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/logging.admin"
+              ],
+              "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
             }
           }
         }
@@ -1742,10 +1764,6 @@
                   "response": {
                     "$ref": "LogBucket"
                   },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/logging.admin"
-                  ],
                   "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
                 },
                 "delete": {
@@ -1773,6 +1791,32 @@
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
                   "description": "Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty and locked, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned"
+                },
+                "undelete": {
+                  "id": "logging.projects.locations.buckets.undelete",
+                  "path": "v2/{+name}:undelete",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}:undelete",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the bucket to undelete.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
                 }
               }
             }
@@ -2520,10 +2564,6 @@
                   "response": {
                     "$ref": "LogBucket"
                   },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/logging.admin"
-                  ],
                   "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
                 },
                 "delete": {
@@ -2551,6 +2591,32 @@
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
                   "description": "Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty and locked, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned"
+                },
+                "undelete": {
+                  "id": "logging.folders.locations.buckets.undelete",
+                  "path": "v2/{+name}:undelete",
+                  "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}:undelete",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the bucket to undelete.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
                 }
               }
             }
@@ -3112,10 +3178,6 @@
                   "response": {
                     "$ref": "LogBucket"
                   },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/logging.admin"
-                  ],
                   "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
                 },
                 "delete": {
@@ -3143,6 +3205,32 @@
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
                   "description": "Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty and locked, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned"
+                },
+                "undelete": {
+                  "id": "logging.billingAccounts.locations.buckets.undelete",
+                  "path": "v2/{+name}:undelete",
+                  "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}:undelete",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the bucket to undelete.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
                 }
               }
             }
@@ -4229,10 +4317,6 @@
                   "response": {
                     "$ref": "LogBucket"
                   },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/logging.admin"
-                  ],
                   "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
                 },
                 "delete": {
@@ -4260,6 +4344,32 @@
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
                   "description": "Deletes a bucket. All views and logs in the bucket are deleted. If the bucket is non-empty and locked, FAILED_PRECONDITION will be returned. If the bucket has a sink in the same project pointing to it, FAILED_PRECONDITION will be returned"
+                },
+                "undelete": {
+                  "id": "logging.organizations.locations.buckets.undelete",
+                  "path": "v2/{+name}:undelete",
+                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}:undelete",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the bucket to undelete.\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n\"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
                 }
               }
             }

@@ -672,6 +672,11 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
       doc = rep + doc[pos:]
     return doc
 
+  def _IsNotThisCommand(self, cmd):
+    # We should not include the link if it refers to the current page, per
+    # our research with screen readers. (See b/1723464.)
+    return '.'.join(cmd) != '.'.join(self._command_path)
+
   def _LinkMarkdown(self, doc, pat, with_args=True):
     """Build a representation of a doc, finding all command examples.
 
@@ -695,7 +700,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
         break
       cmd, args = self._SplitCommandFromArgs(match.group('command').split(' '))
       lnk = self.FormatExample(cmd, args, with_args=with_args)
-      if lnk:
+      if self._IsNotThisCommand(cmd) and lnk:
         rep += doc[pos:match.start('command')] + lnk
       else:
         # Skip invalid commands.

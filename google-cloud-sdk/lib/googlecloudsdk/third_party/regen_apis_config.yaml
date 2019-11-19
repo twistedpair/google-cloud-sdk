@@ -443,6 +443,8 @@ apis:
       discovery_doc: osconfig_v1alpha1.json
     v1alpha2:
       discovery_doc: osconfig_v1alpha2.json
+    v1beta:
+      discovery_doc: osconfig_v1beta.json
       default: true
   iam:
     v1:
@@ -729,6 +731,8 @@ apis:
       discovery_doc: recommender_v1alpha2.json
     v1beta1:
       discovery_doc: recommender_v1beta1.json
+    v1:
+      discovery_doc: recommender_v1.json
   gameservices:
     v1alpha:
       discovery_doc: gameservices_v1alpha.json

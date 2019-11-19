@@ -95,6 +95,7 @@ class JobSubmitter(base.Command):
       job = util.WaitForJobTermination(
           dataproc,
           job,
+          job_ref,
           message='Waiting for job completion',
           goal_state=dataproc.messages.JobStatus.StateValueValuesEnum.DONE,
           error_state=dataproc.messages.JobStatus.StateValueValuesEnum.ERROR,

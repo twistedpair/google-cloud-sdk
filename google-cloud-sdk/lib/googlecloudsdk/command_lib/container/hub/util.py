@@ -19,9 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import base64
+import io
 import os
 import re
-import subprocess
 import tempfile
 import textwrap
 
@@ -37,11 +37,13 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.projects import util as p_util
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
 
@@ -629,7 +631,7 @@ def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
   full_manifest = full_manifest + CREDENTIAL_SECRET_TEMPLATE.format(
       namespace=DEFAULT_NAMESPACE,
       gcp_sa_key_secret_name=GCP_SA_KEY_SECRET_NAME,
-      gcp_sa_key=service_account_key_data)
+      gcp_sa_key=encoding.Decode(service_account_key_data, encoding='utf8'))
   return full_manifest
 
 
@@ -719,7 +721,7 @@ def DeployConnectAgent(args,
   _PurgeAlphaInstaller(kube_client, namespace, project_id)
 
   # Create or update the agent install deployment and related resources.
-  err = kube_client.Apply(full_manifest)
+  _, err = kube_client.Apply(full_manifest)
   if err:
     raise exceptions.Error(
         'Failed to apply manifest to cluster: {}'.format(err))
@@ -813,7 +815,7 @@ def DeployConnectAgentAlpha(args,
                 namespace, error))
 
   # Create or update the agent install deployment and related resources.
-  err = kube_client.Apply(full_manifest)
+  _, err = kube_client.Apply(full_manifest)
   if err:
     raise exceptions.Error(
         'Failed to apply manifest to cluster: {}'.format(err))
@@ -888,6 +890,35 @@ class NamespaceDeleteOperation(object):
   def Update(self):
     """Updates this operation with the latest namespace deletion status."""
     err = self.kube_client.DeleteNamespace(self.namespace)
+
+    # The first delete request should succeed.
+    if not err:
+      return
+
+    # If deletion is successful, the delete command will return a NotFound
+    # error.
+    if 'NotFound' in err:
+      self.done = True
+      self.succeeded = True
+    else:
+      self.error = err
+
+
+class MembershipCRDeleteOperation(object):
+  """An operation that waits for a membership CR to be deleted."""
+
+  def __init__(self, kube_client):
+    self.kube_client = kube_client
+    self.done = False
+    self.succeeded = False
+    self.error = None
+
+  def __str__(self):
+    return '<deleting membership CR>'
+
+  def Update(self):
+    """Updates this operation with the latest membership CR deletion status."""
+    err = self.kube_client.DeleteMembership()
 
     # The first delete request should succeed.
     if not err:
@@ -1024,7 +1055,6 @@ class KubernetesClient(object):
     if err:
       raise exceptions.Error(
           'Failed to get the UID of the cluster: {}'.format(err))
-
     return out.replace("'", '')
 
   def GetEvents(self, namespace):
@@ -1091,14 +1121,25 @@ class KubernetesClient(object):
       raise exceptions.Error('Error retrieving membership id: {}'.format(err))
     return out
 
+  def CreateMembershipCRD(self):
+    return self.Apply(MEMBERSHIP_CRD_MANIFEST)
+
   def ApplyMembership(self, membership_cr_manifest):
-    # We need to apply the CRD before the resource. `kubectl apply` does not
-    # handle ordering CR and CRD creations.
-    for manifest in [MEMBERSHIP_CRD_MANIFEST, membership_cr_manifest]:
-      err = self.Apply(manifest)
-      if err:
-        raise exceptions.Error(
-            'Failed to apply Membership manifest to cluster: {}'.format(err))
+    """Apply membership resources."""
+    _, error = waiter.WaitFor(
+        KubernetesPoller(),
+        MembershipCRDCreationOperation(self),
+        pre_start_sleep_ms=NAMESPACE_DELETION_INITIAL_WAIT_MS,
+        max_wait_ms=NAMESPACE_DELETION_TIMEOUT_MS,
+        wait_ceiling_ms=NAMESPACE_DELETION_MAX_POLL_INTERVAL_MS,
+        sleep_ms=NAMESPACE_DELETION_INITIAL_POLL_INTERVAL_MS)
+    if error:
+      raise exceptions.Error(
+          'Membership CRD creation failed to complete: {}'.format(error))
+    _, err = self.Apply(membership_cr_manifest)
+    if err:
+      raise exceptions.Error(
+          'Failed to apply Membership CR to cluster: {}'.format(err))
 
   def NamespaceExists(self, namespace):
     _, err = self._RunKubectl(['get', 'namespace', namespace])
@@ -1127,8 +1168,8 @@ class KubernetesClient(object):
     return self._RunKubectl(cmd)
 
   def Apply(self, manifest):
-    _, err = self._RunKubectl(['apply', '-f', '-'], stdin=manifest)
-    return err
+    out, err = self._RunKubectl(['apply', '-f', '-'], stdin=manifest)
+    return out, err
 
   def Delete(self, manifest):
     _, err = self._RunKubectl(['delete', '-f', '-'], stdin=manifest)
@@ -1164,18 +1205,44 @@ class KubernetesClient(object):
         self.kubectl_timeout
     ]
     cmd.extend(args)
+    out = io.StringIO()
+    err = io.StringIO()
+    returncode = execution_utils.Exec(
+        cmd, no_exit=True, out_func=out.write, err_func=err.write, in_str=stdin
+    )
 
-    p = subprocess.Popen(
-        cmd,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE)
-    out, err = p.communicate(stdin)
+    if returncode != 0 and not err.getvalue():
+      err.write('kubectl exited with return code {}'.format(returncode))
 
-    if p.returncode != 0 and not err:
-      err = 'kubectl exited with return code {}'.format(p.returncode)
+    return out.getvalue() if returncode == 0 else None, err.getvalue(
+    ) if returncode != 0 else None
 
-    return out if p.returncode == 0 else None, err if p.returncode != 0 else None
+
+class MembershipCRDCreationOperation(object):
+  """An operation that waits for a membership CRD to be created."""
+
+  CREATED_KEYWORD = 'unchanged'
+
+  def __init__(self, kube_client):
+    self.kube_client = kube_client
+    self.done = False
+    self.succeeded = False
+    self.error = None
+
+  def __str__(self):
+    return '<creating membership CRD>'
+
+  def Update(self):
+    """Updates this operation with the latest membership creation status."""
+    out, err = self.kube_client.CreateMembershipCRD()
+    if err:
+      self.done = True
+      self.error = err
+
+    # If creation is successful, the create operation should show "unchanged"
+    if self.CREATED_KEYWORD in out:
+      self.done = True
+      self.succeeded = True
 
 
 class KubeconfigProcessor(object):
@@ -1339,19 +1406,23 @@ def DeleteMembershipResources(kube_client):
     kube_client: A KubernetesClient.
   """
 
-  err = kube_client.DeleteMembership()
-  if err:
-    if 'NotFound' in err:
-      # If the Membership resources were not found, then do not log an error.
-      log.status.Print(
-          'Membership for context [{}]) did not exist, so it did not '
-          'require deletion.'.format(kube_client.context))
-      return
-    log.warning(
-        'Failed to delete membership (for context [{}]): {}. '
-        'Please delete the membership resource, manually in your cluster:\n\n'
-        '  kubectl delete membership membership'.format(kube_client.context,
-                                                        err))
+  try:
+    succeeded, error = waiter.WaitFor(
+        KubernetesPoller(),
+        MembershipCRDeleteOperation(kube_client),
+        'Deleting membership CR in the cluster',
+        pre_start_sleep_ms=NAMESPACE_DELETION_INITIAL_WAIT_MS,
+        max_wait_ms=NAMESPACE_DELETION_TIMEOUT_MS,
+        wait_ceiling_ms=NAMESPACE_DELETION_MAX_POLL_INTERVAL_MS,
+        sleep_ms=NAMESPACE_DELETION_INITIAL_POLL_INTERVAL_MS)
+  except waiter.TimeoutError:
+    # waiter.TimeoutError assumes that the operation is a Google API
+    # operation, and prints a debugging string to that effect.
+    raise exceptions.Error('Timeout deleting membership CR from cluster.')
+
+  if not succeeded:
+    raise exceptions.Error(
+        'Could not delete membership CR from cluster. Error: {}'.format(error))
 
 
 def ReleaseTrackCommandPrefix(release_track):

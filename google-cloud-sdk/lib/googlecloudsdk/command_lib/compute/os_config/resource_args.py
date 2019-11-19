@@ -37,7 +37,7 @@ def GetPatchJobResourceSpec():
 
 
 def CreatePatchJobResourceArg(verb, plural=False):
-  """Create a resource argument for a OS Config patch job.
+  """Creates a resource argument for a OS Config patch job.
 
   Args:
     verb: str, The verb to describe the resource, such as 'to describe'.
@@ -57,7 +57,7 @@ def CreatePatchJobResourceArg(verb, plural=False):
 
 
 def AddPatchJobResourceArg(parser, verb, plural=False):
-  """Create a resource argument for a OS Config patch job.
+  """Creates a resource argument for a OS Config patch job.
 
   Args:
     parser: The parser for the command.
@@ -66,3 +66,48 @@ def AddPatchJobResourceArg(parser, verb, plural=False):
   """
   concept_parsers.ConceptParser([CreatePatchJobResourceArg(
       verb, plural)]).AddToParser(parser)
+
+
+def PatchDeploymentAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='patch_deployment', help_text='An OS patch deployment.')
+
+
+def GetPatchDeploymentResourceSpec():
+  return concepts.ResourceSpec(
+      'osconfig.projects.patchDeployments',
+      resource_name='patch_deployment',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      patchDeploymentsId=PatchDeploymentAttributeConfig())
+
+
+def CreatePatchDeploymentResourceArg(verb, plural=False):
+  """Creates a resource argument for a OS Config patch deployment.
+
+  Args:
+    verb: str, The verb to describe the resource, such as 'to describe'.
+    plural: bool, If True, use a resource argument that returns a list.
+
+  Returns:
+    PresentationSpec for the resource argument.
+  """
+  noun = 'Patch deployment' + ('s' if plural else '')
+  return presentation_specs.ResourcePresentationSpec(
+      'patch_deployment',
+      GetPatchDeploymentResourceSpec(),
+      '{} {}'.format(noun, verb),
+      required=True,
+      plural=plural,
+      prefixes=False)
+
+
+def AddPatchDeploymentResourceArg(parser, verb, plural=False):
+  """Creates a resource argument for a OS Config patch deployment.
+
+  Args:
+    parser: The parser for the command.
+    verb: str, The verb to describe the resource, such as 'to describe'.
+    plural: bool, If True, use a resource argument that returns a list.
+  """
+  concept_parsers.ConceptParser(
+      [CreatePatchDeploymentResourceArg(verb, plural)]).AddToParser(parser)

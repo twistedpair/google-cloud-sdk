@@ -1307,6 +1307,23 @@ class LoggingBillingAccountsLocationsBucketsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class LoggingBillingAccountsLocationsBucketsUndeleteRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsUndeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the bucket to undelete.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingBillingAccountsLogsDeleteRequest(_messages.Message):
   r"""A LoggingBillingAccountsLogsDeleteRequest object.
 
@@ -1791,6 +1808,23 @@ class LoggingFoldersLocationsBucketsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class LoggingFoldersLocationsBucketsUndeleteRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsUndeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the bucket to undelete.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingFoldersLogsDeleteRequest(_messages.Message):
   r"""A LoggingFoldersLogsDeleteRequest object.
 
@@ -2112,6 +2146,23 @@ class LoggingLocationsBucketsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class LoggingLocationsBucketsUndeleteRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsUndeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the bucket to undelete.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingLogsDeleteRequest(_messages.Message):
   r"""A LoggingLogsDeleteRequest object.
 
@@ -2382,6 +2433,23 @@ class LoggingOrganizationsLocationsBucketsPatchRequest(_messages.Message):
   logBucket = _messages.MessageField('LogBucket', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class LoggingOrganizationsLocationsBucketsUndeleteRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsUndeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the bucket to undelete.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class LoggingOrganizationsLogsDeleteRequest(_messages.Message):
@@ -2801,6 +2869,23 @@ class LoggingProjectsLocationsBucketsPatchRequest(_messages.Message):
   logBucket = _messages.MessageField('LogBucket', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class LoggingProjectsLocationsBucketsUndeleteRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsUndeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the bucket to undelete.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class LoggingProjectsLogsDeleteRequest(_messages.Message):

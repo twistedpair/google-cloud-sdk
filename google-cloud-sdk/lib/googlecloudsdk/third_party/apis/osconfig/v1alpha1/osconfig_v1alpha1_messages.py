@@ -94,11 +94,13 @@ class AptSettings(_messages.Message):
     using `apt-get dist-upgrade` instead.
 
     Values:
-      TYPE_UNSPECIFIED: By default, a full upgrade will be performed.
-      DIST: run `apt-get dist-upgrade` instead.
+      TYPE_UNSPECIFIED: By default, upgrade will be performed.
+      DIST: Runs `apt-get dist-upgrade`.
+      UPGRADE: Runs `apt-get upgrade`.
     """
     TYPE_UNSPECIFIED = 0
     DIST = 1
+    UPGRADE = 2
 
   excludes = _messages.StringField(1, repeated=True)
   exclusivePackages = _messages.StringField(2, repeated=True)

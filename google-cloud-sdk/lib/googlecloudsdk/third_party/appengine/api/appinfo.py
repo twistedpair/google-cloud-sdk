@@ -51,6 +51,7 @@ else:
   from googlecloudsdk.third_party.appengine.api import yaml_listener
   from googlecloudsdk.third_party.appengine.api import yaml_object
 
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.third_party.appengine.api import appinfo_errors
 from googlecloudsdk.third_party.appengine.api import backendinfo
 from googlecloudsdk.third_party.appengine._internal import six_subset
@@ -920,7 +921,7 @@ class HttpHeadersDict(validation.ValidatedDict):
             'HTTP header values must not contain non-ASCII data'))
 
       # HTTP headers are case-insensitive.
-      name = name.lower()
+      name = encoding.Decode(name.lower(),encoding='utf8')
 
       if not _HTTP_TOKEN_RE.match(name):
         raise appinfo_errors.InvalidHttpHeaderName(

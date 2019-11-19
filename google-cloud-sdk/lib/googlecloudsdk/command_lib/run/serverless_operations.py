@@ -854,18 +854,8 @@ class ServerlessOperations(object):
       The Service object we created or modified.
     """
     messages = self.messages_module
-    config_changes = [_SetClientNameAndVersion()] + config_changes
     try:
       if serv:
-        if not with_code:
-          # Avoid changing the running code by making the new revision by digest
-          self._EnsureImageDigest(serv, config_changes)
-
-        # Revision names must be unique across the namespace.
-        # To prevent the revision name being unchanged from the last revision,
-        # we reset the value so the default naming scheme will be used instead.
-        serv.template.name = None
-
         # PUT the changed Service
         for config_change in config_changes:
           serv = config_change.Adjust(serv)
@@ -961,6 +951,13 @@ class ServerlessOperations(object):
       getter = functools.partial(self.GetService, service_ref)
       self.WaitForCondition(ServiceConditionPoller(getter, tracker, serv=serv))
 
+  def _AddRevisionForcingChange(self, serv, config_changes):
+    """Get a new revision forcing config change for the given service."""
+    curr_generation = serv.generation if serv is not None else 0
+    revision_suffix = '{}-{}'.format(
+        str(curr_generation + 1).zfill(5), name_generator.GenerateName())
+    config_changes.insert(0, _NewRevisionForcingChange(revision_suffix))
+
   def ReleaseService(self, service_ref, config_changes, tracker=None,
                      asyn=False, allow_unauthenticated=None, for_replace=False):
     """Change the given service in prod using the given config_changes.
@@ -985,16 +982,17 @@ class ServerlessOperations(object):
           stages.ServiceStages(allow_unauthenticated is not None),
           interruptable=True, aborted_message='aborted')
     serv = self.GetService(service_ref)
-    curr_generation = serv.generation if serv else 0
-    revision_suffix = '{}-{}'.format(
-        str(curr_generation + 1).zfill(5), name_generator.GenerateName())
     if for_replace:
       with_image = True
     else:
       with_image = any(
           isinstance(c, config_changes_mod.ImageChange) for c in config_changes)
-      config_changes = ([_NewRevisionForcingChange(revision_suffix)] +
-                        config_changes)
+      self._AddRevisionForcingChange(serv, config_changes)
+      if serv and not with_image:
+        # Avoid changing the running code by making the new revision by digest
+        self._EnsureImageDigest(serv, config_changes)
+    config_changes = [_SetClientNameAndVersion()] + config_changes
+
     self._UpdateOrCreateService(
         service_ref, config_changes, with_image, serv)
 

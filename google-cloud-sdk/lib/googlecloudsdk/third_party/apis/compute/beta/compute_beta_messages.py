@@ -31238,7 +31238,7 @@ class Network(_messages.Message):
 
 
 class NetworkEndpoint(_messages.Message):
-  r"""The network endpoint.
+  r"""The network endpoint. Next ID: 7
 
   Fields:
     instance: The name for a specific VM instance that the IP address belongs
@@ -31264,6 +31264,7 @@ class NetworkEndpointGroup(_messages.Message):
   r"""Represents a collection of network endpoints.  For more information read
   Setting up network endpoint groups in load balancing. (== resource_for
   v1.networkEndpointGroups ==) (== resource_for beta.networkEndpointGroups ==)
+  Next ID: 21
 
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
@@ -32905,7 +32906,7 @@ class NodeTemplate(_messages.Message):
   r"""Represent a sole-tenant Node Template resource.  You can use a template
   to define properties for nodes in a node group. For more information, read
   Creating node groups and instances. (== resource_for beta.nodeTemplates ==)
-  (== resource_for v1.nodeTemplates ==) (== NextID: 16 ==)
+  (== resource_for v1.nodeTemplates ==) (== NextID: 17 ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the node template. One
@@ -39923,6 +39924,8 @@ class SavedAttachedDisk(_messages.Message):
       instance.
     diskEncryptionKey: The encryption key for the disk.
     diskSizeGb: The size of the disk in base-2 GB.
+    diskType: [Output Only] URL of the disk type resource. For example:
+      projects/project/zones/zone/diskTypes/pd-standard or pd-ssd
     guestOsFeatures: A list of features to enable on the guest operating
       system. Applicable only for bootable images. Read  Enabling guest
       operating system features to see a list of available options.
@@ -39997,16 +40000,17 @@ class SavedAttachedDisk(_messages.Message):
   deviceName = _messages.StringField(3)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
   diskSizeGb = _messages.IntegerField(5)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 6, repeated=True)
-  index = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 8)
-  kind = _messages.StringField(9, default=u'compute#savedAttachedDisk')
-  licenses = _messages.StringField(10, repeated=True)
-  mode = _messages.EnumField('ModeValueValuesEnum', 11)
-  source = _messages.StringField(12)
-  storageBytes = _messages.IntegerField(13)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 14)
-  type = _messages.EnumField('TypeValueValuesEnum', 15)
+  diskType = _messages.StringField(6)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
+  index = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 9)
+  kind = _messages.StringField(10, default=u'compute#savedAttachedDisk')
+  licenses = _messages.StringField(11, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 12)
+  source = _messages.StringField(13)
+  storageBytes = _messages.IntegerField(14)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
 
 
 class Scheduling(_messages.Message):
