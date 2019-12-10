@@ -203,6 +203,69 @@
       "properties": {
       }
     },
+    "UndeleteBucketRequest": {
+      "id": "UndeleteBucketRequest",
+      "description": "The parameters to UndeleteBucket.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListViewsResponse": {
+      "id": "ListViewsResponse",
+      "description": "The response from ListViews.",
+      "type": "object",
+      "properties": {
+        "views": {
+          "description": "A list of views.",
+          "type": "array",
+          "items": {
+            "$ref": "LogView"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than appear in this response, then nextPageToken is included. To get the next set of results, call the same method again using the value of nextPageToken as pageToken.",
+          "type": "string"
+        }
+      }
+    },
+    "LogView": {
+      "id": "LogView",
+      "description": "Describes a view over logs in a bucket",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the view. For example \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Display name of the view.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Describes this view.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The creation timestamp of the view.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last update timestamp of the view.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "expireTime": {
+          "description": "Time at which this view will no longer be useable. Requests to view logs after expire_time has passed will fail with a FAILED_PRECONDITION error.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "filter": {
+          "description": "Filter that restricts which log entries in a bucket are visible in this view. Filters are restricted to be a logical AND of ==\/!= of any of the following:  originating project\/folder\/organization\/billing account.  resource type  log id  user labels",
+          "type": "string"
+        }
+      }
+    },
     "ListSinksResponse": {
       "id": "ListSinksResponse",
       "description": "Result returned from ListSinks.",
@@ -1615,6 +1678,9 @@
               "parameterOrder": [
                 "name"
               ],
+              "request": {
+                "$ref": "UndeleteBucketRequest"
+              },
               "response": {
                 "$ref": "Empty"
               },
@@ -1623,6 +1689,175 @@
                 "https://www.googleapis.com/auth/logging.admin"
               ],
               "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
+            }
+          }
+          ,
+          "resources": {
+            "views": {
+              "methods": {
+                "list": {
+                  "id": "logging.locations.buckets.views.list",
+                  "path": "v2/{+parent}/views",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The bucket whose views are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageToken": {
+                      "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListViewsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
+                  "description": "Lists views on a bucket.."
+                },
+                "get": {
+                  "id": "logging.locations.buckets.views.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the policy:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "LogView"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
+                  "description": "Gets a view."
+                },
+                "create": {
+                  "id": "logging.locations.buckets.views.create",
+                  "path": "v2/{+parent}/views",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The bucket in which to create the view\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-logging-project\/locations\/my-location\/buckets\/my-bucket\"",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "viewId": {
+                      "description": "Required. The id to use for this view.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "LogView"
+                  },
+                  "response": {
+                    "$ref": "LogView"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views."
+                },
+                "patch": {
+                  "id": "logging.locations.buckets.views.patch",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the view to update\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\"\nExample:  \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "LogView"
+                  },
+                  "response": {
+                    "$ref": "LogView"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Updates a view. This method replaces the following fields in the existing view with values from the new view: filter."
+                },
+                "delete": {
+                  "id": "logging.locations.buckets.views.delete",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the view to delete:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\"\nExample:  \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Deletes a view from a bucket."
+                }
+              }
             }
           }
         }
@@ -1809,6 +2044,9 @@
                   "parameterOrder": [
                     "name"
                   ],
+                  "request": {
+                    "$ref": "UndeleteBucketRequest"
+                  },
                   "response": {
                     "$ref": "Empty"
                   },
@@ -1817,6 +2055,175 @@
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
                   "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
+                }
+              }
+              ,
+              "resources": {
+                "views": {
+                  "methods": {
+                    "list": {
+                      "id": "logging.projects.locations.buckets.views.list",
+                      "path": "v2/{+parent}/views",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The bucket whose views are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageToken": {
+                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListViewsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
+                      "description": "Lists views on a bucket.."
+                    },
+                    "get": {
+                      "id": "logging.projects.locations.buckets.views.get",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the policy:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "LogView"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
+                      "description": "Gets a view."
+                    },
+                    "create": {
+                      "id": "logging.projects.locations.buckets.views.create",
+                      "path": "v2/{+parent}/views",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The bucket in which to create the view\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-logging-project\/locations\/my-location\/buckets\/my-bucket\"",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "viewId": {
+                          "description": "Required. The id to use for this view.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "LogView"
+                      },
+                      "response": {
+                        "$ref": "LogView"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
+                      "description": "Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views."
+                    },
+                    "patch": {
+                      "id": "logging.projects.locations.buckets.views.patch",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The full resource name of the view to update\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\"\nExample:  \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "LogView"
+                      },
+                      "response": {
+                        "$ref": "LogView"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
+                      "description": "Updates a view. This method replaces the following fields in the existing view with values from the new view: filter."
+                    },
+                    "delete": {
+                      "id": "logging.projects.locations.buckets.views.delete",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The full resource name of the view to delete:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\"\nExample:  \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
+                      "description": "Deletes a view from a bucket."
+                    }
+                  }
                 }
               }
             }
@@ -2609,6 +3016,9 @@
                   "parameterOrder": [
                     "name"
                   ],
+                  "request": {
+                    "$ref": "UndeleteBucketRequest"
+                  },
                   "response": {
                     "$ref": "Empty"
                   },
@@ -2617,6 +3027,175 @@
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
                   "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
+                }
+              }
+              ,
+              "resources": {
+                "views": {
+                  "methods": {
+                    "list": {
+                      "id": "logging.folders.locations.buckets.views.list",
+                      "path": "v2/{+parent}/views",
+                      "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The bucket whose views are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageToken": {
+                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListViewsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
+                      "description": "Lists views on a bucket.."
+                    },
+                    "get": {
+                      "id": "logging.folders.locations.buckets.views.get",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the policy:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "LogView"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
+                      "description": "Gets a view."
+                    },
+                    "create": {
+                      "id": "logging.folders.locations.buckets.views.create",
+                      "path": "v2/{+parent}/views",
+                      "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The bucket in which to create the view\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-logging-project\/locations\/my-location\/buckets\/my-bucket\"",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "viewId": {
+                          "description": "Required. The id to use for this view.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "LogView"
+                      },
+                      "response": {
+                        "$ref": "LogView"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
+                      "description": "Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views."
+                    },
+                    "patch": {
+                      "id": "logging.folders.locations.buckets.views.patch",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The full resource name of the view to update\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\"\nExample:  \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "LogView"
+                      },
+                      "response": {
+                        "$ref": "LogView"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
+                      "description": "Updates a view. This method replaces the following fields in the existing view with values from the new view: filter."
+                    },
+                    "delete": {
+                      "id": "logging.folders.locations.buckets.views.delete",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The full resource name of the view to delete:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\"\nExample:  \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
+                      "description": "Deletes a view from a bucket."
+                    }
+                  }
                 }
               }
             }
@@ -3223,6 +3802,9 @@
                   "parameterOrder": [
                     "name"
                   ],
+                  "request": {
+                    "$ref": "UndeleteBucketRequest"
+                  },
                   "response": {
                     "$ref": "Empty"
                   },
@@ -3231,6 +3813,147 @@
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
                   "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
+                }
+              }
+              ,
+              "resources": {
+                "views": {
+                  "methods": {
+                    "list": {
+                      "id": "logging.billingAccounts.locations.buckets.views.list",
+                      "path": "v2/{+parent}/views",
+                      "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The bucket whose views are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageToken": {
+                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListViewsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
+                      "description": "Lists views on a bucket.."
+                    },
+                    "create": {
+                      "id": "logging.billingAccounts.locations.buckets.views.create",
+                      "path": "v2/{+parent}/views",
+                      "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The bucket in which to create the view\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-logging-project\/locations\/my-location\/buckets\/my-bucket\"",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "viewId": {
+                          "description": "Required. The id to use for this view.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "LogView"
+                      },
+                      "response": {
+                        "$ref": "LogView"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
+                      "description": "Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views."
+                    },
+                    "patch": {
+                      "id": "logging.billingAccounts.locations.buckets.views.patch",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The full resource name of the view to update\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\"\nExample:  \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "LogView"
+                      },
+                      "response": {
+                        "$ref": "LogView"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
+                      "description": "Updates a view. This method replaces the following fields in the existing view with values from the new view: filter."
+                    },
+                    "delete": {
+                      "id": "logging.billingAccounts.locations.buckets.views.delete",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The full resource name of the view to delete:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\"\nExample:  \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
+                      "description": "Deletes a view from a bucket."
+                    }
+                  }
                 }
               }
             }
@@ -3265,6 +3988,41 @@
                 "https://www.googleapis.com/auth/logging.read"
               ],
               "description": "Gets a bucket."
+            }
+          }
+          ,
+          "resources": {
+            "views": {
+              "methods": {
+                "get": {
+                  "id": "logging.billingAccounts.buckets.views.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/billingAccounts/{billingAccountsId}/buckets/{bucketsId}/views/{viewsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the policy:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^billingAccounts\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "LogView"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
+                  "description": "Gets a view."
+                }
+              }
             }
           }
         },
@@ -4362,6 +5120,9 @@
                   "parameterOrder": [
                     "name"
                   ],
+                  "request": {
+                    "$ref": "UndeleteBucketRequest"
+                  },
                   "response": {
                     "$ref": "Empty"
                   },
@@ -4370,6 +5131,175 @@
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
                   "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
+                }
+              }
+              ,
+              "resources": {
+                "views": {
+                  "methods": {
+                    "list": {
+                      "id": "logging.organizations.locations.buckets.views.list",
+                      "path": "v2/{+parent}/views",
+                      "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The bucket whose views are to be listed:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\n",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageToken": {
+                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListViewsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
+                      "description": "Lists views on a bucket.."
+                    },
+                    "get": {
+                      "id": "logging.organizations.locations.buckets.views.get",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the policy:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\"\nExample: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "LogView"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloud-platform.read-only",
+                        "https://www.googleapis.com/auth/logging.admin",
+                        "https://www.googleapis.com/auth/logging.read"
+                      ],
+                      "description": "Gets a view."
+                    },
+                    "create": {
+                      "id": "logging.organizations.locations.buckets.views.create",
+                      "path": "v2/{+parent}/views",
+                      "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The bucket in which to create the view\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"\nExample: \"projects\/my-logging-project\/locations\/my-location\/buckets\/my-bucket\"",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "viewId": {
+                          "description": "Required. The id to use for this view.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "LogView"
+                      },
+                      "response": {
+                        "$ref": "LogView"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
+                      "description": "Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views."
+                    },
+                    "patch": {
+                      "id": "logging.organizations.locations.buckets.views.patch",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The full resource name of the view to update\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\"\nExample:  \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "LogView"
+                      },
+                      "response": {
+                        "$ref": "LogView"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
+                      "description": "Updates a view. This method replaces the following fields in the existing view with values from the new view: filter."
+                    },
+                    "delete": {
+                      "id": "logging.organizations.locations.buckets.views.delete",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The full resource name of the view to delete:\n\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\"\nExample:  \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/logging.admin"
+                      ],
+                      "description": "Deletes a view from a bucket."
+                    }
+                  }
                 }
               }
             }

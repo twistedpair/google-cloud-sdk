@@ -177,7 +177,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest(_messages.Messa
     name: Required. Resource name for the Access Level. The `short_name`
       component must begin with a letter and only include alphanumeric and
       '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`
-    updateMask: Required.  Mask to control which fields get updated. Must be
+    updateMask: Required. Mask to control which fields get updated. Must be
       non-empty.
   """
 
@@ -433,6 +433,8 @@ class Condition(_messages.Message):
     negate: Whether to negate the Condition. If true, the Condition becomes a
       NAND over its non-empty fields, each field must be false for the
       Condition overall to be satisfied. Defaults to false.
+    regions: The request must originate from one of the provided
+      countries/regions. Must be valid ISO 3166-1 alpha-2 codes.
     requiredAccessLevels: A list of other access levels defined in the same
       `Policy`, referenced by resource name. Referencing an `AccessLevel`
       which does not exist is an error. All access levels listed must be
@@ -444,7 +446,8 @@ class Condition(_messages.Message):
   ipSubnetworks = _messages.StringField(2, repeated=True)
   members = _messages.StringField(3, repeated=True)
   negate = _messages.BooleanField(4)
-  requiredAccessLevels = _messages.StringField(5, repeated=True)
+  regions = _messages.StringField(5, repeated=True)
+  requiredAccessLevels = _messages.StringField(6, repeated=True)
 
 
 class DevicePolicy(_messages.Message):
@@ -469,6 +472,9 @@ class DevicePolicy(_messages.Message):
       allows all statuses.
     osConstraints: Allowed OS versions, an empty list allows all types and all
       versions.
+    requireAdminApproval: Whether the device needs to be approved by the
+      customer admin.
+    requireCorpOwned: Whether the device needs to be corp owned.
     requireScreenlock: Whether or not screenlock is required for the
       DevicePolicy to be true. Defaults to `false`.
   """
@@ -504,7 +510,9 @@ class DevicePolicy(_messages.Message):
   allowedDeviceManagementLevels = _messages.EnumField('AllowedDeviceManagementLevelsValueListEntryValuesEnum', 1, repeated=True)
   allowedEncryptionStatuses = _messages.EnumField('AllowedEncryptionStatusesValueListEntryValuesEnum', 2, repeated=True)
   osConstraints = _messages.MessageField('OsConstraint', 3, repeated=True)
-  requireScreenlock = _messages.BooleanField(4)
+  requireAdminApproval = _messages.BooleanField(4)
+  requireCorpOwned = _messages.BooleanField(5)
+  requireScreenlock = _messages.BooleanField(6)
 
 
 class Empty(_messages.Message):
@@ -600,7 +608,8 @@ class Operation(_messages.Message):
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
-      the `name` should have the format of `operations/some/unique/name`.
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
     response: The normal response of the operation in case of success.  If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`.  If the original method is standard
@@ -687,6 +696,10 @@ class OsConstraint(_messages.Message):
       this OS satisfies the constraint. Format: `"major.minor.patch"`.
       Examples: `"10.5.301"`, `"9.2.1"`.
     osType: Required. The allowed OS type.
+    requireVerifiedChromeOs: Only allows requests from devices with a verified
+      Chrome OS. Verifications includes requirements that the device is
+      enterprise-managed, conformant to domain policies, and the caller has
+      permission to call the API targeted by the request.
   """
 
   class OsTypeValueValuesEnum(_messages.Enum):
@@ -699,19 +712,16 @@ class OsConstraint(_messages.Message):
       DESKTOP_WINDOWS: A desktop Windows operating system.
       DESKTOP_LINUX: A desktop Linux operating system.
       DESKTOP_CHROME_OS: A desktop ChromeOS operating system.
-      ANDROID: An Android operating system.
-      IOS: An iOS operating system.
     """
     OS_UNSPECIFIED = 0
     DESKTOP_MAC = 1
     DESKTOP_WINDOWS = 2
     DESKTOP_LINUX = 3
     DESKTOP_CHROME_OS = 4
-    ANDROID = 5
-    IOS = 6
 
   minimumVersion = _messages.StringField(1)
   osType = _messages.EnumField('OsTypeValueValuesEnum', 2)
+  requireVerifiedChromeOs = _messages.BooleanField(3)
 
 
 class ServicePerimeter(_messages.Message):
@@ -731,8 +741,8 @@ class ServicePerimeter(_messages.Message):
       is allowed to be a member of single regular perimeter, but multiple
       service perimeter bridges. A project cannot be a included in a perimeter
       bridge without being included in regular perimeter. For perimeter
-      bridges, restricted/unrestricted service lists as well as access lists
-      must be empty.
+      bridges, the restricted service list as well as access level lists must
+      be empty.
 
   Fields:
     createTime: Output only. Time the `ServicePerimeter` was created in UTC.
@@ -744,12 +754,11 @@ class ServicePerimeter(_messages.Message):
     perimeterType: Perimeter type indicator. A single project is allowed to be
       a member of single regular perimeter, but multiple service perimeter
       bridges. A project cannot be a included in a perimeter bridge without
-      being included in regular perimeter. For perimeter bridges,
-      restricted/unrestricted service lists as well as access lists must be
-      empty.
+      being included in regular perimeter. For perimeter bridges, the
+      restricted service list as well as access level lists must be empty.
     status: Current ServicePerimeter configuration. Specifies sets of
-      resources, restricted/unrestricted services and access levels that
-      determine perimeter content and boundaries.
+      resources, restricted services and access levels that determine
+      perimeter content and boundaries.
     title: Human readable title. Must be unique within the Policy.
     updateTime: Output only. Time the `ServicePerimeter` was updated in UTC.
   """
@@ -758,8 +767,8 @@ class ServicePerimeter(_messages.Message):
     r"""Perimeter type indicator. A single project is allowed to be a member
     of single regular perimeter, but multiple service perimeter bridges. A
     project cannot be a included in a perimeter bridge without being included
-    in regular perimeter. For perimeter bridges, restricted/unrestricted
-    service lists as well as access lists must be empty.
+    in regular perimeter. For perimeter bridges, the restricted service list
+    as well as access level lists must be empty.
 
     Values:
       PERIMETER_TYPE_REGULAR: Regular Perimeter.
@@ -795,34 +804,14 @@ class ServicePerimeterConfig(_messages.Message):
       perimeter. Currently only projects are allowed. Format:
       `projects/{project_number}`
     restrictedServices: GCP services that are subject to the Service Perimeter
-      restrictions. May contain a list of services or a single wildcard "*".
-      For example, if `storage.googleapis.com` is specified, access to the
-      storage buckets inside the perimeter must meet the perimeter's access
-      restrictions.  Wildcard means that unless explicitly specified by
-      "unrestricted_services" list, any service is treated as restricted. One
-      of the fields "restricted_services", "unrestricted_services" must
-      contain a wildcard "*", otherwise the Service Perimeter specification is
-      invalid. It also means that both field being empty is invalid as well.
-      "restricted_services" can be empty if and only if
-      "unrestricted_services" list contains a "*" wildcard.
-    unrestrictedServices: GCP services that are not subject to the Service
-      Perimeter restrictions. May contain a list of services or a single
-      wildcard "*". For example, if `logging.googleapis.com` is unrestricted,
-      users can access logs inside the perimeter as if the perimeter doesn't
-      exist, and it also means VMs inside the perimeter can access logs
-      outside the perimeter.  The wildcard means that unless explicitly
-      specified by "restricted_services" list, any service is treated as
-      unrestricted. One of the fields "restricted_services",
-      "unrestricted_services" must contain a wildcard "*", otherwise the
-      Service Perimeter specification is invalid. It also means that both
-      field being empty is invalid as well. "unrestricted_services" can be
-      empty if and only if "restricted_services" list contains a "*" wildcard.
+      restrictions. For example, if `storage.googleapis.com` is specified,
+      access to the storage buckets inside the perimeter must meet the
+      perimeter's access restrictions.
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
   resources = _messages.StringField(2, repeated=True)
   restrictedServices = _messages.StringField(3, repeated=True)
-  unrestrictedServices = _messages.StringField(4, repeated=True)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -891,37 +880,10 @@ class StandardQueryParameters(_messages.Message):
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). The error model is designed to be:
-  - Simple to use and understand for most users - Flexible enough to meet
-  unexpected needs  # Overview  The `Status` message contains three pieces of
-  data: error code, error message, and error details. The error code should be
-  an enum value of google.rpc.Code, but it may accept additional error codes
-  if needed.  The error message should be a developer-facing English message
-  that helps developers *understand* and *resolve* the error. If a localized
-  user-facing error message is needed, put the localized message in the error
-  details or localize it in the client. The optional error details may contain
-  arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` that can be used for common error
-  conditions.  # Language mapping  The `Status` message is the logical
-  representation of the error model, but it is not necessarily the actual wire
-  format. When the `Status` message is exposed in different client libraries
-  and different wire protocols, it can be mapped differently. For example, it
-  will likely be mapped to some exceptions in Java, but more likely mapped to
-  some error codes in C.  # Other uses  The error model and the `Status`
-  message can be used in a variety of environments, either with or without
-  APIs, to provide a consistent developer experience across different
-  environments.  Example uses of this error model include:  - Partial errors.
-  If a service needs to return partial errors to the client,     it may embed
-  the `Status` in the normal response to indicate the partial     errors.  -
-  Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting.  - Batch operations. If a
-  client uses batch request and batch response, the     `Status` message
-  should be used directly inside batch response, one for     each error sub-
-  response.  - Asynchronous operations. If an API call embeds asynchronous
-  operation     results in its response, the status of those operations should
-  be     represented directly using the `Status` message.  - Logging. If some
-  API errors are stored in logs, the message `Status` could     be used
-  directly after any stripping needed for security/privacy reasons.
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details.  You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
 
   Messages:
     DetailsValueListEntry: A DetailsValueListEntry object.

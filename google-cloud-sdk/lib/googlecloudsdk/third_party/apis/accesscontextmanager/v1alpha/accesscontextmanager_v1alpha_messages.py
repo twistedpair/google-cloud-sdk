@@ -766,11 +766,26 @@ class ServicePerimeter(_messages.Message):
       bridges. A project cannot be a included in a perimeter bridge without
       being included in regular perimeter. For perimeter bridges, the
       restricted service list as well as access level lists must be empty.
+    spec: Proposed (or dry run) ServicePerimeter configuration. This
+      configuration allows to specify and test ServicePerimeter configuration
+      without enforcing actual access restrictions. Only allowed to be set
+      when the "use_explicit_dry_run_spec" flag is set.
     status: Current ServicePerimeter configuration. Specifies sets of
       resources, restricted services and access levels that determine
       perimeter content and boundaries.
     title: Human readable title. Must be unique within the Policy.
     updateTime: Output only. Time the `ServicePerimeter` was updated in UTC.
+    useExplicitDryRunSpec: Use explicit dry run spec flag. Ordinarily, a dry-
+      run spec implicitly exists  for all Service Perimeters, and that spec is
+      identical to the status for those Service Perimeters. When this flag is
+      set, it inhibits the generation of the implicit spec, thereby allowing
+      the user to explicitly provide a configuration ("spec") to use in a dry-
+      run version of the Service Perimeter. This allows the user to test
+      changes to the enforced config ("status") without actually enforcing
+      them. This testing is done through analyzing the differences between
+      currently enforced and suggested restrictions. use_explicit_dry_run_spec
+      must bet set to True if any of the fields in the spec are set to non-
+      default values.
   """
 
   class PerimeterTypeValueValuesEnum(_messages.Enum):
@@ -791,9 +806,11 @@ class ServicePerimeter(_messages.Message):
   description = _messages.StringField(2)
   name = _messages.StringField(3)
   perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 4)
-  status = _messages.MessageField('ServicePerimeterConfig', 5)
-  title = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  spec = _messages.MessageField('ServicePerimeterConfig', 5)
+  status = _messages.MessageField('ServicePerimeterConfig', 6)
+  title = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  useExplicitDryRunSpec = _messages.BooleanField(9)
 
 
 class ServicePerimeterConfig(_messages.Message):
@@ -817,11 +834,14 @@ class ServicePerimeterConfig(_messages.Message):
       restrictions. For example, if `storage.googleapis.com` is specified,
       access to the storage buckets inside the perimeter must meet the
       perimeter's access restrictions.
+    vpcServiceRestriction: Alpha. Configuration for within Perimeter allowed
+      APIs.
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
   resources = _messages.StringField(2, repeated=True)
   restrictedServices = _messages.StringField(3, repeated=True)
+  vpcServiceRestriction = _messages.MessageField('VpcServiceRestriction', 4)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -936,6 +956,21 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class VpcServiceRestriction(_messages.Message):
+  r"""Alpha. Specifies how APIs are allowed to communicate within the Service
+  Perimeter.
+
+  Fields:
+    allowedServices: The list of APIs usable within the Service Perimeter.
+      Must be empty unless 'enable_restriction' is True.
+    enableRestriction: Whether to restrict API calls within the Service
+      Perimeter to the list of APIs specified in 'allowed_services'.
+  """
+
+  allowedServices = _messages.StringField(1, repeated=True)
+  enableRestriction = _messages.BooleanField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

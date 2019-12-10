@@ -173,7 +173,7 @@ class Binding(_messages.Message):
       that represents a Google group.    For example, `admins@example.com`.  *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
-      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
       retains the role in the binding.  *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
@@ -263,6 +263,80 @@ class CloudassetExportAssetsRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class CloudassetFeedsCreateRequest(_messages.Message):
+  r"""A CloudassetFeedsCreateRequest object.
+
+  Fields:
+    createFeedRequest: A CreateFeedRequest resource to be passed as the
+      request body.
+    parent: Required. The name of the project/folder/organization where this
+      feed should be created in. It can only be an organization number (such
+      as "organizations/123"), a folder number (such as "folders/123"), a
+      project ID (such as "projects/my-project-id")", or a project number
+      (such as "projects/12345").
+  """
+
+  createFeedRequest = _messages.MessageField('CreateFeedRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class CloudassetFeedsDeleteRequest(_messages.Message):
+  r"""A CloudassetFeedsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the feed and it must be in the format of:
+      projects/project_number/feeds/feed_id
+      folders/folder_number/feeds/feed_id
+      organizations/organization_number/feeds/feed_id
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudassetFeedsGetRequest(_messages.Message):
+  r"""A CloudassetFeedsGetRequest object.
+
+  Fields:
+    name: Required. The name of the Feed and it must be in the format of:
+      projects/project_number/feeds/feed_id
+      folders/folder_number/feeds/feed_id
+      organizations/organization_number/feeds/feed_id
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudassetFeedsListRequest(_messages.Message):
+  r"""A CloudassetFeedsListRequest object.
+
+  Fields:
+    parent: Required. The parent project/folder/organization whose feeds are
+      to be listed. It can only be using project/folder/organization number
+      (such as "folders/12345")", or a project ID (such as "projects/my-
+      project-id").
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class CloudassetFeedsPatchRequest(_messages.Message):
+  r"""A CloudassetFeedsPatchRequest object.
+
+  Fields:
+    name: Required. The format will be projects/{project_number}/feeds
+      /{client-assigned_feed_identifier} or folders/{folder_number}/feeds
+      /{client-assigned_feed_identifier} or
+      organizations/{organization_number}/feeds/{client-
+      assigned_feed_identifier}  The client-assigned feed identifier must be
+      unique within the parent project/folder/organization.
+    updateFeedRequest: A UpdateFeedRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateFeedRequest = _messages.MessageField('UpdateFeedRequest', 2)
+
+
 class CloudassetOperationsGetRequest(_messages.Message):
   r"""A CloudassetOperationsGetRequest object.
 
@@ -271,6 +345,33 @@ class CloudassetOperationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class CreateFeedRequest(_messages.Message):
+  r"""Create asset feed request.
+
+  Fields:
+    feed: Required. The feed details. The field `name` must be empty and it
+      will be generated in the format of:
+      projects/project_number/feeds/feed_id
+      folders/folder_number/feeds/feed_id
+      organizations/organization_number/feeds/feed_id
+    feedId: Required. This is the client-assigned asset feed identifier and it
+      needs to be unique under a specific parent project/folder/organization.
+  """
+
+  feed = _messages.MessageField('Feed', 1)
+  feedId = _messages.StringField(2)
+
+
+class Empty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance:      service Foo {
+  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
+  JSON representation for `Empty` is empty JSON object `{}`.
+  """
+
 
 
 class ExportAssetsRequest(_messages.Message):
@@ -342,6 +443,75 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class Feed(_messages.Message):
+  r"""An asset feed used to export asset updates to a destinations. An asset
+  feed filter controls what updates are exported. The asset feed must be
+  created within a project, organization, or folder. Supported destinations
+  are: Cloud Pub/Sub topics.
+
+  Enums:
+    ContentTypeValueValuesEnum: Asset content type. If not specified, no
+      content but the asset name and type will be returned.
+
+  Fields:
+    assetNames: A list of the full names of the assets to receive updates. You
+      must specify either or both of asset_names and asset_types. Only asset
+      updates matching specified asset_names and asset_types are exported to
+      the feed. For example: `//compute.googleapis.com/projects/my_project_123
+      /zones/zone1/instances/instance1`. See [Resource Names](https://cloud.go
+      ogle.com/apis/design/resource_names#full_resource_name) for more info.
+    assetTypes: A list of types of the assets to receive updates. You must
+      specify either or both of asset_names and asset_types. Only asset
+      updates matching specified asset_names and asset_types are exported to
+      the feed. For example: "compute.googleapis.com/Disk" See [Introduction
+      to Cloud Asset Inventory](https://cloud.google.com/resource-manager/docs
+      /cloud-asset-inventory/overview) for all supported asset types.
+    contentType: Asset content type. If not specified, no content but the
+      asset name and type will be returned.
+    feedOutputConfig: Required. Feed output configuration defining where the
+      asset updates are published to.
+    name: Required. The format will be projects/{project_number}/feeds
+      /{client-assigned_feed_identifier} or folders/{folder_number}/feeds
+      /{client-assigned_feed_identifier} or
+      organizations/{organization_number}/feeds/{client-
+      assigned_feed_identifier}  The client-assigned feed identifier must be
+      unique within the parent project/folder/organization.
+  """
+
+  class ContentTypeValueValuesEnum(_messages.Enum):
+    r"""Asset content type. If not specified, no content but the asset name
+    and type will be returned.
+
+    Values:
+      CONTENT_TYPE_UNSPECIFIED: Unspecified content type.
+      RESOURCE: Resource metadata.
+      IAM_POLICY: The actual IAM policy set on a resource.
+      ORG_POLICY: The Cloud Organization Policy set on an asset.
+      ACCESS_POLICY: The Cloud Access context mananger Policy set on an asset.
+    """
+    CONTENT_TYPE_UNSPECIFIED = 0
+    RESOURCE = 1
+    IAM_POLICY = 2
+    ORG_POLICY = 3
+    ACCESS_POLICY = 4
+
+  assetNames = _messages.StringField(1, repeated=True)
+  assetTypes = _messages.StringField(2, repeated=True)
+  contentType = _messages.EnumField('ContentTypeValueValuesEnum', 3)
+  feedOutputConfig = _messages.MessageField('FeedOutputConfig', 4)
+  name = _messages.StringField(5)
+
+
+class FeedOutputConfig(_messages.Message):
+  r"""Output configuration for asset feed destination.
+
+  Fields:
+    pubsubDestination: Destination on Cloud Pubsub.
+  """
+
+  pubsubDestination = _messages.MessageField('PubsubDestination', 1)
 
 
 class GcsDestination(_messages.Message):
@@ -903,6 +1073,16 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig(_messages.Messa
   restrictedServices = _messages.StringField(3, repeated=True)
 
 
+class ListFeedsResponse(_messages.Message):
+  r"""A ListFeedsResponse object.
+
+  Fields:
+    feeds: A list of feeds.
+  """
+
+  feeds = _messages.MessageField('Feed', 1, repeated=True)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1027,15 +1207,16 @@ class OutputConfig(_messages.Message):
 
 
 class Policy(_messages.Message):
-  r"""Defines an Identity and Access Management (IAM) policy. It is used to
-  specify access control policies for Cloud Platform resources.   A `Policy`
-  is a collection of `bindings`. A `binding` binds one or more `members` to a
-  single `role`. Members can be user accounts, service accounts, Google
-  groups, and domains (such as G Suite). A `role` is a named list of
-  permissions (defined by IAM or configured by users). A `binding` can
-  optionally specify a `condition`, which is a logic expression that further
-  constrains the role binding based on attributes about the request and/or
-  target resource.  **JSON Example**      {       "bindings": [         {
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources.   A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members` to a single `role`.
+  Members can be user accounts, service accounts, Google groups, and domains
+  (such as G Suite). A `role` is a named list of permissions; each `role` can
+  be an IAM predefined role or a user-created custom role.  Optionally, a
+  `binding` can specify a `condition`, which is a logical expression that
+  allows access to a resource only if the expression evaluates to `true`. A
+  condition can add constraints based on attributes of the request, the
+  resource, or both.  **JSON example:**      {       "bindings": [         {
   "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-project-
@@ -1044,23 +1225,24 @@ class Policy(_messages.Message):
   ["user:eve@example.com"],           "condition": {             "title":
   "expirable access",             "description": "Does not grant access after
   Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ]     }
-  **YAML Example**      bindings:     - members:       - user:mike@example.com
-  - group:admins@example.com       - domain:google.com       - serviceAccount
+  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
+  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
+  bindings:     - members:       - user:mike@example.com       -
+  group:admins@example.com       - domain:google.com       - serviceAccount
   :my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
   grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')  For a description of IAM and its
-  features, see the [IAM developer's
-  guide](https://cloud.google.com/iam/docs).
+  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
+  version: 3  For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally may
-      specify a `condition` that determines when binding is in effect.
-      `bindings` with no members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally, may
+      specify a `condition` that determines how and when the `bindings` are
+      applied. Each of the `bindings` must contain at least one member.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -1068,25 +1250,41 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten. Due to blind-set semantics of an
-      etag-less policy, 'setIamPolicy' will not fail even if either of
-      incoming or stored policy does not meet the version requirements.
-    version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Operations
-      affecting conditional bindings must specify version 3. This can be
-      either setting a conditional policy, modifying a conditional binding, or
-      removing a conditional binding from the stored conditional policy.
-      Operations on non-conditional policies may specify any valid value or
-      leave the field unset.  If no etag is provided in the call to
-      `setIamPolicy`, any version compliance checks on the incoming and/or
-      stored policy is skipped.
+      policy.  **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
+    version: Specifies the format of the policy.  Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected.  Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations:  * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy   that includes conditions  **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost.  If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class PubsubDestination(_messages.Message):
+  r"""A Cloud Pubsub destination.
+
+  Fields:
+    topic: The name of the Cloud Pub/Sub topic to publish to. For example:
+      `projects/PROJECT_ID/topics/TOPIC_ID`.
+  """
+
+  topic = _messages.StringField(1)
 
 
 class Resource(_messages.Message):
@@ -1296,6 +1494,24 @@ class TimeWindow(_messages.Message):
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)
+
+
+class UpdateFeedRequest(_messages.Message):
+  r"""Update asset feed request.
+
+  Fields:
+    feed: Required. The new values of feed details. It must match an existing
+      feed and the field `name` must be in the format of:
+      projects/project_number/feeds/feed_id or
+      folders/folder_number/feeds/feed_id or
+      organizations/organization_number/feeds/feed_id.
+    updateMask: Required. Only updates the `feed` fields indicated by this
+      mask. The field mask must not be empty, and it must not contain fields
+      that are immutable or only set by the server.
+  """
+
+  feed = _messages.MessageField('Feed', 1)
+  updateMask = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

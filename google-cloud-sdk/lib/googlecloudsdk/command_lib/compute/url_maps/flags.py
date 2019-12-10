@@ -43,8 +43,7 @@ class GlobalUrlMapsCompleter(compute_completers.ListCommandCompleter):
   def __init__(self, **kwargs):
     super(GlobalUrlMapsCompleter, self).__init__(
         collection='compute.urlMaps',
-        api_version='alpha',
-        list_command=('alpha compute url-maps list --global --uri'),
+        list_command=('compute url-maps list --global --uri'),
         **kwargs)
 
 
@@ -53,8 +52,7 @@ class RegionalUrlMapsCompleter(compute_completers.ListCommandCompleter):
   def __init__(self, **kwargs):
     super(RegionalUrlMapsCompleter, self).__init__(
         collection='compute.regionUrlMaps',
-        api_version='alpha',
-        list_command='alpha compute url-maps list --filter=region:* --uri',
+        list_command='compute url-maps list --filter=region:* --uri',
         **kwargs)
 
 
@@ -99,7 +97,8 @@ def UrlMapArgumentForTargetProxy(required=True,
           'A reference to a URL map resource that defines the mapping of '
           'URLs to backend services.'),
       detailed_help="""\
-        A reference to a URL map resource that defines the mapping of
-        URLs to backend services. The URL map must exist and cannot be
-        deleted while referenced by a target {0} proxy.
+        A reference to a URL map resource. A URL map defines the mapping of URLs
+        to backend services. Before you can refer to a URL map, you must
+        create the URL map. To delete a URL map that a target proxy is referring
+        to, you must first delete the target {0} proxy.
         """.format(proxy_type))

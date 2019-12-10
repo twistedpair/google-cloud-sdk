@@ -45,8 +45,7 @@ class GlobalTargetHttpsProxiesCompleter(
   def __init__(self, **kwargs):
     super(GlobalTargetHttpsProxiesCompleter, self).__init__(
         collection='compute.targetHttpsProxies',
-        api_version='alpha',
-        list_command='alpha compute target-https-proxies list --global --uri',
+        list_command='compute target-https-proxies list --global --uri',
         **kwargs)
 
 
@@ -56,9 +55,7 @@ class RegionTargetHttpsProxiesCompleter(
   def __init__(self, **kwargs):
     super(RegionTargetHttpsProxiesCompleter, self).__init__(
         collection='compute.regionTargetHttpsProxies',
-        api_version='alpha',
-        list_command=
-        'alpha compute target-https-proxies list --filter=region:* --uri',
+        list_command='compute target-https-proxies list --filter=region:* --uri',
         **kwargs)
 
 
@@ -79,10 +76,10 @@ def AddProxyBind(parser, default):
       action='store_true',
       default=default,
       help="""\
-      This flag only applies when the load_balancing_scheme of the associated
+      This flag applies when the load_balancing_scheme of the associated
       backend service is INTERNAL_SELF_MANAGED. When specified, the envoy binds
-      to the IP address and port specified by the forwarding rule. By default
-      this flag is off.
+      to the forwarding rule's IP address and port. By default, this flag is
+      off.
       """)
 
 

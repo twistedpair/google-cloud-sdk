@@ -35,8 +35,10 @@ class LoggingV2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.billingAccounts_buckets_views = self.BillingAccountsBucketsViewsService(self)
     self.billingAccounts_buckets = self.BillingAccountsBucketsService(self)
     self.billingAccounts_exclusions = self.BillingAccountsExclusionsService(self)
+    self.billingAccounts_locations_buckets_views = self.BillingAccountsLocationsBucketsViewsService(self)
     self.billingAccounts_locations_buckets = self.BillingAccountsLocationsBucketsService(self)
     self.billingAccounts_locations = self.BillingAccountsLocationsService(self)
     self.billingAccounts_logs = self.BillingAccountsLogsService(self)
@@ -45,22 +47,26 @@ class LoggingV2(base_api.BaseApiClient):
     self.entries = self.EntriesService(self)
     self.exclusions = self.ExclusionsService(self)
     self.folders_exclusions = self.FoldersExclusionsService(self)
+    self.folders_locations_buckets_views = self.FoldersLocationsBucketsViewsService(self)
     self.folders_locations_buckets = self.FoldersLocationsBucketsService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders_logs = self.FoldersLogsService(self)
     self.folders_sinks = self.FoldersSinksService(self)
     self.folders = self.FoldersService(self)
+    self.locations_buckets_views = self.LocationsBucketsViewsService(self)
     self.locations_buckets = self.LocationsBucketsService(self)
     self.locations = self.LocationsService(self)
     self.logs = self.LogsService(self)
     self.monitoredResourceDescriptors = self.MonitoredResourceDescriptorsService(self)
     self.organizations_exclusions = self.OrganizationsExclusionsService(self)
+    self.organizations_locations_buckets_views = self.OrganizationsLocationsBucketsViewsService(self)
     self.organizations_locations_buckets = self.OrganizationsLocationsBucketsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations_logs = self.OrganizationsLogsService(self)
     self.organizations_sinks = self.OrganizationsSinksService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_exclusions = self.ProjectsExclusionsService(self)
+    self.projects_locations_buckets_views = self.ProjectsLocationsBucketsViewsService(self)
     self.projects_locations_buckets = self.ProjectsLocationsBucketsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_logs = self.ProjectsLogsService(self)
@@ -69,6 +75,43 @@ class LoggingV2(base_api.BaseApiClient):
     self.projects = self.ProjectsService(self)
     self.sinks = self.SinksService(self)
     self.v2 = self.V2Service(self)
+
+  class BillingAccountsBucketsViewsService(base_api.BaseApiService):
+    """Service class for the billingAccounts_buckets_views resource."""
+
+    _NAME = u'billingAccounts_buckets_views'
+
+    def __init__(self, client):
+      super(LoggingV2.BillingAccountsBucketsViewsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a view.
+
+      Args:
+        request: (LoggingBillingAccountsBucketsViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/billingAccounts/{billingAccountsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method=u'GET',
+        method_id=u'logging.billingAccounts.buckets.views.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'LoggingBillingAccountsBucketsViewsGetRequest',
+        response_type_name=u'LogView',
+        supports_download=False,
+    )
 
   class BillingAccountsBucketsService(base_api.BaseApiService):
     """Service class for the billingAccounts_buckets resource."""
@@ -252,6 +295,124 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class BillingAccountsLocationsBucketsViewsService(base_api.BaseApiService):
+    """Service class for the billingAccounts_locations_buckets_views resource."""
+
+    _NAME = u'billingAccounts_locations_buckets_views'
+
+    def __init__(self, client):
+      super(LoggingV2.BillingAccountsLocationsBucketsViewsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsBucketsViewsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method=u'POST',
+        method_id=u'logging.billingAccounts.locations.buckets.views.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'viewId'],
+        relative_path=u'v2/{+parent}/views',
+        request_field=u'logView',
+        request_type_name=u'LoggingBillingAccountsLocationsBucketsViewsCreateRequest',
+        response_type_name=u'LogView',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a view from a bucket.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsBucketsViewsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method=u'DELETE',
+        method_id=u'logging.billingAccounts.locations.buckets.views.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'LoggingBillingAccountsLocationsBucketsViewsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists views on a bucket..
+
+      Args:
+        request: (LoggingBillingAccountsLocationsBucketsViewsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListViewsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method=u'GET',
+        method_id=u'logging.billingAccounts.locations.buckets.views.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/views',
+        request_field='',
+        request_type_name=u'LoggingBillingAccountsLocationsBucketsViewsListRequest',
+        response_type_name=u'ListViewsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a view. This method replaces the following fields in the existing view with values from the new view: filter.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsBucketsViewsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method=u'PATCH',
+        method_id=u'logging.billingAccounts.locations.buckets.views.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v2/{+name}',
+        request_field=u'logView',
+        request_type_name=u'LoggingBillingAccountsLocationsBucketsViewsPatchRequest',
+        response_type_name=u'LogView',
+        supports_download=False,
+    )
+
   class BillingAccountsLocationsBucketsService(base_api.BaseApiService):
     """Service class for the billingAccounts_locations_buckets resource."""
 
@@ -391,7 +552,7 @@ class LoggingV2(base_api.BaseApiClient):
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v2/{+name}:undelete',
-        request_field='',
+        request_field=u'undeleteBucketRequest',
         request_type_name=u'LoggingBillingAccountsLocationsBucketsUndeleteRequest',
         response_type_name=u'Empty',
         supports_download=False,
@@ -1005,6 +1166,151 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class FoldersLocationsBucketsViewsService(base_api.BaseApiService):
+    """Service class for the folders_locations_buckets_views resource."""
+
+    _NAME = u'folders_locations_buckets_views'
+
+    def __init__(self, client):
+      super(LoggingV2.FoldersLocationsBucketsViewsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views.
+
+      Args:
+        request: (LoggingFoldersLocationsBucketsViewsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method=u'POST',
+        method_id=u'logging.folders.locations.buckets.views.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'viewId'],
+        relative_path=u'v2/{+parent}/views',
+        request_field=u'logView',
+        request_type_name=u'LoggingFoldersLocationsBucketsViewsCreateRequest',
+        response_type_name=u'LogView',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a view from a bucket.
+
+      Args:
+        request: (LoggingFoldersLocationsBucketsViewsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method=u'DELETE',
+        method_id=u'logging.folders.locations.buckets.views.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'LoggingFoldersLocationsBucketsViewsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a view.
+
+      Args:
+        request: (LoggingFoldersLocationsBucketsViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method=u'GET',
+        method_id=u'logging.folders.locations.buckets.views.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'LoggingFoldersLocationsBucketsViewsGetRequest',
+        response_type_name=u'LogView',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists views on a bucket..
+
+      Args:
+        request: (LoggingFoldersLocationsBucketsViewsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListViewsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method=u'GET',
+        method_id=u'logging.folders.locations.buckets.views.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/views',
+        request_field='',
+        request_type_name=u'LoggingFoldersLocationsBucketsViewsListRequest',
+        response_type_name=u'ListViewsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a view. This method replaces the following fields in the existing view with values from the new view: filter.
+
+      Args:
+        request: (LoggingFoldersLocationsBucketsViewsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method=u'PATCH',
+        method_id=u'logging.folders.locations.buckets.views.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v2/{+name}',
+        request_field=u'logView',
+        request_type_name=u'LoggingFoldersLocationsBucketsViewsPatchRequest',
+        response_type_name=u'LogView',
+        supports_download=False,
+    )
+
   class FoldersLocationsBucketsService(base_api.BaseApiService):
     """Service class for the folders_locations_buckets resource."""
 
@@ -1171,7 +1477,7 @@ class LoggingV2(base_api.BaseApiClient):
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v2/{+name}:undelete',
-        request_field='',
+        request_field=u'undeleteBucketRequest',
         request_type_name=u'LoggingFoldersLocationsBucketsUndeleteRequest',
         response_type_name=u'Empty',
         supports_download=False,
@@ -1433,6 +1739,151 @@ class LoggingV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+  class LocationsBucketsViewsService(base_api.BaseApiService):
+    """Service class for the locations_buckets_views resource."""
+
+    _NAME = u'locations_buckets_views'
+
+    def __init__(self, client):
+      super(LoggingV2.LocationsBucketsViewsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views.
+
+      Args:
+        request: (LoggingLocationsBucketsViewsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method=u'POST',
+        method_id=u'logging.locations.buckets.views.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'viewId'],
+        relative_path=u'v2/{+parent}/views',
+        request_field=u'logView',
+        request_type_name=u'LoggingLocationsBucketsViewsCreateRequest',
+        response_type_name=u'LogView',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a view from a bucket.
+
+      Args:
+        request: (LoggingLocationsBucketsViewsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method=u'DELETE',
+        method_id=u'logging.locations.buckets.views.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'LoggingLocationsBucketsViewsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a view.
+
+      Args:
+        request: (LoggingLocationsBucketsViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method=u'GET',
+        method_id=u'logging.locations.buckets.views.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'LoggingLocationsBucketsViewsGetRequest',
+        response_type_name=u'LogView',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists views on a bucket..
+
+      Args:
+        request: (LoggingLocationsBucketsViewsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListViewsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method=u'GET',
+        method_id=u'logging.locations.buckets.views.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/views',
+        request_field='',
+        request_type_name=u'LoggingLocationsBucketsViewsListRequest',
+        response_type_name=u'ListViewsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a view. This method replaces the following fields in the existing view with values from the new view: filter.
+
+      Args:
+        request: (LoggingLocationsBucketsViewsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method=u'PATCH',
+        method_id=u'logging.locations.buckets.views.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v2/{+name}',
+        request_field=u'logView',
+        request_type_name=u'LoggingLocationsBucketsViewsPatchRequest',
+        response_type_name=u'LogView',
+        supports_download=False,
+    )
+
   class LocationsBucketsService(base_api.BaseApiService):
     """Service class for the locations_buckets resource."""
 
@@ -1599,7 +2050,7 @@ class LoggingV2(base_api.BaseApiClient):
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v2/{+name}:undelete',
-        request_field='',
+        request_field=u'undeleteBucketRequest',
         request_type_name=u'LoggingLocationsBucketsUndeleteRequest',
         response_type_name=u'Empty',
         supports_download=False,
@@ -1860,6 +2311,151 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsLocationsBucketsViewsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_buckets_views resource."""
+
+    _NAME = u'organizations_locations_buckets_views'
+
+    def __init__(self, client):
+      super(LoggingV2.OrganizationsLocationsBucketsViewsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views.
+
+      Args:
+        request: (LoggingOrganizationsLocationsBucketsViewsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method=u'POST',
+        method_id=u'logging.organizations.locations.buckets.views.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'viewId'],
+        relative_path=u'v2/{+parent}/views',
+        request_field=u'logView',
+        request_type_name=u'LoggingOrganizationsLocationsBucketsViewsCreateRequest',
+        response_type_name=u'LogView',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a view from a bucket.
+
+      Args:
+        request: (LoggingOrganizationsLocationsBucketsViewsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method=u'DELETE',
+        method_id=u'logging.organizations.locations.buckets.views.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'LoggingOrganizationsLocationsBucketsViewsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a view.
+
+      Args:
+        request: (LoggingOrganizationsLocationsBucketsViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method=u'GET',
+        method_id=u'logging.organizations.locations.buckets.views.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'LoggingOrganizationsLocationsBucketsViewsGetRequest',
+        response_type_name=u'LogView',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists views on a bucket..
+
+      Args:
+        request: (LoggingOrganizationsLocationsBucketsViewsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListViewsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method=u'GET',
+        method_id=u'logging.organizations.locations.buckets.views.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/views',
+        request_field='',
+        request_type_name=u'LoggingOrganizationsLocationsBucketsViewsListRequest',
+        response_type_name=u'ListViewsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a view. This method replaces the following fields in the existing view with values from the new view: filter.
+
+      Args:
+        request: (LoggingOrganizationsLocationsBucketsViewsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method=u'PATCH',
+        method_id=u'logging.organizations.locations.buckets.views.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v2/{+name}',
+        request_field=u'logView',
+        request_type_name=u'LoggingOrganizationsLocationsBucketsViewsPatchRequest',
+        response_type_name=u'LogView',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsBucketsService(base_api.BaseApiService):
     """Service class for the organizations_locations_buckets resource."""
 
@@ -2026,7 +2622,7 @@ class LoggingV2(base_api.BaseApiClient):
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v2/{+name}:undelete',
-        request_field='',
+        request_field=u'undeleteBucketRequest',
         request_type_name=u'LoggingOrganizationsLocationsBucketsUndeleteRequest',
         response_type_name=u'Empty',
         supports_download=False,
@@ -2487,6 +3083,151 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsBucketsViewsService(base_api.BaseApiService):
+    """Service class for the projects_locations_buckets_views resource."""
+
+    _NAME = u'projects_locations_buckets_views'
+
+    def __init__(self, client):
+      super(LoggingV2.ProjectsLocationsBucketsViewsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views.
+
+      Args:
+        request: (LoggingProjectsLocationsBucketsViewsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method=u'POST',
+        method_id=u'logging.projects.locations.buckets.views.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'viewId'],
+        relative_path=u'v2/{+parent}/views',
+        request_field=u'logView',
+        request_type_name=u'LoggingProjectsLocationsBucketsViewsCreateRequest',
+        response_type_name=u'LogView',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a view from a bucket.
+
+      Args:
+        request: (LoggingProjectsLocationsBucketsViewsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method=u'DELETE',
+        method_id=u'logging.projects.locations.buckets.views.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'LoggingProjectsLocationsBucketsViewsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a view.
+
+      Args:
+        request: (LoggingProjectsLocationsBucketsViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method=u'GET',
+        method_id=u'logging.projects.locations.buckets.views.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'LoggingProjectsLocationsBucketsViewsGetRequest',
+        response_type_name=u'LogView',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists views on a bucket..
+
+      Args:
+        request: (LoggingProjectsLocationsBucketsViewsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListViewsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views',
+        http_method=u'GET',
+        method_id=u'logging.projects.locations.buckets.views.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/views',
+        request_field='',
+        request_type_name=u'LoggingProjectsLocationsBucketsViewsListRequest',
+        response_type_name=u'ListViewsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a view. This method replaces the following fields in the existing view with values from the new view: filter.
+
+      Args:
+        request: (LoggingProjectsLocationsBucketsViewsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogView) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}',
+        http_method=u'PATCH',
+        method_id=u'logging.projects.locations.buckets.views.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v2/{+name}',
+        request_field=u'logView',
+        request_type_name=u'LoggingProjectsLocationsBucketsViewsPatchRequest',
+        response_type_name=u'LogView',
+        supports_download=False,
+    )
+
   class ProjectsLocationsBucketsService(base_api.BaseApiService):
     """Service class for the projects_locations_buckets resource."""
 
@@ -2653,7 +3394,7 @@ class LoggingV2(base_api.BaseApiClient):
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v2/{+name}:undelete',
-        request_field='',
+        request_field=u'undeleteBucketRequest',
         request_type_name=u'LoggingProjectsLocationsBucketsUndeleteRequest',
         response_type_name=u'Empty',
         supports_download=False,

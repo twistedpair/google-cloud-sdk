@@ -62,14 +62,16 @@ def SubnetworkResolver():
 
 def AddUpdateArgs(parser, include_alpha_logging,
                   include_l7_internal_load_balancing,
-                  include_private_ipv6_access):
+                  include_private_ipv6_access_alpha,
+                  include_private_ipv6_access_beta):
   """Add args to the parser for subnet update.
 
   Args:
     parser: The argparse parser.
     include_alpha_logging: Include alpha-specific logging args.
     include_l7_internal_load_balancing: Include Internal HTTP(S) LB args.
-    include_private_ipv6_access: Include Private Ipv6 Access args.
+    include_private_ipv6_access_alpha: Include alpha Private Ipv6 Access args.
+    include_private_ipv6_access_beta: Include beta Private Ipv6 Access args.
   """
   messages = apis.GetMessagesModule('compute',
                                     compute_api.COMPUTE_GA_API_VERSION)
@@ -190,14 +192,16 @@ def AddUpdateArgs(parser, include_alpha_logging,
         only applicable when the [--role=ACTIVE] flag is being used.
         """)
 
-  if include_private_ipv6_access:
+  if include_private_ipv6_access_alpha:
+    messages = apis.GetMessagesModule('compute',
+                                      compute_api.COMPUTE_ALPHA_API_VERSION)
     updated_field.add_argument(
         '--enable-private-ipv6-access',
         action=arg_parsers.StoreTrueFalseAction,
         help=('Enable/disable private IPv6 access for the subnet.'))
     update_private_ipv6_access_field = updated_field.add_argument_group()
-    GetPrivateIpv6GoogleAccessTypeFlagMapper(messages).choice_arg.AddToParser(
-        update_private_ipv6_access_field)
+    GetPrivateIpv6GoogleAccessTypeFlagMapperAlpha(
+        messages).choice_arg.AddToParser(update_private_ipv6_access_field)
     update_private_ipv6_access_field.add_argument(
         '--private-ipv6-google-access-service-accounts',
         default=None,
@@ -215,9 +219,15 @@ def AddUpdateArgs(parser, include_alpha_logging,
 
         $ {command} MY-SUBNET --private-ipv6-google-access-service-accounts ''
         """)
+  elif include_private_ipv6_access_beta:
+    messages = apis.GetMessagesModule('compute',
+                                      compute_api.COMPUTE_BETA_API_VERSION)
+    update_private_ipv6_access_field = updated_field.add_argument_group()
+    GetPrivateIpv6GoogleAccessTypeFlagMapperBeta(
+        messages).choice_arg.AddToParser(update_private_ipv6_access_field)
 
 
-def GetPrivateIpv6GoogleAccessTypeFlagMapper(messages):
+def GetPrivateIpv6GoogleAccessTypeFlagMapperAlpha(messages):
   return arg_utils.ChoiceEnumMapper(
       '--private-ipv6-google-access-type',
       messages.Subnetwork.PrivateIpv6GoogleAccessValueValuesEnum,
@@ -230,6 +240,22 @@ def GetPrivateIpv6GoogleAccessTypeFlagMapper(messages):
               'enable-outbound-vm-access',
           'ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS':
               'enable-outbound-vm-access-for-service-accounts'
+      },
+      help_str='The private IPv6 google access type for the VMs in this subnet.'
+  )
+
+
+def GetPrivateIpv6GoogleAccessTypeFlagMapperBeta(messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--private-ipv6-google-access-type',
+      messages.Subnetwork.PrivateIpv6GoogleAccessValueValuesEnum,
+      custom_mappings={
+          'DISABLE_GOOGLE_ACCESS':
+              'disable',
+          'ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE':
+              'enable-bidirectional-access',
+          'ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE':
+              'enable-outbound-vm-access'
       },
       help_str='The private IPv6 google access type for the VMs in this subnet.'
   )

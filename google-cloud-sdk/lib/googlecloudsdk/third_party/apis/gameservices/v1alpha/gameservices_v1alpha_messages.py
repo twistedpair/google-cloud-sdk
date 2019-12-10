@@ -206,9 +206,26 @@ class Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: The G Suite domain (primary) that represents all
-      the    users of that domain. For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding.  *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus    unique identifier) representing a service account that has been
+      recently    deleted. For example,    `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique    identifier) representing a Google group
+      that has been recently    deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If    the group is
+      recovered, this value reverts to `group:{emailid}` and the    recovered
+      group retains the role in the binding.   * `domain:{domain}`: The G
+      Suite domain (primary) that represents all the    users of that domain.
+      For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -461,6 +478,18 @@ class DataAccessOptions(_messages.Message):
   logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
+class DeployedFleetDetails(_messages.Message):
+  r"""A DeployedFleetDetails object.
+
+  Fields:
+    autoscaler: Information about the agones autoscaler for that fleet.
+    fleet: Information about the agones fleet.
+  """
+
+  autoscaler = _messages.MessageField('FleetAutoscaler', 1)
+  fleet = _messages.MessageField('Fleet', 2)
+
+
 class DeployedState(_messages.Message):
   r"""Encapsulates the expected deployed state.
 
@@ -519,7 +548,7 @@ class FetchDeploymentStateResponse(_messages.Message):
     unavailable: List of locations that could not be reached.
   """
 
-  details = _messages.MessageField('Fleet', 1, repeated=True)
+  details = _messages.MessageField('DeployedFleetDetails', 1, repeated=True)
   unavailable = _messages.StringField(2, repeated=True)
 
 
@@ -530,25 +559,19 @@ class Fleet(_messages.Message):
     agonesSpec: The Agones fleet spec. This is sent because it is possible
       that we may no longer have the corresponding game server config in our
       systems.
-    allocatedCount: The number of allocated servers. These are servers
-      allocated to game sessions.
-    availableCount: The number of available servers. The are no players
-      connected to this servers.
     cluster: The cluster name.
-    fleetAutoscaler: Detailed information about the autoscalers.
-    gameServerConfigName: The name of the game server config object whose
-      fleet spec is used to create the fleet. This config may no longer exist
-      in the system.
     name: The name of the Agones game server fleet.
+    specSource: The source spec that is used to create the fleet. The game
+      server config and fleet config may no longer exist in the system.
+    status: The current status of the fleet. Includes count of game servers in
+      various states.
   """
 
   agonesSpec = _messages.StringField(1)
-  allocatedCount = _messages.IntegerField(2)
-  availableCount = _messages.IntegerField(3)
-  cluster = _messages.StringField(4)
-  fleetAutoscaler = _messages.MessageField('FleetAutoscaler', 5)
-  gameServerConfigName = _messages.StringField(6)
-  name = _messages.StringField(7)
+  cluster = _messages.StringField(2)
+  name = _messages.StringField(3)
+  specSource = _messages.MessageField('SpecSource', 4)
+  status = _messages.MessageField('FleetStatus', 5)
 
 
 class FleetAutoscaler(_messages.Message):
@@ -559,13 +582,13 @@ class FleetAutoscaler(_messages.Message):
     fleetAutoscalerSpec: The autoscaler spec. This is sent because it is
       possible that we may no longer have the corresponding game server config
       in our systems.
-    scalingConfigName: The name of the scaling config (within the game server
-      config) that is used to create the autoscalar.
+    specSource: The source spec that is used to create the autoscaler. The
+      game server config and scaling config may no longer exist in the system.
   """
 
   autoscalerName = _messages.StringField(1)
   fleetAutoscalerSpec = _messages.StringField(2)
-  scalingConfigName = _messages.StringField(3)
+  specSource = _messages.MessageField('SpecSource', 3)
 
 
 class FleetAutoscalerSettings(_messages.Message):
@@ -596,9 +619,11 @@ class FleetConfig(_messages.Message):
     fleetSpec: The fleet spec, which is sent to Agones to configure fleet.
       Example spec can be found :
       `https://agones.dev/site/docs/reference/fleet/`.
+    name: The name of the FleetConfig.
   """
 
   fleetSpec = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class FleetDetails(_messages.Message):
@@ -616,6 +641,26 @@ class FleetDetails(_messages.Message):
   fleetName = _messages.StringField(2)
   gameServerClusterName = _messages.StringField(3)
   gameServerConfigName = _messages.StringField(4)
+
+
+class FleetStatus(_messages.Message):
+  r"""FleetStatus has details about the fleets like how many are running, how
+  many allocated and so on.
+
+  Fields:
+    allocatedCount: The number of allocated servers. These are servers
+      allocated to game sessions.
+    availableCount: The number of available servers. The are no players
+      connected to this servers.
+    replicaCount: The total number of current GameServer replicas.
+    reservedCount: The number of reserved servers. Reserved instances won't be
+      deleted on scale down, but won't cause an autoscaler to scale up.
+  """
+
+  allocatedCount = _messages.IntegerField(1)
+  availableCount = _messages.IntegerField(2)
+  replicaCount = _messages.IntegerField(3)
+  reservedCount = _messages.IntegerField(4)
 
 
 class GameServerCluster(_messages.Message):
@@ -2127,15 +2172,16 @@ class OperationMetadata(_messages.Message):
 
 
 class Policy(_messages.Message):
-  r"""Defines an Identity and Access Management (IAM) policy. It is used to
-  specify access control policies for Cloud Platform resources.   A `Policy`
-  is a collection of `bindings`. A `binding` binds one or more `members` to a
-  single `role`. Members can be user accounts, service accounts, Google
-  groups, and domains (such as G Suite). A `role` is a named list of
-  permissions (defined by IAM or configured by users). A `binding` can
-  optionally specify a `condition`, which is a logic expression that further
-  constrains the role binding based on attributes about the request and/or
-  target resource.  **JSON Example**      {       "bindings": [         {
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources.   A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members` to a single `role`.
+  Members can be user accounts, service accounts, Google groups, and domains
+  (such as G Suite). A `role` is a named list of permissions; each `role` can
+  be an IAM predefined role or a user-created custom role.  Optionally, a
+  `binding` can specify a `condition`, which is a logical expression that
+  allows access to a resource only if the expression evaluates to `true`. A
+  condition can add constraints based on attributes of the request, the
+  resource, or both.  **JSON example:**      {       "bindings": [         {
   "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-project-
@@ -2144,23 +2190,24 @@ class Policy(_messages.Message):
   ["user:eve@example.com"],           "condition": {             "title":
   "expirable access",             "description": "Does not grant access after
   Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ]     }
-  **YAML Example**      bindings:     - members:       - user:mike@example.com
-  - group:admins@example.com       - domain:google.com       - serviceAccount
+  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
+  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
+  bindings:     - members:       - user:mike@example.com       -
+  group:admins@example.com       - domain:google.com       - serviceAccount
   :my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
   grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')  For a description of IAM and its
-  features, see the [IAM developer's
-  guide](https://cloud.google.com/iam/docs).
+  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
+  version: 3  For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally may
-      specify a `condition` that determines when binding is in effect.
-      `bindings` with no members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally, may
+      specify a `condition` that determines how and when the `bindings` are
+      applied. Each of the `bindings` must contain at least one member.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -2168,11 +2215,10 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten. Due to blind-set semantics of an
-      etag-less policy, 'setIamPolicy' will not fail even if the incoming
-      policy version does not meet the requirements for modifying the stored
-      policy.
+      policy.  **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
     iamOwned: A boolean attribute.
     rules: If more than one rule is specified, the rules are applied in the
       following manner: - All matching LOG rules are always applied. - If any
@@ -2181,15 +2227,20 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
       Logging will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Operations
-      affecting conditional bindings must specify version 3. This can be
-      either setting a conditional policy, modifying a conditional binding, or
-      removing a binding (conditional or unconditional) from the stored
-      conditional policy. Operations on non-conditional policies may specify
-      any valid value or leave the field unset.  If no etag is provided in the
-      call to `setIamPolicy`, version compliance checks against the stored
-      policy is skipped.
+    version: Specifies the format of the policy.  Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected.  Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations:  * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy   that includes conditions  **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost.  If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -2207,10 +2258,12 @@ class PreviewCreateGameServerClusterResponse(_messages.Message):
   Fields:
     deployedState: The deployed state.
     etag: The ETag of the game server cluster.
+    targetState: The target state.
   """
 
   deployedState = _messages.MessageField('DeployedState', 1)
   etag = _messages.StringField(2)
+  targetState = _messages.MessageField('TargetState', 3)
 
 
 class PreviewDeleteGameServerClusterResponse(_messages.Message):
@@ -2220,10 +2273,12 @@ class PreviewDeleteGameServerClusterResponse(_messages.Message):
   Fields:
     deployedState: The deployed state.
     etag: The ETag of the game server cluster.
+    targetState: The target state.
   """
 
   deployedState = _messages.MessageField('DeployedState', 1)
   etag = _messages.StringField(2)
+  targetState = _messages.MessageField('TargetState', 3)
 
 
 class PreviewGameServerDeploymentRolloutResponse(_messages.Message):
@@ -2233,12 +2288,14 @@ class PreviewGameServerDeploymentRolloutResponse(_messages.Message):
   Fields:
     deployedState: The deployed state.
     etag: ETag of the game server deployment.
+    targetState: The target state.
     unavailable: Locations that could not be reached on this request.
   """
 
   deployedState = _messages.MessageField('DeployedState', 1)
   etag = _messages.StringField(2)
-  unavailable = _messages.StringField(3, repeated=True)
+  targetState = _messages.MessageField('TargetState', 3)
+  unavailable = _messages.StringField(4, repeated=True)
 
 
 class PreviewRealmUpdateResponse(_messages.Message):
@@ -2247,10 +2304,12 @@ class PreviewRealmUpdateResponse(_messages.Message):
   Fields:
     deployedState: The deployment state.
     etag: ETag of the realm.
+    targetState: The target state.
   """
 
   deployedState = _messages.MessageField('DeployedState', 1)
   etag = _messages.StringField(2)
+  targetState = _messages.MessageField('TargetState', 3)
 
 
 class PreviewUpdateGameServerClusterResponse(_messages.Message):
@@ -2260,10 +2319,12 @@ class PreviewUpdateGameServerClusterResponse(_messages.Message):
   Fields:
     deployedState: The deployed state.
     etag: The ETag of the game server cluster.
+    targetState: The target state.
   """
 
   deployedState = _messages.MessageField('DeployedState', 1)
   etag = _messages.StringField(2)
+  targetState = _messages.MessageField('TargetState', 3)
 
 
 class Realm(_messages.Message):
@@ -2530,6 +2591,21 @@ class SetRolloutTargetRequest(_messages.Message):
   clusterPercentageSelector = _messages.MessageField('ClusterPercentageSelector', 1, repeated=True)
 
 
+class SpecSource(_messages.Message):
+  r"""Encapsulates fleet spec and autoscaler spec sources.
+
+  Fields:
+    gameServerConfigName: The game server config resource. It is of the form
+      `projects/{project_id}/locations/{location}/gameServerDeployments/{deplo
+      yment_id}/configs/{config_id}`
+    name: The name of the fleet config or scaling config that is used to
+      derive the fleet or fleet autoscaler spec.
+  """
+
+  gameServerConfigName = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -2653,6 +2729,72 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TargetDetails(_messages.Message):
+  r"""Details about the Agones resources.
+
+  Fields:
+    fleetDetails: A TargetFleetDetails attribute.
+    gameServerClusterName: The game server cluster name. It is of the form
+      `projects/{project_id}/locations/{location}/realms/{realm-
+      id}/gameServerClusters/{cluster_id}`
+    gameServerDeploymentName: The game server deployment name. It is of the
+      form  `projects/{project_id}/locations/{location}/gameServerDeployments/
+      {deployment_id}`
+  """
+
+  fleetDetails = _messages.MessageField('TargetFleetDetails', 1, repeated=True)
+  gameServerClusterName = _messages.StringField(2)
+  gameServerDeploymentName = _messages.StringField(3)
+
+
+class TargetFleet(_messages.Message):
+  r"""A TargetFleet object.
+
+  Fields:
+    name: The name of the Agones game server fleet.
+    specSource: Encapsulates the source of the fleet spec. The fleet spec
+      source.
+  """
+
+  name = _messages.StringField(1)
+  specSource = _messages.MessageField('SpecSource', 2)
+
+
+class TargetFleetAutoscaler(_messages.Message):
+  r"""A TargetFleetAutoscaler object.
+
+  Fields:
+    name: The name of the Agones autoscaler.
+    specSource: Encapsulates the source of the fleet spec. Details about the
+      agones autoscaler spec.
+  """
+
+  name = _messages.StringField(1)
+  specSource = _messages.MessageField('SpecSource', 2)
+
+
+class TargetFleetDetails(_messages.Message):
+  r"""A TargetFleetDetails object.
+
+  Fields:
+    autoscaler: A TargetFleetAutoscaler attribute.
+    fleet: A TargetFleet attribute.
+  """
+
+  autoscaler = _messages.MessageField('TargetFleetAutoscaler', 1)
+  fleet = _messages.MessageField('TargetFleet', 2)
+
+
+class TargetState(_messages.Message):
+  r"""Encapsulates the Target state.
+
+  Fields:
+    details: Details about fleets.
+  """
+
+  details = _messages.MessageField('TargetDetails', 1, repeated=True)
 
 
 class TestIamPermissionsRequest(_messages.Message):

@@ -23,7 +23,7 @@ def CommonFlags(parser):
   parser.add_argument(
       '--dockerfile',
       default='Dockerfile',
-      help='The Dockerfile for the service image.')
+      help='Dockerfile for the service image.')
 
   parser.add_argument(
       '--service-name', required=False, help='Name of the service.')

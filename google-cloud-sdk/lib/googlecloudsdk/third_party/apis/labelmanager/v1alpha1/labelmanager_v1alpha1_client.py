@@ -35,10 +35,111 @@ class LabelmanagerV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.labelBindings = self.LabelBindingsService(self)
     self.labelKeys = self.LabelKeysService(self)
-    self.labelValues_labelBindings = self.LabelValuesLabelBindingsService(self)
     self.labelValues = self.LabelValuesService(self)
     self.operations = self.OperationsService(self)
+
+  class LabelBindingsService(base_api.BaseApiService):
+    """Service class for the labelBindings resource."""
+
+    _NAME = u'labelBindings'
+
+    def __init__(self, client):
+      super(LabelmanagerV1alpha1.LabelBindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a LabelBinding between a LabelValue and a cloud resource.
+(currently Project, Folder, or Organization).
+
+      Args:
+        request: (LabelBinding) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LabelBinding) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'labelmanager.labelBindings.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1alpha1/labelBindings',
+        request_field='<request>',
+        request_type_name=u'LabelBinding',
+        response_type_name=u'LabelBinding',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a LabelBinding.
+
+      Args:
+        request: (LabelmanagerLabelBindingsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/labelBindings/{labelBindingsId}',
+        http_method=u'DELETE',
+        method_id=u'labelmanager.labelBindings.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'LabelmanagerLabelBindingsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the LabelBindings for the given LabelValue or cloud resource.
+(currently Project, Folder, or Organization) determined by the given
+filter.
+
+List LabelBindings for LabelValue with id 123 will map to:
+/v1alpha1/labelBindings?filter=labelValue:labelValues/123
+List LabelBindings for Project resource with id 456 will map to:
+/v1alpha1/labelBindings?filter=resource://cloudresourcemanager.googleapis.com/projects/456
+because the full resource name is required.
+
+For additional details see:
+https://cloud.google.com/apis/design/resource_names#full_resource_name.
+
+      Args:
+        request: (LabelmanagerLabelBindingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLabelBindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'labelmanager.labelBindings.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha1/labelBindings',
+        request_field='',
+        request_type_name=u'LabelmanagerLabelBindingsListRequest',
+        response_type_name=u'ListLabelBindingsResponse',
+        supports_download=False,
+    )
 
   class LabelKeysService(base_api.BaseApiService):
     """Service class for the labelKeys resource."""
@@ -310,104 +411,6 @@ In order to succeed, the LabelKey's parent must be in the active state.
         request_field=u'undeleteLabelKeyRequest',
         request_type_name=u'LabelmanagerLabelKeysUndeleteRequest',
         response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-  class LabelValuesLabelBindingsService(base_api.BaseApiService):
-    """Service class for the labelValues_labelBindings resource."""
-
-    _NAME = u'labelValues_labelBindings'
-
-    def __init__(self, client):
-      super(LabelmanagerV1alpha1.LabelValuesLabelBindingsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Binds a LabelValue to a cloud resource (project, folder, org).
-
-      Args:
-        request: (LabelmanagerLabelValuesLabelBindingsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (LabelBinding) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'labelmanager.labelValues.labelBindings.create',
-        ordered_params=[u'labelValuesId'],
-        path_params=[u'labelValuesId'],
-        query_params=[],
-        relative_path=u'v1alpha1/labelValues/{labelValuesId}/labelBindings',
-        request_field=u'createLabelBindingRequest',
-        request_type_name=u'LabelmanagerLabelValuesLabelBindingsCreateRequest',
-        response_type_name=u'LabelBinding',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a binding between a LabelValue and a cloud resource.
-(project, folder, org).
-
-      Args:
-        request: (LabelmanagerLabelValuesLabelBindingsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'labelmanager.labelValues.labelBindings.delete',
-        ordered_params=[u'labelValuesId', u'labelBindingsId'],
-        path_params=[u'labelBindingsId', u'labelValuesId'],
-        query_params=[u'labelBinding_labelValue', u'labelBinding_resource'],
-        relative_path=u'v1alpha1/labelValues/{labelValuesId}/labelBindings/{labelBindingsId}',
-        request_field='',
-        request_type_name=u'LabelmanagerLabelValuesLabelBindingsDeleteRequest',
-        response_type_name=u'Empty',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists the LabelBindings for the given LabelValue or.
-cloud resource (project, folder, org).
-
-Listing LabelBindings for LabelValue with id 123 will map to:
-/v1alpha1/labelValues/123/labelBindings
-List LabelBindings for project resource with id 456 will map to:
-/v1alpha1/labelValues/-/labelBindings?resource=//cloudresourcemanager.googleapis.com/projects/456
-
-For additional details see:
-https://cloud.google.com/apis/design/design_patterns#list_sub-collections
-
-      Args:
-        request: (LabelmanagerLabelValuesLabelBindingsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListLabelBindingsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'labelmanager.labelValues.labelBindings.list',
-        ordered_params=[u'labelValuesId'],
-        path_params=[u'labelValuesId'],
-        query_params=[u'label', u'pageSize', u'pageToken', u'resource'],
-        relative_path=u'v1alpha1/labelValues/{labelValuesId}/labelBindings',
-        request_field='',
-        request_type_name=u'LabelmanagerLabelValuesLabelBindingsListRequest',
-        response_type_name=u'ListLabelBindingsResponse',
         supports_download=False,
     )
 

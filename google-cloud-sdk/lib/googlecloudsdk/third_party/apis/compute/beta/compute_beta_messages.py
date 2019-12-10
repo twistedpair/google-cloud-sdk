@@ -7013,6 +7013,18 @@ class ComputeGlobalOperationsListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeGlobalOperationsWaitRequest(_messages.Message):
+  r"""A ComputeGlobalOperationsWaitRequest object.
+
+  Fields:
+    operation: Name of the Operations resource to return.
+    project: Project ID for this request.
+  """
+
+  operation = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
 class ComputeHealthChecksAggregatedListRequest(_messages.Message):
   r"""A ComputeHealthChecksAggregatedListRequest object.
 
@@ -10214,12 +10226,14 @@ class ComputeInterconnectAttachmentsInsertRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: If true, the request will not be committed.
   """
 
   interconnectAttachment = _messages.MessageField('InterconnectAttachment', 1)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class ComputeInterconnectAttachmentsListRequest(_messages.Message):
@@ -11873,6 +11887,33 @@ class ComputeNodeGroupsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputeNodeGroupsPatchRequest(_messages.Message):
+  r"""A ComputeNodeGroupsPatchRequest object.
+
+  Fields:
+    nodeGroup: Name of the NodeGroup resource to update.
+    nodeGroupResource: A NodeGroup resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  nodeGroup = _messages.StringField(1, required=True)
+  nodeGroupResource = _messages.MessageField('NodeGroup', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeNodeGroupsSetIamPolicyRequest(_messages.Message):
@@ -14793,6 +14834,20 @@ class ComputeRegionOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionOperationsWaitRequest(_messages.Message):
+  r"""A ComputeRegionOperationsWaitRequest object.
+
+  Fields:
+    operation: Name of the Operations resource to return.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  operation = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
 
 
 class ComputeRegionSslCertificatesDeleteRequest(_messages.Message):
@@ -19763,6 +19818,20 @@ class ComputeZoneOperationsListRequest(_messages.Message):
   zone = _messages.StringField(6, required=True)
 
 
+class ComputeZoneOperationsWaitRequest(_messages.Message):
+  r"""A ComputeZoneOperationsWaitRequest object.
+
+  Fields:
+    operation: Name of the Operations resource to return.
+    project: Project ID for this request.
+    zone: Name of the zone for this request.
+  """
+
+  operation = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeZonesGetRequest(_messages.Message):
   r"""A ComputeZonesGetRequest object.
 
@@ -22121,16 +22190,16 @@ class ForwardingRule(_messages.Message):
   beta.regionForwardingRules ==) (== resource_for v1.regionForwardingRules ==)
 
   Enums:
-    IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
-      Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP
-      Load Balancing, the load balancing scheme is INTERNAL, and one of TCP or
-      UDP are valid. For Traffic Director, the load balancing scheme is
-      INTERNAL_SELF_MANAGED, and only TCPis valid. For Internal HTTP(S) Load
-      Balancing, the load balancing scheme is INTERNAL_MANAGED, and only TCP
-      is valid. For HTTP(S), SSL Proxy, and TCP Proxy Load Balancing, the load
-      balancing scheme is EXTERNAL and only TCP is valid. For Network TCP/UDP
-      Load Balancing, the load balancing scheme is EXTERNAL, and one of TCP or
-      UDP is valid.
+    IPProtocolValueValuesEnum: The IP protocol to which this rule applies. For
+      protocol forwarding, valid options are TCP, UDP, ESP, AH, SCTP or ICMP.
+      For Internal TCP/UDP Load Balancing, the load balancing scheme is
+      INTERNAL, and one of TCP or UDP are valid. For Traffic Director, the
+      load balancing scheme is INTERNAL_SELF_MANAGED, and only TCPis valid.
+      For Internal HTTP(S) Load Balancing, the load balancing scheme is
+      INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy, and TCP
+      Proxy Load Balancing, the load balancing scheme is EXTERNAL and only TCP
+      is valid. For Network TCP/UDP Load Balancing, the load balancing scheme
+      is EXTERNAL, and one of TCP or UDP is valid.
     IpVersionValueValuesEnum: The IP Version that will be used by this
       forwarding rule. Valid options are IPV4 or IPV6. This can only be
       specified for an external global forwarding rule.
@@ -22171,16 +22240,16 @@ class ForwardingRule(_messages.Message):
       use. For detailed information, refer to [IP address specifications
       ](/load-balancing/docs/forwarding-rule-
       concepts#ip_address_specifications).
-    IPProtocol: The IP protocol to which this rule applies. Valid options are
-      TCP, UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP Load Balancing,
-      the load balancing scheme is INTERNAL, and one of TCP or UDP are valid.
-      For Traffic Director, the load balancing scheme is
-      INTERNAL_SELF_MANAGED, and only TCPis valid. For Internal HTTP(S) Load
-      Balancing, the load balancing scheme is INTERNAL_MANAGED, and only TCP
-      is valid. For HTTP(S), SSL Proxy, and TCP Proxy Load Balancing, the load
-      balancing scheme is EXTERNAL and only TCP is valid. For Network TCP/UDP
-      Load Balancing, the load balancing scheme is EXTERNAL, and one of TCP or
-      UDP is valid.
+    IPProtocol: The IP protocol to which this rule applies. For protocol
+      forwarding, valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For
+      Internal TCP/UDP Load Balancing, the load balancing scheme is INTERNAL,
+      and one of TCP or UDP are valid. For Traffic Director, the load
+      balancing scheme is INTERNAL_SELF_MANAGED, and only TCPis valid. For
+      Internal HTTP(S) Load Balancing, the load balancing scheme is
+      INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy, and TCP
+      Proxy Load Balancing, the load balancing scheme is EXTERNAL and only TCP
+      is valid. For Network TCP/UDP Load Balancing, the load balancing scheme
+      is EXTERNAL, and one of TCP or UDP is valid.
     allPorts: This field is used along with the backend_service field for
       internal load balancing or with the target field for internal
       TargetInstance. This field cannot be used with port or portRange fields.
@@ -22326,15 +22395,16 @@ class ForwardingRule(_messages.Message):
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
-    r"""The IP protocol to which this rule applies. Valid options are TCP,
-    UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP Load Balancing, the load
-    balancing scheme is INTERNAL, and one of TCP or UDP are valid. For Traffic
-    Director, the load balancing scheme is INTERNAL_SELF_MANAGED, and only
-    TCPis valid. For Internal HTTP(S) Load Balancing, the load balancing
-    scheme is INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy,
-    and TCP Proxy Load Balancing, the load balancing scheme is EXTERNAL and
-    only TCP is valid. For Network TCP/UDP Load Balancing, the load balancing
-    scheme is EXTERNAL, and one of TCP or UDP is valid.
+    r"""The IP protocol to which this rule applies. For protocol forwarding,
+    valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP
+    Load Balancing, the load balancing scheme is INTERNAL, and one of TCP or
+    UDP are valid. For Traffic Director, the load balancing scheme is
+    INTERNAL_SELF_MANAGED, and only TCPis valid. For Internal HTTP(S) Load
+    Balancing, the load balancing scheme is INTERNAL_MANAGED, and only TCP is
+    valid. For HTTP(S), SSL Proxy, and TCP Proxy Load Balancing, the load
+    balancing scheme is EXTERNAL and only TCP is valid. For Network TCP/UDP
+    Load Balancing, the load balancing scheme is EXTERNAL, and one of TCP or
+    UDP is valid.
 
     Values:
       AH: <no description>
@@ -27576,6 +27646,8 @@ class InstanceProperties(_messages.Message):
       interface.
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
+    resourcePolicies: Resource policies (names, not ULRs) applied to instances
+      created from this templae.
     scheduling: Specifies the scheduling options for the instances that are
       created from this template.
     serviceAccounts: A list of service accounts with specified scopes. Access
@@ -27626,11 +27698,12 @@ class InstanceProperties(_messages.Message):
   minCpuPlatform = _messages.StringField(9)
   networkInterfaces = _messages.MessageField('NetworkInterface', 10, repeated=True)
   reservationAffinity = _messages.MessageField('ReservationAffinity', 11)
-  scheduling = _messages.MessageField('Scheduling', 12)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 13, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 14)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 15)
-  tags = _messages.MessageField('Tags', 16)
+  resourcePolicies = _messages.StringField(12, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 13)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 14, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 15)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 16)
+  tags = _messages.MessageField('Tags', 17)
 
 
 class InstanceReference(_messages.Message):
@@ -31210,9 +31283,9 @@ class Network(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?. The first character must
-      be a lowercase letter, and all following characters (except for the last
-      character) must be a dash, lowercase letter, or digit. The last
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character
+      must be a lowercase letter, and all following characters (except for the
+      last character) must be a dash, lowercase letter, or digit. The last
       character must be a lowercase letter or digit.
     peerings: [Output Only] A list of network peerings for the resource.
     routingConfig: The network-level routing configuration for this network.
@@ -32261,20 +32334,26 @@ class NodeGroup(_messages.Message):
   separated from instances in other projects, or to group your instances
   together on the same host hardware. For more information, read Sole-tenant
   nodes. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups
-  ==) NextID: 16
+  ==)
 
   Enums:
+    MaintenancePolicyValueValuesEnum: Specifies how to handle instances when a
+      node in the group undergoes maintenance.
     StatusValueValuesEnum:
 
   Fields:
+    autoscalingPolicy: Specifies how autoscaling should behave.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    fingerprint: A byte attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] The type of the resource. Always compute#nodeGroup for
       node group.
+    maintenancePolicy: Specifies how to handle instances when a node in the
+      group undergoes maintenance.
     name: The name of the resource, provided by the client when initially
       creating the resource. The resource name must be 1-63 characters long,
       and comply with RFC1035. Specifically, the name must be 1-63 characters
@@ -32291,6 +32370,21 @@ class NodeGroup(_messages.Message):
       such as us-central1-a.
   """
 
+  class MaintenancePolicyValueValuesEnum(_messages.Enum):
+    r"""Specifies how to handle instances when a node in the group undergoes
+    maintenance.
+
+    Values:
+      DEFAULT: <no description>
+      MAINTENANCE_POLICY_UNSPECIFIED: <no description>
+      MIGRATE_WITHIN_NODE_GROUP: <no description>
+      RESTART_IN_PLACE: <no description>
+    """
+    DEFAULT = 0
+    MAINTENANCE_POLICY_UNSPECIFIED = 1
+    MIGRATE_WITHIN_NODE_GROUP = 2
+    RESTART_IN_PLACE = 3
+
   class StatusValueValuesEnum(_messages.Enum):
     r"""StatusValueValuesEnum enum type.
 
@@ -32305,16 +32399,19 @@ class NodeGroup(_messages.Message):
     INVALID = 2
     READY = 3
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#nodeGroup')
-  name = _messages.StringField(5)
-  nodeTemplate = _messages.StringField(6)
-  selfLink = _messages.StringField(7)
-  size = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  zone = _messages.StringField(10)
+  autoscalingPolicy = _messages.MessageField('NodeGroupAutoscalingPolicy', 1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  fingerprint = _messages.BytesField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#nodeGroup')
+  maintenancePolicy = _messages.EnumField('MaintenancePolicyValueValuesEnum', 7)
+  name = _messages.StringField(8)
+  nodeTemplate = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  size = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  zone = _messages.StringField(13)
 
 
 class NodeGroupAggregatedList(_messages.Message):
@@ -32468,6 +32565,37 @@ class NodeGroupAggregatedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class NodeGroupAutoscalingPolicy(_messages.Message):
+  r"""A NodeGroupAutoscalingPolicy object.
+
+  Enums:
+    ModeValueValuesEnum: The autoscaling mode.
+
+  Fields:
+    maxNodes: The maximum number of nodes that the group should have.
+    minNodes: The minimum number of nodes that the group should have.
+    mode: The autoscaling mode.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""The autoscaling mode.
+
+    Values:
+      MODE_UNSPECIFIED: <no description>
+      OFF: <no description>
+      ON: <no description>
+      ONLY_SCALE_OUT: <no description>
+    """
+    MODE_UNSPECIFIED = 0
+    OFF = 1
+    ON = 2
+    ONLY_SCALE_OUT = 3
+
+  maxNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minNodes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  mode = _messages.EnumField('ModeValueValuesEnum', 3)
+
+
 class NodeGroupList(_messages.Message):
   r"""Contains a list of nodeGroups.
 
@@ -32604,6 +32732,7 @@ class NodeGroupNode(_messages.Message):
     name: The name of the node.
     nodeType: The type of this node.
     serverBinding: Binding properties for the physical server.
+    serverId: Server ID associated with this node.
     status: A StatusValueValuesEnum attribute.
   """
 
@@ -32627,7 +32756,8 @@ class NodeGroupNode(_messages.Message):
   name = _messages.StringField(2)
   nodeType = _messages.StringField(3)
   serverBinding = _messages.MessageField('ServerBinding', 4)
-  status = _messages.EnumField('StatusValueValuesEnum', 5)
+  serverId = _messages.StringField(5)
+  status = _messages.EnumField('StatusValueValuesEnum', 6)
 
 
 class NodeGroupsAddNodesRequest(_messages.Message):
@@ -32906,7 +33036,7 @@ class NodeTemplate(_messages.Message):
   r"""Represent a sole-tenant Node Template resource.  You can use a template
   to define properties for nodes in a node group. For more information, read
   Creating node groups and instances. (== resource_for beta.nodeTemplates ==)
-  (== resource_for v1.nodeTemplates ==) (== NextID: 17 ==)
+  (== resource_for v1.nodeTemplates ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the node template. One
@@ -35281,37 +35411,38 @@ class PerInstanceConfig(_messages.Message):
 
 
 class Policy(_messages.Message):
-  r"""Defines an Identity and Access Management (IAM) policy. It is used to
-  specify access control policies for Cloud Platform resources.    A `Policy`
-  is a collection of `bindings`. A `binding` binds one or more `members` to a
-  single `role`. Members can be user accounts, service accounts, Google
-  groups, and domains (such as G Suite). A `role` is a named list of
-  permissions (defined by IAM or configured by users). A `binding` can
-  optionally specify a `condition`, which is a logic expression that further
-  constrains the role binding based on attributes about the request and/or
-  target resource.  **JSON Example**  { "bindings": [ { "role":
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources.    A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members` to a single `role`.
+  Members can be user accounts, service accounts, Google groups, and domains
+  (such as G Suite). A `role` is a named list of permissions; each `role` can
+  be an IAM predefined role or a user-created custom role.  Optionally, a
+  `binding` can specify a `condition`, which is a logical expression that
+  allows access to a resource only if the expression evaluates to `true`. A
+  condition can add constraints based on attributes of the request, the
+  resource, or both.  **JSON example:**  { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
   "roles/resourcemanager.organizationViewer", "members":
   ["user:eve@example.com"], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
-  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ] }  **YAML
-  Example**  bindings: - members: - user:mike@example.com -
-  group:admins@example.com - domain:google.com - serviceAccount:my-project-
-  id@appspot.gserviceaccount.com role: roles/resourcemanager.organizationAdmin
-  - members: - user:eve@example.com role:
-  roles/resourcemanager.organizationViewer condition: title: expirable access
-  description: Does not grant access after Sep 2020 expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')  For a description of IAM and its
-  features, see the [IAM developer's
-  guide](https://cloud.google.com/iam/docs).
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 }  **YAML example:**  bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3  For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally may
-      specify a `condition` that determines when binding is in effect.
-      `bindings` with no members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally, may
+      specify a `condition` that determines how and when the `bindings` are
+      applied. Each of the `bindings` must contain at least one member.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -35319,10 +35450,10 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten. Due to blind-set semantics of an
-      etag-less policy, 'setIamPolicy' will not fail even if either of
-      incoming or stored policy does not meet the version requirements.
+      policy.  **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
     iamOwned:
     rules: If more than one rule is specified, the rules are applied in the
       following manner: - All matching LOG rules are always applied. - If any
@@ -35331,15 +35462,20 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
       will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Operations
-      affecting conditional bindings must specify version 3. This can be
-      either setting a conditional policy, modifying a conditional binding, or
-      removing a conditional binding from the stored conditional policy.
-      Operations on non-conditional policies may specify any valid value or
-      leave the field unset.  If no etag is provided in the call to
-      `setIamPolicy`, any version compliance checks on the incoming and/or
-      stored policy is skipped.
+    version: Specifies the format of the policy.  Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected.  Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations:  * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy that includes conditions  **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost.  If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)

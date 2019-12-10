@@ -6333,6 +6333,18 @@ class ComputeGlobalOperationsListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeGlobalOperationsWaitRequest(_messages.Message):
+  r"""A ComputeGlobalOperationsWaitRequest object.
+
+  Fields:
+    operation: Name of the Operations resource to return.
+    project: Project ID for this request.
+  """
+
+  operation = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
 class ComputeHealthChecksAggregatedListRequest(_messages.Message):
   r"""A ComputeHealthChecksAggregatedListRequest object.
 
@@ -7123,6 +7135,36 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceGroupManagersCreateInstancesRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersCreateInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    instanceGroupManagersCreateInstancesRequest: A
+      InstanceGroupManagersCreateInstancesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request.  The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located. It
+      should conform to RFC1035.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersCreateInstancesRequest = _messages.MessageField('InstanceGroupManagersCreateInstancesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
@@ -8990,12 +9032,14 @@ class ComputeInterconnectAttachmentsInsertRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: If true, the request will not be committed.
   """
 
   interconnectAttachment = _messages.MessageField('InterconnectAttachment', 1)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class ComputeInterconnectAttachmentsListRequest(_messages.Message):
@@ -9938,6 +9982,75 @@ class ComputeNetworksInsertRequest(_messages.Message):
   network = _messages.MessageField('Network', 1)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+
+
+class ComputeNetworksListPeeringRoutesRequest(_messages.Message):
+  r"""A ComputeNetworksListPeeringRoutesRequest object.
+
+  Enums:
+    DirectionValueValuesEnum: The direction of the exchanged routes.
+
+  Fields:
+    direction: The direction of the exchanged routes.
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    network: Name of the network for this request.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    peeringName: The response will show routes exchanged over the given
+      peering connection.
+    project: Project ID for this request.
+    region: The region of the request. The response will include all subnet
+      routes, static routes and dynamic routes in the region.
+  """
+
+  class DirectionValueValuesEnum(_messages.Enum):
+    r"""The direction of the exchanged routes.
+
+    Values:
+      INCOMING: <no description>
+      OUTGOING: <no description>
+    """
+    INCOMING = 0
+    OUTGOING = 1
+
+  direction = _messages.EnumField('DirectionValueValuesEnum', 1)
+  filter = _messages.StringField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  network = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(5)
+  pageToken = _messages.StringField(6)
+  peeringName = _messages.StringField(7)
+  project = _messages.StringField(8, required=True)
+  region = _messages.StringField(9)
 
 
 class ComputeNetworksListRequest(_messages.Message):
@@ -12087,6 +12200,36 @@ class ComputeRegionInstanceGroupManagersAbandonInstancesRequest(_messages.Messag
   requestId = _messages.StringField(5)
 
 
+class ComputeRegionInstanceGroupManagersCreateInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersCreateInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    project: Project ID for this request.
+    region: The name of the region where the managed instance group is
+      located. It should conform to RFC1035.
+    regionInstanceGroupManagersCreateInstancesRequest: A
+      RegionInstanceGroupManagersCreateInstancesRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request.  The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersCreateInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersCreateInstancesRequest', 4)
+  requestId = _messages.StringField(5)
+
+
 class ComputeRegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   r"""A ComputeRegionInstanceGroupManagersDeleteInstancesRequest object.
 
@@ -12647,6 +12790,20 @@ class ComputeRegionOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionOperationsWaitRequest(_messages.Message):
+  r"""A ComputeRegionOperationsWaitRequest object.
+
+  Fields:
+    operation: Name of the Operations resource to return.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  operation = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
 
 
 class ComputeRegionSslCertificatesDeleteRequest(_messages.Message):
@@ -17274,6 +17431,20 @@ class ComputeZoneOperationsListRequest(_messages.Message):
   zone = _messages.StringField(6, required=True)
 
 
+class ComputeZoneOperationsWaitRequest(_messages.Message):
+  r"""A ComputeZoneOperationsWaitRequest object.
+
+  Fields:
+    operation: Name of the Operations resource to return.
+    project: Project ID for this request.
+    zone: Name of the zone for this request.
+  """
+
+  operation = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeZonesGetRequest(_messages.Message):
   r"""A ComputeZonesGetRequest object.
 
@@ -18812,6 +18983,168 @@ class Duration(_messages.Message):
   seconds = _messages.IntegerField(2)
 
 
+class ExchangedPeeringRoute(_messages.Message):
+  r"""A ExchangedPeeringRoute object.
+
+  Enums:
+    TypeValueValuesEnum: The type of the peering route.
+
+  Fields:
+    destRange: The destination range of the route.
+    imported: True if the peering route has been imported from a peer. The
+      actual import happens if the field networkPeering.importCustomRoutes is
+      true for this network, and networkPeering.exportCustomRoutes is true for
+      the peer network, and the import does not result in a route conflict.
+    nextHopRegion: The region of peering route next hop, only applies to
+      dynamic routes.
+    priority: The priority of the peering route.
+    type: The type of the peering route.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of the peering route.
+
+    Values:
+      DYNAMIC_PEERING_ROUTE: <no description>
+      STATIC_PEERING_ROUTE: <no description>
+      SUBNET_PEERING_ROUTE: <no description>
+    """
+    DYNAMIC_PEERING_ROUTE = 0
+    STATIC_PEERING_ROUTE = 1
+    SUBNET_PEERING_ROUTE = 2
+
+  destRange = _messages.StringField(1)
+  imported = _messages.BooleanField(2)
+  nextHopRegion = _messages.StringField(3)
+  priority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
+class ExchangedPeeringRoutesList(_messages.Message):
+  r"""A ExchangedPeeringRoutesList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of ExchangedPeeringRoute resources.
+    kind: [Output Only] Type of resource. Always
+      compute#exchangedPeeringRoutesList for exchanged peering routes lists.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ExchangedPeeringRoute', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#exchangedPeeringRoutesList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
 class Expr(_messages.Message):
   r"""Represents an expression text. Example:  title: "User account presence"
   description: "Determines whether the request has a user account" expression:
@@ -19436,16 +19769,16 @@ class ForwardingRule(_messages.Message):
   beta.regionForwardingRules ==) (== resource_for v1.regionForwardingRules ==)
 
   Enums:
-    IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
-      Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP
-      Load Balancing, the load balancing scheme is INTERNAL, and one of TCP or
-      UDP are valid. For Traffic Director, the load balancing scheme is
-      INTERNAL_SELF_MANAGED, and only TCPis valid. For Internal HTTP(S) Load
-      Balancing, the load balancing scheme is INTERNAL_MANAGED, and only TCP
-      is valid. For HTTP(S), SSL Proxy, and TCP Proxy Load Balancing, the load
-      balancing scheme is EXTERNAL and only TCP is valid. For Network TCP/UDP
-      Load Balancing, the load balancing scheme is EXTERNAL, and one of TCP or
-      UDP is valid.
+    IPProtocolValueValuesEnum: The IP protocol to which this rule applies. For
+      protocol forwarding, valid options are TCP, UDP, ESP, AH, SCTP or ICMP.
+      For Internal TCP/UDP Load Balancing, the load balancing scheme is
+      INTERNAL, and one of TCP or UDP are valid. For Traffic Director, the
+      load balancing scheme is INTERNAL_SELF_MANAGED, and only TCPis valid.
+      For Internal HTTP(S) Load Balancing, the load balancing scheme is
+      INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy, and TCP
+      Proxy Load Balancing, the load balancing scheme is EXTERNAL and only TCP
+      is valid. For Network TCP/UDP Load Balancing, the load balancing scheme
+      is EXTERNAL, and one of TCP or UDP is valid.
     IpVersionValueValuesEnum: The IP Version that will be used by this
       forwarding rule. Valid options are IPV4 or IPV6. This can only be
       specified for an external global forwarding rule.
@@ -19481,16 +19814,16 @@ class ForwardingRule(_messages.Message):
       use. For detailed information, refer to [IP address specifications
       ](/load-balancing/docs/forwarding-rule-
       concepts#ip_address_specifications).
-    IPProtocol: The IP protocol to which this rule applies. Valid options are
-      TCP, UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP Load Balancing,
-      the load balancing scheme is INTERNAL, and one of TCP or UDP are valid.
-      For Traffic Director, the load balancing scheme is
-      INTERNAL_SELF_MANAGED, and only TCPis valid. For Internal HTTP(S) Load
-      Balancing, the load balancing scheme is INTERNAL_MANAGED, and only TCP
-      is valid. For HTTP(S), SSL Proxy, and TCP Proxy Load Balancing, the load
-      balancing scheme is EXTERNAL and only TCP is valid. For Network TCP/UDP
-      Load Balancing, the load balancing scheme is EXTERNAL, and one of TCP or
-      UDP is valid.
+    IPProtocol: The IP protocol to which this rule applies. For protocol
+      forwarding, valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For
+      Internal TCP/UDP Load Balancing, the load balancing scheme is INTERNAL,
+      and one of TCP or UDP are valid. For Traffic Director, the load
+      balancing scheme is INTERNAL_SELF_MANAGED, and only TCPis valid. For
+      Internal HTTP(S) Load Balancing, the load balancing scheme is
+      INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy, and TCP
+      Proxy Load Balancing, the load balancing scheme is EXTERNAL and only TCP
+      is valid. For Network TCP/UDP Load Balancing, the load balancing scheme
+      is EXTERNAL, and one of TCP or UDP is valid.
     allPorts: This field is used along with the backend_service field for
       internal load balancing or with the target field for internal
       TargetInstance. This field cannot be used with port or portRange fields.
@@ -19608,15 +19941,16 @@ class ForwardingRule(_messages.Message):
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
-    r"""The IP protocol to which this rule applies. Valid options are TCP,
-    UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP Load Balancing, the load
-    balancing scheme is INTERNAL, and one of TCP or UDP are valid. For Traffic
-    Director, the load balancing scheme is INTERNAL_SELF_MANAGED, and only
-    TCPis valid. For Internal HTTP(S) Load Balancing, the load balancing
-    scheme is INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy,
-    and TCP Proxy Load Balancing, the load balancing scheme is EXTERNAL and
-    only TCP is valid. For Network TCP/UDP Load Balancing, the load balancing
-    scheme is EXTERNAL, and one of TCP or UDP is valid.
+    r"""The IP protocol to which this rule applies. For protocol forwarding,
+    valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP
+    Load Balancing, the load balancing scheme is INTERNAL, and one of TCP or
+    UDP are valid. For Traffic Director, the load balancing scheme is
+    INTERNAL_SELF_MANAGED, and only TCPis valid. For Internal HTTP(S) Load
+    Balancing, the load balancing scheme is INTERNAL_MANAGED, and only TCP is
+    valid. For HTTP(S), SSL Proxy, and TCP Proxy Load Balancing, the load
+    balancing scheme is EXTERNAL and only TCP is valid. For Network TCP/UDP
+    Load Balancing, the load balancing scheme is EXTERNAL, and one of TCP or
+    UDP is valid.
 
     Values:
       AH: <no description>
@@ -23522,6 +23856,16 @@ class InstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   """
 
   instances = _messages.StringField(1, repeated=True)
+
+
+class InstanceGroupManagersCreateInstancesRequest(_messages.Message):
+  r"""InstanceGroupManagers.createInstances
+
+  Fields:
+    instances: [Required] List of specifications of per-instance configs.
+  """
+
+  instances = _messages.MessageField('PerInstanceConfig', 1, repeated=True)
 
 
 class InstanceGroupManagersDeleteInstancesRequest(_messages.Message):
@@ -27603,9 +27947,9 @@ class Network(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?. The first character must
-      be a lowercase letter, and all following characters (except for the last
-      character) must be a dash, lowercase letter, or digit. The last
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character
+      must be a lowercase letter, and all following characters (except for the
+      last character) must be a dash, lowercase letter, or digit. The last
       character must be a lowercase letter or digit.
     peerings: [Output Only] A list of network peerings for the resource.
     routingConfig: The network-level routing configuration for this network.
@@ -28627,7 +28971,7 @@ class NodeGroup(_messages.Message):
   separated from instances in other projects, or to group your instances
   together on the same host hardware. For more information, read Sole-tenant
   nodes. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups
-  ==) NextID: 16
+  ==)
 
   Enums:
     StatusValueValuesEnum:
@@ -29272,7 +29616,7 @@ class NodeTemplate(_messages.Message):
   r"""Represent a sole-tenant Node Template resource.  You can use a template
   to define properties for nodes in a node group. For more information, read
   Creating node groups and instances. (== resource_for beta.nodeTemplates ==)
-  (== resource_for v1.nodeTemplates ==) (== NextID: 17 ==)
+  (== resource_for v1.nodeTemplates ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the node template. One
@@ -31008,38 +31352,60 @@ class PathRule(_messages.Message):
   urlRedirect = _messages.MessageField('HttpRedirectAction', 4)
 
 
+class PerInstanceConfig(_messages.Message):
+  r"""A PerInstanceConfig object.
+
+  Fields:
+    fingerprint: Fingerprint of this per-instance config. This field may be
+      used in optimistic locking. It will be ignored when inserting a per-
+      instance config. An up-to-date fingerprint must be provided in order to
+      update an existing per-instance config or the field needs to be unset.
+    name: The name of the per-instance config and the corresponding instance.
+      Serves as a merge key during UpdatePerInstanceConfigs operation, i.e. if
+      per-instance config with the same name exists then it will be updated,
+      otherwise a new one will be created for the VM instance with the same
+      name. An attempt to create a per-instance config for a VM instance that
+      either doesn't exist or is not part of the group will result in a
+      failure.
+  """
+
+  fingerprint = _messages.BytesField(1)
+  name = _messages.StringField(2)
+
+
 class Policy(_messages.Message):
-  r"""Defines an Identity and Access Management (IAM) policy. It is used to
-  specify access control policies for Cloud Platform resources.    A `Policy`
-  is a collection of `bindings`. A `binding` binds one or more `members` to a
-  single `role`. Members can be user accounts, service accounts, Google
-  groups, and domains (such as G Suite). A `role` is a named list of
-  permissions (defined by IAM or configured by users). A `binding` can
-  optionally specify a `condition`, which is a logic expression that further
-  constrains the role binding based on attributes about the request and/or
-  target resource.  **JSON Example**  { "bindings": [ { "role":
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources.    A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members` to a single `role`.
+  Members can be user accounts, service accounts, Google groups, and domains
+  (such as G Suite). A `role` is a named list of permissions; each `role` can
+  be an IAM predefined role or a user-created custom role.  Optionally, a
+  `binding` can specify a `condition`, which is a logical expression that
+  allows access to a resource only if the expression evaluates to `true`. A
+  condition can add constraints based on attributes of the request, the
+  resource, or both.  **JSON example:**  { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
   "roles/resourcemanager.organizationViewer", "members":
   ["user:eve@example.com"], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
-  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ] }  **YAML
-  Example**  bindings: - members: - user:mike@example.com -
-  group:admins@example.com - domain:google.com - serviceAccount:my-project-
-  id@appspot.gserviceaccount.com role: roles/resourcemanager.organizationAdmin
-  - members: - user:eve@example.com role:
-  roles/resourcemanager.organizationViewer condition: title: expirable access
-  description: Does not grant access after Sep 2020 expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')  For a description of IAM and its
-  features, see the [IAM developer's
-  guide](https://cloud.google.com/iam/docs).
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 }  **YAML example:**  bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3  For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally may
-      specify a `condition` that determines when binding is in effect.
-      `bindings` with no members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally, may
+      specify a `condition` that determines how and when the `bindings` are
+      applied. Each of the `bindings` must contain at least one member.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -31047,10 +31413,10 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten. Due to blind-set semantics of an
-      etag-less policy, 'setIamPolicy' will not fail even if either of
-      incoming or stored policy does not meet the version requirements.
+      policy.  **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
     iamOwned:
     rules: If more than one rule is specified, the rules are applied in the
       following manner: - All matching LOG rules are always applied. - If any
@@ -31059,15 +31425,20 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
       will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Operations
-      affecting conditional bindings must specify version 3. This can be
-      either setting a conditional policy, modifying a conditional binding, or
-      removing a conditional binding from the stored conditional policy.
-      Operations on non-conditional policies may specify any valid value or
-      leave the field unset.  If no etag is provided in the call to
-      `setIamPolicy`, any version compliance checks on the incoming and/or
-      stored policy is skipped.
+    version: Specifies the format of the policy.  Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected.  Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations:  * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy that includes conditions  **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost.  If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -32033,6 +32404,16 @@ class RegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   """
 
   instances = _messages.StringField(1, repeated=True)
+
+
+class RegionInstanceGroupManagersCreateInstancesRequest(_messages.Message):
+  r"""RegionInstanceGroupManagers.createInstances
+
+  Fields:
+    instances: [Required] List of specifications of per-instance configs.
+  """
+
+  instances = _messages.MessageField('PerInstanceConfig', 1, repeated=True)
 
 
 class RegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):

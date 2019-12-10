@@ -54,7 +54,10 @@ IMPORT_PROTECTION_LEVEL_MAPPER = arg_utils.ChoiceEnumMapper(
 
 # Add new algorithms according to their purposes here.
 VALID_ALGORITHMS_MAP = {
-    PURPOSE_ENUM.ENCRYPT_DECRYPT: ['google-symmetric-encryption'],
+    PURPOSE_ENUM.ENCRYPT_DECRYPT: [
+        'google-symmetric-encryption',
+        'external-symmetric-encryption',
+    ],
     PURPOSE_ENUM.ASYMMETRIC_SIGN: [
         'ec-sign-p256-sha256',
         'ec-sign-p384-sha384',
@@ -80,3 +83,6 @@ ALL_ALGORITHMS = {
     algorithm for algorithms in VALID_ALGORITHMS_MAP.values()
     for algorithm in algorithms
 }
+
+ALGORITHMS_FOR_IMPORT = ALL_ALGORITHMS - {'external-symmetric-encryption'}
+

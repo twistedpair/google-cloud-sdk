@@ -18,13 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.game.servers import utils
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-
-OPERATIONS_COLLECTION = 'gameservices.projects.locations.operations'
 
 
 class NoFieldsSpecifiedError(exceptions.Error):
@@ -37,7 +35,8 @@ class PreviewTimeFieldNotRelevantError(exceptions.Error):
 
 def ConvertOutput(response, args):
   if not args.dry_run:
-    WaitForOperation(response)
+    utils.WaitForOperation(response)
+    log.status.Print('Updated rollout for: [{}]'.format(args.deployment))
     return GetExistingResource(args)
 
   return response
@@ -51,16 +50,6 @@ def GetResourceRef(args):
       projectsId=project,
       locationsId=location, gameServerDeploymentsId=args.deployment)
   return ref
-
-
-def WaitForOperation(response):
-  operation_ref = resources.REGISTRY.ParseRelativeName(
-      response.name, collection=OPERATIONS_COLLECTION)
-  api_version = operation_ref.GetCollectionInfo().api_version
-  return waiter.WaitFor(
-      waiter.CloudOperationPollerNoResources(
-          utils.GetClient(api_version).projects_locations_operations),
-      operation_ref, 'Waiting for [{0}] to finish'.format(operation_ref.Name()))
 
 
 def GetExistingResource(args):
@@ -87,6 +76,8 @@ def ChooseUpdateOrPreviewMethod(unused_instance_ref, args):
   if args.preview_time:
     raise PreviewTimeFieldNotRelevantError(
         '`--preview-time` is only relevant if `--dry-run` is set to true.')
+  log.status.Print('Update rollout request issued for: [{}]'.format(
+      args.deployment))
   return 'updateRollout'
 
 
@@ -97,6 +88,7 @@ def SetUpdateMask(ref, args, request):
     ref: The rollout resource reference.
     args: The parsed args namespace.
     request: The update rollout request.
+
   Returns:
     Request with update mask set appropriately.
   Raises:
@@ -105,9 +97,9 @@ def SetUpdateMask(ref, args, request):
   del ref
   update_mask = []
 
-  if args.IsSpecified('default_config'):
+  if args.default_config:
     update_mask.append('defaultGameServerConfig')
-  if args.IsSpecified('config_overrides_file'):
+  if args.config_overrides_file or args.clear_config_overrides:
     update_mask.append('gameServerConfigOverrides')
 
   if not args.dry_run and not update_mask:
@@ -115,4 +107,13 @@ def SetUpdateMask(ref, args, request):
         'Must specify at least one parameter to update.')
 
   request.updateMask = ','.join(update_mask)
+  return request
+
+
+def ClearConfigOverrides(ref, args, request):
+  del ref
+  if args.clear_config_overrides:
+    if not request.gameServerDeploymentRollout:
+      request.gameServerDeploymentRollout = {}
+    request.gameServerDeploymentRollout.gameServerConfigOverrides = []
   return request

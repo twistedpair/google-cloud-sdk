@@ -24,6 +24,16 @@ DOCS_URL = 'https://cloud.google.com/resource-manager/docs/cloud-asset-inventory
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  FEEDS = (
+      'feeds',
+      '{+name}',
+      {
+          '':
+              '{v1Id}/{v1Id1}/feeds/{feedsId}',
+      },
+      [u'name'],
+      True
+  )
   OPERATIONS = (
       'operations',
       '{+name}',

@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.command_lib.compute.sole_tenancy.node_groups import flags
+from googlecloudsdk.command_lib.util.apis.arg_utils import ChoiceToEnumName
 
 
 def ParseNodeTemplate(resources, name, project=None, region=None):
@@ -41,13 +41,10 @@ def ParseNodeTemplate(resources, name, project=None, region=None):
 def BuildAutoscaling(args, messages):
   """Build NodeGroupAutoscalingPolicy object from args."""
 
-  if args.mode:
-    mapper = flags.GetAutoscalingModeEnumMapper(messages)
-    mode = mapper.GetEnumForChoice(args.mode)
-    autoscaling_policy = messages.NodeGroupAutoscalingPolicy(
-        mode=mode,
-        minSize=args.min_size if args.min_size else None,
-        maxSize=args.max_size if args.max_size else None)
-    return autoscaling_policy
-
-  return None
+  autoscaling_policy = messages.NodeGroupAutoscalingPolicy(
+      mode=(messages.NodeGroupAutoscalingPolicy.ModeValueValuesEnum(
+          ChoiceToEnumName(args.autoscaler_mode))
+            if args.autoscaler_mode else None),
+      minNodes=args.min_nodes if args.IsSpecified('min_nodes') else None,
+      maxNodes=args.max_nodes if args.IsSpecified('max_nodes') else None)
+  return autoscaling_policy

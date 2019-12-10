@@ -218,7 +218,7 @@ class ToolResultsSummaryFetcher(object):
       # prevents a stack trace if it should happen.
       if not step.outcome:
         log.warning('Step for [{0}] had no outcome value.'.format(axis_value))
-      elif not step.multiStep or step.multiStep.multistepNumber < 1:
+      elif not step.multiStep or not step.multiStep.multistepNumber:
         axis_value = self._GetAxisValue(step)
         pass_ratio = pass_counter[axis_value] / total_counter[axis_value]
         passed_str = '{:.0%} ({p} of {t})'.format(

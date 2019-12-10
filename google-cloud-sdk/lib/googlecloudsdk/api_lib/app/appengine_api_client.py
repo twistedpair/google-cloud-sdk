@@ -740,3 +740,30 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
 
     return operations_util.WaitForOperation(self.client.apps_operations,
                                             operation)
+
+  def UpdateDatabaseType(self, database_type):
+    """Updates an application's database_type.
+
+    Args:
+      database_type: New database type to switch to
+
+    Returns:
+      Long running operation.
+    """
+
+    # Create a configuration update request.
+    update_mask = 'databaseType'
+    application_update = self.messages.Application()
+    application_update.databaseType = database_type
+    update_request = self.messages.AppengineAppsPatchRequest(
+        name=self._FormatApp(),
+        application=application_update,
+        updateMask=update_mask)
+
+    operation = self.client.apps.Patch(update_request)
+
+    log.debug('Received operation: [{operation}] with mask [{mask}]'.format(
+        operation=operation.name, mask=update_mask))
+
+    return operations_util.WaitForOperation(self.client.apps_operations,
+                                            operation)

@@ -105,6 +105,10 @@ def ParseBasicLevelConditions(path):
   return ParseBasicLevelConditionsBase(path, version='v1')
 
 
+def ParseBasicLevelConditionsAlpha(path):
+  return ParseBasicLevelConditionsBase(path, version='v1alpha')
+
+
 def ParseBasicLevelConditionsBeta(path):
   return ParseBasicLevelConditionsBase(path, version='v1beta')
 
@@ -269,7 +273,7 @@ def AddLevelSpecArgs(parser, version=None):
   basic_map = {
       'v1': ParseBasicLevelConditions,
       'v1beta': ParseBasicLevelConditionsBeta,
-      'v1alpha': ParseBasicLevelConditionsBeta
+      'v1alpha': ParseBasicLevelConditionsAlpha
   }
   args = [
       base.Argument(

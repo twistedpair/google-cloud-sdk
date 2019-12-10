@@ -123,7 +123,7 @@ class SurveyPrompter(object):
      _prompt_message: str, the prompting message.
   """
   _DEFAULT_SURVEY_PROMPT_MSG = ('To take a quick anonymous survey, run:\n'
-                                '  $ gcloud alpha survey')
+                                '  $ gcloud survey')
 
   def __init__(self, msg=_DEFAULT_SURVEY_PROMPT_MSG):
     self._prompt_record = PromptRecord()

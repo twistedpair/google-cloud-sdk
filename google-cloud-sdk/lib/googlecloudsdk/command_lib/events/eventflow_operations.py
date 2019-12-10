@@ -164,7 +164,7 @@ class EventflowOperations(object):
       crd_client: The API client for querying for CRDs. Or None if interacting
         with managed Cloud Run.
       op_client: The API client for interacting with One Platform APIs. Or
-        None if interacting with Cloud Run on GKE.
+        None if interacting with Cloud Run for Anthos.
     """
     self._client = client
     self._crd_client = crd_client

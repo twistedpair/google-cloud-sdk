@@ -95,10 +95,9 @@ class ReplaceServiceChange(ConfigChanger):
       self._service.metadata.resourceVersion = resource.metadata.resourceVersion
       # Knative will complain if you try to edit (incl remove) serving annots.
       # So replicate them here.
-      if not resource.is_managed:
-        for k, v in resource.annotations.items():
-          if k.startswith(k8s_object.SERVING_GROUP):
-            self._service.annotations[k] = v
+      for k, v in resource.annotations.items():
+        if k.startswith(k8s_object.SERVING_GROUP):
+          self._service.annotations[k] = v
     return self._service
 
 

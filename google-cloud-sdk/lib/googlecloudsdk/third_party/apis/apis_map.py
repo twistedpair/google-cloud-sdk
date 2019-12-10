@@ -217,6 +217,12 @@ MAP = {
                 client_classpath='cloudasset_v1p4alpha1_client.CloudassetV1p4alpha1',
                 messages_modulepath='cloudasset_v1p4alpha1_messages',
                 default_version=False),
+        'v1p5alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.cloudasset.v1p5alpha1',
+                client_classpath='cloudasset_v1p5alpha1_client.CloudassetV1p5alpha1',
+                messages_modulepath='cloudasset_v1p5alpha1_messages',
+                default_version=False),
     },
     'cloudbilling': {
         'v1':
@@ -238,6 +244,12 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.cloudbuild.v1alpha1',
                 client_classpath='cloudbuild_v1alpha1_client.CloudbuildV1alpha1',
                 messages_modulepath='cloudbuild_v1alpha1_messages',
+                default_version=False),
+        'v1alpha2':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.cloudbuild.v1alpha2',
+                client_classpath='cloudbuild_v1alpha2_client.CloudbuildV1alpha2',
+                messages_modulepath='cloudbuild_v1alpha2_messages',
                 default_version=False),
     },
     'clouddebugger': {
@@ -881,12 +893,18 @@ MAP = {
                 default_version=False),
     },
     'policytroubleshooter': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.policytroubleshooter.v1',
+                client_classpath='policytroubleshooter_v1_client.PolicytroubleshooterV1',
+                messages_modulepath='policytroubleshooter_v1_messages',
+                default_version=True),
         'v1beta':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.policytroubleshooter.v1beta',
                 client_classpath='policytroubleshooter_v1beta_client.PolicytroubleshooterV1beta',
                 messages_modulepath='policytroubleshooter_v1beta_messages',
-                default_version=True),
+                default_version=False),
     },
     'pubsub': {
         'v1':
@@ -979,18 +997,12 @@ MAP = {
                 default_version=True),
     },
     'secretmanager': {
-        'v1alpha':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.secretmanager.v1alpha',
-                client_classpath='secretmanager_v1alpha_client.SecretmanagerV1alpha',
-                messages_modulepath='secretmanager_v1alpha_messages',
-                default_version=True),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.secretmanager.v1beta1',
                 client_classpath='secretmanager_v1beta1_client.SecretmanagerV1beta1',
                 messages_modulepath='secretmanager_v1beta1_messages',
-                default_version=False),
+                default_version=True),
     },
     'securitycenter': {
         'v1':

@@ -100,7 +100,7 @@ class Binding(_messages.Message):
       that represents a Google group.    For example, `admins@example.com`.  *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
-      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
       retains the role in the binding.  *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
@@ -132,7 +132,7 @@ class CancelOperationRequest(_messages.Message):
 
 class ConnectAgentResource(_messages.Message):
   r"""ConnectAgentResource represents a Kubernetes resource manifest for
-  connect agnet deployment.
+  connect agent deployment.
 
   Fields:
     manifest: YAML manifest of the resource.
@@ -232,14 +232,15 @@ class GkehubProjectsLocationsMembershipsCreateRequest(_messages.Message):
 
   Fields:
     membership: A Membership resource to be passed as the request body.
-    membershipId: Client chosen ID for the membership. The ID must be a valid
-      RFC 1123 compliant DNS label. In particular, the ID must be:   1. At
-      most 63 characters in length   2. It must consist of lower case
+    membershipId: Required. Client chosen ID for the membership. The ID must
+      be a valid RFC 1123 compliant DNS label. In particular, the ID must be:
+      1. At most 63 characters in length   2. It must consist of lower case
       alphanumeric characters or `-`   3. It must start and end with an
       alphanumeric character I.e. ID must match the regex:
       `[a-z0-9]([-a-z0-9]*[a-z0-9])?` with at most 63 characters.
-    parent: The parent in whose context the membership is created. The parent
-      value is in the format: `projects/[project_id]/locations/global`.
+    parent: Required. The parent in whose context the membership is created.
+      The parent value is in the format:
+      `projects/[project_id]/locations/global`.
   """
 
   membership = _messages.MessageField('Membership', 1)
@@ -251,7 +252,7 @@ class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsDeleteRequest object.
 
   Fields:
-    name: The membership resource name in the format:
+    name: Required. The membership resource name in the format:
       `projects/[project_id]/locations/global/memberships/[membership_id]`
   """
 
@@ -263,24 +264,26 @@ class GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(_messages
   object.
 
   Fields:
-    connectAgent_name: Deprecated. Do not set.
-    connectAgent_namespace: Namespace for GKE Connect agent resources. If
-      empty, uses 'gke-connect'.
-    connectAgent_proxy: Connection name of the proxy if a proxy is required to
-      reach gkeconnect.googleapis.com, format must be in the form
+    connectAgent_name: Optional. Deprecated. Do not set.
+    connectAgent_namespace: Optional. Namespace for GKE Connect agent
+      resources. If empty, uses 'gke-connect'.
+    connectAgent_proxy: Optional. URI of the proxy to reach
+      gkeconnect.googleapis.com. The format must be in the form
       http(s)://{proxy_address}, depends on HTTP/HTTPS protocol supported by
       the proxy. This will direct connect agent's outbound traffic through a
       HTTP(S) proxy.
-    imagePullSecretContent: The image pull secret content for the registry, if
-      not public.
-    isUpgrade: If true, generate the resources for upgrade only. Some
-      resources (e.g. secrets) generated for installation will be excluded.
-    name: The membership resource the connect agent is associated with.
+    imagePullSecretContent: Optional. The image pull secret content for the
+      registry, if not public.
+    isUpgrade: Optional. If true, generate the resources for upgrade only.
+      Some resources (e.g. secrets) generated for installation will be
+      excluded.
+    name: Required. The membership resource the connect agent is associated
+      with.
       `projects/[project_id]/locations/global/memberships/[membership_id]`.
-    registry: The registry to fetch connect agent image; default to
+    registry: Optional. The registry to fetch connect agent image; default to
       gcr.io/gkeconnect.
-    version: The version to use for connect agent. If empty, the current
-      default version will be used.
+    version: Optional. The version to use for connect agent. If empty, the
+      current default version will be used.
   """
 
   connectAgent_name = _messages.StringField(1)
@@ -315,7 +318,7 @@ class GkehubProjectsLocationsMembershipsGetRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsGetRequest object.
 
   Fields:
-    name: The Membership resource name in the format:
+    name: Required. The Membership resource name in the format:
       `projects/[project_id]/locations/global/memberships/[membership_id]`
   """
 
@@ -326,26 +329,28 @@ class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsMembershipsListRequest object.
 
   Fields:
-    filter: Lists the Memberships that match the filter expression. A filter
-      expression filters the resources listed in the response. The expression
-      must be of the form `<field> <operator> <value>` where operators: `<`,
-      `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a
-      HAS operator which is roughly synonymous with equality). <field> can
-      refer to a proto or JSON field, or a synthetic field. Field names can be
-      camelCase or snake_case.  Examples: - Filter by name:   name = "projects
-      /foo-proj/locations/global/membership/bar  - Filter by labels:   -
-      Resources that have a key called `foo`     labels.foo:*   - Resources
-      that have a key called `foo` whose value is `bar`     labels.foo = bar
-      - Filter by state:    - Members in CREATING state.      state = CREATING
-    orderBy: Field to use to sort the list.
-    pageSize: When requesting a 'page' of resources, `page_size` specifies
-      number of resources to return. If unspecified or set to 0, all resources
-      will be returned.
-    pageToken: Token returned by previous call to `ListMemberships` which
-      specifies the position in the list from where to continue listing the
-      resources.
-    parent: The parent in whose context the memberships are listed. The parent
-      value is in the format: `projects/[project_id]/locations/global`.
+    filter: Optional. Lists the Memberships that match the filter expression.
+      A filter expression filters the resources listed in the response. The
+      expression must be of the form `<field> <operator> <value>` where
+      operators: `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:`
+      represents a HAS operator which is roughly synonymous with equality).
+      <field> can refer to a proto or JSON field, or a synthetic field. Field
+      names can be camelCase or snake_case.  Examples: - Filter by name:
+      name = "projects/foo-proj/locations/global/membership/bar  - Filter by
+      labels:   - Resources that have a key called `foo`     labels.foo:*   -
+      Resources that have a key called `foo` whose value is `bar`
+      labels.foo = bar   - Filter by state:    - Members in CREATING state.
+      state = CREATING
+    orderBy: Optional. Field to use to sort the list.
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to `ListMemberships`
+      which specifies the position in the list from where to continue listing
+      the resources.
+    parent: Required. The parent in whose context the memberships are listed.
+      The parent value is in the format:
+      `projects/[project_id]/locations/global`.
   """
 
   filter = _messages.StringField(1)
@@ -360,10 +365,10 @@ class GkehubProjectsLocationsMembershipsPatchRequest(_messages.Message):
 
   Fields:
     membership: A Membership resource to be passed as the request body.
-    name: The membership resource name in the format:
+    name: Required. The membership resource name in the format:
       `projects/[project_id]/locations/global/memberships/[membership_id]`
-    updateMask: Mask of fields to update. At least one field path must be
-      specified in this mask.
+    updateMask: Required. Mask of fields to update. At least one field path
+      must be specified in this mask.
   """
 
   membership = _messages.MessageField('Membership', 1)
@@ -634,8 +639,8 @@ class Membership(_messages.Message):
   Fields:
     createTime: Output only. Timestamp for when the Membership was created.
     deleteTime: Output only. Timestamp for when the Membership was deleted.
-    description: A required description of this membership, limited to 63
-      characters. description must match the regex: `a-zA-Z0-9*`
+    description: Required. Description of this membership, limited to 63
+      characters. It must match the regex: `a-zA-Z0-9*`
     endpoint: A MembershipEndpoint attribute.
     labels: GCP labels for this membership.
     name: Output only. The unique name of this domain resource in the format:
@@ -840,15 +845,16 @@ class Operation(_messages.Message):
 
 
 class Policy(_messages.Message):
-  r"""Defines an Identity and Access Management (IAM) policy. It is used to
-  specify access control policies for Cloud Platform resources.   A `Policy`
-  is a collection of `bindings`. A `binding` binds one or more `members` to a
-  single `role`. Members can be user accounts, service accounts, Google
-  groups, and domains (such as G Suite). A `role` is a named list of
-  permissions (defined by IAM or configured by users). A `binding` can
-  optionally specify a `condition`, which is a logic expression that further
-  constrains the role binding based on attributes about the request and/or
-  target resource.  **JSON Example**      {       "bindings": [         {
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources.   A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members` to a single `role`.
+  Members can be user accounts, service accounts, Google groups, and domains
+  (such as G Suite). A `role` is a named list of permissions; each `role` can
+  be an IAM predefined role or a user-created custom role.  Optionally, a
+  `binding` can specify a `condition`, which is a logical expression that
+  allows access to a resource only if the expression evaluates to `true`. A
+  condition can add constraints based on attributes of the request, the
+  resource, or both.  **JSON example:**      {       "bindings": [         {
   "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-project-
@@ -857,23 +863,24 @@ class Policy(_messages.Message):
   ["user:eve@example.com"],           "condition": {             "title":
   "expirable access",             "description": "Does not grant access after
   Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ]     }
-  **YAML Example**      bindings:     - members:       - user:mike@example.com
-  - group:admins@example.com       - domain:google.com       - serviceAccount
+  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
+  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
+  bindings:     - members:       - user:mike@example.com       -
+  group:admins@example.com       - domain:google.com       - serviceAccount
   :my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
   grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')  For a description of IAM and its
-  features, see the [IAM developer's
-  guide](https://cloud.google.com/iam/docs).
+  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
+  version: 3  For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally may
-      specify a `condition` that determines when binding is in effect.
-      `bindings` with no members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally, may
+      specify a `condition` that determines how and when the `bindings` are
+      applied. Each of the `bindings` must contain at least one member.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -881,19 +888,24 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten. Due to blind-set semantics of an
-      etag-less policy, 'setIamPolicy' will not fail even if either of
-      incoming or stored policy does not meet the version requirements.
-    version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Operations
-      affecting conditional bindings must specify version 3. This can be
-      either setting a conditional policy, modifying a conditional binding, or
-      removing a conditional binding from the stored conditional policy.
-      Operations on non-conditional policies may specify any valid value or
-      leave the field unset.  If no etag is provided in the call to
-      `setIamPolicy`, any version compliance checks on the incoming and/or
-      stored policy is skipped.
+      policy.  **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
+    version: Specifies the format of the policy.  Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected.  Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations:  * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy   that includes conditions  **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost.  If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)

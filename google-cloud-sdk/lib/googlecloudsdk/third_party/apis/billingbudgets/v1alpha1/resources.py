@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://billingbudgets.googleapis.com/v1alpha1/'
-DOCS_URL = 'https://docs.google.com/document/d/13BHH4JD6AclB5a2tRgVo7yB2oKyH8SeZh0M4biDWGOY/edit'
+DOCS_URL = 'https://cloud.google.com/billing/docs/how-to/budget-api-overview'
 
 
 class Collections(enum.Enum):

@@ -28,7 +28,6 @@ from googlecloudsdk.command_lib.game.servers import utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
-
 import six
 
 PARENT_TEMPLATE = 'projects/{}/locations/{}'
@@ -158,6 +157,8 @@ def ProcessScalingConfigsFile(scaling_configs_file):
         # Add default selector if not set
         esc.selectors = [selector]
       scaling_configs_message.append(esc)
+      # Set priority to None as the priority field will be removed from API.
+      esc.priority = None
 
   except AttributeError:
     raise InvalidSchemaError(

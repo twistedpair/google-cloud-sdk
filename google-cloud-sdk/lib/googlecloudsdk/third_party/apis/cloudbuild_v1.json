@@ -385,7 +385,7 @@
           "type": "string"
         },
         "repoName": {
-          "description": "Name of the Cloud Source Repository. If omitted, the name \"default\" is\nassumed.",
+          "description": "Required. Name of the Cloud Source Repository.",
           "type": "string"
         },
         "branchName": {
@@ -783,7 +783,7 @@
           ]
         },
         "workerPool": {
-          "description": "Option to specify a `WorkerPool` for the build. User specifies the pool\nwith the format \"[WORKERPOOL_PROJECT_ID]\/[WORKERPOOL_NAME]\".\nThis is an experimental field.",
+          "description": "Option to specify a `WorkerPool` for the build.\nFormat: projects\/{project}\/workerPools\/{workerPool}\n\nThis field is experimental.",
           "type": "string"
         },
         "logging": {
@@ -888,7 +888,7 @@
           "type": "string"
         },
         "name": {
-          "description": "User assigned name of the trigger. Must be unique within the project.",
+          "description": "User-assigned name of the trigger. Must be unique within the project.\nTrigger names must meet the following requirements:\n\n+ They must contain only alphanumeric characters and dashes.\n+ They can be 1-64 characters long.\n+ They must begin and end with an alphanumeric character.",
           "type": "string"
         },
         "tags": {
@@ -984,7 +984,7 @@
           "type": "string"
         },
         "commentControl": {
-          "description": "Whether to block builds on a \"\/gcbrun\" comment from a repository owner or\ncollaborator.",
+          "description": "Whether to block builds on a \"\/gcbrun\" comment from a repository admin or\ncollaborator.",
           "enumDescriptions": [
             "Do not require comments on Pull Requests before builds are triggered.",
             "Enforce that repository owners or collaborators must comment on Pull\nRequests before builds are triggered."

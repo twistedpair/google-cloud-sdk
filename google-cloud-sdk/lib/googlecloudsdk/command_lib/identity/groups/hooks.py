@@ -26,8 +26,6 @@ from googlecloudsdk.api_lib.cloudresourcemanager import organizations
 from googlecloudsdk.api_lib.identity import cloudidentity_client as ci_client
 from googlecloudsdk.calliope import exceptions
 
-_CIG_API_VERSION = 'v1alpha1'
-
 
 # request hooks
 def SetParent(unused_ref, args, request):
@@ -63,6 +61,7 @@ def SetEntityKey(unused_ref, args, request):
   """
 
   if hasattr(args, 'email'):
+    # TODO(b/144289256): Pass API_VERSION info.
     messages = ci_client.GetMessages()
     request.group.groupKey = messages.EntityKey(id=args.email)
 
@@ -207,6 +206,7 @@ def AddDynamicGroupUserQuery(arg_list):
 
   if arg_list:
     dg_user_query = ','.join(arg_list)
+
     messages = ci_client.GetMessages()
     resource_type = messages.DynamicGroupQuery.ResourceTypeValueValuesEnum
     new_dynamic_group_query = messages.DynamicGroupQuery(
@@ -248,6 +248,7 @@ def ReformatLabels(labels):
       labels_dict[label] = ''
 
   # Encode the OrderedDict format of labels to group.labels message.
+  # TODO(b/144289256): Pass API_VERSION info.
   messages = ci_client.GetMessages()
   return encoding.DictToMessage(labels_dict, messages.Group.LabelsValue)
 
@@ -287,6 +288,7 @@ def ConvertEmailToResourceName(email, arg_name):
     Group Id (e.g. groups/11zu0gzc3tkdgn2)
 
   """
+  # TODO(b/144289256): Pass API_VERSION info.
   lookup_group_name_resp = ci_client.LookupGroupName(email)
 
   if 'name' in lookup_group_name_resp:

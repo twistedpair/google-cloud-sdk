@@ -35,10 +35,472 @@ class OsconfigV1beta(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.folders_guestPolicies = self.FoldersGuestPoliciesService(self)
+    self.folders = self.FoldersService(self)
+    self.organizations_guestPolicies = self.OrganizationsGuestPoliciesService(self)
+    self.organizations = self.OrganizationsService(self)
+    self.projects_guestPolicies = self.ProjectsGuestPoliciesService(self)
     self.projects_patchDeployments = self.ProjectsPatchDeploymentsService(self)
     self.projects_patchJobs_instanceDetails = self.ProjectsPatchJobsInstanceDetailsService(self)
     self.projects_patchJobs = self.ProjectsPatchJobsService(self)
+    self.projects_zones_instances = self.ProjectsZonesInstancesService(self)
+    self.projects_zones = self.ProjectsZonesService(self)
     self.projects = self.ProjectsService(self)
+
+  class FoldersGuestPoliciesService(base_api.BaseApiService):
+    """Service class for the folders_guestPolicies resource."""
+
+    _NAME = u'folders_guestPolicies'
+
+    def __init__(self, client):
+      super(OsconfigV1beta.FoldersGuestPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create an OS Config guest policy.
+
+      Args:
+        request: (OsconfigFoldersGuestPoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GuestPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/folders/{foldersId}/guestPolicies',
+        http_method=u'POST',
+        method_id=u'osconfig.folders.guestPolicies.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'guestPolicyId'],
+        relative_path=u'v1beta/{+parent}/guestPolicies',
+        request_field=u'guestPolicy',
+        request_type_name=u'OsconfigFoldersGuestPoliciesCreateRequest',
+        response_type_name=u'GuestPolicy',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete an OS Config guest policy.
+
+      Args:
+        request: (OsconfigFoldersGuestPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/folders/{foldersId}/guestPolicies/{guestPoliciesId}',
+        http_method=u'DELETE',
+        method_id=u'osconfig.folders.guestPolicies.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta/{+name}',
+        request_field='',
+        request_type_name=u'OsconfigFoldersGuestPoliciesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get an OS Config guest policy.
+
+      Args:
+        request: (OsconfigFoldersGuestPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GuestPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/folders/{foldersId}/guestPolicies/{guestPoliciesId}',
+        http_method=u'GET',
+        method_id=u'osconfig.folders.guestPolicies.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta/{+name}',
+        request_field='',
+        request_type_name=u'OsconfigFoldersGuestPoliciesGetRequest',
+        response_type_name=u'GuestPolicy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Get a page of OS Config guest policies.
+
+      Args:
+        request: (OsconfigFoldersGuestPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListGuestPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/folders/{foldersId}/guestPolicies',
+        http_method=u'GET',
+        method_id=u'osconfig.folders.guestPolicies.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta/{+parent}/guestPolicies',
+        request_field='',
+        request_type_name=u'OsconfigFoldersGuestPoliciesListRequest',
+        response_type_name=u'ListGuestPoliciesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update an OS Config guest policy.
+
+      Args:
+        request: (OsconfigFoldersGuestPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GuestPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/folders/{foldersId}/guestPolicies/{guestPoliciesId}',
+        http_method=u'PATCH',
+        method_id=u'osconfig.folders.guestPolicies.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1beta/{+name}',
+        request_field=u'guestPolicy',
+        request_type_name=u'OsconfigFoldersGuestPoliciesPatchRequest',
+        response_type_name=u'GuestPolicy',
+        supports_download=False,
+    )
+
+  class FoldersService(base_api.BaseApiService):
+    """Service class for the folders resource."""
+
+    _NAME = u'folders'
+
+    def __init__(self, client):
+      super(OsconfigV1beta.FoldersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsGuestPoliciesService(base_api.BaseApiService):
+    """Service class for the organizations_guestPolicies resource."""
+
+    _NAME = u'organizations_guestPolicies'
+
+    def __init__(self, client):
+      super(OsconfigV1beta.OrganizationsGuestPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create an OS Config guest policy.
+
+      Args:
+        request: (OsconfigOrganizationsGuestPoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GuestPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/organizations/{organizationsId}/guestPolicies',
+        http_method=u'POST',
+        method_id=u'osconfig.organizations.guestPolicies.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'guestPolicyId'],
+        relative_path=u'v1beta/{+parent}/guestPolicies',
+        request_field=u'guestPolicy',
+        request_type_name=u'OsconfigOrganizationsGuestPoliciesCreateRequest',
+        response_type_name=u'GuestPolicy',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete an OS Config guest policy.
+
+      Args:
+        request: (OsconfigOrganizationsGuestPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/organizations/{organizationsId}/guestPolicies/{guestPoliciesId}',
+        http_method=u'DELETE',
+        method_id=u'osconfig.organizations.guestPolicies.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta/{+name}',
+        request_field='',
+        request_type_name=u'OsconfigOrganizationsGuestPoliciesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get an OS Config guest policy.
+
+      Args:
+        request: (OsconfigOrganizationsGuestPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GuestPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/organizations/{organizationsId}/guestPolicies/{guestPoliciesId}',
+        http_method=u'GET',
+        method_id=u'osconfig.organizations.guestPolicies.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta/{+name}',
+        request_field='',
+        request_type_name=u'OsconfigOrganizationsGuestPoliciesGetRequest',
+        response_type_name=u'GuestPolicy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Get a page of OS Config guest policies.
+
+      Args:
+        request: (OsconfigOrganizationsGuestPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListGuestPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/organizations/{organizationsId}/guestPolicies',
+        http_method=u'GET',
+        method_id=u'osconfig.organizations.guestPolicies.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta/{+parent}/guestPolicies',
+        request_field='',
+        request_type_name=u'OsconfigOrganizationsGuestPoliciesListRequest',
+        response_type_name=u'ListGuestPoliciesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update an OS Config guest policy.
+
+      Args:
+        request: (OsconfigOrganizationsGuestPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GuestPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/organizations/{organizationsId}/guestPolicies/{guestPoliciesId}',
+        http_method=u'PATCH',
+        method_id=u'osconfig.organizations.guestPolicies.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1beta/{+name}',
+        request_field=u'guestPolicy',
+        request_type_name=u'OsconfigOrganizationsGuestPoliciesPatchRequest',
+        response_type_name=u'GuestPolicy',
+        supports_download=False,
+    )
+
+  class OrganizationsService(base_api.BaseApiService):
+    """Service class for the organizations resource."""
+
+    _NAME = u'organizations'
+
+    def __init__(self, client):
+      super(OsconfigV1beta.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsGuestPoliciesService(base_api.BaseApiService):
+    """Service class for the projects_guestPolicies resource."""
+
+    _NAME = u'projects_guestPolicies'
+
+    def __init__(self, client):
+      super(OsconfigV1beta.ProjectsGuestPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create an OS Config guest policy.
+
+      Args:
+        request: (OsconfigProjectsGuestPoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GuestPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/projects/{projectsId}/guestPolicies',
+        http_method=u'POST',
+        method_id=u'osconfig.projects.guestPolicies.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'guestPolicyId'],
+        relative_path=u'v1beta/{+parent}/guestPolicies',
+        request_field=u'guestPolicy',
+        request_type_name=u'OsconfigProjectsGuestPoliciesCreateRequest',
+        response_type_name=u'GuestPolicy',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete an OS Config guest policy.
+
+      Args:
+        request: (OsconfigProjectsGuestPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/projects/{projectsId}/guestPolicies/{guestPoliciesId}',
+        http_method=u'DELETE',
+        method_id=u'osconfig.projects.guestPolicies.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta/{+name}',
+        request_field='',
+        request_type_name=u'OsconfigProjectsGuestPoliciesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get an OS Config guest policy.
+
+      Args:
+        request: (OsconfigProjectsGuestPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GuestPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/projects/{projectsId}/guestPolicies/{guestPoliciesId}',
+        http_method=u'GET',
+        method_id=u'osconfig.projects.guestPolicies.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta/{+name}',
+        request_field='',
+        request_type_name=u'OsconfigProjectsGuestPoliciesGetRequest',
+        response_type_name=u'GuestPolicy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Get a page of OS Config guest policies.
+
+      Args:
+        request: (OsconfigProjectsGuestPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListGuestPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/projects/{projectsId}/guestPolicies',
+        http_method=u'GET',
+        method_id=u'osconfig.projects.guestPolicies.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta/{+parent}/guestPolicies',
+        request_field='',
+        request_type_name=u'OsconfigProjectsGuestPoliciesListRequest',
+        response_type_name=u'ListGuestPoliciesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update an OS Config guest policy.
+
+      Args:
+        request: (OsconfigProjectsGuestPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GuestPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/projects/{projectsId}/guestPolicies/{guestPoliciesId}',
+        http_method=u'PATCH',
+        method_id=u'osconfig.projects.guestPolicies.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1beta/{+name}',
+        request_field=u'guestPolicy',
+        request_type_name=u'OsconfigProjectsGuestPoliciesPatchRequest',
+        response_type_name=u'GuestPolicy',
+        supports_download=False,
+    )
 
   class ProjectsPatchDeploymentsService(base_api.BaseApiService):
     """Service class for the projects_patchDeployments resource."""
@@ -234,7 +696,7 @@ cannot be restarted.
     )
 
     def Execute(self, request, global_params=None):
-      r"""Patch GCE instances by creating and running a PatchJob.
+      r"""Patch VM instances by creating and running a patch job.
 
       Args:
         request: (OsconfigProjectsPatchJobsExecuteRequest) input message
@@ -314,6 +776,54 @@ ongoing patch job or review the details of completed jobs.
         response_type_name=u'ListPatchJobsResponse',
         supports_download=False,
     )
+
+  class ProjectsZonesInstancesService(base_api.BaseApiService):
+    """Service class for the projects_zones_instances resource."""
+
+    _NAME = u'projects_zones_instances'
+
+    def __init__(self, client):
+      super(OsconfigV1beta.ProjectsZonesInstancesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def LookupEffectiveGuestPolicy(self, request, global_params=None):
+      r"""Lookup the effective guest policy that applies to a VM instance. This.
+lookup merges all policies that are assigned to the instance ancestry.
+
+      Args:
+        request: (OsconfigProjectsZonesInstancesLookupEffectiveGuestPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EffectiveGuestPolicy) The response message.
+      """
+      config = self.GetMethodConfig('LookupEffectiveGuestPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LookupEffectiveGuestPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/projects/{projectsId}/zones/{zonesId}/instances/{instancesId}:lookupEffectiveGuestPolicy',
+        http_method=u'POST',
+        method_id=u'osconfig.projects.zones.instances.lookupEffectiveGuestPolicy',
+        ordered_params=[u'instance'],
+        path_params=[u'instance'],
+        query_params=[],
+        relative_path=u'v1beta/{+instance}:lookupEffectiveGuestPolicy',
+        request_field=u'lookupEffectiveGuestPolicyRequest',
+        request_type_name=u'OsconfigProjectsZonesInstancesLookupEffectiveGuestPolicyRequest',
+        response_type_name=u'EffectiveGuestPolicy',
+        supports_download=False,
+    )
+
+  class ProjectsZonesService(base_api.BaseApiService):
+    """Service class for the projects_zones resource."""
+
+    _NAME = u'projects_zones'
+
+    def __init__(self, client):
+      super(OsconfigV1beta.ProjectsZonesService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""

@@ -134,6 +134,20 @@ def GetManagedZonesDnsNameArg():
       help='The DNS name suffix that will be managed with the created zone.')
 
 
+def GetZoneIdArg(
+    help_text=(
+        'The unique system generated id for the peering zone to deactivate.')):
+  return base.Argument('--zone-id', required=True, help=help_text)
+
+
+def GetPeeringZoneListArg():
+  return base.Argument(
+      '--target-network',
+      required=True,
+      help='The network url of the Google Compute Engine private network '
+      'to forward queries to.')
+
+
 def GetManagedZonesDescriptionArg(required=False):
   return base.Argument(
       '--description',

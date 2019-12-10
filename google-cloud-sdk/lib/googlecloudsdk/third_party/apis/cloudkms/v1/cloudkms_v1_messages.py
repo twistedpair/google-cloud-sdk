@@ -790,7 +790,7 @@ class CryptoKey(_messages.Message):
     primary: Output only. A copy of the "primary" CryptoKeyVersion that will
       be used by Encrypt when this CryptoKey is given in EncryptRequest.name.
       The CryptoKey's primary version can be updated via
-      UpdateCryptoKeyPrimaryVersion.  All keys with purpose ENCRYPT_DECRYPT
+      UpdateCryptoKeyPrimaryVersion.  Keys with purpose ENCRYPT_DECRYPT may
       have a primary. For other keys, this field will be omitted.
     purpose: Immutable. The immutable purpose of this CryptoKey.
     rotationPeriod: next_rotation_time will be advanced by this period when
@@ -885,6 +885,9 @@ class CryptoKeyVersion(_messages.Message):
       material was destroyed. Only present if state is DESTROYED.
     destroyTime: Output only. The time this CryptoKeyVersion's key material is
       scheduled for destruction. Only present if state is DESTROY_SCHEDULED.
+    externalProtectionLevelOptions: [ExternalProtectionLevelOptions] stores a
+      group of additional fields for configuring a [CryptoKeyVersion] that are
+      specific to the [EXTERNAL] protection level.
     generateTime: Output only. The time this CryptoKeyVersion's key material
       was generated.
     importFailureReason: Output only. The root cause of an import failure.
@@ -931,6 +934,8 @@ class CryptoKeyVersion(_messages.Message):
         digest.
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
+      EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
+        encryption by an external KMS.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -948,6 +953,7 @@ class CryptoKeyVersion(_messages.Message):
     RSA_DECRYPT_OAEP_4096_SHA512 = 13
     EC_SIGN_P256_SHA256 = 14
     EC_SIGN_P384_SHA384 = 15
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 16
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Output only. The ProtectionLevel describing how crypto operations are
@@ -957,10 +963,12 @@ class CryptoKeyVersion(_messages.Message):
       PROTECTION_LEVEL_UNSPECIFIED: Not specified.
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
+      EXTERNAL: Crypto operations are performed by an external KMS.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
+    EXTERNAL = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current state of the CryptoKeyVersion.
@@ -1002,13 +1010,14 @@ class CryptoKeyVersion(_messages.Message):
   createTime = _messages.StringField(3)
   destroyEventTime = _messages.StringField(4)
   destroyTime = _messages.StringField(5)
-  generateTime = _messages.StringField(6)
-  importFailureReason = _messages.StringField(7)
-  importJob = _messages.StringField(8)
-  importTime = _messages.StringField(9)
-  name = _messages.StringField(10)
-  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
+  externalProtectionLevelOptions = _messages.MessageField('ExternalProtectionLevelOptions', 6)
+  generateTime = _messages.StringField(7)
+  importFailureReason = _messages.StringField(8)
+  importJob = _messages.StringField(9)
+  importTime = _messages.StringField(10)
+  name = _messages.StringField(11)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
 
 
 class CryptoKeyVersionTemplate(_messages.Message):
@@ -1065,6 +1074,8 @@ class CryptoKeyVersionTemplate(_messages.Message):
         digest.
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
+      EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
+        encryption by an external KMS.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -1082,6 +1093,7 @@ class CryptoKeyVersionTemplate(_messages.Message):
     RSA_DECRYPT_OAEP_4096_SHA512 = 13
     EC_SIGN_P256_SHA256 = 14
     EC_SIGN_P384_SHA384 = 15
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 16
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this
@@ -1091,10 +1103,12 @@ class CryptoKeyVersionTemplate(_messages.Message):
       PROTECTION_LEVEL_UNSPECIFIED: Not specified.
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
+      EXTERNAL: Crypto operations are performed by an external KMS.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
+    EXTERNAL = 3
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
@@ -1203,6 +1217,19 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class ExternalProtectionLevelOptions(_messages.Message):
+  r"""[ExternalProtectionLevelOptions] stores a group of additional fields for
+  configuring a [CryptoKeyVersion] that are specific to the [EXTERNAL]
+  protection level.
+
+  Fields:
+    externalKeyUri: The URI for an external resource that this
+      CryptoKeyVersion represents.
+  """
+
+  externalKeyUri = _messages.StringField(1)
+
+
 class ImportCryptoKeyVersionRequest(_messages.Message):
   r"""Request message for KeyManagementService.ImportCryptoKeyVersion.
 
@@ -1260,6 +1287,8 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
         digest.
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
+      EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
+        encryption by an external KMS.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -1277,6 +1306,7 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     RSA_DECRYPT_OAEP_4096_SHA512 = 13
     EC_SIGN_P256_SHA256 = 14
     EC_SIGN_P384_SHA384 = 15
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 16
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   importJob = _messages.StringField(2)
@@ -1371,10 +1401,12 @@ class ImportJob(_messages.Message):
       PROTECTION_LEVEL_UNSPECIFIED: Not specified.
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
+      EXTERNAL: Crypto operations are performed by an external KMS.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
     HSM = 2
+    EXTERNAL = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the ImportJob, indicating if it can
@@ -1621,15 +1653,16 @@ class LocationMetadata(_messages.Message):
 
 
 class Policy(_messages.Message):
-  r"""Defines an Identity and Access Management (IAM) policy. It is used to
-  specify access control policies for Cloud Platform resources.   A `Policy`
-  is a collection of `bindings`. A `binding` binds one or more `members` to a
-  single `role`. Members can be user accounts, service accounts, Google
-  groups, and domains (such as G Suite). A `role` is a named list of
-  permissions (defined by IAM or configured by users). A `binding` can
-  optionally specify a `condition`, which is a logic expression that further
-  constrains the role binding based on attributes about the request and/or
-  target resource.  **JSON Example**      {       "bindings": [         {
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources.   A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members` to a single `role`.
+  Members can be user accounts, service accounts, Google groups, and domains
+  (such as G Suite). A `role` is a named list of permissions; each `role` can
+  be an IAM predefined role or a user-created custom role.  Optionally, a
+  `binding` can specify a `condition`, which is a logical expression that
+  allows access to a resource only if the expression evaluates to `true`. A
+  condition can add constraints based on attributes of the request, the
+  resource, or both.  **JSON example:**      {       "bindings": [         {
   "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-project-
@@ -1638,23 +1671,24 @@ class Policy(_messages.Message):
   ["user:eve@example.com"],           "condition": {             "title":
   "expirable access",             "description": "Does not grant access after
   Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ]     }
-  **YAML Example**      bindings:     - members:       - user:mike@example.com
-  - group:admins@example.com       - domain:google.com       - serviceAccount
+  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
+  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
+  bindings:     - members:       - user:mike@example.com       -
+  group:admins@example.com       - domain:google.com       - serviceAccount
   :my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
   grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')  For a description of IAM and its
-  features, see the [IAM developer's
-  guide](https://cloud.google.com/iam/docs).
+  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
+  version: 3  For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally may
-      specify a `condition` that determines when binding is in effect.
-      `bindings` with no members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally, may
+      specify a `condition` that determines how and when the `bindings` are
+      applied. Each of the `bindings` must contain at least one member.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -1662,19 +1696,24 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten. Due to blind-set semantics of an
-      etag-less policy, 'setIamPolicy' will not fail even if either of
-      incoming or stored policy does not meet the version requirements.
-    version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Operations
-      affecting conditional bindings must specify version 3. This can be
-      either setting a conditional policy, modifying a conditional binding, or
-      removing a conditional binding from the stored conditional policy.
-      Operations on non-conditional policies may specify any valid value or
-      leave the field unset.  If no etag is provided in the call to
-      `setIamPolicy`, any version compliance checks on the incoming and/or
-      stored policy is skipped.
+      policy.  **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
+    version: Specifies the format of the policy.  Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected.  Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations:  * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy   that includes conditions  **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost.  If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -1726,6 +1765,8 @@ class PublicKey(_messages.Message):
         digest.
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
+      EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
+        encryption by an external KMS.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -1743,6 +1784,7 @@ class PublicKey(_messages.Message):
     RSA_DECRYPT_OAEP_4096_SHA512 = 13
     EC_SIGN_P256_SHA256 = 14
     EC_SIGN_P384_SHA384 = 15
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 16
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   pem = _messages.StringField(2)

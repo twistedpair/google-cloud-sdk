@@ -276,11 +276,13 @@
           "description": "The service tier of the instance.",
           "enumDescriptions": [
             "Not set.",
-            "STANDARD tier.",
-            "PREMIUM tier.",
+            "STANDARD tier. BASIC_HDD is the preferred term for this tier.",
+            "PREMIUM tier. BASIC_SSD is the preferred term for this tier.",
             "SCALE OUT tier.\nThis is a possibly temporary change for\ngo\/elastifile-filestore-hackathon.",
-            "Alias for STANDARD Tier, backed by Persistent Disk HDD.",
-            "Alias for PREMIUM Tier, backed by Persistent Disk SSD."
+            "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_HDD is an alias for STANDARD Tier, offering economical\nperformance backed by Persistent Disk HDD.",
+            "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_SSD is an alias for PREMIUM Tier, and offers improved\nperformance backed by Persistent Disk SSD.",
+            "ADVANCED_HDD instances offer larger capacity and scalable\nperformance backed by Persistent Disk HDD",
+            "ADVANCED instances offer larger capacity and professional\nperformance backed by Persistent Disk SSD."
           ],
           "type": "string",
           "enum": [
@@ -288,8 +290,10 @@
             "STANDARD",
             "PREMIUM",
             "SCALE_OUT",
-            "HDD",
-            "SSD"
+            "BASIC_HDD",
+            "BASIC_SSD",
+            "ADVANCED_HDD",
+            "ADVANCED_SSD"
           ]
         },
         "labels": {
@@ -565,11 +569,13 @@
           "description": "Output only. The service tier of the source Cloud Filestore instance that this snapshot\nis created from.",
           "enumDescriptions": [
             "Not set.",
-            "STANDARD tier.",
-            "PREMIUM tier.",
+            "STANDARD tier. BASIC_HDD is the preferred term for this tier.",
+            "PREMIUM tier. BASIC_SSD is the preferred term for this tier.",
             "SCALE OUT tier.\nThis is a possibly temporary change for\ngo\/elastifile-filestore-hackathon.",
-            "Alias for STANDARD Tier, backed by Persistent Disk HDD.",
-            "Alias for PREMIUM Tier, backed by Persistent Disk SSD."
+            "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_HDD is an alias for STANDARD Tier, offering economical\nperformance backed by Persistent Disk HDD.",
+            "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_SSD is an alias for PREMIUM Tier, and offers improved\nperformance backed by Persistent Disk SSD.",
+            "ADVANCED_HDD instances offer larger capacity and scalable\nperformance backed by Persistent Disk HDD",
+            "ADVANCED instances offer larger capacity and professional\nperformance backed by Persistent Disk SSD."
           ],
           "type": "string",
           "enum": [
@@ -577,8 +583,26 @@
             "STANDARD",
             "PREMIUM",
             "SCALE_OUT",
-            "HDD",
-            "SSD"
+            "BASIC_HDD",
+            "BASIC_SSD",
+            "ADVANCED_HDD",
+            "ADVANCED_SSD"
+          ]
+        },
+        "type": {
+          "description": "The Type of the Snapshot.",
+          "enumDescriptions": [
+            "Not set, will use the default value of BACKUP.",
+            "Backup snapshots are standalone and replicated regionally.\nBasic Instances can be created or restored from this snapshot\nvariant (Backup snapshots are not supported for Advanced\ninstances at this time).",
+            "Local snapshots are standalone, zonal resources. Basic\nInstances can be created or restored from this snapshot\nvariant (Local snapshots are not supported for Advanced\ninstances at this time).",
+            "In place snapshots are part of the Instance storage system and occupy\nInstance storage space. They are also tied to the Instance lifecycle and\nare deleted at Instance deletion time. Instances cannot be restored or\ncreated from this snapshot variant. In Place snapshots are only supported\nfor Advanced Instances at this time."
+          ],
+          "type": "string",
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "BACKUP",
+            "LOCAL",
+            "IN_PLACE"
           ]
         }
       }

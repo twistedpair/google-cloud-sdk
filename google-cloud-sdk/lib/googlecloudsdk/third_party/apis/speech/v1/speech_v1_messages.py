@@ -534,11 +534,13 @@ class SpeakerDiarizationConfig(_messages.Message):
       range gives you more flexibility by allowing the system to automatically
       determine the correct number of speakers. If not set, the default value
       is 2.
+    speakerTag: Output only. Unused.
   """
 
   enableSpeakerDiarization = _messages.BooleanField(1)
   maxSpeakerCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   minSpeakerCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  speakerTag = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class SpeechContext(_messages.Message):

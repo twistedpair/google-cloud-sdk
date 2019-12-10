@@ -82,7 +82,14 @@ def AddEnableLogging(parser, default):
       default=default,
       help="""\
       Enable logging for the firewall rule. Logs will be exported to
-      StackDriver. Firewall logging is disabled by default.
+      StackDriver. Firewall logging is disabled by default. To enable logging
+      for an existing rule, run:
+
+        $ {command} MY-RULE --enable-logging
+
+      To disable logging on an existing rule, run:
+
+        $ {command} MY-RULE --no-enable-logging
       """)
 
 

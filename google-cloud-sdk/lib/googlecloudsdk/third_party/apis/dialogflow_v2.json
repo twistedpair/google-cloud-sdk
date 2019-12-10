@@ -457,7 +457,7 @@
           "type": "boolean"
         },
         "mlDisabled": {
-          "description": "Optional. Indicates whether Machine Learning is disabled for the intent.\nNote: If `ml_diabled` setting is set to true, then this intent is not\ntaken into account during inference in `ML ONLY` match mode. Also,\nauto-markup in the UI is turned off.",
+          "description": "Optional. Indicates whether Machine Learning is disabled for the intent.\nNote: If `ml_disabled` setting is set to true, then this intent is not\ntaken into account during inference in `ML ONLY` match mode. Also,\nauto-markup in the UI is turned off.",
           "type": "boolean"
         },
         "inputContextNames": {
@@ -2091,19 +2091,127 @@
         }
       }
     },
-    "GoogleCloudDialogflowV2ExportAgentResponse": {
-      "id": "GoogleCloudDialogflowV2ExportAgentResponse",
-      "description": "The response message for Agents.ExportAgent.",
+    "GoogleCloudDialogflowV2ConversationEvent": {
+      "id": "GoogleCloudDialogflowV2ConversationEvent",
+      "description": "Represents a notification sent to Cloud Pub\/Sub subscribers for conversation\nlifecycle events.",
       "type": "object",
       "properties": {
-        "agentUri": {
-          "description": "The URI to a file containing the exported agent. This field is populated\nonly if `agent_uri` is specified in `ExportAgentRequest`.",
+        "conversation": {
+          "description": "The unique identifier of the conversation this notification\nrefers to.\nFormat: `projects\/<Project ID>\/conversations\/<Conversation ID>`.",
           "type": "string"
         },
-        "agentContent": {
-          "description": "Zip compressed raw byte content for agent.",
+        "type": {
+          "description": "The type of the event that this notification refers to.",
+          "enumDescriptions": [
+            "Type not set.",
+            "A new conversation has been opened. This is fired when a telephone call\nis answered, or a conversation is created via the API.",
+            "An existing conversation has closed. This is fired when a telephone call\nis terminated, or a conversation is closed via the API.",
+            "An existing conversation has received notification from Dialogflow that\nhuman intervention is required.",
+            "An existing conversation has received a new message, either from API or\ntelephony. It is configured in\nConversationProfile.new_message_event_notification_config",
+            "Unrecoverable error during a telephone call.\n\nIn general non-recoverable errors only occur if something was\nmisconfigured in the ConversationProfile corresponding to the call. After\na non-recoverable error, Dialogflow may stop responding.\n\nWe don't fire this event:\n* in an API call because we can directly return the error, or,\n* when we can recover from an error."
+          ],
           "type": "string",
-          "format": "byte"
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "CONVERSATION_STARTED",
+            "CONVERSATION_FINISHED",
+            "HUMAN_INTERVENTION_NEEDED",
+            "NEW_MESSAGE",
+            "UNRECOVERABLE_ERROR"
+          ]
+        },
+        "errorStatus": {
+          "description": "More detailed information about an error. Only set for type\nUNRECOVERABLE_ERROR_IN_PHONE_CALL.",
+          "$ref": "GoogleRpcStatus"
+        },
+        "newMessagePayload": {
+          "description": "Payload of NEW_MESSAGE event.",
+          "$ref": "GoogleCloudDialogflowV2Message"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2Message": {
+      "id": "GoogleCloudDialogflowV2Message",
+      "description": "Represents a message posted into a conversation.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The unique identifier of the message.\nFormat: `projects\/<Project ID>\/conversations\/<Conversation\nID>\/messages\/<Message ID>`.",
+          "type": "string"
+        },
+        "content": {
+          "description": "Required. The message content.",
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "Optional. The message language.\nThis should be a [BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt)\nlanguage tag. Example: \"en-US\".",
+          "type": "string"
+        },
+        "participant": {
+          "description": "Output only. The participant that sends this message.",
+          "type": "string"
+        },
+        "participantRole": {
+          "description": "Output only. The role of the participant.",
+          "enumDescriptions": [
+            "Participant role not set.",
+            "Participant is a human agent.",
+            "Participant is an automated agent, such as a Dialogflow agent.",
+            "Participant is an end user that has called or chatted with\nDialogflow services."
+          ],
+          "type": "string",
+          "enum": [
+            "ROLE_UNSPECIFIED",
+            "HUMAN_AGENT",
+            "AUTOMATED_AGENT",
+            "END_USER"
+          ]
+        },
+        "createTime": {
+          "description": "Output only. The time when the message was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "messageAnnotation": {
+          "description": "Output only. The annotation for the message.",
+          "$ref": "GoogleCloudDialogflowV2MessageAnnotation"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2MessageAnnotation": {
+      "id": "GoogleCloudDialogflowV2MessageAnnotation",
+      "description": "Represents the result of annotation for the message.",
+      "type": "object",
+      "properties": {
+        "parts": {
+          "description": "The collection of annotated message parts ordered by their\nposition in the message. You can recover the annotated message by\nconcatenating [AnnotatedMessagePart.text].",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2AnnotatedMessagePart"
+          }
+        },
+        "containEntities": {
+          "description": "Indicates whether the text message contains entities.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2AnnotatedMessagePart": {
+      "id": "GoogleCloudDialogflowV2AnnotatedMessagePart",
+      "description": "Represents a part of a message possibly annotated with an entity. The part\ncan be an entity or purely a part of the message between two entities or\nmessage start\/end.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "A part of a message possibly annotated with an entity.",
+          "type": "string"
+        },
+        "entityType": {
+          "description": "The [Dialogflow system entity\ntype](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/system-entities)\nof this message part. If this is empty, Dialogflow could not annotate the\nphrase part with a system entity.",
+          "type": "string"
+        },
+        "formattedValue": {
+          "description": "The [Dialogflow system entity formatted value\n](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/system-entities) of\nthis message part. For example for a system entity of type\n`@sys.unit-currency`, this may contain:\n<pre>\n{\n  \"amount\": 5,\n  \"currency\": \"USD\"\n}\n<\/pre>",
+          "type": "any"
         }
       }
     },
@@ -2132,6 +2240,22 @@
           "items": {
             "$ref": "GoogleCloudDialogflowV2Intent"
           }
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2ExportAgentResponse": {
+      "id": "GoogleCloudDialogflowV2ExportAgentResponse",
+      "description": "The response message for Agents.ExportAgent.",
+      "type": "object",
+      "properties": {
+        "agentUri": {
+          "description": "The URI to a file containing the exported agent. This field is populated\nonly if `agent_uri` is specified in `ExportAgentRequest`.",
+          "type": "string"
+        },
+        "agentContent": {
+          "description": "Zip compressed raw byte content for agent.",
+          "type": "string",
+          "format": "byte"
         }
       }
     },

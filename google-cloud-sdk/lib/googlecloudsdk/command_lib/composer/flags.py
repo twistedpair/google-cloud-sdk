@@ -357,10 +357,46 @@ ENABLE_PRIVATE_ENDPOINT_FLAG = base.Argument(
     specified.
     """)
 
+
+def _GetIpv4CidrMaskSize(ipv4_cidr_block):
+  """Returns the size of IPV4 CIDR block mask in bits.
+
+  Args:
+    ipv4_cidr_block: str, the IPV4 CIDR block string to check.
+
+  Returns:
+    int, the size of the block mask if ipv4_cidr_block is a valid CIDR block
+    string, otherwise None.
+  """
+  network = ipaddress.IPv4Network(ipv4_cidr_block)
+  if network is None:
+    return None
+
+  return 32 - (network.num_addresses.bit_length() - 1)
+
+
+def _IsValidMasterIpv4CidrBlock(ipv4_cidr_block):
+  """Validates that IPV4 CIDR block arg for the master network has valid format.
+
+  Intended to be used as an argparse validator.
+
+  Args:
+    ipv4_cidr_block: str, the IPV4 CIDR block string to validate.
+
+  Returns:
+    bool, True if and only if the IPV4 CIDR block is valid and has the 28-bit
+    size mask.
+  """
+  return _IsValidIpv4CidrBlock(ipv4_cidr_block) and \
+    _GetIpv4CidrMaskSize(ipv4_cidr_block) == 28
+
+MASTER_IPV4_CIDR_BLOCK_FORMAT_VALIDATOR = arg_parsers.CustomFunctionValidator(
+    _IsValidMasterIpv4CidrBlock, _INVALID_IPV4_CIDR_BLOCK_ERROR)
+
 MASTER_IPV4_CIDR_FLAG = base.Argument(
     '--master-ipv4-cidr',
     default=None,
-    type=IPV4_CIDR_BLOCK_FORMAT_VALIDATOR,
+    type=MASTER_IPV4_CIDR_BLOCK_FORMAT_VALIDATOR,
     help="""\
     IPv4 CIDR range to use for the master network. This should have a netmask
     of size /28.

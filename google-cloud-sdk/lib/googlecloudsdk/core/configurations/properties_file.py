@@ -111,7 +111,7 @@ def PersistProperty(file_path, section, name, value):
   if value is None:
     parsed_config.remove_option(section, name)
   else:
-    parsed_config.set(section, name, str(value))
+    parsed_config.set(section, name, six.text_type(value))
 
   properties_dir, unused_name = os.path.split(file_path)
   files.MakeDir(properties_dir)

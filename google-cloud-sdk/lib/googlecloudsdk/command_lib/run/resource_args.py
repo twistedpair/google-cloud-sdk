@@ -108,7 +108,8 @@ class DefaultFallthrough(deps.Fallthrough):
         'Otherwise, defaults to project ID.')
 
   def _Call(self, parsed_args):
-    if flags.IsGKE(parsed_args) or flags.IsKubernetes(parsed_args):
+    if (flags.GetPlatform() == flags.PLATFORM_GKE or
+        flags.GetPlatform() == flags.PLATFORM_KUBERNETES):
       return 'default'
     elif not (getattr(parsed_args, 'project', None) or
               properties.VALUES.core.project.Get()):
@@ -188,7 +189,7 @@ class ClusterPromptFallthrough(PromptFallthrough):
     Returns:
       A cluster name string
     """
-    if flags.IsGKE(parsed_args):
+    if flags.GetPlatform() == flags.PLATFORM_GKE:
       cluster_location = (
           getattr(parsed_args, 'cluster_location', None) or
           properties.VALUES.run.cluster_location.Get())
@@ -199,7 +200,7 @@ class ClusterPromptFallthrough(PromptFallthrough):
       if not clusters:
         raise exceptions.ConfigurationError(
             'No compatible clusters found{}. '
-            'Ensure your cluster has Cloud Run on GKE enabled.'.format(
+            'Ensure your cluster has Cloud Run enabled.'.format(
                 cluster_location_msg))
 
       def _GetClusterDescription(cluster):
@@ -267,14 +268,14 @@ class ClusterLocationPromptFallthrough(PromptFallthrough):
     cluster_name = (
         getattr(parsed_args, 'cluster', None) or
         properties.VALUES.run.cluster.Get())
-    if flags.IsGKE(parsed_args) and cluster_name:
+    if flags.GetPlatform() == flags.PLATFORM_GKE and cluster_name:
       clusters = [
           c for c in global_methods.ListClusters() if c.name == cluster_name
       ]
       if not clusters:
         raise exceptions.ConfigurationError(
             'No cluster locations found for cluster [{}]. '
-            'Ensure your clusters have Cloud Run on GKE enabled.'
+            'Ensure your clusters have Cloud Run enabled.'
             .format(cluster_name))
       cluster_locations = [c.zone for c in clusters]
       idx = console_io.PromptChoice(

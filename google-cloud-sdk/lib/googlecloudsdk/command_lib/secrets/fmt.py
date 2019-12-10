@@ -38,8 +38,9 @@ value(
 _SECRET_TABLE = """
 table(
   name.basename():label=NAME,
-  policy.replicaLocations.notnull().list():label=LOCATIONS,
-  createTime.date():label=CREATED
+  createTime.date():label=CREATED,
+  policy_transform():label=REPLICATION_POLICY,
+  locations_transform():label=LOCATIONS
 )
 """
 
@@ -63,6 +64,35 @@ _VERSION_STATE_TRANSFORMS = {
     }
 }
 
+
+def _TransformReplicationPolicy(r):
+  if 'replication' not in r:
+    return 'ERROR'
+  if 'automatic' in r['replication']:
+    return 'automatic'
+  if 'userManaged' in r['replication']:
+    return 'user_managed'
+  return 'ERROR'
+
+
+def _TransformLocations(r):
+  if 'replication' not in r:
+    return 'ERROR'
+  if 'automatic' in r['replication']:
+    return '-'
+  if 'userManaged' in r['replication'] and 'replicas' in r['replication'][
+      'userManaged']:
+    locations = []
+    for replica in r['replication']['userManaged']['replicas']:
+      locations.append(replica['location'])
+    return ','.join(locations)
+  return 'ERROR'
+
+_SECRET_TRANSFORMS = {
+    'policy_transform': _TransformReplicationPolicy,
+    'locations_transform': _TransformLocations
+}
+
 _VERSION_URI_FUNC = lambda r: secrets_args.ParseVersionRef(r.name).SelfLink()
 
 
@@ -73,6 +103,7 @@ def UseLocationTable(parser):
 
 def UseSecretTable(parser):
   parser.display_info.AddFormat(_SECRET_TABLE)
+  parser.display_info.AddTransforms(_SECRET_TRANSFORMS)
   parser.display_info.AddUriFunc(_SECRET_URI_FUNC)
 
 

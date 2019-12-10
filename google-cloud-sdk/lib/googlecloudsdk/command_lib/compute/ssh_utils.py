@@ -30,6 +30,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import base64
+import binascii
 import collections
 import datetime
 import json
@@ -46,6 +48,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import times
 import six
 
@@ -57,6 +60,7 @@ _TROUBLESHOOTING_URL = (
     'https://cloud.google.com/compute/docs/troubleshooting#ssherrors')
 
 GUEST_ATTRIBUTES_METADATA_KEY = 'enable-guest-attributes'
+SUPPORTED_HOSTKEY_TYPES = ['ssh-rsa', 'ssh-ed25519', 'ecdsa-sha2-nistp256']
 
 
 class UnallocatedIPAddressError(core_exceptions.Error):
@@ -559,8 +563,21 @@ class BaseSSHHelper(object):
 
     if hostkeys is not None:
       for item in hostkeys.queryValue.items:
-        if item.namespace == 'hostkeys':
-          hostkey_dict[item.key] = item.value
+        if (item.namespace == 'hostkeys'
+            and item.key in SUPPORTED_HOSTKEY_TYPES):
+          # Truncate key value at any whitespace (newlines specifically can
+          # be a security issue).
+          key_value = item.value.split()[0]
+
+          # Verify that key value is a base64 string
+          try:
+            decoded_key = base64.b64decode(key_value)
+            encoded_key = encoding.Decode(base64.b64encode(decoded_key))
+          except (TypeError, binascii.Error):
+            encoded_key = ''
+
+          if key_value == encoded_key:
+            hostkey_dict[item.key] = key_value
 
     return hostkey_dict
 

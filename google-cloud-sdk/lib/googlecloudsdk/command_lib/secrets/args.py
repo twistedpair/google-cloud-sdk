@@ -45,6 +45,16 @@ def AddDataFile(parser, positional=False, **kwargs):
       **kwargs)
 
 
+def AddPolicy(parser, positional=False, **kwargs):
+  parser.add_argument(
+      _ArgOrFlag('replication-policy', positional),
+      metavar='POLICY',
+      help=('The type of replication policy to apply to this secret. Allowed '
+            'values are "automatic" and "user-managed". If user-managed then '
+            '--locations must also be provided.'),
+      **kwargs)
+
+
 def AddProject(parser, positional=False, **kwargs):
   concept_parsers.ConceptParser.ForResource(
       name=_ArgOrFlag('project', positional),

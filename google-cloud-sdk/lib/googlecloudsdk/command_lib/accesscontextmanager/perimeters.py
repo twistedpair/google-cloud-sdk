@@ -149,6 +149,11 @@ def _AddServiceFilterRestriction(args, req, version, restriction_type):
   return req
 
 
+def AddVpcServiceRestrictionAlpha(ref, args, req):
+  del ref  # Unused
+  return AddVpcServiceRestriction(args, req, 'v1alpha')
+
+
 def AddVpcServiceRestrictionBeta(ref, args, req):
   del ref  # Unused
   return AddVpcServiceRestriction(args, req, 'v1beta')
@@ -457,6 +462,10 @@ def ParseLevels(args, perimeter_result, policy_id, dry_run=False):
   ]
 
 
+def ParseServicePerimetersAlpha(path):
+  return ParseServicePerimetersBase(path, version='v1alpha')
+
+
 def ParseServicePerimetersBeta(path):
   return ParseServicePerimetersBase(path, version='v1beta')
 
@@ -488,6 +497,10 @@ def ParseServicePerimetersBase(path, version=None):
 
   _ValidateAllFieldsRecognized(path, conditions)
   return conditions
+
+
+def ParseReplaceServicePerimetersResponseAlpha(lro, unused_args):
+  return ParseReplaceServicePerimetersResponseBase(lro, version='v1alpha')
 
 
 def ParseReplaceServicePerimetersResponseBeta(lro, unused_args):

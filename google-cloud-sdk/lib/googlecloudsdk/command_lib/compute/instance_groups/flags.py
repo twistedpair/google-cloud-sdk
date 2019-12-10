@@ -277,11 +277,11 @@ def AddSettingStatefulDisksFlag(parser, required=False):
       '--stateful-disks',
       metavar='DEVICE_NAME',
       type=arg_parsers.ArgList(min_length=1),
-      help=('Disks considered stateful by the instance group. Usually, the '
-            'managed instance group deletes disks when deleting instances; '
+      help=('Disks, specified in the group\'s instance template, to consider '
+            'stateful. Usually, a managed instance group deletes and recreates '
+            'disks from their original images when recreating instances; '
             'however, in the case of stateful disks, these disks are detached '
-            'from the deleted instance and attached to new instances the '
-            'managed instance group creates.'),
+            'and reattached when the instance is recreated.'),
   )
   stateful_disks.add_argument(
       '--no-stateful-disks',
@@ -334,23 +334,15 @@ def AddMigStatefulFlagsForInstanceConfigs(parser, for_update=False):
       '--instance',
       required=True,
       help="""
-        URI to existing or non existing instance.
-
-        Name - last part of URI - will be preserved for existing per instance
-        configs.
-
-        For zonal managed instance groups there is no need to specify the whole
-        URI to the instance - for this case instance name can be applied instead
-        of URI.
+        URI/name of an existing instance in the managed instance group.
       """)
 
   stateful_disks_help = STATEFUL_DISKS_HELP + """
-      Besides preserving disks already attached to the instance by specifying
-      only device names, user have an option to attach (and preserve) other
-      existing persistent disk(s) to the given instance.
+      You can also attach and preserve disks, not defined in the group's
+      instance template, to a given instance.
 
-      The same disk can be attached to many instances but only in read-only
-      mode.
+      The same disk can be attached to more than one instance but only in
+      read-only mode.
       """
   if for_update:
     stateful_disks_help += """
@@ -364,14 +356,14 @@ def AddMigStatefulFlagsForInstanceConfigs(parser, for_update=False):
     stateful_disk_argument_name = '--update-stateful-disk'
   else:
     stateful_disks_help += """
-      Use this argument multiple times to attach more disks.
+      Use this argument multiple times to attach and preserve multiple disks.
       """
     stateful_disk_argument_name = '--stateful-disk'
   stateful_disks_help += """
       *device-name*::: Name under which disk is or will be attached.
 
-      *source*::: Optional argument used to specify URI of existing persistent
-      disk to attach under specified `device-name`.
+      *source*::: Optional argument used to specify the URI of an existing
+      persistent disk to attach under specified `device-name`.
 
       *mode*::: Specifies the mode of the disk to attach. Supported options are
       `ro` for read-only and `rw` for read-write. If omitted when source is
@@ -399,8 +391,7 @@ def AddMigStatefulFlagsForInstanceConfigs(parser, for_update=False):
         '--remove-stateful-disks',
         metavar='DEVICE_NAME',
         type=arg_parsers.ArgList(min_length=1),
-        help=('List all device names which should be removed from current '
-              'instance config.'),
+        help='List all device names to remove from the instance\'s config.',
     )
 
   if for_update:
@@ -409,15 +400,16 @@ def AddMigStatefulFlagsForInstanceConfigs(parser, for_update=False):
     stateful_metadata_argument_name = '--stateful-metadata'
   stateful_metadata_help = """
       Additional metadata to be made available to the guest operating system
-      on top of the metadata defined in the instance template.
+      in addition to the metadata defined in the instance template.
 
       Stateful metadata may be used to define a key/value pair specific for
       the one given instance to differentiate it from the other instances in
       the managed instance group.
 
       Stateful metadata have priority over the metadata defined in the
-      instance template. It means that stateful metadata defined for the keys
-      already existing in the instance template override their values.
+      instance template. This means that stateful metadata that is defined for a
+      key that already exists in the instance template overrides the instance
+      template value.
 
       Each metadata entry is a key/value pair separated by an equals sign.
       Metadata keys must be unique and less than 128 bytes in length. Multiple
@@ -443,8 +435,8 @@ def AddMigStatefulFlagsForInstanceConfigs(parser, for_update=False):
         '--remove-stateful-metadata',
         metavar='KEY',
         type=arg_parsers.ArgList(min_length=1),
-        help=('List all stateful metadata keys which should be removed from '
-              'current instance config.'),
+        help=('List all stateful metadata keys to remove from the'
+              'instance\'s config.'),
     )
 
 
@@ -469,14 +461,14 @@ def AddCreateInstancesFlags(parser):
 
       Use this flag multiple times to attach more disks.
 
-      *device-name*::: (Required) Device name under which disk is or will be
+      *device-name*::: (Required) Device name under which the disk is or will be
       attached.
 
       *source*::: (Required) URI of an existing persistent disk to attach under
       the specified device-name.
 
       *mode*::: Specifies the attachment mode of the disk. Supported options are
-      'ro' for read-only and 'rw' for read-write. If omitted, defaults to 'rw'.
+      `ro` for read-only and `rw` for read-write. If omitted, defaults to `rw`.
       `mode` can only be specified if `source` is given.
       """ + AUTO_DELETE_ARG_HELP
   parser.add_argument(
@@ -514,7 +506,7 @@ def AddCreateInstancesFlags(parser):
       Each metadata entry is a key/value pair separated by an equals sign.
       Metadata keys must be unique and less than 128 bytes in length.
       Multiple entries can be passed to this flag, e.g.,
-      ``--stateful-metadata key-1=value-1,key-2=value-2,key-3=value-3''.
+      `--stateful-metadata key-1=value-1,key-2=value-2,key-3=value-3`.
   """.format(argument_name=stateful_metadata_argument_name)
   parser.add_argument(
       stateful_metadata_argument_name,
@@ -525,25 +517,23 @@ def AddCreateInstancesFlags(parser):
       help=stateful_metadata_help)
 
 
-def AddMigStatefulForceInstanceUpdateFlag(parser):
+def AddMigStatefulUpdateInstanceFlag(parser):
   parser.add_argument(
-      '--force-instance-update',
+      '--update-instance',
+      default=True,
       action='store_true',
       help="""
-        The changes will be applied immediately to the instances. If this flag
-        is not provided, the changes will be applied once the instances are
+        Apply the changes immediately to the instances. If this flag
+        is disabled, the changes will be applied once the instances are
         restarted or recreated.
 
-        Example: let's say we have an instance with a disk attached to it and an
-        override for the disk. If we decide to delete the override and provide
-        this flag, this will instantly recreate the instance and detach the disk
-        from it. Similarly if we have attached new disk or changed its
-        definition - with this flag it will instantly recreate instance with
-        newly applied overrides.
-
-        If we omit this flag, the instance will continue to exist with no
-        overrides changes applied until it gets restarted or recreated either
-        manually or by autohealer or updater.""")
+        Example: say you have an instance with a disk attached to it and you
+        created a stateful config for the disk. If you decide to delete the
+        stateful config for the disk and you provide this flag, the MIG
+        immediately refreshes the instance and removes the stateful config
+        for the disk. Similarly if you have attached a new disk or changed its
+        definition, with this flag the MIG immediately refreshes the instance
+        with the new config.""")
 
 
 def ValidateMigStatefulFlagsForInstanceConfigs(args,

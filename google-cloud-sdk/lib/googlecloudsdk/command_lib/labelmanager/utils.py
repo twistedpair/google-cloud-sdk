@@ -56,7 +56,7 @@ def GetLabelKeyFromDisplayName(display_name, label_parent):
       return key.name
 
   raise InvalidInputError(
-      'Invalid display_name for label key [{}] in parent [{}]'.format(
+      'Invalid display_name for LabelKey [{}] in parent [{}]'.format(
           display_name, label_parent))
 
 
@@ -88,6 +88,36 @@ def GetLabelValueFromDisplayName(display_name, label_key):
   raise InvalidInputError(
       'Invalid display_name for LabelValue [{}] in parent [{}]'.format(
           display_name, label_key))
+
+
+def GetLabelBindingNameFromLabelValueAndResource(label_value, resource):
+  """Returns the LabelBinding name for the LabelValue and resource if it exists.
+
+  Args:
+    label_value: String, numeric id of the LabelValue
+    resource: String, full resource name of the resource
+
+  Raises:
+    InvalidInputError: if the specified LabelValue and resource are not bound.
+
+  Returns:
+    The LabelBinding name of the LabelValue bound to the resource.
+  """
+  labelbindings_service = labelmanager.LabelBindingsService()
+  labelmanager_messages = labelmanager.LabelManagerMessages()
+
+  list_request = (
+      labelmanager_messages.LabelmanagerLabelBindingsListRequest(
+          filter='labelValue:'+label_value))
+  response = labelbindings_service.List(list_request)
+
+  for binding in response.bindings:
+    if (binding.labelValue == label_value and binding.resource == resource):
+      return binding.name
+
+  raise InvalidInputError(
+      'Invalid LabelBinding for LabelValue [{}] and resource [{}]'.format(
+          label_value, resource))
 
 
 def GetLabelValueIfArgsAreValid(args):

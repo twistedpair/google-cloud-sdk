@@ -51,7 +51,7 @@ class BillingbudgetsV1alpha1(base_api.BaseApiClient):
     def Create(self, request, global_params=None):
       r"""Creates a new budget. See.
 <a href="https://cloud.google.com/billing/quotas">Quotas and limits</a>
-for more information.
+for more information on the limits of the number of budgets you can create.
 
       Args:
         request: (BillingbudgetsBillingAccountsBudgetsCreateRequest) input message

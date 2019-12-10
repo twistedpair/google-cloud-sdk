@@ -751,8 +751,8 @@ def CreateCluster(dataproc, cluster_ref, cluster, is_async, timeout):
         details='Cluster placed in zone [{0}]'.format(zone_short_name))
   else:
     log.error('Create cluster failed!')
-    if operation.details:
-      log.error('Details:\n' + operation.details)
+    if operation.error:
+      log.error('Details:\n' + operation.error.message)
   return cluster
 
 

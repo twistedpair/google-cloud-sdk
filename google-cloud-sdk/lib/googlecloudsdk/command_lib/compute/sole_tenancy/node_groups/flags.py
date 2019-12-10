@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util.apis import arg_utils
-import six
 
 _MAINTENANCE_POLICY_CHOICES = {
     'default': 'VM instances on the host are live migrated to a new '
@@ -38,23 +37,6 @@ _MAINTENANCE_POLICY_MAPPINGS = {
     'RESTART_IN_PLACE': 'restart-in-place',
     'MIGRATE_WITHIN_NODE_GROUP': 'migrate-within-node-group',
 }
-
-_AUTOSCALING_MODES = ['off', 'on']
-_AUTOSCALING_MODE_MAPPINGS = {
-    'OFF': 'off',
-    'ON': 'on',
-}
-
-
-def _ModeChoice():
-  def _Parse(value):
-    value = six.text_type(value.lower())
-    if value not in _AUTOSCALING_MODES:
-      raise arg_parsers.ArgumentTypeError(
-          '[mode] must be one of [{0}]'.format(
-              ','.join(_AUTOSCALING_MODES)))
-    return value
-  return _Parse
 
 
 def MakeNodeGroupArg():
@@ -118,36 +100,30 @@ def GetMaintenancePolicyEnumMapper(messages):
   )
 
 
-def AddAutoscalingPolicyArgToParser(parser):
+def AddAutoscalingPolicyArgToParser(parser, required_mode=False):
   """Add autoscaling configuration  arguments to parser."""
 
   group = parser.add_group(help='Autoscaling policy for node groups.')
-  group.add_argument('--mode',
-                     type=_ModeChoice(),
-                     required=True,
-                     help="""
-Options for mode are 'on' or 'off'. When set to 'on', the autoscaler
-will increase or decrease the size of the node group in response to capacity
-needs. If set to 'off', the autoscaler will not update the size of the node
-group.
-""")
-  group.add_argument('--min-size',
+  group.add_argument('--autoscaler-mode',
+                     required=required_mode,
+                     choices=
+                     {
+                         'on': 'to permit autoscaling to scale in and out.',
+                         'only-scale-out': 'to permit autoscaling to scale only'
+                                           ' out and not in.',
+                         'off': 'to turn off autoscaling.'
+                     },
+                     help='Set the mode of an autoscaler for a node group.')
+  group.add_argument('--min-nodes',
                      type=int,
                      help="""
 The minimum size of the node group. Default is 0 and must be an integer value
-smaller than or equal to max-size.
+smaller than or equal to `--max-nodes`.
 """)
-  group.add_argument('--max-size',
+  group.add_argument('--max-nodes',
                      type=int,
                      help="""
-The maximum size of the node group. Default is 100 and must be smaller or equal
-to 100 and larger than or equal to min-size.
+The maximum size of the node group. Must be smaller or equal to 100 and larger
+than or equal to `--min-nodes`. Must be specified if `--autoscaler-mode` is not
+``off''.
 """)
-
-
-def GetAutoscalingModeEnumMapper(messages):
-  return arg_utils.ChoiceEnumMapper(
-      'mode',
-      messages.NodeGroupAutoscalingPolicy.ModeValueValuesEnum,
-      custom_mappings=_AUTOSCALING_MODE_MAPPINGS,
-  )

@@ -5,6 +5,192 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 273.0.0 (2019-12-10)
+
+### Cloud SDK
+
+* Fixed issue where the gcloud command-line tool would crash with a TypeError
+  when invoked behind a proxy using a Python 3 interpreter. This issue was
+  reported at: <https://issuetracker.google.com/issues/144297388>.
+* GA support for Python 3 will be announced soon. Please run
+  `gcloud topic startup` for:
+     * Information on configuring the Python interpreter used by the
+       Cloud SDK.
+     * List of tools in the Cloud SDK that still require a Python 2.7
+       interpreter.
+     * List of known issues with Python 3 support.
+
+### Cloud Bigtable
+
+* Added Table-level IAM controls. For more information, see `gcloud bigtable instances tables --help` and <https://cloud.google.com/bigtable/docs/access-control>.
+
+### Cloud Build
+
+* Passing empty `--cache-dir` flag to Kaniko to suppress log spam about
+  "Error while retrieving image from cache".
+
+### Cloud Composer
+
+* Modified validation for `--master-ipv4-cidr` flag of
+  `gcloud beta composer environments create` to verify that the IPV4 CIDR block
+  has a mask of 28 bits size.
+
+### Cloud Dataproc
+
+* Promoted `gcloud dataproc jobs submit spark-r` command group to GA.
+
+### Cloud Datastore
+
+* Fixed a bug where the strings "yes", "no", "y", or "n" could not be used as
+  field names in indexes.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.10.1
+  * Fix bug where ruleCoverage.html pages were always return a 404 NOT FOUND.
+* Release Cloud Firestore emulator v1.10.2
+  * Introduce support for data import and export.
+  * Fix bug where rapid, repeated writes to the same document could trigger timestamp collisions.
+
+### Cloud Key Management Service
+
+*   Promoted `gcloud kms` commands for external keys to beta.
+*   Promoted key import commands to GA.
+
+### Cloud Memorystore
+
+* Promoted the following commands to GA:
+  * `gcloud redis instances import`
+  * `gcloud redis instances export`
+  * `gcloud redis operations cancel`
+
+### Compute Engine
+
+* Promoted `gcloud compute os-config patch-jobs` command group to beta.
+* Added the following flags to
+  `gcloud beta compute os-config patch-jobs execute` command to allow for a
+  custom patch job name and more structured expressions for instance filters:
+    * `--display-name`
+    * `--instance-filter-all`
+    * `--instance-filter-group-labels`
+    * `--instance-filter-zones`
+    * `--instance-filter-names`
+    * `--instance-filter-name-prefixes`
+* Promoted `gcloud compute os-config patch-deployments` command group to beta.
+* Promoted `gcloud compute security-policies list-preconfigured-expression-sets`
+  to beta.
+* Promoted `--private-ipv6-google-access-type` flag of `gcloud compute networks subnets <create|update>` to beta.
+* Modified `gcloud compute backend-services create` to accept one
+of `--global-health-checks` or `--health-checks-region`.
+* Modified the following commands to accept one of `--global` or `--region` flag:
+  * `gcloud compute ssl-certificates create`
+  * `gcloud compute ssl-certificates delete`
+  * `gcloud compute ssl-certificates describe`
+* Updated the following commands to require either a `--global` or `--region` flag:
+  * `gcloud compute health-checks create http`
+  * `gcloud compute health-checks create http2`
+  * `gcloud compute health-checks create https`
+  * `gcloud compute health-checks create ssl`
+  * `gcloud compute health-checks create tcp`
+  * `gcloud compute health-checks delete`
+  * `gcloud compute health-checks describe`
+  * `gcloud compute health-checks update http`
+  * `gcloud compute health-checks update http2`
+  * `gcloud compute health-checks update https`
+  * `gcloud compute health-checks update ssl`
+  * `gcloud compute health-checks update tcp`
+* Modified the following commands to accept either a regional or global flag:
+  * `gcloud compute target-http-proxies create`
+  can accept a `--region` or `--global` flag.
+  * `gcloud compute target-http-proxies delete`
+  can accept a `--region` or `--global` flag.
+  * `gcloud compute target-http-proxies describe`
+  can accept a `--region` or `--global` flag.
+  * `gcloud compute target-http-proxies list`
+  can accept a `--global` or `--regions` flag.
+  * `gcloud compute target-http-proxies update`
+  can accept a `--region` or `--global` flag.
+* Modified the following commands to accept either a regional or global flag:
+  * `gcloud compute target-https-proxies create`
+  can accept a `--region` or `--global` flag.
+  * `gcloud compute target-https-proxies create`
+  can accept a `--url-map-region` or `--global-url-map` flag.
+  * `gcloud compute target-https-proxies create
+  can accept a `--ssl-certificates-region` or `--global-ssl-certificates` flag.
+  * `gcloud compute target-https-proxies delete`
+  can accept a `--region` or `--global` flag.
+  * `gcloud compute target-https-proxies describe`
+  can accept a `--region` or `--global` flag.
+  * `gcloud compute target-https-proxies list`
+  can accept a `--global` or `--regions` flag.
+  * `gcloud compute target-https-proxies update`
+  can accept a `--region` or `--global` flag.
+  * `gcloud compute target-https-proxies update`
+  can accept a `--url-map-region` or `--global-url-map` flag.
+  * `gcloud compute target-https-proxies update`
+  can accept a `--ssl-certificates-region` or `--global-ssl-certificates` flag.
+* Promoted `--autoscaler-mode`, `--min-nodes`, `--max-nodes` flags of
+  `gcloud compute sole-tenancy node-groups <create|update>` to beta.
+* Added and standardized the Windows Client BYOL names in `--os`flag of `gcloud compute images import`.
+  * For 32-bit versions of Windows:
+    Windows 7 SP1: windows-7-x86-byol
+    Windows 8.0 and 8.1: windows-8-x86-byol
+    Windows 10, all versions: windows-10-x86-byol
+  * For 64-bit versions of Windows:
+    Windows 7 SP1: windows-7-x64-byol (renamed, previously windows-7-byol)
+    Windows 8.0 and 8.1: windows-8-x64-byol (renamed, previously windows-8-1-x64-byol)
+    Windows 10, all versions: windows-10-x64-byol (renamed, previously windows-10-byol)
+* Modified the following commands to accept either a regional or global flag:
+  * `gcloud compute url-maps add-host-rule` can accept a `--global` or `--regions` flag.
+  * `gcloud compute url-maps add-path-matcher` can accept a `--global` or `--regions` flag.
+  * `gcloud compute url-maps create` can accept a `--global` or `--regions` flag.
+  * `gcloud compute url-maps delete` can accept a `--global` or `--regions` flag.
+  * `gcloud compute url-maps describe` can accept a `--global` or `--regions` flag.
+  * `gcloud compute url-maps list` can accept a `--global` or `--regions` flag.
+  * `gcloud compute url-maps remove-host-rule` can accept a `--global` or `--regions` flag.
+  * `gcloud compute url-maps remove-path-matcher` can accept a `--global` or `--regions` flag.
+  * `gcloud compute url-maps set-default-service` can accept a `--global` or `--regions` flag.
+* Updated `gcloud compute forwarding-rules create` command
+to accept one of the following flags: `--global-target-http-proxy`,
+`--target-http-proxy-region`, `--global-target-https-proxy`,
+`--target-https-proxy-region`.
+
+### Firebase Test Lab
+
+* Added `--num-uniform-shards` and `--test-targets-for-shard` (mutually exclusive) flags to `gcloud beta firebase test android run` to run tests in parallel.
+
+### GKE Hub
+
+* Added support for registrations in container.
+
+### Kubernetes Engine
+
+*   Promoted NodeLocalDNS Addon to beta. Use
+    `--addons=NodeLocalDNS` with `gcloud beta container clusters create`.
+    This addon can be enabled or disabled on existing clusters using
+    `--update-addons=NodeLocalDNS=ENABLED` or
+    `--update-addons=NodeLocalDNS=DISABLED`
+    with `gcloud container clusters update`.
+*   Fixed doc link of `gcloud container clusters create` amd `gcloud container
+    clusters update`.
+
+### Miscellaneous
+
+* Modified `gcloud projects list` to apply `--limit` on client-side if any
+  client-side filters were applied with `--filter`.
+
+### Policy Troubleshooter
+
+*  Added `gcloud policy-troubleshoot iam`, which troubleshoots a member's IAM permissions on a resource.
+
+### Secret Manager
+
+* Promoted `gcloud secrets` command group to beta.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 272.0.0 (2019-11-19)
 
 ### Cloud SDK

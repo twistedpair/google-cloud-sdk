@@ -42,8 +42,6 @@ class ArtifactregistryV1beta1(base_api.BaseApiClient):
     self.projects_locations_repositories_packages = self.ProjectsLocationsRepositoriesPackagesService(self)
     self.projects_locations_repositories = self.ProjectsLocationsRepositoriesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
-    self.projects_repositories_locations = self.ProjectsRepositoriesLocationsService(self)
-    self.projects_repositories = self.ProjectsRepositoriesService(self)
     self.projects = self.ProjectsService(self)
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
@@ -341,13 +339,14 @@ is the parent resource, without the operations collection id.
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a version and all of its content.
+      r"""Deletes a version and all of its content. The returned operation will.
+complete once the version has been deleted.
 
       Args:
         request: (ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -363,7 +362,7 @@ is the parent resource, without the operations collection id.
         relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsDeleteRequest',
-        response_type_name=u'Empty',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -432,13 +431,14 @@ is the parent resource, without the operations collection id.
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a package and all of its versions and tags.
+      r"""Deletes a package and all of its versions and tags. The returned operation.
+will complete once the package has been deleted.
 
       Args:
         request: (ArtifactregistryProjectsLocationsRepositoriesPackagesDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -454,7 +454,7 @@ is the parent resource, without the operations collection id.
         relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesPackagesDeleteRequest',
-        response_type_name=u'Empty',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -576,6 +576,33 @@ metadata and will return a google.protobuf.Empty response.
         request_field='',
         request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesDeleteRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a repository.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Repository) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}',
+        http_method=u'GET',
+        method_id=u'artifactregistry.projects.locations.repositories.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'ArtifactregistryProjectsLocationsRepositoriesGetRequest',
+        response_type_name=u'Repository',
         supports_download=False,
     )
 
@@ -721,53 +748,6 @@ metadata and will return a google.protobuf.Empty response.
 
     def __init__(self, client):
       super(ArtifactregistryV1beta1.ProjectsLocationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class ProjectsRepositoriesLocationsService(base_api.BaseApiService):
-    """Service class for the projects_repositories_locations resource."""
-
-    _NAME = u'projects_repositories_locations'
-
-    def __init__(self, client):
-      super(ArtifactregistryV1beta1.ProjectsRepositoriesLocationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Gets a repository.
-
-      Args:
-        request: (ArtifactregistryProjectsRepositoriesLocationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Repository) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/repositories/{repositoriesId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'artifactregistry.projects.repositories.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1beta1/{+name}',
-        request_field='',
-        request_type_name=u'ArtifactregistryProjectsRepositoriesLocationsGetRequest',
-        response_type_name=u'Repository',
-        supports_download=False,
-    )
-
-  class ProjectsRepositoriesService(base_api.BaseApiService):
-    """Service class for the projects_repositories resource."""
-
-    _NAME = u'projects_repositories'
-
-    def __init__(self, client):
-      super(ArtifactregistryV1beta1.ProjectsRepositoriesService, self).__init__(client)
       self._upload_configs = {
           }
 

@@ -561,8 +561,8 @@ class DatacatalogProjectsLocationsTaxonomiesCreateRequest(_messages.Message):
     googleCloudDatacatalogV1beta1Taxonomy: A
       GoogleCloudDatacatalogV1beta1Taxonomy resource to be passed as the
       request body.
-    parent: Required. Resource name of the project that the newly created
-      taxonomy belongs to.
+    parent: Required. Resource name of the project that the taxonomy will
+      belong to.
   """
 
   googleCloudDatacatalogV1beta1Taxonomy = _messages.MessageField('GoogleCloudDatacatalogV1beta1Taxonomy', 1)
@@ -614,7 +614,7 @@ class DatacatalogProjectsLocationsTaxonomiesGetRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsTaxonomiesGetRequest object.
 
   Fields:
-    name: Required. Resource name of the taxonomy to be returned.
+    name: Required. Resource name of the requested taxonomy.
   """
 
   name = _messages.StringField(1, required=True)
@@ -639,11 +639,11 @@ class DatacatalogProjectsLocationsTaxonomiesListRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsTaxonomiesListRequest object.
 
   Fields:
-    pageSize: The maximum number of items to return. If not set, defaults to
-      50.
+    pageSize: The maximum number of items to return. Must be a value between 1
+      and 1000. If not set, defaults to 50.
     pageToken: The next_page_token value returned from a previous list
       request, if any. If not set, defaults to an empty string.
-    parent: Required. Resource name of a project to list the taxonomies of.
+    parent: Required. Resource name of the project to list the taxonomies of.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -658,7 +658,7 @@ class DatacatalogProjectsLocationsTaxonomiesPatchRequest(_messages.Message):
     googleCloudDatacatalogV1beta1Taxonomy: A
       GoogleCloudDatacatalogV1beta1Taxonomy resource to be passed as the
       request body.
-    name: Output only. Resource name of the taxonomy, whose format is:
+    name: Output only. Resource name of this taxonomy, whose format is:
       "projects/{project_number}/locations/{location_id}/taxonomies/{id}".
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
@@ -678,8 +678,8 @@ class DatacatalogProjectsLocationsTaxonomiesPolicyTagsCreateRequest(_messages.Me
     googleCloudDatacatalogV1beta1PolicyTag: A
       GoogleCloudDatacatalogV1beta1PolicyTag resource to be passed as the
       request body.
-    parent: Required. Resource name of the taxonomy that the newly created
-      policy tag belongs to.
+    parent: Required. Resource name of the taxonomy that the policy tag will
+      belong to.
   """
 
   googleCloudDatacatalogV1beta1PolicyTag = _messages.MessageField('GoogleCloudDatacatalogV1beta1PolicyTag', 1)
@@ -690,7 +690,7 @@ class DatacatalogProjectsLocationsTaxonomiesPolicyTagsDeleteRequest(_messages.Me
   r"""A DatacatalogProjectsLocationsTaxonomiesPolicyTagsDeleteRequest object.
 
   Fields:
-    name: Required. Resource name of the policy tag to be deleted. All its
+    name: Required. Resource name of the policy tag to be deleted. All of its
       descendant policy tags will also be deleted.
   """
 
@@ -717,7 +717,7 @@ class DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetRequest(_messages.Messa
   r"""A DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetRequest object.
 
   Fields:
-    name: Required. Resource name of the policy tag to be returned.
+    name: Required. Resource name of the requested policy tag.
   """
 
   name = _messages.StringField(1, required=True)
@@ -727,11 +727,12 @@ class DatacatalogProjectsLocationsTaxonomiesPolicyTagsListRequest(_messages.Mess
   r"""A DatacatalogProjectsLocationsTaxonomiesPolicyTagsListRequest object.
 
   Fields:
-    pageSize: The maximum number of items to return. If not set, defaults to
-      50.
+    pageSize: The maximum number of items to return. Must be a value between 1
+      and 1000. If not set, defaults to 50.
     pageToken: The next_page_token value returned from a previous List
       request, if any. If not set, defaults to an empty string.
-    parent: Required. Resource name of a taxonomy to list the policy tags of.
+    parent: Required. Resource name of the taxonomy to list the policy tags
+      of.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -746,9 +747,9 @@ class DatacatalogProjectsLocationsTaxonomiesPolicyTagsPatchRequest(_messages.Mes
     googleCloudDatacatalogV1beta1PolicyTag: A
       GoogleCloudDatacatalogV1beta1PolicyTag resource to be passed as the
       request body.
-    name: Output only. Resource name of the policy tag, whose format is: "proj
-      ects/{project_number}/locations/{location_id}/taxonomies/{taxonomy_id}/p
-      olicyTags/{id}".
+    name: Output only. Resource name of this policy tag, whose format is: "pro
+      jects/{project_number}/locations/{location_id}/taxonomies/{taxonomy_id}/
+      policyTags/{id}".
     updateMask: The update mask applies to the resource. Only display_name,
       description and parent_policy_tag can be updated and thus can be listed
       in the mask. If update_mask is not provided, all allowed fields (i.e.
@@ -1147,13 +1148,18 @@ class GoogleCloudDatacatalogV1beta1GcsFilesetSpec(_messages.Message):
 
   Fields:
     filePatterns: Required. Patterns to identify a set of files in Google
-      Cloud Storage.  Examples of valid file_patterns:   *
-      `gs://bucket_name/*`: matches all files in `bucket_name`  *
-      `gs://bucket_name/file*`: matches files prefixed by `file` in
-      `bucket_name`  * `gs://bucket_name/a/*/b`: matches all files in
-      `bucket_name` that match                              `a/*/b` pattern,
-      such as `a/c/b`, `a/d/b`  * `gs://another_bucket/a.txt`: matches
-      `gs://another_bucket/a.txt`
+      Cloud Storage. See [Cloud Storage
+      documentation](storage/docs/gsutil/addlhelp/WildcardNames) for more
+      information. Note that bucket wildcards are currently not supported.
+      Examples of valid file_patterns:   * `gs://bucket_name/dir/*`: matches
+      all files within `bucket_name/dir`
+      directory.  * `gs://bucket_name/dir/**`: matches all files in
+      `bucket_name/dir`                               spanning all
+      subdirectories.  * `gs://bucket_name/file*`: matches files prefixed by
+      `file` in                              `bucket_name`  *
+      `gs://bucket_name/a/*/b`: matches all files in `bucket_name` that match
+      `a/*/b` pattern, such as `a/c/b`, `a/d/b`  *
+      `gs://another_bucket/a.txt`: matches `gs://another_bucket/a.txt`
     sampleGcsFileSpecs: Output only. Sample files contained in this fileset,
       not all files contained in this fileset are represented here.
   """
@@ -1196,9 +1202,9 @@ class GoogleCloudDatacatalogV1beta1ListPolicyTagsResponse(_messages.Message):
   r"""Response message for ListPolicyTags.
 
   Fields:
-    nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-    policyTags: Policy Tags that are in this taxonomy.
+    nextPageToken: Token used to retrieve the next page of results, or empty
+      if there are no more results in the list.
+    policyTags: The policy tags that are in the requested taxonomy.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1222,8 +1228,8 @@ class GoogleCloudDatacatalogV1beta1ListTaxonomiesResponse(_messages.Message):
   r"""Response message for ListTaxonomies.
 
   Fields:
-    nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
+    nextPageToken: Token used to retrieve the next page of results, or empty
+      if there are no more results in the list.
     taxonomies: Taxonomies that the project contains.
   """
 
@@ -1242,20 +1248,23 @@ class GoogleCloudDatacatalogV1beta1PolicyTag(_messages.Message):
   Fields:
     childPolicyTags: Output only. Resource names of child policy tags of this
       policy tag.
-    description: Description of the policy tag. The length of the description
-      is limited to 2000 bytes when encoded in UTF-8. If not set, defaults to
-      an empty description.
-    displayName: Required. Human readable name of this policy tag. Max 200
-      bytes when encoded in UTF-8.
-    name: Output only. Resource name of the policy tag, whose format is: "proj
-      ects/{project_number}/locations/{location_id}/taxonomies/{taxonomy_id}/p
-      olicyTags/{id}".
-    parentPolicyTag: Resource name of the parent policy tag to this policy tag
-      (e.g. for policy tag "LatLong" in the example above, this field contains
-      the resource name of policy tag "Geolocation"). If empty, it means this
-      policy tag is a top level policy tag (e.g. this field is empty for
-      policy tag "Geolocation" in the example above). If not set, defaults to
-      an empty string.
+    description: Description of this policy tag. It must: contain only unicode
+      characters, tabs, newlines, carriage returns and page breaks; and be at
+      most 2000 bytes long when encoded in UTF-8. If not set, defaults to an
+      empty description. If not set, defaults to an empty description.
+    displayName: Required. User defined name of this policy tag. It must: be
+      unique within the parent taxonomy; contain only unicode letters,
+      numbers, underscores, dashes and spaces; not start or end with spaces;
+      and be at most 200 bytes long when encoded in UTF-8.
+    name: Output only. Resource name of this policy tag, whose format is: "pro
+      jects/{project_number}/locations/{location_id}/taxonomies/{taxonomy_id}/
+      policyTags/{id}".
+    parentPolicyTag: Resource name of this policy tag's parent policy tag
+      (e.g. for the "LatLong" policy tag in the example above, this field
+      contains the resource name of the "Geolocation" policy tag). If empty,
+      it means this policy tag is a top level policy tag (e.g. this field is
+      empty for the "Geolocation" policy tag in the example above). If not
+      set, defaults to an empty string.
   """
 
   childPolicyTags = _messages.StringField(1, repeated=True)
@@ -1654,23 +1663,27 @@ class GoogleCloudDatacatalogV1beta1TagTemplateField(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1beta1Taxonomy(_messages.Message):
-  r"""A taxonomy is a collection of policy tags of business significance,
-  typically associated with the substance of the policy tag (e.g. credit card,
-  SSN), or how it is used (e.g. account name, user ID).
+  r"""A taxonomy is a collection of policy tags that classify data along a
+  common axis. For instance a data *sensitivity* taxonomy could contain policy
+  tags denoting PII such as age, zipcode, and SSN. A data *origin* taxonomy
+  could contain policy tags to distinguish user data, employee data, partner
+  data, public data.
 
   Enums:
     ActivatedPolicyTypesValueListEntryValuesEnum:
 
   Fields:
     activatedPolicyTypes: Optional. A list of policy types that are activated
-      for the taxonomy. If not set, defaults to an empty list of activated
-      policy types.
-    description: Optional. Description of the taxonomy. The length of the
-      description is limited to 2000 bytes when encoded in UTF-8. If not set,
+      for this taxonomy. If not set, defaults to an empty list.
+    description: Optional. Description of this taxonomy. It must: contain only
+      unicode characters, tabs, newlines, carriage returns and page breaks;
+      and be at most 2000 bytes long when encoded in UTF-8. If not set,
       defaults to an empty description.
-    displayName: Required. Human readable name of this taxonomy. Max 200 bytes
-      when encoded in UTF-8.
-    name: Output only. Resource name of the taxonomy, whose format is:
+    displayName: Required. User defined name of this taxonomy. It must:
+      contain only unicode letters, numbers, underscores, dashes and spaces;
+      not start or end with spaces; and be at most 200 bytes long when encoded
+      in UTF-8.
+    name: Output only. Resource name of this taxonomy, whose format is:
       "projects/{project_number}/locations/{location_id}/taxonomies/{id}".
   """
 
@@ -1701,15 +1714,16 @@ class GoogleCloudDatacatalogV1beta1ViewSpec(_messages.Message):
 
 
 class Policy(_messages.Message):
-  r"""Defines an Identity and Access Management (IAM) policy. It is used to
-  specify access control policies for Cloud Platform resources.   A `Policy`
-  is a collection of `bindings`. A `binding` binds one or more `members` to a
-  single `role`. Members can be user accounts, service accounts, Google
-  groups, and domains (such as G Suite). A `role` is a named list of
-  permissions (defined by IAM or configured by users). A `binding` can
-  optionally specify a `condition`, which is a logic expression that further
-  constrains the role binding based on attributes about the request and/or
-  target resource.  **JSON Example**      {       "bindings": [         {
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources.   A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members` to a single `role`.
+  Members can be user accounts, service accounts, Google groups, and domains
+  (such as G Suite). A `role` is a named list of permissions; each `role` can
+  be an IAM predefined role or a user-created custom role.  Optionally, a
+  `binding` can specify a `condition`, which is a logical expression that
+  allows access to a resource only if the expression evaluates to `true`. A
+  condition can add constraints based on attributes of the request, the
+  resource, or both.  **JSON example:**      {       "bindings": [         {
   "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-project-
@@ -1718,22 +1732,23 @@ class Policy(_messages.Message):
   ["user:eve@example.com"],           "condition": {             "title":
   "expirable access",             "description": "Does not grant access after
   Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ]     }
-  **YAML Example**      bindings:     - members:       - user:mike@example.com
-  - group:admins@example.com       - domain:google.com       - serviceAccount
+  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
+  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
+  bindings:     - members:       - user:mike@example.com       -
+  group:admins@example.com       - domain:google.com       - serviceAccount
   :my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
   grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')  For a description of IAM and its
-  features, see the [IAM developer's
-  guide](https://cloud.google.com/iam/docs).
+  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
+  version: 3  For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
-    bindings: Associates a list of `members` to a `role`. Optionally may
-      specify a `condition` that determines when binding is in effect.
-      `bindings` with no members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally, may
+      specify a `condition` that determines how and when the `bindings` are
+      applied. Each of the `bindings` must contain at least one member.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -1741,19 +1756,24 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten. Due to blind-set semantics of an
-      etag-less policy, 'setIamPolicy' will not fail even if either of
-      incoming or stored policy does not meet the version requirements.
-    version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Operations
-      affecting conditional bindings must specify version 3. This can be
-      either setting a conditional policy, modifying a conditional binding, or
-      removing a conditional binding from the stored conditional policy.
-      Operations on non-conditional policies may specify any valid value or
-      leave the field unset.  If no etag is provided in the call to
-      `setIamPolicy`, any version compliance checks on the incoming and/or
-      stored policy is skipped.
+      policy.  **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
+    version: Specifies the format of the policy.  Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected.  Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations:  * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy   that includes conditions  **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost.  If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)

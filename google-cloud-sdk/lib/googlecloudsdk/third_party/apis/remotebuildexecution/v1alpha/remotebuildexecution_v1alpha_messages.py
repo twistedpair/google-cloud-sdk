@@ -1009,6 +1009,21 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListWorkerPoolsResponse(_mes
   workerPools = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool', 1, repeated=True)
 
 
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateInstanceRequest(_messages.Message):
+  r"""The request used for `UpdateInstance`.
+
+  Fields:
+    loggingEnabled: Whether to enable Stackdriver logging for this instance.
+    name: Name of the instance to update. Format:
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
+    updateMask: The fields to update.
+  """
+
+  loggingEnabled = _messages.BooleanField(1)
+  name = _messages.StringField(2)
+  updateMask = _messages.StringField(3)
+
+
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest(_messages.Message):
   r"""The request used for UpdateWorkerPool.
 

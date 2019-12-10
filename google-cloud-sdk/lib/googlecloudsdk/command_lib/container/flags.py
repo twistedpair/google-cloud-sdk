@@ -372,7 +372,7 @@ def AddAutoscalingProfilesFlag(parser, hidden=False):
       type=str)
 
 
-def AddAutoprovisioningFlags(parser, hidden=False, for_create=False):
+def AddAutoprovisioningFlags(parser, hidden=False, for_create=False, ga=False):
   """Adds node autoprovisioning related flags to parser.
 
   Autoprovisioning related flags are: --enable-autoprovisioning
@@ -382,6 +382,7 @@ def AddAutoprovisioningFlags(parser, hidden=False, for_create=False):
     parser: A given parser.
     hidden: If true, suppress help text for added options.
     for_create: Add flags for create request.
+    ga: If false adds non GA flags
   """
 
   group = parser.add_argument_group('Node autoprovisioning', hidden=hidden)
@@ -405,8 +406,8 @@ and memory limits to be specified.""",
       help="""\
 Path of the JSON/YAML file which contains information about the
 cluster's node autoprovisioning configuration. Currently it contains
-a list of resource limits, identity defaults for autoprovisioning and node locations
-for autoprovisioning.
+a list of resource limits, identity defaults for autoprovisioning, node upgrade
+settings, node management settings and node locations for autoprovisioning.
 
 Resource limits are specified in the field 'resourceLimits'.
 Each resource limits definition contains three fields:
@@ -419,17 +420,33 @@ Minimum is the minimum allowed amount with the unit of the resource.
 
 Identity default contains at most one of the below fields:
 serviceAccount: The Google Cloud Platform Service Account to be used by node VMs in
-autoprovisioined node pools. If not specified, the project default service account
+autoprovisioined node pools. If not specified, the project's default service account
 is used.
-scopes: A list of scopes be used by node instances in autoprovisioined node pools.
+scopes: A list of scopes to be used by node instances in autoprovisioined node pools.
 Multiple scopes can be specified, separated by commas. For information on defaults,
 look at:
 https://cloud.google.com/sdk/gcloud/reference/container/clusters/create#--scopes
 
-Autoprovisioning locations is a set of zones where new node pools can be created by
-Autoprovisioning. Autoprovisioning locations are specified in the field
-'autoprovisioningLocations'. All zones must be in the same region as the cluster's
-master(s).
+Note: Node Upgrade settings are implemented only in Beta and Alpha.
+Node Upgrade settings are specified under the field
+'upgradeSettings', which has the following fields:
+maxSurgeUpgrade: Number of extra (surge) nodes to be created on
+each upgrade of an autoprovisioned node pool.
+maxUnavailableUpgrade: Number of nodes that can be unavailable at the
+same time on each upgrade of an autoprovisioned node pool.
+
+Note: Node Management settings are implemented only in Beta and
+Alpha. Node Management settings are specified under the field
+'nodeManagement', which has the following fields:
+enableAutoUpgrade: A boolean field that indicates if node
+autoupgrade is enabled for autoprovisioned node pools.
+enableAutoRepair: A boolean field that indicates if node
+autorepair is enabled for autoprovisioned node pools.
+
+Autoprovisioning locations is a set of zones where new node pools
+can be created by Autoprovisioning. Autoprovisioning locations are
+specified in the field 'autoprovisioningLocations'. All zones must
+be in the same region as the cluster's master(s).
 """)
 
   from_flags_group = limits_group.add_argument_group(
@@ -545,6 +562,62 @@ All zones must be in the same region as the cluster's master(s).
 Multiple locations can be specified, separated by commas.""",
       metavar='ZONE',
       type=arg_parsers.ArgList(min_length=1))
+  if not ga:
+    AddNonGAAutoscalingFlags(from_flags_group)
+
+
+def AddNonGAAutoscalingFlags(from_flags_group):
+  """Adds node autoprovisioning related non GA flags.
+
+  Args:
+    from_flags_group: Autoprovisioning flags group
+  """
+  upgrade_settings_group = from_flags_group.add_argument_group(
+      'Flags to specify upgrade settings for autoprovisioned nodes:',
+      hidden=True,
+  )
+  upgrade_settings_group.add_argument(
+      '--autoprovisioning-max-surge-upgrade',
+      type=int,
+      hidden=True,
+      required=True,
+      help="""\
+Number of extra (surge) nodes to be created on each upgrade of a
+autoprovisioned node pool.
+""")
+  upgrade_settings_group.add_argument(
+      '--autoprovisioning-max-unavailable-upgrade',
+      type=int,
+      hidden=True,
+      required=True,
+      help="""\
+Number of nodes that can be unavailable at the same time on each
+upgrade of a autoprovisioned node pool.
+""")
+  management_settings_group = from_flags_group.add_argument_group(
+      'Flags to specify node management settings for autoprovisioned nodes:',
+      hidden=True,
+  )
+  management_settings_group.add_argument(
+      '--enable-autoprovisioning-autoupgrade',
+      hidden=True,
+      default=None,
+      required=True,
+      action='store_true',
+      help="""\
+Enable node autoupgrade for autoprovisioned node pools.
+Use --no-enable-autoprovisioning-autoupgrade to disable
+""")
+  management_settings_group.add_argument(
+      '--enable-autoprovisioning-autorepair',
+      default=None,
+      action='store_true',
+      hidden=True,
+      required=True,
+      help="""\
+Enable node autorepair for autoprovisioned node pools.
+Use --no-enable-autoprovisioning-autorepair to disable
+""")
 
 
 def AddEnableBinAuthzFlag(parser, hidden=False):
@@ -1062,13 +1135,11 @@ One of either maintenance-window or the group of maintenance-window flags can
 be set.
 """
   AddDailyMaintenanceWindowFlag(maintenance_group)
-  AddRecurringMaintenanceWindowFlags(maintenance_group,
-                                     hidden=recurring_windows_hidden)
+  AddRecurringMaintenanceWindowFlags(
+      maintenance_group, hidden=recurring_windows_hidden)
 
 
-def AddDailyMaintenanceWindowFlag(parser,
-                                  hidden=False,
-                                  add_unset_text=False):
+def AddDailyMaintenanceWindowFlag(parser, hidden=False, add_unset_text=False):
   """Adds a --maintenance-window flag to parser."""
   help_text = """\
 Set a time of day when you prefer maintenance to start on this cluster. \
@@ -2456,6 +2527,8 @@ def ValidateSurgeUpgradeSettings(args):
       'max_unavailable_upgrade' in args._specified_args):
     raise exceptions.InvalidArgumentException(
         '--max-unavailable-upgrade', util.INVALIID_SURGE_UPGRADE_SETTINGS)
+
+
 # pylint: enable=protected-access
 
 
@@ -2681,7 +2754,7 @@ Enable database encryption that will be used to encrypt Kubernetes Secrets at
 the application layer. The key provided should be the resource ID in the format of
 `projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME]`.
 For more information, see
-<https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets>.
+https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets.
 """,
       required=False,
       type=arg_parsers.RegexpValidator(
@@ -2700,7 +2773,7 @@ Disable database encryption.
 
 Disable Database Encryption which encrypt Kubernetes Secrets at
 the application layer. For more information, see
-<https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets>.
+https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets.
       """)
 
 

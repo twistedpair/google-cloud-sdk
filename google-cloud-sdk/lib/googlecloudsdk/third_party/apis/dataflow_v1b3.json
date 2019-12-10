@@ -1929,6 +1929,24 @@
         "metadata": {
           "description": "The template metadata describing the template name, available\nparameters, etc.",
           "$ref": "TemplateMetadata"
+        },
+        "templateType": {
+          "description": "Template Type.",
+          "enumDescriptions": [
+            "Unknown Template Type.",
+            "Legacy Template.",
+            "Flex Template."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "LEGACY",
+            "FLEX"
+          ]
+        },
+        "runtimeMetadata": {
+          "description": "Describes the runtime metadata with SDKInfo and available parameters.",
+          "$ref": "RuntimeMetadata"
         }
       }
     },
@@ -2008,6 +2026,77 @@
           "items": {
             "type": "string"
           }
+        },
+        "paramType": {
+          "description": "Optional. The type of the parameter.\nUsed for selecting input picker.",
+          "enumDescriptions": [
+            "Default input type.",
+            "The parameter specifies generic text input.",
+            "The parameter specifies a GCS Bucket to read from.",
+            "The parameter specifies a GCS Bucket to write to.",
+            "The parameter specifies a GCS file path to read from.",
+            "The parameter specifies a GCS file path to write to.",
+            "The parameter specifies a GCS folder path to read from.",
+            "The parameter specifies a GCS folder to write to.",
+            "The parameter specifies a Pub\/Sub Topic.",
+            "The parameter specifies a Pub\/Sub Subscription."
+          ],
+          "type": "string",
+          "enum": [
+            "DEFAULT",
+            "TEXT",
+            "GCS_READ_BUCKET",
+            "GCS_WRITE_BUCKET",
+            "GCS_READ_FILE",
+            "GCS_WRITE_FILE",
+            "GCS_READ_FOLDER",
+            "GCS_WRITE_FOLDER",
+            "PUBSUB_TOPIC",
+            "PUBSUB_SUBSCRIPTION"
+          ]
+        }
+      }
+    },
+    "RuntimeMetadata": {
+      "id": "RuntimeMetadata",
+      "description": "RuntimeMetadata describing a runtime environment.",
+      "type": "object",
+      "properties": {
+        "sdkInfo": {
+          "description": "SDK Info for the template.",
+          "$ref": "SDKInfo"
+        },
+        "parameters": {
+          "description": "The parameters for the template.",
+          "type": "array",
+          "items": {
+            "$ref": "ParameterMetadata"
+          }
+        }
+      }
+    },
+    "SDKInfo": {
+      "id": "SDKInfo",
+      "description": "SDK Information.",
+      "type": "object",
+      "properties": {
+        "language": {
+          "description": "Required. The SDK Language.",
+          "enumDescriptions": [
+            "UNKNOWN Language.",
+            "Java.",
+            "Python."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "JAVA",
+            "PYTHON"
+          ]
+        },
+        "version": {
+          "description": "Optional. The SDK version.",
+          "type": "string"
         }
       }
     },

@@ -89,6 +89,12 @@ def Create(versions_client, operations_client, version_id,
       raise InvalidArgumentCombinationError(
           'If --origin is provided as a local path, --staging-bucket must be '
           'given as well.')
+  if explanation_method is not None:
+    log.status.Print(
+        'Explanations reflect patterns in your model, but don\'t necessarily '
+        'reveal fundamental relationships about your data population. See '
+        'https://cloud.google.com/ml-engine/docs/ai-explanations/limitations '
+        'for more information.')
 
   model_ref = models_util.ParseModel(model)
   version = versions_client.BuildVersion(version_id,

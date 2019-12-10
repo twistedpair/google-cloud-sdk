@@ -33,7 +33,6 @@ from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import flags
-
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
@@ -164,7 +163,7 @@ class _GKEConnectionContext(ConnectionInfo):
 
   @property
   def operator(self):
-    return 'Cloud Run on GKE'
+    return 'Cloud Run for Anthos'
 
   def HttpClient(self):
     # Import http only when needed, as it depends on credential infrastructure
@@ -263,7 +262,7 @@ class _KubeconfigConnectionContext(ConnectionInfo):
 
   @property
   def operator(self):
-    return 'Kubernetes Cluster'
+    return 'Cloud Run for Anthos'
 
   @property
   def location_label(self):
@@ -413,11 +412,11 @@ def GetConnectionContext(args, product=Product.RUN):
   Returns:
     A GKE or regional ConnectionInfo object.
   """
-  if flags.IsKubernetes(args):
+  if flags.GetPlatform() == flags.PLATFORM_KUBERNETES:
     kubeconfig = flags.GetKubeconfig(args)
     return _KubeconfigConnectionContext(kubeconfig, args.context)
 
-  if flags.IsGKE(args):
+  if flags.GetPlatform() == flags.PLATFORM_GKE:
     cluster_ref = args.CONCEPTS.cluster.Parse()
     if not cluster_ref:
       raise flags.ArgumentError(
@@ -426,7 +425,7 @@ def GetConnectionContext(args, product=Product.RUN):
           'or set the run/cluster and run/cluster_location properties.')
     return _GKEConnectionContext(cluster_ref)
 
-  if flags.IsManaged(args):
+  if flags.GetPlatform() == flags.PLATFORM_MANAGED:
     region = flags.GetRegion(args, prompt=True)
     if not region:
       raise flags.ArgumentError(

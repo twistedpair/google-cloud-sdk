@@ -328,6 +328,61 @@ class Duration(_messages.Message):
   seconds = _messages.IntegerField(2)
 
 
+class Environment(_messages.Message):
+  r"""An Environment represents the set of test runs (Steps) from the parent
+  Execution that are configured with the same set of dimensions (Model,
+  Version, Locale, and Orientation). Multiple such runs occur particularly
+  because of features like sharding (splitting up a test suite to run in
+  parallel across devices) and reruns (running a test multiple times to check
+  for different outcomes).
+
+  Fields:
+    completionTime: Output only. The time when the Environment status was set
+      to complete.  This value will be set automatically when state
+      transitions to COMPLETE.
+    creationTime: Output only. The time when the Environment was created.
+    dimensionValue: Dimension values describing the environment. Dimension
+      values always consist of "Model", "Version", "Locale", and
+      "Orientation".  - In response: always set - In create request: always
+      set - In update request: never set
+    displayName: A short human-readable name to display in the UI. Maximum of
+      100 characters. For example: Nexus 5, API 27.
+    environmentId: Output only. An Environment id.
+    environmentResult: Merged result of the environment.
+    executionId: Output only. An Execution id.
+    historyId: Output only. A History id.
+    projectId: Output only. A Project id.
+    resultsStorage: The location where output files are stored in the user
+      bucket.
+    shardSummaries: Output only. Summaries of shards.  Only one shard will
+      present unless sharding feature is enabled in TestExecutionService.
+  """
+
+  completionTime = _messages.MessageField('Timestamp', 1)
+  creationTime = _messages.MessageField('Timestamp', 2)
+  dimensionValue = _messages.MessageField('EnvironmentDimensionValueEntry', 3, repeated=True)
+  displayName = _messages.StringField(4)
+  environmentId = _messages.StringField(5)
+  environmentResult = _messages.MessageField('MergedResult', 6)
+  executionId = _messages.StringField(7)
+  historyId = _messages.StringField(8)
+  projectId = _messages.StringField(9)
+  resultsStorage = _messages.MessageField('ResultsStorage', 10)
+  shardSummaries = _messages.MessageField('ShardSummary', 11, repeated=True)
+
+
+class EnvironmentDimensionValueEntry(_messages.Message):
+  r"""A EnvironmentDimensionValueEntry object.
+
+  Fields:
+    key: A string attribute.
+    value: A string attribute.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
 class Execution(_messages.Message):
   r"""An Execution represents a collection of Steps. For instance, it could
   represent: - a mobile test executed across a range of device configurations
@@ -596,6 +651,25 @@ class IndividualOutcome(_messages.Message):
   stepId = _messages.StringField(4)
 
 
+class ListEnvironmentsResponse(_messages.Message):
+  r"""Response message for EnvironmentService.ListEnvironments.
+
+  Fields:
+    environments: Environments.  Always set.
+    executionId: A Execution id  Always set.
+    historyId: A History id.  Always set.
+    nextPageToken: A continuation token to resume the query at the next item.
+      Will only be set if there are more Environments to fetch.
+    projectId: A Project id.  Always set.
+  """
+
+  environments = _messages.MessageField('Environment', 1, repeated=True)
+  executionId = _messages.StringField(2)
+  historyId = _messages.StringField(3)
+  nextPageToken = _messages.StringField(4)
+  projectId = _messages.StringField(5)
+
+
 class ListExecutionsResponse(_messages.Message):
   r"""A ListExecutionsResponse object.
 
@@ -718,6 +792,45 @@ class MemoryInfo(_messages.Message):
 
   memoryCapInKibibyte = _messages.IntegerField(1)
   memoryTotalInKibibyte = _messages.IntegerField(2)
+
+
+class MergedResult(_messages.Message):
+  r"""Merged test result for environment.  If the environment has only one
+  step (no reruns or shards), then the merged result is the same as the step
+  result. If the environment has multiple shards and/or reruns, then the
+  results of shards and reruns that belong to the same environment are merged
+  into one environment result.
+
+  Enums:
+    StateValueValuesEnum: State of the resource
+
+  Fields:
+    outcome: Outcome of the resource
+    state: State of the resource
+    testSuiteOverviews: List of roll up test suite overview contents: counts
+      of rolled up test cases within the environment (e.g. same test cases
+      from different runs or test cases from different shards that belong to
+      the same test suite).  Present if the step(s) of the environment has
+      test_suite_overviews.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the resource
+
+    Values:
+      complete: <no description>
+      inProgress: <no description>
+      pending: <no description>
+      unknownState: <no description>
+    """
+    complete = 0
+    inProgress = 1
+    pending = 2
+    unknownState = 3
+
+  outcome = _messages.MessageField('Outcome', 1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  testSuiteOverviews = _messages.MessageField('TestSuiteOverview', 3, repeated=True)
 
 
 class MultiStep(_messages.Message):
@@ -938,6 +1051,18 @@ class PublishXunitXmlFilesRequest(_messages.Message):
   xunitXmlFiles = _messages.MessageField('FileReference', 1, repeated=True)
 
 
+class ResultsStorage(_messages.Message):
+  r"""The storage for test results.
+
+  Fields:
+    resultsStoragePath: The root directory for test results.
+    xunitXmlFile: The path to the Xunit XML file.
+  """
+
+  resultsStoragePath = _messages.MessageField('FileReference', 1)
+  xunitXmlFile = _messages.MessageField('FileReference', 2)
+
+
 class Screen(_messages.Message):
   r"""A Screen object.
 
@@ -973,6 +1098,16 @@ class ScreenshotCluster(_messages.Message):
   clusterId = _messages.StringField(2)
   keyScreen = _messages.MessageField('Screen', 3)
   screens = _messages.MessageField('Screen', 4, repeated=True)
+
+
+class ShardSummary(_messages.Message):
+  r"""Result summary for a shard in an environment.
+
+  Fields:
+    shardResult: Merged result of the shard.
+  """
+
+  shardResult = _messages.MessageField('MergedResult', 1)
 
 
 class SkippedDetail(_messages.Message):
@@ -1491,6 +1626,9 @@ class TestSuiteOverview(_messages.Message):
     failureCount: Number of failed test cases, typically set by the service by
       parsing the xml_source. May also be set by the user.  - In
       create/response: always set - In update request: never
+    flakyCount: Number of flaky test cases, set by the service by rolling up
+      flaky test attempts.  Present only for rollup test suite overview at
+      environment level. A step cannot have flaky test cases.
     name: The name of the test suite.  - In create/response: always set - In
       update request: never
     skippedCount: Number of test cases not run, typically set by the service
@@ -1508,10 +1646,11 @@ class TestSuiteOverview(_messages.Message):
   elapsedTime = _messages.MessageField('Duration', 1)
   errorCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   failureCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  name = _messages.StringField(4)
-  skippedCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  totalCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  xmlSource = _messages.MessageField('FileReference', 7)
+  flakyCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  name = _messages.StringField(5)
+  skippedCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  totalCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  xmlSource = _messages.MessageField('FileReference', 8)
 
 
 class TestTiming(_messages.Message):
@@ -1755,6 +1894,42 @@ class ToolresultsProjectsHistoriesExecutionsCreateRequest(_messages.Message):
   historyId = _messages.StringField(2, required=True)
   projectId = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ToolresultsProjectsHistoriesExecutionsEnvironmentsGetRequest(_messages.Message):
+  r"""A ToolresultsProjectsHistoriesExecutionsEnvironmentsGetRequest object.
+
+  Fields:
+    environmentId: Required. An Environment id.
+    executionId: Required. An Execution id.
+    historyId: Required. A History id.
+    projectId: Required. A Project id.
+  """
+
+  environmentId = _messages.StringField(1, required=True)
+  executionId = _messages.StringField(2, required=True)
+  historyId = _messages.StringField(3, required=True)
+  projectId = _messages.StringField(4, required=True)
+
+
+class ToolresultsProjectsHistoriesExecutionsEnvironmentsListRequest(_messages.Message):
+  r"""A ToolresultsProjectsHistoriesExecutionsEnvironmentsListRequest object.
+
+  Fields:
+    executionId: Required. An Execution id.
+    historyId: Required. A History id.
+    pageSize: The maximum number of Environments to fetch.  Default value: 25.
+      The server will use this default if the field is not set or has a value
+      of 0.
+    pageToken: A continuation token to resume the query at the next item.
+    projectId: Required. A Project id.
+  """
+
+  executionId = _messages.StringField(1, required=True)
+  historyId = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  projectId = _messages.StringField(5, required=True)
 
 
 class ToolresultsProjectsHistoriesExecutionsGetRequest(_messages.Message):

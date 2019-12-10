@@ -210,6 +210,15 @@ def AddOperationArgs(parser):
       help='Name of the operation to describe.')
 
 
+def AddListContentTypeArgs(parser):
+  help_text = (
+      'Asset content type. If not specified, no content but the asset name and'
+      ' type will be returned in the feed. To read more see '
+      'https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/overview#asset_content_type'
+  )
+  parser.add_argument('--content-type', choices=['resource'], help=help_text)
+
+
 def AddFeedIdArgs(parser, help_text):
   parser.add_argument('feed', metavar='FEED_ID', help=help_text)
 

@@ -212,7 +212,7 @@ spec:
           properties:
             name:
               type: string
-              pattern: '^(membership|test-[a-f0-9\\-]+)$'
+              pattern: '^(membership|test-.*)$'
         spec:
           type: object
           properties:
@@ -258,14 +258,6 @@ def AddCommonArgs(parser):
     parser: an argparse.ArgumentParser, to which the common flags will be added
   """
   parser.add_argument(
-      '--context',
-      required=True,
-      type=str,
-      help=textwrap.dedent("""\
-          The context in the kubeconfig file that specifies the cluster.
-        """),
-  )
-  parser.add_argument(
       '--kubeconfig',
       type=str,
       help=textwrap.dedent("""\
@@ -273,6 +265,14 @@ def AddCommonArgs(parser):
           $KUBECONFIG if it is set in the environment, otherwise defaults to
           to $HOME/.kube/config.
         """),
+  )
+
+  parser.add_argument(
+      '--context',
+      type=str,
+      help=textwrap.dedent("""\
+        The context in the kubeconfig file that specifies the cluster.
+      """),
   )
 
 
@@ -1199,11 +1199,13 @@ class KubernetesClient(object):
       The contents of stdout if the return code is 0, stderr (or a fabricated
       error if stderr is empty) otherwise
     """
-    cmd = [
-        c_util.CheckKubectlInstalled(), '--context', self.context,
-        '--kubeconfig', self.kubeconfig, '--request-timeout',
-        self.kubectl_timeout
-    ]
+    cmd = [c_util.CheckKubectlInstalled()]
+    if self.kubeconfig and self.context:
+      cmd.extend([
+          '--context', self.context, '--kubeconfig', self.kubeconfig,
+          '--request-timeout', self.kubectl_timeout
+      ])
+
     cmd.extend(args)
     out = io.StringIO()
     err = io.StringIO()
@@ -1274,8 +1276,15 @@ class KubeconfigProcessor(object):
       exceptions.Error: if the context does not exist in the deduced kubeconfig
         file
     """
+    # We need to support in-cluster configuration so that gcloud can run from
+    # a container on the Cluster we are registering.
+    if not flags.kubeconfig and os.getenv(
+        'KUBERNETES_SERVICE_PORT') and os.getenv('KUBERNETES_SERVICE_HOST'):
+      return None, None
+
     kubeconfig_file = (
         flags.kubeconfig or os.getenv('KUBECONFIG') or '~/.kube/config')
+
     kubeconfig = files.ExpandHomeDir(kubeconfig_file)
     if not kubeconfig:
       raise calliope_exceptions.MinimumArgumentException(
@@ -1285,6 +1294,8 @@ class KubeconfigProcessor(object):
     kc = kconfig.Kubeconfig.LoadFromFile(kubeconfig)
 
     context_name = flags.context
+    if not context_name:
+      raise exceptions.Error('argument --context: Must be specified.')
 
     if context_name not in kc.contexts:
       raise exceptions.Error(

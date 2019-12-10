@@ -71,9 +71,13 @@ class CloudidentityGroupsListRequest(_messages.Message):
       defaults to `View.BASIC`.
 
   Fields:
-    pageSize: The number of results to return.  If unspecified, defaults to
-      200 for `View.BASIC` and to 50 for `View.FULL`.  Must not be greater
-      than 1000 for `View.BASIC` or 500 for `View.FULL`.
+    pageSize: The maximum number of results to return.  Note that the number
+      of results returned may be less than this value even if there are more
+      available results. To fetch all results, clients must continue calling
+      this method repeatedly until the response no longer contains a
+      `next_page_token`.  If unspecified, defaults to 200 for `View.BASIC` and
+      to 50 for `View.FULL`.  Must not be greater than 1000 for `View.BASIC`
+      or 500 for `View.FULL`.
     pageToken: The `next_page_token` value returned from a previous list
       request, if any.
     parent: Required. The parent resource under which to list all `Group`s.
@@ -168,9 +172,13 @@ class CloudidentityGroupsMembershipsListRequest(_messages.Message):
       defaults to `View.BASIC`.
 
   Fields:
-    pageSize: The number of results to return.  If unspecified, defaults to
-      200 for `View.BASIC` and to 50 for `View.FULL`.  Must not be greater
-      than 1000 for `View.BASIC` or 500 for `View.FULL`.
+    pageSize: The maximum number of results to return.  Note that the number
+      of results returned may be less than this value even if there are more
+      available results. To fetch all results, clients must continue calling
+      this method repeatedly until the response no longer contains a
+      `next_page_token`.  If unspecified, defaults to 200 for `View.BASIC` and
+      to 50 for `View.FULL`.  Must not be greater than 1000 for `View.BASIC`
+      or 500 for `View.FULL`.
     pageToken: The `next_page_token` value returned from a previous list
       request, if any.
     parent: Required. The parent `Group` resource under which to lookup the
@@ -279,9 +287,13 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
       defaults to `View.BASIC`.
 
   Fields:
-    pageSize: The number of results to return.  If unspecified, defaults to
-      200 for `View.BASIC` and to 50 for `View.FULL`.  Must not be greater
-      than 1000 for `View.BASIC` or 500 for `View.FULL`.
+    pageSize: The maximum number of results to return.  Note that the number
+      of results returned may be less than this value even if there are more
+      available results. To fetch all results, clients must continue calling
+      this method repeatedly until the response no longer contains a
+      `next_page_token`.  If unspecified, defaults to 200 for `View.BASIC` and
+      to 50 for `View.FULL`.  Must not be greater than 1000 for `View.BASIC`
+      or 500 for `View.FULL`.
     pageToken: The `next_page_token` value returned from a previous search
       request, if any.
     query: Required. The search query.  Only queries on the parent and labels
@@ -289,7 +301,7 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
       Language](https://opensource.google/projects/cel). May only contain
       equality operators on the parent (e.g. `parent ==
       'customers/{customer_id}'`) and inclusion operators on labels (e.g.,
-      `'cloudidentity.googleapis.com/discussion_forum' in labels`).
+      `'cloudidentity.googleapis.com/groups.discussion_forum' in labels`).
     view: The level of detail to be returned.  If unspecified, defaults to
       `View.BASIC`.
   """
@@ -404,6 +416,16 @@ class EntityKey(_messages.Message):
   namespace = _messages.StringField(2)
 
 
+class ExpiryDetail(_messages.Message):
+  r"""Specifies Membership expiry attributes.
+
+  Fields:
+    expireTime: Expiration time for the Membership.
+  """
+
+  expireTime = _messages.StringField(1)
+
+
 class Group(_messages.Message):
   r"""A group within the Cloud Identity Groups API.  A `Group` is a collection
   of entities, where each entity is either a user or another group.
@@ -412,8 +434,8 @@ class Group(_messages.Message):
     LabelsValue: Required. The labels that apply to the `Group`.  Must not
       contain more than one entry. Must contain the entry
       `'system/groups/external': ''` if the `Group` is an external-identity-
-      mapped group or `'cloudidentity.googleapis.com/discussion_forum': ''` if
-      the `Group` is a Google Group.
+      mapped group or `'cloudidentity.googleapis.com/groups.discussion_forum':
+      ''` if the `Group` is a Google Group.
 
   Fields:
     createTime: Output only. The time when the `Group` was created.
@@ -425,8 +447,8 @@ class Group(_messages.Message):
     labels: Required. The labels that apply to the `Group`.  Must not contain
       more than one entry. Must contain the entry `'system/groups/external':
       ''` if the `Group` is an external-identity-mapped group or
-      `'cloudidentity.googleapis.com/discussion_forum': ''` if the `Group` is
-      a Google Group.
+      `'cloudidentity.googleapis.com/groups.discussion_forum': ''` if the
+      `Group` is a Google Group.
     name: Output only. The [resource
       name](https://cloud.google.com/apis/design/resource_names) of the
       `Group`.  Shall be of the form `groups/{group_id}`.
@@ -442,8 +464,8 @@ class Group(_messages.Message):
     r"""Required. The labels that apply to the `Group`.  Must not contain more
     than one entry. Must contain the entry `'system/groups/external': ''` if
     the `Group` is an external-identity-mapped group or
-    `'cloudidentity.googleapis.com/discussion_forum': ''` if the `Group` is a
-    Google Group.
+    `'cloudidentity.googleapis.com/groups.discussion_forum': ''` if the
+    `Group` is a Google Group.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -550,21 +572,11 @@ class Membership(_messages.Message):
   """
 
   createTime = _messages.StringField(1)
-  expiryDetail = _messages.MessageField('MembershipExpiryDetail', 2)
+  expiryDetail = _messages.MessageField('ExpiryDetail', 2)
   name = _messages.StringField(3)
   preferredMemberKey = _messages.MessageField('EntityKey', 4)
   roles = _messages.MessageField('MembershipRole', 5, repeated=True)
   updateTime = _messages.StringField(6)
-
-
-class MembershipExpiryDetail(_messages.Message):
-  r"""Specifies Membership expiry attributes.
-
-  Fields:
-    expireTime: Expiration time for the Membership.
-  """
-
-  expireTime = _messages.StringField(1)
 
 
 class MembershipRole(_messages.Message):
@@ -613,22 +625,7 @@ class ModifyMembershipRolesRequest(_messages.Message):
 
   addRoles = _messages.MessageField('MembershipRole', 1, repeated=True)
   removeRoles = _messages.StringField(2, repeated=True)
-  updateRolesParams = _messages.MessageField('ModifyMembershipRolesRequestUpdateMembershipRolesParams', 3, repeated=True)
-
-
-class ModifyMembershipRolesRequestUpdateMembershipRolesParams(_messages.Message):
-  r"""The details of an update to a `MembershipRole`.
-
-  Fields:
-    fieldMask: The fully-qualified names of fields to update.  May only
-      contain the field `expiry_detail`.
-    membershipRole: The `MembershipRole`s to be updated.  Only `MEMBER`
-      `MembershipRoles` can currently be updated.  May only contain a
-      `MembershipRole` with `name` `MEMBER`.
-  """
-
-  fieldMask = _messages.StringField(1)
-  membershipRole = _messages.MessageField('MembershipRole', 2)
+  updateRolesParams = _messages.MessageField('UpdateMembershipRolesParams', 3, repeated=True)
 
 
 class ModifyMembershipRolesResponse(_messages.Message):
@@ -875,6 +872,21 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class UpdateMembershipRolesParams(_messages.Message):
+  r"""The details of an update to a `MembershipRole`.
+
+  Fields:
+    fieldMask: The fully-qualified names of fields to update.  May only
+      contain the field `expiry_detail`.
+    membershipRole: The `MembershipRole`s to be updated.  Only `MEMBER`
+      `MembershipRoles` can currently be updated.  May only contain a
+      `MembershipRole` with `name` `MEMBER`.
+  """
+
+  fieldMask = _messages.StringField(1)
+  membershipRole = _messages.MessageField('MembershipRole', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -495,6 +495,14 @@
         "status": {
           "description": "Current ServicePerimeter configuration. Specifies sets of resources,\nrestricted services and access levels that determine perimeter\ncontent and boundaries.",
           "$ref": "ServicePerimeterConfig"
+        },
+        "spec": {
+          "description": "Proposed (or dry run) ServicePerimeter configuration. This configuration\nallows to specify and test ServicePerimeter configuration without enforcing\nactual access restrictions. Only allowed to be set when the\n\"use_explicit_dry_run_spec\" flag is set.",
+          "$ref": "ServicePerimeterConfig"
+        },
+        "useExplicitDryRunSpec": {
+          "description": "Use explicit dry run spec flag. Ordinarily, a dry-run spec implicitly\nexists  for all Service Perimeters, and that spec is identical to the\nstatus for those Service Perimeters. When this flag is set, it inhibits the\ngeneration of the implicit spec, thereby allowing the user to explicitly\nprovide a configuration (\"spec\") to use in a dry-run version of the Service\nPerimeter. This allows the user to test changes to the enforced config\n(\"status\") without actually enforcing them. This testing is done through\nanalyzing the differences between currently enforced and suggested\nrestrictions. use_explicit_dry_run_spec must bet set to True if any of the\nfields in the spec are set to non-default values.",
+          "type": "boolean"
         }
       }
     },
@@ -519,6 +527,28 @@
         },
         "restrictedServices": {
           "description": "GCP services that are subject to the Service Perimeter restrictions. For\nexample, if `storage.googleapis.com` is specified, access to the storage\nbuckets inside the perimeter must meet the perimeter's access restrictions.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vpcServiceRestriction": {
+          "description": "Alpha. Configuration for within Perimeter allowed APIs.",
+          "$ref": "VpcServiceRestriction"
+        }
+      }
+    },
+    "VpcServiceRestriction": {
+      "id": "VpcServiceRestriction",
+      "description": "Alpha. Specifies how APIs are allowed to communicate within the Service\nPerimeter.",
+      "type": "object",
+      "properties": {
+        "enableRestriction": {
+          "description": "Whether to restrict API calls within the Service Perimeter to the list of\nAPIs specified in 'allowed_services'.",
+          "type": "boolean"
+        },
+        "allowedServices": {
+          "description": "The list of APIs usable within the Service Perimeter. Must be empty\nunless 'enable_restriction' is True.",
           "type": "array",
           "items": {
             "type": "string"

@@ -20,11 +20,16 @@ from __future__ import unicode_literals
 
 import copy
 import json
+import re
 
 from apitools.base.py import encoding
+from apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.api_lib.labelmanager import service as labelmanager
 from googlecloudsdk.api_lib.orgpolicy import service as org_policy_service
 from googlecloudsdk.api_lib.orgpolicy import utils as org_policy_utils
+from googlecloudsdk.command_lib.labelmanager import utils as label_manager_utils
 from googlecloudsdk.command_lib.org_policies import exceptions
+from googlecloudsdk.core import log as core_log
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
 
@@ -101,6 +106,85 @@ def GetPolicyNameFromArgs(args):
   constraint_name = GetConstraintNameFromArgs(args)
 
   return '{}/policies/{}'.format(resource, constraint_name)
+
+
+def GetLabelKeyAndLabelValueInputFromCondition(condition):
+  """Parse label key and label value input from condition.
+
+  The condition argument has the following syntax:
+  resource.matchLabels("label_key_input", "label_value_input")
+
+  Args:
+    condition: str, A condition string to be parsed.
+
+  Returns:
+    Tuple of label key and label value inputs
+  """
+
+  matches = re.search(
+      r"""resource\.matchLabels\(['"](.+?)['"], ['"](.+?)['"]\)""",
+      condition)
+  if matches:
+    return matches.groups()
+  raise exceptions.InvalidInputError(
+      'Label condition must be of the form: resource.matchLabels('
+      '"label_key_input", "label_value_input").'
+  )
+
+
+def TransformLabelDisplayNameConditionToLabelNameCondition(args):
+  """Set the condition on the argument with label IDs.
+
+  Args:
+    args: argparse.Namespace, An object that contains the values for the
+      arguments specified in the Args method.
+  """
+  display_names = GetLabelKeyAndLabelValueInputFromCondition(
+      args.condition)
+  try:
+    label_key_name = label_manager_utils.GetLabelKeyFromDisplayName(
+        display_names[0], args.label_parent)
+    label_value_name = label_manager_utils.GetLabelValueFromDisplayName(
+        display_names[1], label_key_name)
+  except label_manager_utils.InvalidInputError as e:
+    raise exceptions.InvalidInputError(
+        '%s. Note that if you are using a LabelKey ID and LabelValue ID, '
+        'do not set the --label-parent flag.' % e)
+  args.condition = "resource.matchLabels('%s', '%s')" % (label_key_name,
+                                                         label_value_name)
+
+
+def UpdateLabelNamesInCondition(policy):
+  """Set the condition on the policy with label display names.
+
+  Args:
+    policy: messages.GoogleCloudOrgpolicyV2alpha1Policy, The policy to be
+      updated.
+  """
+  labelkeys_service = labelmanager.LabelKeysService()
+  labelvalues_service = labelmanager.LabelValuesService()
+  labelmanager_messages = labelmanager.LabelManagerMessages()
+
+  for rule in policy.spec.rules:
+    if rule.condition:
+      label_key, label_value = GetLabelKeyAndLabelValueInputFromCondition(
+          rule.condition.expression)
+      try:
+        label_key_display_name = labelkeys_service.Get(
+            labelmanager_messages.LabelmanagerLabelKeysGetRequest(
+                name=label_key)).displayName
+        label_value_display_name = labelvalues_service.Get(
+            labelmanager_messages.LabelmanagerLabelValuesGetRequest(
+                name=label_value)).displayName
+        rule.condition = org_policy_service.OrgPolicyMessages().GoogleTypeExpr(
+            expression="resource.matchLabels('%s', '%s')" %
+            (label_key_display_name, label_value_display_name))
+      except apitools_exceptions.HttpForbiddenError:
+        # return the label key ID and label value ID if we fail to get
+        # display name
+        core_log.status.Print('Permission denied accessing the label '
+                              'display names, defaulting to the IDs.')
+        continue
 
 
 def GetMessageFromFile(filepath, message):

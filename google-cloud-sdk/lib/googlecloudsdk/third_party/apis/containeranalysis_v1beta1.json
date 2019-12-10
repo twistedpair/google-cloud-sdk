@@ -1179,7 +1179,7 @@
       "type": "object",
       "properties": {
         "occurrences": {
-          "description": "The occurrences to create. Max allowed length is 1000.",
+          "description": "Required. The occurrences to create. Max allowed length is 1000.",
           "type": "array",
           "items": {
             "$ref": "Occurrence"
@@ -1794,7 +1794,7 @@
       "type": "object",
       "properties": {
         "notes": {
-          "description": "The notes to create. Max allowed length is 1000.",
+          "description": "Required. The notes to create. Max allowed length is 1000.",
           "type": "object",
           "additionalProperties": {
             "$ref": "Note"
@@ -1902,23 +1902,23 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` is a collection of `bindings`. A `binding` binds one or more\n`members` to a single `role`. Members can be user accounts, service accounts,\nGoogle groups, and domains (such as G Suite). A `role` is a named list of\npermissions (defined by IAM or configured by users). A `binding` can\noptionally specify a `condition`, which is a logic expression that further\nconstrains the role binding based on attributes about the request and\/or\ntarget resource.\n\n**JSON Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/resourcemanager.organizationAdmin\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-project-id@appspot.gserviceaccount.com\"\n          ]\n        },\n        {\n          \"role\": \"roles\/resourcemanager.organizationViewer\",\n          \"members\": [\"user:eve@example.com\"],\n          \"condition\": {\n            \"title\": \"expirable access\",\n            \"description\": \"Does not grant access after Sep 2020\",\n            \"expression\": \"request.time <\n            timestamp('2020-10-01T00:00:00.000Z')\",\n          }\n        }\n      ]\n    }\n\n**YAML Example**\n\n    bindings:\n    - members:\n      - user:mike@example.com\n      - group:admins@example.com\n      - domain:google.com\n      - serviceAccount:my-project-id@appspot.gserviceaccount.com\n      role: roles\/resourcemanager.organizationAdmin\n    - members:\n      - user:eve@example.com\n      role: roles\/resourcemanager.organizationViewer\n      condition:\n        title: expirable access\n        description: Does not grant access after Sep 2020\n        expression: request.time < timestamp('2020-10-01T00:00:00.000Z')\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam\/docs).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access\ncontrols for Google Cloud resources.\n\n\nA `Policy` is a collection of `bindings`. A `binding` binds one or more\n`members` to a single `role`. Members can be user accounts, service accounts,\nGoogle groups, and domains (such as G Suite). A `role` is a named list of\npermissions; each `role` can be an IAM predefined role or a user-created\ncustom role.\n\nOptionally, a `binding` can specify a `condition`, which is a logical\nexpression that allows access to a resource only if the expression evaluates\nto `true`. A condition can add constraints based on attributes of the\nrequest, the resource, or both.\n\n**JSON example:**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/resourcemanager.organizationAdmin\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-project-id@appspot.gserviceaccount.com\"\n          ]\n        },\n        {\n          \"role\": \"roles\/resourcemanager.organizationViewer\",\n          \"members\": [\"user:eve@example.com\"],\n          \"condition\": {\n            \"title\": \"expirable access\",\n            \"description\": \"Does not grant access after Sep 2020\",\n            \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\",\n          }\n        }\n      ],\n      \"etag\": \"BwWWja0YfJA=\",\n      \"version\": 3\n    }\n\n**YAML example:**\n\n    bindings:\n    - members:\n      - user:mike@example.com\n      - group:admins@example.com\n      - domain:google.com\n      - serviceAccount:my-project-id@appspot.gserviceaccount.com\n      role: roles\/resourcemanager.organizationAdmin\n    - members:\n      - user:eve@example.com\n      role: roles\/resourcemanager.organizationViewer\n      condition:\n        title: expirable access\n        description: Does not grant access after Sep 2020\n        expression: request.time < timestamp('2020-10-01T00:00:00.000Z')\n    - etag: BwWWja0YfJA=\n    - version: 3\n\nFor a description of IAM and its features, see the\n[IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {
-          "description": "Specifies the format of the policy.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nOperations affecting conditional bindings must specify version 3. This can\nbe either setting a conditional policy, modifying a conditional binding,\nor removing a conditional binding from the stored conditional policy.\nOperations on non-conditional policies may specify any valid value or\nleave the field unset.\n\nIf no etag is provided in the call to `setIamPolicy`, any version\ncompliance checks on the incoming and\/or stored policy is skipped.",
+          "description": "Specifies the format of the policy.\n\nValid values are `0`, `1`, and `3`. Requests that specify an invalid value\nare rejected.\n\nAny operation that affects conditional role bindings must specify version\n`3`. This requirement applies to the following operations:\n\n* Getting a policy that includes a conditional role binding\n* Adding a conditional role binding to a policy\n* Changing a conditional role binding in a policy\n* Removing any role binding, with or without a condition, from a policy\n  that includes conditions\n\n**Important:** If you use IAM Conditions, you must include the `etag` field\nwhenever you call `setIamPolicy`. If you omit this field, then IAM allows\nyou to overwrite a version `3` policy with a version `1` policy, and all of\nthe conditions in the version `3` policy are lost.\n\nIf a policy does not include any conditions, operations on that policy may\nspecify any valid version or leave the field unset.",
           "type": "integer",
           "format": "int32"
         },
         "bindings": {
-          "description": "Associates a list of `members` to a `role`. Optionally may specify a\n`condition` that determines when binding is in effect.\n`bindings` with no members will result in an error.",
+          "description": "Associates a list of `members` to a `role`. Optionally, may specify a\n`condition` that determines how and when the `bindings` are applied. Each\nof the `bindings` must contain at least one member.",
           "type": "array",
           "items": {
             "$ref": "Binding"
           }
         },
         "etag": {
-          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten. Due to blind-set semantics of an etag-less policy,\n'setIamPolicy' will not fail even if either of incoming or stored policy\ndoes not meet the version requirements.",
+          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\n**Important:** If you use IAM Conditions, you must include the `etag` field\nwhenever you call `setIamPolicy`. If you omit this field, then IAM allows\nyou to overwrite a version `3` policy with a version `1` policy, and all of\nthe conditions in the version `3` policy are lost.",
           "type": "string",
           "format": "byte"
         }
@@ -2097,7 +2097,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the occurrence in the form of\n`projects\/[PROJECT_ID]\/occurrences\/[OCCURRENCE_ID]`.",
+                  "description": "Required. The name of the occurrence in the form of\n`projects\/[PROJECT_ID]\/occurrences\/[OCCURRENCE_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
@@ -2122,7 +2122,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The name of the project to list occurrences for in the form of\n`projects\/[PROJECT_ID]`.",
+                  "description": "Required. The name of the project to list occurrences for in the form of\n`projects\/[PROJECT_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -2163,7 +2163,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The name of the occurrence in the form of\n`projects\/[PROJECT_ID]\/occurrences\/[OCCURRENCE_ID]`.",
+                  "description": "Required. The name of the occurrence in the form of\n`projects\/[PROJECT_ID]\/occurrences\/[OCCURRENCE_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
@@ -2188,7 +2188,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "The name of the project in the form of `projects\/[PROJECT_ID]`, under which\nthe occurrence is to be created.",
+                  "description": "Required. The name of the project in the form of `projects\/[PROJECT_ID]`, under which\nthe occurrence is to be created.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -2216,7 +2216,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "The name of the project in the form of `projects\/[PROJECT_ID]`, under which\nthe occurrences are to be created.",
+                  "description": "Required. The name of the project in the form of `projects\/[PROJECT_ID]`, under which\nthe occurrences are to be created.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -2244,7 +2244,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The name of the occurrence in the form of\n`projects\/[PROJECT_ID]\/occurrences\/[OCCURRENCE_ID]`.",
+                  "description": "Required. The name of the occurrence in the form of\n`projects\/[PROJECT_ID]\/occurrences\/[OCCURRENCE_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
@@ -2278,7 +2278,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the occurrence in the form of\n`projects\/[PROJECT_ID]\/occurrences\/[OCCURRENCE_ID]`.",
+                  "description": "Required. The name of the occurrence in the form of\n`projects\/[PROJECT_ID]\/occurrences\/[OCCURRENCE_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
@@ -2303,7 +2303,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The name of the project to get a vulnerability summary for in the form of\n`projects\/[PROJECT_ID]`.",
+                  "description": "Required. The name of the project to get a vulnerability summary for in the form of\n`projects\/[PROJECT_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -2421,7 +2421,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the note in the form of\n`projects\/[PROVIDER_ID]\/notes\/[NOTE_ID]`.",
+                  "description": "Required. The name of the note in the form of\n`projects\/[PROVIDER_ID]\/notes\/[NOTE_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
@@ -2446,7 +2446,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The name of the project to list notes for in the form of\n`projects\/[PROJECT_ID]`.",
+                  "description": "Required. The name of the project to list notes for in the form of\n`projects\/[PROJECT_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -2487,7 +2487,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The name of the note in the form of\n`projects\/[PROVIDER_ID]\/notes\/[NOTE_ID]`.",
+                  "description": "Required. The name of the note in the form of\n`projects\/[PROVIDER_ID]\/notes\/[NOTE_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
@@ -2512,14 +2512,14 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "The name of the project in the form of `projects\/[PROJECT_ID]`, under which\nthe note is to be created.",
+                  "description": "Required. The name of the project in the form of `projects\/[PROJECT_ID]`, under which\nthe note is to be created.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "noteId": {
-                  "description": "The ID to use for this note.",
+                  "description": "Required. The ID to use for this note.",
                   "location": "query",
                   "type": "string"
                 }
@@ -2545,7 +2545,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "The name of the project in the form of `projects\/[PROJECT_ID]`, under which\nthe notes are to be created.",
+                  "description": "Required. The name of the project in the form of `projects\/[PROJECT_ID]`, under which\nthe notes are to be created.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -2573,7 +2573,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The name of the note in the form of\n`projects\/[PROVIDER_ID]\/notes\/[NOTE_ID]`.",
+                  "description": "Required. The name of the note in the form of\n`projects\/[PROVIDER_ID]\/notes\/[NOTE_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
@@ -2696,7 +2696,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The name of the note to list occurrences for in the form of\n`projects\/[PROVIDER_ID]\/notes\/[NOTE_ID]`.",
+                      "description": "Required. The name of the note to list occurrences for in the form of\n`projects\/[PROVIDER_ID]\/notes\/[NOTE_ID]`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
@@ -2743,7 +2743,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the scan configuration in the form of\n`projects\/[PROJECT_ID]\/scanConfigs\/[SCAN_CONFIG_ID]`.",
+                  "description": "Required. The name of the scan configuration in the form of\n`projects\/[PROJECT_ID]\/scanConfigs\/[SCAN_CONFIG_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/scanConfigs\/[^\/]+$",
@@ -2768,14 +2768,14 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The name of the project to list scan configurations for in the form of\n`projects\/[PROJECT_ID]`.",
+                  "description": "Required. The name of the project to list scan configurations for in the form of\n`projects\/[PROJECT_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The filter expression.",
+                  "description": "Required. The filter expression.",
                   "location": "query",
                   "type": "string"
                 },
@@ -2809,7 +2809,7 @@
               "httpMethod": "PUT",
               "parameters": {
                 "name": {
-                  "description": "The name of the scan configuration in the form of\n`projects\/[PROJECT_ID]\/scanConfigs\/[SCAN_CONFIG_ID]`.",
+                  "description": "Required. The name of the scan configuration in the form of\n`projects\/[PROJECT_ID]\/scanConfigs\/[SCAN_CONFIG_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/scanConfigs\/[^\/]+$",

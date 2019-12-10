@@ -276,6 +276,7 @@ class CheckInRequest(_messages.Message):
   Fields:
     deadlineExpired: The deadline has expired and the worker needs more time.
     event: A workflow specific event occurred.
+    events: A list of timestamped events.
     result: The operation has finished with the given result.
     workerStatus: Data about the status of the worker VM.
   """
@@ -307,8 +308,9 @@ class CheckInRequest(_messages.Message):
 
   deadlineExpired = _messages.MessageField('Empty', 1)
   event = _messages.MessageField('EventValue', 2)
-  result = _messages.MessageField('Status', 3)
-  workerStatus = _messages.MessageField('WorkerStatus', 4)
+  events = _messages.MessageField('TimestampedEvent', 3, repeated=True)
+  result = _messages.MessageField('Status', 4)
+  workerStatus = _messages.MessageField('WorkerStatus', 5)
 
 
 class CheckInResponse(_messages.Message):
@@ -1400,6 +1402,47 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TimestampedEvent(_messages.Message):
+  r"""An event that occured in the operation assigned to the worker and the
+  time of occurance.
+
+  Messages:
+    DataValue: The event data.
+
+  Fields:
+    data: The event data.
+    timestamp: The time when the event happened.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DataValue(_messages.Message):
+    r"""The event data.
+
+    Messages:
+      AdditionalProperty: An additional property for a DataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  data = _messages.MessageField('DataValue', 1)
+  timestamp = _messages.StringField(2)
 
 
 class UnexpectedExitStatusEvent(_messages.Message):

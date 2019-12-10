@@ -117,11 +117,13 @@ apis:
       discovery_doc: cloudasset_v1p2beta1.json
     v1p4alpha1:
       discovery_doc: cloudasset_v1p4alpha1.json
+    v1p5alpha1:
+      discovery_doc: cloudasset_v1p5alpha1.json
   cloudbilling:
     v1:
       discovery_doc: cloudbilling_v1.json
       unelidable_request_methods:
-        - cloudbilling.projects.updateBillingInfo
+      - cloudbilling.projects.updateBillingInfo
       resources:
         projects:
           path: projects/{projectsId}
@@ -132,7 +134,7 @@ apis:
       # The following stanza is a workaround for b/24867445. It prevents elision
       # of a request containing (project_id + xyz) into just an Xyz object.
       unelidable_request_methods:
-        - cloudbuild.projects.builds.create
+      - cloudbuild.projects.builds.create
     v1alpha1:
       discovery_doc: cloudbuild_v1alpha1.json
       resources:
@@ -141,8 +143,13 @@ apis:
       # The following stanza is a workaround for b/24867445. It prevents elision
       # of a request containing (project_id + xyz) into just an Xyz object.
       unelidable_request_methods:
-        - cloudbuild.projects.builds.create
-        - cloudbuild.projects.workerPools.patch
+      - cloudbuild.projects.builds.create
+      - cloudbuild.projects.workerPools.patch
+    v1alpha2:
+      discovery_doc: cloudbuild_v1alpha2.json
+      resources:
+        projects:
+          path: projects/{projectId}
   clouddebugger:
     v2:
       discovery_doc: clouddebugger_v2.json
@@ -528,6 +535,12 @@ apis:
         iam:
           path: iam
       discovery_doc: policytroubleshooter_v1beta.json
+    v1:
+      default: true
+      resources:
+        iam:
+          path: iam
+      discovery_doc: policytroubleshooter_v1.json
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json
@@ -554,11 +567,9 @@ apis:
     v1beta1:
       discovery_doc: runtimeconfig_v1beta1.json
   secretmanager:
-    v1alpha:
-      discovery_doc: secretmanager_v1alpha.json
-      default: true
     v1beta1:
       discovery_doc: secretmanager_v1beta1.json
+      default: true
   securitycenter:
     v1beta1:
       discovery_doc: securitycenter_v1beta1.json

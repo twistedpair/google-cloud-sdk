@@ -518,7 +518,7 @@ class ServerlessOperations(object):
       region: str, The region of the control plane if operating against
         hosted Cloud Run, else None.
       op_client: The API client for interacting with One Platform APIs. Or
-        None if interacting with Cloud Run on GKE.
+        None if interacting with Cloud Run for Anthos.
     """
     self._client = client
     self._registry = resources.REGISTRY.Clone()

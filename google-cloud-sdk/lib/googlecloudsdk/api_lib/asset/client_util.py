@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
+from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import exceptions
@@ -36,6 +37,7 @@ API_NAME = 'cloudasset'
 DEFAULT_API_VERSION = 'v1'
 V1P2BETA1_API_VERSION = 'v1p2beta1'
 V1P4ALPHA1_API_VERSION = 'v1p4alpha1'
+V1P5ALPHA1_API_VERSION = 'v1p5alpha1'
 BASE_URL = 'https://cloudasset.googleapis.com'
 _HEADERS = {'Content-Type': 'application/json', 'X-HTTP-Method-Override': 'GET'}
 _HTTP_ERROR_FORMAT = ('HTTP request failed with status code {}. '
@@ -309,6 +311,37 @@ class AssetFeedClient(object):
     else:
       asset_types = []
     return asset_names, asset_types
+
+
+class AssetListClient(object):
+  """Client for list assets."""
+
+  def __init__(self, parent, api_version=V1P5ALPHA1_API_VERSION):
+    self.parent = parent
+    self.message_module = GetMessages(api_version)
+    self.service = GetClient(api_version).assets
+
+  def List(self, args):
+    """List assets with the asset list method."""
+    snapshot_time = None
+    if args.snapshot_time:
+      snapshot_time = times.FormatDateTime(args.snapshot_time)
+    list_assets_request = self.message_module.CloudassetAssetsListRequest(
+        parent=self.parent,
+        contentType=getattr(
+            self.message_module.CloudassetAssetsListRequest
+            .ContentTypeValueValuesEnum, 'RESOURCE'),
+        assetTypes=args.asset_types,
+        readTime=snapshot_time)
+    return list_pager.YieldFromList(
+        self.service,
+        list_assets_request,
+        field='assets',
+        limit=args.limit,
+        batch_size=args.page_size,
+        batch_size_attribute='pageSize',
+        current_token_attribute='pageToken',
+        next_token_attribute='nextPageToken')
 
 
 class AssetOperationClient(object):

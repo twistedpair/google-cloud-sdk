@@ -24,11 +24,56 @@ DOCS_URL = 'https://cloud.google.com/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  FOLDERS = (
+      'folders',
+      'folders/{foldersId}',
+      {},
+      [u'foldersId'],
+      True
+  )
+  FOLDERS_GUESTPOLICIES = (
+      'folders.guestPolicies',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/guestPolicies/{guestPoliciesId}',
+      },
+      [u'name'],
+      True
+  )
+  ORGANIZATIONS = (
+      'organizations',
+      'organizations/{organizationsId}',
+      {},
+      [u'organizationsId'],
+      True
+  )
+  ORGANIZATIONS_GUESTPOLICIES = (
+      'organizations.guestPolicies',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/guestPolicies/'
+              '{guestPoliciesId}',
+      },
+      [u'name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
       [u'projectsId'],
+      True
+  )
+  PROJECTS_GUESTPOLICIES = (
+      'projects.guestPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/guestPolicies/{guestPoliciesId}',
+      },
+      [u'name'],
       True
   )
   PROJECTS_PATCHDEPLOYMENTS = (

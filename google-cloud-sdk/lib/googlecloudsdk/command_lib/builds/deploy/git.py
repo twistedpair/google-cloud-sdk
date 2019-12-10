@@ -58,7 +58,7 @@ def HasPendingChanges(source_directory):
   return re.search(_GIT_PENDING_CHANGE_PATTERN, status, flags=re.MULTILINE)
 
 
-def GetShortGitHeadRevision(source_directory):
+def GetGitHeadRevision(source_directory):
   """Finds the current HEAD revision for the given source directory.
 
   Args:
@@ -67,7 +67,7 @@ def GetShortGitHeadRevision(source_directory):
   Returns:
     The HEAD revision of the current branch, or None if the command failed.
   """
-  raw_output = _CallGit(source_directory, 'rev-parse', '--short', 'HEAD')
+  raw_output = _CallGit(source_directory, 'rev-parse', 'HEAD')
   return raw_output.strip() if raw_output else None
 
 

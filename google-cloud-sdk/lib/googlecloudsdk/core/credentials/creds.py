@@ -27,6 +27,7 @@ import enum
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.util import files
 
@@ -183,17 +184,23 @@ class AccessTokenCache(object):
           .format(_ACCESS_TOKEN_TABLE), (account_id,)).fetchone()
 
   def Store(self, account_id, access_token, token_expiry, rapt_token, id_token):
-    self._Execute(
-        'REPLACE INTO "{}" '
-        '(account_id, access_token, token_expiry, rapt_token, id_token) '
-        'VALUES (?,?,?,?,?)'
-        .format(_ACCESS_TOKEN_TABLE),
-        (account_id, access_token, token_expiry, rapt_token, id_token))
+    try:
+      self._Execute(
+          'REPLACE INTO "{}" '
+          '(account_id, access_token, token_expiry, rapt_token, id_token) '
+          'VALUES (?,?,?,?,?)'
+          .format(_ACCESS_TOKEN_TABLE),
+          (account_id, access_token, token_expiry, rapt_token, id_token))
+    except sqlite3.OperationalError as e:
+      log.warning('Could not store access token in cache: {}'.format(str(e)))
 
   def Remove(self, account_id):
-    self._Execute(
-        'DELETE FROM "{}" WHERE account_id = ?'
-        .format(_ACCESS_TOKEN_TABLE), (account_id,))
+    try:
+      self._Execute(
+          'DELETE FROM "{}" WHERE account_id = ?'
+          .format(_ACCESS_TOKEN_TABLE), (account_id,))
+    except sqlite3.OperationalError as e:
+      log.warning('Could not delete access token from cache: {}'.format(str(e)))
 
 
 class AccessTokenStore(client.Storage):
@@ -455,4 +462,3 @@ def _GetSqliteStore(sqlite_credential_file=None, sqlite_access_token_file=None):
   files.PrivatizeFile(sqlite_access_token_file)
   access_token_cache = AccessTokenCache(sqlite_access_token_file)
   return CredentialStoreWithCache(credential_store, access_token_cache)
-

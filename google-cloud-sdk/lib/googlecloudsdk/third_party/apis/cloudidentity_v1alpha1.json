@@ -151,7 +151,7 @@
           "format": "google-datetime"
         },
         "labels": {
-          "description": "Required. The labels that apply to the `Group`.\n\nMust not contain more than one entry. Must contain the entry\n`'system\/groups\/external': ''` if the `Group` is an\nexternal-identity-mapped group or\n`'cloudidentity.googleapis.com\/discussion_forum': ''` if the `Group` is a\nGoogle Group.",
+          "description": "Required. The labels that apply to the `Group`.\n\nMust not contain more than one entry. Must contain the entry\n`'system\/groups\/external': ''` if the `Group` is an\nexternal-identity-mapped group or\n`'cloudidentity.googleapis.com\/groups.discussion_forum': ''` if the `Group`\nis a Google Group.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -385,7 +385,7 @@
         },
         "expiryDetail": {
           "description": "The expiry details of the `MembershipRole`.\n\nMay be set if the only `MembershipRole` is one with `name` `MEMBER`. Must\nnot be set if any other `MembershipRole`s exist.",
-          "$ref": "MembershipExpiryDetail"
+          "$ref": "ExpiryDetail"
         }
       }
     },
@@ -416,8 +416,8 @@
         }
       }
     },
-    "MembershipExpiryDetail": {
-      "id": "MembershipExpiryDetail",
+    "ExpiryDetail": {
+      "id": "ExpiryDetail",
       "description": "Specifies Membership expiry attributes.",
       "type": "object",
       "properties": {
@@ -480,13 +480,13 @@
           "description": "The `MembershipRole`s to be updated.\n\nUpdating roles in the same request as adding or removing roles is not\nsupported.\n\nMust not be set if either `add_roles` or `remove_roles` is set.",
           "type": "array",
           "items": {
-            "$ref": "ModifyMembershipRolesRequestUpdateMembershipRolesParams"
+            "$ref": "UpdateMembershipRolesParams"
           }
         }
       }
     },
-    "ModifyMembershipRolesRequestUpdateMembershipRolesParams": {
-      "id": "ModifyMembershipRolesRequestUpdateMembershipRolesParams",
+    "UpdateMembershipRolesParams": {
+      "id": "UpdateMembershipRolesParams",
       "description": "The details of an update to a `MembershipRole`.",
       "type": "object",
       "properties": {
@@ -670,7 +670,7 @@
           "httpMethod": "GET",
           "parameters": {
             "query": {
-              "description": "Required. The search query.\n\nOnly queries on the parent and labels of `Group`s are supported.\n\nMust be specified in [Common Expression\nLanguage](https:\/\/opensource.google\/projects\/cel). May only contain\nequality operators on the parent (e.g. `parent ==\n'customers\/{customer_id}'`) and inclusion operators on labels (e.g.,\n`'cloudidentity.googleapis.com\/discussion_forum' in labels`).",
+              "description": "Required. The search query.\n\nOnly queries on the parent and labels of `Group`s are supported.\n\nMust be specified in [Common Expression\nLanguage](https:\/\/opensource.google\/projects\/cel). May only contain\nequality operators on the parent (e.g. `parent ==\n'customers\/{customer_id}'`) and inclusion operators on labels (e.g.,\n`'cloudidentity.googleapis.com\/groups.discussion_forum' in labels`).",
               "location": "query",
               "type": "string"
             },
@@ -685,7 +685,7 @@
               ]
             },
             "pageSize": {
-              "description": "The number of results to return.\n\nIf unspecified, defaults to 200 for `View.BASIC` and to 50 for `View.FULL`.\n\nMust not be greater than 1000 for `View.BASIC` or 500 for `View.FULL`.",
+              "description": "The maximum number of results to return.\n\nNote that the number of results returned may be less than this value even\nif there are more available results. To fetch all results, clients must\ncontinue calling this method repeatedly until the response no longer\ncontains a `next_page_token`.\n\nIf unspecified, defaults to 200 for `View.BASIC` and to 50 for `View.FULL`.\n\nMust not be greater than 1000 for `View.BASIC` or 500 for `View.FULL`.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -730,7 +730,7 @@
               ]
             },
             "pageSize": {
-              "description": "The number of results to return.\n\nIf unspecified, defaults to 200 for `View.BASIC` and to 50 for `View.FULL`.\n\nMust not be greater than 1000 for `View.BASIC` or 500 for `View.FULL`.",
+              "description": "The maximum number of results to return.\n\nNote that the number of results returned may be less than this value even\nif there are more available results. To fetch all results, clients must\ncontinue calling this method repeatedly until the response no longer\ncontains a `next_page_token`.\n\nIf unspecified, defaults to 200 for `View.BASIC` and to 50 for `View.FULL`.\n\nMust not be greater than 1000 for `View.BASIC` or 500 for `View.FULL`.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -936,7 +936,7 @@
                   ]
                 },
                 "pageSize": {
-                  "description": "The number of results to return.\n\nIf unspecified, defaults to 200 for `View.BASIC` and to 50 for `View.FULL`.\n\nMust not be greater than 1000 for `View.BASIC` or 500 for `View.FULL`.",
+                  "description": "The maximum number of results to return.\n\nNote that the number of results returned may be less than this value even\nif there are more available results. To fetch all results, clients must\ncontinue calling this method repeatedly until the response no longer\ncontains a `next_page_token`.\n\nIf unspecified, defaults to 200 for `View.BASIC` and to 50 for `View.FULL`.\n\nMust not be greater than 1000 for `View.BASIC` or 500 for `View.FULL`.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"

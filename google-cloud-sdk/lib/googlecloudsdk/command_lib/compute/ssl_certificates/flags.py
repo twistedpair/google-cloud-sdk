@@ -55,8 +55,7 @@ class GlobalSslCertificatesCompleter(compute_completers.ListCommandCompleter):
   def __init__(self, **kwargs):
     super(GlobalSslCertificatesCompleter, self).__init__(
         collection='compute.sslCertificates',
-        api_version='alpha',
-        list_command='alpha compute ssl-certificates list --global --uri',
+        list_command='compute ssl-certificates list --global --uri',
         **kwargs)
 
 
@@ -65,9 +64,7 @@ class RegionSslCertificatesCompleter(compute_completers.ListCommandCompleter):
   def __init__(self, **kwargs):
     super(RegionSslCertificatesCompleter, self).__init__(
         collection='compute.regionSslCertificates',
-        api_version='alpha',
-        list_command=
-        'alpha compute ssl-certificates list --filter=region:* --uri',
+        list_command='compute ssl-certificates list --filter=region:* --uri',
         **kwargs)
 
 

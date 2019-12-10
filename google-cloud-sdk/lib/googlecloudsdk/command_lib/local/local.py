@@ -28,6 +28,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.local import yaml_helper
 from googlecloudsdk.core import config
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
@@ -36,22 +37,86 @@ import six
 IAM_MESSAGE_MODULE = apis.GetMessagesModule('iam', 'v1')
 CRM_MESSAGE_MODULE = apis.GetMessagesModule('cloudresourcemanager', 'v1')
 
+
+class Settings(object):
+  """Settings for local development environments."""
+
+  __slots__ = ('service_name', 'image_name', 'service_account', 'dockerfile',
+               'build_context_directory')
+
+  @classmethod
+  def FromArgs(cls, args):
+    """Create a LocalRuntimeFiles object from an args object."""
+    project_name = properties.VALUES.core.project.Get(required=True)
+
+    if not args.IsSpecified('service_name'):
+      dir_name = os.path.basename(
+          os.path.dirname(os.path.join(files.GetCWD(), args.dockerfile)))
+      service_name = console_io.PromptWithDefault(
+          message='Service name', default=dir_name)
+    else:
+      service_name = args.service_name
+
+    if not args.IsSpecified('image_name'):
+      default_image_name = 'gcr.io/{project}/{service}'.format(
+          project=project_name, service=service_name)
+      image_name = console_io.PromptWithDefault(
+          message='Docker image tag', default=default_image_name)
+    else:
+      image_name = args.image_name
+
+    return cls(service_name, image_name, args.service_account, args.dockerfile,
+               args.build_context_directory)
+
+  def __init__(self, service_name, image_name, service_account, dockerfile,
+               build_context_directory):
+    """Initialize Settings.
+
+    Args:
+      service_name: Name of the kuberntes service.
+      image_name: Docker image tag.
+      service_account: Service account id.
+      dockerfile: Path to dockerfile.
+      build_context_directory: Path to directory to use as the current working
+        directory for the docker build.
+    """
+    super(Settings, self).__setattr__('service_name', service_name)
+    super(Settings, self).__setattr__('image_name', image_name)
+    super(Settings, self).__setattr__('service_account', service_account)
+    super(Settings, self).__setattr__('dockerfile', dockerfile)
+    super(Settings, self).__setattr__('build_context_directory',
+                                      build_context_directory)
+
+  def __setattr__(self, name, value):
+    """Prevent modification of attributes."""
+    raise NotImplementedError('Settings cannot be modified')
+
+
 _POD_AND_SERVICES_TEMPLATE = """
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: {service}
   labels:
     service: {service}
 spec:
-  containers:
-  - name: {service}-container
-    image: {image}
-    env:
-    - name: PORT
-      value: "8080"
-    ports:
-    - containerPort: 8080
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {service}
+  template:
+    metadata:
+      labels:
+        app: {service}
+    spec:
+      containers:
+      - name: {service}-container
+        image: {image}
+        env:
+        - name: PORT
+          value: "8080"
+        ports:
+        - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -60,7 +125,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    service: {service}
+    app: {service}
   ports:
   - protocol: TCP
     port: 8080
@@ -170,11 +235,14 @@ def AddServiceAccountSecret(configs):
   Args:
     configs: List of kubernetes yaml configurations as dictionaries.
   """
-  pods = (config for config in configs if config['kind'] == 'Pod')
-  for pod in pods:
-    volumes = yaml_helper.GetOrCreate(pod, ('spec', 'volumes'), list)
+  deployments = (config for config in configs if config['kind'] == 'Deployment')
+  for deployment in deployments:
+    volumes = yaml_helper.GetOrCreate(deployment,
+                                      ('spec', 'template', 'spec', 'volumes'),
+                                      list)
     _AddSecretVolume(volumes, _CREDENTIAL_SECRET_NAME)
-    for container in yaml_helper.GetOrCreate(pod, ('spec', 'containers'), list):
+    for container in yaml_helper.GetOrCreate(
+        deployment, ('spec', 'template', 'spec', 'containers'), list):
       mounts = yaml_helper.GetOrCreate(container, ('volumeMounts',), list)
       _AddVolumeMount(mounts, _CREDENTIAL_SECRET_NAME)
       envs = yaml_helper.GetOrCreate(container, ('env',), list)

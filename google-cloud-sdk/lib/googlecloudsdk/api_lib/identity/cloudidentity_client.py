@@ -25,7 +25,7 @@ from googlecloudsdk.core.credentials import http
 from six.moves import urllib
 
 API_NAME = 'cloudidentity'
-API_VERSION = 'v1alpha1'
+API_VERSION = 'v1beta1'
 
 
 def GetClient(version=API_VERSION):
@@ -64,6 +64,7 @@ def LookupGroupName(email):
     'name: groups/{group_id}'
   """
 
+  # TODO(b/144289256): Pass API_VERSION info.
   client = GetClient()
 
   # Following part is added to resolve the gcloud known issue described
@@ -90,6 +91,7 @@ def LookupMembershipName(group_id, member_email):
     'name: members/{member_id}'
   """
 
+  # TODO(b/144289256): Pass API_VERSION info.
   client = GetClient()
 
   # Following part is added to resolve the gcloud known issue described

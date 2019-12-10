@@ -1031,6 +1031,738 @@
       "type": "object",
       "properties": {
       }
+    },
+    "GuestPolicy": {
+      "id": "GuestPolicy",
+      "description": "An OS Config resource representing a guest configuration policy. These\npolicies represent the desired state for VM instance guest environments\nincluding packages to install or remove, package repository configurations,\nand software to install.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Unique name of the resource in this project using one of the following\nforms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the guest policy. Length of the description is limited\nto 1024 characters.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time this guest policy was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Last time this guest policy was updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "assignment": {
+          "description": "Required. Specifies the VM instances that are assigned to this policy. This allows\nyou to target sets or groups of VM instances by different parameters such\nas labels, names, OS, or zones.\n\nIf left empty, all VM instances underneath this policy are targeted.\n\n\nConflict Management\n\nPolicies that exist higher up in the resource hierarchy\n(closer to the organization) override those lower down if there is a\nconflict.\n\nAt the same level in the resource hierarchy (that is within a project), the\nservice prevents the creation of multiple policies that conflict with\neach other. If there are multiple policies that specify the same config\n(eg. package, software recipe, repository, etc.), the service ensures\nthat no VM instance could potentially receive instructions from both\npolicies. To create multiple policies that specify different versions of a\npackage or different configs for different operating systems, each policy\nmust be mutually exclusive in their targeting according to labels, OS, or\nother criteria.\n\nDifferent configs are identified for conflicts in different ways. Packages\nare identified by their name and the package manager(s) they target.\nPackage repositories are identified by their unique id where applicable.\nSome package managers don't have a unique identifier for repositories and\nwhere that's the case, no uniqueness is validated by the service.\n\nNote that if OS Inventory is disabled, a VM instance cannot assign a policy\nthat targets by OS because the service sees the OS as unknown.",
+          "$ref": "Assignment"
+        },
+        "packages": {
+          "description": "The software packages to be managed by this policy.",
+          "type": "array",
+          "items": {
+            "$ref": "Package"
+          }
+        },
+        "packageRepositories": {
+          "description": "A list of package repositories to configure on the VM instance. This is\ndone before any other configs are applied so they can use these repos.\nPackage repositories are only configured if the corresponding package\nmanager(s) are available.",
+          "type": "array",
+          "items": {
+            "$ref": "PackageRepository"
+          }
+        },
+        "recipes": {
+          "description": "A list of Recipes to install on the VM instance.",
+          "type": "array",
+          "items": {
+            "$ref": "SoftwareRecipe"
+          }
+        },
+        "etag": {
+          "description": "The etag for this guest policy.\nIf this is provided on update, it must match the server's etag.",
+          "type": "string"
+        }
+      }
+    },
+    "Assignment": {
+      "id": "Assignment",
+      "description": "An assignment represents the group or groups of VM instances that the policy\napplies to.\n\nIf an assignment is empty, it applies to all VM instances. Otherwise, the\ntargeted VM instances must meet all the criteria specified. So if both\nlabels and zones are specified, the policy applies to VM instances with those\nlabels and in those zones.",
+      "type": "object",
+      "properties": {
+        "groupLabels": {
+          "description": "Targets instances matching at least one of these label sets. This allows\nan assignment to target disparate groups, for example \"env=prod or\nenv=staging\".",
+          "type": "array",
+          "items": {
+            "$ref": "AssignmentGroupLabel"
+          }
+        },
+        "zones": {
+          "description": "Targets instances in any of these zones. Leave empty to target instances\nin any zone.\n\nZonal targeting is uncommon and is supported to facilitate the management\nof changes by zone.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "instances": {
+          "description": "Targets any of the instances specified. Instances are specified by their\nURI in the form `zones\/[ZONE]\/instances\/[INSTANCE_NAME]`.\n\nInstance targeting is uncommon and is supported to facilitate the\nmanagement of changes by the instance or to target specific VM instances\nfor development and testing.\n\nOnly supported for project-level policies and must reference instances\nwithin this project.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "instanceNamePrefixes": {
+          "description": "Targets VM instances whose name starts with one of these prefixes.\n\nLike labels, this is another way to group VM instances when targeting\nconfigs, for example prefix=\u201Dprod-\u201D.\n\nOnly supported for project-level policies.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "osTypes": {
+          "description": "Targets VM instances matching at least one of the following OS types.\n\nVM instances must match all supplied criteria for a given OsType to be\nincluded.",
+          "type": "array",
+          "items": {
+            "$ref": "AssignmentOsType"
+          }
+        }
+      }
+    },
+    "AssignmentGroupLabel": {
+      "id": "AssignmentGroupLabel",
+      "description": "Represents a group of VM intances that can be identified as having all\nthese labels, for example \"env=prod and app=web\".",
+      "type": "object",
+      "properties": {
+        "labels": {
+          "description": "GCE instance labels that must be present for an instance to be included\nin this assignment group.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AssignmentOsType": {
+      "id": "AssignmentOsType",
+      "description": "Defines the criteria for selecting VM Instances by OS type.",
+      "type": "object",
+      "properties": {
+        "osShortName": {
+          "description": "Targets VM instances with OS Inventory enabled and having the following\nOS short name, for example \"debian\" or \"windows\".",
+          "type": "string"
+        },
+        "osVersion": {
+          "description": "Targets VM instances with OS Inventory enabled and having the following\nfollowing OS version.",
+          "type": "string"
+        },
+        "osArchitecture": {
+          "description": "Targets VM instances with OS Inventory enabled and having the following\nOS architecture.",
+          "type": "string"
+        }
+      }
+    },
+    "Package": {
+      "id": "Package",
+      "description": "Package is a reference to the software package to be installed or removed.\nThe agent on the VM instance uses the system package manager to apply the\nconfig.\n\n\nThese are the commands that the agent uses to install or remove\npackages.\n\nApt\ninstall: `apt-get update && apt-get -y install package1 package2 package3`\nremove: `apt-get -y remove package1 package2 package3`\n\nYum\ninstall: `yum -y install package1 package2 package3`\nremove: `yum -y remove package1 package2 package3`\n\nZypper\ninstall: `zypper install package1 package2 package3`\nremove: `zypper rm package1 package2`\n\nGooget\ninstall: `googet -noconfirm install package1 package2 package3`\nremove: `googet -noconfirm remove package1 package2 package3`",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The name of the package. A package is uniquely identified for conflict\nvalidation by checking the package name and the manager(s) that the\npackage targets.",
+          "type": "string"
+        },
+        "desiredState": {
+          "description": "The desired_state the agent should maintain for this package. The\ndefault is to ensure the package is installed.",
+          "enumDescriptions": [
+            "The default is to ensure the package is installed.",
+            "The agent ensures that the package is installed.",
+            "The agent ensures that the package is installed and\nperiodically checks for and install any updates.",
+            "The agent ensures that the package is not installed and uninstall it\nif detected."
+          ],
+          "type": "string",
+          "enum": [
+            "DESIRED_STATE_UNSPECIFIED",
+            "INSTALLED",
+            "UPDATED",
+            "REMOVED"
+          ]
+        },
+        "manager": {
+          "description": "Type of package manager that can be used to install this package.\nIf a system does not have the package manager, the package is not\ninstalled or removed no error message is returned. By default,\nor if you specify `ANY`,\nthe agent attempts to install and remove this package using the default\npackage manager. This is useful when creating a policy that applies to\ndifferent types of systems.\n\nThe default behavior is ANY.",
+          "enumDescriptions": [
+            "The default behavior is ANY.",
+            "Apply this package config using the default system package manager.",
+            "Apply this package config only if Apt is available on the system.",
+            "Apply this package config only if Yum is available on the system.",
+            "Apply this package config only if Zypper is available on the system.",
+            "Apply this package config only if GooGet is available on the system."
+          ],
+          "type": "string",
+          "enum": [
+            "MANAGER_UNSPECIFIED",
+            "ANY",
+            "APT",
+            "YUM",
+            "ZYPPER",
+            "GOO"
+          ]
+        }
+      }
+    },
+    "PackageRepository": {
+      "id": "PackageRepository",
+      "description": "A package repository.",
+      "type": "object",
+      "properties": {
+        "apt": {
+          "description": "An Apt Repository.",
+          "$ref": "AptRepository"
+        },
+        "yum": {
+          "description": "A Yum Repository.",
+          "$ref": "YumRepository"
+        },
+        "zypper": {
+          "description": "A Zypper Repository.",
+          "$ref": "ZypperRepository"
+        },
+        "goo": {
+          "description": "A Goo Repository.",
+          "$ref": "GooRepository"
+        }
+      }
+    },
+    "AptRepository": {
+      "id": "AptRepository",
+      "description": "Represents a single Apt package repository. This repository is added to\na repo file that is stored at\n`\/etc\/apt\/sources.list.d\/google_osconfig.list`.",
+      "type": "object",
+      "properties": {
+        "archiveType": {
+          "description": "Type of archive files in this repository. The default behavior is DEB.",
+          "enumDescriptions": [
+            "Unspecified.",
+            "DEB indicates that the archive contains binary files.",
+            "DEB_SRC indicates that the archive contains source files."
+          ],
+          "type": "string",
+          "enum": [
+            "ARCHIVE_TYPE_UNSPECIFIED",
+            "DEB",
+            "DEB_SRC"
+          ]
+        },
+        "uri": {
+          "description": "Required. URI for this repository.",
+          "type": "string"
+        },
+        "distribution": {
+          "description": "Required. Distribution of this repository.",
+          "type": "string"
+        },
+        "components": {
+          "description": "Required. List of components for this repository. Must contain at least one item.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "gpgKey": {
+          "description": "URI of the key file for this repository. The agent maintains\na keyring at `\/etc\/apt\/trusted.gpg.d\/osconfig_agent_managed.gpg` containing\nall the keys in any applied guest policy.",
+          "type": "string"
+        }
+      }
+    },
+    "YumRepository": {
+      "id": "YumRepository",
+      "description": "Represents a single Yum package repository. This repository is added to a\nrepo file that is stored at `\/etc\/yum.repos.d\/google_osconfig.repo`.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required. A one word, unique name for this repository. This is\nthe `repo id` in the Yum config file and also the `display_name` if\n`display_name` is omitted. This id is also used as the unique identifier\nwhen checking for guest policy conflicts.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the repository.",
+          "type": "string"
+        },
+        "baseUrl": {
+          "description": "Required. The location of the repository directory.",
+          "type": "string"
+        },
+        "gpgKeys": {
+          "description": "URIs of GPG keys.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ZypperRepository": {
+      "id": "ZypperRepository",
+      "description": "Represents a single Zypper package repository. This repository is added to a\nrepo file that is stored at `\/etc\/zypp\/repos.d\/google_osconfig.repo`.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required. A one word, unique name for this repository. This is\nthe `repo id` in the zypper config file and also the `display_name` if\n`display_name` is omitted. This id is also used as the unique identifier\nwhen checking for guest policy conflicts.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the repository.",
+          "type": "string"
+        },
+        "baseUrl": {
+          "description": "Required. The location of the repository directory.",
+          "type": "string"
+        },
+        "gpgKeys": {
+          "description": "URIs of GPG keys.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GooRepository": {
+      "id": "GooRepository",
+      "description": "Represents a Goo package repository. These is added to a repo file\nthat is stored at C:\/ProgramData\/GooGet\/repos\/google_osconfig.repo.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The name of the repository.",
+          "type": "string"
+        },
+        "url": {
+          "description": "Required. The url of the repository.",
+          "type": "string"
+        }
+      }
+    },
+    "SoftwareRecipe": {
+      "id": "SoftwareRecipe",
+      "description": "A software recipe is a set of instructions for installing and configuring a\npiece of software. It consists of a set of artifacts that are\ndownloaded, and a set of steps that install, configure, and\/or update the\nsoftware.\n\nRecipes support installing and updating software from artifacts in the\nfollowing formats:\nZip archive, Tar archive, Windows MSI, Debian package, and RPM package.\n\nAdditionally, recipes support executing a script (either defined in a file or\ndirectly in this api) in bash, sh, cmd, and powershell.\n\nUpdating a software recipe\n\nIf a recipe is assigned to an instance and there is a recipe with the same\nname but a lower version already installed and the assigned state\nof the recipe is `INSTALLED_KEEP_UPDATED`, then the recipe is updated to\nthe new version.\n\nScript Working Directories\n\nEach script or execution step is run in its own temporary directory which\nis deleted after completing the step.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Unique identifier for the recipe. Only one recipe with a given name is\ninstalled on an instance.\n\nNames are also used to identify resources which helps to determine whether\nguest policies have conflicts. This means that requests to create multiple\nrecipes with the same name and version are rejected since they\ncould potentially have conflicting assignments.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The version of this software recipe. Version can be up to 4 period\nseparated numbers (e.g. 12.34.56.78).",
+          "type": "string"
+        },
+        "artifacts": {
+          "description": "Resources available to be used in the steps in the recipe.",
+          "type": "array",
+          "items": {
+            "$ref": "SoftwareRecipeArtifact"
+          }
+        },
+        "installSteps": {
+          "description": "Actions to be taken for installing this recipe. On failure it stops\nexecuting steps and does not attempt another installation. Any steps taken\n(including partially completed steps) are not rolled back.",
+          "type": "array",
+          "items": {
+            "$ref": "SoftwareRecipeStep"
+          }
+        },
+        "updateSteps": {
+          "description": "Actions to be taken for updating this recipe. On failure it stops\nexecuting steps and  does not attempt another update for this recipe. Any\nsteps taken (including partially completed steps) are not rolled back.",
+          "type": "array",
+          "items": {
+            "$ref": "SoftwareRecipeStep"
+          }
+        },
+        "desiredState": {
+          "description": "Default is INSTALLED. The desired state the agent should maintain for this\nrecipe.\n\nINSTALLED: The software recipe is installed on the instance but\n           won't be updated to new versions.\nINSTALLED_KEEP_UPDATED: The software recipe is installed on the\n                        instance. The recipe is updated to a higher\n                        version, if a higher version of the recipe is\n                        assigned to this instance.\nREMOVE: Remove is unsupported for software recipes and attempts to\n        create or update a recipe to the REMOVE state is rejected.",
+          "enumDescriptions": [
+            "The default is to ensure the package is installed.",
+            "The agent ensures that the package is installed.",
+            "The agent ensures that the package is installed and\nperiodically checks for and install any updates.",
+            "The agent ensures that the package is not installed and uninstall it\nif detected."
+          ],
+          "type": "string",
+          "enum": [
+            "DESIRED_STATE_UNSPECIFIED",
+            "INSTALLED",
+            "UPDATED",
+            "REMOVED"
+          ]
+        }
+      }
+    },
+    "SoftwareRecipeArtifact": {
+      "id": "SoftwareRecipeArtifact",
+      "description": "Specifies a resource to be used in the recipe.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required. Id of the artifact, which the installation and update steps of this\nrecipe can reference. Artifacts in a recipe cannot have the same id.",
+          "type": "string"
+        },
+        "remote": {
+          "description": "A generic remote artifact.",
+          "$ref": "SoftwareRecipeArtifactRemote"
+        },
+        "gcs": {
+          "description": "A Cloud Storage artifact.",
+          "$ref": "SoftwareRecipeArtifactGcs"
+        },
+        "allowInsecure": {
+          "description": "Defaults to false. When false, recipes are subject to validations\nbased on the artifact type:\n\nRemote: A checksum must be specified, and only protocols with\n        transport-layer security are permitted.\nGCS:    An object generation number must be specified.",
+          "type": "boolean"
+        }
+      }
+    },
+    "SoftwareRecipeArtifactRemote": {
+      "id": "SoftwareRecipeArtifactRemote",
+      "description": "Specifies an artifact available via some URI.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "URI from which to fetch the object. It should contain both the protocol\nand path following the format {protocol}:\/\/{location}.",
+          "type": "string"
+        },
+        "checksum": {
+          "description": "Must be provided if `allow_insecure` is `false`.\nSHA256 checksum in hex format, to compare to the checksum of the\nartifact. If the checksum is not empty and it doesn't match the\nartifact then the recipe installation fails before running any of the\nsteps.",
+          "type": "string"
+        }
+      }
+    },
+    "SoftwareRecipeArtifactGcs": {
+      "id": "SoftwareRecipeArtifactGcs",
+      "description": "Specifies an artifact available as a Cloud Storage object.",
+      "type": "object",
+      "properties": {
+        "bucket": {
+          "description": "Bucket of the Cloud Storage object.\nGiven an example URL:\n`https:\/\/storage.googleapis.com\/my-bucket\/foo\/bar#1234567`\nthis value would be `my-bucket`.",
+          "type": "string"
+        },
+        "object": {
+          "description": "Name of the Cloud Storage object.\nAs specified [here]\n(https:\/\/cloud.google.com\/storage\/docs\/naming#objectnames)\nGiven an example URL:\n`https:\/\/storage.googleapis.com\/my-bucket\/foo\/bar#1234567`\nthis value would be `foo\/bar`.",
+          "type": "string"
+        },
+        "generation": {
+          "description": "Must be provided if allow_insecure is false.\nGeneration number of the Cloud Storage object.\n`https:\/\/storage.googleapis.com\/my-bucket\/foo\/bar#1234567`\nthis value would be `1234567`.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "SoftwareRecipeStep": {
+      "id": "SoftwareRecipeStep",
+      "description": "An action that can be taken as part of installing or updating a recipe.",
+      "type": "object",
+      "properties": {
+        "fileCopy": {
+          "description": "Copies a file onto the instance.",
+          "$ref": "SoftwareRecipeStepCopyFile"
+        },
+        "archiveExtraction": {
+          "description": "Extracts an archive into the specified directory.",
+          "$ref": "SoftwareRecipeStepExtractArchive"
+        },
+        "msiInstallation": {
+          "description": "Installs an MSI file.",
+          "$ref": "SoftwareRecipeStepInstallMsi"
+        },
+        "dpkgInstallation": {
+          "description": "Installs a deb file via dpkg.",
+          "$ref": "SoftwareRecipeStepInstallDpkg"
+        },
+        "rpmInstallation": {
+          "description": "Installs an rpm file via the rpm utility.",
+          "$ref": "SoftwareRecipeStepInstallRpm"
+        },
+        "fileExec": {
+          "description": "Executes an artifact or local file.",
+          "$ref": "SoftwareRecipeStepExecFile"
+        },
+        "scriptRun": {
+          "description": "Runs commands in a shell.",
+          "$ref": "SoftwareRecipeStepRunScript"
+        }
+      }
+    },
+    "SoftwareRecipeStepCopyFile": {
+      "id": "SoftwareRecipeStepCopyFile",
+      "description": "Copies the artifact to the specified path on the instance.",
+      "type": "object",
+      "properties": {
+        "artifactId": {
+          "description": "Required. The id of the relevant artifact in the recipe.",
+          "type": "string"
+        },
+        "destination": {
+          "description": "Required. The absolute path on the instance to put the file.",
+          "type": "string"
+        },
+        "overwrite": {
+          "description": "Whether to allow this step to overwrite existing files. If this is\nfalse and the file already exists the file is not overwritten\nand the step is considered a success. Defaults to false.",
+          "type": "boolean"
+        },
+        "permissions": {
+          "description": "Consists of three octal digits which represent, in\norder, the permissions of the owner, group, and other users for the\nfile (similarly to the numeric mode used in the linux chmod utility).\nEach digit represents a three bit number with the 4 bit\ncorresponding to the read permissions, the 2 bit corresponds to the\nwrite bit, and the one bit corresponds to the execute permission.\nDefault behavior is 755.\n\nBelow are some examples of permissions and their associated values:\nread, write, and execute: 7\nread and execute: 5\nread and write: 6\nread only: 4",
+          "type": "string"
+        }
+      }
+    },
+    "SoftwareRecipeStepExtractArchive": {
+      "id": "SoftwareRecipeStepExtractArchive",
+      "description": "Extracts an archive of the type specified in the specified directory.",
+      "type": "object",
+      "properties": {
+        "artifactId": {
+          "description": "Required. The id of the relevant artifact in the recipe.",
+          "type": "string"
+        },
+        "destination": {
+          "description": "Directory to extract archive to.\nDefaults to `\/` on Linux or `C:\\` on Windows.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Required. The type of the archive to extract.",
+          "enumDescriptions": [
+            "Indicates that the archive type isn't specified.",
+            "Indicates that the archive is a tar archive with no encryption.",
+            "Indicates that the archive is a tar archive with gzip encryption.",
+            "Indicates that the archive is a tar archive with bzip encryption.",
+            "Indicates that the archive is a tar archive with lzma encryption.",
+            "Indicates that the archive is a tar archive with xz encryption.",
+            "Indicates that the archive is a zip archive."
+          ],
+          "type": "string",
+          "enum": [
+            "ARCHIVE_TYPE_UNSPECIFIED",
+            "TAR",
+            "TAR_GZIP",
+            "TAR_BZIP",
+            "TAR_LZMA",
+            "TAR_XZ",
+            "ZIP"
+          ]
+        }
+      }
+    },
+    "SoftwareRecipeStepInstallMsi": {
+      "id": "SoftwareRecipeStepInstallMsi",
+      "description": "Installs an MSI file.",
+      "type": "object",
+      "properties": {
+        "artifactId": {
+          "description": "Required. The id of the relevant artifact in the recipe.",
+          "type": "string"
+        },
+        "flags": {
+          "description": "The flags to use when installing the MSI\ndefaults to [\"\/i\"] (i.e. the install flag).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedExitCodes": {
+          "description": "Return codes that indicate that the software installed or updated\nsuccessfully. Behaviour defaults to [0]",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
+    "SoftwareRecipeStepInstallDpkg": {
+      "id": "SoftwareRecipeStepInstallDpkg",
+      "description": "Installs a deb via dpkg.",
+      "type": "object",
+      "properties": {
+        "artifactId": {
+          "description": "Required. The id of the relevant artifact in the recipe.",
+          "type": "string"
+        }
+      }
+    },
+    "SoftwareRecipeStepInstallRpm": {
+      "id": "SoftwareRecipeStepInstallRpm",
+      "description": "Installs an rpm file via the rpm utility.",
+      "type": "object",
+      "properties": {
+        "artifactId": {
+          "description": "Required. The id of the relevant artifact in the recipe.",
+          "type": "string"
+        }
+      }
+    },
+    "SoftwareRecipeStepExecFile": {
+      "id": "SoftwareRecipeStepExecFile",
+      "description": "Executes an artifact or local file.",
+      "type": "object",
+      "properties": {
+        "artifactId": {
+          "description": "The id of the relevant artifact in the recipe.",
+          "type": "string"
+        },
+        "localPath": {
+          "description": "The absolute path of the file on the local filesystem.",
+          "type": "string"
+        },
+        "args": {
+          "description": "Arguments to be passed to the provided executable.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedExitCodes": {
+          "description": "Defaults to [0]. A list of possible return values that the program\ncan return to indicate a success.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
+    "SoftwareRecipeStepRunScript": {
+      "id": "SoftwareRecipeStepRunScript",
+      "description": "Runs a script through an interpreter.",
+      "type": "object",
+      "properties": {
+        "script": {
+          "description": "Required. The shell script to be executed.",
+          "type": "string"
+        },
+        "allowedExitCodes": {
+          "description": "Return codes that indicate that the software installed or updated\nsuccessfully. Behaviour defaults to [0]",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "interpreter": {
+          "description": "The script interpreter to use to run the script. If no interpreter is\nspecified the script is executed directly, which likely\nonly succeed for scripts with\n[shebang lines](https:\/\/en.wikipedia.org\/wiki\/Shebang_(Unix)).",
+          "enumDescriptions": [
+            "Default value for ScriptType.",
+            "Indicates that the script is run with `\/bin\/sh` on Linux and `cmd`\non windows.",
+            "Indicates that the script is run with powershell."
+          ],
+          "type": "string",
+          "enum": [
+            "INTERPRETER_UNSPECIFIED",
+            "SHELL",
+            "POWERSHELL"
+          ]
+        }
+      }
+    },
+    "ListGuestPoliciesResponse": {
+      "id": "ListGuestPoliciesResponse",
+      "description": "A response message for listing guest policies.",
+      "type": "object",
+      "properties": {
+        "guestPolicies": {
+          "description": "The list of GuestPolicies.",
+          "type": "array",
+          "items": {
+            "$ref": "GuestPolicy"
+          }
+        },
+        "nextPageToken": {
+          "description": "A pagination token that can be used to get the next page\nof guest policies.",
+          "type": "string"
+        }
+      }
+    },
+    "LookupEffectiveGuestPolicyRequest": {
+      "id": "LookupEffectiveGuestPolicyRequest",
+      "description": "A request message for getting the effective guest policy assigned to the\ninstance.",
+      "type": "object",
+      "properties": {
+        "osShortName": {
+          "description": "Short name of the OS running on the instance. The OS Config agent only\nprovideS this field for targeting if OS Inventory is enabled for that\ninstance.",
+          "type": "string"
+        },
+        "osVersion": {
+          "description": "Version of the OS running on the instance. The OS Config agent only\nprovide this field for targeting if OS Inventory is enabled for that\nVM instance.",
+          "type": "string"
+        },
+        "osArchitecture": {
+          "description": "Architecture of OS running on the instance. The OS Config agent only\nprovide this field for targeting if OS Inventory is enabled for that\ninstance.",
+          "type": "string"
+        }
+      }
+    },
+    "EffectiveGuestPolicy": {
+      "id": "EffectiveGuestPolicy",
+      "description": "The effective guest policy that applies to a VM instance.",
+      "type": "object",
+      "properties": {
+        "packages": {
+          "description": "List of package configurations assigned to the VM instance.",
+          "type": "array",
+          "items": {
+            "$ref": "EffectiveGuestPolicySourcedPackage"
+          }
+        },
+        "packageRepositories": {
+          "description": "List of package repository configurations assigned to the VM instance.",
+          "type": "array",
+          "items": {
+            "$ref": "EffectiveGuestPolicySourcedPackageRepository"
+          }
+        },
+        "softwareRecipes": {
+          "description": "List of recipes assigned to the VM instance.",
+          "type": "array",
+          "items": {
+            "$ref": "EffectiveGuestPolicySourcedSoftwareRecipe"
+          }
+        }
+      }
+    },
+    "EffectiveGuestPolicySourcedPackage": {
+      "id": "EffectiveGuestPolicySourcedPackage",
+      "description": "A guest policy package including its source.",
+      "type": "object",
+      "properties": {
+        "source": {
+          "description": "Name of the guest policy providing this config.",
+          "type": "string"
+        },
+        "package": {
+          "description": "A software package to configure on the VM instance.",
+          "$ref": "Package"
+        }
+      }
+    },
+    "EffectiveGuestPolicySourcedPackageRepository": {
+      "id": "EffectiveGuestPolicySourcedPackageRepository",
+      "description": "A guest policy package repository including its source.",
+      "type": "object",
+      "properties": {
+        "source": {
+          "description": "Name of the guest policy providing this config.",
+          "type": "string"
+        },
+        "packageRepository": {
+          "description": "A software package repository to configure on the VM instance.",
+          "$ref": "PackageRepository"
+        }
+      }
+    },
+    "EffectiveGuestPolicySourcedSoftwareRecipe": {
+      "id": "EffectiveGuestPolicySourcedSoftwareRecipe",
+      "description": "A guest policy recipe including its source.",
+      "type": "object",
+      "properties": {
+        "source": {
+          "description": "Name of the guest policy providing this config.",
+          "type": "string"
+        },
+        "softwareRecipe": {
+          "description": "A software recipe to configure on the VM instance.",
+          "$ref": "SoftwareRecipe"
+        }
+      }
     }
   },
   "resources": {
@@ -1065,7 +1797,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/compute"
               ],
-              "description": "Patch GCE instances by creating and running a PatchJob."
+              "description": "Patch VM instances by creating and running a patch job."
             },
             "get": {
               "id": "osconfig.projects.patchJobs.get",
@@ -1339,6 +2071,537 @@
                 "https://www.googleapis.com/auth/compute"
               ],
               "description": "Delete an OS Config patch deployment."
+            }
+          }
+        },
+        "guestPolicies": {
+          "methods": {
+            "create": {
+              "id": "osconfig.projects.guestPolicies.create",
+              "path": "v1beta/{+parent}/guestPolicies",
+              "flatPath": "v1beta/projects/{projectsId}/guestPolicies",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The resource name of the parent using one of the following forms:\n`projects\/{project_number}`.\n`folders\/{folder_id}`.\n`organizations\/{organization_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "guestPolicyId": {
+                  "description": "Required. The logical name of the guest policy in the project\nwith the following restrictions:\n\n* Must contain only lowercase letters, numbers, and hyphens.\n* Must start with a letter.\n* Must be between 1-63 characters.\n* Must end with a number or a letter.\n* Must be unique within the project.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GuestPolicy"
+              },
+              "response": {
+                "$ref": "GuestPolicy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Create an OS Config guest policy."
+            },
+            "get": {
+              "id": "osconfig.projects.guestPolicies.get",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/projects/{projectsId}/guestPolicies/{guestPoliciesId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the guest policy using one of the following forms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/guestPolicies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GuestPolicy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Get an OS Config guest policy."
+            },
+            "list": {
+              "id": "osconfig.projects.guestPolicies.list",
+              "path": "v1beta/{+parent}/guestPolicies",
+              "flatPath": "v1beta/projects/{projectsId}/guestPolicies",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The resource name of the parent using one of the following forms:\n`projects\/{project_number}`.\n`folders\/{folder_id}`.\n`organizations\/{organization_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of guest policies to return.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A pagination token returned from a previous call to `ListGuestPolicies`\nthat indicates where this listing should continue from.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListGuestPoliciesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Get a page of OS Config guest policies."
+            },
+            "patch": {
+              "id": "osconfig.projects.guestPolicies.patch",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/projects/{projectsId}/guestPolicies/{guestPoliciesId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Required. Unique name of the resource in this project using one of the following\nforms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/guestPolicies\/[^\/]+$",
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Field mask that controls which fields of the guest policy should be\nupdated.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GuestPolicy"
+              },
+              "response": {
+                "$ref": "GuestPolicy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Update an OS Config guest policy."
+            },
+            "delete": {
+              "id": "osconfig.projects.guestPolicies.delete",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/projects/{projectsId}/guestPolicies/{guestPoliciesId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the guest policy  using one of the following forms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/guestPolicies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Delete an OS Config guest policy."
+            }
+          }
+        },
+        "zones": {
+          "resources": {
+            "instances": {
+              "methods": {
+                "lookupEffectiveGuestPolicy": {
+                  "id": "osconfig.projects.zones.instances.lookupEffectiveGuestPolicy",
+                  "path": "v1beta/{+instance}:lookupEffectiveGuestPolicy",
+                  "flatPath": "v1beta/projects/{projectsId}/zones/{zonesId}/instances/{instancesId}:lookupEffectiveGuestPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "instance": {
+                      "description": "Required. The VM instance whose policies are being looked up.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/zones\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "instance"
+                  ],
+                  "request": {
+                    "$ref": "LookupEffectiveGuestPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "EffectiveGuestPolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/compute"
+                  ],
+                  "description": "Lookup the effective guest policy that applies to a VM instance. This\nlookup merges all policies that are assigned to the instance ancestry."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "organizations": {
+      "resources": {
+        "guestPolicies": {
+          "methods": {
+            "create": {
+              "id": "osconfig.organizations.guestPolicies.create",
+              "path": "v1beta/{+parent}/guestPolicies",
+              "flatPath": "v1beta/organizations/{organizationsId}/guestPolicies",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The resource name of the parent using one of the following forms:\n`projects\/{project_number}`.\n`folders\/{folder_id}`.\n`organizations\/{organization_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+$",
+                  "type": "string"
+                },
+                "guestPolicyId": {
+                  "description": "Required. The logical name of the guest policy in the project\nwith the following restrictions:\n\n* Must contain only lowercase letters, numbers, and hyphens.\n* Must start with a letter.\n* Must be between 1-63 characters.\n* Must end with a number or a letter.\n* Must be unique within the project.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GuestPolicy"
+              },
+              "response": {
+                "$ref": "GuestPolicy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Create an OS Config guest policy."
+            },
+            "get": {
+              "id": "osconfig.organizations.guestPolicies.get",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/organizations/{organizationsId}/guestPolicies/{guestPoliciesId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the guest policy using one of the following forms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+\/guestPolicies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GuestPolicy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Get an OS Config guest policy."
+            },
+            "list": {
+              "id": "osconfig.organizations.guestPolicies.list",
+              "path": "v1beta/{+parent}/guestPolicies",
+              "flatPath": "v1beta/organizations/{organizationsId}/guestPolicies",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The resource name of the parent using one of the following forms:\n`projects\/{project_number}`.\n`folders\/{folder_id}`.\n`organizations\/{organization_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of guest policies to return.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A pagination token returned from a previous call to `ListGuestPolicies`\nthat indicates where this listing should continue from.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListGuestPoliciesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Get a page of OS Config guest policies."
+            },
+            "patch": {
+              "id": "osconfig.organizations.guestPolicies.patch",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/organizations/{organizationsId}/guestPolicies/{guestPoliciesId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Required. Unique name of the resource in this project using one of the following\nforms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+\/guestPolicies\/[^\/]+$",
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Field mask that controls which fields of the guest policy should be\nupdated.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GuestPolicy"
+              },
+              "response": {
+                "$ref": "GuestPolicy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Update an OS Config guest policy."
+            },
+            "delete": {
+              "id": "osconfig.organizations.guestPolicies.delete",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/organizations/{organizationsId}/guestPolicies/{guestPoliciesId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the guest policy  using one of the following forms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+\/guestPolicies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Delete an OS Config guest policy."
+            }
+          }
+        }
+      }
+    },
+    "folders": {
+      "resources": {
+        "guestPolicies": {
+          "methods": {
+            "create": {
+              "id": "osconfig.folders.guestPolicies.create",
+              "path": "v1beta/{+parent}/guestPolicies",
+              "flatPath": "v1beta/folders/{foldersId}/guestPolicies",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The resource name of the parent using one of the following forms:\n`projects\/{project_number}`.\n`folders\/{folder_id}`.\n`organizations\/{organization_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^folders\/[^\/]+$",
+                  "type": "string"
+                },
+                "guestPolicyId": {
+                  "description": "Required. The logical name of the guest policy in the project\nwith the following restrictions:\n\n* Must contain only lowercase letters, numbers, and hyphens.\n* Must start with a letter.\n* Must be between 1-63 characters.\n* Must end with a number or a letter.\n* Must be unique within the project.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GuestPolicy"
+              },
+              "response": {
+                "$ref": "GuestPolicy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Create an OS Config guest policy."
+            },
+            "get": {
+              "id": "osconfig.folders.guestPolicies.get",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/folders/{foldersId}/guestPolicies/{guestPoliciesId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the guest policy using one of the following forms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^folders\/[^\/]+\/guestPolicies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GuestPolicy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Get an OS Config guest policy."
+            },
+            "list": {
+              "id": "osconfig.folders.guestPolicies.list",
+              "path": "v1beta/{+parent}/guestPolicies",
+              "flatPath": "v1beta/folders/{foldersId}/guestPolicies",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The resource name of the parent using one of the following forms:\n`projects\/{project_number}`.\n`folders\/{folder_id}`.\n`organizations\/{organization_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^folders\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of guest policies to return.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A pagination token returned from a previous call to `ListGuestPolicies`\nthat indicates where this listing should continue from.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListGuestPoliciesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Get a page of OS Config guest policies."
+            },
+            "patch": {
+              "id": "osconfig.folders.guestPolicies.patch",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/folders/{foldersId}/guestPolicies/{guestPoliciesId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Required. Unique name of the resource in this project using one of the following\nforms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^folders\/[^\/]+\/guestPolicies\/[^\/]+$",
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Field mask that controls which fields of the guest policy should be\nupdated.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GuestPolicy"
+              },
+              "response": {
+                "$ref": "GuestPolicy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Update an OS Config guest policy."
+            },
+            "delete": {
+              "id": "osconfig.folders.guestPolicies.delete",
+              "path": "v1beta/{+name}",
+              "flatPath": "v1beta/folders/{foldersId}/guestPolicies/{guestPoliciesId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the guest policy  using one of the following forms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^folders\/[^\/]+\/guestPolicies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ],
+              "description": "Delete an OS Config guest policy."
             }
           }
         }

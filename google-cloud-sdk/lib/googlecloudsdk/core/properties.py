@@ -755,7 +755,19 @@ class _SectionSecrets(_Section):
   """Contains the properties for the 'secrets' section."""
 
   def __init__(self):
-    super(_SectionSecrets, self).__init__('secrets', hidden=True)
+    super(_SectionSecrets, self).__init__('secrets')
+    self.replication_policy = self._Add(
+        'replication-policy',
+        choices=['automatic', 'user-managed'],
+        help_text='The type of replication policy to apply to secrets. Allowed '
+        'values are "automatic" and "user-managed". If user-managed then '
+        'locations must also be provided.',
+        )
+    self.locations = self._Add(
+        'locations',
+        help_text='A comma separated list of the locations to replicate '
+        'secrets to. Only applies to secrets with a user-managed policy.'
+        )
 
 
 class _SectionSpanner(_Section):

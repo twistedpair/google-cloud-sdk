@@ -23,8 +23,6 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.identity.groups import hooks as groups_hooks
 from googlecloudsdk.core.util import times
 
-_CIG_API_VERSION = 'v1alpha1'
-
 
 # request hooks
 def SetMembership(unused_ref, unused_args, request):
@@ -62,7 +60,10 @@ def SetEntityKey(unused_ref, args, request):
   messages = ci_client.GetMessages()
   if hasattr(args, 'member_email') and args.IsSpecified('member_email'):
     entity_key = messages.EntityKey(id=args.member_email)
-    request.membership.preferredMemberKey = entity_key
+    if hasattr(request.membership, 'memberKey'):
+      request.membership.memberKey = entity_key
+    elif hasattr(request.membership, 'preferredMemberKey'):
+      request.membership.preferredMemberKey = entity_key
 
   return request
 
@@ -218,6 +219,8 @@ def UpdateRolesToAdd(arg_list):
 def UpdateRolesParamsToUpdate(arg_dict):
   """Update roles params to update to modifyMembershipRolesRequest.updateRolesParams.
 
+  Note: This method should be used in ALPHA release only.
+
   Args:
     arg_dict: ArgDicts, RolesParams to update.
     (e.g. OrderedDict([(u'OWNER', u'expiration=4d')]))
@@ -226,7 +229,7 @@ def UpdateRolesParamsToUpdate(arg_dict):
   """
 
   roles_params = []
-  messages = ci_client.GetMessages()
+  messages = ci_client.GetMessages('v1alpha1')
   arg_name = '--update-roles-params'
   for role, params in arg_dict.items():
     # Tokenize params to name and value
@@ -243,7 +246,7 @@ def UpdateRolesParamsToUpdate(arg_dict):
     # Create 'update_mask' string
     update_mask = GetUpdateMask(param_name, arg_name)
 
-    update_membership_roles_params = messages.ModifyMembershipRolesRequestUpdateMembershipRolesParams(
+    update_membership_roles_params = messages.UpdateMembershipRolesParams(
         fieldMask=update_mask, membershipRole=membership_role)
 
     roles_params.append(update_membership_roles_params)

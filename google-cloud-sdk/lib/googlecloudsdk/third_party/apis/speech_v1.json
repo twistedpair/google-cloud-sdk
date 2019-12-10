@@ -325,6 +325,11 @@
           "description": "Maximum number of speakers in the conversation. This range gives you more\nflexibility by allowing the system to automatically determine the correct\nnumber of speakers. If not set, the default value is 6.",
           "type": "integer",
           "format": "int32"
+        },
+        "speakerTag": {
+          "description": "Output only. Unused.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

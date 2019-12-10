@@ -23,6 +23,7 @@ from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_proxy_types
 
 import httplib2
@@ -162,8 +163,13 @@ def _DisplayGcloudProxyInfo(proxy_info, from_gcloud):
   log.status.Print('    type = {0}'.format(proxy_type_name))
   log.status.Print('    host = {0}'.format(proxy_info.proxy_host))
   log.status.Print('    port = {0}'.format(proxy_info.proxy_port))
-  log.status.Print('    username = {0}'.format(proxy_info.proxy_user))
-  log.status.Print('    password = {0}'.format(proxy_info.proxy_pass))
+  # In Python 3, httplib2 encodes the proxy username and password when
+  # initializing ProxyInfo, so we want to ensure they're decoded here before
+  # displaying them.
+  log.status.Print('    username = {0}'.format(
+      encoding.Decode(proxy_info.proxy_user)))
+  log.status.Print('    password = {0}'.format(
+      encoding.Decode(proxy_info.proxy_pass)))
   log.status.Print()
 
 

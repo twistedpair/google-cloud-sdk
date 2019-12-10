@@ -76,10 +76,12 @@ def GetGlobalTarget(resources, args):
   """Return the forwarding target for a globally scoped request."""
   _ValidateGlobalArgs(args)
   if args.target_http_proxy:
-    return flags.TargetHttpProxyArg().ResolveAsResource(args, resources)
+    return flags.TargetHttpProxyArg().ResolveAsResource(
+        args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL)
 
   if args.target_https_proxy:
-    return flags.TargetHttpsProxyArg().ResolveAsResource(args, resources)
+    return flags.TargetHttpsProxyArg().ResolveAsResource(
+        args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL)
   if args.target_ssl_proxy:
     return flags.TARGET_SSL_PROXY_ARG.ResolveAsResource(args, resources)
   if getattr(args, 'target_tcp_proxy', None):
@@ -174,12 +176,14 @@ def GetRegionalTarget(client,
   elif args.target_http_proxy:
     target_ref = flags.TargetHttpProxyArg(
         include_l7_internal_load_balancing=include_l7_internal_load_balancing
-    ).ResolveAsResource(args, resources)
+    ).ResolveAsResource(
+        args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL)
     target_region = region_arg
   elif args.target_https_proxy:
     target_ref = flags.TargetHttpsProxyArg(
         include_l7_internal_load_balancing=include_l7_internal_load_balancing
-    ).ResolveAsResource(args, resources)
+    ).ResolveAsResource(
+        args, resources, default_scope=compute_scope.ScopeEnum.GLOBAL)
     target_region = region_arg
   elif args.target_ssl_proxy:
     target_ref = flags.TARGET_SSL_PROXY_ARG.ResolveAsResource(args, resources)

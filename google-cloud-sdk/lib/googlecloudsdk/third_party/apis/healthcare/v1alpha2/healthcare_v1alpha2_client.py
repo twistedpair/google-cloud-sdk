@@ -363,13 +363,9 @@ exist.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns NOT_FOUND error if.
-the resource does not exist. Returns an empty policy if the resource exists
-but does not have a policy set.
-
-Authorization requires the Google IAM permission
-`healthcare.AnnotationStores.getIamPolicy` on the specified
-resource
+      r"""Gets the access control policy for a resource.
+Returns an empty policy if the resource exists and does not have a policy
+set.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsAnnotationStoresGetIamPolicyRequest) input message
@@ -383,13 +379,13 @@ resource
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
         flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:getIamPolicy',
-        http_method=u'POST',
+        http_method=u'GET',
         method_id=u'healthcare.projects.locations.datasets.annotationStores.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1alpha2/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
+        request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresGetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
@@ -488,13 +484,10 @@ OperationMetadata.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""POLICIES.
-Sets the access control policy for a resource. Replaces any existing
-policy.
+      r"""Sets the access control policy on the specified resource. Replaces any.
+existing policy.
 
-Authorization requires the Google IAM permission
-`healthcare.annotationStores.setIamPolicy` on the specified
-resource
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsAnnotationStoresSetIamPolicyRequest) input message
@@ -522,10 +515,12 @@ resource
 
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this returns an empty set of
+If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
-There is no permission required to make this API call.
+Note: This operation is designed to be used for building permission-aware
+UIs and command-line tools, not for authorization checking. This operation
+may "fail open" without warning.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsAnnotationStoresTestIamPermissionsRequest) input message
@@ -1492,7 +1487,9 @@ search criteria specified as query parameters, grouped by
 `Observation.code`, sorted from most recent to oldest.
 
 Implements the FHIR extended operation Observation-lastn
-([STU3](http://hl7.org/implement/standards/fhir/STU3/observation-operations.html#lastn)).
+([STU3](http://hl7.org/implement/standards/fhir/STU3/observation-operations.html#lastn)
+or
+[R4](http://hl7.org/implement/standards/fhir/R4/observation-operations.html#lastn)).
 
 DSTU2 doesn't define the Observation-lastn method, but the server supports
 it the same way it supports STU3.
@@ -1552,9 +1549,10 @@ GCP error might be returned instead.
 all of the resources in the patient compartment.
 
 Implements the FHIR extended operation Patient-everything
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/patient-operations.html#everything)
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/patient-operations.html#everything),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/patient-operations.html#everything),
 or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/patient-operations.html#everything)).
+[R4](http://hl7.org/implement/standards/fhir/R4/patient-operations.html#everything)).
 
 On success, the response body contains a JSON-encoded representation
 of a `Bundle` resource of type `searchset`, containing the results of the
@@ -1580,7 +1578,7 @@ GCP error might be returned instead.
         method_id=u'healthcare.projects.locations.datasets.fhirStores.fhir.Patient-everything',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'_count', u'end', u'pageToken', u'start'],
+        query_params=[u'_count', u'_page_token', u'end', u'start'],
         relative_path=u'v1alpha2/{+name}/$everything',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest',
@@ -1622,19 +1620,21 @@ This is not a FHIR standard operation.
     def Capabilities(self, request, global_params=None):
       r"""Gets the.
 [FHIR STU3 capability
-statement](http://hl7.org/implement/standards/fhir/STU3/capabilitystatement.html)
-or the
-[FHIR DSTU2 conformance
-statement](http://hl7.org/implement/standards/fhir/DSTU2/conformance.html)
+statement](http://hl7.org/implement/standards/fhir/STU3/capabilitystatement.html),
+the [FHIR DSTU2 conformance
+statement](http://hl7.org/implement/standards/fhir/DSTU2/conformance.html),
+or the [FHIR R4 capability
+statement](http://hl7.org/implement/standards/fhir/R4/capabilitystatement.html)
 for the store. Each statement contains a description of the
 functionality supported by the server.
 
 Implements the
 [FHIR STU3 standard capabilities
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#capabilities)
-or the
-[FHIR DSTU2 conformance
-interaction](http://hl7.org/implement/standards/fhir/DSTU2/http.html#conformance).
+interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#capabilities),
+the [FHIR DSTU2 conformance
+interaction](http://hl7.org/implement/standards/fhir/DSTU2/http.html#conformance),
+or the [FHIR R4 standard capabilities
+interaction](http://hl7.org/implement/standards/fhir/R4/http.html#capabilities).
 
 On success, the response body contains a JSON-encoded representation
 of a `CapabilityStatement` resource.
@@ -1667,9 +1667,9 @@ of a `CapabilityStatement` resource.
       r"""Deletes FHIR resources that match a search query.
 
 Implements the FHIR standard conditional delete interaction
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#2.1.0.12.1)
-or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#2.21.0.13.1)).
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#2.1.0.12.1),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#2.21.0.13.1),
+or [R4](http://hl7.org/implement/standards/fhir/R4/http.html#2.21.0.13.1)).
 If multiple resources match, all of them are deleted.
 
 Search terms are provided as query parameters following the same pattern as
@@ -1712,7 +1712,8 @@ parameters, updates part of that resource by applying the operations
 specified in a [JSON Patch](http://jsonpatch.com/) document.
 
 Implements the FHIR standard conditional patch interaction
-([STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#patch)).
+([STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#patch) or
+[R4](http://hl7.org/implement/standards/fhir/R4/http.html#patch)).
 
 DSTU2 doesn't define a conditional patch method, but the server supports it
 in the same way it supports STU3.
@@ -1762,9 +1763,9 @@ GCP error might be returned instead.
 parameters, updates the entire contents of that resource.
 
 Implements the FHIR standard conditional update interaction
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#2.1.0.10.2)
-or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#cond-update)).
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#2.1.0.10.2),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#cond-update),
+or [R4](http://hl7.org/implement/standards/fhir/R4/http.html#cond-update)).
 
 Search terms are provided as query parameters following the same pattern as
 the search method.
@@ -1817,15 +1818,15 @@ GCP error might be returned instead.
       r"""Creates a FHIR resource.
 
 Implements the FHIR standard create interaction
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#create)
-or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#create)),
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#create),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#create),
+or [R4](http://hl7.org/implement/standards/fhir/R4/http.html#create)),
 which creates a new resource with a server-assigned resource ID.
 
 Also supports the FHIR standard conditional create interaction
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#ccreate)
-or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#ccreate)),
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#ccreate),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#ccreate),
+or [R4](http://hl7.org/implement/standards/fhir/R4/http.html#ccreate)),
 specified by supplying an `If-None-Exist` header containing a FHIR search
 query. If no resources match this search query, the server processes the
 create operation as normal.
@@ -1869,9 +1870,9 @@ GCP error might be returned instead.
       r"""Deletes a FHIR resource.
 
 Implements the FHIR standard delete interaction
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#delete)
-or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#delete)).
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#delete),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#delete),
+or [R4](http://hl7.org/implement/standards/fhir/R4/http.html#delete)).
 
 Note: Unless resource versioning is disabled by setting the
 disable_resource_versioning flag
@@ -1908,20 +1909,20 @@ purge method.
       r"""Executes all the requests in the given Bundle.
 
 Implements the FHIR standard batch/transaction interaction
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#transaction)
-or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#transaction)).
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#transaction),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#transaction),
+or [R4](http://hl7.org/implement/standards/fhir/R4/http.html#transaction)).
 
 Supports all interactions in a bundle except search. This method
 accepts Bundles of type `batch` and `transaction`, processing them
 according to the batch processing rules
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#2.1.0.16.1)
-or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#2.21.0.17.1))
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#2.1.0.16.1),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#2.21.0.17.1),
+or [R4](http://hl7.org/implement/standards/fhir/R4/http.html#2.21.0.17.1))
 and transaction processing rules
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#2.1.0.16.2)
-or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#2.21.0.17.2)).
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#2.1.0.16.2),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#2.21.0.17.2),
+or [R4](http://hl7.org/implement/standards/fhir/R4/http.html#2.21.0.17.2)).
 
 The request body must contain a JSON-encoded FHIR `Bundle` resource, and
 the request headers must contain `Content-Type: application/fhir+json`.
@@ -1965,9 +1966,9 @@ FHIR store, a generic GCP error might be returned instead.
 deleted versions) from the FHIR store.
 
 Implements the per-resource form of the FHIR standard history interaction
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#history)
-or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#history)).
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#history),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#history),
+or [R4](http://hl7.org/implement/standards/fhir/R4/http.html#history)).
 
 On success, the response body contains a JSON-encoded representation
 of a `Bundle` resource of type `history`, containing the version history
@@ -1993,7 +1994,7 @@ GCP error might be returned instead.
         method_id=u'healthcare.projects.locations.datasets.fhirStores.fhir.history',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'at', u'count', u'page', u'since'],
+        query_params=[u'_at', u'_count', u'_since'],
         relative_path=u'v1alpha2/{+name}/_history',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryRequest',
@@ -2006,7 +2007,8 @@ GCP error might be returned instead.
 in a [JSON Patch](http://jsonpatch.com/) document.
 
 Implements the FHIR standard patch interaction
-([STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#patch)).
+([STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#patch) or
+[R4](http://hl7.org/implement/standards/fhir/R4/http.html#patch)).
 
 DSTU2 doesn't define a patch method, but the server supports it in the same
 way it supports STU3.
@@ -2049,14 +2051,14 @@ GCP error might be returned instead.
       r"""Gets the contents of a FHIR resource.
 
 Implements the FHIR standard read interaction
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#read)
-or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#read)).
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#read),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#read),
+or [R4](http://hl7.org/implement/standards/fhir/R4/http.html#read)).
 
 Also supports the FHIR standard conditional read interaction
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#cread)
-or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#cread))
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#cread),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#cread),
+or [R4](http://hl7.org/implement/standards/fhir/R4/http.html#cread))
 specified by supplying an `If-Modified-Since` header with a date/time value
 or an `If-None-Match` header with an ETag value.
 
@@ -2096,13 +2098,13 @@ GCP error might be returned instead.
 specified as query parameters.
 
 Implements the FHIR standard search interaction
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#search)
-or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#search))
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#search),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#search),
+or [R4](http://hl7.org/implement/standards/fhir/R4/http.html#search))
 using the search semantics described in the FHIR Search specification
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/search.html)
-or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/search.html)).
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/search.html),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/search.html),
+or [R4](http://hl7.org/implement/standards/fhir/R4/search.html)).
 
 Supports three methods of search defined by the specification:
 
@@ -2126,9 +2128,11 @@ GCP error might be returned instead.
 The server's capability statement, retrieved through
 capabilities, indicates the search parameters
 that are supported on each FHIR resource. For the list of search
-parameters for STU3, see the
+parameters, see the
 [STU3 FHIR Search Parameter
-Registry](http://hl7.org/implement/standards/fhir/STU3/searchparameter-registry.html).
+Registry](http://hl7.org/implement/standards/fhir/STU3/searchparameter-registry.html)
+or [R4 FHIR Search Parameter
+Registry](http://hl7.org/implement/standards/fhir/R4/searchparameter-registry.html).
 For the FHIR search parameters for DSTU2, see each resource's definition
 page.
 
@@ -2179,9 +2183,9 @@ is reflected in search results.
       r"""Updates the entire contents of a resource.
 
 Implements the FHIR standard update interaction
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#update)
-or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#update)).
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#update),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#update),
+or [R4](http://hl7.org/implement/standards/fhir/R4/http.html#update)).
 
 If the specified resource does
 not exist and the FHIR store has
@@ -2229,9 +2233,9 @@ GCP error might be returned instead.
 by version ID.
 
 Implements the FHIR standard vread interaction
-([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#vread)
-or
-[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#vread)).
+([DSTU2](http://hl7.org/implement/standards/fhir/DSTU2/http.html#vread),
+[STU3](http://hl7.org/implement/standards/fhir/STU3/http.html#vread),
+or [R4](http://hl7.org/implement/standards/fhir/R4/http.html#vread)).
 
 On success, the response body contains a JSON-encoded representation
 of the resource.
@@ -2273,50 +2277,6 @@ GCP error might be returned instead.
       super(HealthcareV1alpha2.ProjectsLocationsDatasetsFhirStoresService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def Capabilities(self, request, global_params=None):
-      r"""Gets the.
-[FHIR STU3 capability
-statement](http://hl7.org/implement/standards/fhir/STU3/capabilitystatement.html)
-or the
-[FHIR DSTU2 conformance
-statement](http://hl7.org/implement/standards/fhir/DSTU2/conformance.html)
-for the store. Each statement contains a description of the
-functionality supported by the server.
-
-Implements the
-[FHIR STU3 standard capabilities
-interaction](http://hl7.org/implement/standards/fhir/STU3/http.html#capabilities)
-or the
-[FHIR DSTU2 conformance
-interaction](http://hl7.org/implement/standards/fhir/DSTU2/http.html#conformance).
-
-On success, the response body contains a JSON-encoded representation
-of a `CapabilityStatement` resource.
-
-      Args:
-        request: (HealthcareProjectsLocationsDatasetsFhirStoresCapabilitiesRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (HttpBody) The response message.
-      """
-      config = self.GetMethodConfig('Capabilities')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Capabilities.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}/metadata',
-        http_method=u'GET',
-        method_id=u'healthcare.projects.locations.datasets.fhirStores.capabilities',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1alpha2/{+name}/metadata',
-        request_field='',
-        request_type_name=u'HealthcareProjectsLocationsDatasetsFhirStoresCapabilitiesRequest',
-        response_type_name=u'HttpBody',
-        supports_download=False,
-    )
 
     def Create(self, request, global_params=None):
       r"""Creates a new FHIR store within the parent dataset.
@@ -2780,9 +2740,7 @@ asynchronously.
     def Ingest(self, request, global_params=None):
       r"""Ingests a new HL7v2 message from the hospital and sends a notification to.
 the Cloud Pub/Sub topic. Return is an HL7v2 ACK message if the message was
-successfully stored. Otherwise an error is returned.  If an identical
-HL7v2 message is created twice only one resource is created on the server
-and no error is reported.
+successfully stored. Otherwise an error is returned.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesIngestRequest) input message

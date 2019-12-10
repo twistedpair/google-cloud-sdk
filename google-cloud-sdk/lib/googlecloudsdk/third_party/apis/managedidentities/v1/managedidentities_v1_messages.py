@@ -143,9 +143,26 @@ class Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: The G Suite domain (primary) that represents all
-      the    users of that domain. For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding.  *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus    unique identifier) representing a service account that has been
+      recently    deleted. For example,    `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique    identifier) representing a Google group
+      that has been recently    deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If    the group is
+      recovered, this value reverts to `group:{emailid}` and the    recovered
+      group retains the role in the binding.   * `domain:{domain}`: The G
+      Suite domain (primary) that represents all the    users of that domain.
+      For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -611,6 +628,10 @@ class Instance(_messages.Message):
       Producer shall not modify by itself. For update of a single entry in
       this map, the update field mask shall follow this sementics: go
       /advanced-field-masks
+    slmInstanceTemplate: Link to the SLM instance template. Only populated
+      when updating SLM instances via SSA's Actuation service adaptor. Service
+      producers with custom control plane (e.g. Cloud SQL) doesn't need to
+      populate this field. Instead they should use software_versions.
     sloMetadata: Output only. SLO metadata for instance classification in the
       Standardized dataplane SLO platform. See go/cloud-ssa-standard-slo for
       feature description.
@@ -818,11 +839,12 @@ class Instance(_messages.Message):
   producerMetadata = _messages.MessageField('ProducerMetadataValue', 7)
   provisionedResources = _messages.MessageField('ProvisionedResource', 8, repeated=True)
   rolloutMetadata = _messages.MessageField('RolloutMetadataValue', 9)
-  sloMetadata = _messages.MessageField('SloMetadata', 10)
-  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  tenantProjectId = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  slmInstanceTemplate = _messages.StringField(10)
+  sloMetadata = _messages.MessageField('SloMetadata', 11)
+  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  tenantProjectId = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class ListDomainsResponse(_messages.Message):
@@ -1452,15 +1474,16 @@ class OperationMetadata(_messages.Message):
 
 
 class Policy(_messages.Message):
-  r"""Defines an Identity and Access Management (IAM) policy. It is used to
-  specify access control policies for Cloud Platform resources.   A `Policy`
-  is a collection of `bindings`. A `binding` binds one or more `members` to a
-  single `role`. Members can be user accounts, service accounts, Google
-  groups, and domains (such as G Suite). A `role` is a named list of
-  permissions (defined by IAM or configured by users). A `binding` can
-  optionally specify a `condition`, which is a logic expression that further
-  constrains the role binding based on attributes about the request and/or
-  target resource.  **JSON Example**      {       "bindings": [         {
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources.   A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members` to a single `role`.
+  Members can be user accounts, service accounts, Google groups, and domains
+  (such as G Suite). A `role` is a named list of permissions; each `role` can
+  be an IAM predefined role or a user-created custom role.  Optionally, a
+  `binding` can specify a `condition`, which is a logical expression that
+  allows access to a resource only if the expression evaluates to `true`. A
+  condition can add constraints based on attributes of the request, the
+  resource, or both.  **JSON example:**      {       "bindings": [         {
   "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-project-
@@ -1469,23 +1492,24 @@ class Policy(_messages.Message):
   ["user:eve@example.com"],           "condition": {             "title":
   "expirable access",             "description": "Does not grant access after
   Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ]     }
-  **YAML Example**      bindings:     - members:       - user:mike@example.com
-  - group:admins@example.com       - domain:google.com       - serviceAccount
+  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
+  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
+  bindings:     - members:       - user:mike@example.com       -
+  group:admins@example.com       - domain:google.com       - serviceAccount
   :my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
   grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')  For a description of IAM and its
-  features, see the [IAM developer's
-  guide](https://cloud.google.com/iam/docs).
+  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
+  version: 3  For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally may
-      specify a `condition` that determines when binding is in effect.
-      `bindings` with no members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally, may
+      specify a `condition` that determines how and when the `bindings` are
+      applied. Each of the `bindings` must contain at least one member.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -1493,10 +1517,10 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten. Due to blind-set semantics of an
-      etag-less policy, 'setIamPolicy' will not fail even if either of
-      incoming or stored policy does not meet the version requirements.
+      policy.  **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
     iamOwned: A boolean attribute.
     rules: If more than one rule is specified, the rules are applied in the
       following manner: - All matching LOG rules are always applied. - If any
@@ -1505,15 +1529,20 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
       Logging will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Operations
-      affecting conditional bindings must specify version 3. This can be
-      either setting a conditional policy, modifying a conditional binding, or
-      removing a conditional binding from the stored conditional policy.
-      Operations on non-conditional policies may specify any valid value or
-      leave the field unset.  If no etag is provided in the call to
-      `setIamPolicy`, any version compliance checks on the incoming and/or
-      stored policy is skipped.
+    version: Specifies the format of the policy.  Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected.  Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations:  * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy   that includes conditions  **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost.  If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -1674,32 +1703,31 @@ class SloEligibility(_messages.Message):
 
 
 class SloExclusion(_messages.Message):
-  r"""SloExclusion represents an excusion in SLI calculation applies to all
+  r"""SloExclusion represents an exclusion in SLI calculation applies to all
   SLOs.
 
   Fields:
-    exclusionDuration: Exclusion duration. No restrictions on the possible
-      values.  When an ongoing operation is taking longer than initially
-      expected, an existing entry in the exclusion list can be updated by
-      extending the duration. This is supported by the subsystem exporting
-      eligibility data as long as such extension is committed at least 10
-      minutes before the original exclusion expiration - otherwise it is
-      possible that there will be "gaps" in the exclusion application in the
-      exported timeseries.
-    exclusionStartTime: Start time of the exclusion. No alignment (e.g. to a
-      full minute) needed.
+    duration: Exclusion duration. No restrictions on the possible values.
+      When an ongoing operation is taking longer than initially expected, an
+      existing entry in the exclusion list can be updated by extending the
+      duration. This is supported by the subsystem exporting eligibility data
+      as long as such extension is committed at least 10 minutes before the
+      original exclusion expiration - otherwise it is possible that there will
+      be "gaps" in the exclusion application in the exported timeseries.
     reason: Human-readable reason for the exclusion. This should be a static
       string (e.g. "Disruptive update in progress") and should not contain
       dynamically generated data (e.g. instance name). Can be left empty.
     sliName: Name of an SLI that this exclusion applies to. Can be left empty,
       signaling that the instance should be excluded from all SLIs defined in
       the service SLO configuration.
+    startTime: Start time of the exclusion. No alignment (e.g. to a full
+      minute) needed.
   """
 
-  exclusionDuration = _messages.StringField(1)
-  exclusionStartTime = _messages.StringField(2)
-  reason = _messages.StringField(3)
-  sliName = _messages.StringField(4)
+  duration = _messages.StringField(1)
+  reason = _messages.StringField(2)
+  sliName = _messages.StringField(3)
+  startTime = _messages.StringField(4)
 
 
 class SloMetadata(_messages.Message):

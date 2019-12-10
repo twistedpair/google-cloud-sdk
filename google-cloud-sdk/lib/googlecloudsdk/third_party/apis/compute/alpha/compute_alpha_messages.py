@@ -4952,6 +4952,13 @@ class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -4972,10 +4979,11 @@ class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeAcceleratorTypesGetRequest(_messages.Message):
@@ -5060,6 +5068,13 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -5080,10 +5095,11 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeAddressesDeleteRequest(_messages.Message):
@@ -5263,6 +5279,13 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -5283,10 +5306,11 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeAutoscalersDeleteRequest(_messages.Message):
@@ -5772,6 +5796,13 @@ class ComputeBackendServicesAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -5792,10 +5823,11 @@ class ComputeBackendServicesAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeBackendServicesDeleteRequest(_messages.Message):
@@ -6059,6 +6091,13 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -6079,10 +6118,11 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeDiskTypesGetRequest(_messages.Message):
@@ -6195,6 +6235,13 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -6215,10 +6262,11 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeDisksCreateSnapshotRequest(_messages.Message):
@@ -6825,6 +6873,13 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -6845,10 +6900,11 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeForwardingRulesDeleteRequest(_messages.Message):
@@ -7623,6 +7679,13 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -7643,10 +7706,11 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeGlobalOperationsDeleteRequest(_messages.Message):
@@ -7975,6 +8039,13 @@ class ComputeHealthChecksAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -7995,10 +8066,11 @@ class ComputeHealthChecksAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeHealthChecksDeleteRequest(_messages.Message):
@@ -8768,6 +8840,13 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -8788,10 +8867,11 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest(_messages.Message):
@@ -9524,6 +9604,13 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -9544,10 +9631,11 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeInstanceGroupsDeleteRequest(_messages.Message):
@@ -10019,6 +10107,13 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -10039,10 +10134,11 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeInstancesAttachDiskRequest(_messages.Message):
@@ -11102,6 +11198,84 @@ class ComputeInstancesUpdateNetworkInterfaceRequest(_messages.Message):
   zone = _messages.StringField(6, required=True)
 
 
+class ComputeInstancesUpdateRequest(_messages.Message):
+  r"""A ComputeInstancesUpdateRequest object.
+
+  Enums:
+    MinimalActionValueValuesEnum: If specified, this action or higher level
+      action is performed on the instance irrespective of what action is
+      required for the update to take effect. If not specified, then Compute
+      Engine acts based on the minimum action required.
+    MostDisruptiveAllowedActionValueValuesEnum: If specified, Compute Engine
+      returns an error if the update requires a higher action to be applied to
+      the instance. If not specified, the default will be REFRESH.
+
+  Fields:
+    instance: Name of the instance resource to update.
+    instanceResource: A Instance resource to be passed as the request body.
+    minimalAction: If specified, this action or higher level action is
+      performed on the instance irrespective of what action is required for
+      the update to take effect. If not specified, then Compute Engine acts
+      based on the minimum action required.
+    mostDisruptiveAllowedAction: If specified, Compute Engine returns an error
+      if the update requires a higher action to be applied to the instance. If
+      not specified, the default will be REFRESH.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  class MinimalActionValueValuesEnum(_messages.Enum):
+    r"""If specified, this action or higher level action is performed on the
+    instance irrespective of what action is required for the update to take
+    effect. If not specified, then Compute Engine acts based on the minimum
+    action required.
+
+    Values:
+      INVALID: <no description>
+      NO_EFFECT: <no description>
+      REFRESH: <no description>
+      RESTART: <no description>
+    """
+    INVALID = 0
+    NO_EFFECT = 1
+    REFRESH = 2
+    RESTART = 3
+
+  class MostDisruptiveAllowedActionValueValuesEnum(_messages.Enum):
+    r"""If specified, Compute Engine returns an error if the update requires a
+    higher action to be applied to the instance. If not specified, the default
+    will be REFRESH.
+
+    Values:
+      INVALID: <no description>
+      NO_EFFECT: <no description>
+      REFRESH: <no description>
+      RESTART: <no description>
+    """
+    INVALID = 0
+    NO_EFFECT = 1
+    REFRESH = 2
+    RESTART = 3
+
+  instance = _messages.StringField(1, required=True)
+  instanceResource = _messages.MessageField('Instance', 2)
+  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 3)
+  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 4)
+  project = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(6)
+  zone = _messages.StringField(7, required=True)
+
+
 class ComputeInstancesUpdateShieldedInstanceConfigRequest(_messages.Message):
   r"""A ComputeInstancesUpdateShieldedInstanceConfigRequest object.
 
@@ -11178,6 +11352,13 @@ class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -11198,10 +11379,11 @@ class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeInterconnectAttachmentsDeleteRequest(_messages.Message):
@@ -12074,6 +12256,13 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -12094,10 +12283,11 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeMachineTypesGetRequest(_messages.Message):
@@ -12182,6 +12372,13 @@ class ComputeNetworkEndpointGroupsAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -12202,10 +12399,11 @@ class ComputeNetworkEndpointGroupsAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeNetworkEndpointGroupsAttachNetworkEndpointsRequest(_messages.Message):
@@ -12950,6 +13148,13 @@ class ComputeNodeGroupsAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -12970,10 +13175,11 @@ class ComputeNodeGroupsAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeNodeGroupsDeleteNodesRequest(_messages.Message):
@@ -13322,6 +13528,13 @@ class ComputeNodeTemplatesAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -13342,10 +13555,11 @@ class ComputeNodeTemplatesAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeNodeTemplatesDeleteRequest(_messages.Message):
@@ -13530,6 +13744,13 @@ class ComputeNodeTypesAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -13550,10 +13771,11 @@ class ComputeNodeTypesAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeNodeTypesGetRequest(_messages.Message):
@@ -13970,6 +14192,13 @@ class ComputePacketMirroringsAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -13990,10 +14219,11 @@ class ComputePacketMirroringsAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputePacketMirroringsDeleteRequest(_messages.Message):
@@ -14658,6 +14888,13 @@ class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -14678,10 +14915,11 @@ class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputePublicDelegatedPrefixesDeleteRequest(_messages.Message):
@@ -15237,6 +15475,13 @@ class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -15257,10 +15502,11 @@ class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeRegionCommitmentsGetRequest(_messages.Message):
@@ -16932,6 +17178,125 @@ class ComputeRegionInstanceGroupsTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
+class ComputeRegionNetworkEndpointGroupsDeleteRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsDeleteRequest object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group to delete. It
+      should comply with RFC1035.
+    project: Project ID for this request.
+    region: The name of the region where the network endpoint group is
+      located. It should comply with RFC1035.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkEndpointGroupsGetRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsGetRequest object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group. It should
+      comply with RFC1035.
+    project: Project ID for this request.
+    region: The name of the region where the network endpoint group is
+      located. It should comply with RFC1035.
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionNetworkEndpointGroupsInsertRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsInsertRequest object.
+
+  Fields:
+    networkEndpointGroup: A NetworkEndpointGroup resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: The name of the region where you want to create the network
+      endpoint group. It should comply with RFC1035.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  networkEndpointGroup = _messages.MessageField('NetworkEndpointGroup', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkEndpointGroupsListRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: The name of the region where the network endpoint group is
+      located. It should comply with RFC1035.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
 class ComputeRegionNotificationEndpointsDeleteRequest(_messages.Message):
   r"""A ComputeRegionNotificationEndpointsDeleteRequest object.
 
@@ -17898,6 +18263,13 @@ class ComputeReservationsAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -17918,10 +18290,11 @@ class ComputeReservationsAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeReservationsDeleteRequest(_messages.Message):
@@ -18134,6 +18507,13 @@ class ComputeResourcePoliciesAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -18154,10 +18534,11 @@ class ComputeResourcePoliciesAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeResourcePoliciesDeleteRequest(_messages.Message):
@@ -18343,6 +18724,13 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -18363,10 +18751,11 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeRoutersDeleteRequest(_messages.Message):
@@ -19190,6 +19579,13 @@ class ComputeSslCertificatesAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -19210,10 +19606,11 @@ class ComputeSslCertificatesAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeSslCertificatesDeleteRequest(_messages.Message):
@@ -19549,6 +19946,13 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -19569,10 +19973,11 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeSubnetworksDeleteRequest(_messages.Message):
@@ -19897,6 +20302,13 @@ class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -19917,10 +20329,11 @@ class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeTargetHttpProxiesDeleteRequest(_messages.Message):
@@ -20089,6 +20502,13 @@ class ComputeTargetHttpsProxiesAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -20109,10 +20529,11 @@ class ComputeTargetHttpsProxiesAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeTargetHttpsProxiesDeleteRequest(_messages.Message):
@@ -20366,6 +20787,13 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -20386,10 +20814,11 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeTargetInstancesDeleteRequest(_messages.Message):
@@ -20598,6 +21027,13 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -20618,10 +21054,11 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeTargetPoolsDeleteRequest(_messages.Message):
@@ -21284,6 +21721,13 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -21304,10 +21748,11 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeTargetVpnGatewaysDeleteRequest(_messages.Message):
@@ -21488,6 +21933,13 @@ class ComputeUrlMapsAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -21508,10 +21960,11 @@ class ComputeUrlMapsAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeUrlMapsDeleteRequest(_messages.Message):
@@ -21744,6 +22197,13 @@ class ComputeVpnGatewaysAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -21764,10 +22224,11 @@ class ComputeVpnGatewaysAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeVpnGatewaysDeleteRequest(_messages.Message):
@@ -21961,6 +22422,13 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -21981,10 +22449,11 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
 
 
 class ComputeVpnTunnelsDeleteRequest(_messages.Message):
@@ -24721,16 +25190,16 @@ class ForwardingRule(_messages.Message):
   beta.regionForwardingRules ==) (== resource_for v1.regionForwardingRules ==)
 
   Enums:
-    IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
-      Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP
-      Load Balancing, the load balancing scheme is INTERNAL, and one of TCP or
-      UDP are valid. For Traffic Director, the load balancing scheme is
-      INTERNAL_SELF_MANAGED, and only TCPis valid. For Internal HTTP(S) Load
-      Balancing, the load balancing scheme is INTERNAL_MANAGED, and only TCP
-      is valid. For HTTP(S), SSL Proxy, and TCP Proxy Load Balancing, the load
-      balancing scheme is EXTERNAL and only TCP is valid. For Network TCP/UDP
-      Load Balancing, the load balancing scheme is EXTERNAL, and one of TCP or
-      UDP is valid.
+    IPProtocolValueValuesEnum: The IP protocol to which this rule applies. For
+      protocol forwarding, valid options are TCP, UDP, ESP, AH, SCTP or ICMP.
+      For Internal TCP/UDP Load Balancing, the load balancing scheme is
+      INTERNAL, and one of TCP or UDP are valid. For Traffic Director, the
+      load balancing scheme is INTERNAL_SELF_MANAGED, and only TCPis valid.
+      For Internal HTTP(S) Load Balancing, the load balancing scheme is
+      INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy, and TCP
+      Proxy Load Balancing, the load balancing scheme is EXTERNAL and only TCP
+      is valid. For Network TCP/UDP Load Balancing, the load balancing scheme
+      is EXTERNAL, and one of TCP or UDP is valid.
     IpVersionValueValuesEnum: The IP Version that will be used by this
       forwarding rule. Valid options are IPV4 or IPV6. This can only be
       specified for an external global forwarding rule.
@@ -24771,16 +25240,16 @@ class ForwardingRule(_messages.Message):
       use. For detailed information, refer to [IP address specifications
       ](/load-balancing/docs/forwarding-rule-
       concepts#ip_address_specifications).
-    IPProtocol: The IP protocol to which this rule applies. Valid options are
-      TCP, UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP Load Balancing,
-      the load balancing scheme is INTERNAL, and one of TCP or UDP are valid.
-      For Traffic Director, the load balancing scheme is
-      INTERNAL_SELF_MANAGED, and only TCPis valid. For Internal HTTP(S) Load
-      Balancing, the load balancing scheme is INTERNAL_MANAGED, and only TCP
-      is valid. For HTTP(S), SSL Proxy, and TCP Proxy Load Balancing, the load
-      balancing scheme is EXTERNAL and only TCP is valid. For Network TCP/UDP
-      Load Balancing, the load balancing scheme is EXTERNAL, and one of TCP or
-      UDP is valid.
+    IPProtocol: The IP protocol to which this rule applies. For protocol
+      forwarding, valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For
+      Internal TCP/UDP Load Balancing, the load balancing scheme is INTERNAL,
+      and one of TCP or UDP are valid. For Traffic Director, the load
+      balancing scheme is INTERNAL_SELF_MANAGED, and only TCPis valid. For
+      Internal HTTP(S) Load Balancing, the load balancing scheme is
+      INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy, and TCP
+      Proxy Load Balancing, the load balancing scheme is EXTERNAL and only TCP
+      is valid. For Network TCP/UDP Load Balancing, the load balancing scheme
+      is EXTERNAL, and one of TCP or UDP is valid.
     allPorts: This field is used along with the backend_service field for
       internal load balancing or with the target field for internal
       TargetInstance. This field cannot be used with port or portRange fields.
@@ -24928,15 +25397,16 @@ class ForwardingRule(_messages.Message):
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
-    r"""The IP protocol to which this rule applies. Valid options are TCP,
-    UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP Load Balancing, the load
-    balancing scheme is INTERNAL, and one of TCP or UDP are valid. For Traffic
-    Director, the load balancing scheme is INTERNAL_SELF_MANAGED, and only
-    TCPis valid. For Internal HTTP(S) Load Balancing, the load balancing
-    scheme is INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy,
-    and TCP Proxy Load Balancing, the load balancing scheme is EXTERNAL and
-    only TCP is valid. For Network TCP/UDP Load Balancing, the load balancing
-    scheme is EXTERNAL, and one of TCP or UDP is valid.
+    r"""The IP protocol to which this rule applies. For protocol forwarding,
+    valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For Internal TCP/UDP
+    Load Balancing, the load balancing scheme is INTERNAL, and one of TCP or
+    UDP are valid. For Traffic Director, the load balancing scheme is
+    INTERNAL_SELF_MANAGED, and only TCPis valid. For Internal HTTP(S) Load
+    Balancing, the load balancing scheme is INTERNAL_MANAGED, and only TCP is
+    valid. For HTTP(S), SSL Proxy, and TCP Proxy Load Balancing, the load
+    balancing scheme is EXTERNAL and only TCP is valid. For Network TCP/UDP
+    Load Balancing, the load balancing scheme is EXTERNAL, and one of TCP or
+    UDP is valid.
 
     Values:
       AH: <no description>
@@ -30664,6 +31134,8 @@ class InstanceProperties(_messages.Message):
       down on key revocation.
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
+    resourcePolicies: Resource policies (names, not ULRs) applied to instances
+      created from this templae.
     scheduling: Specifies the scheduling options for the instances that are
       created from this template.
     serviceAccounts: A list of service accounts with specified scopes. Access
@@ -30728,11 +31200,12 @@ class InstanceProperties(_messages.Message):
   networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
   postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 12)
   reservationAffinity = _messages.MessageField('ReservationAffinity', 13)
-  scheduling = _messages.MessageField('Scheduling', 14)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 15, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 16)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 17)
-  tags = _messages.MessageField('Tags', 18)
+  resourcePolicies = _messages.StringField(14, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 15)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 16, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 17)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 18)
+  tags = _messages.MessageField('Tags', 19)
 
 
 class InstanceReference(_messages.Message):
@@ -34881,9 +35354,9 @@ class Network(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?. The first character must
-      be a lowercase letter, and all following characters (except for the last
-      character) must be a dash, lowercase letter, or digit. The last
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character
+      must be a lowercase letter, and all following characters (except for the
+      last character) must be a dash, lowercase letter, or digit. The last
       character must be a lowercase letter or digit.
     peerings: [Output Only] A list of network peerings for the resource.
     routingConfig: The network-level routing configuration for this network.
@@ -36220,14 +36693,15 @@ class NodeGroup(_messages.Message):
   separated from instances in other projects, or to group your instances
   together on the same host hardware. For more information, read Sole-tenant
   nodes. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups
-  ==) NextID: 16
+  ==)
 
   Enums:
-    MaintenancePolicyValueValuesEnum:
+    MaintenancePolicyValueValuesEnum: Specifies how to handle instances when a
+      node in the group undergoes maintenance.
     StatusValueValuesEnum:
 
   Fields:
-    autoscalingPolicy: A NodeGroupAutoscalingPolicy attribute.
+    autoscalingPolicy: Specifies how autoscaling should behave.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -36237,7 +36711,8 @@ class NodeGroup(_messages.Message):
       is defined by the server.
     kind: [Output Only] The type of the resource. Always compute#nodeGroup for
       node group.
-    maintenancePolicy: A MaintenancePolicyValueValuesEnum attribute.
+    maintenancePolicy: Specifies how to handle instances when a node in the
+      group undergoes maintenance.
     name: The name of the resource, provided by the client when initially
       creating the resource. The resource name must be 1-63 characters long,
       and comply with RFC1035. Specifically, the name must be 1-63 characters
@@ -36257,7 +36732,8 @@ class NodeGroup(_messages.Message):
   """
 
   class MaintenancePolicyValueValuesEnum(_messages.Enum):
-    r"""MaintenancePolicyValueValuesEnum enum type.
+    r"""Specifies how to handle instances when a node in the group undergoes
+    maintenance.
 
     Values:
       DEFAULT: <no description>
@@ -36455,16 +36931,16 @@ class NodeGroupAutoscalingPolicy(_messages.Message):
   r"""A NodeGroupAutoscalingPolicy object.
 
   Enums:
-    ModeValueValuesEnum:
+    ModeValueValuesEnum: The autoscaling mode.
 
   Fields:
-    maxSize: A integer attribute.
-    minSize: A integer attribute.
-    mode: A ModeValueValuesEnum attribute.
+    maxNodes: The maximum number of nodes that the group should have.
+    minNodes: The minimum number of nodes that the group should have.
+    mode: The autoscaling mode.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
-    r"""ModeValueValuesEnum enum type.
+    r"""The autoscaling mode.
 
     Values:
       MODE_UNSPECIFIED: <no description>
@@ -36477,8 +36953,8 @@ class NodeGroupAutoscalingPolicy(_messages.Message):
     ON = 2
     ONLY_SCALE_OUT = 3
 
-  maxSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  minSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minNodes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   mode = _messages.EnumField('ModeValueValuesEnum', 3)
 
 
@@ -36934,7 +37410,7 @@ class NodeTemplate(_messages.Message):
   r"""Represent a sole-tenant Node Template resource.  You can use a template
   to define properties for nodes in a node group. For more information, read
   Creating node groups and instances. (== resource_for beta.nodeTemplates ==)
-  (== resource_for v1.nodeTemplates ==) (== NextID: 17 ==)
+  (== resource_for v1.nodeTemplates ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the node template. One
@@ -38864,9 +39340,6 @@ class PacketMirroring(_messages.Message):
       loadBalancingScheme=INTERNAL that will be used as collector for mirrored
       traffic. The specified forwarding rule must have isMirroringCollector
       set to true.
-    collectors: PacketMirroring collectorInfos. Each collectorInfo specifies a
-      set of collector VM instances, preferably in the same zone as the
-      mirrored VM(s)
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -38894,9 +39367,6 @@ class PacketMirroring(_messages.Message):
     network: Specifies the mirrored VPC network. Only packets in this network
       will be mirrored. All mirrored VMs should have a NIC in the given
       network. All mirrored subnetworks should belong to the given network.
-    packetMatchers: PacketMirroring packetMatchers. Each packetMatcher
-      specifies a CIRD filter that will apply to the source or destination IP
-      in the IP header for the mirrored VM traffic.
     priority: The priority of applying this configuration. Priority is used to
       break ties in cases where there is more than one matching rule. In the
       case of two rules that apply for a given Instance, the one with the
@@ -38921,21 +39391,19 @@ class PacketMirroring(_messages.Message):
     TRUE = 1
 
   collectorIlb = _messages.MessageField('PacketMirroringForwardingRuleInfo', 1)
-  collectors = _messages.MessageField('PacketMirroringCollectorInfo', 2)
-  creationTimestamp = _messages.StringField(3)
-  description = _messages.StringField(4)
-  enable = _messages.EnumField('EnableValueValuesEnum', 5)
-  filter = _messages.MessageField('PacketMirroringFilter', 6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default=u'compute#packetMirroring')
-  mirroredResources = _messages.MessageField('PacketMirroringMirroredResourceInfo', 9)
-  name = _messages.StringField(10)
-  network = _messages.MessageField('PacketMirroringNetworkInfo', 11)
-  packetMatchers = _messages.MessageField('PacketMirroringPacketMatcher', 12, repeated=True)
-  priority = _messages.IntegerField(13, variant=_messages.Variant.UINT32)
-  region = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  selfLinkWithId = _messages.StringField(16)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  enable = _messages.EnumField('EnableValueValuesEnum', 4)
+  filter = _messages.MessageField('PacketMirroringFilter', 5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#packetMirroring')
+  mirroredResources = _messages.MessageField('PacketMirroringMirroredResourceInfo', 8)
+  name = _messages.StringField(9)
+  network = _messages.MessageField('PacketMirroringNetworkInfo', 10)
+  priority = _messages.IntegerField(11, variant=_messages.Variant.UINT32)
+  region = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  selfLinkWithId = _messages.StringField(14)
 
 
 class PacketMirroringAggregatedList(_messages.Message):
@@ -39086,29 +39554,6 @@ class PacketMirroringAggregatedList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
-
-
-class PacketMirroringCollectorInfo(_messages.Message):
-  r"""PacketMirroringCollectorInfo message type.
-
-  Fields:
-    instances: A set of virtual machines configured as destination of the
-      mirrored traffic. They must live in zones contained in the same region
-      as this packetMirroring.
-  """
-
-  instances = _messages.MessageField('PacketMirroringCollectorInfoInstanceInfo', 1, repeated=True)
-
-
-class PacketMirroringCollectorInfoInstanceInfo(_messages.Message):
-  r"""A PacketMirroringCollectorInfoInstanceInfo object.
-
-  Fields:
-    url: Resource URL to the virtual machine instance configured as
-      destination of the mirrored traffic.
-  """
-
-  url = _messages.StringField(1)
 
 
 class PacketMirroringFilter(_messages.Message):
@@ -39328,17 +39773,6 @@ class PacketMirroringNetworkInfo(_messages.Message):
 
   canonicalUrl = _messages.StringField(1)
   url = _messages.StringField(2)
-
-
-class PacketMirroringPacketMatcher(_messages.Message):
-  r"""PacketMirroringPacketMatcher message type.
-
-  Fields:
-    cidrRange: IP CIDR range that applies as filter on the source or
-      destination IP in the IP header. Only IPv4 is supported.
-  """
-
-  cidrRange = _messages.StringField(1)
 
 
 class PacketMirroringsScopedList(_messages.Message):
@@ -39634,37 +40068,38 @@ class PermissionConstraint(_messages.Message):
 
 
 class Policy(_messages.Message):
-  r"""Defines an Identity and Access Management (IAM) policy. It is used to
-  specify access control policies for Cloud Platform resources.    A `Policy`
-  is a collection of `bindings`. A `binding` binds one or more `members` to a
-  single `role`. Members can be user accounts, service accounts, Google
-  groups, and domains (such as G Suite). A `role` is a named list of
-  permissions (defined by IAM or configured by users). A `binding` can
-  optionally specify a `condition`, which is a logic expression that further
-  constrains the role binding based on attributes about the request and/or
-  target resource.  **JSON Example**  { "bindings": [ { "role":
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources.    A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members` to a single `role`.
+  Members can be user accounts, service accounts, Google groups, and domains
+  (such as G Suite). A `role` is a named list of permissions; each `role` can
+  be an IAM predefined role or a user-created custom role.  Optionally, a
+  `binding` can specify a `condition`, which is a logical expression that
+  allows access to a resource only if the expression evaluates to `true`. A
+  condition can add constraints based on attributes of the request, the
+  resource, or both.  **JSON example:**  { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
   "roles/resourcemanager.organizationViewer", "members":
   ["user:eve@example.com"], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
-  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ] }  **YAML
-  Example**  bindings: - members: - user:mike@example.com -
-  group:admins@example.com - domain:google.com - serviceAccount:my-project-
-  id@appspot.gserviceaccount.com role: roles/resourcemanager.organizationAdmin
-  - members: - user:eve@example.com role:
-  roles/resourcemanager.organizationViewer condition: title: expirable access
-  description: Does not grant access after Sep 2020 expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')  For a description of IAM and its
-  features, see the [IAM developer's
-  guide](https://cloud.google.com/iam/docs).
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 }  **YAML example:**  bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3  For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally may
-      specify a `condition` that determines when binding is in effect.
-      `bindings` with no members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally, may
+      specify a `condition` that determines how and when the `bindings` are
+      applied. Each of the `bindings` must contain at least one member.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -39672,10 +40107,10 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten. Due to blind-set semantics of an
-      etag-less policy, 'setIamPolicy' will not fail even if either of
-      incoming or stored policy does not meet the version requirements.
+      policy.  **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
     iamOwned:
     rules: If more than one rule is specified, the rules are applied in the
       following manner: - All matching LOG rules are always applied. - If any
@@ -39684,15 +40119,20 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
       will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Operations
-      affecting conditional bindings must specify version 3. This can be
-      either setting a conditional policy, modifying a conditional binding, or
-      removing a conditional binding from the stored conditional policy.
-      Operations on non-conditional policies may specify any valid value or
-      leave the field unset.  If no etag is provided in the call to
-      `setIamPolicy`, any version compliance checks on the incoming and/or
-      stored policy is skipped.
+    version: Specifies the format of the policy.  Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected.  Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations:  * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy that includes conditions  **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost.  If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -46292,6 +46732,8 @@ class Snapshot(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     diskSizeGb: [Output Only] Size of the source disk, specified in GB.
+    downloadBytes: [Output Only] Number of bytes downloaded to restore a
+      snapshot to a disk.
     guestOsFeatures: [Output Only] A list of features to enable on the guest
       operating system. Applicable only for bootable images. Read  Enabling
       guest operating system features to see a list of available options.
@@ -46413,24 +46855,25 @@ class Snapshot(_messages.Message):
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   diskSizeGb = _messages.IntegerField(4)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#snapshot')
-  labelFingerprint = _messages.BytesField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  licenseCodes = _messages.IntegerField(10, repeated=True)
-  licenses = _messages.StringField(11, repeated=True)
-  name = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  selfLinkWithId = _messages.StringField(14)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
-  sourceDisk = _messages.StringField(16)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
-  sourceDiskId = _messages.StringField(18)
-  status = _messages.EnumField('StatusValueValuesEnum', 19)
-  storageBytes = _messages.IntegerField(20)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 21)
-  storageLocations = _messages.StringField(22, repeated=True)
+  downloadBytes = _messages.IntegerField(5)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 6, repeated=True)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default=u'compute#snapshot')
+  labelFingerprint = _messages.BytesField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  licenseCodes = _messages.IntegerField(11, repeated=True)
+  licenses = _messages.StringField(12, repeated=True)
+  name = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  selfLinkWithId = _messages.StringField(15)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
+  sourceDisk = _messages.StringField(17)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
+  sourceDiskId = _messages.StringField(19)
+  status = _messages.EnumField('StatusValueValuesEnum', 20)
+  storageBytes = _messages.IntegerField(21)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 22)
+  storageLocations = _messages.StringField(23, repeated=True)
 
 
 class SnapshotList(_messages.Message):

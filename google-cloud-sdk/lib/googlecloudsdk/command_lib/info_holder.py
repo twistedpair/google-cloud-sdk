@@ -171,7 +171,7 @@ class BasicInfo(object):
         sys.executable and encoding.Decode(sys.executable))
     self.python_version = sys.version
     self.site_packages = 'site' in sys.modules
-    self.locale = locale.getdefaultlocale()
+    self.locale = self._GetDefaultLocale()
 
   def __str__(self):
     return textwrap.dedent("""\
@@ -192,6 +192,24 @@ class BasicInfo(object):
             python_location=self.python_location,
             python_version=self.python_version.replace('\n', ' '),
             site_packages='Enabled' if self.site_packages else 'Disabled'))
+
+  def _GetDefaultLocale(self):
+    """Determines the locale from the program's environment.
+
+    Returns:
+      String: Default locale, with a fallback to locale environment variables.
+    """
+    env_vars = [
+        '%s:%s' % (var, os.environ.get(var))
+        for var in ['LC_ALL', 'LC_CTYPE', 'LANG', 'LANGUAGE']
+        if os.environ.get(var)
+    ]
+    fallback_locale = '; '.join(env_vars)
+
+    try:
+      return locale.getdefaultlocale()
+    except ValueError:
+      return fallback_locale
 
 
 class InstallationInfo(object):
@@ -365,10 +383,13 @@ class ProxyInfoFromEnvironmentVars(object):
       out.write('  address: [{0}]\n'.format(self.address))
     if self.port:
       out.write('  port: [{0}]\n'.format(self.port))
+    # In Python 3, httplib2 encodes the proxy username and password when
+    # initializing ProxyInfo, so we want to ensure they're decoded here before
+    # displaying them.
     if self.username:
-      out.write('  username: [{0}]\n'.format(self.username))
+      out.write('  username: [{0}]\n'.format(encoding.Decode(self.username)))
     if self.password:
-      out.write('  password: [{0}]\n'.format(self.password))
+      out.write('  password: [{0}]\n'.format(encoding.Decode(self.password)))
     return out.getvalue()
 
 

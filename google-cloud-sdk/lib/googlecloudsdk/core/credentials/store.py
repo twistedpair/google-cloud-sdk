@@ -174,6 +174,10 @@ class RevokeError(Error):
   """Exception for when there was a problem revoking."""
 
 
+class InvalidCodeVerifierError(Error):
+  """Exception for invalid code verifier for pkce."""
+
+
 IMPERSONATION_TOKEN_PROVIDER = None
 
 
@@ -687,6 +691,15 @@ def AcquireFromWebFlow(launch_browser=True,
   if client_secret is None:
     client_secret = properties.VALUES.auth.client_secret.Get(required=True)
 
+  code_verifier = properties.VALUES.auth.pkce_code_verifier.Get()
+  if code_verifier and not isinstance(code_verifier, six.binary_type):
+    # code_verifier should be a base64 encoded byte string,
+    # so ascii encoding should be enough.
+    try:
+      code_verifier = code_verifier.encode('ascii')
+    except UnicodeEncodeError:
+      raise InvalidCodeVerifierError('code verifier in auth/pkce_code_verifier '
+                                     'is invalid.')
   webflow = client.OAuth2WebServerFlow(
       client_id=client_id,
       client_secret=client_secret,
@@ -695,7 +708,7 @@ def AcquireFromWebFlow(launch_browser=True,
       auth_uri=auth_uri,
       token_uri=token_uri,
       pkce=True,
-      code_verifier=properties.VALUES.auth.pkce_code_verifier.Get(),
+      code_verifier=code_verifier,
       prompt='select_account')
   return RunWebFlow(webflow, launch_browser=launch_browser)
 

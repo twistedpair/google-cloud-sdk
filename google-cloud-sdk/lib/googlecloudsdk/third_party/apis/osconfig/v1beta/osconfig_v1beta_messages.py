@@ -12,6 +12,46 @@ from apitools.base.py import encoding
 package = 'osconfig'
 
 
+class AptRepository(_messages.Message):
+  r"""Represents a single Apt package repository. This repository is added to
+  a repo file that is stored at
+  `/etc/apt/sources.list.d/google_osconfig.list`.
+
+  Enums:
+    ArchiveTypeValueValuesEnum: Type of archive files in this repository. The
+      default behavior is DEB.
+
+  Fields:
+    archiveType: Type of archive files in this repository. The default
+      behavior is DEB.
+    components: Required. List of components for this repository. Must contain
+      at least one item.
+    distribution: Required. Distribution of this repository.
+    gpgKey: URI of the key file for this repository. The agent maintains a
+      keyring at `/etc/apt/trusted.gpg.d/osconfig_agent_managed.gpg`
+      containing all the keys in any applied guest policy.
+    uri: Required. URI for this repository.
+  """
+
+  class ArchiveTypeValueValuesEnum(_messages.Enum):
+    r"""Type of archive files in this repository. The default behavior is DEB.
+
+    Values:
+      ARCHIVE_TYPE_UNSPECIFIED: Unspecified.
+      DEB: DEB indicates that the archive contains binary files.
+      DEB_SRC: DEB_SRC indicates that the archive contains source files.
+    """
+    ARCHIVE_TYPE_UNSPECIFIED = 0
+    DEB = 1
+    DEB_SRC = 2
+
+  archiveType = _messages.EnumField('ArchiveTypeValueValuesEnum', 1)
+  components = _messages.StringField(2, repeated=True)
+  distribution = _messages.StringField(3)
+  gpgKey = _messages.StringField(4)
+  uri = _messages.StringField(5)
+
+
 class AptSettings(_messages.Message):
   r"""Apt patching is completed by executing `apt-get update && apt-get
   upgrade`. Additional options can be set to control how this is executed.
@@ -49,8 +89,154 @@ class AptSettings(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
+class Assignment(_messages.Message):
+  r"""An assignment represents the group or groups of VM instances that the
+  policy applies to.  If an assignment is empty, it applies to all VM
+  instances. Otherwise, the targeted VM instances must meet all the criteria
+  specified. So if both labels and zones are specified, the policy applies to
+  VM instances with those labels and in those zones.
+
+  Fields:
+    groupLabels: Targets instances matching at least one of these label sets.
+      This allows an assignment to target disparate groups, for example
+      "env=prod or env=staging".
+    instanceNamePrefixes: Targets VM instances whose name starts with one of
+      these prefixes.  Like labels, this is another way to group VM instances
+      when targeting configs, for example prefix="prod-".  Only supported for
+      project-level policies.
+    instances: Targets any of the instances specified. Instances are specified
+      by their URI in the form `zones/[ZONE]/instances/[INSTANCE_NAME]`.
+      Instance targeting is uncommon and is supported to facilitate the
+      management of changes by the instance or to target specific VM instances
+      for development and testing.  Only supported for project-level policies
+      and must reference instances within this project.
+    osTypes: Targets VM instances matching at least one of the following OS
+      types.  VM instances must match all supplied criteria for a given OsType
+      to be included.
+    zones: Targets instances in any of these zones. Leave empty to target
+      instances in any zone.  Zonal targeting is uncommon and is supported to
+      facilitate the management of changes by zone.
+  """
+
+  groupLabels = _messages.MessageField('AssignmentGroupLabel', 1, repeated=True)
+  instanceNamePrefixes = _messages.StringField(2, repeated=True)
+  instances = _messages.StringField(3, repeated=True)
+  osTypes = _messages.MessageField('AssignmentOsType', 4, repeated=True)
+  zones = _messages.StringField(5, repeated=True)
+
+
+class AssignmentGroupLabel(_messages.Message):
+  r"""Represents a group of VM intances that can be identified as having all
+  these labels, for example "env=prod and app=web".
+
+  Messages:
+    LabelsValue: GCE instance labels that must be present for an instance to
+      be included in this assignment group.
+
+  Fields:
+    labels: GCE instance labels that must be present for an instance to be
+      included in this assignment group.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""GCE instance labels that must be present for an instance to be
+    included in this assignment group.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+
+
+class AssignmentOsType(_messages.Message):
+  r"""Defines the criteria for selecting VM Instances by OS type.
+
+  Fields:
+    osArchitecture: Targets VM instances with OS Inventory enabled and having
+      the following OS architecture.
+    osShortName: Targets VM instances with OS Inventory enabled and having the
+      following OS short name, for example "debian" or "windows".
+    osVersion: Targets VM instances with OS Inventory enabled and having the
+      following following OS version.
+  """
+
+  osArchitecture = _messages.StringField(1)
+  osShortName = _messages.StringField(2)
+  osVersion = _messages.StringField(3)
+
+
 class CancelPatchJobRequest(_messages.Message):
   r"""Message for canceling a patch job."""
+
+
+class EffectiveGuestPolicy(_messages.Message):
+  r"""The effective guest policy that applies to a VM instance.
+
+  Fields:
+    packageRepositories: List of package repository configurations assigned to
+      the VM instance.
+    packages: List of package configurations assigned to the VM instance.
+    softwareRecipes: List of recipes assigned to the VM instance.
+  """
+
+  packageRepositories = _messages.MessageField('EffectiveGuestPolicySourcedPackageRepository', 1, repeated=True)
+  packages = _messages.MessageField('EffectiveGuestPolicySourcedPackage', 2, repeated=True)
+  softwareRecipes = _messages.MessageField('EffectiveGuestPolicySourcedSoftwareRecipe', 3, repeated=True)
+
+
+class EffectiveGuestPolicySourcedPackage(_messages.Message):
+  r"""A guest policy package including its source.
+
+  Fields:
+    package: A software package to configure on the VM instance.
+    source: Name of the guest policy providing this config.
+  """
+
+  package = _messages.MessageField('Package', 1)
+  source = _messages.StringField(2)
+
+
+class EffectiveGuestPolicySourcedPackageRepository(_messages.Message):
+  r"""A guest policy package repository including its source.
+
+  Fields:
+    packageRepository: A software package repository to configure on the VM
+      instance.
+    source: Name of the guest policy providing this config.
+  """
+
+  packageRepository = _messages.MessageField('PackageRepository', 1)
+  source = _messages.StringField(2)
+
+
+class EffectiveGuestPolicySourcedSoftwareRecipe(_messages.Message):
+  r"""A guest policy recipe including its source.
+
+  Fields:
+    softwareRecipe: A software recipe to configure on the VM instance.
+    source: Name of the guest policy providing this config.
+  """
+
+  softwareRecipe = _messages.MessageField('SoftwareRecipe', 1)
+  source = _messages.StringField(2)
 
 
 class Empty(_messages.Message):
@@ -164,8 +350,93 @@ class GcsObject(_messages.Message):
   object = _messages.StringField(3)
 
 
+class GooRepository(_messages.Message):
+  r"""Represents a Goo package repository. These is added to a repo file that
+  is stored at C:/ProgramData/GooGet/repos/google_osconfig.repo.
+
+  Fields:
+    name: Required. The name of the repository.
+    url: Required. The url of the repository.
+  """
+
+  name = _messages.StringField(1)
+  url = _messages.StringField(2)
+
+
 class GooSettings(_messages.Message):
   r"""Googet patching is performed by running `googet update`."""
+
+
+class GuestPolicy(_messages.Message):
+  r"""An OS Config resource representing a guest configuration policy. These
+  policies represent the desired state for VM instance guest environments
+  including packages to install or remove, package repository configurations,
+  and software to install.
+
+  Fields:
+    assignment: Required. Specifies the VM instances that are assigned to this
+      policy. This allows you to target sets or groups of VM instances by
+      different parameters such as labels, names, OS, or zones.  If left
+      empty, all VM instances underneath this policy are targeted.   Conflict
+      Management  Policies that exist higher up in the resource hierarchy
+      (closer to the organization) override those lower down if there is a
+      conflict.  At the same level in the resource hierarchy (that is within a
+      project), the service prevents the creation of multiple policies that
+      conflict with each other. If there are multiple policies that specify
+      the same config (eg. package, software recipe, repository, etc.), the
+      service ensures that no VM instance could potentially receive
+      instructions from both policies. To create multiple policies that
+      specify different versions of a package or different configs for
+      different operating systems, each policy must be mutually exclusive in
+      their targeting according to labels, OS, or other criteria.  Different
+      configs are identified for conflicts in different ways. Packages are
+      identified by their name and the package manager(s) they target. Package
+      repositories are identified by their unique id where applicable. Some
+      package managers don't have a unique identifier for repositories and
+      where that's the case, no uniqueness is validated by the service.  Note
+      that if OS Inventory is disabled, a VM instance cannot assign a policy
+      that targets by OS because the service sees the OS as unknown.
+    createTime: Output only. Time this guest policy was created.
+    description: Description of the guest policy. Length of the description is
+      limited to 1024 characters.
+    etag: The etag for this guest policy. If this is provided on update, it
+      must match the server's etag.
+    name: Required. Unique name of the resource in this project using one of
+      the following forms:
+      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
+      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
+      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
+    packageRepositories: A list of package repositories to configure on the VM
+      instance. This is done before any other configs are applied so they can
+      use these repos. Package repositories are only configured if the
+      corresponding package manager(s) are available.
+    packages: The software packages to be managed by this policy.
+    recipes: A list of Recipes to install on the VM instance.
+    updateTime: Output only. Last time this guest policy was updated.
+  """
+
+  assignment = _messages.MessageField('Assignment', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  name = _messages.StringField(5)
+  packageRepositories = _messages.MessageField('PackageRepository', 6, repeated=True)
+  packages = _messages.MessageField('Package', 7, repeated=True)
+  recipes = _messages.MessageField('SoftwareRecipe', 8, repeated=True)
+  updateTime = _messages.StringField(9)
+
+
+class ListGuestPoliciesResponse(_messages.Message):
+  r"""A response message for listing guest policies.
+
+  Fields:
+    guestPolicies: The list of GuestPolicies.
+    nextPageToken: A pagination token that can be used to get the next page of
+      guest policies.
+  """
+
+  guestPolicies = _messages.MessageField('GuestPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListPatchDeploymentsResponse(_messages.Message):
@@ -207,6 +478,27 @@ class ListPatchJobsResponse(_messages.Message):
   patchJobs = _messages.MessageField('PatchJob', 2, repeated=True)
 
 
+class LookupEffectiveGuestPolicyRequest(_messages.Message):
+  r"""A request message for getting the effective guest policy assigned to the
+  instance.
+
+  Fields:
+    osArchitecture: Architecture of OS running on the instance. The OS Config
+      agent only provide this field for targeting if OS Inventory is enabled
+      for that instance.
+    osShortName: Short name of the OS running on the instance. The OS Config
+      agent only provideS this field for targeting if OS Inventory is enabled
+      for that instance.
+    osVersion: Version of the OS running on the instance. The OS Config agent
+      only provide this field for targeting if OS Inventory is enabled for
+      that VM instance.
+  """
+
+  osArchitecture = _messages.StringField(1)
+  osShortName = _messages.StringField(2)
+  osVersion = _messages.StringField(3)
+
+
 class MonthlySchedule(_messages.Message):
   r"""Represents a monthly schedule. An example of a valid monthly schedule is
   "on the third Tuesday of the month" or "on the 15th of the month".
@@ -233,6 +525,261 @@ class OneTimeSchedule(_messages.Message):
   """
 
   executeTime = _messages.StringField(1)
+
+
+class OsconfigFoldersGuestPoliciesCreateRequest(_messages.Message):
+  r"""A OsconfigFoldersGuestPoliciesCreateRequest object.
+
+  Fields:
+    guestPolicy: A GuestPolicy resource to be passed as the request body.
+    guestPolicyId: Required. The logical name of the guest policy in the
+      project with the following restrictions:  * Must contain only lowercase
+      letters, numbers, and hyphens. * Must start with a letter. * Must be
+      between 1-63 characters. * Must end with a number or a letter. * Must be
+      unique within the project.
+    parent: Required. The resource name of the parent using one of the
+      following forms: `projects/{project_number}`. `folders/{folder_id}`.
+      `organizations/{organization_id}`.
+  """
+
+  guestPolicy = _messages.MessageField('GuestPolicy', 1)
+  guestPolicyId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class OsconfigFoldersGuestPoliciesDeleteRequest(_messages.Message):
+  r"""A OsconfigFoldersGuestPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the guest policy  using one of the
+      following forms:
+      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
+      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
+      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigFoldersGuestPoliciesGetRequest(_messages.Message):
+  r"""A OsconfigFoldersGuestPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the guest policy using one of the
+      following forms:
+      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
+      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
+      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigFoldersGuestPoliciesListRequest(_messages.Message):
+  r"""A OsconfigFoldersGuestPoliciesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of guest policies to return.
+    pageToken: A pagination token returned from a previous call to
+      `ListGuestPolicies` that indicates where this listing should continue
+      from.
+    parent: Required. The resource name of the parent using one of the
+      following forms: `projects/{project_number}`. `folders/{folder_id}`.
+      `organizations/{organization_id}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class OsconfigFoldersGuestPoliciesPatchRequest(_messages.Message):
+  r"""A OsconfigFoldersGuestPoliciesPatchRequest object.
+
+  Fields:
+    guestPolicy: A GuestPolicy resource to be passed as the request body.
+    name: Required. Unique name of the resource in this project using one of
+      the following forms:
+      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
+      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
+      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
+    updateMask: Field mask that controls which fields of the guest policy
+      should be updated.
+  """
+
+  guestPolicy = _messages.MessageField('GuestPolicy', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class OsconfigOrganizationsGuestPoliciesCreateRequest(_messages.Message):
+  r"""A OsconfigOrganizationsGuestPoliciesCreateRequest object.
+
+  Fields:
+    guestPolicy: A GuestPolicy resource to be passed as the request body.
+    guestPolicyId: Required. The logical name of the guest policy in the
+      project with the following restrictions:  * Must contain only lowercase
+      letters, numbers, and hyphens. * Must start with a letter. * Must be
+      between 1-63 characters. * Must end with a number or a letter. * Must be
+      unique within the project.
+    parent: Required. The resource name of the parent using one of the
+      following forms: `projects/{project_number}`. `folders/{folder_id}`.
+      `organizations/{organization_id}`.
+  """
+
+  guestPolicy = _messages.MessageField('GuestPolicy', 1)
+  guestPolicyId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class OsconfigOrganizationsGuestPoliciesDeleteRequest(_messages.Message):
+  r"""A OsconfigOrganizationsGuestPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the guest policy  using one of the
+      following forms:
+      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
+      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
+      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigOrganizationsGuestPoliciesGetRequest(_messages.Message):
+  r"""A OsconfigOrganizationsGuestPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the guest policy using one of the
+      following forms:
+      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
+      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
+      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigOrganizationsGuestPoliciesListRequest(_messages.Message):
+  r"""A OsconfigOrganizationsGuestPoliciesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of guest policies to return.
+    pageToken: A pagination token returned from a previous call to
+      `ListGuestPolicies` that indicates where this listing should continue
+      from.
+    parent: Required. The resource name of the parent using one of the
+      following forms: `projects/{project_number}`. `folders/{folder_id}`.
+      `organizations/{organization_id}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class OsconfigOrganizationsGuestPoliciesPatchRequest(_messages.Message):
+  r"""A OsconfigOrganizationsGuestPoliciesPatchRequest object.
+
+  Fields:
+    guestPolicy: A GuestPolicy resource to be passed as the request body.
+    name: Required. Unique name of the resource in this project using one of
+      the following forms:
+      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
+      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
+      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
+    updateMask: Field mask that controls which fields of the guest policy
+      should be updated.
+  """
+
+  guestPolicy = _messages.MessageField('GuestPolicy', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class OsconfigProjectsGuestPoliciesCreateRequest(_messages.Message):
+  r"""A OsconfigProjectsGuestPoliciesCreateRequest object.
+
+  Fields:
+    guestPolicy: A GuestPolicy resource to be passed as the request body.
+    guestPolicyId: Required. The logical name of the guest policy in the
+      project with the following restrictions:  * Must contain only lowercase
+      letters, numbers, and hyphens. * Must start with a letter. * Must be
+      between 1-63 characters. * Must end with a number or a letter. * Must be
+      unique within the project.
+    parent: Required. The resource name of the parent using one of the
+      following forms: `projects/{project_number}`. `folders/{folder_id}`.
+      `organizations/{organization_id}`.
+  """
+
+  guestPolicy = _messages.MessageField('GuestPolicy', 1)
+  guestPolicyId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class OsconfigProjectsGuestPoliciesDeleteRequest(_messages.Message):
+  r"""A OsconfigProjectsGuestPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the guest policy  using one of the
+      following forms:
+      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
+      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
+      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigProjectsGuestPoliciesGetRequest(_messages.Message):
+  r"""A OsconfigProjectsGuestPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the guest policy using one of the
+      following forms:
+      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
+      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
+      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigProjectsGuestPoliciesListRequest(_messages.Message):
+  r"""A OsconfigProjectsGuestPoliciesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of guest policies to return.
+    pageToken: A pagination token returned from a previous call to
+      `ListGuestPolicies` that indicates where this listing should continue
+      from.
+    parent: Required. The resource name of the parent using one of the
+      following forms: `projects/{project_number}`. `folders/{folder_id}`.
+      `organizations/{organization_id}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class OsconfigProjectsGuestPoliciesPatchRequest(_messages.Message):
+  r"""A OsconfigProjectsGuestPoliciesPatchRequest object.
+
+  Fields:
+    guestPolicy: A GuestPolicy resource to be passed as the request body.
+    name: Required. Unique name of the resource in this project using one of
+      the following forms:
+      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
+      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
+      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
+    updateMask: Field mask that controls which fields of the guest policy
+      should be updated.
+  """
+
+  guestPolicy = _messages.MessageField('GuestPolicy', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class OsconfigProjectsPatchDeploymentsCreateRequest(_messages.Message):
@@ -370,6 +917,122 @@ class OsconfigProjectsPatchJobsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class OsconfigProjectsZonesInstancesLookupEffectiveGuestPolicyRequest(_messages.Message):
+  r"""A OsconfigProjectsZonesInstancesLookupEffectiveGuestPolicyRequest
+  object.
+
+  Fields:
+    instance: Required. The VM instance whose policies are being looked up.
+    lookupEffectiveGuestPolicyRequest: A LookupEffectiveGuestPolicyRequest
+      resource to be passed as the request body.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  lookupEffectiveGuestPolicyRequest = _messages.MessageField('LookupEffectiveGuestPolicyRequest', 2)
+
+
+class Package(_messages.Message):
+  r"""Package is a reference to the software package to be installed or
+  removed. The agent on the VM instance uses the system package manager to
+  apply the config.   These are the commands that the agent uses to install or
+  remove packages.  Apt install: `apt-get update && apt-get -y install
+  package1 package2 package3` remove: `apt-get -y remove package1 package2
+  package3`  Yum install: `yum -y install package1 package2 package3` remove:
+  `yum -y remove package1 package2 package3`  Zypper install: `zypper install
+  package1 package2 package3` remove: `zypper rm package1 package2`  Googet
+  install: `googet -noconfirm install package1 package2 package3` remove:
+  `googet -noconfirm remove package1 package2 package3`
+
+  Enums:
+    DesiredStateValueValuesEnum: The desired_state the agent should maintain
+      for this package. The default is to ensure the package is installed.
+    ManagerValueValuesEnum: Type of package manager that can be used to
+      install this package. If a system does not have the package manager, the
+      package is not installed or removed no error message is returned. By
+      default, or if you specify `ANY`, the agent attempts to install and
+      remove this package using the default package manager. This is useful
+      when creating a policy that applies to different types of systems.  The
+      default behavior is ANY.
+
+  Fields:
+    desiredState: The desired_state the agent should maintain for this
+      package. The default is to ensure the package is installed.
+    manager: Type of package manager that can be used to install this package.
+      If a system does not have the package manager, the package is not
+      installed or removed no error message is returned. By default, or if you
+      specify `ANY`, the agent attempts to install and remove this package
+      using the default package manager. This is useful when creating a policy
+      that applies to different types of systems.  The default behavior is
+      ANY.
+    name: Required. The name of the package. A package is uniquely identified
+      for conflict validation by checking the package name and the manager(s)
+      that the package targets.
+  """
+
+  class DesiredStateValueValuesEnum(_messages.Enum):
+    r"""The desired_state the agent should maintain for this package. The
+    default is to ensure the package is installed.
+
+    Values:
+      DESIRED_STATE_UNSPECIFIED: The default is to ensure the package is
+        installed.
+      INSTALLED: The agent ensures that the package is installed.
+      UPDATED: The agent ensures that the package is installed and
+        periodically checks for and install any updates.
+      REMOVED: The agent ensures that the package is not installed and
+        uninstall it if detected.
+    """
+    DESIRED_STATE_UNSPECIFIED = 0
+    INSTALLED = 1
+    UPDATED = 2
+    REMOVED = 3
+
+  class ManagerValueValuesEnum(_messages.Enum):
+    r"""Type of package manager that can be used to install this package. If a
+    system does not have the package manager, the package is not installed or
+    removed no error message is returned. By default, or if you specify `ANY`,
+    the agent attempts to install and remove this package using the default
+    package manager. This is useful when creating a policy that applies to
+    different types of systems.  The default behavior is ANY.
+
+    Values:
+      MANAGER_UNSPECIFIED: The default behavior is ANY.
+      ANY: Apply this package config using the default system package manager.
+      APT: Apply this package config only if Apt is available on the system.
+      YUM: Apply this package config only if Yum is available on the system.
+      ZYPPER: Apply this package config only if Zypper is available on the
+        system.
+      GOO: Apply this package config only if GooGet is available on the
+        system.
+    """
+    MANAGER_UNSPECIFIED = 0
+    ANY = 1
+    APT = 2
+    YUM = 3
+    ZYPPER = 4
+    GOO = 5
+
+  desiredState = _messages.EnumField('DesiredStateValueValuesEnum', 1)
+  manager = _messages.EnumField('ManagerValueValuesEnum', 2)
+  name = _messages.StringField(3)
+
+
+class PackageRepository(_messages.Message):
+  r"""A package repository.
+
+  Fields:
+    apt: An Apt Repository.
+    goo: A Goo Repository.
+    yum: A Yum Repository.
+    zypper: A Zypper Repository.
+  """
+
+  apt = _messages.MessageField('AptRepository', 1)
+  goo = _messages.MessageField('GooRepository', 2)
+  yum = _messages.MessageField('YumRepository', 3)
+  zypper = _messages.MessageField('ZypperRepository', 4)
 
 
 class PatchConfig(_messages.Message):
@@ -773,6 +1436,332 @@ class RecurringSchedule(_messages.Message):
   weekly = _messages.MessageField('WeeklySchedule', 9)
 
 
+class SoftwareRecipe(_messages.Message):
+  r"""A software recipe is a set of instructions for installing and
+  configuring a piece of software. It consists of a set of artifacts that are
+  downloaded, and a set of steps that install, configure, and/or update the
+  software.  Recipes support installing and updating software from artifacts
+  in the following formats: Zip archive, Tar archive, Windows MSI, Debian
+  package, and RPM package.  Additionally, recipes support executing a script
+  (either defined in a file or directly in this api) in bash, sh, cmd, and
+  powershell.  Updating a software recipe  If a recipe is assigned to an
+  instance and there is a recipe with the same name but a lower version
+  already installed and the assigned state of the recipe is
+  `INSTALLED_KEEP_UPDATED`, then the recipe is updated to the new version.
+  Script Working Directories  Each script or execution step is run in its own
+  temporary directory which is deleted after completing the step.
+
+  Enums:
+    DesiredStateValueValuesEnum: Default is INSTALLED. The desired state the
+      agent should maintain for this recipe.  INSTALLED: The software recipe
+      is installed on the instance but            won't be updated to new
+      versions. INSTALLED_KEEP_UPDATED: The software recipe is installed on
+      the                         instance. The recipe is updated to a higher
+      version, if a higher version of the recipe is
+      assigned to this instance. REMOVE: Remove is unsupported for software
+      recipes and attempts to         create or update a recipe to the REMOVE
+      state is rejected.
+
+  Fields:
+    artifacts: Resources available to be used in the steps in the recipe.
+    desiredState: Default is INSTALLED. The desired state the agent should
+      maintain for this recipe.  INSTALLED: The software recipe is installed
+      on the instance but            won't be updated to new versions.
+      INSTALLED_KEEP_UPDATED: The software recipe is installed on the
+      instance. The recipe is updated to a higher
+      version, if a higher version of the recipe is
+      assigned to this instance. REMOVE: Remove is unsupported for software
+      recipes and attempts to         create or update a recipe to the REMOVE
+      state is rejected.
+    installSteps: Actions to be taken for installing this recipe. On failure
+      it stops executing steps and does not attempt another installation. Any
+      steps taken (including partially completed steps) are not rolled back.
+    name: Required. Unique identifier for the recipe. Only one recipe with a
+      given name is installed on an instance.  Names are also used to identify
+      resources which helps to determine whether guest policies have
+      conflicts. This means that requests to create multiple recipes with the
+      same name and version are rejected since they could potentially have
+      conflicting assignments.
+    updateSteps: Actions to be taken for updating this recipe. On failure it
+      stops executing steps and  does not attempt another update for this
+      recipe. Any steps taken (including partially completed steps) are not
+      rolled back.
+    version: The version of this software recipe. Version can be up to 4
+      period separated numbers (e.g. 12.34.56.78).
+  """
+
+  class DesiredStateValueValuesEnum(_messages.Enum):
+    r"""Default is INSTALLED. The desired state the agent should maintain for
+    this recipe.  INSTALLED: The software recipe is installed on the instance
+    but            won't be updated to new versions. INSTALLED_KEEP_UPDATED:
+    The software recipe is installed on the                         instance.
+    The recipe is updated to a higher                         version, if a
+    higher version of the recipe is                         assigned to this
+    instance. REMOVE: Remove is unsupported for software recipes and attempts
+    to         create or update a recipe to the REMOVE state is rejected.
+
+    Values:
+      DESIRED_STATE_UNSPECIFIED: The default is to ensure the package is
+        installed.
+      INSTALLED: The agent ensures that the package is installed.
+      UPDATED: The agent ensures that the package is installed and
+        periodically checks for and install any updates.
+      REMOVED: The agent ensures that the package is not installed and
+        uninstall it if detected.
+    """
+    DESIRED_STATE_UNSPECIFIED = 0
+    INSTALLED = 1
+    UPDATED = 2
+    REMOVED = 3
+
+  artifacts = _messages.MessageField('SoftwareRecipeArtifact', 1, repeated=True)
+  desiredState = _messages.EnumField('DesiredStateValueValuesEnum', 2)
+  installSteps = _messages.MessageField('SoftwareRecipeStep', 3, repeated=True)
+  name = _messages.StringField(4)
+  updateSteps = _messages.MessageField('SoftwareRecipeStep', 5, repeated=True)
+  version = _messages.StringField(6)
+
+
+class SoftwareRecipeArtifact(_messages.Message):
+  r"""Specifies a resource to be used in the recipe.
+
+  Fields:
+    allowInsecure: Defaults to false. When false, recipes are subject to
+      validations based on the artifact type:  Remote: A checksum must be
+      specified, and only protocols with         transport-layer security are
+      permitted. GCS:    An object generation number must be specified.
+    gcs: A Cloud Storage artifact.
+    id: Required. Id of the artifact, which the installation and update steps
+      of this recipe can reference. Artifacts in a recipe cannot have the same
+      id.
+    remote: A generic remote artifact.
+  """
+
+  allowInsecure = _messages.BooleanField(1)
+  gcs = _messages.MessageField('SoftwareRecipeArtifactGcs', 2)
+  id = _messages.StringField(3)
+  remote = _messages.MessageField('SoftwareRecipeArtifactRemote', 4)
+
+
+class SoftwareRecipeArtifactGcs(_messages.Message):
+  r"""Specifies an artifact available as a Cloud Storage object.
+
+  Fields:
+    bucket: Bucket of the Cloud Storage object. Given an example URL:
+      `https://storage.googleapis.com/my-bucket/foo/bar#1234567` this value
+      would be `my-bucket`.
+    generation: Must be provided if allow_insecure is false. Generation number
+      of the Cloud Storage object. `https://storage.googleapis.com/my-
+      bucket/foo/bar#1234567` this value would be `1234567`.
+    object: Name of the Cloud Storage object. As specified [here]
+      (https://cloud.google.com/storage/docs/naming#objectnames) Given an
+      example URL: `https://storage.googleapis.com/my-bucket/foo/bar#1234567`
+      this value would be `foo/bar`.
+  """
+
+  bucket = _messages.StringField(1)
+  generation = _messages.IntegerField(2)
+  object = _messages.StringField(3)
+
+
+class SoftwareRecipeArtifactRemote(_messages.Message):
+  r"""Specifies an artifact available via some URI.
+
+  Fields:
+    checksum: Must be provided if `allow_insecure` is `false`. SHA256 checksum
+      in hex format, to compare to the checksum of the artifact. If the
+      checksum is not empty and it doesn't match the artifact then the recipe
+      installation fails before running any of the steps.
+    uri: URI from which to fetch the object. It should contain both the
+      protocol and path following the format {protocol}://{location}.
+  """
+
+  checksum = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
+class SoftwareRecipeStep(_messages.Message):
+  r"""An action that can be taken as part of installing or updating a recipe.
+
+  Fields:
+    archiveExtraction: Extracts an archive into the specified directory.
+    dpkgInstallation: Installs a deb file via dpkg.
+    fileCopy: Copies a file onto the instance.
+    fileExec: Executes an artifact or local file.
+    msiInstallation: Installs an MSI file.
+    rpmInstallation: Installs an rpm file via the rpm utility.
+    scriptRun: Runs commands in a shell.
+  """
+
+  archiveExtraction = _messages.MessageField('SoftwareRecipeStepExtractArchive', 1)
+  dpkgInstallation = _messages.MessageField('SoftwareRecipeStepInstallDpkg', 2)
+  fileCopy = _messages.MessageField('SoftwareRecipeStepCopyFile', 3)
+  fileExec = _messages.MessageField('SoftwareRecipeStepExecFile', 4)
+  msiInstallation = _messages.MessageField('SoftwareRecipeStepInstallMsi', 5)
+  rpmInstallation = _messages.MessageField('SoftwareRecipeStepInstallRpm', 6)
+  scriptRun = _messages.MessageField('SoftwareRecipeStepRunScript', 7)
+
+
+class SoftwareRecipeStepCopyFile(_messages.Message):
+  r"""Copies the artifact to the specified path on the instance.
+
+  Fields:
+    artifactId: Required. The id of the relevant artifact in the recipe.
+    destination: Required. The absolute path on the instance to put the file.
+    overwrite: Whether to allow this step to overwrite existing files. If this
+      is false and the file already exists the file is not overwritten and the
+      step is considered a success. Defaults to false.
+    permissions: Consists of three octal digits which represent, in order, the
+      permissions of the owner, group, and other users for the file (similarly
+      to the numeric mode used in the linux chmod utility). Each digit
+      represents a three bit number with the 4 bit corresponding to the read
+      permissions, the 2 bit corresponds to the write bit, and the one bit
+      corresponds to the execute permission. Default behavior is 755.  Below
+      are some examples of permissions and their associated values: read,
+      write, and execute: 7 read and execute: 5 read and write: 6 read only: 4
+  """
+
+  artifactId = _messages.StringField(1)
+  destination = _messages.StringField(2)
+  overwrite = _messages.BooleanField(3)
+  permissions = _messages.StringField(4)
+
+
+class SoftwareRecipeStepExecFile(_messages.Message):
+  r"""Executes an artifact or local file.
+
+  Fields:
+    allowedExitCodes: Defaults to [0]. A list of possible return values that
+      the program can return to indicate a success.
+    args: Arguments to be passed to the provided executable.
+    artifactId: The id of the relevant artifact in the recipe.
+    localPath: The absolute path of the file on the local filesystem.
+  """
+
+  allowedExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  args = _messages.StringField(2, repeated=True)
+  artifactId = _messages.StringField(3)
+  localPath = _messages.StringField(4)
+
+
+class SoftwareRecipeStepExtractArchive(_messages.Message):
+  r"""Extracts an archive of the type specified in the specified directory.
+
+  Enums:
+    TypeValueValuesEnum: Required. The type of the archive to extract.
+
+  Fields:
+    artifactId: Required. The id of the relevant artifact in the recipe.
+    destination: Directory to extract archive to. Defaults to `/` on Linux or
+      `C:\` on Windows.
+    type: Required. The type of the archive to extract.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the archive to extract.
+
+    Values:
+      ARCHIVE_TYPE_UNSPECIFIED: Indicates that the archive type isn't
+        specified.
+      TAR: Indicates that the archive is a tar archive with no encryption.
+      TAR_GZIP: Indicates that the archive is a tar archive with gzip
+        encryption.
+      TAR_BZIP: Indicates that the archive is a tar archive with bzip
+        encryption.
+      TAR_LZMA: Indicates that the archive is a tar archive with lzma
+        encryption.
+      TAR_XZ: Indicates that the archive is a tar archive with xz encryption.
+      ZIP: Indicates that the archive is a zip archive.
+    """
+    ARCHIVE_TYPE_UNSPECIFIED = 0
+    TAR = 1
+    TAR_GZIP = 2
+    TAR_BZIP = 3
+    TAR_LZMA = 4
+    TAR_XZ = 5
+    ZIP = 6
+
+  artifactId = _messages.StringField(1)
+  destination = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class SoftwareRecipeStepInstallDpkg(_messages.Message):
+  r"""Installs a deb via dpkg.
+
+  Fields:
+    artifactId: Required. The id of the relevant artifact in the recipe.
+  """
+
+  artifactId = _messages.StringField(1)
+
+
+class SoftwareRecipeStepInstallMsi(_messages.Message):
+  r"""Installs an MSI file.
+
+  Fields:
+    allowedExitCodes: Return codes that indicate that the software installed
+      or updated successfully. Behaviour defaults to [0]
+    artifactId: Required. The id of the relevant artifact in the recipe.
+    flags: The flags to use when installing the MSI defaults to ["/i"] (i.e.
+      the install flag).
+  """
+
+  allowedExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  artifactId = _messages.StringField(2)
+  flags = _messages.StringField(3, repeated=True)
+
+
+class SoftwareRecipeStepInstallRpm(_messages.Message):
+  r"""Installs an rpm file via the rpm utility.
+
+  Fields:
+    artifactId: Required. The id of the relevant artifact in the recipe.
+  """
+
+  artifactId = _messages.StringField(1)
+
+
+class SoftwareRecipeStepRunScript(_messages.Message):
+  r"""Runs a script through an interpreter.
+
+  Enums:
+    InterpreterValueValuesEnum: The script interpreter to use to run the
+      script. If no interpreter is specified the script is executed directly,
+      which likely only succeed for scripts with [shebang
+      lines](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+
+  Fields:
+    allowedExitCodes: Return codes that indicate that the software installed
+      or updated successfully. Behaviour defaults to [0]
+    interpreter: The script interpreter to use to run the script. If no
+      interpreter is specified the script is executed directly, which likely
+      only succeed for scripts with [shebang
+      lines](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+    script: Required. The shell script to be executed.
+  """
+
+  class InterpreterValueValuesEnum(_messages.Enum):
+    r"""The script interpreter to use to run the script. If no interpreter is
+    specified the script is executed directly, which likely only succeed for
+    scripts with [shebang
+    lines](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+
+    Values:
+      INTERPRETER_UNSPECIFIED: Default value for ScriptType.
+      SHELL: Indicates that the script is run with `/bin/sh` on Linux and
+        `cmd` on windows.
+      POWERSHELL: Indicates that the script is run with powershell.
+    """
+    INTERPRETER_UNSPECIFIED = 0
+    SHELL = 1
+    POWERSHELL = 2
+
+  allowedExitCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  interpreter = _messages.EnumField('InterpreterValueValuesEnum', 2)
+  script = _messages.StringField(3)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -989,6 +1978,26 @@ class WindowsUpdateSettings(_messages.Message):
   exclusivePatches = _messages.StringField(3, repeated=True)
 
 
+class YumRepository(_messages.Message):
+  r"""Represents a single Yum package repository. This repository is added to
+  a repo file that is stored at `/etc/yum.repos.d/google_osconfig.repo`.
+
+  Fields:
+    baseUrl: Required. The location of the repository directory.
+    displayName: The display name of the repository.
+    gpgKeys: URIs of GPG keys.
+    id: Required. A one word, unique name for this repository. This is the
+      `repo id` in the Yum config file and also the `display_name` if
+      `display_name` is omitted. This id is also used as the unique identifier
+      when checking for guest policy conflicts.
+  """
+
+  baseUrl = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  gpgKeys = _messages.StringField(3, repeated=True)
+  id = _messages.StringField(4)
+
+
 class YumSettings(_messages.Message):
   r"""Yum patching is performed by executing `yum update`. Additional options
   can be set to control how this is executed.  Note that not all settings are
@@ -1010,6 +2019,26 @@ class YumSettings(_messages.Message):
   exclusivePackages = _messages.StringField(2, repeated=True)
   minimal = _messages.BooleanField(3)
   security = _messages.BooleanField(4)
+
+
+class ZypperRepository(_messages.Message):
+  r"""Represents a single Zypper package repository. This repository is added
+  to a repo file that is stored at `/etc/zypp/repos.d/google_osconfig.repo`.
+
+  Fields:
+    baseUrl: Required. The location of the repository directory.
+    displayName: The display name of the repository.
+    gpgKeys: URIs of GPG keys.
+    id: Required. A one word, unique name for this repository. This is the
+      `repo id` in the zypper config file and also the `display_name` if
+      `display_name` is omitted. This id is also used as the unique identifier
+      when checking for guest policy conflicts.
+  """
+
+  baseUrl = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  gpgKeys = _messages.StringField(3, repeated=True)
+  id = _messages.StringField(4)
 
 
 class ZypperSettings(_messages.Message):

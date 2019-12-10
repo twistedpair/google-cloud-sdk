@@ -245,7 +245,7 @@
           }
         },
         "description": {
-          "description": "A required description of this membership, limited to 63 characters.\ndescription must match the regex: `a-zA-Z0-9*`",
+          "description": "Required. Description of this membership, limited to 63 characters.\nIt must match the regex: `a-zA-Z0-9*`",
           "type": "string"
         },
         "endpoint": {
@@ -344,7 +344,7 @@
     },
     "ConnectAgentResource": {
       "id": "ConnectAgentResource",
-      "description": "ConnectAgentResource represents a Kubernetes resource manifest for connect\nagnet deployment.",
+      "description": "ConnectAgentResource represents a Kubernetes resource manifest for connect\nagent deployment.",
       "type": "object",
       "properties": {
         "type": {
@@ -442,16 +442,16 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` is a collection of `bindings`. A `binding` binds one or more\n`members` to a single `role`. Members can be user accounts, service accounts,\nGoogle groups, and domains (such as G Suite). A `role` is a named list of\npermissions (defined by IAM or configured by users). A `binding` can\noptionally specify a `condition`, which is a logic expression that further\nconstrains the role binding based on attributes about the request and\/or\ntarget resource.\n\n**JSON Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/resourcemanager.organizationAdmin\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-project-id@appspot.gserviceaccount.com\"\n          ]\n        },\n        {\n          \"role\": \"roles\/resourcemanager.organizationViewer\",\n          \"members\": [\"user:eve@example.com\"],\n          \"condition\": {\n            \"title\": \"expirable access\",\n            \"description\": \"Does not grant access after Sep 2020\",\n            \"expression\": \"request.time <\n            timestamp('2020-10-01T00:00:00.000Z')\",\n          }\n        }\n      ]\n    }\n\n**YAML Example**\n\n    bindings:\n    - members:\n      - user:mike@example.com\n      - group:admins@example.com\n      - domain:google.com\n      - serviceAccount:my-project-id@appspot.gserviceaccount.com\n      role: roles\/resourcemanager.organizationAdmin\n    - members:\n      - user:eve@example.com\n      role: roles\/resourcemanager.organizationViewer\n      condition:\n        title: expirable access\n        description: Does not grant access after Sep 2020\n        expression: request.time < timestamp('2020-10-01T00:00:00.000Z')\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam\/docs).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access\ncontrols for Google Cloud resources.\n\n\nA `Policy` is a collection of `bindings`. A `binding` binds one or more\n`members` to a single `role`. Members can be user accounts, service accounts,\nGoogle groups, and domains (such as G Suite). A `role` is a named list of\npermissions; each `role` can be an IAM predefined role or a user-created\ncustom role.\n\nOptionally, a `binding` can specify a `condition`, which is a logical\nexpression that allows access to a resource only if the expression evaluates\nto `true`. A condition can add constraints based on attributes of the\nrequest, the resource, or both.\n\n**JSON example:**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/resourcemanager.organizationAdmin\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-project-id@appspot.gserviceaccount.com\"\n          ]\n        },\n        {\n          \"role\": \"roles\/resourcemanager.organizationViewer\",\n          \"members\": [\"user:eve@example.com\"],\n          \"condition\": {\n            \"title\": \"expirable access\",\n            \"description\": \"Does not grant access after Sep 2020\",\n            \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\",\n          }\n        }\n      ],\n      \"etag\": \"BwWWja0YfJA=\",\n      \"version\": 3\n    }\n\n**YAML example:**\n\n    bindings:\n    - members:\n      - user:mike@example.com\n      - group:admins@example.com\n      - domain:google.com\n      - serviceAccount:my-project-id@appspot.gserviceaccount.com\n      role: roles\/resourcemanager.organizationAdmin\n    - members:\n      - user:eve@example.com\n      role: roles\/resourcemanager.organizationViewer\n      condition:\n        title: expirable access\n        description: Does not grant access after Sep 2020\n        expression: request.time < timestamp('2020-10-01T00:00:00.000Z')\n    - etag: BwWWja0YfJA=\n    - version: 3\n\nFor a description of IAM and its features, see the\n[IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {
-          "description": "Specifies the format of the policy.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nOperations affecting conditional bindings must specify version 3. This can\nbe either setting a conditional policy, modifying a conditional binding,\nor removing a conditional binding from the stored conditional policy.\nOperations on non-conditional policies may specify any valid value or\nleave the field unset.\n\nIf no etag is provided in the call to `setIamPolicy`, any version\ncompliance checks on the incoming and\/or stored policy is skipped.",
+          "description": "Specifies the format of the policy.\n\nValid values are `0`, `1`, and `3`. Requests that specify an invalid value\nare rejected.\n\nAny operation that affects conditional role bindings must specify version\n`3`. This requirement applies to the following operations:\n\n* Getting a policy that includes a conditional role binding\n* Adding a conditional role binding to a policy\n* Changing a conditional role binding in a policy\n* Removing any role binding, with or without a condition, from a policy\n  that includes conditions\n\n**Important:** If you use IAM Conditions, you must include the `etag` field\nwhenever you call `setIamPolicy`. If you omit this field, then IAM allows\nyou to overwrite a version `3` policy with a version `1` policy, and all of\nthe conditions in the version `3` policy are lost.\n\nIf a policy does not include any conditions, operations on that policy may\nspecify any valid version or leave the field unset.",
           "type": "integer",
           "format": "int32"
         },
         "bindings": {
-          "description": "Associates a list of `members` to a `role`. Optionally may specify a\n`condition` that determines when binding is in effect.\n`bindings` with no members will result in an error.",
+          "description": "Associates a list of `members` to a `role`. Optionally, may specify a\n`condition` that determines how and when the `bindings` are applied. Each\nof the `bindings` must contain at least one member.",
           "type": "array",
           "items": {
             "$ref": "Binding"
@@ -465,7 +465,7 @@
           }
         },
         "etag": {
-          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten. Due to blind-set semantics of an etag-less policy,\n'setIamPolicy' will not fail even if either of incoming or stored policy\ndoes not meet the version requirements.",
+          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\n**Important:** If you use IAM Conditions, you must include the `etag` field\nwhenever you call `setIamPolicy`. If you omit this field, then IAM allows\nyou to overwrite a version `3` policy with a version `1` policy, and all of\nthe conditions in the version `3` policy are lost.",
           "type": "string",
           "format": "byte"
         }
@@ -481,7 +481,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a user that has been recently deleted. For\n   example,`alice@example.com?uid=123456789012345678901`. If the user is\n   recovered, this value reverts to `user:{emailid}` and the recovered user\n   retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus\n   unique identifier) representing a service account that has been recently\n   deleted. For example,\n   `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.\n   If the service account is undeleted, this value reverts to\n   `serviceAccount:{emailid}` and the undeleted service account retains the\n   role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a Google group that has been recently\n   deleted. For example, `admins@example.com?uid=123456789012345678901`. If\n   the group is recovered, this value reverts to `group:{emailid}` and the\n   recovered group retains the role in the binding.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a user that has been recently deleted. For\n   example, `alice@example.com?uid=123456789012345678901`. If the user is\n   recovered, this value reverts to `user:{emailid}` and the recovered user\n   retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus\n   unique identifier) representing a service account that has been recently\n   deleted. For example,\n   `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.\n   If the service account is undeleted, this value reverts to\n   `serviceAccount:{emailid}` and the undeleted service account retains the\n   role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a Google group that has been recently\n   deleted. For example, `admins@example.com?uid=123456789012345678901`. If\n   the group is recovered, this value reverts to `group:{emailid}` and the\n   recovered group retains the role in the binding.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -799,30 +799,30 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The parent in whose context the memberships are listed. The parent value\nis in the format: `projects\/[project_id]\/locations\/global`.",
+                      "description": "Required. The parent in whose context the memberships are listed. The parent value\nis in the format: `projects\/[project_id]\/locations\/global`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "When requesting a 'page' of resources, `page_size` specifies number of\nresources to return. If unspecified or set to 0, all resources will\nbe returned.",
+                      "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of\nresources to return. If unspecified or set to 0, all resources will\nbe returned.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "Token returned by previous call to `ListMemberships` which\nspecifies the position in the list from where to continue listing the\nresources.",
+                      "description": "Optional. Token returned by previous call to `ListMemberships` which\nspecifies the position in the list from where to continue listing the\nresources.",
                       "location": "query",
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Lists the Memberships that match the filter expression. A filter expression\nfilters the resources listed in the response. The expression must be of\nthe form `<field> <operator> <value>` where operators: `<`, `>`, `<=`,\n`>=`,\n`!=`, `=`, `:` are supported (colon `:` represents a HAS operator which is\nroughly synonymous with equality). <field> can refer to a proto or JSON\nfield, or a synthetic field. Field names can be camelCase or snake_case.\n\nExamples:\n- Filter by name:\n  name = \"projects\/foo-proj\/locations\/global\/membership\/bar\n\n- Filter by labels:\n  - Resources that have a key called `foo`\n    labels.foo:*\n  - Resources that have a key called `foo` whose value is `bar`\n    labels.foo = bar\n\n - Filter by state:\n   - Members in CREATING state.\n     state = CREATING",
+                      "description": "Optional. Lists the Memberships that match the filter expression. A filter expression\nfilters the resources listed in the response. The expression must be of\nthe form `<field> <operator> <value>` where operators: `<`, `>`, `<=`,\n`>=`,\n`!=`, `=`, `:` are supported (colon `:` represents a HAS operator which is\nroughly synonymous with equality). <field> can refer to a proto or JSON\nfield, or a synthetic field. Field names can be camelCase or snake_case.\n\nExamples:\n- Filter by name:\n  name = \"projects\/foo-proj\/locations\/global\/membership\/bar\n\n- Filter by labels:\n  - Resources that have a key called `foo`\n    labels.foo:*\n  - Resources that have a key called `foo` whose value is `bar`\n    labels.foo = bar\n\n - Filter by state:\n   - Members in CREATING state.\n     state = CREATING",
                       "location": "query",
                       "type": "string"
                     },
                     "orderBy": {
-                      "description": "Field to use to sort the list.",
+                      "description": "Optional. Field to use to sort the list.",
                       "location": "query",
                       "type": "string"
                     }
@@ -845,7 +845,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The Membership resource name in the format:\n`projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`",
+                      "description": "Required. The Membership resource name in the format:\n`projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
@@ -870,14 +870,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The parent in whose context the membership is created. The parent value is\nin the format: `projects\/[project_id]\/locations\/global`.",
+                      "description": "Required. The parent in whose context the membership is created. The parent value is\nin the format: `projects\/[project_id]\/locations\/global`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "membershipId": {
-                      "description": "Client chosen ID for the membership. The ID must be a valid RFC 1123\ncompliant DNS label. In particular, the ID must be:\n  1. At most 63 characters in length\n  2. It must consist of lower case alphanumeric characters or `-`\n  3. It must start and end with an alphanumeric character\nI.e. ID must match the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` with at most\n63 characters.",
+                      "description": "Required. Client chosen ID for the membership. The ID must be a valid RFC 1123\ncompliant DNS label. In particular, the ID must be:\n  1. At most 63 characters in length\n  2. It must consist of lower case alphanumeric characters or `-`\n  3. It must start and end with an alphanumeric character\nI.e. ID must match the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` with at most\n63 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -903,7 +903,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The membership resource name in the format:\n`projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`",
+                      "description": "Required. The membership resource name in the format:\n`projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
@@ -928,14 +928,14 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The membership resource name in the format:\n`projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`",
+                      "description": "Required. The membership resource name in the format:\n`projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Mask of fields to update. At least one field path must be specified in this\nmask.",
+                      "description": "Required. Mask of fields to update. At least one field path must be specified in this\nmask.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -962,45 +962,45 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The membership resource the connect agent is associated with.\n`projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`.",
+                      "description": "Required. The membership resource the connect agent is associated with.\n`projects\/[project_id]\/locations\/global\/memberships\/[membership_id]`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
                       "type": "string"
                     },
                     "connectAgent.name": {
-                      "description": "Deprecated. Do not set.",
+                      "description": "Optional. Deprecated. Do not set.",
                       "location": "query",
                       "type": "string"
                     },
                     "connectAgent.proxy": {
-                      "description": "Connection name of the proxy if a proxy is required to reach\ngkeconnect.googleapis.com, format must be in the form\nhttp(s):\/\/{proxy_address}, depends on HTTP\/HTTPS protocol\nsupported by the proxy.\nThis will direct connect agent's outbound traffic through a HTTP(S) proxy.",
+                      "description": "Optional. URI of the proxy to reach gkeconnect.googleapis.com.\nThe format must be in the form http(s):\/\/{proxy_address},\ndepends on HTTP\/HTTPS protocol supported by the proxy. This will direct\nconnect agent's outbound traffic through a HTTP(S) proxy.",
                       "location": "query",
                       "type": "string",
                       "format": "byte"
                     },
                     "connectAgent.namespace": {
-                      "description": "Namespace for GKE Connect agent resources. If empty, uses 'gke-connect'.",
+                      "description": "Optional. Namespace for GKE Connect agent resources. If empty, uses 'gke-connect'.",
                       "location": "query",
                       "type": "string"
                     },
                     "version": {
-                      "description": "The version to use for connect agent.\nIf empty, the current default version will be used.",
+                      "description": "Optional. The version to use for connect agent.\nIf empty, the current default version will be used.",
                       "location": "query",
                       "type": "string"
                     },
                     "isUpgrade": {
-                      "description": "If true, generate the resources for upgrade only. Some resources\n(e.g. secrets) generated for installation will be excluded.",
+                      "description": "Optional. If true, generate the resources for upgrade only. Some resources\n(e.g. secrets) generated for installation will be excluded.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "registry": {
-                      "description": "The registry to fetch connect agent image; default to\ngcr.io\/gkeconnect.",
+                      "description": "Optional. The registry to fetch connect agent image; default to\ngcr.io\/gkeconnect.",
                       "location": "query",
                       "type": "string"
                     },
                     "imagePullSecretContent": {
-                      "description": "The image pull secret content for the registry, if not public.",
+                      "description": "Optional. The image pull secret content for the registry, if not public.",
                       "location": "query",
                       "type": "string",
                       "format": "byte"

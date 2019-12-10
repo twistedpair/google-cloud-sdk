@@ -22,11 +22,9 @@ import argparse
 
 from apitools.base.py import encoding
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.dataproc.jobs import base as job_base
 
 
-@base.ReleaseTracks(base.ReleaseTrack.BETA)
 class SparkRBase(job_base.JobBase):
   """Submit a SparkR job to a cluster."""
 

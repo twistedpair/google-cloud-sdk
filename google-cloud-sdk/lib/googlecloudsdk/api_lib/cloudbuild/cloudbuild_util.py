@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import files
 
 import six
@@ -166,6 +167,37 @@ def SnakeToCamel(msg, skip=None):
     return [SnakeToCamel(elem, skip) for elem in msg]
   else:
     return msg
+
+
+def MessageToFieldPaths(msg):
+  """Produce field paths from a message object.
+
+  The result is used to create a FieldMask proto message that contains all field
+  paths presented in the object.
+  https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/field_mask.proto
+
+  Args:
+    msg: An user defined message object that extends the messages.Message class.
+    https://github.com/google/apitools/blob/master/apitools/base/protorpclite/messages.py
+
+  Returns:
+    The list of field paths.
+  """
+  fields = []
+  for field in msg.all_fields():
+    v = msg.get_assigned_value(field.name)
+    if field.repeated and not v:
+      # Repeated field is initialized as an empty list.
+      continue
+    if v is not None:
+      name = resource_property.ConvertToSnakeCase(field.name)
+      if hasattr(v, 'all_fields'):
+        # message has sub-messages, constructing subpaths.
+        for f in MessageToFieldPaths(v):
+          fields.append('{}.{}'.format(name, f))
+      else:
+        fields.append(name)
+  return fields
 
 
 def _UnpackCheckUnused(obj, msg_type):

@@ -22,17 +22,17 @@ from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 
-DEFAULT_VERSION = 'v1alpha'
-
 
 def GetClient(version=None):
   """Get the default client."""
-  return apis.GetClientInstance('secretmanager', version or DEFAULT_VERSION)
+  return apis.GetClientInstance('secretmanager',
+                                version or apis.ResolveVersion('secretmanager'))
 
 
 def GetMessages(version=None):
   """Get the default messages module."""
-  return apis.GetMessagesModule('secretmanager', version or DEFAULT_VERSION)
+  return apis.GetMessagesModule('secretmanager', version or
+                                apis.ResolveVersion('secretmanager'))
 
 
 def _FormatUpdateMask(update_mask):
@@ -80,16 +80,23 @@ class Secrets(Client):
     super(Secrets, self).__init__(client, messages)
     self.service = self.client.projects_secrets
 
-  def Create(self, secret_ref, locations, labels):
+  def Create(self, secret_ref, policy, locations, labels):
     """Create a secret."""
+    replication = self.messages.Replication(automatic=self.messages.Automatic())
+    if policy == 'user-managed':
+      replicas = []
+      for location in locations:
+        replicas.append(self.messages.Replica(location=location))
+      replication = self.messages.Replication(
+          userManaged=self.messages.UserManaged(replicas=replicas))
+
     return self.service.Create(
         self.messages.SecretmanagerProjectsSecretsCreateRequest(
             parent=secret_ref.Parent().RelativeName(),
             secretId=secret_ref.Name(),
             secret=self.messages.Secret(
                 labels=labels,
-                policy=self.messages.ReplicationPolicy(
-                    replicaLocations=locations))))
+                replication=replication)))
 
   def Delete(self, secret_ref):
     """Delete a secret."""
@@ -122,24 +129,20 @@ class Secrets(Client):
         limit=limit,
         batch_size_attribute='pageSize')
 
-  def SetData(self, secret_ref, data):
-    """Set the data on a secret."""
-    request = self.messages.SecretmanagerProjectsSecretsSetPayloadRequest(
+  def AddVersion(self, secret_ref, data):
+    """Add a new version of an existing secret."""
+    request = self.messages.SecretmanagerProjectsSecretsAddVersionRequest(
         parent=secret_ref.RelativeName(),
-        setSecretPayloadRequest=self.messages.SetSecretPayloadRequest(
+        addSecretVersionRequest=self.messages.AddSecretVersionRequest(
             payload=self.messages.SecretPayload(data=data)))
-    return self.service.SetPayload(request)
+    return self.service.AddVersion(request)
 
-  def Update(self, secret_ref, labels, locations, update_mask):
+  def Update(self, secret_ref, labels, update_mask):
     """Update a secret."""
-    locations = locations or []  # can't be None
     return self.service.Patch(
         self.messages.SecretmanagerProjectsSecretsPatchRequest(
             name=secret_ref.RelativeName(),
-            secret=self.messages.Secret(
-                labels=labels,
-                policy=self.messages.ReplicationPolicy(
-                    replicaLocations=locations)),
+            secret=self.messages.Secret(labels=labels),
             updateMask=_FormatUpdateMask(update_mask)))
 
 
@@ -178,13 +181,15 @@ class Versions(Client):
 
   def Disable(self, version_ref):
     """Disable a secret version."""
-    state_disabled = self.messages.SecretVersion.StateValueValuesEnum.DISABLED
-    return self.SetState(version_ref, state_disabled)
+    return self.service.Disable(
+        self.messages.SecretmanagerProjectsSecretsVersionsDisableRequest(
+            name=version_ref.RelativeName()))
 
   def Enable(self, version_ref):
     """Enable a secret version."""
-    state_enabled = self.messages.SecretVersion.StateValueValuesEnum.ENABLED
-    return self.SetState(version_ref, state_enabled)
+    return self.service.Enable(
+        self.messages.SecretmanagerProjectsSecretsVersionsEnableRequest(
+            name=version_ref.RelativeName()))
 
   def Get(self, version_ref):
     """Get the secret version with the given name."""
@@ -209,11 +214,3 @@ class Versions(Client):
         limit=limit,
         batch_size=0,
         batch_size_attribute='pageSize')
-
-  def SetState(self, version_ref, state):
-    """Set the state of the version."""
-    return self.service.Patch(
-        self.messages.SecretmanagerProjectsSecretsVersionsPatchRequest(
-            name=version_ref.RelativeName(),
-            secretVersion=self.messages.SecretVersion(state=state),
-            updateMask='state'))

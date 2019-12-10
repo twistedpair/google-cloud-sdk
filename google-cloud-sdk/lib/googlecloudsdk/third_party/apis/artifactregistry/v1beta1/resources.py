@@ -51,10 +51,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_REPOSITORIES = (
       'projects.locations.repositories',
-      'projects/{projectsId}/locations/{locationsId}/repositories/'
-      '{repositoriesId}',
-      {},
-      [u'projectsId', u'locationsId', u'repositoriesId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/repositories/'
+              '{repositoriesId}',
+      },
+      [u'name'],
       True
   )
   PROJECTS_LOCATIONS_REPOSITORIES_FILES = (
@@ -97,24 +100,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/repositories/'
               '{repositoriesId}/packages/{packagesId}/versions/{versionsId}',
-      },
-      [u'name'],
-      True
-  )
-  PROJECTS_REPOSITORIES = (
-      'projects.repositories',
-      'projects/{projectsId}/repositories/{repositoriesId}',
-      {},
-      [u'projectsId', u'repositoriesId'],
-      True
-  )
-  PROJECTS_REPOSITORIES_LOCATIONS = (
-      'projects.repositories.locations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/repositories/{repositoriesId}/locations/'
-              '{locationsId}',
       },
       [u'name'],
       True

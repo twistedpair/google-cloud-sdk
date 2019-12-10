@@ -558,6 +558,13 @@
       "description": "The parameters to the CheckIn method.",
       "type": "object",
       "properties": {
+        "events": {
+          "description": "A list of timestamped events.",
+          "type": "array",
+          "items": {
+            "$ref": "TimestampedEvent"
+          }
+        },
         "event": {
           "description": "A workflow specific event occurred.",
           "type": "object",
@@ -577,6 +584,26 @@
         "workerStatus": {
           "description": "Data about the status of the worker VM.",
           "$ref": "WorkerStatus"
+        }
+      }
+    },
+    "TimestampedEvent": {
+      "id": "TimestampedEvent",
+      "description": "An event that occured in the operation assigned to the\nworker and the time of occurance.",
+      "type": "object",
+      "properties": {
+        "data": {
+          "description": "The event data.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "timestamp": {
+          "description": "The time when the event happened.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

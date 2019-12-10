@@ -51,7 +51,7 @@ def _GetIndexFromCapsule(capsule):
     The help doc index line for a capsule line.
   """
   # Strip leading tags: <markdown>(TAG)<markdown> or <markdown>[TAG]<markdown>.
-  capsule = re.sub(r'(\*?[[(][A-Z]+[])]\*? +)*', '', capsule)
+  capsule = re.sub(r'(\*?[\[(][A-Z]+[\])]\*? +)*', '', capsule)
   # Lower case first word if not an abbreviation.
   match = re.match(r'([A-Z])([^A-Z].*)', capsule)
   if match:

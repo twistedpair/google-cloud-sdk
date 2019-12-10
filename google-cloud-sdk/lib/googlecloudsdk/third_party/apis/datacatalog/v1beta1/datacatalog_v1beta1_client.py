@@ -1133,7 +1133,7 @@ request.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a policy tag in a taxonomy.
+      r"""Creates a policy tag in the specified taxonomy.
 
       Args:
         request: (DatacatalogProjectsLocationsTaxonomiesPolicyTagsCreateRequest) input message
@@ -1322,7 +1322,8 @@ request.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on specified resources.
+      r"""Returns the permissions that a caller has on the specified taxonomy or.
+policy tag.
 
       Args:
         request: (DatacatalogProjectsLocationsTaxonomiesPolicyTagsTestIamPermissionsRequest) input message
@@ -1359,7 +1360,7 @@ request.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new taxonomy in a given project.
+      r"""Creates a taxonomy in the specified project.
 
       Args:
         request: (DatacatalogProjectsLocationsTaxonomiesCreateRequest) input message
@@ -1387,7 +1388,7 @@ request.
 
     def Delete(self, request, global_params=None):
       r"""Deletes a taxonomy. This operation will also delete all.
-policy tags in this taxonomy.
+policy tags in this taxonomy along with their associated policies.
 
       Args:
         request: (DatacatalogProjectsLocationsTaxonomiesDeleteRequest) input message
@@ -1529,7 +1530,8 @@ proto structure.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all taxonomies in a project in a particular location.
+      r"""Lists all taxonomies in a project in a particular location that the caller.
+has permission to view.
 
       Args:
         request: (DatacatalogProjectsLocationsTaxonomiesListRequest) input message
@@ -1610,7 +1612,8 @@ proto structure.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on specified resources.
+      r"""Returns the permissions that a caller has on the specified taxonomy or.
+policy tag.
 
       Args:
         request: (DatacatalogProjectsLocationsTaxonomiesTestIamPermissionsRequest) input message

@@ -592,7 +592,7 @@ class CLILoader(object):
         help="""\
         The configuration to use for this command invocation. For more
         information on how to use configurations, run:
-        `gcloud topic configurations`.  You can also use the [{0}] environment
+        `gcloud topic configurations`.  You can also use the {0} environment
         variable to set the equivalent of this flag for a terminal
         session.""".format(config.CLOUDSDK_ACTIVE_CONFIG_NAME))
 

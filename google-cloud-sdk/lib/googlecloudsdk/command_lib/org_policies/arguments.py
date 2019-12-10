@@ -79,6 +79,8 @@ def AddResourceFlagsToParser(parser):
       help_text_to_overwrite='Project ID.').AddToParser(resource_group)
 
 
+# TODO (b/138656127): One aliasing is implemented for all commands that take in
+# --condition, update this documentation to reflect the newly available input.
 def AddConditionFlagToParser(parser):
   """Adds flag for the condition to the parser.
 

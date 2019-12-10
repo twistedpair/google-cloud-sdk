@@ -2085,10 +2085,20 @@ class AppInclude(validation.Validated):
 
     # We only want to mutate a param if at least one of the given
     # arguments has manual_scaling.instances set.
-    if _Instances(appinclude_one) or _Instances(appinclude_two):
-      instances = max(_Instances(appinclude_one), _Instances(appinclude_two))
-      if instances is not None:
-        appinclude_one.manual_scaling = ManualScaling(instances=str(instances))
+    instances_one = _Instances(appinclude_one)
+    instances_two = _Instances(appinclude_two)
+
+    if instances_one is not None and instances_two is not None:
+      instances = max(instances_one, instances_two)
+    elif instances_one is not None:
+      instances = instances_one
+    elif instances_two is not None:
+      instances = instances_two
+    else:
+      instances = None
+
+    if instances is not None:
+      appinclude_one.manual_scaling = ManualScaling(instances=str(instances))
     return appinclude_one
 
   @classmethod

@@ -23,13 +23,13 @@ class DlpInfoTypesListRequest(_messages.Message):
     languageCode: Optional BCP-47 language code for localized infoType
       friendly names. If omitted, or if localized strings are not available,
       en-US strings will be returned.
-    location: The geographic location to list info types. Reserved for future
-      extensions.
+    locationId: The geographic location to list info types. Reserved for
+      future extensions.
   """
 
   filter = _messages.StringField(1)
   languageCode = _messages.StringField(2)
-  location = _messages.StringField(3)
+  locationId = _messages.StringField(3)
 
 
 class DlpLocationsInfoTypesListRequest(_messages.Message):
@@ -41,13 +41,13 @@ class DlpLocationsInfoTypesListRequest(_messages.Message):
     languageCode: Optional BCP-47 language code for localized infoType
       friendly names. If omitted, or if localized strings are not available,
       en-US strings will be returned.
-    location: The geographic location to list info types. Reserved for future
-      extensions.
+    locationId: The geographic location to list info types. Reserved for
+      future extensions.
   """
 
   filter = _messages.StringField(1)
   languageCode = _messages.StringField(2)
-  location = _messages.StringField(3, required=True)
+  locationId = _messages.StringField(3, required=True)
 
 
 class DlpOrganizationsDeidentifyTemplatesCreateRequest(_messages.Message):
@@ -95,7 +95,7 @@ class DlpOrganizationsDeidentifyTemplatesListRequest(_messages.Message):
   r"""A DlpOrganizationsDeidentifyTemplatesListRequest object.
 
   Fields:
-    location: The geographic location where deidentifications templates will
+    locationId: The geographic location where deidentifications templates will
       be retrieved from. Use `-` for all locations. Reserved for future
       extensions.
     orderBy: Optional comma separated list of fields to order by, followed by
@@ -114,7 +114,7 @@ class DlpOrganizationsDeidentifyTemplatesListRequest(_messages.Message):
       project-id or organizations/my-org-id.
   """
 
-  location = _messages.StringField(1)
+  locationId = _messages.StringField(1)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
@@ -183,7 +183,7 @@ class DlpOrganizationsInspectTemplatesListRequest(_messages.Message):
   r"""A DlpOrganizationsInspectTemplatesListRequest object.
 
   Fields:
-    location: The geographic location where inspection templates will be
+    locationId: The geographic location where inspection templates will be
       retrieved from. Use `-` for all locations. Reserved for future
       extensions.
     orderBy: Optional comma separated list of fields to order by, followed by
@@ -202,7 +202,7 @@ class DlpOrganizationsInspectTemplatesListRequest(_messages.Message):
       project-id or organizations/my-org-id.
   """
 
-  location = _messages.StringField(1)
+  locationId = _messages.StringField(1)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
@@ -233,14 +233,14 @@ class DlpOrganizationsLocationsDeidentifyTemplatesCreateRequest(_messages.Messag
     googlePrivacyDlpV2CreateDeidentifyTemplateRequest: A
       GooglePrivacyDlpV2CreateDeidentifyTemplateRequest resource to be passed
       as the request body.
-    location: The geographic location to store the deidentification template.
-      Reserved for future extensions.
+    locationId: The geographic location to store the deidentification
+      template. Reserved for future extensions.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
 
   googlePrivacyDlpV2CreateDeidentifyTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDeidentifyTemplateRequest', 1)
-  location = _messages.StringField(2, required=True)
+  locationId = _messages.StringField(2, required=True)
   parent = _messages.StringField(3, required=True)
 
 
@@ -274,7 +274,7 @@ class DlpOrganizationsLocationsDeidentifyTemplatesListRequest(_messages.Message)
   r"""A DlpOrganizationsLocationsDeidentifyTemplatesListRequest object.
 
   Fields:
-    location: The geographic location where deidentifications templates will
+    locationId: The geographic location where deidentifications templates will
       be retrieved from. Use `-` for all locations. Reserved for future
       extensions.
     orderBy: Optional comma separated list of fields to order by, followed by
@@ -293,7 +293,7 @@ class DlpOrganizationsLocationsDeidentifyTemplatesListRequest(_messages.Message)
       project-id or organizations/my-org-id.
   """
 
-  location = _messages.StringField(1, required=True)
+  locationId = _messages.StringField(1, required=True)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
@@ -324,14 +324,14 @@ class DlpOrganizationsLocationsInspectTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateInspectTemplateRequest: A
       GooglePrivacyDlpV2CreateInspectTemplateRequest resource to be passed as
       the request body.
-    location: The geographic location to store the inspection template.
+    locationId: The geographic location to store the inspection template.
       Reserved for future extensions.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
 
   googlePrivacyDlpV2CreateInspectTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateInspectTemplateRequest', 1)
-  location = _messages.StringField(2, required=True)
+  locationId = _messages.StringField(2, required=True)
   parent = _messages.StringField(3, required=True)
 
 
@@ -365,7 +365,7 @@ class DlpOrganizationsLocationsInspectTemplatesListRequest(_messages.Message):
   r"""A DlpOrganizationsLocationsInspectTemplatesListRequest object.
 
   Fields:
-    location: The geographic location where inspection templates will be
+    locationId: The geographic location where inspection templates will be
       retrieved from. Use `-` for all locations. Reserved for future
       extensions.
     orderBy: Optional comma separated list of fields to order by, followed by
@@ -384,7 +384,7 @@ class DlpOrganizationsLocationsInspectTemplatesListRequest(_messages.Message):
       project-id or organizations/my-org-id.
   """
 
-  location = _messages.StringField(1, required=True)
+  locationId = _messages.StringField(1, required=True)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
@@ -415,14 +415,14 @@ class DlpOrganizationsLocationsStoredInfoTypesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateStoredInfoTypeRequest: A
       GooglePrivacyDlpV2CreateStoredInfoTypeRequest resource to be passed as
       the request body.
-    location: The geographic location to store the stored infoType. Reserved
+    locationId: The geographic location to store the stored infoType. Reserved
       for future extensions.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
 
   googlePrivacyDlpV2CreateStoredInfoTypeRequest = _messages.MessageField('GooglePrivacyDlpV2CreateStoredInfoTypeRequest', 1)
-  location = _messages.StringField(2, required=True)
+  locationId = _messages.StringField(2, required=True)
   parent = _messages.StringField(3, required=True)
 
 
@@ -454,8 +454,9 @@ class DlpOrganizationsLocationsStoredInfoTypesListRequest(_messages.Message):
   r"""A DlpOrganizationsLocationsStoredInfoTypesListRequest object.
 
   Fields:
-    location: The geographic location where stored infoTypes will be retrieved
-      from. Use `-` for all locations. Reserved for future extensions.
+    locationId: The geographic location where stored infoTypes will be
+      retrieved from. Use `-` for all locations. Reserved for future
+      extensions.
     orderBy: Optional comma separated list of fields to order by, followed by
       `asc` or `desc` postfix. This list is case-insensitive, default sorting
       order is ascending, redundant space characters are insignificant.
@@ -472,7 +473,7 @@ class DlpOrganizationsLocationsStoredInfoTypesListRequest(_messages.Message):
       project-id or organizations/my-org-id.
   """
 
-  location = _messages.StringField(1, required=True)
+  locationId = _messages.StringField(1, required=True)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
@@ -538,8 +539,9 @@ class DlpOrganizationsStoredInfoTypesListRequest(_messages.Message):
   r"""A DlpOrganizationsStoredInfoTypesListRequest object.
 
   Fields:
-    location: The geographic location where stored infoTypes will be retrieved
-      from. Use `-` for all locations. Reserved for future extensions.
+    locationId: The geographic location where stored infoTypes will be
+      retrieved from. Use `-` for all locations. Reserved for future
+      extensions.
     orderBy: Optional comma separated list of fields to order by, followed by
       `asc` or `desc` postfix. This list is case-insensitive, default sorting
       order is ascending, redundant space characters are insignificant.
@@ -556,7 +558,7 @@ class DlpOrganizationsStoredInfoTypesListRequest(_messages.Message):
       project-id or organizations/my-org-id.
   """
 
-  location = _messages.StringField(1)
+  locationId = _messages.StringField(1)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
@@ -666,7 +668,7 @@ class DlpProjectsDeidentifyTemplatesListRequest(_messages.Message):
   r"""A DlpProjectsDeidentifyTemplatesListRequest object.
 
   Fields:
-    location: The geographic location where deidentifications templates will
+    locationId: The geographic location where deidentifications templates will
       be retrieved from. Use `-` for all locations. Reserved for future
       extensions.
     orderBy: Optional comma separated list of fields to order by, followed by
@@ -685,7 +687,7 @@ class DlpProjectsDeidentifyTemplatesListRequest(_messages.Message):
       project-id or organizations/my-org-id.
   """
 
-  location = _messages.StringField(1)
+  locationId = _messages.StringField(1)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
@@ -783,7 +785,7 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
       inspected_storage = cloud_storage AND (state = done OR state = canceled)
       * end_time > \"2017-12-12T00:00:00+00:00\"  The length of this field
       should be no more than 500 characters.
-    location: The geographic location where jobs will be retrieved from. Use
+    locationId: The geographic location where jobs will be retrieved from. Use
       `-` for all locations. Reserved for future extensions.
     orderBy: Optional comma separated list of fields to order by, followed by
       `asc` or `desc` postfix. This list is case-insensitive, default sorting
@@ -812,7 +814,7 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
     RISK_ANALYSIS_JOB = 2
 
   filter = _messages.StringField(1)
-  location = _messages.StringField(2)
+  locationId = _messages.StringField(2)
   orderBy = _messages.StringField(3)
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
@@ -879,7 +881,7 @@ class DlpProjectsInspectTemplatesListRequest(_messages.Message):
   r"""A DlpProjectsInspectTemplatesListRequest object.
 
   Fields:
-    location: The geographic location where inspection templates will be
+    locationId: The geographic location where inspection templates will be
       retrieved from. Use `-` for all locations. Reserved for future
       extensions.
     orderBy: Optional comma separated list of fields to order by, followed by
@@ -898,7 +900,7 @@ class DlpProjectsInspectTemplatesListRequest(_messages.Message):
       project-id or organizations/my-org-id.
   """
 
-  location = _messages.StringField(1)
+  locationId = _messages.StringField(1)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
@@ -994,7 +996,7 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
       inspected_storage = cloud_storage AND (state = PAUSED OR state =
       HEALTHY) * last_run_time > \"2017-12-12T00:00:00+00:00\"  The length of
       this field should be no more than 500 characters.
-    location: The geographic location where job triggers will be retrieved
+    locationId: The geographic location where job triggers will be retrieved
       from. Use `-` for all locations. Reserved for future extensions.
     orderBy: Optional comma separated list of triggeredJob fields to order by,
       followed by `asc` or `desc` postfix. This list is case-insensitive,
@@ -1015,7 +1017,7 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  location = _messages.StringField(2)
+  locationId = _messages.StringField(2)
   orderBy = _messages.StringField(3)
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
@@ -1044,13 +1046,13 @@ class DlpProjectsLocationsContentDeidentifyRequest(_messages.Message):
     googlePrivacyDlpV2DeidentifyContentRequest: A
       GooglePrivacyDlpV2DeidentifyContentRequest resource to be passed as the
       request body.
-    location: The geographic location to process de-identification. Reserved
+    locationId: The geographic location to process de-identification. Reserved
       for future extensions.
     parent: The parent resource name, for example projects/my-project-id.
   """
 
   googlePrivacyDlpV2DeidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2DeidentifyContentRequest', 1)
-  location = _messages.StringField(2, required=True)
+  locationId = _messages.StringField(2, required=True)
   parent = _messages.StringField(3, required=True)
 
 
@@ -1061,13 +1063,13 @@ class DlpProjectsLocationsContentInspectRequest(_messages.Message):
     googlePrivacyDlpV2InspectContentRequest: A
       GooglePrivacyDlpV2InspectContentRequest resource to be passed as the
       request body.
-    location: The geographic location to process content inspection. Reserved
-      for future extensions.
+    locationId: The geographic location to process content inspection.
+      Reserved for future extensions.
     parent: The parent resource name, for example projects/my-project-id.
   """
 
   googlePrivacyDlpV2InspectContentRequest = _messages.MessageField('GooglePrivacyDlpV2InspectContentRequest', 1)
-  location = _messages.StringField(2, required=True)
+  locationId = _messages.StringField(2, required=True)
   parent = _messages.StringField(3, required=True)
 
 
@@ -1078,13 +1080,13 @@ class DlpProjectsLocationsContentReidentifyRequest(_messages.Message):
     googlePrivacyDlpV2ReidentifyContentRequest: A
       GooglePrivacyDlpV2ReidentifyContentRequest resource to be passed as the
       request body.
-    location: The geographic location to process content reidentification.
+    locationId: The geographic location to process content reidentification.
       Reserved for future extensions.
     parent: Required. The parent resource name.
   """
 
   googlePrivacyDlpV2ReidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2ReidentifyContentRequest', 1)
-  location = _messages.StringField(2, required=True)
+  locationId = _messages.StringField(2, required=True)
   parent = _messages.StringField(3, required=True)
 
 
@@ -1095,14 +1097,14 @@ class DlpProjectsLocationsDeidentifyTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateDeidentifyTemplateRequest: A
       GooglePrivacyDlpV2CreateDeidentifyTemplateRequest resource to be passed
       as the request body.
-    location: The geographic location to store the deidentification template.
-      Reserved for future extensions.
+    locationId: The geographic location to store the deidentification
+      template. Reserved for future extensions.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
 
   googlePrivacyDlpV2CreateDeidentifyTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDeidentifyTemplateRequest', 1)
-  location = _messages.StringField(2, required=True)
+  locationId = _messages.StringField(2, required=True)
   parent = _messages.StringField(3, required=True)
 
 
@@ -1136,7 +1138,7 @@ class DlpProjectsLocationsDeidentifyTemplatesListRequest(_messages.Message):
   r"""A DlpProjectsLocationsDeidentifyTemplatesListRequest object.
 
   Fields:
-    location: The geographic location where deidentifications templates will
+    locationId: The geographic location where deidentifications templates will
       be retrieved from. Use `-` for all locations. Reserved for future
       extensions.
     orderBy: Optional comma separated list of fields to order by, followed by
@@ -1155,7 +1157,7 @@ class DlpProjectsLocationsDeidentifyTemplatesListRequest(_messages.Message):
       project-id or organizations/my-org-id.
   """
 
-  location = _messages.StringField(1, required=True)
+  locationId = _messages.StringField(1, required=True)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
@@ -1200,14 +1202,14 @@ class DlpProjectsLocationsDlpJobsCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateDlpJobRequest: A
       GooglePrivacyDlpV2CreateDlpJobRequest resource to be passed as the
       request body.
-    location: The geographic location to store and process the job. Reserved
+    locationId: The geographic location to store and process the job. Reserved
       for future extensions.
     parent: Required. The parent resource name, for example projects/my-
       project-id.
   """
 
   googlePrivacyDlpV2CreateDlpJobRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDlpJobRequest', 1)
-  location = _messages.StringField(2, required=True)
+  locationId = _messages.StringField(2, required=True)
   parent = _messages.StringField(3, required=True)
 
 
@@ -1256,7 +1258,7 @@ class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
       inspected_storage = cloud_storage AND (state = done OR state = canceled)
       * end_time > \"2017-12-12T00:00:00+00:00\"  The length of this field
       should be no more than 500 characters.
-    location: The geographic location where jobs will be retrieved from. Use
+    locationId: The geographic location where jobs will be retrieved from. Use
       `-` for all locations. Reserved for future extensions.
     orderBy: Optional comma separated list of fields to order by, followed by
       `asc` or `desc` postfix. This list is case-insensitive, default sorting
@@ -1285,7 +1287,7 @@ class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
     RISK_ANALYSIS_JOB = 2
 
   filter = _messages.StringField(1)
-  location = _messages.StringField(2, required=True)
+  locationId = _messages.StringField(2, required=True)
   orderBy = _messages.StringField(3)
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
@@ -1300,13 +1302,13 @@ class DlpProjectsLocationsImageRedactRequest(_messages.Message):
     googlePrivacyDlpV2RedactImageRequest: A
       GooglePrivacyDlpV2RedactImageRequest resource to be passed as the
       request body.
-    location: The geographic location to process the request. Reserved for
+    locationId: The geographic location to process the request. Reserved for
       future extensions.
     parent: The parent resource name, for example projects/my-project-id.
   """
 
   googlePrivacyDlpV2RedactImageRequest = _messages.MessageField('GooglePrivacyDlpV2RedactImageRequest', 1)
-  location = _messages.StringField(2, required=True)
+  locationId = _messages.StringField(2, required=True)
   parent = _messages.StringField(3, required=True)
 
 
@@ -1317,14 +1319,14 @@ class DlpProjectsLocationsInspectTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateInspectTemplateRequest: A
       GooglePrivacyDlpV2CreateInspectTemplateRequest resource to be passed as
       the request body.
-    location: The geographic location to store the inspection template.
+    locationId: The geographic location to store the inspection template.
       Reserved for future extensions.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
 
   googlePrivacyDlpV2CreateInspectTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateInspectTemplateRequest', 1)
-  location = _messages.StringField(2, required=True)
+  locationId = _messages.StringField(2, required=True)
   parent = _messages.StringField(3, required=True)
 
 
@@ -1358,7 +1360,7 @@ class DlpProjectsLocationsInspectTemplatesListRequest(_messages.Message):
   r"""A DlpProjectsLocationsInspectTemplatesListRequest object.
 
   Fields:
-    location: The geographic location where inspection templates will be
+    locationId: The geographic location where inspection templates will be
       retrieved from. Use `-` for all locations. Reserved for future
       extensions.
     orderBy: Optional comma separated list of fields to order by, followed by
@@ -1377,7 +1379,7 @@ class DlpProjectsLocationsInspectTemplatesListRequest(_messages.Message):
       project-id or organizations/my-org-id.
   """
 
-  location = _messages.StringField(1, required=True)
+  locationId = _messages.StringField(1, required=True)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
@@ -1423,14 +1425,14 @@ class DlpProjectsLocationsJobTriggersCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateJobTriggerRequest: A
       GooglePrivacyDlpV2CreateJobTriggerRequest resource to be passed as the
       request body.
-    location: The geographic location to store the job trigger. Reserved for
+    locationId: The geographic location to store the job trigger. Reserved for
       future extensions.
     parent: Required. The parent resource name, for example projects/my-
       project-id.
   """
 
   googlePrivacyDlpV2CreateJobTriggerRequest = _messages.MessageField('GooglePrivacyDlpV2CreateJobTriggerRequest', 1)
-  location = _messages.StringField(2, required=True)
+  locationId = _messages.StringField(2, required=True)
   parent = _messages.StringField(3, required=True)
 
 
@@ -1476,7 +1478,7 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
       inspected_storage = cloud_storage AND (state = PAUSED OR state =
       HEALTHY) * last_run_time > \"2017-12-12T00:00:00+00:00\"  The length of
       this field should be no more than 500 characters.
-    location: The geographic location where job triggers will be retrieved
+    locationId: The geographic location where job triggers will be retrieved
       from. Use `-` for all locations. Reserved for future extensions.
     orderBy: Optional comma separated list of triggeredJob fields to order by,
       followed by `asc` or `desc` postfix. This list is case-insensitive,
@@ -1497,7 +1499,7 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  location = _messages.StringField(2, required=True)
+  locationId = _messages.StringField(2, required=True)
   orderBy = _messages.StringField(3)
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
@@ -1526,14 +1528,14 @@ class DlpProjectsLocationsStoredInfoTypesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateStoredInfoTypeRequest: A
       GooglePrivacyDlpV2CreateStoredInfoTypeRequest resource to be passed as
       the request body.
-    location: The geographic location to store the stored infoType. Reserved
+    locationId: The geographic location to store the stored infoType. Reserved
       for future extensions.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
 
   googlePrivacyDlpV2CreateStoredInfoTypeRequest = _messages.MessageField('GooglePrivacyDlpV2CreateStoredInfoTypeRequest', 1)
-  location = _messages.StringField(2, required=True)
+  locationId = _messages.StringField(2, required=True)
   parent = _messages.StringField(3, required=True)
 
 
@@ -1565,8 +1567,9 @@ class DlpProjectsLocationsStoredInfoTypesListRequest(_messages.Message):
   r"""A DlpProjectsLocationsStoredInfoTypesListRequest object.
 
   Fields:
-    location: The geographic location where stored infoTypes will be retrieved
-      from. Use `-` for all locations. Reserved for future extensions.
+    locationId: The geographic location where stored infoTypes will be
+      retrieved from. Use `-` for all locations. Reserved for future
+      extensions.
     orderBy: Optional comma separated list of fields to order by, followed by
       `asc` or `desc` postfix. This list is case-insensitive, default sorting
       order is ascending, redundant space characters are insignificant.
@@ -1583,7 +1586,7 @@ class DlpProjectsLocationsStoredInfoTypesListRequest(_messages.Message):
       project-id or organizations/my-org-id.
   """
 
-  location = _messages.StringField(1, required=True)
+  locationId = _messages.StringField(1, required=True)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
@@ -1649,8 +1652,9 @@ class DlpProjectsStoredInfoTypesListRequest(_messages.Message):
   r"""A DlpProjectsStoredInfoTypesListRequest object.
 
   Fields:
-    location: The geographic location where stored infoTypes will be retrieved
-      from. Use `-` for all locations. Reserved for future extensions.
+    locationId: The geographic location where stored infoTypes will be
+      retrieved from. Use `-` for all locations. Reserved for future
+      extensions.
     orderBy: Optional comma separated list of fields to order by, followed by
       `asc` or `desc` postfix. This list is case-insensitive, default sorting
       order is ascending, redundant space characters are insignificant.
@@ -1667,7 +1671,7 @@ class DlpProjectsStoredInfoTypesListRequest(_messages.Message):
       project-id or organizations/my-org-id.
   """
 
-  location = _messages.StringField(1)
+  locationId = _messages.StringField(1)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
@@ -1702,7 +1706,7 @@ class GooglePrivacyDlpV2Action(_messages.Message):
     publishSummaryToCscc: Publish summary to Cloud Security Command Center
       (Alpha).
     publishToStackdriver: Enable Stackdriver metric
-      dlp.googleapis.com/finding_count
+      dlp.googleapis.com/finding_count.
     saveFindings: Save resulting findings in a provided location.
   """
 
@@ -2328,8 +2332,8 @@ class GooglePrivacyDlpV2CreateDeidentifyTemplateRequest(_messages.Message):
 
   Fields:
     deidentifyTemplate: The DeidentifyTemplate to create.
-    location: The geographic location to store the deidentification template.
-      Reserved for future extensions.
+    locationId: The geographic location to store the deidentification
+      template. Reserved for future extensions.
     templateId: The template id can contain uppercase and lowercase letters,
       numbers, and hyphens; that is, it must match the regular expression:
       `[a-zA-Z\\d-_]+`. The maximum length is 100 characters. Can be empty to
@@ -2337,7 +2341,7 @@ class GooglePrivacyDlpV2CreateDeidentifyTemplateRequest(_messages.Message):
   """
 
   deidentifyTemplate = _messages.MessageField('GooglePrivacyDlpV2DeidentifyTemplate', 1)
-  location = _messages.StringField(2)
+  locationId = _messages.StringField(2)
   templateId = _messages.StringField(3)
 
 
@@ -2351,14 +2355,14 @@ class GooglePrivacyDlpV2CreateDlpJobRequest(_messages.Message):
       and hyphens; that is, it must match the regular expression:
       `[a-zA-Z\\d-_]+`. The maximum length is 100 characters. Can be empty to
       allow the system to generate one.
-    location: The geographic location to store and process the job. Reserved
+    locationId: The geographic location to store and process the job. Reserved
       for future extensions.
     riskJob: A GooglePrivacyDlpV2RiskAnalysisJobConfig attribute.
   """
 
   inspectJob = _messages.MessageField('GooglePrivacyDlpV2InspectJobConfig', 1)
   jobId = _messages.StringField(2)
-  location = _messages.StringField(3)
+  locationId = _messages.StringField(3)
   riskJob = _messages.MessageField('GooglePrivacyDlpV2RiskAnalysisJobConfig', 4)
 
 
@@ -2367,7 +2371,7 @@ class GooglePrivacyDlpV2CreateInspectTemplateRequest(_messages.Message):
 
   Fields:
     inspectTemplate: The InspectTemplate to create.
-    location: The geographic location to store the inspection template.
+    locationId: The geographic location to store the inspection template.
       Reserved for future extensions.
     templateId: The template id can contain uppercase and lowercase letters,
       numbers, and hyphens; that is, it must match the regular expression:
@@ -2376,7 +2380,7 @@ class GooglePrivacyDlpV2CreateInspectTemplateRequest(_messages.Message):
   """
 
   inspectTemplate = _messages.MessageField('GooglePrivacyDlpV2InspectTemplate', 1)
-  location = _messages.StringField(2)
+  locationId = _messages.StringField(2)
   templateId = _messages.StringField(3)
 
 
@@ -2385,7 +2389,7 @@ class GooglePrivacyDlpV2CreateJobTriggerRequest(_messages.Message):
 
   Fields:
     jobTrigger: The JobTrigger to create.
-    location: The geographic location to store the job trigger. Reserved for
+    locationId: The geographic location to store the job trigger. Reserved for
       future extensions.
     triggerId: The trigger id can contain uppercase and lowercase letters,
       numbers, and hyphens; that is, it must match the regular expression:
@@ -2394,7 +2398,7 @@ class GooglePrivacyDlpV2CreateJobTriggerRequest(_messages.Message):
   """
 
   jobTrigger = _messages.MessageField('GooglePrivacyDlpV2JobTrigger', 1)
-  location = _messages.StringField(2)
+  locationId = _messages.StringField(2)
   triggerId = _messages.StringField(3)
 
 
@@ -2403,7 +2407,7 @@ class GooglePrivacyDlpV2CreateStoredInfoTypeRequest(_messages.Message):
 
   Fields:
     config: Configuration of the storedInfoType to create.
-    location: The geographic location to store the stored infoType. Reserved
+    locationId: The geographic location to store the stored infoType. Reserved
       for future extensions.
     storedInfoTypeId: The storedInfoType ID can contain uppercase and
       lowercase letters, numbers, and hyphens; that is, it must match the
@@ -2412,7 +2416,7 @@ class GooglePrivacyDlpV2CreateStoredInfoTypeRequest(_messages.Message):
   """
 
   config = _messages.MessageField('GooglePrivacyDlpV2StoredInfoTypeConfig', 1)
-  location = _messages.StringField(2)
+  locationId = _messages.StringField(2)
   storedInfoTypeId = _messages.StringField(3)
 
 
@@ -2790,7 +2794,7 @@ class GooglePrivacyDlpV2DeidentifyContentRequest(_messages.Message):
       corresponding fields in the template. Repeated fields are appended.
       Singular sub-messages and groups are recursively merged.
     item: The item to de-identify. Will be treated as text.
-    location: The geographic location to process de-identification. Reserved
+    locationId: The geographic location to process de-identification. Reserved
       for future extensions.
   """
 
@@ -2799,7 +2803,7 @@ class GooglePrivacyDlpV2DeidentifyContentRequest(_messages.Message):
   inspectConfig = _messages.MessageField('GooglePrivacyDlpV2InspectConfig', 3)
   inspectTemplateName = _messages.StringField(4)
   item = _messages.MessageField('GooglePrivacyDlpV2ContentItem', 5)
-  location = _messages.StringField(6)
+  locationId = _messages.StringField(6)
 
 
 class GooglePrivacyDlpV2DeidentifyContentResponse(_messages.Message):
@@ -2815,12 +2819,11 @@ class GooglePrivacyDlpV2DeidentifyContentResponse(_messages.Message):
 
 
 class GooglePrivacyDlpV2DeidentifyTemplate(_messages.Message):
-  r"""The DeidentifyTemplates contains instructions on how to deidentify
-  content. See https://cloud.google.com/dlp/docs/concepts-templates to learn
-  more.
+  r"""DeidentifyTemplates contains instructions on how to de-identify content.
+  See https://cloud.google.com/dlp/docs/concepts-templates to learn more.
 
   Fields:
-    createTime: The creation timestamp of a inspectTemplate, output only
+    createTime: The creation timestamp of an inspectTemplate, output only
       field.
     deidentifyConfig: ///////////// // The core content of the template  //
       ///////////////
@@ -2829,7 +2832,7 @@ class GooglePrivacyDlpV2DeidentifyTemplate(_messages.Message):
     name: The template name. Output only.  The template will have one of the
       following formats: `projects/PROJECT_ID/deidentifyTemplates/TEMPLATE_ID`
       OR `organizations/ORGANIZATION_ID/deidentifyTemplates/TEMPLATE_ID`
-    updateTime: The last update timestamp of a inspectTemplate, output only
+    updateTime: The last update timestamp of an inspectTemplate, output only
       field.
   """
 
@@ -3567,14 +3570,14 @@ class GooglePrivacyDlpV2InspectContentRequest(_messages.Message):
       corresponding fields in the template. Repeated fields are appended.
       Singular sub-messages and groups are recursively merged.
     item: The item to inspect.
-    location: The geographic location to process content inspection. Reserved
-      for future extensions.
+    locationId: The geographic location to process content inspection.
+      Reserved for future extensions.
   """
 
   inspectConfig = _messages.MessageField('GooglePrivacyDlpV2InspectConfig', 1)
   inspectTemplateName = _messages.StringField(2)
   item = _messages.MessageField('GooglePrivacyDlpV2ContentItem', 3)
-  location = _messages.StringField(4)
+  locationId = _messages.StringField(4)
 
 
 class GooglePrivacyDlpV2InspectContentResponse(_messages.Message):
@@ -3641,7 +3644,7 @@ class GooglePrivacyDlpV2InspectTemplate(_messages.Message):
   templates to learn more.
 
   Fields:
-    createTime: The creation timestamp of a inspectTemplate, output only
+    createTime: The creation timestamp of an inspectTemplate, output only
       field.
     description: Short description (max 256 chars).
     displayName: Display name (max 256 chars).
@@ -3650,7 +3653,7 @@ class GooglePrivacyDlpV2InspectTemplate(_messages.Message):
     name: The template name. Output only.  The template will have one of the
       following formats: `projects/PROJECT_ID/inspectTemplates/TEMPLATE_ID` OR
       `organizations/ORGANIZATION_ID/inspectTemplates/TEMPLATE_ID`
-    updateTime: The last update timestamp of a inspectTemplate, output only
+    updateTime: The last update timestamp of an inspectTemplate, output only
       field.
   """
 
@@ -4608,7 +4611,7 @@ class GooglePrivacyDlpV2RedactImageRequest(_messages.Message):
     includeFindings: Whether the response should include findings along with
       the redacted image.
     inspectConfig: Configuration for the inspector.
-    location: The geographic location to process the request. Reserved for
+    locationId: The geographic location to process the request. Reserved for
       future extensions.
   """
 
@@ -4616,7 +4619,7 @@ class GooglePrivacyDlpV2RedactImageRequest(_messages.Message):
   imageRedactionConfigs = _messages.MessageField('GooglePrivacyDlpV2ImageRedactionConfig', 2, repeated=True)
   includeFindings = _messages.BooleanField(3)
   inspectConfig = _messages.MessageField('GooglePrivacyDlpV2InspectConfig', 4)
-  location = _messages.StringField(5)
+  locationId = _messages.StringField(5)
 
 
 class GooglePrivacyDlpV2RedactImageResponse(_messages.Message):
@@ -4663,7 +4666,7 @@ class GooglePrivacyDlpV2ReidentifyContentRequest(_messages.Message):
       corresponding fields in the template. Repeated fields are appended.
       Singular sub-messages and groups are recursively merged.
     item: The item to re-identify. Will be treated as text.
-    location: The geographic location to process content reidentification.
+    locationId: The geographic location to process content reidentification.
       Reserved for future extensions.
     reidentifyConfig: Configuration for the re-identification of the content
       item. This field shares the same proto message type that is used for de-
@@ -4684,7 +4687,7 @@ class GooglePrivacyDlpV2ReidentifyContentRequest(_messages.Message):
   inspectConfig = _messages.MessageField('GooglePrivacyDlpV2InspectConfig', 1)
   inspectTemplateName = _messages.StringField(2)
   item = _messages.MessageField('GooglePrivacyDlpV2ContentItem', 3)
-  location = _messages.StringField(4)
+  locationId = _messages.StringField(4)
   reidentifyConfig = _messages.MessageField('GooglePrivacyDlpV2DeidentifyConfig', 5)
   reidentifyTemplateName = _messages.StringField(6)
 
@@ -4850,7 +4853,9 @@ class GooglePrivacyDlpV2StoredInfoType(_messages.Message):
 
 
 class GooglePrivacyDlpV2StoredInfoTypeConfig(_messages.Message):
-  r"""Configuration for a StoredInfoType.
+  r"""Configuration for stored infoT types. All fields and subfield are
+  provided by the user. For more information, see
+  https://cloud.google.com/dlp/docs/creating-custom-infotypes.
 
   Fields:
     description: Description of the StoredInfoType (max 256 characters).

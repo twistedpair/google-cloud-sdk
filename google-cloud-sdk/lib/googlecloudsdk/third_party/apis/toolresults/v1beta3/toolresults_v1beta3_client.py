@@ -36,6 +36,7 @@ class ToolresultsV1beta3(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_histories_executions_clusters = self.ProjectsHistoriesExecutionsClustersService(self)
+    self.projects_histories_executions_environments = self.ProjectsHistoriesExecutionsEnvironmentsService(self)
     self.projects_histories_executions_steps_perfMetricsSummary = self.ProjectsHistoriesExecutionsStepsPerfMetricsSummaryService(self)
     self.projects_histories_executions_steps_perfSampleSeries_samples = self.ProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesService(self)
     self.projects_histories_executions_steps_perfSampleSeries = self.ProjectsHistoriesExecutionsStepsPerfSampleSeriesService(self)
@@ -107,6 +108,78 @@ Returns the list of screenshot clusters corresponding to an execution. Screensho
         request_field='',
         request_type_name=u'ToolresultsProjectsHistoriesExecutionsClustersListRequest',
         response_type_name=u'ListScreenshotClustersResponse',
+        supports_download=False,
+    )
+
+  class ProjectsHistoriesExecutionsEnvironmentsService(base_api.BaseApiService):
+    """Service class for the projects_histories_executions_environments resource."""
+
+    _NAME = u'projects_histories_executions_environments'
+
+    def __init__(self, client):
+      super(ToolresultsV1beta3.ProjectsHistoriesExecutionsEnvironmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets an Environment.
+
+May return any of the following canonical error codes:
+
+- PERMISSION_DENIED - if the user is not authorized to read project - INVALID_ARGUMENT - if the request is malformed - NOT_FOUND - if the Environment does not exist
+
+      Args:
+        request: (ToolresultsProjectsHistoriesExecutionsEnvironmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Environment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'toolresults.projects.histories.executions.environments.get',
+        ordered_params=[u'projectId', u'historyId', u'executionId', u'environmentId'],
+        path_params=[u'environmentId', u'executionId', u'historyId', u'projectId'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/environments/{environmentId}',
+        request_field='',
+        request_type_name=u'ToolresultsProjectsHistoriesExecutionsEnvironmentsGetRequest',
+        response_type_name=u'Environment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Environments for a given Execution.
+
+The Environments are sorted by display name.
+
+May return any of the following canonical error codes:
+
+- PERMISSION_DENIED - if the user is not authorized to read project - INVALID_ARGUMENT - if the request is malformed - NOT_FOUND - if the containing Execution does not exist
+
+      Args:
+        request: (ToolresultsProjectsHistoriesExecutionsEnvironmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListEnvironmentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'toolresults.projects.histories.executions.environments.list',
+        ordered_params=[u'projectId', u'historyId', u'executionId'],
+        path_params=[u'executionId', u'historyId', u'projectId'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/environments',
+        request_field='',
+        request_type_name=u'ToolresultsProjectsHistoriesExecutionsEnvironmentsListRequest',
+        response_type_name=u'ListEnvironmentsResponse',
         supports_download=False,
     )
 

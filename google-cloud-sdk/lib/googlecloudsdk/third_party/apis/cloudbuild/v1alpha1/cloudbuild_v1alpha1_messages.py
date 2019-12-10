@@ -294,9 +294,8 @@ class BuildOptions(_messages.Message):
       build step.  Using a global volume in a build with only one step is not
       valid as it is indicative of a build request with an incorrect
       configuration.
-    workerPool: Option to specify a `WorkerPool` for the build. User specifies
-      the pool with the format "[WORKERPOOL_PROJECT_ID]/[WORKERPOOL_NAME]".
-      This is an experimental field.
+    workerPool: Option to specify a `WorkerPool` for the build. Format:
+      projects/{project}/workerPools/{workerPool}  This field is experimental.
   """
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
@@ -661,8 +660,7 @@ class RepoSource(_messages.Message):
       absolute path, this value is ignored for that step's execution.
     projectId: ID of the project that owns the Cloud Source Repository. If
       omitted, the project ID requesting the build is assumed.
-    repoName: Name of the Cloud Source Repository. If omitted, the name
-      "default" is assumed.
+    repoName: Required. Name of the Cloud Source Repository.
     substitutions: Substitutions to use in a triggered build. Should only be
       used with RunBuildTrigger
     tagName: Regex matching tags to build.  The syntax of the regular

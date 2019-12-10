@@ -3,18 +3,18 @@
   "discoveryVersion": "v1",
   "id": "billingbudgets:v1alpha1",
   "name": "billingbudgets",
-  "canonicalName": "Billingbudgets",
+  "canonicalName": "CloudBillingBudget",
   "version": "v1alpha1",
   "revision": "0",
   "title": "Cloud Billing Budget API",
-  "description": "",
+  "description": "The Cloud Billing Budget API stores Cloud Billing budgets, which define a budget plan and the rules to execute as spend is tracked against that plan.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://docs.google.com/document/d/13BHH4JD6AclB5a2tRgVo7yB2oKyH8SeZh0M4biDWGOY/edit",
+  "documentationLink": "https://cloud.google.com/billing/docs/how-to/budget-api-overview",
   "protocol": "rest",
   "rootUrl": "https://billingbudgets.googleapis.com/",
   "servicePath": "",
@@ -238,7 +238,7 @@
     },
     "GoogleCloudBillingBudgetsV1alpha1ThresholdRule": {
       "id": "GoogleCloudBillingBudgetsV1alpha1ThresholdRule",
-      "description": "ThresholdRule contains a definition of a threshold which triggers\nan alert (a notification of a threshold being crossed) to be sent when\nspend goes above the specified amount.\nAlerts are automatically e-mailed to the billing users who have\naccess to the billing account. The thresholds here have no effect on\nnotifications sent to anything configured under `Budget.all_updates_rule`.",
+      "description": "ThresholdRule contains a definition of a threshold which triggers\nan alert (a notification of a threshold being crossed) to be sent when\nspend goes above the specified amount.\nAlerts are automatically e-mailed to users with the Billing Account\nAdministrator role or the Billing Account User role.\nThe thresholds here have no effect on notifications sent to anything\nconfigured under `Budget.all_updates_rule`.",
       "type": "object",
       "properties": {
         "thresholdPercent": {
@@ -350,7 +350,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates a new budget. See\n<a href=\"https:\/\/cloud.google.com\/billing\/quotas\">Quotas and limits<\/a>\nfor more information."
+              "description": "Creates a new budget. See\n<a href=\"https:\/\/cloud.google.com\/billing\/quotas\">Quotas and limits<\/a>\nfor more information on the limits of the number of budgets you can create."
             },
             "patch": {
               "id": "billingbudgets.billingAccounts.budgets.patch",

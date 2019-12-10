@@ -79,10 +79,14 @@ def _WrapDescription(depth, text):
 def _NormalizeTypeName(name):
   """Returns the JSON schema normalized type name for name."""
   s = six.text_type(name).lower()
+  if re.match(r'.?int64', s):
+    return 'string'
   if re.match(r'^int\d*$', s):
     return 'integer'
   if s == 'bool':
     return 'boolean'
+  if s == 'bytes':
+    return 'string'
   return s
 
 

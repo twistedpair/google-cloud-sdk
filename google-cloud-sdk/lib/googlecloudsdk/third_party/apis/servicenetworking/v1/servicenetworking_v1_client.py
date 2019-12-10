@@ -360,3 +360,33 @@ Operation<response: Range>
         response_type_name=u'Operation',
         supports_download=False,
     )
+
+    def Validate(self, request, global_params=None):
+      r"""Service producers use this method to validate if the consumer provided.
+network, project and the requested range is valid. This allows them to use
+a fail-fast mechanism for consumer requests, and not have to wait for
+AddSubnetwork operation completion to determine if user request is invalid.
+
+      Args:
+        request: (ServicenetworkingServicesValidateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateConsumerConfigResponse) The response message.
+      """
+      config = self.GetMethodConfig('Validate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Validate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/services/{servicesId}:validate',
+        http_method=u'POST',
+        method_id=u'servicenetworking.services.validate',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}:validate',
+        request_field=u'validateConsumerConfigRequest',
+        request_type_name=u'ServicenetworkingServicesValidateRequest',
+        response_type_name=u'ValidateConsumerConfigResponse',
+        supports_download=False,
+    )

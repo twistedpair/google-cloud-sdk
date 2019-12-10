@@ -855,19 +855,29 @@ class Instance(_messages.Message):
 
     Values:
       TIER_UNSPECIFIED: Not set.
-      STANDARD: STANDARD tier.
-      PREMIUM: PREMIUM tier.
+      STANDARD: STANDARD tier. BASIC_HDD is the preferred term for this tier.
+      PREMIUM: PREMIUM tier. BASIC_SSD is the preferred term for this tier.
       SCALE_OUT: SCALE OUT tier. This is a possibly temporary change for go
         /elastifile-filestore-hackathon.
-      HDD: Alias for STANDARD Tier, backed by Persistent Disk HDD.
-      SSD: Alias for PREMIUM Tier, backed by Persistent Disk SSD.
+      BASIC_HDD: BASIC instances offer a maximum capacity of 63.9 TB.
+        BASIC_HDD is an alias for STANDARD Tier, offering economical
+        performance backed by Persistent Disk HDD.
+      BASIC_SSD: BASIC instances offer a maximum capacity of 63.9 TB.
+        BASIC_SSD is an alias for PREMIUM Tier, and offers improved
+        performance backed by Persistent Disk SSD.
+      ADVANCED_HDD: ADVANCED_HDD instances offer larger capacity and scalable
+        performance backed by Persistent Disk HDD
+      ADVANCED_SSD: ADVANCED instances offer larger capacity and professional
+        performance backed by Persistent Disk SSD.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
     PREMIUM = 2
     SCALE_OUT = 3
-    HDD = 4
-    SSD = 5
+    BASIC_HDD = 4
+    BASIC_SSD = 5
+    ADVANCED_HDD = 6
+    ADVANCED_SSD = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1316,6 +1326,7 @@ class Snapshot(_messages.Message):
     SourceInstanceTierValueValuesEnum: Output only. The service tier of the
       source Cloud Filestore instance that this snapshot is created from.
     StateValueValuesEnum: Output only. The snapshot state.
+    TypeValueValuesEnum: The Type of the Snapshot.
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata.
@@ -1345,6 +1356,7 @@ class Snapshot(_messages.Message):
       As snapshots share storage, this number is expected to change with
       snapshot creation/deletion. Always equals to capacityGb for local
       snapshots.
+    type: The Type of the Snapshot.
   """
 
   class SourceInstanceTierValueValuesEnum(_messages.Enum):
@@ -1353,19 +1365,29 @@ class Snapshot(_messages.Message):
 
     Values:
       TIER_UNSPECIFIED: Not set.
-      STANDARD: STANDARD tier.
-      PREMIUM: PREMIUM tier.
+      STANDARD: STANDARD tier. BASIC_HDD is the preferred term for this tier.
+      PREMIUM: PREMIUM tier. BASIC_SSD is the preferred term for this tier.
       SCALE_OUT: SCALE OUT tier. This is a possibly temporary change for go
         /elastifile-filestore-hackathon.
-      HDD: Alias for STANDARD Tier, backed by Persistent Disk HDD.
-      SSD: Alias for PREMIUM Tier, backed by Persistent Disk SSD.
+      BASIC_HDD: BASIC instances offer a maximum capacity of 63.9 TB.
+        BASIC_HDD is an alias for STANDARD Tier, offering economical
+        performance backed by Persistent Disk HDD.
+      BASIC_SSD: BASIC instances offer a maximum capacity of 63.9 TB.
+        BASIC_SSD is an alias for PREMIUM Tier, and offers improved
+        performance backed by Persistent Disk SSD.
+      ADVANCED_HDD: ADVANCED_HDD instances offer larger capacity and scalable
+        performance backed by Persistent Disk HDD
+      ADVANCED_SSD: ADVANCED instances offer larger capacity and professional
+        performance backed by Persistent Disk SSD.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
     PREMIUM = 2
     SCALE_OUT = 3
-    HDD = 4
-    SSD = 5
+    BASIC_HDD = 4
+    BASIC_SSD = 5
+    ADVANCED_HDD = 6
+    ADVANCED_SSD = 7
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The snapshot state.
@@ -1384,6 +1406,29 @@ class Snapshot(_messages.Message):
     FINALIZING = 2
     READY = 3
     DELETING = 4
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The Type of the Snapshot.
+
+    Values:
+      TYPE_UNSPECIFIED: Not set, will use the default value of BACKUP.
+      BACKUP: Backup snapshots are standalone and replicated regionally. Basic
+        Instances can be created or restored from this snapshot variant
+        (Backup snapshots are not supported for Advanced instances at this
+        time).
+      LOCAL: Local snapshots are standalone, zonal resources. Basic Instances
+        can be created or restored from this snapshot variant (Local snapshots
+        are not supported for Advanced instances at this time).
+      IN_PLACE: In place snapshots are part of the Instance storage system and
+        occupy Instance storage space. They are also tied to the Instance
+        lifecycle and are deleted at Instance deletion time. Instances cannot
+        be restored or created from this snapshot variant. In Place snapshots
+        are only supported for Advanced Instances at this time.
+    """
+    TYPE_UNSPECIFIED = 0
+    BACKUP = 1
+    LOCAL = 2
+    IN_PLACE = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1420,6 +1465,7 @@ class Snapshot(_messages.Message):
   sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
   storageBytes = _messages.IntegerField(11)
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
 
 
 class StandardQueryParameters(_messages.Message):

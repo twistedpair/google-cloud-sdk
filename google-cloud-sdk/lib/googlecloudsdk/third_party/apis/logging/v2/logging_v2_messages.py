@@ -432,6 +432,21 @@ class ListSinksResponse(_messages.Message):
   sinks = _messages.MessageField('LogSink', 2, repeated=True)
 
 
+class ListViewsResponse(_messages.Message):
+  r"""The response from ListViews.
+
+  Fields:
+    nextPageToken: If there might be more results than appear in this
+      response, then nextPageToken is included. To get the next set of
+      results, call the same method again using the value of nextPageToken as
+      pageToken.
+    views: A list of views.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  views = _messages.MessageField('LogView', 2, repeated=True)
+
+
 class LogBucket(_messages.Message):
   r"""Describes a repository of logs.
 
@@ -1109,6 +1124,34 @@ class LogSink(_messages.Message):
   writerIdentity = _messages.StringField(15)
 
 
+class LogView(_messages.Message):
+  r"""Describes a view over logs in a bucket
+
+  Fields:
+    createTime: Output only. The creation timestamp of the view.
+    description: Describes this view.
+    displayName: Display name of the view.
+    expireTime: Time at which this view will no longer be useable. Requests to
+      view logs after expire_time has passed will fail with a
+      FAILED_PRECONDITION error.
+    filter: Filter that restricts which log entries in a bucket are visible in
+      this view. Filters are restricted to be a logical AND of ==/!= of any of
+      the following:  originating project/folder/organization/billing account.
+      resource type  log id  user labels
+    name: The resource name of the view. For example "projects/my-project-
+      id/locations/my-location/buckets/my-bucket-id/views/my-view
+    updateTime: Output only. The last update timestamp of the view.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  expireTime = _messages.StringField(4)
+  filter = _messages.StringField(5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
 class LoggingBillingAccountsBucketsGetRequest(_messages.Message):
   r"""A LoggingBillingAccountsBucketsGetRequest object.
 
@@ -1121,6 +1164,19 @@ class LoggingBillingAccountsBucketsGetRequest(_messages.Message):
       "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingBillingAccountsBucketsViewsGetRequest(_messages.Message):
+  r"""A LoggingBillingAccountsBucketsViewsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the policy: "projects/[PROJECT_ID]/lo
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" Example:
+      "projects/my-project-id/locations/my-location/buckets/my-bucket-id/views
+      /my-view-id".
   """
 
   name = _messages.StringField(1, required=True)
@@ -1319,9 +1375,85 @@ class LoggingBillingAccountsLocationsBucketsUndeleteRequest(_messages.Message):
       "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
+    undeleteBucketRequest: A UndeleteBucketRequest resource to be passed as
+      the request body.
   """
 
   name = _messages.StringField(1, required=True)
+  undeleteBucketRequest = _messages.MessageField('UndeleteBucketRequest', 2)
+
+
+class LoggingBillingAccountsLocationsBucketsViewsCreateRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsViewsCreateRequest object.
+
+  Fields:
+    logView: A LogView resource to be passed as the request body.
+    parent: Required. The bucket in which to create the view
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-logging-project/locations/my-location/buckets/my-
+      bucket"
+    viewId: Required. The id to use for this view.
+  """
+
+  logView = _messages.MessageField('LogView', 1)
+  parent = _messages.StringField(2, required=True)
+  viewId = _messages.StringField(3)
+
+
+class LoggingBillingAccountsLocationsBucketsViewsDeleteRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsViewsDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the view to delete: "projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
+      Example:  "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id/views/my-view-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingBillingAccountsLocationsBucketsViewsListRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsViewsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The bucket whose views are to be listed:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingBillingAccountsLocationsBucketsViewsPatchRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsBucketsViewsPatchRequest object.
+
+  Fields:
+    logView: A LogView resource to be passed as the request body.
+    name: Required. The full resource name of the view to update "projects/[PR
+      OJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
+      Example:  "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id/views/my-view-id".
+    updateMask: Optional. Field mask that specifies the fields in view that
+      need an update. A field will be overwritten if, and only if, it is in
+      the update mask. name and output only fields cannot be updated.For a
+      detailed FieldMask definition, see https://developers.google.com
+      /protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
+      updateMask=filter.
+  """
+
+  logView = _messages.MessageField('LogView', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingBillingAccountsLogsDeleteRequest(_messages.Message):
@@ -1820,9 +1952,98 @@ class LoggingFoldersLocationsBucketsUndeleteRequest(_messages.Message):
       "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
+    undeleteBucketRequest: A UndeleteBucketRequest resource to be passed as
+      the request body.
   """
 
   name = _messages.StringField(1, required=True)
+  undeleteBucketRequest = _messages.MessageField('UndeleteBucketRequest', 2)
+
+
+class LoggingFoldersLocationsBucketsViewsCreateRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsViewsCreateRequest object.
+
+  Fields:
+    logView: A LogView resource to be passed as the request body.
+    parent: Required. The bucket in which to create the view
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-logging-project/locations/my-location/buckets/my-
+      bucket"
+    viewId: Required. The id to use for this view.
+  """
+
+  logView = _messages.MessageField('LogView', 1)
+  parent = _messages.StringField(2, required=True)
+  viewId = _messages.StringField(3)
+
+
+class LoggingFoldersLocationsBucketsViewsDeleteRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsViewsDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the view to delete: "projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
+      Example:  "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id/views/my-view-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingFoldersLocationsBucketsViewsGetRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsViewsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the policy: "projects/[PROJECT_ID]/lo
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" Example:
+      "projects/my-project-id/locations/my-location/buckets/my-bucket-id/views
+      /my-view-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingFoldersLocationsBucketsViewsListRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsViewsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The bucket whose views are to be listed:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingFoldersLocationsBucketsViewsPatchRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsBucketsViewsPatchRequest object.
+
+  Fields:
+    logView: A LogView resource to be passed as the request body.
+    name: Required. The full resource name of the view to update "projects/[PR
+      OJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
+      Example:  "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id/views/my-view-id".
+    updateMask: Optional. Field mask that specifies the fields in view that
+      need an update. A field will be overwritten if, and only if, it is in
+      the update mask. name and output only fields cannot be updated.For a
+      detailed FieldMask definition, see https://developers.google.com
+      /protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
+      updateMask=filter.
+  """
+
+  logView = _messages.MessageField('LogView', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingFoldersLogsDeleteRequest(_messages.Message):
@@ -2158,9 +2379,98 @@ class LoggingLocationsBucketsUndeleteRequest(_messages.Message):
       "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
+    undeleteBucketRequest: A UndeleteBucketRequest resource to be passed as
+      the request body.
   """
 
   name = _messages.StringField(1, required=True)
+  undeleteBucketRequest = _messages.MessageField('UndeleteBucketRequest', 2)
+
+
+class LoggingLocationsBucketsViewsCreateRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsViewsCreateRequest object.
+
+  Fields:
+    logView: A LogView resource to be passed as the request body.
+    parent: Required. The bucket in which to create the view
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-logging-project/locations/my-location/buckets/my-
+      bucket"
+    viewId: Required. The id to use for this view.
+  """
+
+  logView = _messages.MessageField('LogView', 1)
+  parent = _messages.StringField(2, required=True)
+  viewId = _messages.StringField(3)
+
+
+class LoggingLocationsBucketsViewsDeleteRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsViewsDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the view to delete: "projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
+      Example:  "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id/views/my-view-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingLocationsBucketsViewsGetRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsViewsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the policy: "projects/[PROJECT_ID]/lo
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" Example:
+      "projects/my-project-id/locations/my-location/buckets/my-bucket-id/views
+      /my-view-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingLocationsBucketsViewsListRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsViewsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The bucket whose views are to be listed:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingLocationsBucketsViewsPatchRequest(_messages.Message):
+  r"""A LoggingLocationsBucketsViewsPatchRequest object.
+
+  Fields:
+    logView: A LogView resource to be passed as the request body.
+    name: Required. The full resource name of the view to update "projects/[PR
+      OJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
+      Example:  "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id/views/my-view-id".
+    updateMask: Optional. Field mask that specifies the fields in view that
+      need an update. A field will be overwritten if, and only if, it is in
+      the update mask. name and output only fields cannot be updated.For a
+      detailed FieldMask definition, see https://developers.google.com
+      /protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
+      updateMask=filter.
+  """
+
+  logView = _messages.MessageField('LogView', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingLogsDeleteRequest(_messages.Message):
@@ -2447,9 +2757,98 @@ class LoggingOrganizationsLocationsBucketsUndeleteRequest(_messages.Message):
       "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
+    undeleteBucketRequest: A UndeleteBucketRequest resource to be passed as
+      the request body.
   """
 
   name = _messages.StringField(1, required=True)
+  undeleteBucketRequest = _messages.MessageField('UndeleteBucketRequest', 2)
+
+
+class LoggingOrganizationsLocationsBucketsViewsCreateRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsViewsCreateRequest object.
+
+  Fields:
+    logView: A LogView resource to be passed as the request body.
+    parent: Required. The bucket in which to create the view
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-logging-project/locations/my-location/buckets/my-
+      bucket"
+    viewId: Required. The id to use for this view.
+  """
+
+  logView = _messages.MessageField('LogView', 1)
+  parent = _messages.StringField(2, required=True)
+  viewId = _messages.StringField(3)
+
+
+class LoggingOrganizationsLocationsBucketsViewsDeleteRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsViewsDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the view to delete: "projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
+      Example:  "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id/views/my-view-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingOrganizationsLocationsBucketsViewsGetRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsViewsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the policy: "projects/[PROJECT_ID]/lo
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" Example:
+      "projects/my-project-id/locations/my-location/buckets/my-bucket-id/views
+      /my-view-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingOrganizationsLocationsBucketsViewsListRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsViewsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The bucket whose views are to be listed:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingOrganizationsLocationsBucketsViewsPatchRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsBucketsViewsPatchRequest object.
+
+  Fields:
+    logView: A LogView resource to be passed as the request body.
+    name: Required. The full resource name of the view to update "projects/[PR
+      OJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
+      Example:  "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id/views/my-view-id".
+    updateMask: Optional. Field mask that specifies the fields in view that
+      need an update. A field will be overwritten if, and only if, it is in
+      the update mask. name and output only fields cannot be updated.For a
+      detailed FieldMask definition, see https://developers.google.com
+      /protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
+      updateMask=filter.
+  """
+
+  logView = _messages.MessageField('LogView', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingOrganizationsLogsDeleteRequest(_messages.Message):
@@ -2883,9 +3282,98 @@ class LoggingProjectsLocationsBucketsUndeleteRequest(_messages.Message):
       "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
       Example: "projects/my-project-id/locations/my-location/buckets/my-
       bucket-id".
+    undeleteBucketRequest: A UndeleteBucketRequest resource to be passed as
+      the request body.
   """
 
   name = _messages.StringField(1, required=True)
+  undeleteBucketRequest = _messages.MessageField('UndeleteBucketRequest', 2)
+
+
+class LoggingProjectsLocationsBucketsViewsCreateRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsViewsCreateRequest object.
+
+  Fields:
+    logView: A LogView resource to be passed as the request body.
+    parent: Required. The bucket in which to create the view
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-logging-project/locations/my-location/buckets/my-
+      bucket"
+    viewId: Required. The id to use for this view.
+  """
+
+  logView = _messages.MessageField('LogView', 1)
+  parent = _messages.StringField(2, required=True)
+  viewId = _messages.StringField(3)
+
+
+class LoggingProjectsLocationsBucketsViewsDeleteRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsViewsDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the view to delete: "projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
+      Example:  "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id/views/my-view-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingProjectsLocationsBucketsViewsGetRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsViewsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the policy: "projects/[PROJECT_ID]/lo
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" Example:
+      "projects/my-project-id/locations/my-location/buckets/my-bucket-id/views
+      /my-view-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingProjectsLocationsBucketsViewsListRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsViewsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The bucket whose views are to be listed:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingProjectsLocationsBucketsViewsPatchRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsViewsPatchRequest object.
+
+  Fields:
+    logView: A LogView resource to be passed as the request body.
+    name: Required. The full resource name of the view to update "projects/[PR
+      OJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
+      Example:  "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id/views/my-view-id".
+    updateMask: Optional. Field mask that specifies the fields in view that
+      need an update. A field will be overwritten if, and only if, it is in
+      the update mask. name and output only fields cannot be updated.For a
+      detailed FieldMask definition, see https://developers.google.com
+      /protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
+      updateMask=filter.
+  """
+
+  logView = _messages.MessageField('LogView', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingProjectsLogsDeleteRequest(_messages.Message):
@@ -3942,6 +4430,10 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class UndeleteBucketRequest(_messages.Message):
+  r"""The parameters to UndeleteBucket."""
 
 
 class WriteLogEntriesRequest(_messages.Message):

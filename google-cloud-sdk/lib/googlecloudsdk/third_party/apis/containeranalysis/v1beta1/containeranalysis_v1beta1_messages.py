@@ -119,15 +119,15 @@ class BatchCreateNotesRequest(_messages.Message):
   r"""Request to create notes in batch.
 
   Messages:
-    NotesValue: The notes to create. Max allowed length is 1000.
+    NotesValue: Required. The notes to create. Max allowed length is 1000.
 
   Fields:
-    notes: The notes to create. Max allowed length is 1000.
+    notes: Required. The notes to create. Max allowed length is 1000.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class NotesValue(_messages.Message):
-    r"""The notes to create. Max allowed length is 1000.
+    r"""Required. The notes to create. Max allowed length is 1000.
 
     Messages:
       AdditionalProperty: An additional property for a NotesValue object.
@@ -166,7 +166,8 @@ class BatchCreateOccurrencesRequest(_messages.Message):
   r"""Request to create occurrences in batch.
 
   Fields:
-    occurrences: The occurrences to create. Max allowed length is 1000.
+    occurrences: Required. The occurrences to create. Max allowed length is
+      1000.
   """
 
   occurrences = _messages.MessageField('Occurrence', 1, repeated=True)
@@ -561,8 +562,8 @@ class ContaineranalysisProjectsNotesBatchCreateRequest(_messages.Message):
   Fields:
     batchCreateNotesRequest: A BatchCreateNotesRequest resource to be passed
       as the request body.
-    parent: The name of the project in the form of `projects/[PROJECT_ID]`,
-      under which the notes are to be created.
+    parent: Required. The name of the project in the form of
+      `projects/[PROJECT_ID]`, under which the notes are to be created.
   """
 
   batchCreateNotesRequest = _messages.MessageField('BatchCreateNotesRequest', 1)
@@ -574,9 +575,9 @@ class ContaineranalysisProjectsNotesCreateRequest(_messages.Message):
 
   Fields:
     note: A Note resource to be passed as the request body.
-    noteId: The ID to use for this note.
-    parent: The name of the project in the form of `projects/[PROJECT_ID]`,
-      under which the note is to be created.
+    noteId: Required. The ID to use for this note.
+    parent: Required. The name of the project in the form of
+      `projects/[PROJECT_ID]`, under which the note is to be created.
   """
 
   note = _messages.MessageField('Note', 1)
@@ -588,7 +589,7 @@ class ContaineranalysisProjectsNotesDeleteRequest(_messages.Message):
   r"""A ContaineranalysisProjectsNotesDeleteRequest object.
 
   Fields:
-    name: The name of the note in the form of
+    name: Required. The name of the note in the form of
       `projects/[PROVIDER_ID]/notes/[NOTE_ID]`.
   """
 
@@ -614,7 +615,7 @@ class ContaineranalysisProjectsNotesGetRequest(_messages.Message):
   r"""A ContaineranalysisProjectsNotesGetRequest object.
 
   Fields:
-    name: The name of the note in the form of
+    name: Required. The name of the note in the form of
       `projects/[PROVIDER_ID]/notes/[NOTE_ID]`.
   """
 
@@ -629,7 +630,7 @@ class ContaineranalysisProjectsNotesListRequest(_messages.Message):
     pageSize: Number of notes to return in the list. Must be positive. Max
       allowed page size is 1000. If not specified, page size defaults to 20.
     pageToken: Token to provide to skip to a particular spot in the list.
-    parent: The name of the project to list notes for in the form of
+    parent: Required. The name of the project to list notes for in the form of
       `projects/[PROJECT_ID]`.
   """
 
@@ -644,8 +645,8 @@ class ContaineranalysisProjectsNotesOccurrencesListRequest(_messages.Message):
 
   Fields:
     filter: The filter expression.
-    name: The name of the note to list occurrences for in the form of
-      `projects/[PROVIDER_ID]/notes/[NOTE_ID]`.
+    name: Required. The name of the note to list occurrences for in the form
+      of `projects/[PROVIDER_ID]/notes/[NOTE_ID]`.
     pageSize: Number of occurrences to return in the list.
     pageToken: Token to provide to skip to a particular spot in the list.
   """
@@ -660,7 +661,7 @@ class ContaineranalysisProjectsNotesPatchRequest(_messages.Message):
   r"""A ContaineranalysisProjectsNotesPatchRequest object.
 
   Fields:
-    name: The name of the note in the form of
+    name: Required. The name of the note in the form of
       `projects/[PROVIDER_ID]/notes/[NOTE_ID]`.
     note: A Note resource to be passed as the request body.
     updateMask: The fields to update.
@@ -707,8 +708,8 @@ class ContaineranalysisProjectsOccurrencesBatchCreateRequest(_messages.Message):
   Fields:
     batchCreateOccurrencesRequest: A BatchCreateOccurrencesRequest resource to
       be passed as the request body.
-    parent: The name of the project in the form of `projects/[PROJECT_ID]`,
-      under which the occurrences are to be created.
+    parent: Required. The name of the project in the form of
+      `projects/[PROJECT_ID]`, under which the occurrences are to be created.
   """
 
   batchCreateOccurrencesRequest = _messages.MessageField('BatchCreateOccurrencesRequest', 1)
@@ -720,8 +721,8 @@ class ContaineranalysisProjectsOccurrencesCreateRequest(_messages.Message):
 
   Fields:
     occurrence: A Occurrence resource to be passed as the request body.
-    parent: The name of the project in the form of `projects/[PROJECT_ID]`,
-      under which the occurrence is to be created.
+    parent: Required. The name of the project in the form of
+      `projects/[PROJECT_ID]`, under which the occurrence is to be created.
   """
 
   occurrence = _messages.MessageField('Occurrence', 1)
@@ -732,7 +733,7 @@ class ContaineranalysisProjectsOccurrencesDeleteRequest(_messages.Message):
   r"""A ContaineranalysisProjectsOccurrencesDeleteRequest object.
 
   Fields:
-    name: The name of the occurrence in the form of
+    name: Required. The name of the occurrence in the form of
       `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]`.
   """
 
@@ -758,7 +759,7 @@ class ContaineranalysisProjectsOccurrencesGetNotesRequest(_messages.Message):
   r"""A ContaineranalysisProjectsOccurrencesGetNotesRequest object.
 
   Fields:
-    name: The name of the occurrence in the form of
+    name: Required. The name of the occurrence in the form of
       `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]`.
   """
 
@@ -769,7 +770,7 @@ class ContaineranalysisProjectsOccurrencesGetRequest(_messages.Message):
   r"""A ContaineranalysisProjectsOccurrencesGetRequest object.
 
   Fields:
-    name: The name of the occurrence in the form of
+    name: Required. The name of the occurrence in the form of
       `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]`.
   """
 
@@ -782,8 +783,8 @@ class ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest(_messag
 
   Fields:
     filter: The filter expression.
-    parent: The name of the project to get a vulnerability summary for in the
-      form of `projects/[PROJECT_ID]`.
+    parent: Required. The name of the project to get a vulnerability summary
+      for in the form of `projects/[PROJECT_ID]`.
   """
 
   filter = _messages.StringField(1)
@@ -799,8 +800,8 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
       Max allowed page size is 1000. If not specified, page size defaults to
       20.
     pageToken: Token to provide to skip to a particular spot in the list.
-    parent: The name of the project to list occurrences for in the form of
-      `projects/[PROJECT_ID]`.
+    parent: Required. The name of the project to list occurrences for in the
+      form of `projects/[PROJECT_ID]`.
   """
 
   filter = _messages.StringField(1)
@@ -813,7 +814,7 @@ class ContaineranalysisProjectsOccurrencesPatchRequest(_messages.Message):
   r"""A ContaineranalysisProjectsOccurrencesPatchRequest object.
 
   Fields:
-    name: The name of the occurrence in the form of
+    name: Required. The name of the occurrence in the form of
       `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]`.
     occurrence: A Occurrence resource to be passed as the request body.
     updateMask: The fields to update.
@@ -858,7 +859,7 @@ class ContaineranalysisProjectsScanConfigsGetRequest(_messages.Message):
   r"""A ContaineranalysisProjectsScanConfigsGetRequest object.
 
   Fields:
-    name: The name of the scan configuration in the form of
+    name: Required. The name of the scan configuration in the form of
       `projects/[PROJECT_ID]/scanConfigs/[SCAN_CONFIG_ID]`.
   """
 
@@ -869,11 +870,11 @@ class ContaineranalysisProjectsScanConfigsListRequest(_messages.Message):
   r"""A ContaineranalysisProjectsScanConfigsListRequest object.
 
   Fields:
-    filter: The filter expression.
+    filter: Required. The filter expression.
     pageSize: The number of scan configs to return in the list.
     pageToken: Token to provide to skip to a particular spot in the list.
-    parent: The name of the project to list scan configurations for in the
-      form of `projects/[PROJECT_ID]`.
+    parent: Required. The name of the project to list scan configurations for
+      in the form of `projects/[PROJECT_ID]`.
   """
 
   filter = _messages.StringField(1)
@@ -1951,15 +1952,16 @@ class PgpSignedAttestation(_messages.Message):
 
 
 class Policy(_messages.Message):
-  r"""Defines an Identity and Access Management (IAM) policy. It is used to
-  specify access control policies for Cloud Platform resources.   A `Policy`
-  is a collection of `bindings`. A `binding` binds one or more `members` to a
-  single `role`. Members can be user accounts, service accounts, Google
-  groups, and domains (such as G Suite). A `role` is a named list of
-  permissions (defined by IAM or configured by users). A `binding` can
-  optionally specify a `condition`, which is a logic expression that further
-  constrains the role binding based on attributes about the request and/or
-  target resource.  **JSON Example**      {       "bindings": [         {
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources.   A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members` to a single `role`.
+  Members can be user accounts, service accounts, Google groups, and domains
+  (such as G Suite). A `role` is a named list of permissions; each `role` can
+  be an IAM predefined role or a user-created custom role.  Optionally, a
+  `binding` can specify a `condition`, which is a logical expression that
+  allows access to a resource only if the expression evaluates to `true`. A
+  condition can add constraints based on attributes of the request, the
+  resource, or both.  **JSON example:**      {       "bindings": [         {
   "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-project-
@@ -1968,22 +1970,23 @@ class Policy(_messages.Message):
   ["user:eve@example.com"],           "condition": {             "title":
   "expirable access",             "description": "Does not grant access after
   Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ]     }
-  **YAML Example**      bindings:     - members:       - user:mike@example.com
-  - group:admins@example.com       - domain:google.com       - serviceAccount
+  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
+  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
+  bindings:     - members:       - user:mike@example.com       -
+  group:admins@example.com       - domain:google.com       - serviceAccount
   :my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
   grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')  For a description of IAM and its
-  features, see the [IAM developer's
-  guide](https://cloud.google.com/iam/docs).
+  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
+  version: 3  For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
-    bindings: Associates a list of `members` to a `role`. Optionally may
-      specify a `condition` that determines when binding is in effect.
-      `bindings` with no members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally, may
+      specify a `condition` that determines how and when the `bindings` are
+      applied. Each of the `bindings` must contain at least one member.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -1991,19 +1994,24 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten. Due to blind-set semantics of an
-      etag-less policy, 'setIamPolicy' will not fail even if either of
-      incoming or stored policy does not meet the version requirements.
-    version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Operations
-      affecting conditional bindings must specify version 3. This can be
-      either setting a conditional policy, modifying a conditional binding, or
-      removing a conditional binding from the stored conditional policy.
-      Operations on non-conditional policies may specify any valid value or
-      leave the field unset.  If no etag is provided in the call to
-      `setIamPolicy`, any version compliance checks on the incoming and/or
-      stored policy is skipped.
+      policy.  **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
+    version: Specifies the format of the policy.  Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected.  Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations:  * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy   that includes conditions  **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost.  If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)

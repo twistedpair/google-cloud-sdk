@@ -2680,6 +2680,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Wait(self, request, global_params=None):
+      r"""Waits for the specified Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE.
+
+      Args:
+        request: (ComputeGlobalOperationsWaitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Wait')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Wait.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.globalOperations.wait',
+        ordered_params=[u'project', u'operation'],
+        path_params=[u'operation', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/operations/{operation}/wait',
+        request_field='',
+        request_type_name=u'ComputeGlobalOperationsWaitRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class HealthChecksService(base_api.BaseApiService):
     """Service class for the healthChecks resource."""
 
@@ -5860,7 +5886,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.interconnectAttachments.insert',
         ordered_params=[u'project', u'region'],
         path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
+        query_params=[u'requestId', u'validateOnly'],
         relative_path=u'projects/{project}/regions/{region}/interconnectAttachments',
         request_field=u'interconnectAttachment',
         request_type_name=u'ComputeInterconnectAttachmentsInsertRequest',
@@ -7515,6 +7541,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeNodeGroupsListNodesRequest',
         response_type_name=u'NodeGroupsListNodes',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patch the node group.
+
+      Args:
+        request: (ComputeNodeGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.nodeGroups.patch',
+        ordered_params=[u'project', u'zone', u'nodeGroup'],
+        path_params=[u'nodeGroup', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}',
+        request_field=u'nodeGroupResource',
+        request_type_name=u'ComputeNodeGroupsPatchRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -10367,6 +10419,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeRegionOperationsListRequest',
         response_type_name=u'OperationList',
+        supports_download=False,
+    )
+
+    def Wait(self, request, global_params=None):
+      r"""Waits for the specified region-specific Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE.
+
+      Args:
+        request: (ComputeRegionOperationsWaitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Wait')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Wait.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionOperations.wait',
+        ordered_params=[u'project', u'region', u'operation'],
+        path_params=[u'operation', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/operations/{operation}/wait',
+        request_field='',
+        request_type_name=u'ComputeRegionOperationsWaitRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -15455,6 +15533,32 @@ For more information, see Deleting snapshots.
         request_field='',
         request_type_name=u'ComputeZoneOperationsListRequest',
         response_type_name=u'OperationList',
+        supports_download=False,
+    )
+
+    def Wait(self, request, global_params=None):
+      r"""Waits for the specified zone-specific Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE.
+
+      Args:
+        request: (ComputeZoneOperationsWaitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Wait')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Wait.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.zoneOperations.wait',
+        ordered_params=[u'project', u'zone', u'operation'],
+        path_params=[u'operation', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/operations/{operation}/wait',
+        request_field='',
+        request_type_name=u'ComputeZoneOperationsWaitRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

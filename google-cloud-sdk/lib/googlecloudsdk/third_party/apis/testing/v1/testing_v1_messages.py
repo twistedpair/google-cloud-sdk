@@ -873,7 +873,7 @@ class ManualSharding(_messages.Message):
   Fields:
     testTargetsForShard: Required. Group of packages, classes, and/or test
       methods to be run for each shard. The number of shard_test_targets must
-      be > 1, and <= 50.
+      be >= 1 and <= 50.
   """
 
   testTargetsForShard = _messages.MessageField('TestTargetsForShard', 1, repeated=True)
@@ -1716,7 +1716,7 @@ class UniformSharding(_messages.Message):
   these sharding arguments via environment_variables is invalid.
 
   Fields:
-    numShards: Required. Total number of shards. The number must be > 1, and
+    numShards: Required. Total number of shards. The number must be >= 1 and
       <= 50.
   """
 

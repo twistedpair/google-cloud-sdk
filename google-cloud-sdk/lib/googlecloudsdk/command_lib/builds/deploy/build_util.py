@@ -24,8 +24,8 @@ from googlecloudsdk.core.util import times
 
 import six
 
-_IMAGE = 'gcr.io/$PROJECT_ID/$REPO_NAME:$SHORT_SHA'
-_VERSION = '$SHORT_SHA'
+_IMAGE = 'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA'
+_VERSION = '$COMMIT_SHA'
 
 _DEFAULT_TAGS = [
     'gcp-cloud-build-deploy',
@@ -58,6 +58,7 @@ _OUTPUT_BUCKET_PATH_SUB_VAR = '_OUTPUT_BUCKET_PATH'
 _K8S_ANNOTATIONS_SUB_VAR = '_K8S_ANNOTATIONS'
 _K8S_NAMESPACE_SUB_VAR = '_K8S_NAMESPACE'
 _PREVIEW_EXPIRY_SUB_VAR = '_PREVIEW_EXPIRY'
+_PR_PATTERN_SUB_VAR = '_PR_PATTERN'
 
 _EXPANDED_CONFIGS_PATH_DYNAMIC = _EXPANDED_CONFIGS_PATH.format(
     '$' + _OUTPUT_BUCKET_PATH_SUB_VAR, '$BUILD_ID')
@@ -107,14 +108,15 @@ fi
 
 /gke-deploy prepare \\
   --filename=${k8s_yaml_path} \\
-  --image=gcr.io/$PROJECT_ID/$REPO_NAME \\
+  --image={image} \\
   --app=${app_name} \\
-  --version=$SHORT_SHA \\
+  --version=$COMMIT_SHA \\
   --namespace=$$NAMESPACE \\
   --output=output \\
   --annotation=gcb-build-id=$BUILD_ID,${k8s_annotations} \\
   --expose=${expose_port}
 '''.format(
+    image=_IMAGE,
     cluster=_GKE_CLUSTER_SUB_VAR,
     location=_GKE_LOCATION_SUB_VAR,
     k8s_yaml_path=_K8S_YAML_PATH_SUB_VAR,
@@ -147,17 +149,21 @@ set -e
 NAMESPACE=$$(cat preview-namespace.txt)
 gcloud container clusters get-credentials ${cluster} --zone=${location}
 EXPIRY_EPOCH=$$(date -d "+${preview_expiry} days" "+%s")
-kubectl annotate namespace $$NAMESPACE preview/repo-name=$REPO_NAME preview/expiry=$$EXPIRY_EPOCH --overwrite
+kubectl annotate namespace $$NAMESPACE preview/repo-name=$REPO_NAME preview/expiry=$$EXPIRY_EPOCH preview/branch-pattern="${pr_pattern}" --overwrite
 '''.format(
     cluster=_GKE_CLUSTER_SUB_VAR,
     location=_GKE_LOCATION_SUB_VAR,
-    preview_expiry=_PREVIEW_EXPIRY_SUB_VAR
+    preview_expiry=_PREVIEW_EXPIRY_SUB_VAR,
+    pr_pattern=_PR_PATTERN_SUB_VAR,
 )
 
 _CLEANUP_PREVIEW_SCRIPT = '''
+set -e
+
 gcloud container clusters get-credentials ${cluster} --zone=${location} --project=$PROJECT_ID
 
-NAMESPACES=$$(kubectl get namespace -o=jsonpath="{{range .items[?(@.metadata.annotations.preview/repo-name==\\"$REPO_NAME\\")]}}{{.metadata.name}},{{.metadata.annotations.preview/expiry}}{{end}}")
+IFS=
+NAMESPACES="$$(kubectl get namespace -o=jsonpath="{{range .items[?(@.metadata.annotations.preview/repo-name==\\"$REPO_NAME\\")]}}{{.metadata.name}},{{.metadata.annotations.preview/expiry}},{{.metadata.annotations.preview/branch-pattern}}{{\\"\\n\\"}}{{end}}")"
 
 if [[ -z $$NAMESPACES ]]; then
   echo "No preview environments found"
@@ -165,19 +171,23 @@ if [[ -z $$NAMESPACES ]]; then
 fi
 
 while read -r i; do
-  NAMESPACE=$(echo $$i | cut -d"," -f1)
-  EXPIRY=$(echo $$i | cut -d"," -f2)
+  NAMESPACE=$$(echo $$i | cut -d"," -f1)
+  EXPIRY=$$(echo $$i | cut -d"," -f2)
+  BRANCH=$$(echo $$i | cut -d"," -f3)
 
-  if [[ $(date "+%s") -ge $$EXPIRY ]]; then
-    echo "Deleting expired preview environment in namespace $$NAMESPACE"
-    kubectl delete namespace $$NAMESPACE
-  else
-    echo "Preview environment in namespace $$NAMESPACE expires on $$(date --date="@$$EXPIRY" -u)"
+  if [[ "$$BRANCH" == "${pr_pattern}" ]]; then
+    if [[ $$(date "+%s") -ge $$EXPIRY ]]; then
+      echo "Deleting expired preview environment in namespace $$NAMESPACE"
+      kubectl delete namespace $$NAMESPACE
+    else
+      echo "Preview environment in namespace $$NAMESPACE expires on $$(date --date="@$$EXPIRY" -u)"
+    fi
   fi
 done <<< $$NAMESPACES
 '''.format(
     cluster=_GKE_CLUSTER_SUB_VAR,
     location=_GKE_LOCATION_SUB_VAR,
+    pr_pattern=_PR_PATTERN_SUB_VAR,
 )
 
 # Build step IDs
@@ -524,7 +534,8 @@ def CreatePRPreviewBuildTrigger(
       field.
     github_repo_name: A GitHub repo name to be used in the trigger's github
       field.
-    pr_pattern: A regex value to be used to trigger.
+    pr_pattern: A regex value that is the base branch that the PR is targeting,
+      which triggers the creation of the PR preview deployment.
     preview_expiry_days: How long a deployed preview application can exist
       before it is expired, in days, that is set to a substitution variable.
     comment_control: Whether or not a user must comment /gcbrun to trigger
@@ -562,6 +573,7 @@ def CreatePRPreviewBuildTrigger(
                                               config_path, expose_port, cluster,
                                               location, gcs_config_staging_path)
   substitutions[_PREVIEW_EXPIRY_SUB_VAR] = six.text_type(preview_expiry_days)
+  substitutions[_PR_PATTERN_SUB_VAR] = pr_pattern
 
   build = messages.Build(
       steps=[
@@ -654,8 +666,9 @@ def CreatePRPreviewBuildTrigger(
 
 
 def CreateCleanPreviewBuildTrigger(messages, name, description,
-                                   github_repo_owner, github_repo_name, cluster,
-                                   location, build_tags, build_trigger_tags):
+                                   github_repo_owner, github_repo_name,
+                                   pr_pattern, cluster, location, build_tags,
+                                   build_trigger_tags):
   """Creates the Cloud BuildTrigger config that deletes expired preview deployments.
 
   Args:
@@ -667,6 +680,8 @@ def CreateCleanPreviewBuildTrigger(messages, name, description,
       field.
     github_repo_name: A GitHub repo name to be used in the trigger's github
       field.
+    pr_pattern: A regex value that is the base branch that the PR is targeting,
+      which triggers the creation of the PR preview deployment.
     cluster: The name of the target cluster to check for expired deployments
       that is set to a substitution variable.
     location: The zone/region of the target cluster to check for the expired
@@ -681,7 +696,8 @@ def CreateCleanPreviewBuildTrigger(messages, name, description,
 
   substitutions = {
       _GKE_CLUSTER_SUB_VAR: cluster,
-      _GKE_LOCATION_SUB_VAR: location
+      _GKE_LOCATION_SUB_VAR: location,
+      _PR_PATTERN_SUB_VAR: pr_pattern,
   }
 
   build_trigger = messages.BuildTrigger(

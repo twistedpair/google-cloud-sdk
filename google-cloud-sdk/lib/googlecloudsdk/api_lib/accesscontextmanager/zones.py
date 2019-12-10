@@ -169,19 +169,19 @@ class Client(object):
       if not apply_to_dry_run_config:
         perimeter.status = config
       else:
-        perimeter.dryRun = True
+        perimeter.useExplicitDryRunSpec = True
         perimeter.spec = config
 
       update_mask += config_mask_additions
 
       if apply_to_dry_run_config and config_mask_additions:
-        update_mask.append('dryRun')
+        update_mask.append('useExplicitDryRunSpec')
 
     else:
       update_mask.append('spec')
-      update_mask.append('dryRun')
+      update_mask.append('useExplicitDryRunSpec')
       perimeter.spec = None
-      perimeter.dryRun = False
+      perimeter.useExplicitDryRunSpec = False
 
     update_mask.sort()  # For ease-of-testing
 

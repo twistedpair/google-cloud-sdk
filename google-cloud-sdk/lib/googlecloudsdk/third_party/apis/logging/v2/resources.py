@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  BILLINGACCOUNTS_BUCKETS_VIEWS = (
+      'billingAccounts.buckets.views',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/buckets/{bucketsId}/views/'
+              '{viewsId}',
+      },
+      [u'name'],
+      True
+  )
   BILLINGACCOUNTS_EXCLUSIONS = (
       'billingAccounts.exclusions',
       '{+name}',
@@ -106,6 +117,17 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  FOLDERS_LOCATIONS_BUCKETS_VIEWS = (
+      'folders.locations.buckets.views',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/buckets/'
+              '{bucketsId}/views/{viewsId}',
+      },
+      [u'name'],
+      True
+  )
   FOLDERS_SINKS = (
       'folders.sinks',
       '{+sinkName}',
@@ -129,6 +151,17 @@ class Collections(enum.Enum):
       {
           '':
               '{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}',
+      },
+      [u'name'],
+      True
+  )
+  LOCATIONS_BUCKETS_VIEWS = (
+      'locations.buckets.views',
+      '{+name}',
+      {
+          '':
+              '{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/'
+              'views/{viewsId}',
       },
       [u'name'],
       True
@@ -164,6 +197,17 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/locations/{locationsId}/'
               'buckets/{bucketsId}',
+      },
+      [u'name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_BUCKETS_VIEWS = (
+      'organizations.locations.buckets.views',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'buckets/{bucketsId}/views/{viewsId}',
       },
       [u'name'],
       True
@@ -209,6 +253,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/buckets/'
               '{bucketsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_BUCKETS_VIEWS = (
+      'projects.locations.buckets.views',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/buckets/'
+              '{bucketsId}/views/{viewsId}',
       },
       [u'name'],
       True

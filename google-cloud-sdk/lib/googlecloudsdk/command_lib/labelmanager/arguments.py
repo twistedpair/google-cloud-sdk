@@ -54,7 +54,7 @@ def AddLabelValueIdArgToParser(parser):
 
 
 def AddDisplayNameArgToParser(parser):
-  """Adds argument for the label key display name to the parser.
+  """Adds argument for the LabelKey display name to the parser.
 
   Args:
     parser: ArgumentInterceptor, An argparse parser.
@@ -69,7 +69,7 @@ def AddDisplayNameArgToParser(parser):
 
 
 def AddLabelParentArgToParser(parser, required=False, message=''):
-  """Adds argument for the label parent to the parser.
+  """Adds argument for the LabelKey's parent to the parser.
 
   Args:
     parser: ArgumentInterceptor, An argparse parser.
@@ -85,7 +85,7 @@ def AddLabelParentArgToParser(parser, required=False, message=''):
 
 
 def AddDescriptionArgToParser(parser):
-  """Adds argument for the label description to the parser.
+  """Adds argument for the LabelKey's or LabelValue's description to the parser.
 
   Args:
     parser: ArgumentInterceptor, An argparse parser.
@@ -93,7 +93,7 @@ def AddDescriptionArgToParser(parser):
   parser.add_argument(
       '--description',
       metavar='DESCRIPTION',
-      help=('Optional user-assigned description of the label. '
+      help=('Optional user-assigned description of the LabelKey or LabelValue. '
             'Must not exceed 256 characters.'))
 
 
@@ -137,7 +137,7 @@ def AddLabelKeyArgToParser(parser, required=True, message=''):
 def AddResourceArgToParser(
     parser,
     required=True,
-    message=('Fully qualified name of the resource the LabelValue should '
+    message=('Full resource name of the resource the LabelValue will '
              'be bound to.')):
   """Adds argument for the LabelKey to the parser.
 
@@ -148,3 +148,19 @@ def AddResourceArgToParser(
   """
   parser.add_argument(
       '--resource', required=required, metavar='RESOURCE', help=message)
+
+
+def AddPolicyFileArgToParser(parser):
+  """Adds argument for the local Policy file to set.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+  """
+  parser.add_argument(
+      'POLICY_FILE',
+      metavar='POLICY_FILE',
+      help=(
+          'Path to a local JSON or YAML formatted file containing a valid '
+          'policy. The output of the `get-iam-policy` command is a valid '
+          'file, as is any JSON or YAML file conforming to the structure of '
+          'a [Policy](https://cloud.google.com/iam/reference/rest/v1/Policy).'))

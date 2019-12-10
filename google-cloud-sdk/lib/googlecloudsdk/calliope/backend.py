@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import argparse
+import collections
 import re
 import textwrap
 
@@ -722,16 +723,24 @@ class CommandGroup(CommandCommon):
 
   def _GroupSubElementsByCategory(self):
     """Returns dictionary mapping each category to its set of subelements."""
+
+    def _GroupSubElementsOfSameTypeByCategory(elements):
+      """Returns dictionary mapping specific to element type."""
+      categorized_dict = collections.defaultdict(set)
+      for element in elements.values():
+        if element.category:
+          categorized_dict[element.category].add(element)
+        else:
+          categorized_dict[base.UNCATEGORIZED_CATEGORY].add(element)
+      return categorized_dict
+
     self.LoadAllSubElements()
     categories = {}
-    for elements in (self.groups, self.commands):
-      for element in elements.values():
-        category = element.category
-        if category is not None:
-          if category not in categories:
-            categories[category] = set([element])
-          else:
-            categories[category].add(element)
+    categories['command'] = (
+        _GroupSubElementsOfSameTypeByCategory(self.commands))
+    categories['command_group'] = (
+        _GroupSubElementsOfSameTypeByCategory(self.groups))
+
     return categories
 
 

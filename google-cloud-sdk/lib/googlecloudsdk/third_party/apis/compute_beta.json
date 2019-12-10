@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20191108",
+ "revision": "20191121",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -5524,7 +5524,7 @@
     },
     "IPProtocol": {
      "type": "string",
-     "description": "The IP protocol to which this rule applies. Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.\n\nFor Internal TCP/UDP Load Balancing, the load balancing scheme is INTERNAL, and one of TCP or UDP are valid. For Traffic Director, the load balancing scheme is INTERNAL_SELF_MANAGED, and only TCPis valid. For Internal HTTP(S) Load Balancing, the load balancing scheme is INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy, and TCP Proxy Load Balancing, the load balancing scheme is EXTERNAL and only TCP is valid. For Network TCP/UDP Load Balancing, the load balancing scheme is EXTERNAL, and one of TCP or UDP is valid.",
+     "description": "The IP protocol to which this rule applies. For protocol forwarding, valid options are TCP, UDP, ESP, AH, SCTP or ICMP.\n\nFor Internal TCP/UDP Load Balancing, the load balancing scheme is INTERNAL, and one of TCP or UDP are valid. For Traffic Director, the load balancing scheme is INTERNAL_SELF_MANAGED, and only TCPis valid. For Internal HTTP(S) Load Balancing, the load balancing scheme is INTERNAL_MANAGED, and only TCP is valid. For HTTP(S), SSL Proxy, and TCP Proxy Load Balancing, the load balancing scheme is EXTERNAL and only TCP is valid. For Network TCP/UDP Load Balancing, the load balancing scheme is EXTERNAL, and one of TCP or UDP is valid.",
      "enum": [
       "AH",
       "ESP",
@@ -10091,6 +10091,13 @@
      "$ref": "ReservationAffinity",
      "description": "Specifies the reservations that this instance can consume from."
     },
+    "resourcePolicies": {
+     "type": "array",
+     "description": "Resource policies (names, not ULRs) applied to instances created from this templae.",
+     "items": {
+      "type": "string"
+     }
+    },
     "scheduling": {
      "$ref": "Scheduling",
      "description": "Specifies the scheduling options for the instances that are created from this template."
@@ -13096,7 +13103,7 @@
     },
     "name": {
      "type": "string",
-     "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?. The first character must be a lowercase letter, and all following characters (except for the last character) must be a dash, lowercase letter, or digit. The last character must be a lowercase letter or digit.",
+     "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character must be a lowercase letter, and all following characters (except for the last character) must be a dash, lowercase letter, or digit. The last character must be a lowercase letter or digit.",
      "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
      "annotations": {
       "required": [
@@ -14004,8 +14011,12 @@
   "NodeGroup": {
    "id": "NodeGroup",
    "type": "object",
-   "description": "Represent a sole-tenant Node Group resource.\n\nA sole-tenant node is a physical server that is dedicated to hosting VM instances only for your specific project. Use sole-tenant nodes to keep your instances physically separated from instances in other projects, or to group your instances together on the same host hardware. For more information, read Sole-tenant nodes. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups ==) NextID: 16",
+   "description": "Represent a sole-tenant Node Group resource.\n\nA sole-tenant node is a physical server that is dedicated to hosting VM instances only for your specific project. Use sole-tenant nodes to keep your instances physically separated from instances in other projects, or to group your instances together on the same host hardware. For more information, read Sole-tenant nodes. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups ==)",
    "properties": {
+    "autoscalingPolicy": {
+     "$ref": "NodeGroupAutoscalingPolicy",
+     "description": "Specifies how autoscaling should behave."
+    },
     "creationTimestamp": {
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
@@ -14013,6 +14024,10 @@
     "description": {
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "fingerprint": {
+     "type": "string",
+     "format": "byte"
     },
     "id": {
      "type": "string",
@@ -14023,6 +14038,22 @@
      "type": "string",
      "description": "[Output Only] The type of the resource. Always compute#nodeGroup for node group.",
      "default": "compute#nodeGroup"
+    },
+    "maintenancePolicy": {
+     "type": "string",
+     "description": "Specifies how to handle instances when a node in the group undergoes maintenance.",
+     "enum": [
+      "DEFAULT",
+      "MAINTENANCE_POLICY_UNSPECIFIED",
+      "MIGRATE_WITHIN_NODE_GROUP",
+      "RESTART_IN_PLACE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
     },
     "name": {
      "type": "string",
@@ -14174,6 +14205,38 @@
     }
    }
   },
+  "NodeGroupAutoscalingPolicy": {
+   "id": "NodeGroupAutoscalingPolicy",
+   "type": "object",
+   "properties": {
+    "maxNodes": {
+     "type": "integer",
+     "description": "The maximum number of nodes that the group should have.",
+     "format": "int32"
+    },
+    "minNodes": {
+     "type": "integer",
+     "description": "The minimum number of nodes that the group should have.",
+     "format": "int32"
+    },
+    "mode": {
+     "type": "string",
+     "description": "The autoscaling mode.",
+     "enum": [
+      "MODE_UNSPECIFIED",
+      "OFF",
+      "ON",
+      "ONLY_SCALE_OUT"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
   "NodeGroupList": {
    "id": "NodeGroupList",
    "type": "object",
@@ -14308,6 +14371,10 @@
     "serverBinding": {
      "$ref": "ServerBinding",
      "description": "Binding properties for the physical server."
+    },
+    "serverId": {
+     "type": "string",
+     "description": "Server ID associated with this node."
     },
     "status": {
      "type": "string",
@@ -14570,7 +14637,7 @@
   "NodeTemplate": {
    "id": "NodeTemplate",
    "type": "object",
-   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==) (== NextID: 17 ==)",
+   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -16605,7 +16672,7 @@
   "Policy": {
    "id": "Policy",
    "type": "object",
-   "description": "Defines an Identity and Access Management (IAM) policy. It is used to specify access control policies for Cloud Platform resources.\n\n\n\nA `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions (defined by IAM or configured by users). A `binding` can optionally specify a `condition`, which is a logic expression that further constrains the role binding based on attributes about the request and/or target resource.\n\n**JSON Example**\n\n{ \"bindings\": [ { \"role\": \"roles/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles/resourcemanager.organizationViewer\", \"members\": [\"user:eve@example.com\"], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time \u003c timestamp('2020-10-01T00:00:00.000Z')\", } } ] }\n\n**YAML Example**\n\nbindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time \u003c timestamp('2020-10-01T00:00:00.000Z')\n\nFor a description of IAM and its features, see the [IAM developer's guide](https://cloud.google.com/iam/docs).",
+   "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources.\n\n\n\nA `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role.\n\nOptionally, a `binding` can specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both.\n\n**JSON example:**\n\n{ \"bindings\": [ { \"role\": \"roles/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles/resourcemanager.organizationViewer\", \"members\": [\"user:eve@example.com\"], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time \u003c timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 }\n\n**YAML example:**\n\nbindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time \u003c timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= - version: 3\n\nFor a description of IAM and its features, see the [IAM documentation](https://cloud.google.com/iam/docs/).",
    "properties": {
     "auditConfigs": {
      "type": "array",
@@ -16616,14 +16683,14 @@
     },
     "bindings": {
      "type": "array",
-     "description": "Associates a list of `members` to a `role`. Optionally may specify a `condition` that determines when binding is in effect. `bindings` with no members will result in an error.",
+     "description": "Associates a list of `members` to a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one member.",
      "items": {
       "$ref": "Binding"
      }
     },
     "etag": {
      "type": "string",
-     "description": "`etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a policy from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform policy updates in order to avoid race conditions: An `etag` is returned in the response to `getIamPolicy`, and systems are expected to put that etag in the request to `setIamPolicy` to ensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing policy is overwritten. Due to blind-set semantics of an etag-less policy, 'setIamPolicy' will not fail even if either of incoming or stored policy does not meet the version requirements.",
+     "description": "`etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a policy from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform policy updates in order to avoid race conditions: An `etag` is returned in the response to `getIamPolicy`, and systems are expected to put that etag in the request to `setIamPolicy` to ensure that their change will be applied to the same version of the policy.\n\n**Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost.",
      "format": "byte"
     },
     "iamOwned": {
@@ -16639,7 +16706,7 @@
     },
     "version": {
      "type": "integer",
-     "description": "Specifies the format of the policy.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.\n\nOperations affecting conditional bindings must specify version 3. This can be either setting a conditional policy, modifying a conditional binding, or removing a conditional binding from the stored conditional policy. Operations on non-conditional policies may specify any valid value or leave the field unset.\n\nIf no etag is provided in the call to `setIamPolicy`, any version compliance checks on the incoming and/or stored policy is skipped.",
+     "description": "Specifies the format of the policy.\n\nValid values are `0`, `1`, and `3`. Requests that specify an invalid value are rejected.\n\nAny operation that affects conditional role bindings must specify version `3`. This requirement applies to the following operations:\n\n* Getting a policy that includes a conditional role binding * Adding a conditional role binding to a policy * Changing a conditional role binding in a policy * Removing any role binding, with or without a condition, from a policy that includes conditions\n\n**Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost.\n\nIf a policy does not include any conditions, operations on that policy may specify any valid version or leave the field unset.",
      "format": "int32"
     }
    }
@@ -31941,6 +32008,40 @@
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
      ]
+    },
+    "wait": {
+     "id": "compute.globalOperations.wait",
+     "path": "{project}/global/operations/{operation}/wait",
+     "httpMethod": "POST",
+     "description": "Waits for the specified Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE.",
+     "parameters": {
+      "operation": {
+       "type": "string",
+       "description": "Name of the Operations resource to return.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "operation"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
     }
    }
   },
@@ -37357,6 +37458,11 @@
        "type": "string",
        "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
        "location": "query"
+      },
+      "validateOnly": {
+       "type": "boolean",
+       "description": "If true, the request will not be committed.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -40041,6 +40147,55 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "patch": {
+     "id": "compute.nodeGroups.patch",
+     "path": "{project}/zones/{zone}/nodeGroups/{nodeGroup}",
+     "httpMethod": "PATCH",
+     "description": "Patch the node group.",
+     "parameters": {
+      "nodeGroup": {
+       "type": "string",
+       "description": "Name of the NodeGroup resource to update.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "nodeGroup"
+     ],
+     "request": {
+      "$ref": "NodeGroup"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "setIamPolicy": {
@@ -44869,6 +45024,48 @@
      ],
      "response": {
       "$ref": "OperationList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "wait": {
+     "id": "compute.regionOperations.wait",
+     "path": "{project}/regions/{region}/operations/{operation}/wait",
+     "httpMethod": "POST",
+     "description": "Waits for the specified region-specific Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE.",
+     "parameters": {
+      "operation": {
+       "type": "string",
+       "description": "Name of the Operations resource to return.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "operation"
+     ],
+     "response": {
+      "$ref": "Operation"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -53152,6 +53349,48 @@
      ],
      "response": {
       "$ref": "OperationList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "wait": {
+     "id": "compute.zoneOperations.wait",
+     "path": "{project}/zones/{zone}/operations/{operation}/wait",
+     "httpMethod": "POST",
+     "description": "Waits for the specified zone-specific Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE.",
+     "parameters": {
+      "operation": {
+       "type": "string",
+       "description": "Name of the Operations resource to return.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "Name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "operation"
+     ],
+     "response": {
+      "$ref": "Operation"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",

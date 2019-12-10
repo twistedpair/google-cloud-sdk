@@ -522,6 +522,10 @@ class Experiments(object):
       raise ExperimentsError(
           'Unable to read the runtimes experiment config: [{}], error: {}'
           .format(uri, e))
+    except yaml.YAMLParseError as e:
+      raise ExperimentsError(
+          'Unable to read the runtimes experiment config: [{}], error: {}'
+          .format(uri, e))
 
   def __init__(self, uri, data):
     """Use LoadFromFile, not this constructor directly."""

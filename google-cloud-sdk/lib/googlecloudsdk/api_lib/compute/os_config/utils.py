@@ -25,7 +25,14 @@ from googlecloudsdk.core import resources
 
 
 _API_CLIENT_NAME = 'osconfig'
-_API_CLIENT_VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1alpha2'}
+_API_CLIENT_VERSION_MAP = {
+    base.ReleaseTrack.ALPHA: 'v1alpha2',
+    base.ReleaseTrack.BETA: 'v1beta',
+}
+
+
+def GetApiVersion(release_track):
+  return _API_CLIENT_VERSION_MAP[release_track]
 
 
 def GetClientClass(release_track, api_version_override=None):

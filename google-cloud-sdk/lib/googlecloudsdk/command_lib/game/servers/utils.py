@@ -19,9 +19,12 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.core import resources
 
 GAME_SERVICES_API = 'gameservices'
 API_VERSION = 'v1alpha'
+OPERATIONS_COLLECTION = 'gameservices.projects.locations.operations'
 
 
 def AddFieldToUpdateMask(field, patch_request):
@@ -85,3 +88,13 @@ def _GetDefaultVersion():
 def GetMessages(version=None):
   version = version or _GetDefaultVersion()
   return apis.GetMessagesModule(GAME_SERVICES_API, version)
+
+
+def WaitForOperation(response):
+  operation_ref = resources.REGISTRY.ParseRelativeName(
+      response.name, collection=OPERATIONS_COLLECTION)
+  api_version = operation_ref.GetCollectionInfo().api_version
+  return waiter.WaitFor(
+      waiter.CloudOperationPollerNoResources(
+          GetClient(api_version).projects_locations_operations),
+      operation_ref, 'Waiting for [{0}] to finish'.format(operation_ref.Name()))

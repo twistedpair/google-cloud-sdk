@@ -295,9 +295,8 @@ class BuildOptions(_messages.Message):
       build step.  Using a global volume in a build with only one step is not
       valid as it is indicative of a build request with an incorrect
       configuration.
-    workerPool: Option to specify a `WorkerPool` for the build. User specifies
-      the pool with the format "[WORKERPOOL_PROJECT_ID]/[WORKERPOOL_NAME]".
-      This is an experimental field.
+    workerPool: Option to specify a `WorkerPool` for the build. Format:
+      projects/{project}/workerPools/{workerPool}  This field is experimental.
   """
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
@@ -525,8 +524,11 @@ class BuildTrigger(_messages.Message):
       altered in the commit pass the ignored_files filter and included_files
       is not empty, then we make sure that at least one of those files matches
       a included_files glob. If not, then we do not trigger a build.
-    name: User assigned name of the trigger. Must be unique within the
-      project.
+    name: User-assigned name of the trigger. Must be unique within the
+      project. Trigger names must meet the following requirements:  + They
+      must contain only alphanumeric characters and dashes. + They can be 1-64
+      characters long. + They must begin and end with an alphanumeric
+      character.
     substitutions: Substitutions data for Build resource.
     tags: Tags for annotation of a `BuildTrigger`
     triggerTemplate: Template describing the types of source changes to
@@ -1012,18 +1014,18 @@ class PullRequestFilter(_messages.Message):
 
   Enums:
     CommentControlValueValuesEnum: Whether to block builds on a "/gcbrun"
-      comment from a repository owner or collaborator.
+      comment from a repository admin or collaborator.
 
   Fields:
     branch: Regex of branches to match.  The syntax of the regular expressions
       accepted is the syntax accepted by RE2 and described at
       https://github.com/google/re2/wiki/Syntax
     commentControl: Whether to block builds on a "/gcbrun" comment from a
-      repository owner or collaborator.
+      repository admin or collaborator.
   """
 
   class CommentControlValueValuesEnum(_messages.Enum):
-    r"""Whether to block builds on a "/gcbrun" comment from a repository owner
+    r"""Whether to block builds on a "/gcbrun" comment from a repository admin
     or collaborator.
 
     Values:
@@ -1072,8 +1074,7 @@ class RepoSource(_messages.Message):
       absolute path, this value is ignored for that step's execution.
     projectId: ID of the project that owns the Cloud Source Repository. If
       omitted, the project ID requesting the build is assumed.
-    repoName: Name of the Cloud Source Repository. If omitted, the name
-      "default" is assumed.
+    repoName: Required. Name of the Cloud Source Repository.
     substitutions: Substitutions to use in a triggered build. Should only be
       used with RunBuildTrigger
     tagName: Regex matching tags to build.  The syntax of the regular

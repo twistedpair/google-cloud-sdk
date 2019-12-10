@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import os
+
 import time
 
 from apitools.base.py import exceptions as apitools_exceptions
@@ -72,9 +73,28 @@ LIMITS_WITHOUT_AUTOPROVISIONING_MSG = """\
 Must enable node autoprovisioning to specify resource limits for autoscaling.
 """
 
-IDENTITY_DEFAULTS_WITHOUT_AUTOPROVISIONING_MSG = """\
-Must enable node autoprovisioning to specify default service account or scopes \
-for node autoprovisioning
+DEFAULTS_WITHOUT_AUTOPROVISIONING_MSG = """\
+Must enable node autoprovisioning to specify defaults for node autoprovisioning.
+"""
+
+UPGRADE_SETTINGS_NOT_IMPLEMENTED_IN_GA = """\
+Upgrade settings not implemented in GA. Please remove 'upgradeSettings' from
+auto-provisioning config file
+"""
+
+NODE_MANAGEMENT_SETTINGS_NOT_IMPLEMENTED_IN_GA = """\
+Node Management settings not implemented in GA. Please remove 'managment' from
+auto-provisioning config file
+"""
+
+BOTH_AUTOPROVISIONING_UPGRADE_SETTINGS_ERROR_MSG = """\
+Must specify both 'maxSurgeUpgrade' and 'maxUnavailableUpgrade' in \
+'upgradeSettings' in --autoprovisioning-config-file to set upgrade settings.
+"""
+
+BOTH_AUTOPROVISIONING_MANAGEMENT_SETTINGS_ERROR_MSG = """\
+Must specify both 'autoUpgrade' and 'autoRepair' in 'management' in \
+--autoprovisioning-config-file to set management settings.
 """
 
 LIMITS_WITHOUT_AUTOPROVISIONING_FLAG_MSG = """\
@@ -202,13 +222,19 @@ NODELOCALDNS = 'NodeLocalDNS'
 APPLICATIONMANAGER = 'ApplicationManager'
 RESOURCE_LIMITS = 'resourceLimits'
 SERVICE_ACCOUNT = 'serviceAccount'
+UPGRADE_SETTINGS = 'upgradeSettings'
+MAX_SURGE_UPGRADE = 'maxSurgeUpgrade'
+MAX_UNAVAILABLE_UPGRADE = 'maxUnavailableUpgrade'
+NODE_MANAGEMENT = 'management'
+ENABLE_AUTO_UPGRADE = 'autoUpgrade'
+ENABLE_AUTO_REPAIR = 'autoRepair'
 SCOPES = 'scopes'
 AUTOPROVISIONING_LOCATIONS = 'autoprovisioningLocations'
 DEFAULT_ADDONS = [INGRESS, HPA]
 ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, NETWORK_POLICY, CLOUDRUN]
-BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [ISTIO, APPLICATIONMANAGER]
+BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [ISTIO, APPLICATIONMANAGER, NODELOCALDNS]
 ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [
-    NODELOCALDNS, CONFIGCONNECTOR, GCEPDCSIDRIVER, CLOUDBUILD
+    CONFIGCONNECTOR, GCEPDCSIDRIVER, CLOUDBUILD
 ]
 
 
@@ -430,7 +456,11 @@ class CreateClusterOptions(object):
                min_memory=None,
                max_memory=None,
                min_accelerator=None,
-               max_accelerator=None):
+               max_accelerator=None,
+               autoprovisioning_max_surge_upgrade=None,
+               autoprovisioning_max_unavailable_upgrade=None,
+               enable_autoprovisioning_autoupgrade=None,
+               enable_autoprovisioning_autorepair=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -536,6 +566,10 @@ class CreateClusterOptions(object):
     self.max_memory = max_memory
     self.min_accelerator = min_accelerator
     self.max_accelerator = max_accelerator
+    self.autoprovisioning_max_surge_upgrade = autoprovisioning_max_surge_upgrade
+    self.autoprovisioning_max_unavailable_upgrade = autoprovisioning_max_unavailable_upgrade
+    self.enable_autoprovisioning_autoupgrade = enable_autoprovisioning_autoupgrade
+    self.enable_autoprovisioning_autorepair = enable_autoprovisioning_autorepair
 
 
 class UpdateClusterOptions(object):
@@ -590,7 +624,11 @@ class UpdateClusterOptions(object):
                max_memory=None,
                min_accelerator=None,
                max_accelerator=None,
-               release_channel=None):
+               release_channel=None,
+               autoprovisioning_max_surge_upgrade=None,
+               autoprovisioning_max_unavailable_upgrade=None,
+               enable_autoprovisioning_autoupgrade=None,
+               enable_autoprovisioning_autorepair=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -641,6 +679,10 @@ class UpdateClusterOptions(object):
     self.min_accelerator = min_accelerator
     self.max_accelerator = max_accelerator
     self.release_channel = release_channel
+    self.autoprovisioning_max_surge_upgrade = autoprovisioning_max_surge_upgrade
+    self.autoprovisioning_max_unavailable_upgrade = autoprovisioning_max_unavailable_upgrade
+    self.enable_autoprovisioning_autoupgrade = enable_autoprovisioning_autoupgrade
+    self.enable_autoprovisioning_autorepair = enable_autoprovisioning_autorepair
 
 
 class SetMasterAuthOptions(object):
@@ -1003,7 +1045,7 @@ class APIAdapter(object):
           disable_hpa=HPA not in options.addons,
           disable_dashboard=DASHBOARD not in options.addons,
           disable_network_policy=(NETWORK_POLICY not in options.addons),
-          enable_node_local_dns=(NODELOCALDNS in options.addons),
+          enable_node_local_dns=(NODELOCALDNS in options.addons or None),
           enable_config_connector=(CONFIGCONNECTOR in options.addons),
           enable_gcepd_csi_driver=(GCEPDCSIDRIVER in options.addons),
           enable_application_manager=(APPLICATIONMANAGER in options.addons),
@@ -1454,12 +1496,16 @@ class APIAdapter(object):
     resource_limits = []
     if options.autoprovisioning_config_file is not None:
       # Create using config file only.
-      autoprovisioning_options = yaml.load(options.autoprovisioning_config_file)
-      resource_limits = autoprovisioning_options.get(RESOURCE_LIMITS)
-      service_account = autoprovisioning_options.get(SERVICE_ACCOUNT)
-      scopes = autoprovisioning_options.get(SCOPES)
+      config = yaml.load(options.autoprovisioning_config_file)
+      resource_limits = config.get(RESOURCE_LIMITS)
+      service_account = config.get(SERVICE_ACCOUNT)
+      scopes = config.get(SCOPES)
       autoprovisioning_locations = \
-          autoprovisioning_options.get(AUTOPROVISIONING_LOCATIONS)
+          config.get(AUTOPROVISIONING_LOCATIONS)
+      if config.get(NODE_MANAGEMENT):
+        raise util.Error(NODE_MANAGEMENT_SETTINGS_NOT_IMPLEMENTED_IN_GA)
+      if config.get(UPGRADE_SETTINGS):
+        raise util.Error(UPGRADE_SETTINGS_NOT_IMPLEMENTED_IN_GA)
     else:
       resource_limits = self.ResourceLimitsFromFlags(options)
       service_account = options.autoprovisioning_service_account
@@ -1495,12 +1541,10 @@ class APIAdapter(object):
     """
     if autoscaling.enableNodeAutoprovisioning:
       if not for_update or autoscaling.resourceLimits:
-        cpu_found, mem_found = False, False
-        for limit in autoscaling.resourceLimits:
-          if limit.resourceType == 'cpu':
-            cpu_found = True
-          if limit.resourceType == 'memory':
-            mem_found = True
+        cpu_found = any(
+            limit.resourceType == 'cpu' for limit in autoscaling.resourceLimits)
+        mem_found = any(limit.resourceType == 'memory'
+                        for limit in autoscaling.resourceLimits)
         if not cpu_found or not mem_found:
           raise util.Error(NO_AUTOPROVISIONING_LIMITS_ERROR_MSG)
     elif autoscaling.resourceLimits:
@@ -1508,7 +1552,7 @@ class APIAdapter(object):
     elif autoscaling.autoprovisioningNodePoolDefaults and \
         (autoscaling.autoprovisioningNodePoolDefaults.serviceAccount or
          autoscaling.autoprovisioningNodePoolDefaults.oauthScopes):
-      raise util.Error(IDENTITY_DEFAULTS_WITHOUT_AUTOPROVISIONING_MSG)
+      raise util.Error(DEFAULTS_WITHOUT_AUTOPROVISIONING_MSG)
 
   def ResourceLimitsFromFlags(self, options):
     """Create cluster's autoscaling resource limits from command line flags.
@@ -1580,12 +1624,14 @@ class APIAdapter(object):
       if options.logging_service:
         update.desiredLoggingService = options.logging_service
     elif options.disable_addons:
+      disable_node_local_dns = options.disable_addons.get(NODELOCALDNS)
       addons = self._AddonsConfig(
           disable_ingress=options.disable_addons.get(INGRESS),
           disable_hpa=options.disable_addons.get(HPA),
           disable_dashboard=options.disable_addons.get(DASHBOARD),
           disable_network_policy=options.disable_addons.get(NETWORK_POLICY),
-          )
+          enable_node_local_dns=not disable_node_local_dns if \
+             disable_node_local_dns is not None else None)
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
     elif options.enable_autoscaling is not None:
       # For update, we can either enable or disable.
@@ -1786,8 +1832,10 @@ class APIAdapter(object):
     if disable_network_policy is not None:
       addons.networkPolicyConfig = self.messages.NetworkPolicyConfig(
           disabled=disable_network_policy)
-    if enable_node_local_dns:
-      addons.dnsCacheConfig = self.messages.DnsCacheConfig(enabled=True)
+    if enable_node_local_dns is not None:
+      addons.dnsCacheConfig = self.messages.DnsCacheConfig(
+          enabled=enable_node_local_dns)
+
     if enable_config_connector:
       addons.configConnectorConfig = self.messages.ConfigConnectorConfig(
           enabled=True)
@@ -2642,6 +2690,119 @@ class V1Beta1Adapter(V1Adapter):
             update=update))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
+  def CreateClusterAutoscalingCommon(self, cluster_ref, options, for_update):
+    """Create cluster's autoscaling configuration.
+
+    Args:
+      cluster_ref: Cluster reference.
+      options: Either CreateClusterOptions or UpdateClusterOptions.
+      for_update: Is function executed for update operation.
+
+    Returns:
+      Cluster's autoscaling configuration.
+    """
+    del cluster_ref  # Unused in GA.
+
+    autoscaling = self.messages.ClusterAutoscaling()
+    autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
+
+    resource_limits = []
+    if options.autoprovisioning_config_file is not None:
+      # Create using config file only.
+      config = yaml.load(options.autoprovisioning_config_file)
+      resource_limits = config.get(RESOURCE_LIMITS)
+      service_account = config.get(SERVICE_ACCOUNT)
+      scopes = config.get(SCOPES)
+      max_surge_upgrade = None
+      max_unavailable_upgrade = None
+      upgrade_settings = config.get(UPGRADE_SETTINGS)
+      if upgrade_settings:
+        max_surge_upgrade = upgrade_settings.get(MAX_SURGE_UPGRADE)
+        max_unavailable_upgrade = upgrade_settings.get(MAX_UNAVAILABLE_UPGRADE)
+      management_settings = config.get(NODE_MANAGEMENT)
+      enable_autoupgrade = None
+      enable_autorepair = None
+      if management_settings:
+        enable_autoupgrade = management_settings.get(ENABLE_AUTO_UPGRADE)
+        enable_autorepair = management_settings.get(ENABLE_AUTO_REPAIR)
+      autoprovisioning_locations = \
+        config.get(AUTOPROVISIONING_LOCATIONS)
+    else:
+      resource_limits = self.ResourceLimitsFromFlags(options)
+      service_account = options.autoprovisioning_service_account
+      scopes = options.autoprovisioning_scopes
+      autoprovisioning_locations = options.autoprovisioning_locations
+      max_surge_upgrade = options.autoprovisioning_max_surge_upgrade
+      max_unavailable_upgrade = options.autoprovisioning_max_unavailable_upgrade
+      enable_autoupgrade = options.enable_autoprovisioning_autoupgrade
+      enable_autorepair = options.enable_autoprovisioning_autorepair
+
+    if options.enable_autoprovisioning is not None:
+      autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
+      autoscaling.resourceLimits = resource_limits or []
+      if scopes is None:
+        scopes = []
+      management = None
+      upgrade_settings = None
+      if max_surge_upgrade is not None or max_unavailable_upgrade is not None:
+        upgrade_settings = self.messages.UpgradeSettings()
+        upgrade_settings.maxUnavailable = max_unavailable_upgrade
+        upgrade_settings.maxSurge = max_surge_upgrade
+      if enable_autorepair is not None or enable_autoupgrade is not None:
+        management = (self.messages.NodeManagement(
+            autoUpgrade=enable_autoupgrade, autoRepair=enable_autorepair))
+      autoscaling.autoprovisioningNodePoolDefaults = self.messages \
+        .AutoprovisioningNodePoolDefaults(serviceAccount=service_account,
+                                          oauthScopes=scopes,
+                                          upgradeSettings=upgrade_settings,
+                                          management=management)
+      if autoprovisioning_locations:
+        autoscaling.autoprovisioningLocations = \
+          sorted(autoprovisioning_locations)
+
+    self.ValidateClusterAutoscaling(autoscaling, for_update)
+    return autoscaling
+
+  def ValidateClusterAutoscaling(self, autoscaling, for_update):
+    """Validate cluster autoscaling configuration.
+
+    Args:
+      autoscaling: autoscaling configuration to be validated.
+      for_update: Is function executed for update operation.
+
+    Raises:
+      Error if the new configuration is invalid.
+    """
+    if autoscaling.enableNodeAutoprovisioning:
+      if not for_update or autoscaling.resourceLimits:
+        cpu_found = any(
+            limit.resourceType == 'cpu' for limit in autoscaling.resourceLimits)
+        mem_found = any(limit.resourceType == 'memory'
+                        for limit in autoscaling.resourceLimits)
+        if not cpu_found or not mem_found:
+          raise util.Error(NO_AUTOPROVISIONING_LIMITS_ERROR_MSG)
+        defaults = autoscaling.autoprovisioningNodePoolDefaults
+        if defaults:
+          if defaults.upgradeSettings:
+            max_surge_found = defaults.upgradeSettings.maxSurge is not None
+            max_unavailable_found = defaults.upgradeSettings.maxUnavailable is not None
+            if max_unavailable_found != max_surge_found:
+              raise util.Error(BOTH_AUTOPROVISIONING_UPGRADE_SETTINGS_ERROR_MSG)
+          if defaults.management:
+            auto_upgrade_found = defaults.management.autoUpgrade is not None
+            auto_repair_found = defaults.management.autoRepair is not None
+            if auto_repair_found != auto_upgrade_found:
+              raise util.Error(
+                  BOTH_AUTOPROVISIONING_MANAGEMENT_SETTINGS_ERROR_MSG)
+    elif autoscaling.resourceLimits:
+      raise util.Error(LIMITS_WITHOUT_AUTOPROVISIONING_MSG)
+    elif autoscaling.autoprovisioningNodePoolDefaults and \
+        (autoscaling.autoprovisioningNodePoolDefaults.serviceAccount or
+         autoscaling.autoprovisioningNodePoolDefaults.oauthScopes or
+         autoscaling.autoprovisioningNodePoolDefaults.management or
+         autoscaling.autoprovisioningNodePoolDefaults.upgradeSettings):
+      raise util.Error(DEFAULTS_WITHOUT_AUTOPROVISIONING_MSG)
+
   def UpdateNodePoolRequest(self, node_pool_ref, options):
     """Creates an UpdateNodePoolRequest from the provided options.
 
@@ -2901,17 +3062,33 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     resource_limits = []
     if options.autoprovisioning_config_file is not None:
       # Create using config file only.
-      autoprovisioning_options = yaml.load(options.autoprovisioning_config_file)
-      resource_limits = autoprovisioning_options.get(RESOURCE_LIMITS)
-      service_account = autoprovisioning_options.get(SERVICE_ACCOUNT)
-      scopes = autoprovisioning_options.get(SCOPES)
+      config = yaml.load(options.autoprovisioning_config_file)
+      resource_limits = config.get(RESOURCE_LIMITS)
+      service_account = config.get(SERVICE_ACCOUNT)
+      scopes = config.get(SCOPES)
+      max_surge_upgrade = None
+      max_unavailable_upgrade = None
+      upgrade_settings = config.get(UPGRADE_SETTINGS)
+      if upgrade_settings:
+        max_surge_upgrade = upgrade_settings.get(MAX_SURGE_UPGRADE)
+        max_unavailable_upgrade = upgrade_settings.get(MAX_UNAVAILABLE_UPGRADE)
+      management_settings = config.get(NODE_MANAGEMENT)
+      enable_autoupgrade = None
+      enable_autorepair = None
+      if management_settings is not None:
+        enable_autoupgrade = management_settings.get(ENABLE_AUTO_UPGRADE)
+        enable_autorepair = management_settings.get(ENABLE_AUTO_REPAIR)
       autoprovisioning_locations = \
-          autoprovisioning_options.get(AUTOPROVISIONING_LOCATIONS)
+          config.get(AUTOPROVISIONING_LOCATIONS)
     else:
       resource_limits = self.ResourceLimitsFromFlags(options)
       service_account = options.autoprovisioning_service_account
       scopes = options.autoprovisioning_scopes
       autoprovisioning_locations = options.autoprovisioning_locations
+      max_surge_upgrade = options.autoprovisioning_max_surge_upgrade
+      max_unavailable_upgrade = options.autoprovisioning_max_unavailable_upgrade
+      enable_autoupgrade = options.enable_autoprovisioning_autoupgrade
+      enable_autorepair = options.enable_autoprovisioning_autorepair
 
     if options.enable_autoprovisioning is not None:
       autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
@@ -2920,10 +3097,22 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       autoscaling.resourceLimits = resource_limits
       if scopes is None:
         scopes = []
+      management = None
+      upgrade_settings = None
+      if max_surge_upgrade is not None or max_unavailable_upgrade is not None:
+        upgrade_settings = self.messages.UpgradeSettings()
+        upgrade_settings.maxUnavailable = max_unavailable_upgrade
+        upgrade_settings.maxSurge = max_surge_upgrade
+      if enable_autorepair is not None or enable_autorepair is not None:
+        management = self.messages \
+          .NodeManagement(autoUpgrade=enable_autoupgrade,
+                          autoRepair=enable_autorepair)
       autoscaling.autoprovisioningNodePoolDefaults = self.messages \
-        .AutoprovisioningNodePoolDefaults(
-            serviceAccount=service_account,
-            oauthScopes=scopes)
+        .AutoprovisioningNodePoolDefaults(serviceAccount=service_account,
+                                          oauthScopes=scopes,
+                                          upgradeSettings=upgrade_settings,
+                                          management=management)
+
       if autoprovisioning_locations:
         autoscaling.autoprovisioningLocations = \
             sorted(autoprovisioning_locations)

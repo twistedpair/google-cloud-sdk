@@ -97,9 +97,9 @@ class Bucket(_messages.Message):
       storageClass is specified for a newly-created object. This defines how
       objects in the bucket are stored and determines the SLA and the cost of
       storage. Values include MULTI_REGIONAL, REGIONAL, STANDARD, NEARLINE,
-      COLDLINE, and DURABLE_REDUCED_AVAILABILITY. If this value is not
-      specified when the bucket is created, it will default to STANDARD. For
-      more information, see storage classes.
+      COLDLINE, ARCHIVE, and DURABLE_REDUCED_AVAILABILITY. If this value is
+      not specified when the bucket is created, it will default to STANDARD.
+      For more information, see storage classes.
     timeCreated: The creation time of the bucket in RFC 3339 format.
     updated: The modification time of the bucket in RFC 3339 format.
     versioning: The bucket's versioning configuration.
@@ -152,18 +152,32 @@ class Bucket(_messages.Message):
     r"""The bucket's IAM configuration.
 
     Messages:
-      BucketPolicyOnlyValue: The bucket's Bucket Policy Only configuration.
+      BucketPolicyOnlyValue: The bucket's uniform bucket-level access
+        configuration. The feature was formerly known as Bucket Policy Only.
+        For backward compatibility, this field will be populated with
+        identical information as the uniformBucketLevelAccess field. We
+        recommend using the uniformBucketLevelAccess field to enable and
+        disable the feature.
       UniformBucketLevelAccessValue: The bucket's uniform bucket-level access
         configuration.
 
     Fields:
-      bucketPolicyOnly: The bucket's Bucket Policy Only configuration.
+      bucketPolicyOnly: The bucket's uniform bucket-level access
+        configuration. The feature was formerly known as Bucket Policy Only.
+        For backward compatibility, this field will be populated with
+        identical information as the uniformBucketLevelAccess field. We
+        recommend using the uniformBucketLevelAccess field to enable and
+        disable the feature.
       uniformBucketLevelAccess: The bucket's uniform bucket-level access
         configuration.
     """
 
     class BucketPolicyOnlyValue(_messages.Message):
-      r"""The bucket's Bucket Policy Only configuration.
+      r"""The bucket's uniform bucket-level access configuration. The feature
+      was formerly known as Bucket Policy Only. For backward compatibility,
+      this field will be populated with identical information as the
+      uniformBucketLevelAccess field. We recommend using the
+      uniformBucketLevelAccess field to enable and disable the feature.
 
       Fields:
         enabled: If set, access is controlled only by bucket-level or above
@@ -279,8 +293,8 @@ class Bucket(_messages.Message):
             incompatible ways and that it is not guaranteed to be released.
           matchesStorageClass: Objects having any of the storage classes
             specified by this condition will be matched. Values include
-            MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, STANDARD, and
-            DURABLE_REDUCED_AVAILABILITY.
+            MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, ARCHIVE, STANDARD,
+            and DURABLE_REDUCED_AVAILABILITY.
           numNewerVersions: Relevant only for versioned objects. If the value
             is N, this condition is satisfied when there are at least N
             versions (including the live version) newer than this version of

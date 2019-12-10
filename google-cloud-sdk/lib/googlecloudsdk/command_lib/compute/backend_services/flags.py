@@ -23,6 +23,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.util import completers
 
 
@@ -437,7 +438,9 @@ def GetHealthCheckUris(args, resource_resolver, resource_parser):
     else:
       health_check_refs.extend(
           resource_resolver.HEALTH_CHECK_ARG.ResolveAsResource(
-              args, resource_parser))
+              args,
+              resource_parser,
+              default_scope=compute_scope.ScopeEnum.GLOBAL))
 
   return [health_check_ref.SelfLink() for health_check_ref in health_check_refs]
 

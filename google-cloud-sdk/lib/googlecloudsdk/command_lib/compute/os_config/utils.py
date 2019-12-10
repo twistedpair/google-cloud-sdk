@@ -35,6 +35,7 @@ class InstanceDetailsStates(Enum):
 
 
 INSTANCE_DETAILS_KEY_MAP = {
+    # Alpha mapping
     'instancesAcked': InstanceDetailsStates.NOTIFIED,
     'instancesApplyingPatches': InstanceDetailsStates.PATCHING,
     'instancesDownloadingPatches': InstanceDetailsStates.PATCHING,
@@ -50,7 +51,25 @@ INSTANCE_DETAILS_KEY_MAP = {
     'instancesRunningPrePatchStep': InstanceDetailsStates.PATCHING,
     'instancesRunningPostPatchStep': InstanceDetailsStates.PATCHING,
     'instancesNoAgentDetected': InstanceDetailsStates.FINISHED,
+
+    # Beta mapping
+    'ackedInstanceCount': InstanceDetailsStates.NOTIFIED,
+    'applyingPatchesInstanceCount': InstanceDetailsStates.PATCHING,
+    'downloadingPatchesInstanceCount': InstanceDetailsStates.PATCHING,
+    'failedInstanceCount': InstanceDetailsStates.FINISHED,
+    'inactiveInstanceCount': InstanceDetailsStates.FINISHED,
+    'notifiedInstanceCount': InstanceDetailsStates.NOTIFIED,
+    'pendingInstanceCount': InstanceDetailsStates.NOTIFIED,
+    'rebootingInstanceCount': InstanceDetailsStates.PATCHING,
+    'startedInstanceCount': InstanceDetailsStates.PATCHING,
+    'succeededInstanceCount': InstanceDetailsStates.FINISHED,
+    'succeededRebootRequiredInstanceCount': InstanceDetailsStates.FINISHED,
+    'timedOutInstanceCount': InstanceDetailsStates.FINISHED,
+    'prePatchStepInstanceCount': InstanceDetailsStates.PATCHING,
+    'postPatchStepInstanceCount': InstanceDetailsStates.PATCHING,
+    'noAgentDetectedInstanceCount': InstanceDetailsStates.FINISHED,
 }
+
 
 _GCS_PREFIXES = ('gs://', 'https://www.googleapis.com/storage/v1/',
                  'https://storage.googleapis.com/')
@@ -81,9 +100,9 @@ def GetPatchJobUriPath(project, patch_job):
   return '/'.join(['projects', project, 'patchJobs', patch_job])
 
 
-def GetPatchJobName(patch_job_uri):
-  """Returns the name of a patch job from its URI."""
-  return patch_job_uri.split('/')[3]
+def GetResourceName(uri):
+  """Returns the name of a GCP resource from its URI."""
+  return uri.split('/')[3]
 
 
 def GetGuestPolicyRelativePath(parent, guest_policy):

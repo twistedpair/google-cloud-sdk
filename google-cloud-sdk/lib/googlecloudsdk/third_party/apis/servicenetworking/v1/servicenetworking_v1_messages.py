@@ -28,7 +28,7 @@ class AddSubnetworkRequest(_messages.Message):
       the following format: `projects/{project}/global/networks/{network}`,
       where {project} is a project number, such as `12345`. {network} is the
       name of a VPC network in the project.
-    description: An optional description of the subnet.
+    description: Optional. Description of the subnet.
     ipPrefixLength: Required. The prefix length of the subnet's IP address
       range.  Use CIDR range notation, such as `30` to provision a subnet with
       an `x.x.x.x/30` CIDR range. The IP address range is drawn from a pool of
@@ -375,6 +375,18 @@ class Connection(_messages.Message):
   peering = _messages.StringField(2)
   reservedPeeringRanges = _messages.StringField(3, repeated=True)
   service = _messages.StringField(4)
+
+
+class ConsumerProject(_messages.Message):
+  r"""Represents a consumer project.
+
+  Fields:
+    projectNum: Required. Project number of the consumer that is launching the
+      service instance. It can own the network that is peered with Google or,
+      be a service project in an XPN where the host project has the network.
+  """
+
+  projectNum = _messages.IntegerField(1)
 
 
 class Context(_messages.Message):
@@ -1980,6 +1992,19 @@ class Range(_messages.Message):
   network = _messages.StringField(2)
 
 
+class RangeReservation(_messages.Message):
+  r"""Represents a range reservation.
+
+  Fields:
+    ipPrefixLength: Required. The size of the desired subnet. Use usual CIDR
+      range notation. For example, '30' to find unused x.x.x.x/30 CIDR range.
+      The goal is to determine if one of the allocated ranges has enough free
+      space for a subnet of the requested size.
+  """
+
+  ipPrefixLength = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class SearchRangeRequest(_messages.Message):
   r"""Request to search for an unused range within allocated ranges.
 
@@ -1988,11 +2013,10 @@ class SearchRangeRequest(_messages.Message):
       CIDR range notation. For example, '30' to find unused x.x.x.x/30 CIDR
       range. Actual range will be determined using allocated range for the
       consumer peered network and returned in the result.
-    network: Network name in the consumer project.   This network must have
-      been already peered with a shared VPC network using CreateConnection
-      method. Must be in a form
-      'projects/{project}/global/networks/{network}'. {project} is a project
-      number, as in '12345' {network} is network name.
+    network: Network name in the consumer project. This network must have been
+      already peered with a shared VPC network using CreateConnection method.
+      Must be in a form 'projects/{project}/global/networks/{network}'.
+      {project} is a project number, as in '12345' {network} is network name.
   """
 
   ipPrefixLength = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2041,8 +2065,9 @@ class Service(_messages.Message):
       google.someapi.v1.SomeEnum
     http: HTTP configuration.
     id: A unique ID for a specific instance of this message, typically
-      assigned by the client for tracking purpose. If empty, the server may
-      choose to generate one instead. Must be no longer than 60 characters.
+      assigned by the client for tracking purpose. Must be no longer than 63
+      characters and only lower case letters, digits, '.', '_' and '-' are
+      allowed. If empty, the server may choose to generate one instead.
     logging: Logging configuration.
     logs: Defines the logs used by this service.
     metrics: Defines the metrics used by this service.
@@ -2243,6 +2268,21 @@ class ServicenetworkingServicesSearchRangeRequest(_messages.Message):
 
   parent = _messages.StringField(1, required=True)
   searchRangeRequest = _messages.MessageField('SearchRangeRequest', 2)
+
+
+class ServicenetworkingServicesValidateRequest(_messages.Message):
+  r"""A ServicenetworkingServicesValidateRequest object.
+
+  Fields:
+    parent: Required. This is in a form services/{service} where {service} is
+      the name of the private access management service. For example 'service-
+      peering.example.com'.
+    validateConsumerConfigRequest: A ValidateConsumerConfigRequest resource to
+      be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  validateConsumerConfigRequest = _messages.MessageField('ValidateConsumerConfigRequest', 2)
 
 
 class SourceContext(_messages.Message):
@@ -2578,6 +2618,88 @@ class UsageRule(_messages.Message):
   allowUnregisteredCalls = _messages.BooleanField(1)
   selector = _messages.StringField(2)
   skipServiceControl = _messages.BooleanField(3)
+
+
+class ValidateConsumerConfigRequest(_messages.Message):
+  r"""A ValidateConsumerConfigRequest object.
+
+  Fields:
+    consumerNetwork: Required. The network that the consumer is using to
+      connect with services. Must be in the form of
+      projects/{project}/global/networks/{network} {project} is a project
+      number, as in '12345' {network} is network name.
+    consumerProject: NETWORK_NOT_IN_CONSUMERS_PROJECT,
+      NETWORK_NOT_IN_CONSUMERS_HOST_PROJECT, and HOST_PROJECT_NOT_FOUND are
+      done when consumer_project is provided.
+    rangeReservation: RANGES_EXHAUSTED, RANGES_EXHAUSTED, and
+      RANGES_DELETED_LATER are done when range_reservation is provided.
+    validateNetwork: The validations will be performed in the order listed in
+      the ValidationError enum. The first failure will return. If a validation
+      is not requested, then the next one will be performed.
+      SERVICE_NETWORKING_NOT_ENABLED and NETWORK_NOT_PEERED checks are
+      performed for all requests where validation is requested.
+      NETWORK_NOT_FOUND and NETWORK_DISCONNECTED checks are done for requests
+      that have validate_network set to true.
+  """
+
+  consumerNetwork = _messages.StringField(1)
+  consumerProject = _messages.MessageField('ConsumerProject', 2)
+  rangeReservation = _messages.MessageField('RangeReservation', 3)
+  validateNetwork = _messages.BooleanField(4)
+
+
+class ValidateConsumerConfigResponse(_messages.Message):
+  r"""A ValidateConsumerConfigResponse object.
+
+  Enums:
+    ValidationErrorValueValuesEnum:
+
+  Fields:
+    isValid: A boolean attribute.
+    validationError: A ValidationErrorValueValuesEnum attribute.
+  """
+
+  class ValidationErrorValueValuesEnum(_messages.Enum):
+    r"""ValidationErrorValueValuesEnum enum type.
+
+    Values:
+      VALIDATION_ERROR_UNSPECIFIED: <no description>
+      VALIDATION_NOT_REQUESTED: In case none of the validations are requested.
+      SERVICE_NETWORKING_NOT_ENABLED: <no description>
+      NETWORK_NOT_FOUND: The network provided by the consumer does not exist.
+      NETWORK_NOT_PEERED: The network has not been peered with the producer
+        org.
+      NETWORK_PEERING_DELETED: The peering was created and later deleted.
+      NETWORK_NOT_IN_CONSUMERS_PROJECT: The network is a regular VPC but the
+        network is not in the consumer's project.
+      NETWORK_NOT_IN_CONSUMERS_HOST_PROJECT: The consumer project is a service
+        project, and network is a shared VPC, but the network is not in the
+        host project of this consumer project.
+      HOST_PROJECT_NOT_FOUND: The host project associated with the consumer
+        project was not found.
+      CONSUMER_PROJECT_NOT_SERVICE_PROJECT: The consumer project is not a
+        service project for the specified host project.
+      RANGES_EXHAUSTED: The reserved IP ranges do not have enough space to
+        create a subnet of desired size.
+      RANGES_NOT_RESERVED: The IP ranges were not reserved.
+      RANGES_DELETED_LATER: The IP ranges were reserved but deleted later.
+    """
+    VALIDATION_ERROR_UNSPECIFIED = 0
+    VALIDATION_NOT_REQUESTED = 1
+    SERVICE_NETWORKING_NOT_ENABLED = 2
+    NETWORK_NOT_FOUND = 3
+    NETWORK_NOT_PEERED = 4
+    NETWORK_PEERING_DELETED = 5
+    NETWORK_NOT_IN_CONSUMERS_PROJECT = 6
+    NETWORK_NOT_IN_CONSUMERS_HOST_PROJECT = 7
+    HOST_PROJECT_NOT_FOUND = 8
+    CONSUMER_PROJECT_NOT_SERVICE_PROJECT = 9
+    RANGES_EXHAUSTED = 10
+    RANGES_NOT_RESERVED = 11
+    RANGES_DELETED_LATER = 12
+
+  isValid = _messages.BooleanField(1)
+  validationError = _messages.EnumField('ValidationErrorValueValuesEnum', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

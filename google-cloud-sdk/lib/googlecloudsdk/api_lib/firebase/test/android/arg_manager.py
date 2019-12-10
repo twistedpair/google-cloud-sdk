@@ -39,8 +39,8 @@ def TypedArgRules():
       'instrumentation': {
           'required': ['test'],
           'optional': [
-              'test_package', 'test_runner_class', 'test_targets',
-              'use_orchestrator'
+              'num_uniform_shards', 'test_targets_for_shard', 'test_package',
+              'test_runner_class', 'test_targets', 'use_orchestrator'
           ],
           'defaults': {}
       },
@@ -171,6 +171,7 @@ class AndroidArgsManager(object):
     arg_validate.NormalizeAndValidateObbFileNames(args.obb_files)
     arg_validate.ValidateRoboDirectivesList(args)
     arg_validate.ValidateEnvironmentVariablesList(args)
+    arg_validate.ValidateTestTargetsForShard(args)
     arg_validate.NormalizeAndValidateDirectoriesToPullList(
         args.directories_to_pull)
     arg_validate.ValidateScenarioNumbers(args)

@@ -855,6 +855,29 @@ class GoogleCloudDialogflowV2Agent(_messages.Message):
   timeZone = _messages.StringField(12)
 
 
+class GoogleCloudDialogflowV2AnnotatedMessagePart(_messages.Message):
+  r"""Represents a part of a message possibly annotated with an entity. The
+  part can be an entity or purely a part of the message between two entities
+  or message start/end.
+
+  Fields:
+    entityType: The [Dialogflow system entity
+      type](https://cloud.google.com/dialogflow/docs/reference/system-
+      entities) of this message part. If this is empty, Dialogflow could not
+      annotate the phrase part with a system entity.
+    formattedValue: The [Dialogflow system entity formatted value
+      ](https://cloud.google.com/dialogflow/docs/reference/system-entities) of
+      this message part. For example for a system entity of type `@sys.unit-
+      currency`, this may contain: <pre> {   "amount": 5,   "currency": "USD"
+      } </pre>
+    text: A part of a message possibly annotated with an entity.
+  """
+
+  entityType = _messages.StringField(1)
+  formattedValue = _messages.MessageField('extra_types.JsonValue', 2)
+  text = _messages.StringField(3)
+
+
 class GoogleCloudDialogflowV2BatchCreateEntitiesRequest(_messages.Message):
   r"""The request message for EntityTypes.BatchCreateEntities.
 
@@ -1069,6 +1092,60 @@ class GoogleCloudDialogflowV2Context(_messages.Message):
   lifespanCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   name = _messages.StringField(2)
   parameters = _messages.MessageField('ParametersValue', 3)
+
+
+class GoogleCloudDialogflowV2ConversationEvent(_messages.Message):
+  r"""Represents a notification sent to Cloud Pub/Sub subscribers for
+  conversation lifecycle events.
+
+  Enums:
+    TypeValueValuesEnum: The type of the event that this notification refers
+      to.
+
+  Fields:
+    conversation: The unique identifier of the conversation this notification
+      refers to. Format: `projects/<Project ID>/conversations/<Conversation
+      ID>`.
+    errorStatus: More detailed information about an error. Only set for type
+      UNRECOVERABLE_ERROR_IN_PHONE_CALL.
+    newMessagePayload: Payload of NEW_MESSAGE event.
+    type: The type of the event that this notification refers to.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of the event that this notification refers to.
+
+    Values:
+      TYPE_UNSPECIFIED: Type not set.
+      CONVERSATION_STARTED: A new conversation has been opened. This is fired
+        when a telephone call is answered, or a conversation is created via
+        the API.
+      CONVERSATION_FINISHED: An existing conversation has closed. This is
+        fired when a telephone call is terminated, or a conversation is closed
+        via the API.
+      HUMAN_INTERVENTION_NEEDED: An existing conversation has received
+        notification from Dialogflow that human intervention is required.
+      NEW_MESSAGE: An existing conversation has received a new message, either
+        from API or telephony. It is configured in
+        ConversationProfile.new_message_event_notification_config
+      UNRECOVERABLE_ERROR: Unrecoverable error during a telephone call.  In
+        general non-recoverable errors only occur if something was
+        misconfigured in the ConversationProfile corresponding to the call.
+        After a non-recoverable error, Dialogflow may stop responding.  We
+        don't fire this event: * in an API call because we can directly return
+        the error, or, * when we can recover from an error.
+    """
+    TYPE_UNSPECIFIED = 0
+    CONVERSATION_STARTED = 1
+    CONVERSATION_FINISHED = 2
+    HUMAN_INTERVENTION_NEEDED = 3
+    NEW_MESSAGE = 4
+    UNRECOVERABLE_ERROR = 5
+
+  conversation = _messages.StringField(1)
+  errorStatus = _messages.MessageField('GoogleRpcStatus', 2)
+  newMessagePayload = _messages.MessageField('GoogleCloudDialogflowV2Message', 3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class GoogleCloudDialogflowV2DetectIntentRequest(_messages.Message):
@@ -1454,7 +1531,7 @@ class GoogleCloudDialogflowV2Intent(_messages.Message):
     messages: Optional. The collection of rich messages corresponding to the
       `Response` field in the Dialogflow console.
     mlDisabled: Optional. Indicates whether Machine Learning is disabled for
-      the intent. Note: If `ml_diabled` setting is set to true, then this
+      the intent. Note: If `ml_disabled` setting is set to true, then this
       intent is not taken into account during inference in `ML ONLY` match
       mode. Also, auto-markup in the UI is turned off.
     name: The unique identifier of this intent. Required for
@@ -2320,6 +2397,64 @@ class GoogleCloudDialogflowV2ListSessionEntityTypesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   sessionEntityTypes = _messages.MessageField('GoogleCloudDialogflowV2SessionEntityType', 2, repeated=True)
+
+
+class GoogleCloudDialogflowV2Message(_messages.Message):
+  r"""Represents a message posted into a conversation.
+
+  Enums:
+    ParticipantRoleValueValuesEnum: Output only. The role of the participant.
+
+  Fields:
+    content: Required. The message content.
+    createTime: Output only. The time when the message was created.
+    languageCode: Optional. The message language. This should be a
+      [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
+      Example: "en-US".
+    messageAnnotation: Output only. The annotation for the message.
+    name: The unique identifier of the message. Format: `projects/<Project
+      ID>/conversations/<Conversation ID>/messages/<Message ID>`.
+    participant: Output only. The participant that sends this message.
+    participantRole: Output only. The role of the participant.
+  """
+
+  class ParticipantRoleValueValuesEnum(_messages.Enum):
+    r"""Output only. The role of the participant.
+
+    Values:
+      ROLE_UNSPECIFIED: Participant role not set.
+      HUMAN_AGENT: Participant is a human agent.
+      AUTOMATED_AGENT: Participant is an automated agent, such as a Dialogflow
+        agent.
+      END_USER: Participant is an end user that has called or chatted with
+        Dialogflow services.
+    """
+    ROLE_UNSPECIFIED = 0
+    HUMAN_AGENT = 1
+    AUTOMATED_AGENT = 2
+    END_USER = 3
+
+  content = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  languageCode = _messages.StringField(3)
+  messageAnnotation = _messages.MessageField('GoogleCloudDialogflowV2MessageAnnotation', 4)
+  name = _messages.StringField(5)
+  participant = _messages.StringField(6)
+  participantRole = _messages.EnumField('ParticipantRoleValueValuesEnum', 7)
+
+
+class GoogleCloudDialogflowV2MessageAnnotation(_messages.Message):
+  r"""Represents the result of annotation for the message.
+
+  Fields:
+    containEntities: Indicates whether the text message contains entities.
+    parts: The collection of annotated message parts ordered by their position
+      in the message. You can recover the annotated message by concatenating
+      [AnnotatedMessagePart.text].
+  """
+
+  containEntities = _messages.BooleanField(1)
+  parts = _messages.MessageField('GoogleCloudDialogflowV2AnnotatedMessagePart', 2, repeated=True)
 
 
 class GoogleCloudDialogflowV2OriginalDetectIntentRequest(_messages.Message):

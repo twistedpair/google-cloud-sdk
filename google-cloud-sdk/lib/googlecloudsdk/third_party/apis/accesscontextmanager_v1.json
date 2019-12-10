@@ -133,7 +133,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {
@@ -164,7 +164,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
       "type": "object",
       "properties": {
         "code": {
@@ -360,6 +360,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "regions": {
+          "description": "The request must originate from one of the provided countries\/regions.\nMust be valid ISO 3166-1 alpha-2 codes.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -416,6 +423,14 @@
               "COMPLETE"
             ]
           }
+        },
+        "requireAdminApproval": {
+          "description": "Whether the device needs to be approved by the customer admin.",
+          "type": "boolean"
+        },
+        "requireCorpOwned": {
+          "description": "Whether the device needs to be corp owned.",
+          "type": "boolean"
         }
       }
     },
@@ -431,9 +446,7 @@
             "A desktop Mac operating system.",
             "A desktop Windows operating system.",
             "A desktop Linux operating system.",
-            "A desktop ChromeOS operating system.",
-            "An Android operating system.",
-            "An iOS operating system."
+            "A desktop ChromeOS operating system."
           ],
           "type": "string",
           "enum": [
@@ -441,14 +454,16 @@
             "DESKTOP_MAC",
             "DESKTOP_WINDOWS",
             "DESKTOP_LINUX",
-            "DESKTOP_CHROME_OS",
-            "ANDROID",
-            "IOS"
+            "DESKTOP_CHROME_OS"
           ]
         },
         "minimumVersion": {
           "description": "The minimum allowed OS version. If not set, any version of this OS\nsatisfies the constraint. Format: `\"major.minor.patch\"`.\nExamples: `\"10.5.301\"`, `\"9.2.1\"`.",
           "type": "string"
+        },
+        "requireVerifiedChromeOs": {
+          "description": "Only allows requests from devices with a verified Chrome OS.\nVerifications includes requirements that the device is enterprise-managed,\nconformant to domain policies, and the caller has permission to call\nthe API targeted by the request.",
+          "type": "boolean"
         }
       }
     },
@@ -498,7 +513,7 @@
           "format": "google-datetime"
         },
         "perimeterType": {
-          "description": "Perimeter type indicator. A single project is\nallowed to be a member of single regular perimeter, but multiple service\nperimeter bridges. A project cannot be a included in a perimeter bridge\nwithout being included in regular perimeter. For perimeter bridges,\nrestricted\/unrestricted service lists as well as access lists must be\nempty.",
+          "description": "Perimeter type indicator. A single project is\nallowed to be a member of single regular perimeter, but multiple service\nperimeter bridges. A project cannot be a included in a perimeter bridge\nwithout being included in regular perimeter. For perimeter bridges,\nthe restricted service list as well as access level lists must be\nempty.",
           "enumDescriptions": [
             "Regular Perimeter.",
             "Perimeter Bridge."
@@ -510,7 +525,7 @@
           ]
         },
         "status": {
-          "description": "Current ServicePerimeter configuration. Specifies sets of resources,\nrestricted\/unrestricted services and access levels that determine perimeter\ncontent and boundaries.",
+          "description": "Current ServicePerimeter configuration. Specifies sets of resources,\nrestricted services and access levels that determine perimeter\ncontent and boundaries.",
           "$ref": "ServicePerimeterConfig"
         }
       }
@@ -534,15 +549,8 @@
             "type": "string"
           }
         },
-        "unrestrictedServices": {
-          "description": "GCP services that are not subject to the Service Perimeter restrictions.\nMay contain a list of services or a single wildcard \"*\". For example, if\n`logging.googleapis.com` is unrestricted, users can access logs inside the\nperimeter as if the perimeter doesn't exist, and it also means VMs inside\nthe perimeter can access logs outside the perimeter.\n\nThe wildcard means that unless explicitly specified by\n\"restricted_services\" list, any service is treated as unrestricted. One of\nthe fields \"restricted_services\", \"unrestricted_services\" must contain a\nwildcard \"*\", otherwise the Service Perimeter specification is invalid. It\nalso means that both field being empty is invalid as well.\n\"unrestricted_services\" can be empty if and only if \"restricted_services\"\nlist contains a \"*\" wildcard.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
         "restrictedServices": {
-          "description": "GCP services that are subject to the Service Perimeter restrictions. May\ncontain a list of services or a single wildcard \"*\". For example, if\n`storage.googleapis.com` is specified, access to the storage buckets\ninside the perimeter must meet the perimeter's access restrictions.\n\nWildcard means that unless explicitly specified by \"unrestricted_services\"\nlist, any service is treated as restricted. One of the fields\n\"restricted_services\", \"unrestricted_services\" must contain a wildcard \"*\",\notherwise the Service Perimeter specification is invalid. It also means\nthat both field being empty is invalid as well. \"restricted_services\" can\nbe empty if and only if \"unrestricted_services\" list contains a \"*\"\nwildcard.",
+          "description": "GCP services that are subject to the Service Perimeter restrictions. For\nexample, if `storage.googleapis.com` is specified, access to the storage\nbuckets inside the perimeter must meet the perimeter's access restrictions.",
           "type": "array",
           "items": {
             "type": "string"
@@ -942,7 +950,7 @@
                   "type": "string"
                 },
                 "updateMask": {
-                  "description": "Required.  Mask to control which fields get updated. Must be non-empty.",
+                  "description": "Required. Mask to control which fields get updated. Must be non-empty.",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"

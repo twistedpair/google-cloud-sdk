@@ -251,7 +251,7 @@ def AddAadFileFlag(parser):
 def AddProtectionLevelFlag(parser):
   parser.add_argument(
       '--protection-level',
-      choices=['software', 'hsm'],
+      choices=['software', 'hsm', 'external'],
       default='software',
       help='Protection level of the key.')
 
@@ -314,11 +314,18 @@ def AddDigestAlgorithmFlag(parser, help_action):
 def AddImportedVersionAlgorithmFlag(parser):
   parser.add_argument(
       '--algorithm',
-      choices=sorted(maps.ALL_ALGORITHMS),
+      choices=sorted(maps.ALGORITHMS_FOR_IMPORT),
       help='The algorithm of the key being imported. See'
       'https://cloud.google.com/kms/docs/algorithms for guidance on choosing '
       'an algorithm.',
       required=True)
+
+
+def AddExternalKeyUriFlag(parser):
+  parser.add_argument(
+      '--external-key-uri',
+      help='The URI of the external key for keys with protection level'
+      ' "external".')
 
 
 # Arguments

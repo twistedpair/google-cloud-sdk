@@ -33,6 +33,22 @@ _py3_interpreter_compat_with_gsutil () {
   echo "$("$1" -V 2>&1)" | grep -E "Python 3[.]([5-9]|[1-9][0-9])" > /dev/null
 }
 
+order_python() {
+  selected_version=""
+  for python_version in "$@"
+  do
+    if [ -z "$selected_version" ]; then
+      if _cloudsdk_which $python_version >/dev/null; then
+      selected_version=$python_version
+      fi
+    fi
+  done
+  if [ -z "$selected_version" ]; then
+    selected_version=python
+  fi
+  echo $selected_version
+}
+
 # Determines the real cloud sdk root dir given the script path.
 # Would be easier with a portable "readlink -f".
 _cloudsdk_root_dir() {
@@ -86,54 +102,22 @@ CLOUDSDK_ROOT_DIR=$(_cloudsdk_root_dir "$0")
 
 setup_cloudsdk_python() {
   if [ -z "$CLOUDSDK_PYTHON" ]; then
-    # if python2 exists then plain python may point to a version != 2
-    if _cloudsdk_which python2 >/dev/null; then
-      CLOUDSDK_PYTHON=python2
-    elif _cloudsdk_which python2.7 >/dev/null; then
-      # this is what some OS X versions call their built-in Python
-      CLOUDSDK_PYTHON=python2.7
-    elif _cloudsdk_which python >/dev/null; then
-      # Use unversioned python if it exists.
-      CLOUDSDK_PYTHON=python
-    elif _cloudsdk_which python3 >/dev/null; then
-      # We support python3, but only want to default to it if nothing else is
-      # found.
-      CLOUDSDK_PYTHON=python3
-    else
-      # This won't work because it wasn't found above, but at this point this
-      # is our best guess for the error message.
-      CLOUDSDK_PYTHON=python
-    fi
+    CLOUDSDK_PYTHON=$(order_python python2 python2.7 python python3)
   fi
 }
 
-setup_cloudsdk_python_prefer_python3() {
+setup_cloudsdk_python_prefer_python3_unless_snap() {
 # Settings for corp
-  if [ -z "$CLOUDSDK_PYTHON" ]; then
-    # if python3 exists then plain python may point to a version != 3
-    if _cloudsdk_which python3 >/dev/null; then
-      CLOUDSDK_PYTHON=python3
-    elif _cloudsdk_which python2.7 >/dev/null; then
-      # this is what some OS X versions call their built-in Python
-      CLOUDSDK_PYTHON=python2.7
-    elif _cloudsdk_which python >/dev/null; then
-      # Use unversioned python if it exists.
-      CLOUDSDK_PYTHON=python
-    elif _cloudsdk_which python2 >/dev/null; then
-      # We support python2, but only want to default to it if nothing else is
-      # found.
-      CLOUDSDK_PYTHON=python2
-    else
-      # This won't work because it wasn't found above, but at this point this
-      # is our best guess for the error message.
-      CLOUDSDK_PYTHON=python
-    fi
+  if [ -z "$CLOUDSDK_PYTHON" ] && [ -z "$SNAP_INSTANCE_NAME" ]; then
+    CLOUDSDK_PYTHON=$(order_python python3 python python2 python2.7)
+  else
+    setup_cloudsdk_python
   fi
 }
 
 case $HOSTNAME in
-  *.corp.google.com) setup_cloudsdk_python_prefer_python3;;
-  *.c.googlers.com) setup_cloudsdk_python_prefer_python3;;
+  *.corp.google.com) setup_cloudsdk_python_prefer_python3_unless_snap;;
+  *.c.googlers.com) setup_cloudsdk_python_prefer_python3_unless_snap;;
   *) setup_cloudsdk_python;;
 esac
 
@@ -197,20 +181,7 @@ fi
 
 # bq requires python2 so it can not use CLOUDSDK_PYTHON which may be python3.
 if [ -z "$CLOUDSDK_BQ_PYTHON" ]; then
-  # if python2 exists then plain python may point to a version != 2
-  if _cloudsdk_which python2 >/dev/null; then
-    CLOUDSDK_BQ_PYTHON=python2
-  elif _cloudsdk_which python2.7 >/dev/null; then
-    # this is what some OS X versions call their built-in Python
-    CLOUDSDK_BQ_PYTHON=python2.7
-  elif _cloudsdk_which python >/dev/null; then
-    # Use unversioned python if it exists.
-    CLOUDSDK_BQ_PYTHON=python
-  else
-    # This won't work because it wasn't found above, but at this point this
-    # is our best guess for the error message.
-    CLOUDSDK_BQ_PYTHON=python
-  fi
+  CLOUDSDK_BQ_PYTHON=$(order_python python2 python2.7 python)
 fi
 
 export CLOUDSDK_ROOT_DIR

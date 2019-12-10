@@ -274,7 +274,7 @@
       "type": "object",
       "properties": {
         "action": {
-          "description": "Type of this operation. Contains one of 'and', 'remove', 'replace', 'move',\n'copy', 'test' and custom operations. This field is case-insensitive and\nalways populated.",
+          "description": "Type of this operation. Contains one of 'and', 'remove', 'replace', 'move',\n'copy', 'test' and 'custom' operations. This field is case-insensitive and\nalways populated.",
           "type": "string"
         },
         "resourceType": {
@@ -306,7 +306,7 @@
           "$ref": "GoogleCloudRecommenderV1beta1ValueMatcher"
         },
         "pathFilters": {
-          "description": "Set of filters to apply if `path` refers to array elements or nested array\nelements in order to narrow down to a single unique element that is being\ntested\/modified.\nThis is intended to be an exact match per filter. To perform advanced\nmatching, use path_value_matchers.\n\n* Example: {\n  \"\/versions\/*\/name\" : \"it-123\"\n  \"\/versions\/*\/targetSize\/percent\": 20\n }\n* Example: {\n  \"\/bindings\/*\/role\": \"roles\/admin\"\n  \"\/bindings\/*\/condition\" : null\n }\n* Example: {\n  \"\/bindings\/*\/role\": \"roles\/admin\"\n  \"\/bindings\/*\/members\/*\" : [\"x@google.com\", \"y@google.com\"]\n }\nWhen both path_filters and path_value_matchers are set, an implicit AND\nmust be performed.",
+          "description": "Set of filters to apply if `path` refers to array elements or nested array\nelements in order to narrow down to a single unique element that is being\ntested\/modified.\nThis is intended to be an exact match per filter. To perform advanced\nmatching, use path_value_matchers.\n\n* Example: {\n  \"\/versions\/*\/name\" : \"it-123\"\n  \"\/versions\/*\/targetSize\/percent\": 20\n  }\n* Example: {\n  \"\/bindings\/*\/role\": \"roles\/admin\"\n  \"\/bindings\/*\/condition\" : null\n  }\n* Example: {\n  \"\/bindings\/*\/role\": \"roles\/admin\"\n  \"\/bindings\/*\/members\/*\" : [\"x@google.com\", \"y@google.com\"]\n  }\nWhen both path_filters and path_value_matchers are set, an implicit AND\nmust be performed.",
           "type": "object",
           "additionalProperties": {
             "type": "any"
@@ -522,7 +522,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Mark the Recommendation State as Claimed. Users can use this method to\nindicate to the Recommender API that they are starting to apply the\nrecommendation themselves. This stops the recommendation content from being\nupdated.\n\nMarkRecommendationClaimed can be applied to recommendations in CLAIMED,\nSUCCEEDED, FAILED, or ACTIVE state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender."
+                      "description": "Marks the Recommendation State as Claimed. Users can use this method to\nindicate to the Recommender API that they are starting to apply the\nrecommendation themselves. This stops the recommendation content from being\nupdated. Associated insights are frozen and placed in the ACCEPTED state.\n\nMarkRecommendationClaimed can be applied to recommendations in CLAIMED or\nACTIVE state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender."
                     },
                     "markSucceeded": {
                       "id": "recommender.projects.locations.recommenders.recommendations.markSucceeded",
@@ -550,7 +550,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Mark the Recommendation State as Succeeded. Users can use this method to\nindicate to the Recommender API that they have applied the recommendation\nthemselves, and the operation was successful. This stops the recommendation\ncontent from being updated.\n\nMarkRecommendationSucceeded can be applied to recommendations in ACTIVE,\nCLAIMED, SUCCEEDED, or FAILED state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender."
+                      "description": "Marks the Recommendation State as Succeeded. Users can use this method to\nindicate to the Recommender API that they have applied the recommendation\nthemselves, and the operation was successful. This stops the recommendation\ncontent from being updated. Associated insights are frozen and placed in\nthe ACCEPTED state.\n\nMarkRecommendationSucceeded can be applied to recommendations in ACTIVE,\nCLAIMED, SUCCEEDED, or FAILED state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender."
                     },
                     "markFailed": {
                       "id": "recommender.projects.locations.recommenders.recommendations.markFailed",
@@ -578,7 +578,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Mark the Recommendation State as Failed. Users can use this method to\nindicate to the Recommender API that they have applied the recommendation\nthemselves, and the operation failed. This stops the recommendation content\nfrom being updated.\n\nMarkRecommendationFailed can be applied to recommendations in ACTIVE,\nCLAIMED, SUCCEEDED, or FAILED state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender."
+                      "description": "Marks the Recommendation State as Failed. Users can use this method to\nindicate to the Recommender API that they have applied the recommendation\nthemselves, and the operation failed. This stops the recommendation content\nfrom being updated. Associated insights are frozen and placed in the\nACCEPTED state.\n\nMarkRecommendationFailed can be applied to recommendations in ACTIVE,\nCLAIMED, SUCCEEDED, or FAILED state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender."
                     }
                   }
                 }

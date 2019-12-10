@@ -35,8 +35,155 @@ class CloudassetV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.feeds = self.FeedsService(self)
     self.operations = self.OperationsService(self)
     self.v1 = self.V1Service(self)
+
+  class FeedsService(base_api.BaseApiService):
+    """Service class for the feeds resource."""
+
+    _NAME = u'feeds'
+
+    def __init__(self, client):
+      super(CloudassetV1.FeedsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a feed in a parent project/folder/organization to listen to its.
+asset updates.
+
+      Args:
+        request: (CloudassetFeedsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Feed) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/{v1Id}/{v1Id1}/feeds',
+        http_method=u'POST',
+        method_id=u'cloudasset.feeds.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/feeds',
+        request_field=u'createFeedRequest',
+        request_type_name=u'CloudassetFeedsCreateRequest',
+        response_type_name=u'Feed',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an asset feed.
+
+      Args:
+        request: (CloudassetFeedsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/{v1Id}/{v1Id1}/feeds/{feedsId}',
+        http_method=u'DELETE',
+        method_id=u'cloudasset.feeds.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'CloudassetFeedsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details about an asset feed.
+
+      Args:
+        request: (CloudassetFeedsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Feed) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/{v1Id}/{v1Id1}/feeds/{feedsId}',
+        http_method=u'GET',
+        method_id=u'cloudasset.feeds.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'CloudassetFeedsGetRequest',
+        response_type_name=u'Feed',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all asset feeds in a parent project/folder/organization.
+
+      Args:
+        request: (CloudassetFeedsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFeedsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/{v1Id}/{v1Id1}/feeds',
+        http_method=u'GET',
+        method_id=u'cloudasset.feeds.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/feeds',
+        request_field='',
+        request_type_name=u'CloudassetFeedsListRequest',
+        response_type_name=u'ListFeedsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an asset feed configuration.
+
+      Args:
+        request: (CloudassetFeedsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Feed) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/{v1Id}/{v1Id1}/feeds/{feedsId}',
+        http_method=u'PATCH',
+        method_id=u'cloudasset.feeds.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field=u'updateFeedRequest',
+        request_type_name=u'CloudassetFeedsPatchRequest',
+        response_type_name=u'Feed',
+        supports_download=False,
+    )
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""

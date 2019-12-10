@@ -68,17 +68,17 @@ class NodeGroupsClient(object):
         zone=node_group_ref.zone)
     return self._service.DeleteNodes(request)
 
-  def SetAutoscalingPolicy(self, node_group_ref, args):
+  def Patch(self, node_group_ref, args):
     """Sets the autoscaling policy on a node group."""
     autoscaling_policy_ref = util.BuildAutoscaling(args, self.messages)
-    set_request = self.messages.NodeGroupsSetAutoscalingPolicyRequest(
+    set_request = self.messages.NodeGroup(
         autoscalingPolicy=autoscaling_policy_ref)
-    request = self.messages.ComputeNodeGroupsSetAutoscalingPolicyRequest(
-        nodeGroupsSetAutoscalingPolicyRequest=set_request,
+    request = self.messages.ComputeNodeGroupsPatchRequest(
+        nodeGroupResource=set_request,
         nodeGroup=node_group_ref.Name(),
         project=node_group_ref.project,
         zone=node_group_ref.zone)
-    return self._service.SetAutoscalingPolicy(request)
+    return self._service.Patch(request)
 
   def _GetOperationsRef(self, operation):
     return self.resources.Parse(operation.selfLink,
@@ -114,8 +114,7 @@ class NodeGroupsClient(object):
       delete_nodes_ref = self._GetOperationsRef(operation)
 
     if autoscaling_policy_args:
-      operation = self.SetAutoscalingPolicy(node_group_ref,
-                                            autoscaling_policy_args)
+      operation = self.Patch(node_group_ref, autoscaling_policy_args)
       autoscaling_policy_ref = self._GetOperationsRef(operation)
 
     node_group_name = node_group_ref.Name()
@@ -137,18 +136,19 @@ class NodeGroupsClient(object):
 
     autoscaling_policy_str_list = []
     if autoscaling_policy_args:
-      if autoscaling_policy_args.mode:
-        mode_str = 'mode={0}'.format(autoscaling_policy_args.mode)
+      if autoscaling_policy_args.autoscaler_mode:
+        mode_str = 'autoscaler-mode={0}'.format(
+            autoscaling_policy_args.autoscaler_mode)
         autoscaling_policy_str_list.append(mode_str)
-      if autoscaling_policy_args.min_size:
-        min_str = 'min-size={0}'.format(autoscaling_policy_args.min_size)
+      if autoscaling_policy_args.IsSpecified('min_nodes'):
+        min_str = 'min-nodes={0}'.format(autoscaling_policy_args.min_nodes)
         autoscaling_policy_str_list.append(min_str)
-      if autoscaling_policy_args.max_size:
-        max_str = 'max-size={0}'.format(autoscaling_policy_args.max_size)
+      if autoscaling_policy_args.IsSpecified('max_nodes'):
+        max_str = 'max-nodes={0}'.format(autoscaling_policy_args.max_nodes)
         autoscaling_policy_str_list.append(max_str)
     autoscaling_policy_str = ','.join(autoscaling_policy_str_list)
     result = self._WaitForResult(
         operation_poller, autoscaling_policy_ref,
-        'Setting autoscaling policy on [{0}] to [{1}].'.format(
+        'Updating autoscaling policy on [{0}] to [{1}].'.format(
             node_group_name, autoscaling_policy_str)) or result
     return result

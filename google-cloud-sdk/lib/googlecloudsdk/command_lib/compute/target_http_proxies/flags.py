@@ -29,22 +29,12 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-class TargetHttpProxiesCompleter(compute_completers.ListCommandCompleter):
-
-  def __init__(self, **kwargs):
-    super(TargetHttpProxiesCompleter, self).__init__(
-        collection='compute.targetHttpProxies',
-        list_command='compute target-http-proxies list --uri',
-        **kwargs)
-
-
 class GlobalTargetHttpProxiesCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(GlobalTargetHttpProxiesCompleter, self).__init__(
         collection='compute.targetHttpProxies',
-        api_version='alpha',
-        list_command='alpha compute target-http-proxies list --global --uri',
+        list_command='compute target-http-proxies list --global --uri',
         **kwargs)
 
 
@@ -53,16 +43,14 @@ class RegionTargetHttpProxiesCompleter(compute_completers.ListCommandCompleter):
   def __init__(self, **kwargs):
     super(RegionTargetHttpProxiesCompleter, self).__init__(
         collection='compute.regionTargetHttpProxies',
-        api_version='alpha',
-        list_command=
-        'alpha compute target-http-proxies list --filter=region:* --uri',
+        list_command='compute target-http-proxies list --filter=region:* --uri',
         **kwargs)
 
 
-class TargetHttpProxiesCompleterAlpha(completers.MultiResourceCompleter):
+class TargetHttpProxiesCompleter(completers.MultiResourceCompleter):
 
   def __init__(self, **kwargs):
-    super(TargetHttpProxiesCompleterAlpha, self).__init__(
+    super(TargetHttpProxiesCompleter, self).__init__(
         completers=[
             GlobalTargetHttpProxiesCompleter, RegionTargetHttpProxiesCompleter
         ],
@@ -76,25 +64,20 @@ def AddProxyBind(parser, default):
       action='store_true',
       default=default,
       help="""\
-      This flag only applies when the load_balancing_scheme of the associated
+      This flag applies when the load_balancing_scheme of the associated
       backend service is INTERNAL_SELF_MANAGED. When specified, the envoy binds
-      to the IP address and port specified by the forwarding rule. By default
+      to the forwarding rule's IP address and port. By default,
       this flag is off.
       """)
 
 
-def TargetHttpProxyArgument(required=True,
-                            plural=False,
-                            include_l7_internal_load_balancing=False):
+def TargetHttpProxyArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='target HTTP proxy',
-      completer=TargetHttpProxiesCompleterAlpha
-      if include_l7_internal_load_balancing else TargetHttpProxiesCompleter,
+      completer=TargetHttpProxiesCompleter,
       plural=plural,
       custom_plural='target HTTP proxies',
       required=required,
       global_collection='compute.targetHttpProxies',
-      regional_collection='compute.regionTargetHttpProxies'
-      if include_l7_internal_load_balancing else None,
-      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
-      if include_l7_internal_load_balancing else None)
+      regional_collection='compute.regionTargetHttpProxies',
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)

@@ -2112,15 +2112,35 @@ class GetDebugConfigResponse(_messages.Message):
 class GetTemplateResponse(_messages.Message):
   r"""The response to a GetTemplate request.
 
+  Enums:
+    TemplateTypeValueValuesEnum: Template Type.
+
   Fields:
     metadata: The template metadata describing the template name, available
       parameters, etc.
+    runtimeMetadata: Describes the runtime metadata with SDKInfo and available
+      parameters.
     status: The status of the get template request. Any problems with the
       request will be indicated in the error_details.
+    templateType: Template Type.
   """
 
+  class TemplateTypeValueValuesEnum(_messages.Enum):
+    r"""Template Type.
+
+    Values:
+      UNKNOWN: Unknown Template Type.
+      LEGACY: Legacy Template.
+      FLEX: Flex Template.
+    """
+    UNKNOWN = 0
+    LEGACY = 1
+    FLEX = 2
+
   metadata = _messages.MessageField('TemplateMetadata', 1)
-  status = _messages.MessageField('Status', 2)
+  runtimeMetadata = _messages.MessageField('RuntimeMetadata', 2)
+  status = _messages.MessageField('Status', 3)
+  templateType = _messages.EnumField('TemplateTypeValueValuesEnum', 4)
 
 
 class Histogram(_messages.Message):
@@ -3353,20 +3373,53 @@ class Parameter(_messages.Message):
 class ParameterMetadata(_messages.Message):
   r"""Metadata for a specific parameter.
 
+  Enums:
+    ParamTypeValueValuesEnum: Optional. The type of the parameter. Used for
+      selecting input picker.
+
   Fields:
     helpText: Required. The help text to display for the parameter.
     isOptional: Optional. Whether the parameter is optional. Defaults to
       false.
     label: Required. The label to display for the parameter.
     name: Required. The name of the parameter.
+    paramType: Optional. The type of the parameter. Used for selecting input
+      picker.
     regexes: Optional. Regexes that the parameter must match.
   """
+
+  class ParamTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of the parameter. Used for selecting input picker.
+
+    Values:
+      DEFAULT: Default input type.
+      TEXT: The parameter specifies generic text input.
+      GCS_READ_BUCKET: The parameter specifies a GCS Bucket to read from.
+      GCS_WRITE_BUCKET: The parameter specifies a GCS Bucket to write to.
+      GCS_READ_FILE: The parameter specifies a GCS file path to read from.
+      GCS_WRITE_FILE: The parameter specifies a GCS file path to write to.
+      GCS_READ_FOLDER: The parameter specifies a GCS folder path to read from.
+      GCS_WRITE_FOLDER: The parameter specifies a GCS folder to write to.
+      PUBSUB_TOPIC: The parameter specifies a Pub/Sub Topic.
+      PUBSUB_SUBSCRIPTION: The parameter specifies a Pub/Sub Subscription.
+    """
+    DEFAULT = 0
+    TEXT = 1
+    GCS_READ_BUCKET = 2
+    GCS_WRITE_BUCKET = 3
+    GCS_READ_FILE = 4
+    GCS_WRITE_FILE = 5
+    GCS_READ_FOLDER = 6
+    GCS_WRITE_FOLDER = 7
+    PUBSUB_TOPIC = 8
+    PUBSUB_SUBSCRIPTION = 9
 
   helpText = _messages.StringField(1)
   isOptional = _messages.BooleanField(2)
   label = _messages.StringField(3)
   name = _messages.StringField(4)
-  regexes = _messages.StringField(5, repeated=True)
+  paramType = _messages.EnumField('ParamTypeValueValuesEnum', 5)
+  regexes = _messages.StringField(6, repeated=True)
 
 
 class PartialGroupByKeyInstruction(_messages.Message):
@@ -3808,6 +3861,45 @@ class RuntimeEnvironment(_messages.Message):
   workerRegion = _messages.StringField(13)
   workerZone = _messages.StringField(14)
   zone = _messages.StringField(15)
+
+
+class RuntimeMetadata(_messages.Message):
+  r"""RuntimeMetadata describing a runtime environment.
+
+  Fields:
+    parameters: The parameters for the template.
+    sdkInfo: SDK Info for the template.
+  """
+
+  parameters = _messages.MessageField('ParameterMetadata', 1, repeated=True)
+  sdkInfo = _messages.MessageField('SDKInfo', 2)
+
+
+class SDKInfo(_messages.Message):
+  r"""SDK Information.
+
+  Enums:
+    LanguageValueValuesEnum: Required. The SDK Language.
+
+  Fields:
+    language: Required. The SDK Language.
+    version: Optional. The SDK version.
+  """
+
+  class LanguageValueValuesEnum(_messages.Enum):
+    r"""Required. The SDK Language.
+
+    Values:
+      UNKNOWN: UNKNOWN Language.
+      JAVA: Java.
+      PYTHON: Python.
+    """
+    UNKNOWN = 0
+    JAVA = 1
+    PYTHON = 2
+
+  language = _messages.EnumField('LanguageValueValuesEnum', 1)
+  version = _messages.StringField(2)
 
 
 class SdkVersion(_messages.Message):

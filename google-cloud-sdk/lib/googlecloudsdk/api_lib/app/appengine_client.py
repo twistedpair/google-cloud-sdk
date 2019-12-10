@@ -17,9 +17,12 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import print_function
 from __future__ import unicode_literals
 
 from __future__ import with_statement
+
+import json
 
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import yaml_parsing
@@ -222,8 +225,9 @@ class AppengineClient(object):
     Args:
       index_yaml: The parsed yaml file with index data.
     """
+    payload = json.dumps(index_yaml.ToDict())
     self._GetRpcServer().Send('/api/datastore/index/add',
-                              app_id=self.project, payload=index_yaml.ToYAML())
+                              app_id=self.project, payload=payload)
 
   def UpdateQueues(self, queue_yaml):
     """Updates any new or changed task queue definitions.

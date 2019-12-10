@@ -2340,6 +2340,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Wait(self, request, global_params=None):
+      r"""Waits for the specified Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE.
+
+      Args:
+        request: (ComputeGlobalOperationsWaitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Wait')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Wait.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.globalOperations.wait',
+        ordered_params=[u'project', u'operation'],
+        path_params=[u'operation', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/operations/{operation}/wait',
+        request_field='',
+        request_type_name=u'ComputeGlobalOperationsWaitRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class HealthChecksService(base_api.BaseApiService):
     """Service class for the healthChecks resource."""
 
@@ -3199,6 +3225,32 @@ You can specify a maximum of 1000 instances with this method per request.
         request_field='',
         request_type_name=u'ComputeInstanceGroupManagersAggregatedListRequest',
         response_type_name=u'InstanceGroupManagerAggregatedList',
+        supports_download=False,
+    )
+
+    def CreateInstances(self, request, global_params=None):
+      r"""Creates instances with per-instance configs in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
+
+      Args:
+        request: (ComputeInstanceGroupManagersCreateInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CreateInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instanceGroupManagers.createInstances',
+        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/createInstances',
+        request_field=u'instanceGroupManagersCreateInstancesRequest',
+        request_type_name=u'ComputeInstanceGroupManagersCreateInstancesRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -4996,7 +5048,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.interconnectAttachments.insert',
         ordered_params=[u'project', u'region'],
         path_params=[u'project', u'region'],
-        query_params=[u'requestId'],
+        query_params=[u'requestId', u'validateOnly'],
         relative_path=u'projects/{project}/regions/{region}/interconnectAttachments',
         request_field=u'interconnectAttachment',
         request_type_name=u'ComputeInterconnectAttachmentsInsertRequest',
@@ -6007,6 +6059,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeNetworksListRequest',
         response_type_name=u'NetworkList',
+        supports_download=False,
+    )
+
+    def ListPeeringRoutes(self, request, global_params=None):
+      r"""Lists the peering routes exchanged over peering connection.
+
+      Args:
+        request: (ComputeNetworksListPeeringRoutesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExchangedPeeringRoutesList) The response message.
+      """
+      config = self.GetMethodConfig('ListPeeringRoutes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListPeeringRoutes.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.networks.listPeeringRoutes',
+        ordered_params=[u'project', u'network'],
+        path_params=[u'network', u'project'],
+        query_params=[u'direction', u'filter', u'maxResults', u'orderBy', u'pageToken', u'peeringName', u'region'],
+        relative_path=u'projects/{project}/global/networks/{network}/listPeeringRoutes',
+        request_field='',
+        request_type_name=u'ComputeNetworksListPeeringRoutesRequest',
+        response_type_name=u'ExchangedPeeringRoutesList',
         supports_download=False,
     )
 
@@ -8100,6 +8178,32 @@ You can specify a maximum of 1000 instances with this method per request.
         supports_download=False,
     )
 
+    def CreateInstances(self, request, global_params=None):
+      r"""Creates instances with per-instance configs in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersCreateInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CreateInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionInstanceGroupManagers.createInstances',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/createInstances',
+        request_field=u'regionInstanceGroupManagersCreateInstancesRequest',
+        request_type_name=u'ComputeRegionInstanceGroupManagersCreateInstancesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified managed instance group and all of the instances in that group.
 
@@ -8599,6 +8703,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeRegionOperationsListRequest',
         response_type_name=u'OperationList',
+        supports_download=False,
+    )
+
+    def Wait(self, request, global_params=None):
+      r"""Waits for the specified region-specific Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE.
+
+      Args:
+        request: (ComputeRegionOperationsWaitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Wait')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Wait.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionOperations.wait',
+        ordered_params=[u'project', u'region', u'operation'],
+        path_params=[u'operation', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/operations/{operation}/wait',
+        request_field='',
+        request_type_name=u'ComputeRegionOperationsWaitRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -13245,6 +13375,32 @@ For more information, see Deleting snapshots.
         request_field='',
         request_type_name=u'ComputeZoneOperationsListRequest',
         response_type_name=u'OperationList',
+        supports_download=False,
+    )
+
+    def Wait(self, request, global_params=None):
+      r"""Waits for the specified zone-specific Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE.
+
+      Args:
+        request: (ComputeZoneOperationsWaitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Wait')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Wait.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.zoneOperations.wait',
+        ordered_params=[u'project', u'zone', u'operation'],
+        path_params=[u'operation', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/operations/{operation}/wait',
+        request_field='',
+        request_type_name=u'ComputeZoneOperationsWaitRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
