@@ -40,6 +40,8 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import http
 
+import six
+
 
 class Error(core_exc.Error):
   """Base exception for storage API module."""
@@ -64,7 +66,7 @@ def _GetMimetype(local_path):
 
 def _GetFileSize(local_path):
   try:
-    return os.path.getsize(local_path)
+    return os.path.getsize(six.ensure_str(local_path))
   except os.error:
     raise exceptions.BadFileException('[{0}] not found or not accessible'
                                       .format(local_path))
@@ -180,7 +182,7 @@ class StorageClient(object):
 
     chunksize = self._GetChunkSize()
     upload = transfer.Upload.FromFile(
-        local_path, mime_type=mime_type, chunksize=chunksize)
+        six.ensure_str(local_path), mime_type=mime_type, chunksize=chunksize)
     insert_req = self.messages.StorageObjectsInsertRequest(
         bucket=target_obj_ref.bucket,
         name=target_obj_ref.object,

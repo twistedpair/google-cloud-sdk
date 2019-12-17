@@ -135,7 +135,7 @@ class Binding(_messages.Message):
       example, `admins@example.com`.  *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
-      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
       retains the role in the binding.  *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
@@ -1469,10 +1469,9 @@ class Operation(_messages.Message):
   operations, use the globalOperations resource.  - For regional operations,
   use the regionOperations resource.  - For zonal operations, use the
   zonalOperations resource.    For more information, read  Global, Regional,
-  and Zonal Resources. (== resource_for v1.globalOperations ==) (==
-  resource_for beta.globalOperations ==) (== resource_for v1.regionOperations
-  ==) (== resource_for beta.regionOperations ==) (== resource_for
-  v1.zoneOperations ==) (== resource_for beta.zoneOperations ==)
+  and Zonal Resources. (== resource_for {$api_version}.globalOperations ==)
+  (== resource_for {$api_version}.regionOperations ==) (== resource_for
+  {$api_version}.zoneOperations ==)
 
   Messages:
     ErrorValue: [Output Only] If errors are generated during processing of the
@@ -2184,6 +2183,13 @@ class TypeProvider(_messages.Message):
     collectionOverrides: Allows resource handling overrides for specific
       collections
     credential: Credential used when interacting with this type.
+    customCertificateAuthorityRoots: List of up to 2 custom certificate
+      authority roots to use for TLS authentication when making calls on
+      behalf of this type provider. If set, TLS authentication will
+      exclusively use these roots instead of relying on publicly trusted
+      certificate authorities when validating TLS certificate authenticity.
+      The certificates must be in base64-encoded PEM format. The maximum size
+      of each certificate must not exceed 10KB.
     description: An optional textual description of the resource; provided by
       the client when the resource is created.
     descriptorUrl: Descriptor Url for the this type provider.
@@ -2210,15 +2216,16 @@ class TypeProvider(_messages.Message):
 
   collectionOverrides = _messages.MessageField('CollectionOverride', 1, repeated=True)
   credential = _messages.MessageField('Credential', 2)
-  description = _messages.StringField(3)
-  descriptorUrl = _messages.StringField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  insertTime = _messages.StringField(6)
-  labels = _messages.MessageField('TypeProviderLabelEntry', 7, repeated=True)
-  name = _messages.StringField(8)
-  operation = _messages.MessageField('Operation', 9)
-  options = _messages.MessageField('Options', 10)
-  selfLink = _messages.StringField(11)
+  customCertificateAuthorityRoots = _messages.StringField(3, repeated=True)
+  description = _messages.StringField(4)
+  descriptorUrl = _messages.StringField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  insertTime = _messages.StringField(7)
+  labels = _messages.MessageField('TypeProviderLabelEntry', 8, repeated=True)
+  name = _messages.StringField(9)
+  operation = _messages.MessageField('Operation', 10)
+  options = _messages.MessageField('Options', 11)
+  selfLink = _messages.StringField(12)
 
 
 class TypeProviderLabelEntry(_messages.Message):

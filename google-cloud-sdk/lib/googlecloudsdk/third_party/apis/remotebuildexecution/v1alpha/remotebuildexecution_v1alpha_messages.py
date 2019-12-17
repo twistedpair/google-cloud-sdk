@@ -805,6 +805,32 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
   message = _messages.StringField(2)
 
 
+class GoogleDevtoolsRemotebuildbotResourceUsage(_messages.Message):
+  r"""ResourceUsage is the system resource usage of the host machine.
+
+  Fields:
+    cpuUsedPercent: A number attribute.
+    diskUsage: A GoogleDevtoolsRemotebuildbotResourceUsageStat attribute.
+    memoryUsage: A GoogleDevtoolsRemotebuildbotResourceUsageStat attribute.
+  """
+
+  cpuUsedPercent = _messages.FloatField(1)
+  diskUsage = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageStat', 2)
+  memoryUsage = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageStat', 3)
+
+
+class GoogleDevtoolsRemotebuildbotResourceUsageStat(_messages.Message):
+  r"""A GoogleDevtoolsRemotebuildbotResourceUsageStat object.
+
+  Fields:
+    total: A string attribute.
+    used: A string attribute.
+  """
+
+  total = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
+  used = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
+
+
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaAcceleratorConfig(_messages.Message):
   r"""AcceleratorConfig defines the accelerator cards to attach to the VM.
 
@@ -1059,7 +1085,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
       https://cloud.google.com/compute/docs/disks/
     diskType: Required. Disk Type to use for the worker. See [Storage
       options](https://cloud.google.com/compute/docs/disks/#introduction).
-      Currently only `pd-standard` is supported.
+      Currently only `pd-standard` and `pd-ssd` are supported.
     labels: Labels associated with the workers. Label keys and values can be
       no longer than 63 characters, can only contain lowercase letters,
       numeric characters, underscores and dashes. International letters are

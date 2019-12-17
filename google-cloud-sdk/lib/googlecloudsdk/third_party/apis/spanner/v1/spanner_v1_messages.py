@@ -70,7 +70,7 @@ class Binding(_messages.Message):
       that represents a Google group.    For example, `admins@example.com`.  *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
-      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
       retains the role in the binding.  *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
@@ -606,13 +606,17 @@ class Instance(_messages.Message):
     displayName: Required. The descriptive name for this instance as it
       appears in UIs. Must be unique per project and between 4 and 30
       characters in length.
-    endpointUris: Output only. The endpoint URIs based on the instance config.
-      For example, instances located in a specific cloud region (or multi
-      region) such as nam3, would have a nam3 specific endpoint URI. This URI
-      is to be used implictly by SDK clients, with fallback to default URI.
-      These endpoints are intended to optimize the network routing between the
-      client and the instance's serving resources. If multiple endpoints are
-      present, client may establish connections using any of the given URIs.
+    endpointUris: Output only. A set of endpoint URIs based on your instance
+      config that you can use instead of the global endpoint
+      `spanner.googleapis.com`.  For example, if your instance config is `us-
+      central1` (a regional config in Iowa), then your instance specific
+      endpoints may include `us-central1-spanner.googleapis.com`. By calling
+      these endpoints instead of the global endpoint, you optimize network
+      routing which could reduce network latency.  The client libraries, JDBC
+      drivers, and other SDK clients automatically call these instance
+      specific endpoints.  If you are using DNS whitelists, firewalls, or
+      filtering to control access to endpoints, make sure you grant access to
+      `*spanner.googleapis.com`.
     labels: Cloud Labels are a flexible and lightweight mechanism for
       organizing cloud resources into groups that reflect a customer's
       organizational needs and deployment strategies. Cloud Labels can be used
@@ -896,7 +900,10 @@ class Mutation(_messages.Message):
       write or transaction fails with error `ALREADY_EXISTS`.
     insertOrUpdate: Like insert, except that if the row already exists, then
       its column values are overwritten with the ones provided. Any column
-      values not explicitly written are preserved.
+      values not explicitly written are preserved.  When using
+      insert_or_update, just as when using insert, all `NOT NULL` columns in
+      the table must be given a value. This holds true even when the row
+      already exists and will therefore actually be updated.
     replace: Like insert, except that if the row already exists, it is
       deleted, and the column values provided are inserted instead. Unlike
       insert_or_update, this means any values not explicitly written become
@@ -2421,10 +2428,9 @@ class SpannerProjectsInstancesGetRequest(_messages.Message):
   r"""A SpannerProjectsInstancesGetRequest object.
 
   Fields:
-    fieldMask: If field_mask is present, specifies the subset of
-      [][google.spanner.admin.instance.v1.Instance] fields that should be
-      returned. If absent, all [][google.spanner.admin.instance.v1.Instance]
-      fields are returned.
+    fieldMask: If field_mask is present, specifies the subset of Instance
+      fields that should be returned. If absent, all Instance fields are
+      returned.
     name: Required. The name of the requested instance. Values are of the form
       `projects/<project>/instances/<instance>`.
   """
@@ -3164,16 +3170,13 @@ class UpdateInstanceRequest(_messages.Message):
   r"""The request for UpdateInstance.
 
   Fields:
-    fieldMask: Required. A mask specifying which fields in
-      [][google.spanner.admin.instance.v1.UpdateInstanceRequest.instance]
-      should be updated. The field mask must always be specified; this
-      prevents any future fields in
-      [][google.spanner.admin.instance.v1.Instance] from being erased
-      accidentally by clients that do not know about them.
+    fieldMask: Required. A mask specifying which fields in Instance should be
+      updated. The field mask must always be specified; this prevents any
+      future fields in Instance from being erased accidentally by clients that
+      do not know about them.
     instance: Required. The instance to update, which must always include the
-      instance name.  Otherwise, only fields mentioned in
-      [][google.spanner.admin.instance.v1.UpdateInstanceRequest.field_mask]
-      need be included.
+      instance name.  Otherwise, only fields mentioned in field_mask need be
+      included.
   """
 
   fieldMask = _messages.StringField(1)

@@ -230,7 +230,7 @@
     },
     "Membership": {
       "id": "Membership",
-      "description": "Membership contains information about a member cluster.\nNext tag: 10",
+      "description": "Membership contains information about a member cluster.\nNext tag: 11",
       "type": "object",
       "properties": {
         "name": {
@@ -269,6 +269,10 @@
           "description": "Output only. Timestamp for when the Membership was deleted.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "externalId": {
+          "description": "An externally-generated and managed ID for this Membership. This ID may\nstill be modified after creation but it is not recommended to do so.\nThe ID must match the regex: `a-zA-Z0-9*`",
+          "type": "string"
         }
       }
     },

@@ -631,7 +631,7 @@ class Location(_messages.Message):
 
 
 class Membership(_messages.Message):
-  r"""Membership contains information about a member cluster. Next tag: 10
+  r"""Membership contains information about a member cluster. Next tag: 11
 
   Messages:
     LabelsValue: GCP labels for this membership.
@@ -642,6 +642,9 @@ class Membership(_messages.Message):
     description: Required. Description of this membership, limited to 63
       characters. It must match the regex: `a-zA-Z0-9*`
     endpoint: A MembershipEndpoint attribute.
+    externalId: An externally-generated and managed ID for this Membership.
+      This ID may still be modified after creation but it is not recommended
+      to do so. The ID must match the regex: `a-zA-Z0-9*`
     labels: GCP labels for this membership.
     name: Output only. The unique name of this domain resource in the format:
       `projects/[project_id]/locations/global/memberships/[membership_id]`.
@@ -685,10 +688,11 @@ class Membership(_messages.Message):
   deleteTime = _messages.StringField(2)
   description = _messages.StringField(3)
   endpoint = _messages.MessageField('MembershipEndpoint', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  state = _messages.MessageField('MembershipState', 7)
-  updateTime = _messages.StringField(8)
+  externalId = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  state = _messages.MessageField('MembershipState', 8)
+  updateTime = _messages.StringField(9)
 
 
 class MembershipEndpoint(_messages.Message):

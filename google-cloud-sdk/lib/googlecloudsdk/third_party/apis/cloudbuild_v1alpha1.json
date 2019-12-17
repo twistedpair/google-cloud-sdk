@@ -177,7 +177,7 @@
             "Status of the `WorkerPool` is unknown.",
             "`WorkerPool` is being created.",
             "`WorkerPool` is running.",
-            "`WorkerPool` is being deleting: cancelling builds and draining workers.",
+            "`WorkerPool` is being deleted: cancelling builds and draining workers.",
             "`WorkerPool` is deleted."
           ],
           "type": "string",

@@ -164,7 +164,7 @@ def _GetDomain(account):
 
 
 def GetDefaultPolicy():
-  """Gets the default policy for the current account."""
+  """Gets the ID of the default policy for the current account."""
   account = properties.VALUES.core.account.Get()
   if not account:
     log.info('Unable to automatically resolve policy since account property '
@@ -186,4 +186,4 @@ def GetDefaultPolicy():
       log.info('Unable to automatically resolve policy: %s', err)
       return None
 
-  return policy_ref.RelativeName()
+  return policy_ref.Name()

@@ -52,6 +52,12 @@ def _ReadNoProxyWithCleanFailures(uri, http_errors_to_ignore=()):
   except urllib.error.HTTPError as e:
     if e.code in http_errors_to_ignore:
       return None
+    if e.code == 403:
+      raise MetadataServerException(
+          'The request is rejected. Please check if the metadata server is '
+          'concealed.\n'
+          'See https://cloud.google.com/kubernetes-engine/docs/how-to/protecting-cluster-metadata#concealment '
+          'for more information about metadata server concealment.')
     raise MetadataServerException(e)
   except urllib.error.URLError as e:
     raise CannotConnectToMetadataServerException(e)
@@ -87,7 +93,6 @@ class _GCEMetadata(object):
 
   Attributes:
       connected: bool, True if the metadata server is available.
-
   """
 
   def __init__(self):

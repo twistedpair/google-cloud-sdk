@@ -421,6 +421,36 @@ service.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Patches specified subset of the settings that control the specified.
+customer's usage of the service.  Attempts to update a field not
+controlled by the caller will result in an access denied error.
+
+Operation<response: CustomerSettings>
+
+      Args:
+        request: (ServicemanagementServicesCustomerSettingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'servicemanagement.services.customerSettings.patch',
+        ordered_params=[u'serviceName', u'customerId'],
+        path_params=[u'customerId', u'serviceName'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/services/{serviceName}/customerSettings/{customerId}',
+        request_field=u'customerSettings',
+        request_type_name=u'ServicemanagementServicesCustomerSettingsPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ServicesProjectSettingsService(base_api.BaseApiService):
     """Service class for the services_projectSettings resource."""
 

@@ -17,8 +17,8 @@ class AllocateIdsRequest(_messages.Message):
   r"""The request for Datastore.AllocateIds.
 
   Fields:
-    keys: A list of keys with incomplete key paths for which to allocate IDs.
-      No key may be reserved/read-only.
+    keys: Required. A list of keys with incomplete key paths for which to
+      allocate IDs. No key may be reserved/read-only.
   """
 
   keys = _messages.MessageField('Key', 1, repeated=True)
@@ -153,7 +153,8 @@ class DatastoreProjectsAllocateIdsRequest(_messages.Message):
   Fields:
     allocateIdsRequest: A AllocateIdsRequest resource to be passed as the
       request body.
-    projectId: The ID of the project against which to make the request.
+    projectId: Required. The ID of the project against which to make the
+      request.
   """
 
   allocateIdsRequest = _messages.MessageField('AllocateIdsRequest', 1)
@@ -166,7 +167,8 @@ class DatastoreProjectsBeginTransactionRequest(_messages.Message):
   Fields:
     beginTransactionRequest: A BeginTransactionRequest resource to be passed
       as the request body.
-    projectId: The ID of the project against which to make the request.
+    projectId: Required. The ID of the project against which to make the
+      request.
   """
 
   beginTransactionRequest = _messages.MessageField('BeginTransactionRequest', 1)
@@ -178,7 +180,8 @@ class DatastoreProjectsCommitRequest(_messages.Message):
 
   Fields:
     commitRequest: A CommitRequest resource to be passed as the request body.
-    projectId: The ID of the project against which to make the request.
+    projectId: Required. The ID of the project against which to make the
+      request.
   """
 
   commitRequest = _messages.MessageField('CommitRequest', 1)
@@ -192,7 +195,7 @@ class DatastoreProjectsExportRequest(_messages.Message):
     googleDatastoreAdminV1ExportEntitiesRequest: A
       GoogleDatastoreAdminV1ExportEntitiesRequest resource to be passed as the
       request body.
-    projectId: Project ID against which to make the request.
+    projectId: Required. Project ID against which to make the request.
   """
 
   googleDatastoreAdminV1ExportEntitiesRequest = _messages.MessageField('GoogleDatastoreAdminV1ExportEntitiesRequest', 1)
@@ -206,7 +209,7 @@ class DatastoreProjectsImportRequest(_messages.Message):
     googleDatastoreAdminV1ImportEntitiesRequest: A
       GoogleDatastoreAdminV1ImportEntitiesRequest resource to be passed as the
       request body.
-    projectId: Project ID against which to make the request.
+    projectId: Required. Project ID against which to make the request.
   """
 
   googleDatastoreAdminV1ImportEntitiesRequest = _messages.MessageField('GoogleDatastoreAdminV1ImportEntitiesRequest', 1)
@@ -260,7 +263,8 @@ class DatastoreProjectsLookupRequest(_messages.Message):
 
   Fields:
     lookupRequest: A LookupRequest resource to be passed as the request body.
-    projectId: The ID of the project against which to make the request.
+    projectId: Required. The ID of the project against which to make the
+      request.
   """
 
   lookupRequest = _messages.MessageField('LookupRequest', 1)
@@ -317,7 +321,8 @@ class DatastoreProjectsReserveIdsRequest(_messages.Message):
   r"""A DatastoreProjectsReserveIdsRequest object.
 
   Fields:
-    projectId: The ID of the project against which to make the request.
+    projectId: Required. The ID of the project against which to make the
+      request.
     reserveIdsRequest: A ReserveIdsRequest resource to be passed as the
       request body.
   """
@@ -330,7 +335,8 @@ class DatastoreProjectsRollbackRequest(_messages.Message):
   r"""A DatastoreProjectsRollbackRequest object.
 
   Fields:
-    projectId: The ID of the project against which to make the request.
+    projectId: Required. The ID of the project against which to make the
+      request.
     rollbackRequest: A RollbackRequest resource to be passed as the request
       body.
   """
@@ -343,7 +349,8 @@ class DatastoreProjectsRunQueryRequest(_messages.Message):
   r"""A DatastoreProjectsRunQueryRequest object.
 
   Fields:
-    projectId: The ID of the project against which to make the request.
+    projectId: Required. The ID of the project against which to make the
+      request.
     runQueryRequest: A RunQueryRequest resource to be passed as the request
       body.
   """
@@ -597,16 +604,17 @@ class GoogleDatastoreAdminV1ExportEntitiesRequest(_messages.Message):
     entityFilter: Description of what data from the project is included in the
       export.
     labels: Client-assigned labels.
-    outputUrlPrefix: Location for the export metadata and data files.  The
-      full resource URL of the external storage location. Currently, only
-      Google Cloud Storage is supported. So output_url_prefix should be of the
-      form: `gs://BUCKET_NAME[/NAMESPACE_PATH]`, where `BUCKET_NAME` is the
-      name of the Cloud Storage bucket and `NAMESPACE_PATH` is an optional
-      Cloud Storage namespace path (this is not a Cloud Datastore namespace).
-      For more information about Cloud Storage namespace paths, see [Object
-      name considerations](https://cloud.google.com/storage/docs/naming
-      #object-considerations).  The resulting files will be nested deeper than
-      the specified URL prefix. The final output URL will be provided in the
+    outputUrlPrefix: Required. Location for the export metadata and data
+      files.  The full resource URL of the external storage location.
+      Currently, only Google Cloud Storage is supported. So output_url_prefix
+      should be of the form: `gs://BUCKET_NAME[/NAMESPACE_PATH]`, where
+      `BUCKET_NAME` is the name of the Cloud Storage bucket and
+      `NAMESPACE_PATH` is an optional Cloud Storage namespace path (this is
+      not a Cloud Datastore namespace). For more information about Cloud
+      Storage namespace paths, see [Object name
+      considerations](https://cloud.google.com/storage/docs/naming#object-
+      considerations).  The resulting files will be nested deeper than the
+      specified URL prefix. The final output URL will be provided in the
       google.datastore.admin.v1.ExportEntitiesResponse.output_url field. That
       value should be used for subsequent ImportEntities operations.  By
       nesting the data files deeper, the same Cloud Storage bucket can be used
@@ -688,9 +696,9 @@ class GoogleDatastoreAdminV1ImportEntitiesRequest(_messages.Message):
       used in creating the export, otherwise a FAILED_PRECONDITION error will
       be returned. If no filter is specified then all entities from the export
       are imported.
-    inputUrl: The full resource URL of the external storage location.
-      Currently, only Google Cloud Storage is supported. So input_url should
-      be of the form:
+    inputUrl: Required. The full resource URL of the external storage
+      location. Currently, only Google Cloud Storage is supported. So
+      input_url should be of the form:
       `gs://BUCKET_NAME[/NAMESPACE_PATH]/OVERALL_EXPORT_METADATA_FILE`, where
       `BUCKET_NAME` is the name of the Cloud Storage bucket, `NAMESPACE_PATH`
       is an optional Cloud Storage namespace path (this is not a Cloud
@@ -736,24 +744,24 @@ class GoogleDatastoreAdminV1Index(_messages.Message):
   r"""A minimal index definition.
 
   Enums:
-    AncestorValueValuesEnum: The index's ancestor mode.  Must not be
-      ANCESTOR_MODE_UNSPECIFIED. Required.
-    StateValueValuesEnum: The state of the index. Output only.
+    AncestorValueValuesEnum: Required. The index's ancestor mode.  Must not be
+      ANCESTOR_MODE_UNSPECIFIED.
+    StateValueValuesEnum: Output only. The state of the index.
 
   Fields:
-    ancestor: The index's ancestor mode.  Must not be
-      ANCESTOR_MODE_UNSPECIFIED. Required.
-    indexId: The resource ID of the index. Output only.
-    kind: The entity kind to which this index applies. Required.
-    projectId: Project ID. Output only.
-    properties: An ordered sequence of property names and their index
-      attributes. Required.
-    state: The state of the index. Output only.
+    ancestor: Required. The index's ancestor mode.  Must not be
+      ANCESTOR_MODE_UNSPECIFIED.
+    indexId: Output only. The resource ID of the index.
+    kind: Required. The entity kind to which this index applies.
+    projectId: Output only. Project ID.
+    properties: Required. An ordered sequence of property names and their
+      index attributes.
+    state: Output only. The state of the index.
   """
 
   class AncestorValueValuesEnum(_messages.Enum):
-    r"""The index's ancestor mode.  Must not be ANCESTOR_MODE_UNSPECIFIED.
-    Required.
+    r"""Required. The index's ancestor mode.  Must not be
+    ANCESTOR_MODE_UNSPECIFIED.
 
     Values:
       ANCESTOR_MODE_UNSPECIFIED: The ancestor mode is unspecified.
@@ -765,7 +773,7 @@ class GoogleDatastoreAdminV1Index(_messages.Message):
     ALL_ANCESTORS = 2
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The state of the index. Output only.
+    r"""Output only. The state of the index.
 
     Values:
       STATE_UNSPECIFIED: The state is unspecified.
@@ -816,18 +824,18 @@ class GoogleDatastoreAdminV1IndexedProperty(_messages.Message):
   r"""A property of an index.
 
   Enums:
-    DirectionValueValuesEnum: The indexed property's direction.  Must not be
-      DIRECTION_UNSPECIFIED. Required.
+    DirectionValueValuesEnum: Required. The indexed property's direction.
+      Must not be DIRECTION_UNSPECIFIED.
 
   Fields:
-    direction: The indexed property's direction.  Must not be
-      DIRECTION_UNSPECIFIED. Required.
-    name: The property name to index. Required.
+    direction: Required. The indexed property's direction.  Must not be
+      DIRECTION_UNSPECIFIED.
+    name: Required. The property name to index.
   """
 
   class DirectionValueValuesEnum(_messages.Enum):
-    r"""The indexed property's direction.  Must not be DIRECTION_UNSPECIFIED.
-    Required.
+    r"""Required. The indexed property's direction.  Must not be
+    DIRECTION_UNSPECIFIED.
 
     Values:
       DIRECTION_UNSPECIFIED: The direction is unspecified.
@@ -1309,7 +1317,7 @@ class LookupRequest(_messages.Message):
   r"""The request for Datastore.Lookup.
 
   Fields:
-    keys: Keys of entities to look up.
+    keys: Required. Keys of entities to look up.
     readOptions: The options for this lookup request.
   """
 
@@ -1675,8 +1683,8 @@ class ReserveIdsRequest(_messages.Message):
   Fields:
     databaseId: If not empty, the ID of the database against which to make the
       request.
-    keys: A list of keys with complete key paths whose numeric IDs should not
-      be auto-allocated.
+    keys: Required. A list of keys with complete key paths whose numeric IDs
+      should not be auto-allocated.
   """
 
   databaseId = _messages.StringField(1)
@@ -1691,7 +1699,7 @@ class RollbackRequest(_messages.Message):
   r"""The request for Datastore.Rollback.
 
   Fields:
-    transaction: The transaction identifier, returned by a call to
+    transaction: Required. The transaction identifier, returned by a call to
       Datastore.BeginTransaction.
   """
 

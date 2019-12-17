@@ -48,9 +48,8 @@ class PolicytroubleshooterV1(base_api.BaseApiClient):
           }
 
     def Troubleshoot(self, request, global_params=None):
-      r"""Perform a check on whether a member is granted a permission.
-on a resource and how that grant/deny is determined accordinga
-to the resource's effective IAM policy interpretation.
+      r"""Checks whether a member has a specific permission for a specific resource,.
+and explains why the member does or does not have that permission.
 
       Args:
         request: (GoogleCloudPolicytroubleshooterV1TroubleshootIamPolicyRequest) input message

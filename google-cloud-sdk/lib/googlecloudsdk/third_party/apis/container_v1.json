@@ -449,6 +449,14 @@
             "$ref": "NodeTaint"
           }
         },
+        "sandboxConfig": {
+          "description": "Sandbox configuration for this node.",
+          "$ref": "SandboxConfig"
+        },
+        "reservationAffinity": {
+          "description": "The optional reservation affinity. Setting this field will apply\nthe specified [Zonal Compute\nReservation](\/compute\/docs\/instances\/reserving-zonal-resources)\nto this node pool.",
+          "$ref": "ReservationAffinity"
+        },
         "shieldedInstanceConfig": {
           "description": "Shielded Instance options.",
           "$ref": "ShieldedInstanceConfig"
@@ -518,6 +526,59 @@
             "PREFER_NO_SCHEDULE",
             "NO_EXECUTE"
           ]
+        }
+      }
+    },
+    "SandboxConfig": {
+      "id": "SandboxConfig",
+      "description": "SandboxConfig contains configurations of the sandbox to use for the node.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Type of the sandbox to use for the node.",
+          "enumDescriptions": [
+            "Default value. This should not be used.",
+            "Run sandbox using gvisor."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "GVISOR"
+          ]
+        }
+      }
+    },
+    "ReservationAffinity": {
+      "id": "ReservationAffinity",
+      "description": "[ReservationAffinity](\/compute\/docs\/instances\/reserving-zonal-resources) is\nthe configuration of desired reservation which instances could take\ncapacity from.",
+      "type": "object",
+      "properties": {
+        "consumeReservationType": {
+          "description": "Corresponds to the type of reservation consumption.",
+          "enumDescriptions": [
+            "Default value. This should not be used.",
+            "Do not consume from any reserved capacity.",
+            "Consume any reservation available.",
+            "Must consume from a specific reservation. Must specify key value fields\nfor specifying the reservations."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "NO_RESERVATION",
+            "ANY_RESERVATION",
+            "SPECIFIC_RESERVATION"
+          ]
+        },
+        "key": {
+          "description": "Corresponds to the label key of reservation resource.",
+          "type": "string"
+        },
+        "values": {
+          "description": "Corresponds to the label value(s) of reservation resource(s).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

@@ -117,6 +117,7 @@ spec:
           value: "8080"
         ports:
         - containerPort: 8080
+      terminationGracePeriodSeconds: 0
 ---
 apiVersion: v1
 kind: Service

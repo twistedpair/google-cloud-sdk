@@ -253,6 +253,10 @@
         "meteringFeatureSpec": {
           "$ref": "MeteringFeatureSpec"
         },
+        "multiclusterservicediscoveryFeatureSpec": {
+          "description": "An EAP feature for GKE multi-cluster service discovery.",
+          "$ref": "MultiClusterServiceDiscoveryFeatureSpec"
+        },
         "featureState": {
           "description": "Output only. State of the resource itself.",
           "$ref": "FeatureState"
@@ -305,6 +309,13 @@
     "MeteringFeatureSpec": {
       "id": "MeteringFeatureSpec",
       "description": "An empty spec for metering feature. This is required since Feature proto\nrequires a spec.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "MultiClusterServiceDiscoveryFeatureSpec": {
+      "id": "MultiClusterServiceDiscoveryFeatureSpec",
+      "description": "An empty spec for multi-cluster service discovery feature. This is required\nsince Feature proto requires a spec.",
       "type": "object",
       "properties": {
       }
@@ -379,6 +390,9 @@
         "meteringFeatureState": {
           "$ref": "MeteringFeatureState"
         },
+        "multiclusterservicediscoveryFeatureState": {
+          "$ref": "MultiClusterServiceDiscoveryFeatureState"
+        },
         "updateTime": {
           "description": "The last update time of this status by the controllers",
           "type": "string",
@@ -409,6 +423,13 @@
     "MeteringFeatureState": {
       "id": "MeteringFeatureState",
       "description": "An empty state for metering feature. This is required since\nFeatureStateDetails requires a state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "MultiClusterServiceDiscoveryFeatureState": {
+      "id": "MultiClusterServiceDiscoveryFeatureState",
+      "description": "An empty state for multi-cluster service discovery feature. This is required\nsince FeatureStateDetails requires a state.",
       "type": "object",
       "properties": {
       }

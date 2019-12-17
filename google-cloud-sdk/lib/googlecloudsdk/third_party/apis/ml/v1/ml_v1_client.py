@@ -367,7 +367,7 @@ version of the specified model, it will be made the default version of the
 model. When you add a version to a model that already has one or more
 versions, the default version does not automatically change. If you want a
 new version to be the default, you must call
-[projects.models.versions.setDefault](/ml-engine/reference/rest/v1/projects.models.versions/setDefault).
+projects.models.versions.setDefault.
 
       Args:
         request: (MlProjectsModelsVersionsCreateRequest) input message
@@ -430,7 +430,7 @@ of the model unless it is the only remaining version.
       r"""Gets information about a model version.
 
 Models can have multiple versions. You can call
-[projects.models.versions.list](/ml-engine/reference/rest/v1/projects.models.versions/list)
+projects.models.versions.list
 to get the same information that this method returns for all of the
 versions of a model.
 
@@ -495,8 +495,8 @@ request returns an empty response body: {}.
     def Patch(self, request, global_params=None):
       r"""Updates the specified Version resource.
 
-Currently the only update-able fields are `description` and
-`autoScaling.minNodes`.
+Currently the only update-able fields are `description`,
+`requestLoggingConfig`, `autoScaling.minNodes`, and `manualScaling.nodes`.
 
       Args:
         request: (MlProjectsModelsVersionsPatchRequest) input message
@@ -571,7 +571,7 @@ setting manually using this method.
 
 You must add at least one version before you can request predictions from
 the model. Add versions by calling
-[projects.models.versions.create](/ml-engine/reference/rest/v1/projects.models.versions/create).
+projects.models.versions.create.
 
       Args:
         request: (MlProjectsModelsCreateRequest) input message
@@ -602,7 +602,7 @@ the model. Add versions by calling
 
 You can only delete a model if there are no versions in it. You can delete
 versions by calling
-[projects.models.versions.delete](/ml-engine/reference/rest/v1/projects.models.versions/delete).
+projects.models.versions.delete.
 
       Args:
         request: (MlProjectsModelsDeleteRequest) input message
@@ -936,7 +936,9 @@ is the parent resource, without the operations collection id.
     def Explain(self, request, global_params=None):
       r"""Performs explanation on the data in the request.
 AI Platform implements a custom `explain` verb on top of an HTTP POST
-method. <p>For details of the request and response format, see the **guide
+method.
+
+For details of the request and response format, see the **guide
 to the [explain request format](/ml-engine/docs/v1/explain-request)**.
 
       Args:
@@ -996,7 +998,9 @@ for training the model with Google Cloud Machine Learning.
     def Predict(self, request, global_params=None):
       r"""Performs prediction on the data in the request.
 AI Platform implements a custom `predict` verb on top of an HTTP POST
-method. <p>For details of the request and response format, see the **guide
+method.
+
+For details of the request and response format, see the **guide
 to the [predict request format](/ml-engine/docs/v1/predict-request)**.
 
       Args:

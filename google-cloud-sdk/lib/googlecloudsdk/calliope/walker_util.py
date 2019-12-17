@@ -206,12 +206,13 @@ class HelpTextGenerator(walker.Walker):
     """
     # Set up the destination dir for this level.
     command = node.GetPath()
+
     if is_group:
       directory = os.path.join(self._directory, *command[1:])
-      files.MakeDir(directory, mode=0o755)
     else:
       directory = os.path.join(self._directory, *command[1:-1])
 
+    files.MakeDir(directory, mode=0o755)
     # Render the help text document.
     path = os.path.join(directory, 'GROUP' if is_group else command[-1])
     with files.FileWriter(path) as f:

@@ -33,7 +33,7 @@ class Binding(_messages.Message):
       that represents a Google group.    For example, `admins@example.com`.  *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
-      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
       retains the role in the binding.  *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
@@ -1240,10 +1240,8 @@ class GoogleCloudDatacatalogV1beta1ListTaxonomiesResponse(_messages.Message):
 class GoogleCloudDatacatalogV1beta1PolicyTag(_messages.Message):
   r"""Denotes one policy tag in a taxonomy (e.g. ssn). Policy Tags can be
   defined in a hierarchy. For example, consider the following hierachy:
-  Geolocation                    |   ------------------------------------   |
-  |                 | LatLong          City              ZipCode PolicyTag
-  "Geolocation" contains three child policy tags: "LatLong", "City", and
-  "ZipCode".
+  Geolocation -&gt; (LatLong, City, ZipCode). PolicyTag "Geolocation" contains
+  three child policy tags: "LatLong", "City", and "ZipCode".
 
   Fields:
     childPolicyTags: Output only. Resource names of child policy tags of this

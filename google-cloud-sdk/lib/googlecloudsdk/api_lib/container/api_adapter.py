@@ -203,6 +203,14 @@ DISABLE_DEFAULT_SNAT_WITHOUT_PRIVATE_NODES_ERROR_MSG = """\
 Cannot use --disable-default-snat without --enable-private-nodes.
 """
 
+RESERVATION_AFFINITY_SPECIFIC_WITHOUT_RESERVATION_NAME_ERROR_MSG = """\
+Must specify --reservation for --reservation-affinity=specific.
+"""
+
+RESERVATION_AFFINITY_NON_SPECIFIC_WITH_RESERVATION_NAME_ERROR_MSG = """\
+Cannot specify --reservation for --reservation-affinity={affinity}.
+"""
+
 MAX_NODES_PER_POOL = 1000
 
 MAX_CONCURRENT_NODE_COUNT = 20
@@ -351,116 +359,121 @@ def ExpandScopeURIs(scopes):
 class CreateClusterOptions(object):
   """Options to pass to CreateCluster."""
 
-  def __init__(self,
-               node_machine_type=None,
-               node_source_image=None,
-               node_disk_size_gb=None,
-               scopes=None,
-               num_nodes=None,
-               additional_zones=None,
-               node_locations=None,
-               user=None,
-               password=None,
-               cluster_version=None,
-               node_version=None,
-               network=None,
-               cluster_ipv4_cidr=None,
-               enable_cloud_logging=None,
-               enable_cloud_monitoring=None,
-               enable_stackdriver_kubernetes=None,
-               subnetwork=None,
-               addons=None,
-               istio_config=None,
-               local_ssd_count=None,
-               local_ssd_volume_configs=None,
-               node_pool_name=None,
-               tags=None,
-               node_labels=None,
-               node_taints=None,
-               enable_autoscaling=None,
-               min_nodes=None,
-               max_nodes=None,
-               image_type=None,
-               image=None,
-               image_project=None,
-               image_family=None,
-               issue_client_certificate=None,
-               max_nodes_per_pool=None,
-               enable_kubernetes_alpha=None,
-               enable_cloud_run_alpha=None,
-               preemptible=None,
-               enable_autorepair=None,
-               enable_autoupgrade=None,
-               service_account=None,
-               enable_master_authorized_networks=None,
-               master_authorized_networks=None,
-               enable_legacy_authorization=None,
-               labels=None,
-               disk_type=None,
-               enable_network_policy=None,
-               services_ipv4_cidr=None,
-               enable_ip_alias=None,
-               create_subnetwork=None,
-               cluster_secondary_range_name=None,
-               services_secondary_range_name=None,
-               accelerators=None,
-               enable_binauthz=None,
-               min_cpu_platform=None,
-               workload_metadata_from_node=None,
-               maintenance_window=None,
-               enable_pod_security_policy=None,
-               allow_route_overlap=None,
-               private_cluster=None,
-               enable_private_nodes=None,
-               enable_private_endpoint=None,
-               enable_peering_route_sharing=None,
-               master_ipv4_cidr=None,
-               tpu_ipv4_cidr=None,
-               enable_tpu=None,
-               enable_tpu_service_networking=None,
-               default_max_pods_per_node=None,
-               max_pods_per_node=None,
-               enable_managed_pod_identity=None,
-               federating_service_account=None,
-               resource_usage_bigquery_dataset=None,
-               security_group=None,
-               enable_private_ipv6_access=None,
-               enable_intra_node_visibility=None,
-               enable_vertical_pod_autoscaling=None,
-               security_profile=None,
-               security_profile_runtime_rules=None,
-               database_encryption_key=None,
-               metadata=None,
-               enable_network_egress_metering=None,
-               enable_resource_consumption_metering=None,
-               identity_namespace=None,
-               enable_shielded_nodes=None,
-               linux_sysctls=None,
-               disable_default_snat=None,
-               shielded_secure_boot=None,
-               shielded_integrity_monitoring=None,
-               node_config=None,
-               maintenance_window_start=None,
-               maintenance_window_end=None,
-               maintenance_window_recurrence=None,
-               enable_cost_management=None,
-               max_surge_upgrade=None,
-               max_unavailable_upgrade=None,
-               enable_autoprovisioning=None,
-               autoprovisioning_config_file=None,
-               autoprovisioning_service_account=None,
-               autoprovisioning_scopes=None,
-               autoprovisioning_locations=None,
-               min_cpu=None,
-               max_cpu=None,
-               min_memory=None,
-               max_memory=None,
-               min_accelerator=None,
-               max_accelerator=None,
-               autoprovisioning_max_surge_upgrade=None,
-               autoprovisioning_max_unavailable_upgrade=None,
-               enable_autoprovisioning_autoupgrade=None,
-               enable_autoprovisioning_autorepair=None):
+  def __init__(
+      self,
+      node_machine_type=None,
+      node_source_image=None,
+      node_disk_size_gb=None,
+      scopes=None,
+      num_nodes=None,
+      additional_zones=None,
+      node_locations=None,
+      user=None,
+      password=None,
+      cluster_version=None,
+      node_version=None,
+      network=None,
+      cluster_ipv4_cidr=None,
+      enable_cloud_logging=None,
+      enable_cloud_monitoring=None,
+      enable_stackdriver_kubernetes=None,
+      subnetwork=None,
+      addons=None,
+      istio_config=None,
+      local_ssd_count=None,
+      local_ssd_volume_configs=None,
+      boot_disk_kms_key=None,
+      node_pool_name=None,
+      tags=None,
+      node_labels=None,
+      node_taints=None,
+      enable_autoscaling=None,
+      min_nodes=None,
+      max_nodes=None,
+      image_type=None,
+      image=None,
+      image_project=None,
+      image_family=None,
+      issue_client_certificate=None,
+      max_nodes_per_pool=None,
+      enable_kubernetes_alpha=None,
+      enable_cloud_run_alpha=None,
+      preemptible=None,
+      enable_autorepair=None,
+      enable_autoupgrade=None,
+      service_account=None,
+      enable_master_authorized_networks=None,
+      master_authorized_networks=None,
+      enable_legacy_authorization=None,
+      labels=None,
+      disk_type=None,
+      enable_network_policy=None,
+      services_ipv4_cidr=None,
+      enable_ip_alias=None,
+      create_subnetwork=None,
+      cluster_secondary_range_name=None,
+      services_secondary_range_name=None,
+      accelerators=None,
+      enable_binauthz=None,
+      min_cpu_platform=None,
+      workload_metadata_from_node=None,
+      maintenance_window=None,
+      enable_pod_security_policy=None,
+      allow_route_overlap=None,
+      private_cluster=None,
+      enable_private_nodes=None,
+      enable_private_endpoint=None,
+      enable_peering_route_sharing=None,
+      master_ipv4_cidr=None,
+      tpu_ipv4_cidr=None,
+      enable_tpu=None,
+      enable_tpu_service_networking=None,
+      default_max_pods_per_node=None,
+      max_pods_per_node=None,
+      enable_managed_pod_identity=None,
+      federating_service_account=None,
+      resource_usage_bigquery_dataset=None,
+      security_group=None,
+      enable_private_ipv6_access=None,
+      enable_intra_node_visibility=None,
+      enable_vertical_pod_autoscaling=None,
+      security_profile=None,
+      security_profile_runtime_rules=None,
+      database_encryption_key=None,
+      metadata=None,
+      enable_network_egress_metering=None,
+      enable_resource_consumption_metering=None,
+      identity_namespace=None,
+      enable_shielded_nodes=None,
+      linux_sysctls=None,
+      disable_default_snat=None,
+      shielded_secure_boot=None,
+      shielded_integrity_monitoring=None,
+      node_config=None,
+      maintenance_window_start=None,
+      maintenance_window_end=None,
+      maintenance_window_recurrence=None,
+      enable_cost_management=None,
+      max_surge_upgrade=None,
+      max_unavailable_upgrade=None,
+      enable_autoprovisioning=None,
+      autoprovisioning_config_file=None,
+      autoprovisioning_service_account=None,
+      autoprovisioning_scopes=None,
+      autoprovisioning_locations=None,
+      min_cpu=None,
+      max_cpu=None,
+      min_memory=None,
+      max_memory=None,
+      min_accelerator=None,
+      max_accelerator=None,
+      autoprovisioning_max_surge_upgrade=None,
+      autoprovisioning_max_unavailable_upgrade=None,
+      enable_autoprovisioning_autoupgrade=None,
+      enable_autoprovisioning_autorepair=None,
+      reservation_affinity=None,
+      reservation=None,
+  ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -482,6 +495,7 @@ class CreateClusterOptions(object):
     self.istio_config = istio_config
     self.local_ssd_count = local_ssd_count
     self.local_ssd_volume_configs = local_ssd_volume_configs
+    self.boot_disk_kms_key = boot_disk_kms_key
     self.node_pool_name = node_pool_name
     self.tags = tags
     self.node_labels = node_labels
@@ -570,6 +584,8 @@ class CreateClusterOptions(object):
     self.autoprovisioning_max_unavailable_upgrade = autoprovisioning_max_unavailable_upgrade
     self.enable_autoprovisioning_autoupgrade = enable_autoprovisioning_autoupgrade
     self.enable_autoprovisioning_autorepair = enable_autoprovisioning_autorepair
+    self.reservation_affinity = reservation_affinity
+    self.reservation = reservation
 
 
 class UpdateClusterOptions(object):
@@ -715,6 +731,7 @@ class CreateNodePoolOptions(object):
                num_nodes=None,
                local_ssd_count=None,
                local_ssd_volume_configs=None,
+               boot_disk_kms_key=None,
                tags=None,
                node_labels=None,
                node_taints=None,
@@ -743,7 +760,9 @@ class CreateNodePoolOptions(object):
                node_locations=None,
                shielded_secure_boot=None,
                shielded_integrity_monitoring=None,
-               node_config=None):
+               node_config=None,
+               reservation_affinity=None,
+               reservation=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -751,6 +770,7 @@ class CreateNodePoolOptions(object):
     self.num_nodes = num_nodes
     self.local_ssd_count = local_ssd_count
     self.local_ssd_volume_configs = local_ssd_volume_configs
+    self.boot_disk_kms_key = boot_disk_kms_key
     self.tags = tags
     self.node_labels = node_labels
     self.node_taints = node_taints
@@ -780,6 +800,8 @@ class CreateNodePoolOptions(object):
     self.shielded_secure_boot = shielded_secure_boot
     self.shielded_integrity_monitoring = shielded_integrity_monitoring
     self.node_config = node_config
+    self.reservation_affinity = reservation_affinity
+    self.reservation = reservation
 
 
 class UpdateNodePoolOptions(object):
@@ -1213,6 +1235,7 @@ class APIAdapter(object):
     _AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
     _AddShieldedInstanceConfigToNodeConfig(node_config, options, self.messages)
+    _AddReservationAffinityToNodeConfig(node_config, options, self.messages)
 
     if options.node_config is not None:
       util.LoadNodeConfigFromYAML(node_config, options.node_config,
@@ -2049,6 +2072,8 @@ class APIAdapter(object):
       node_config.localSsdCount = options.local_ssd_count
     if options.local_ssd_volume_configs:
       self._AddLocalSSDVolumeConfigsToNodeConfig(node_config, options)
+    if options.boot_disk_kms_key:
+      node_config.bootDiskKmsKey = options.boot_disk_kms_key
     if options.tags:
       node_config.tags = options.tags
     else:
@@ -2076,6 +2101,7 @@ class APIAdapter(object):
     _AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
     _AddShieldedInstanceConfigToNodeConfig(node_config, options, self.messages)
+    _AddReservationAffinityToNodeConfig(node_config, options, self.messages)
 
     if options.sandbox is not None:
       node_config.sandboxConfig = self.messages.SandboxConfig(
@@ -2616,6 +2642,9 @@ class V1Beta1Adapter(V1Adapter):
     if options.enable_autoprovisioning is not None:
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
           cluster_ref, options, False)
+    if options.boot_disk_kms_key:
+      for pool in cluster.nodePools:
+        pool.config.bootDiskKmsKey = options.boot_disk_kms_key
     if options.identity_namespace is not None:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
           identityNamespace=options.identity_namespace)
@@ -2879,6 +2908,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.local_ssd_volume_configs:
       for pool in cluster.nodePools:
         self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
+    if options.boot_disk_kms_key:
+      for pool in cluster.nodePools:
+        pool.config.bootDiskKmsKey = options.boot_disk_kms_key
     if options.addons:
       # CloudRun is disabled by default.
       if CLOUDRUN in options.addons:
@@ -3027,6 +3059,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     pool = self.CreateNodePoolCommon(node_pool_ref, options)
     if options.local_ssd_volume_configs:
       self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
+    if options.boot_disk_kms_key:
+      pool.config.bootDiskKmsKey = options.boot_disk_kms_key
     if options.enable_autoprovisioning is not None:
       pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
     if options.node_group is not None:
@@ -3290,6 +3324,34 @@ def _AddShieldedInstanceConfigToNodeConfig(node_config, options, messages):
     if options.shielded_integrity_monitoring is not None:
       node_config.shieldedInstanceConfig.enableIntegrityMonitoring = (
           options.shielded_integrity_monitoring)
+
+
+def _AddReservationAffinityToNodeConfig(node_config, options, messages):
+  """Adds ReservationAffinity to NodeConfig."""
+  affinity = options.reservation_affinity
+  if options.reservation and affinity != 'specific':
+    raise util.Error(
+        RESERVATION_AFFINITY_NON_SPECIFIC_WITH_RESERVATION_NAME_ERROR_MSG
+        .format(affinity=affinity))
+
+  if not options.reservation and affinity == 'specific':
+    raise util.Error(
+        RESERVATION_AFFINITY_SPECIFIC_WITHOUT_RESERVATION_NAME_ERROR_MSG)
+
+  if affinity == 'none':
+    node_config.reservationAffinity = messages.ReservationAffinity(
+        consumeReservationType=messages.ReservationAffinity
+        .ConsumeReservationTypeValueValuesEnum.NO_RESERVATION)
+  elif affinity == 'any':
+    node_config.reservationAffinity = messages.ReservationAffinity(
+        consumeReservationType=messages.ReservationAffinity
+        .ConsumeReservationTypeValueValuesEnum.ANY_RESERVATION)
+  elif affinity == 'specific':
+    node_config.reservationAffinity = messages.ReservationAffinity(
+        consumeReservationType=messages.ReservationAffinity
+        .ConsumeReservationTypeValueValuesEnum.SPECIFIC_RESERVATION,
+        key='compute.googleapis.com/reservation-name',
+        values=[options.reservation])
 
 
 def _AddReleaseChannelToCluster(cluster, options, messages):

@@ -1317,6 +1317,10 @@
         "recordTransformations": {
           "description": "Treat the dataset as structured. Transformations can be applied to\nspecific locations within structured datasets, such as transforming\na column within a table.",
           "$ref": "GooglePrivacyDlpV2RecordTransformations"
+        },
+        "transformationErrorHandling": {
+          "description": "Mode for handling transformation errors. If left unspecified, the default\nmode is `TransformationErrorHandling.ThrowError`.",
+          "$ref": "GooglePrivacyDlpV2TransformationErrorHandling"
         }
       }
     },
@@ -1850,6 +1854,33 @@
           "description": "A condition that when it evaluates to true will result in the record being\nevaluated to be suppressed from the transformed content.",
           "$ref": "GooglePrivacyDlpV2RecordCondition"
         }
+      }
+    },
+    "GooglePrivacyDlpV2TransformationErrorHandling": {
+      "id": "GooglePrivacyDlpV2TransformationErrorHandling",
+      "description": "How to handle transformation errors during de-identification. A\ntransformation error occurs when the requested transformation is incompatible\nwith the data. For example, trying to de-identify an IP address using a\n`DateShift` transformation would result in a transformation error, since date\ninfo cannot be extracted from an IP address.\nInformation about any incompatible transformations, and how they were\nhandled, is returned in the response as part of the\n`TransformationOverviews`.",
+      "type": "object",
+      "properties": {
+        "throwError": {
+          "$ref": "GooglePrivacyDlpV2ThrowError"
+        },
+        "leaveUntransformed": {
+          "$ref": "GooglePrivacyDlpV2LeaveUntransformed"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2ThrowError": {
+      "id": "GooglePrivacyDlpV2ThrowError",
+      "description": "Throw an error and fail the request when a transformation error occurs.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GooglePrivacyDlpV2LeaveUntransformed": {
+      "id": "GooglePrivacyDlpV2LeaveUntransformed",
+      "description": "Skips the data without modifying it if the requested transformation would\ncause an error. For example, if a `DateShift` transformation were applied\nan an IP address, this mode would leave the IP address unchanged in the\nresponse.",
+      "type": "object",
+      "properties": {
       }
     },
     "GooglePrivacyDlpV2DeidentifyContentResponse": {
@@ -3673,7 +3704,7 @@
     },
     "GooglePrivacyDlpV2StoredInfoTypeConfig": {
       "id": "GooglePrivacyDlpV2StoredInfoTypeConfig",
-      "description": "Configuration for stored infoT types. All fields and subfield are provided\nby the user. For more information, see\nhttps:\/\/cloud.google.com\/dlp\/docs\/creating-custom-infotypes.",
+      "description": "Configuration for stored infoTypes. All fields and subfield are provided\nby the user. For more information, see\nhttps:\/\/cloud.google.com\/dlp\/docs\/creating-custom-infotypes.",
       "type": "object",
       "properties": {
         "displayName": {

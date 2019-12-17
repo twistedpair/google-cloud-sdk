@@ -400,9 +400,7 @@ RPC will have a successful status once all replacements have propagated to
 long-lasting storage. Replacements containing errors will result in an
 error response for the first error encountered and the transaction will be
 cancelled. Operation.response field will contain
-ReplaceServicePerimetersResponse. Either all
-Service Perimeters' spec fields
-should be set or all status fields should be set, but not both.
+ReplaceServicePerimetersResponse.
 
       Args:
         request: (AccesscontextmanagerAccessPoliciesServicePerimetersReplaceAllRequest) input message

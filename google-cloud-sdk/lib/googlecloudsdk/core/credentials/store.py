@@ -33,6 +33,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import gce as c_gce
@@ -110,7 +111,11 @@ class NoCredentialsForAccountException(PrintTokenAuthenticationException):
 class NoActiveAccountException(AuthenticationException):
   """Exception for when there are no valid active credentials."""
 
-  def __init__(self):
+  def __init__(self, active_config_path=None):
+    if active_config_path:
+      if not os.path.exists(active_config_path):
+        log.warning('Could not open the configuration file: [%s].',
+                    active_config_path)
     super(NoActiveAccountException, self).__init__(
         'You do not currently have an active account selected.')
 
@@ -417,7 +422,7 @@ def _Load(account, scopes, prevent_refresh):
     account = properties.VALUES.core.account.Get()
 
   if not account:
-    raise NoActiveAccountException()
+    raise NoActiveAccountException(named_configs.ActiveConfig(False).file_path)
 
   cred = STATIC_CREDENTIAL_PROVIDERS.GetCredentials(account)
   if cred is not None:
@@ -504,7 +509,7 @@ def Refresh(credentials,
   except (client.AccessTokenRefreshError, httplib2.ServerNotFoundError) as e:
     raise TokenRefreshError(six.text_type(e))
   except reauth_errors.ReauthError as e:
-    raise TokenRefreshReauthError(e.message)
+    raise TokenRefreshReauthError(str(e))
 
 
 def _RefreshImpersonatedAccountIdToken(cred, include_email):

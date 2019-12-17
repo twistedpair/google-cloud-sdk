@@ -169,7 +169,7 @@ class ConfigurationStore(object):
     Returns:
       Configuration, the currently active configuration.
     """
-    return _ActiveConfig(force_create=True)
+    return ActiveConfig(force_create=True)
 
   @staticmethod
   def AllConfigs(include_none_config=False):
@@ -393,7 +393,7 @@ class ActivePropertiesFile(object):
     try:
       if not ActivePropertiesFile._PROPERTIES:
         ActivePropertiesFile._PROPERTIES = properties_file.PropertiesFile(
-            [config.Paths().installation_properties_path, _ActiveConfig(
+            [config.Paths().installation_properties_path, ActiveConfig(
                 force_create=False).file_path])
     finally:
       ActivePropertiesFile._LOCK.release()
@@ -413,7 +413,7 @@ class ActivePropertiesFile(object):
       file_utils.WriteFileContents(config.Paths().config_sentinel_file, '')
 
 
-def _ActiveConfig(force_create):
+def ActiveConfig(force_create):
   """Gets the currently active configuration.
 
   There must always be an active configuration.  If there isn't this means

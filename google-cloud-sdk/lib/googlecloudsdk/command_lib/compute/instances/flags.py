@@ -1129,13 +1129,22 @@ def AddMinCpuPlatformArgs(parser, track, required=False):
       """.format(track.prefix + ' ' if track.prefix else ''))
 
 
-def AddMinNodeCpuArg(parser):
+def AddMinNodeCpuArg(parser, is_update=False):
   parser.add_argument(
       '--min-node-cpu',
       help="""\
       Minimum number of virtual CPUs this instance will consume when running on
       a sole-tenant node.
       """)
+  if is_update:
+    parser.add_argument(
+        '--clear-min-node-cpu',
+        action='store_true',
+        help="""\
+        Removes the min-node-cpu field from the instance. If specified, the
+        instance min-node-cpu will be cleared. The instance will not be
+        overcommitted and utilize the full CPU count assigned.
+        """)
 
 
 def AddLocationHintArg(parser):

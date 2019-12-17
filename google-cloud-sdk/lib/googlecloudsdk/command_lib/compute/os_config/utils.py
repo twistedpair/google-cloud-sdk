@@ -22,6 +22,7 @@ from apitools.base.py import encoding
 from enum import Enum
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.args import common_args
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 import six
@@ -113,13 +114,28 @@ def GetGuestPolicyRelativePath(parent, guest_policy):
 def AddResourceParentArgs(parser, noun, verb):
   """Adds project, folder, and organization flags to the parser."""
   parent_resource_group = parser.add_group(
-      help='The scope of the {} which defaults to project if unspecified.'
-      .format(noun),
+      help="""\
+      The scope of the {}. If a scope is not specified, the current project is
+      used as the default.""".format(noun),
       mutex=True,
   )
   common_args.ProjectArgument(
-      help_text_to_prepend='The project of the {} {}.'.format(
-          noun, verb)).AddToParser(parent_resource_group)
+      help_text_to_prepend='The project of the {} {}.'.format(noun, verb),
+      help_text_to_overwrite="""\
+      The project name to use. If a project name is not specified, then the
+      current project is used. The current project can be listed using gcloud
+      config list --format='text(core.project)' and can be set using gcloud
+      config set project PROJECTID.
+
+      `--project` and its fallback `{core_project}` property play two roles. It
+      specifies the project of the resource to operate on, and also specifies
+      the project for API enablement check, quota, and billing. To specify a
+      different project for quota and billing, use `--billing-project` or
+      `{billing_project}` property.
+      """.format(
+          core_project=properties.VALUES.core.project,
+          billing_project=properties.VALUES.billing.quota_project)).AddToParser(
+              parent_resource_group)
   parent_resource_group.add_argument(
       '--folder',
       metavar='FOLDER_ID',

@@ -113,6 +113,15 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
   Fields:
     management: Specifies the node management options for NAP created node-
       pools.
+    minCpuPlatform: Minimum CPU platform to be used for NAP created node
+      pools. The instance may be scheduled on the specified or newer CPU
+      platform. Applicable values are the friendly names of CPU platforms,
+      such as <code>minCpuPlatform: &quot;Intel Haswell&quot;</code> or
+      <code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;</code>. For more
+      information, read [how to specify min CPU
+      platform](https://cloud.google.com/compute/docs/instances/specify-min-
+      cpu-platform) To unset the min cpu platform field pass "automatic" as
+      field value.
     oauthScopes: Scopes that are used by NAP when creating node pools. If
       oauth_scopes are specified, service_account should be empty.
     serviceAccount: The Google Cloud Platform Service Account to be used by
@@ -121,9 +130,10 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
   """
 
   management = _messages.MessageField('NodeManagement', 1)
-  oauthScopes = _messages.StringField(2, repeated=True)
-  serviceAccount = _messages.StringField(3)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 4)
+  minCpuPlatform = _messages.StringField(2)
+  oauthScopes = _messages.StringField(3, repeated=True)
+  serviceAccount = _messages.StringField(4)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 5)
 
 
 class AvailableVersion(_messages.Message):

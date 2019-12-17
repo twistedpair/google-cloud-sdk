@@ -3,18 +3,18 @@
   "discoveryVersion": "v1",
   "id": "orgpolicy:v2alpha1",
   "name": "orgpolicy",
-  "canonicalName": "Orgpolicy",
+  "canonicalName": "OrgPolicy API",
   "version": "v2alpha1",
   "revision": "0",
-  "title": "orgpolicy API",
-  "description": "",
+  "title": "OrgPolicy API",
+  "description": "The Org Policy API allows users to configure governance ruleson their GCP resources across the Cloud Resource Hierarchy.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://cloud.google.com/resource-manager/docs/organization-policy/understanding-constraints",
   "protocol": "rest",
   "rootUrl": "https://orgpolicy.googleapis.com/",
   "servicePath": "",
@@ -173,6 +173,10 @@
       "description": "A `Constraint` that allows or disallows a list of string values, which are\nconfigured by an Organization's policy administrator with a `Policy`.",
       "type": "object",
       "properties": {
+        "supportsIn": {
+          "description": "Indicates whether values grouped into categories can be used in\n`Policy.allowed_values` and `Policy.denied_values`. For example,\n`\"in:Python\"` would match any value in the 'Python' group.",
+          "type": "boolean"
+        },
         "supportsUnder": {
           "description": "Indicates whether subtrees of Cloud Resource Manager resource hierarchy\ncan be used in `Policy.allowed_values` and `Policy.denied_values`. For\nexample, `\"under:folders\/123\"` would match any resource under the\n'folders\/123' folder.",
           "type": "boolean"
@@ -567,4 +571,3 @@
   },
   "basePath": ""
 }
-

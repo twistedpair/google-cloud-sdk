@@ -29,9 +29,10 @@ class GenerateAccessTokenRequest(_messages.Message):
       Must be set to a value less than or equal to 3600 (1 hour). If a value
       is not specified, the token's lifetime will be set to a default value of
       one hour.
-    scope: Code to identify the scopes to be included in the OAuth 2.0 access
-      token. See https://developers.google.com/identity/protocols/googlescopes
-      for more information. At least one value required.
+    scope: Required. Code to identify the scopes to be included in the OAuth
+      2.0 access token. See
+      https://developers.google.com/identity/protocols/googlescopes for more
+      information. At least one value required.
   """
 
   delegates = _messages.StringField(1, repeated=True)
@@ -55,8 +56,8 @@ class GenerateIdTokenRequest(_messages.Message):
   r"""A GenerateIdTokenRequest object.
 
   Fields:
-    audience: The audience for the token, such as the API or account that this
-      token grants access to.
+    audience: Required. The audience for the token, such as the API or account
+      that this token grants access to.
     delegates: The sequence of service accounts in a delegation chain. Each
       service account must be granted the
       `roles/iam.serviceAccountTokenCreator` role on its next service account
@@ -93,8 +94,8 @@ class IamcredentialsProjectsServiceAccountsGenerateAccessTokenRequest(_messages.
   Fields:
     generateAccessTokenRequest: A GenerateAccessTokenRequest resource to be
       passed as the request body.
-    name: The resource name of the service account for which the credentials
-      are requested, in the following format:
+    name: Required. The resource name of the service account for which the
+      credentials are requested, in the following format:
       `projects/-/serviceAccounts/{ACCOUNT_EMAIL_OR_UNIQUEID}`. The `-`
       wildcard character is required; replacing it with a project ID is
       invalid.
@@ -110,8 +111,8 @@ class IamcredentialsProjectsServiceAccountsGenerateIdTokenRequest(_messages.Mess
   Fields:
     generateIdTokenRequest: A GenerateIdTokenRequest resource to be passed as
       the request body.
-    name: The resource name of the service account for which the credentials
-      are requested, in the following format:
+    name: Required. The resource name of the service account for which the
+      credentials are requested, in the following format:
       `projects/-/serviceAccounts/{ACCOUNT_EMAIL_OR_UNIQUEID}`. The `-`
       wildcard character is required; replacing it with a project ID is
       invalid.
@@ -125,8 +126,8 @@ class IamcredentialsProjectsServiceAccountsSignBlobRequest(_messages.Message):
   r"""A IamcredentialsProjectsServiceAccountsSignBlobRequest object.
 
   Fields:
-    name: The resource name of the service account for which the credentials
-      are requested, in the following format:
+    name: Required. The resource name of the service account for which the
+      credentials are requested, in the following format:
       `projects/-/serviceAccounts/{ACCOUNT_EMAIL_OR_UNIQUEID}`. The `-`
       wildcard character is required; replacing it with a project ID is
       invalid.
@@ -142,8 +143,8 @@ class IamcredentialsProjectsServiceAccountsSignJwtRequest(_messages.Message):
   r"""A IamcredentialsProjectsServiceAccountsSignJwtRequest object.
 
   Fields:
-    name: The resource name of the service account for which the credentials
-      are requested, in the following format:
+    name: Required. The resource name of the service account for which the
+      credentials are requested, in the following format:
       `projects/-/serviceAccounts/{ACCOUNT_EMAIL_OR_UNIQUEID}`. The `-`
       wildcard character is required; replacing it with a project ID is
       invalid.
@@ -169,7 +170,7 @@ class SignBlobRequest(_messages.Message):
       `projects/-/serviceAccounts/{ACCOUNT_EMAIL_OR_UNIQUEID}`. The `-`
       wildcard character is required; replacing it with a project ID is
       invalid.
-    payload: The bytes to sign.
+    payload: Required. The bytes to sign.
   """
 
   delegates = _messages.StringField(1, repeated=True)
@@ -202,8 +203,8 @@ class SignJwtRequest(_messages.Message):
       `projects/-/serviceAccounts/{ACCOUNT_EMAIL_OR_UNIQUEID}`. The `-`
       wildcard character is required; replacing it with a project ID is
       invalid.
-    payload: The JWT payload to sign: a JSON object that contains a JWT Claims
-      Set.
+    payload: Required. The JWT payload to sign: a JSON object that contains a
+      JWT Claims Set.
   """
 
   delegates = _messages.StringField(1, repeated=True)

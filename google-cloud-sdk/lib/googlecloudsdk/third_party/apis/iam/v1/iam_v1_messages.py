@@ -205,7 +205,7 @@ class Binding(_messages.Message):
       that represents a Google group.    For example, `admins@example.com`.  *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
-      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
       retains the role in the binding.  *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
@@ -360,7 +360,7 @@ class CreateServiceAccountRequest(_messages.Message):
       project, must be 6-30 characters long, and match the regular expression
       `[a-z]([-a-z0-9]*[a-z0-9])` to comply with RFC1035.
     serviceAccount: The ServiceAccount resource to create. Currently, only the
-      following values are user assignable: `display_name` .
+      following values are user assignable: `display_name` and `description`.
   """
 
   accountId = _messages.StringField(1)
@@ -858,9 +858,9 @@ class IamProjectsServiceAccountsDeleteRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsDeleteRequest object.
 
   Fields:
-    name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
-      wildcard for the `PROJECT_ID` will infer the project from the account.
+    name: Required. The resource name of the service account in the following
+      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as
+      a wildcard for the `PROJECT_ID` will infer the project from the account.
       The `ACCOUNT` value can be the `email` address or the `unique_id` of the
       service account.
   """
@@ -924,9 +924,9 @@ class IamProjectsServiceAccountsGetRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsGetRequest object.
 
   Fields:
-    name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
-      wildcard for the `PROJECT_ID` will infer the project from the account.
+    name: Required. The resource name of the service account in the following
+      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as
+      a wildcard for the `PROJECT_ID` will infer the project from the account.
       The `ACCOUNT` value can be the `email` address or the `unique_id` of the
       service account.
   """
@@ -1000,9 +1000,9 @@ class IamProjectsServiceAccountsKeysCreateRequest(_messages.Message):
   Fields:
     createServiceAccountKeyRequest: A CreateServiceAccountKeyRequest resource
       to be passed as the request body.
-    name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
-      wildcard for the `PROJECT_ID` will infer the project from the account.
+    name: Required. The resource name of the service account in the following
+      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as
+      a wildcard for the `PROJECT_ID` will infer the project from the account.
       The `ACCOUNT` value can be the `email` address or the `unique_id` of the
       service account.
   """
@@ -1015,10 +1015,11 @@ class IamProjectsServiceAccountsKeysDeleteRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsKeysDeleteRequest object.
 
   Fields:
-    name: The resource name of the service account key in the following
-      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`.
-      Using `-` as a wildcard for the `PROJECT_ID` will infer the project from
-      the account. The `ACCOUNT` value can be the `email` address or the
+    name: Required. The resource name of the service account key in the
+      following format:
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`. Using `-`
+      as a wildcard for the `PROJECT_ID` will infer the project from the
+      account. The `ACCOUNT` value can be the `email` address or the
       `unique_id` of the service account.
   """
 
@@ -1033,10 +1034,11 @@ class IamProjectsServiceAccountsKeysGetRequest(_messages.Message):
       requested. X509_PEM is the default output format.
 
   Fields:
-    name: The resource name of the service account key in the following
-      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`.
-      Using `-` as a wildcard for the `PROJECT_ID` will infer the project from
-      the account. The `ACCOUNT` value can be the `email` address or the
+    name: Required. The resource name of the service account key in the
+      following format:
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`.  Using `-`
+      as a wildcard for the `PROJECT_ID` will infer the project from the
+      account. The `ACCOUNT` value can be the `email` address or the
       `unique_id` of the service account.
     publicKeyType: The output format of the public key requested. X509_PEM is
       the default output format.
@@ -1071,11 +1073,11 @@ class IamProjectsServiceAccountsKeysListRequest(_messages.Message):
     keyTypes: Filters the types of keys the user wants to include in the list
       response. Duplicate key types are not allowed. If no key type is
       provided, all keys are returned.
-    name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.  Using `-` as a
-      wildcard for the `PROJECT_ID`, will infer the project from the account.
-      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
-      service account.
+    name: Required. The resource name of the service account in the following
+      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.  Using `-` as
+      a wildcard for the `PROJECT_ID`, will infer the project from the
+      account. The `ACCOUNT` value can be the `email` address or the
+      `unique_id` of the service account.
   """
 
   class KeyTypesValueValuesEnum(_messages.Enum):
@@ -1169,9 +1171,9 @@ class IamProjectsServiceAccountsSignBlobRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsSignBlobRequest object.
 
   Fields:
-    name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
-      wildcard for the `PROJECT_ID` will infer the project from the account.
+    name: Required. The resource name of the service account in the following
+      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as
+      a wildcard for the `PROJECT_ID` will infer the project from the account.
       The `ACCOUNT` value can be the `email` address or the `unique_id` of the
       service account.
     signBlobRequest: A SignBlobRequest resource to be passed as the request
@@ -1186,9 +1188,9 @@ class IamProjectsServiceAccountsSignJwtRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsSignJwtRequest object.
 
   Fields:
-    name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
-      wildcard for the `PROJECT_ID` will infer the project from the account.
+    name: Required. The resource name of the service account in the following
+      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as
+      a wildcard for the `PROJECT_ID` will infer the project from the account.
       The `ACCOUNT` value can be the `email` address or the `unique_id` of the
       service account.
     signJwtRequest: A SignJwtRequest resource to be passed as the request
@@ -2090,7 +2092,7 @@ class SignBlobRequest(_messages.Message):
   r"""The service account sign blob request.
 
   Fields:
-    bytesToSign: The bytes to sign.
+    bytesToSign: Required. The bytes to sign.
   """
 
   bytesToSign = _messages.BytesField(1)
@@ -2112,7 +2114,7 @@ class SignJwtRequest(_messages.Message):
   r"""The service account sign JWT request.
 
   Fields:
-    payload: The JWT payload to sign, a JSON JWT Claim set.
+    payload: Required. The JWT payload to sign, a JSON JWT Claim set.
   """
 
   payload = _messages.StringField(1)

@@ -214,7 +214,7 @@
           "$ref": "GoogleDatastoreAdminV1EntityFilter"
         },
         "outputUrlPrefix": {
-          "description": "Location for the export metadata and data files.\n\nThe full resource URL of the external storage location. Currently, only\nGoogle Cloud Storage is supported. So output_url_prefix should be of the\nform: `gs:\/\/BUCKET_NAME[\/NAMESPACE_PATH]`, where `BUCKET_NAME` is the\nname of the Cloud Storage bucket and `NAMESPACE_PATH` is an optional Cloud\nStorage namespace path (this is not a Cloud Datastore namespace). For more\ninformation about Cloud Storage namespace paths, see\n[Object name\nconsiderations](https:\/\/cloud.google.com\/storage\/docs\/naming#object-considerations).\n\nThe resulting files will be nested deeper than the specified URL prefix.\nThe final output URL will be provided in the\ngoogle.datastore.admin.v1.ExportEntitiesResponse.output_url field. That\nvalue should be used for subsequent ImportEntities operations.\n\nBy nesting the data files deeper, the same Cloud Storage bucket can be used\nin multiple ExportEntities operations without conflict.",
+          "description": "Required. Location for the export metadata and data files.\n\nThe full resource URL of the external storage location. Currently, only\nGoogle Cloud Storage is supported. So output_url_prefix should be of the\nform: `gs:\/\/BUCKET_NAME[\/NAMESPACE_PATH]`, where `BUCKET_NAME` is the\nname of the Cloud Storage bucket and `NAMESPACE_PATH` is an optional Cloud\nStorage namespace path (this is not a Cloud Datastore namespace). For more\ninformation about Cloud Storage namespace paths, see\n[Object name\nconsiderations](https:\/\/cloud.google.com\/storage\/docs\/naming#object-considerations).\n\nThe resulting files will be nested deeper than the specified URL prefix.\nThe final output URL will be provided in the\ngoogle.datastore.admin.v1.ExportEntitiesResponse.output_url field. That\nvalue should be used for subsequent ImportEntities operations.\n\nBy nesting the data files deeper, the same Cloud Storage bucket can be used\nin multiple ExportEntities operations without conflict.",
           "type": "string"
         }
       }
@@ -253,7 +253,7 @@
           }
         },
         "inputUrl": {
-          "description": "The full resource URL of the external storage location. Currently, only\nGoogle Cloud Storage is supported. So input_url should be of the form:\n`gs:\/\/BUCKET_NAME[\/NAMESPACE_PATH]\/OVERALL_EXPORT_METADATA_FILE`, where\n`BUCKET_NAME` is the name of the Cloud Storage bucket, `NAMESPACE_PATH` is\nan optional Cloud Storage namespace path (this is not a Cloud Datastore\nnamespace), and `OVERALL_EXPORT_METADATA_FILE` is the metadata file written\nby the ExportEntities operation. For more information about Cloud Storage\nnamespace paths, see\n[Object name\nconsiderations](https:\/\/cloud.google.com\/storage\/docs\/naming#object-considerations).\n\nFor more information, see\ngoogle.datastore.admin.v1.ExportEntitiesResponse.output_url.",
+          "description": "Required. The full resource URL of the external storage location. Currently, only\nGoogle Cloud Storage is supported. So input_url should be of the form:\n`gs:\/\/BUCKET_NAME[\/NAMESPACE_PATH]\/OVERALL_EXPORT_METADATA_FILE`, where\n`BUCKET_NAME` is the name of the Cloud Storage bucket, `NAMESPACE_PATH` is\nan optional Cloud Storage namespace path (this is not a Cloud Datastore\nnamespace), and `OVERALL_EXPORT_METADATA_FILE` is the metadata file written\nby the ExportEntities operation. For more information about Cloud Storage\nnamespace paths, see\n[Object name\nconsiderations](https:\/\/cloud.google.com\/storage\/docs\/naming#object-considerations).\n\nFor more information, see\ngoogle.datastore.admin.v1.ExportEntitiesResponse.output_url.",
           "type": "string"
         },
         "entityFilter": {
@@ -268,19 +268,19 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Project ID.\nOutput only.",
+          "description": "Output only. Project ID.",
           "type": "string"
         },
         "indexId": {
-          "description": "The resource ID of the index.\nOutput only.",
+          "description": "Output only. The resource ID of the index.",
           "type": "string"
         },
         "kind": {
-          "description": "The entity kind to which this index applies.\nRequired.",
+          "description": "Required. The entity kind to which this index applies.",
           "type": "string"
         },
         "ancestor": {
-          "description": "The index's ancestor mode.  Must not be ANCESTOR_MODE_UNSPECIFIED.\nRequired.",
+          "description": "Required. The index's ancestor mode.  Must not be ANCESTOR_MODE_UNSPECIFIED.",
           "enumDescriptions": [
             "The ancestor mode is unspecified.",
             "Do not include the entity's ancestors in the index.",
@@ -294,14 +294,14 @@
           ]
         },
         "properties": {
-          "description": "An ordered sequence of property names and their index attributes.\nRequired.",
+          "description": "Required. An ordered sequence of property names and their index attributes.",
           "type": "array",
           "items": {
             "$ref": "GoogleDatastoreAdminV1IndexedProperty"
           }
         },
         "state": {
-          "description": "The state of the index.\nOutput only.",
+          "description": "Output only. The state of the index.",
           "enumDescriptions": [
             "The state is unspecified.",
             "The index is being created, and cannot be used by queries.\nThere is an active long-running operation for the index.\nThe index is updated when writing an entity.\nSome index data may exist.",
@@ -326,11 +326,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The property name to index.\nRequired.",
+          "description": "Required. The property name to index.",
           "type": "string"
         },
         "direction": {
-          "description": "The indexed property's direction.  Must not be DIRECTION_UNSPECIFIED.\nRequired.",
+          "description": "Required. The indexed property's direction.  Must not be DIRECTION_UNSPECIFIED.",
           "enumDescriptions": [
             "The direction is unspecified.",
             "The property's values are indexed so as to support sequencing in\nascending order and also query by <, >, <=, >=, and =.",
@@ -373,7 +373,7 @@
           "$ref": "ReadOptions"
         },
         "keys": {
-          "description": "Keys of entities to look up.",
+          "description": "Required. Keys of entities to look up.",
           "type": "array",
           "items": {
             "$ref": "Key"
@@ -1137,7 +1137,7 @@
       "type": "object",
       "properties": {
         "transaction": {
-          "description": "The transaction identifier, returned by a call to\nDatastore.BeginTransaction.",
+          "description": "Required. The transaction identifier, returned by a call to\nDatastore.BeginTransaction.",
           "type": "string",
           "format": "byte"
         }
@@ -1156,7 +1156,7 @@
       "type": "object",
       "properties": {
         "keys": {
-          "description": "A list of keys with incomplete key paths for which to allocate IDs.\nNo key may be reserved\/read-only.",
+          "description": "Required. A list of keys with incomplete key paths for which to allocate IDs.\nNo key may be reserved\/read-only.",
           "type": "array",
           "items": {
             "$ref": "Key"
@@ -1188,7 +1188,7 @@
           "type": "string"
         },
         "keys": {
-          "description": "A list of keys with complete key paths whose numeric IDs should not be\nauto-allocated.",
+          "description": "Required. A list of keys with complete key paths whose numeric IDs should not be\nauto-allocated.",
           "type": "array",
           "items": {
             "$ref": "Key"
@@ -1546,7 +1546,7 @@
           "httpMethod": "POST",
           "parameters": {
             "projectId": {
-              "description": "Project ID against which to make the request.",
+              "description": "Required. Project ID against which to make the request.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -1574,7 +1574,7 @@
           "httpMethod": "POST",
           "parameters": {
             "projectId": {
-              "description": "Project ID against which to make the request.",
+              "description": "Required. Project ID against which to make the request.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -1602,7 +1602,7 @@
           "httpMethod": "POST",
           "parameters": {
             "projectId": {
-              "description": "The ID of the project against which to make the request.",
+              "description": "Required. The ID of the project against which to make the request.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -1630,7 +1630,7 @@
           "httpMethod": "POST",
           "parameters": {
             "projectId": {
-              "description": "The ID of the project against which to make the request.",
+              "description": "Required. The ID of the project against which to make the request.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -1658,7 +1658,7 @@
           "httpMethod": "POST",
           "parameters": {
             "projectId": {
-              "description": "The ID of the project against which to make the request.",
+              "description": "Required. The ID of the project against which to make the request.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -1686,7 +1686,7 @@
           "httpMethod": "POST",
           "parameters": {
             "projectId": {
-              "description": "The ID of the project against which to make the request.",
+              "description": "Required. The ID of the project against which to make the request.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -1714,7 +1714,7 @@
           "httpMethod": "POST",
           "parameters": {
             "projectId": {
-              "description": "The ID of the project against which to make the request.",
+              "description": "Required. The ID of the project against which to make the request.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -1742,7 +1742,7 @@
           "httpMethod": "POST",
           "parameters": {
             "projectId": {
-              "description": "The ID of the project against which to make the request.",
+              "description": "Required. The ID of the project against which to make the request.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -1770,7 +1770,7 @@
           "httpMethod": "POST",
           "parameters": {
             "projectId": {
-              "description": "The ID of the project against which to make the request.",
+              "description": "Required. The ID of the project against which to make the request.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -1789,7 +1789,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/datastore"
           ],
-          "description": "Prevents the supplied keys' IDs from being auto-allocated by Cloud\nDatastore. Used for imports only; other workloads are not supported."
+          "description": "Prevents the supplied keys' IDs from being auto-allocated by Cloud\nDatastore."
         }
       }
       ,

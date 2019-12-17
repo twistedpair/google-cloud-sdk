@@ -760,6 +760,9 @@ class ManagedZone(_messages.Message):
       the same ManagedZones. Most users will leave this field unset.
     nameServers: Delegate your managed_zone to these virtual name servers;
       defined by the server (output only)
+    peeringConfig: The presence of this field indicates that DNS Peering is
+      enabled for this zone. The value of this field contains the network to
+      peer with.
     privateVisibilityConfig: For privately visible zones, the set of Virtual
       Private Cloud resources that the zone is visible from.
     visibility: The zone's visibility: public zones are exposed to the
@@ -813,8 +816,9 @@ class ManagedZone(_messages.Message):
   name = _messages.StringField(9)
   nameServerSet = _messages.StringField(10)
   nameServers = _messages.StringField(11, repeated=True)
-  privateVisibilityConfig = _messages.MessageField('ManagedZonePrivateVisibilityConfig', 12)
-  visibility = _messages.EnumField('VisibilityValueValuesEnum', 13)
+  peeringConfig = _messages.MessageField('ManagedZonePeeringConfig', 12)
+  privateVisibilityConfig = _messages.MessageField('ManagedZonePrivateVisibilityConfig', 13)
+  visibility = _messages.EnumField('VisibilityValueValuesEnum', 14)
 
 
 class ManagedZoneDnsSecConfig(_messages.Message):
@@ -916,6 +920,40 @@ class ManagedZoneOperationsListResponse(_messages.Message):
   kind = _messages.StringField(2, default=u'dns#managedZoneOperationsListResponse')
   nextPageToken = _messages.StringField(3)
   operations = _messages.MessageField('Operation', 4, repeated=True)
+
+
+class ManagedZonePeeringConfig(_messages.Message):
+  r"""A ManagedZonePeeringConfig object.
+
+  Fields:
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#managedZonePeeringConfig".
+    targetNetwork: The network with which to peer.
+  """
+
+  kind = _messages.StringField(1, default=u'dns#managedZonePeeringConfig')
+  targetNetwork = _messages.MessageField('ManagedZonePeeringConfigTargetNetwork', 2)
+
+
+class ManagedZonePeeringConfigTargetNetwork(_messages.Message):
+  r"""A ManagedZonePeeringConfigTargetNetwork object.
+
+  Fields:
+    deactivateTime: The time at which the zone was deactivated, in RFC 3339
+      date-time format. An empty string indicates that the peering connection
+      is active. The producer network can deactivate a zone. The zone is
+      automatically deactivated if the producer network that the zone targeted
+      is deleted. Output only.
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#managedZonePeeringConfigTargetNetwork".
+    networkUrl: The fully qualified URL of the VPC network to forward queries
+      to. This should be formatted like https://www.googleapis.com/compute/v1/
+      projects/{project}/global/networks/{network}
+  """
+
+  deactivateTime = _messages.StringField(1)
+  kind = _messages.StringField(2, default=u'dns#managedZonePeeringConfigTargetNetwork')
+  networkUrl = _messages.StringField(3)
 
 
 class ManagedZonePrivateVisibilityConfig(_messages.Message):

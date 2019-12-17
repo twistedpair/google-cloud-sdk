@@ -155,15 +155,6 @@ class AccessTokenCache(object):
 
   def __init__(self, store_file):
     self._cursor = _SqlCursor(store_file)
-
-    # Older versions of the access_tokens database may not have the id_token
-    # column, so we add it and catch the exception if it's already present.
-    try:
-      self._Execute('ALTER TABLE "{}" ADD COLUMN id_token TEXT'.format(
-          _ACCESS_TOKEN_TABLE))
-    except sqlite3.OperationalError:
-      pass
-
     self._Execute(
         'CREATE TABLE IF NOT EXISTS "{}" '
         '(account_id TEXT PRIMARY KEY, '
@@ -171,6 +162,15 @@ class AccessTokenCache(object):
         'token_expiry TIMESTAMP, '
         'rapt_token TEXT, '
         'id_token TEXT)'.format(_ACCESS_TOKEN_TABLE))
+
+    # Older versions of the access_tokens database may not have the id_token
+    # column, so we will add it if we can't access it.
+    try:
+      self._Execute(
+          'SELECT id_token FROM "{}" LIMIT 1'.format(_ACCESS_TOKEN_TABLE))
+    except sqlite3.OperationalError:
+      self._Execute('ALTER TABLE "{}" ADD COLUMN id_token TEXT'.format(
+          _ACCESS_TOKEN_TABLE))
 
   def _Execute(self, *args):
     with self._cursor as cur:

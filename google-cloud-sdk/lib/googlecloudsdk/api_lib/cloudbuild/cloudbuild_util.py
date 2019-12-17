@@ -18,12 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import collections
-
 from apitools.base.protorpclite import messages as proto_messages
 from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_property
@@ -33,7 +30,7 @@ import six
 
 _API_NAME = 'cloudbuild'
 _API_VERSION = 'v1'
-_ALPHA_API_VERSION = 'v1alpha1'
+_ALPHA_API_VERSION = 'v1alpha2'
 
 
 def GetMessagesModule():
@@ -415,15 +412,3 @@ def LoadMessagesFromPath(path,
   with files.FileReader(path) as f:  # Returns user-friendly error messages
     return LoadMessagesFromStream(f, msg_type, msg_friendly_name,
                                   skip_camel_case, path)
-
-
-def GenerateRegionChoiceToEnum():
-  # Return a map of region choice strings (for arguments) to region enum values.
-  msg = GetMessagesModuleAlpha()
-  enums = msg.WorkerPool.RegionsValueListEntryValuesEnum
-  d = {
-      arg_utils.EnumNameToChoice(region_val.name): region_val
-      for region_val in enums
-      if region_val != enums.REGION_UNSPECIFIED
-  }
-  return collections.OrderedDict(sorted(d.items(), key=lambda t: t[0]))

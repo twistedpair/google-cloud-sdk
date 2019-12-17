@@ -36,6 +36,7 @@ class RunV1alpha1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.namespaces_authorizeddomains = self.NamespacesAuthorizeddomainsService(self)
+    self.namespaces_cloudauditlogs = self.NamespacesCloudauditlogsService(self)
     self.namespaces_configurations = self.NamespacesConfigurationsService(self)
     self.namespaces_domainmappings = self.NamespacesDomainmappingsService(self)
     self.namespaces_eventtypes = self.NamespacesEventtypesService(self)
@@ -43,9 +44,11 @@ class RunV1alpha1(base_api.BaseApiClient):
     self.namespaces_revisions = self.NamespacesRevisionsService(self)
     self.namespaces_routes = self.NamespacesRoutesService(self)
     self.namespaces_services = self.NamespacesServicesService(self)
+    self.namespaces_storages = self.NamespacesStoragesService(self)
     self.namespaces_triggers = self.NamespacesTriggersService(self)
     self.namespaces = self.NamespacesService(self)
     self.projects_locations_authorizeddomains = self.ProjectsLocationsAuthorizeddomainsService(self)
+    self.projects_locations_cloudauditlogs = self.ProjectsLocationsCloudauditlogsService(self)
     self.projects_locations_configurations = self.ProjectsLocationsConfigurationsService(self)
     self.projects_locations_domainmappings = self.ProjectsLocationsDomainmappingsService(self)
     self.projects_locations_eventtypes = self.ProjectsLocationsEventtypesService(self)
@@ -53,6 +56,7 @@ class RunV1alpha1(base_api.BaseApiClient):
     self.projects_locations_revisions = self.ProjectsLocationsRevisionsService(self)
     self.projects_locations_routes = self.ProjectsLocationsRoutesService(self)
     self.projects_locations_services = self.ProjectsLocationsServicesService(self)
+    self.projects_locations_storages = self.ProjectsLocationsStoragesService(self)
     self.projects_locations_triggers = self.ProjectsLocationsTriggersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -91,6 +95,158 @@ class RunV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'RunNamespacesAuthorizeddomainsListRequest',
         response_type_name=u'ListAuthorizedDomainsResponse',
+        supports_download=False,
+    )
+
+  class NamespacesCloudauditlogsService(base_api.BaseApiService):
+    """Service class for the namespaces_cloudauditlogs resource."""
+
+    _NAME = u'namespaces_cloudauditlogs'
+
+    def __init__(self, client):
+      super(RunV1alpha1.NamespacesCloudauditlogsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new cloudauditlog.
+
+      Args:
+        request: (RunNamespacesCloudauditlogsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudAuditLog) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudauditlogs',
+        http_method=u'POST',
+        method_id=u'run.namespaces.cloudauditlogs.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+parent}/cloudauditlogs',
+        request_field=u'cloudAuditLog',
+        request_type_name=u'RunNamespacesCloudauditlogsCreateRequest',
+        response_type_name=u'CloudAuditLog',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a cloudauditlog.
+
+      Args:
+        request: (RunNamespacesCloudauditlogsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudauditlogs/{cloudauditlogsId}',
+        http_method=u'DELETE',
+        method_id=u'run.namespaces.cloudauditlogs.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunNamespacesCloudauditlogsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a cloudauditlog.
+
+      Args:
+        request: (RunNamespacesCloudauditlogsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudAuditLog) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudauditlogs/{cloudauditlogsId}',
+        http_method=u'GET',
+        method_id=u'run.namespaces.cloudauditlogs.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunNamespacesCloudauditlogsGetRequest',
+        response_type_name=u'CloudAuditLog',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list cloudauditlogs.
+
+      Args:
+        request: (RunNamespacesCloudauditlogsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListCloudAuditLogsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudauditlogs',
+        http_method=u'GET',
+        method_id=u'run.namespaces.cloudauditlogs.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+parent}/cloudauditlogs',
+        request_field='',
+        request_type_name=u'RunNamespacesCloudauditlogsListRequest',
+        response_type_name=u'ListCloudAuditLogsResponse',
+        supports_download=False,
+    )
+
+    def ReplaceCloudAuditLog(self, request, global_params=None):
+      r"""Rpc to replace a cloudauditlog.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
+
+      Args:
+        request: (RunNamespacesCloudauditlogsReplaceCloudAuditLogRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudAuditLog) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceCloudAuditLog')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceCloudAuditLog.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudauditlogs/{cloudauditlogsId}',
+        http_method=u'PUT',
+        method_id=u'run.namespaces.cloudauditlogs.replaceCloudAuditLog',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
+        request_field=u'cloudAuditLog',
+        request_type_name=u'RunNamespacesCloudauditlogsReplaceCloudAuditLogRequest',
+        response_type_name=u'CloudAuditLog',
         supports_download=False,
     )
 
@@ -801,6 +957,158 @@ optimistic concurrency control.
         supports_download=False,
     )
 
+  class NamespacesStoragesService(base_api.BaseApiService):
+    """Service class for the namespaces_storages resource."""
+
+    _NAME = u'namespaces_storages'
+
+    def __init__(self, client):
+      super(RunV1alpha1.NamespacesStoragesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new storage.
+
+      Args:
+        request: (RunNamespacesStoragesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Storage) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/storages',
+        http_method=u'POST',
+        method_id=u'run.namespaces.storages.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+parent}/storages',
+        request_field=u'storage',
+        request_type_name=u'RunNamespacesStoragesCreateRequest',
+        response_type_name=u'Storage',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a storage.
+
+      Args:
+        request: (RunNamespacesStoragesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/storages/{storagesId}',
+        http_method=u'DELETE',
+        method_id=u'run.namespaces.storages.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunNamespacesStoragesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a storage.
+
+      Args:
+        request: (RunNamespacesStoragesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Storage) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/storages/{storagesId}',
+        http_method=u'GET',
+        method_id=u'run.namespaces.storages.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunNamespacesStoragesGetRequest',
+        response_type_name=u'Storage',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list storages.
+
+      Args:
+        request: (RunNamespacesStoragesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListStoragesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/storages',
+        http_method=u'GET',
+        method_id=u'run.namespaces.storages.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+parent}/storages',
+        request_field='',
+        request_type_name=u'RunNamespacesStoragesListRequest',
+        response_type_name=u'ListStoragesResponse',
+        supports_download=False,
+    )
+
+    def ReplaceStorage(self, request, global_params=None):
+      r"""Rpc to replace a storage.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
+
+      Args:
+        request: (RunNamespacesStoragesReplaceStorageRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Storage) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceStorage')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceStorage.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/storages/{storagesId}',
+        http_method=u'PUT',
+        method_id=u'run.namespaces.storages.replaceStorage',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
+        request_field=u'storage',
+        request_type_name=u'RunNamespacesStoragesReplaceStorageRequest',
+        response_type_name=u'Storage',
+        supports_download=False,
+    )
+
   class NamespacesTriggersService(base_api.BaseApiService):
     """Service class for the namespaces_triggers resource."""
 
@@ -997,6 +1305,158 @@ optimistic concurrency control.
         request_field='',
         request_type_name=u'RunProjectsLocationsAuthorizeddomainsListRequest',
         response_type_name=u'ListAuthorizedDomainsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsCloudauditlogsService(base_api.BaseApiService):
+    """Service class for the projects_locations_cloudauditlogs resource."""
+
+    _NAME = u'projects_locations_cloudauditlogs'
+
+    def __init__(self, client):
+      super(RunV1alpha1.ProjectsLocationsCloudauditlogsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new cloudauditlog.
+
+      Args:
+        request: (RunProjectsLocationsCloudauditlogsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudAuditLog) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudauditlogs',
+        http_method=u'POST',
+        method_id=u'run.projects.locations.cloudauditlogs.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+parent}/cloudauditlogs',
+        request_field=u'cloudAuditLog',
+        request_type_name=u'RunProjectsLocationsCloudauditlogsCreateRequest',
+        response_type_name=u'CloudAuditLog',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a cloudauditlog.
+
+      Args:
+        request: (RunProjectsLocationsCloudauditlogsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudauditlogs/{cloudauditlogsId}',
+        http_method=u'DELETE',
+        method_id=u'run.projects.locations.cloudauditlogs.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsCloudauditlogsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a cloudauditlog.
+
+      Args:
+        request: (RunProjectsLocationsCloudauditlogsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudAuditLog) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudauditlogs/{cloudauditlogsId}',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.cloudauditlogs.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsCloudauditlogsGetRequest',
+        response_type_name=u'CloudAuditLog',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list cloudauditlogs.
+
+      Args:
+        request: (RunProjectsLocationsCloudauditlogsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListCloudAuditLogsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudauditlogs',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.cloudauditlogs.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
+        relative_path=u'v1alpha1/{+parent}/cloudauditlogs',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsCloudauditlogsListRequest',
+        response_type_name=u'ListCloudAuditLogsResponse',
+        supports_download=False,
+    )
+
+    def ReplaceCloudAuditLog(self, request, global_params=None):
+      r"""Rpc to replace a cloudauditlog.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
+
+      Args:
+        request: (RunProjectsLocationsCloudauditlogsReplaceCloudAuditLogRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudAuditLog) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceCloudAuditLog')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceCloudAuditLog.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudauditlogs/{cloudauditlogsId}',
+        http_method=u'PUT',
+        method_id=u'run.projects.locations.cloudauditlogs.replaceCloudAuditLog',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'cloudAuditLog',
+        request_type_name=u'RunProjectsLocationsCloudauditlogsReplaceCloudAuditLogRequest',
+        response_type_name=u'CloudAuditLog',
         supports_download=False,
     )
 
@@ -1789,6 +2249,158 @@ There are no permissions required for making this API call.
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'RunProjectsLocationsServicesTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsStoragesService(base_api.BaseApiService):
+    """Service class for the projects_locations_storages resource."""
+
+    _NAME = u'projects_locations_storages'
+
+    def __init__(self, client):
+      super(RunV1alpha1.ProjectsLocationsStoragesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new storage.
+
+      Args:
+        request: (RunProjectsLocationsStoragesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Storage) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/storages',
+        http_method=u'POST',
+        method_id=u'run.projects.locations.storages.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+parent}/storages',
+        request_field=u'storage',
+        request_type_name=u'RunProjectsLocationsStoragesCreateRequest',
+        response_type_name=u'Storage',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a storage.
+
+      Args:
+        request: (RunProjectsLocationsStoragesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/storages/{storagesId}',
+        http_method=u'DELETE',
+        method_id=u'run.projects.locations.storages.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsStoragesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a storage.
+
+      Args:
+        request: (RunProjectsLocationsStoragesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Storage) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/storages/{storagesId}',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.storages.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsStoragesGetRequest',
+        response_type_name=u'Storage',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list storages.
+
+      Args:
+        request: (RunProjectsLocationsStoragesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListStoragesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/storages',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.storages.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
+        relative_path=u'v1alpha1/{+parent}/storages',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsStoragesListRequest',
+        response_type_name=u'ListStoragesResponse',
+        supports_download=False,
+    )
+
+    def ReplaceStorage(self, request, global_params=None):
+      r"""Rpc to replace a storage.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
+
+      Args:
+        request: (RunProjectsLocationsStoragesReplaceStorageRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Storage) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceStorage')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceStorage.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/storages/{storagesId}',
+        http_method=u'PUT',
+        method_id=u'run.projects.locations.storages.replaceStorage',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'storage',
+        request_type_name=u'RunProjectsLocationsStoragesReplaceStorageRequest',
+        response_type_name=u'Storage',
         supports_download=False,
     )
 

@@ -104,6 +104,15 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
   Fields:
     management: Specifies the node management options for NAP created node-
       pools.
+    minCpuPlatform: Minimum CPU platform to be used for NAP created node
+      pools. The instance may be scheduled on the specified or newer CPU
+      platform. Applicable values are the friendly names of CPU platforms,
+      such as <code>minCpuPlatform: &quot;Intel Haswell&quot;</code> or
+      <code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;</code>. For more
+      information, read [how to specify min CPU
+      platform](https://cloud.google.com/compute/docs/instances/specify-min-
+      cpu-platform) To unset the min cpu platform field pass "automatic" as
+      field value.
     oauthScopes: Scopes that are used by NAP when creating node pools. If
       oauth_scopes are specified, service_account should be empty.
     serviceAccount: The Google Cloud Platform Service Account to be used by
@@ -112,9 +121,10 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
   """
 
   management = _messages.MessageField('NodeManagement', 1)
-  oauthScopes = _messages.StringField(2, repeated=True)
-  serviceAccount = _messages.StringField(3)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 4)
+  minCpuPlatform = _messages.StringField(2)
+  oauthScopes = _messages.StringField(3, repeated=True)
+  serviceAccount = _messages.StringField(4)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 5)
 
 
 class AvailableVersion(_messages.Message):
@@ -1960,6 +1970,12 @@ class NodeConfig(_messages.Message):
     accelerators: A list of hardware accelerators to be attached to each node.
       See https://cloud.google.com/compute/docs/gpus for more information
       about support for GPUs.
+    bootDiskKmsKey:  The Customer Managed Encryption Key used to encrypt the
+      boot disk attached to each node in the node pool. This should be of the
+      form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]
+      /cryptoKeys/[KEY_NAME]. For more information about protecting resources
+      with Cloud KMS Keys please see:
+      https://cloud.google.com/compute/docs/disks/customer-managed-encryption
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
       smallest allowed disk size is 10GB.  If unspecified, the default disk
       size is 100GB.
@@ -2023,6 +2039,10 @@ class NodeConfig(_messages.Message):
     preemptible: Whether the nodes are created as preemptible VM instances.
       See: https://cloud.google.com/compute/docs/instances/preemptible for
       more inforamtion about preemptible VM instances.
+    reservationAffinity: The optional reservation affinity. Setting this field
+      will apply the specified [Zonal Compute
+      Reservation](/compute/docs/instances/reserving-zonal-resources) to this
+      node pool.
     sandboxConfig: Sandbox configuration for this node.
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs. If no Service Account is specified, the "default" service
@@ -2107,23 +2127,25 @@ class NodeConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
-  diskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  diskType = _messages.StringField(3)
-  imageType = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  localSsdCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(7)
-  metadata = _messages.MessageField('MetadataValue', 8)
-  minCpuPlatform = _messages.StringField(9)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 10)
-  oauthScopes = _messages.StringField(11, repeated=True)
-  preemptible = _messages.BooleanField(12)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 13)
-  serviceAccount = _messages.StringField(14)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 15)
-  tags = _messages.StringField(16, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 17, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 18)
+  bootDiskKmsKey = _messages.StringField(2)
+  diskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  diskType = _messages.StringField(4)
+  imageType = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  localSsdCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(8)
+  metadata = _messages.MessageField('MetadataValue', 9)
+  minCpuPlatform = _messages.StringField(10)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 11)
+  oauthScopes = _messages.StringField(12, repeated=True)
+  preemptible = _messages.BooleanField(13)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 14)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 15)
+  serviceAccount = _messages.StringField(16)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 17)
+  tags = _messages.StringField(18, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 19, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 20)
 
 
 class NodeManagement(_messages.Message):
@@ -2601,6 +2623,42 @@ class ReleaseChannelConfig(_messages.Message):
   defaultVersion = _messages.StringField(3)
 
 
+class ReservationAffinity(_messages.Message):
+  r"""[ReservationAffinity](/compute/docs/instances/reserving-zonal-resources)
+  is the configuration of desired reservation which instances could take
+  capacity from.
+
+  Enums:
+    ConsumeReservationTypeValueValuesEnum: Corresponds to the type of
+      reservation consumption.
+
+  Fields:
+    consumeReservationType: Corresponds to the type of reservation
+      consumption.
+    key: Corresponds to the label key of reservation resource.
+    values: Corresponds to the label value(s) of reservation resource(s).
+  """
+
+  class ConsumeReservationTypeValueValuesEnum(_messages.Enum):
+    r"""Corresponds to the type of reservation consumption.
+
+    Values:
+      UNSPECIFIED: Default value. This should not be used.
+      NO_RESERVATION: Do not consume from any reserved capacity.
+      ANY_RESERVATION: Consume any reservation available.
+      SPECIFIC_RESERVATION: Must consume from a specific reservation. Must
+        specify key value fields for specifying the reservations.
+    """
+    UNSPECIFIED = 0
+    NO_RESERVATION = 1
+    ANY_RESERVATION = 2
+    SPECIFIC_RESERVATION = 3
+
+  consumeReservationType = _messages.EnumField('ConsumeReservationTypeValueValuesEnum', 1)
+  key = _messages.StringField(2)
+  values = _messages.StringField(3, repeated=True)
+
+
 class ResourceLimit(_messages.Message):
   r"""Contains information about amount of some resource in the cluster. For
   memory, value should be in GB.
@@ -2666,11 +2724,26 @@ class SandboxConfig(_messages.Message):
   r"""SandboxConfig contains configurations of the sandbox to use for the
   node.
 
+  Enums:
+    TypeValueValuesEnum: Type of the sandbox to use for the node.
+
   Fields:
     sandboxType: Type of the sandbox to use for the node (e.g. 'gvisor')
+    type: Type of the sandbox to use for the node.
   """
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the sandbox to use for the node.
+
+    Values:
+      UNSPECIFIED: Default value. This should not be used.
+      GVISOR: Run sandbox using gvisor.
+    """
+    UNSPECIFIED = 0
+    GVISOR = 1
+
   sandboxType = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class ServerConfig(_messages.Message):

@@ -101,7 +101,7 @@ class Binding(_messages.Message):
       that represents a Google group.    For example, `admins@example.com`.  *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
-      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
       retains the role in the binding.  *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
@@ -555,6 +555,12 @@ class FhirFilter(_messages.Message):
 class FhirStore(_messages.Message):
   r"""Represents a FHIR store.
 
+  Enums:
+    VersionValueValuesEnum: The FHIR specification version that this FHIR
+      store supports natively. This field is immutable after store creation.
+      Requests are rejected if they contain FHIR resources of a different
+      version. An empty value is treated as STU3.
+
   Messages:
     LabelsValue: User-supplied key-value pairs used to organize FHIR stores.
       Label keys must be between 1 and 63 characters long, have a UTF-8
@@ -607,7 +613,28 @@ class FhirStore(_messages.Message):
       this FHIR store to this destination. The Cloud Pub/Sub message
       attributes contain a map with a string describing the action that has
       triggered the notification. For example, "action":"CreateResource".
+    version: The FHIR specification version that this FHIR store supports
+      natively. This field is immutable after store creation. Requests are
+      rejected if they contain FHIR resources of a different version. An empty
+      value is treated as STU3.
   """
+
+  class VersionValueValuesEnum(_messages.Enum):
+    r"""The FHIR specification version that this FHIR store supports natively.
+    This field is immutable after store creation. Requests are rejected if
+    they contain FHIR resources of a different version. An empty value is
+    treated as STU3.
+
+    Values:
+      VERSION_UNSPECIFIED: VERSION_UNSPECIFIED is treated as STU3 to
+        accommodate the existing FHIR stores.
+      DSTU2: Draft Standard for Trial Use, [Release
+        2](https://www.hl7.org/fhir/DSTU2)
+      STU3: Standard for Trial Use, [Release 3](https://www.hl7.org/fhir/STU3)
+    """
+    VERSION_UNSPECIFIED = 0
+    DSTU2 = 1
+    STU3 = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -646,6 +673,7 @@ class FhirStore(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   notificationConfig = _messages.MessageField('NotificationConfig', 6)
+  version = _messages.EnumField('VersionValueValuesEnum', 7)
 
 
 class FieldMetadata(_messages.Message):
@@ -897,6 +925,58 @@ class GoogleCloudHealthcareV1beta1FhirRestImportResourcesResponse(_messages.Mess
 
   fhirStore = _messages.StringField(1)
   inputSize = _messages.IntegerField(2)
+
+
+class HealthcareProjectsLocationsDatasetsAnnotationStoresGetIamPolicyRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsAnnotationStoresGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsAnnotationStoresSetIamPolicyRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsAnnotationStoresSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class HealthcareProjectsLocationsDatasetsAnnotationStoresTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsAnnotationStoresTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class HealthcareProjectsLocationsDatasetsCreateRequest(_messages.Message):
@@ -1521,8 +1601,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalDeleteRequest(
   Fields:
     parent: The name of the FHIR store this resource belongs to.
     type: The FHIR resource type to delete, such as Patient or Observation.
-      For a complete list, see the [FHIR Resource
-      Index](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html).
+      For a complete list, see the FHIR Resource Index ([DSTU2](http://hl7.org
+      /implement/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html)).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1538,8 +1619,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalPatchRequest(_
     httpBody: A HttpBody resource to be passed as the request body.
     parent: The name of the FHIR store this resource belongs to.
     type: The FHIR resource type to update, such as Patient or Observation.
-      For a complete list, see the [FHIR Resource
-      Index](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html).
+      For a complete list, see the FHIR Resource Index ([DSTU2](http://hl7.org
+      /implement/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html)).
   """
 
   httpBody = _messages.MessageField('HttpBody', 1)
@@ -1556,8 +1638,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirConditionalUpdateRequest(
     httpBody: A HttpBody resource to be passed as the request body.
     parent: The name of the FHIR store this resource belongs to.
     type: The FHIR resource type to update, such as Patient or Observation.
-      For a complete list, see the [FHIR Resource
-      Index](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html).
+      For a complete list, see the FHIR Resource Index ([DSTU2](http://hl7.org
+      /implement/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html)).
       Must match the resource type in the provided content.
   """
 
@@ -1573,8 +1656,9 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirCreateRequest(_messages.M
     httpBody: A HttpBody resource to be passed as the request body.
     parent: The name of the FHIR store this resource belongs to.
     type: The FHIR resource type to create, such as Patient or Observation.
-      For a complete list, see the [FHIR Resource
-      Index](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html).
+      For a complete list, see the FHIR Resource Index ([DSTU2](http://hl7.org
+      /implement/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html)).
       Must match the resource type in the provided content.
   """
 
@@ -1995,17 +2079,17 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesGetRequest(_messages
 
   Enums:
     ViewValueValuesEnum: Specifies which parts of the Message resource to
-      return in the response.
+      return in the response. When unspecified, equivalent to FULL.
 
   Fields:
     name: The resource name of the HL7v2 message to retrieve.
     view: Specifies which parts of the Message resource to return in the
-      response.
+      response. When unspecified, equivalent to FULL.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
     r"""Specifies which parts of the Message resource to return in the
-    response.
+    response. When unspecified, equivalent to FULL.
 
     Values:
       MESSAGE_VIEW_UNSPECIFIED: <no description>
@@ -3139,8 +3223,9 @@ class SearchResourcesRequest(_messages.Message):
 
   Fields:
     resourceType: The FHIR resource type to search, such as Patient or
-      Observation. For a complete list, see the [FHIR Resource
-      Index](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html).
+      Observation. For a complete list, see the FHIR Resource Index ([DSTU2](h
+      ttp://hl7.org/implement/standards/fhir/DSTU2/resourcelist.html),
+      [STU3](http://hl7.org/implement/standards/fhir/STU3/resourcelist.html)).
   """
 
   resourceType = _messages.StringField(1)

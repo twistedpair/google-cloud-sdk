@@ -20,7 +20,8 @@ class BigquerydatatransferProjectsDataSourcesCheckValidCredsRequest(_messages.Me
     checkValidCredsRequest: A CheckValidCredsRequest resource to be passed as
       the request body.
     name: Required. The data source in the form:
-      `projects/{project_id}/dataSources/{data_source_id}`
+      `projects/{project_id}/dataSources/{data_source_id}` or `projects/{proje
+      ct_id}/locations/{location_id}/dataSources/{data_source_id}`.
   """
 
   checkValidCredsRequest = _messages.MessageField('CheckValidCredsRequest', 1)
@@ -32,7 +33,8 @@ class BigquerydatatransferProjectsDataSourcesGetRequest(_messages.Message):
 
   Fields:
     name: Required. The field will contain name of the resource requested, for
-      example: `projects/{project_id}/dataSources/{data_source_id}`
+      example: `projects/{project_id}/dataSources/{data_source_id}` or `projec
+      ts/{project_id}/locations/{location_id}/dataSources/{data_source_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -49,7 +51,8 @@ class BigquerydatatransferProjectsDataSourcesListRequest(_messages.Message):
       `ListDataSourcesResponse` outputs a `next_page` token, which can be used
       as the `page_token` value to request the next page of list results.
     parent: Required. The BigQuery project id for which data sources should be
-      returned. Must be in the form: `projects/{project_id}`
+      returned. Must be in the form: `projects/{project_id}` or
+      `projects/{project_id}/locations/{location_id}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -65,7 +68,8 @@ class BigquerydatatransferProjectsLocationsDataSourcesCheckValidCredsRequest(_me
     checkValidCredsRequest: A CheckValidCredsRequest resource to be passed as
       the request body.
     name: Required. The data source in the form:
-      `projects/{project_id}/dataSources/{data_source_id}`
+      `projects/{project_id}/dataSources/{data_source_id}` or `projects/{proje
+      ct_id}/locations/{location_id}/dataSources/{data_source_id}`.
   """
 
   checkValidCredsRequest = _messages.MessageField('CheckValidCredsRequest', 1)
@@ -77,7 +81,8 @@ class BigquerydatatransferProjectsLocationsDataSourcesGetRequest(_messages.Messa
 
   Fields:
     name: Required. The field will contain name of the resource requested, for
-      example: `projects/{project_id}/dataSources/{data_source_id}`
+      example: `projects/{project_id}/dataSources/{data_source_id}` or `projec
+      ts/{project_id}/locations/{location_id}/dataSources/{data_source_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -94,7 +99,8 @@ class BigquerydatatransferProjectsLocationsDataSourcesListRequest(_messages.Mess
       `ListDataSourcesResponse` outputs a `next_page` token, which can be used
       as the `page_token` value to request the next page of list results.
     parent: Required. The BigQuery project id for which data sources should be
-      returned. Must be in the form: `projects/{project_id}`
+      returned. Must be in the form: `projects/{project_id}` or
+      `projects/{project_id}/locations/{location_id}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -150,9 +156,9 @@ class BigquerydatatransferProjectsLocationsTransferConfigsCreateRequest(_message
       the application.
     parent: Required. The BigQuery project id where the transfer configuration
       should be created. Must be in the format
-      projects/{project_id}/locations/{location_id} If specified location and
-      location of the destination bigquery dataset do not match - the request
-      will fail.
+      projects/{project_id}/locations/{location_id} or projects/{project_id}.
+      If specified location and location of the destination bigquery dataset
+      do not match - the request will fail.
     serviceAccountName: Optional service account name. If this field is set,
       transfer config will be created with this service account credentials.
       It requires that requesting user calling this API has permissions to act
@@ -180,7 +186,8 @@ class BigquerydatatransferProjectsLocationsTransferConfigsDeleteRequest(_message
 
   Fields:
     name: Required. The field will contain name of the resource requested, for
-      example: `projects/{project_id}/transferConfigs/{config_id}`
+      example: `projects/{project_id}/transferConfigs/{config_id}` or `project
+      s/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -191,7 +198,8 @@ class BigquerydatatransferProjectsLocationsTransferConfigsGetRequest(_messages.M
 
   Fields:
     name: Required. The field will contain name of the resource requested, for
-      example: `projects/{project_id}/transferConfigs/{config_id}`
+      example: `projects/{project_id}/transferConfigs/{config_id}` or `project
+      s/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -211,7 +219,8 @@ class BigquerydatatransferProjectsLocationsTransferConfigsListRequest(_messages.
       `ListTransfersResponse` outputs a `next_page` token, which can be used
       as the `page_token` value to request the next page of list results.
     parent: Required. The BigQuery project id for which data sources should be
-      returned: `projects/{project_id}`.
+      returned: `projects/{project_id}` or
+      `projects/{project_id}/locations/{location_id}`
   """
 
   dataSourceIds = _messages.StringField(1, repeated=True)
@@ -279,7 +288,9 @@ class BigquerydatatransferProjectsLocationsTransferConfigsRunsDeleteRequest(_mes
   Fields:
     name: Required. The field will contain name of the resource requested, for
       example:
-      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}`
+      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` or `pr
+      ojects/{project_id}/locations/{location_id}/transferConfigs/{config_id}/
+      runs/{run_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -292,7 +303,9 @@ class BigquerydatatransferProjectsLocationsTransferConfigsRunsGetRequest(_messag
   Fields:
     name: Required. The field will contain name of the resource requested, for
       example:
-      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}`
+      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` or `pr
+      ojects/{project_id}/locations/{location_id}/transferConfigs/{config_id}/
+      runs/{run_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -316,7 +329,8 @@ class BigquerydatatransferProjectsLocationsTransferConfigsRunsListRequest(_messa
       used as the `page_token` value to request the next page of list results.
     parent: Required. Name of transfer configuration for which transfer runs
       should be retrieved. Format of transfer configuration resource name is:
-      `projects/{project_id}/transferConfigs/{config_id}`.
+      `projects/{project_id}/transferConfigs/{config_id}` or `projects/{projec
+      t_id}/locations/{location_id}/transferConfigs/{config_id}`.
     runAttempt: Indicates how run attempts are to be pulled.
     states: When specified, only transfer runs with requested states are
       returned.
@@ -375,7 +389,9 @@ class BigquerydatatransferProjectsLocationsTransferConfigsRunsTransferLogsListRe
       `ListTransferLogsResponse` outputs a `next_page` token, which can be
       used as the `page_token` value to request the next page of list results.
     parent: Required. Transfer run name in the form:
-      `projects/{project_id}/transferConfigs/{config_Id}/runs/{run_id}`.
+      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` or `pr
+      ojects/{project_id}/locations/{location_id}/transferConfigs/{config_id}/
+      runs/{run_id}`
   """
 
   class MessageTypesValueValuesEnum(_messages.Enum):
@@ -406,7 +422,8 @@ class BigquerydatatransferProjectsLocationsTransferConfigsScheduleRunsRequest(_m
 
   Fields:
     parent: Required. Transfer configuration name in the form:
-      `projects/{project_id}/transferConfigs/{config_id}`.
+      `projects/{project_id}/transferConfigs/{config_id}` or `projects/{projec
+      t_id}/locations/{location_id}/transferConfigs/{config_id}`.
     scheduleTransferRunsRequest: A ScheduleTransferRunsRequest resource to be
       passed as the request body.
   """
@@ -422,7 +439,8 @@ class BigquerydatatransferProjectsLocationsTransferConfigsStartManualRunsRequest
 
   Fields:
     parent: Transfer configuration name in the form:
-      `projects/{project_id}/transferConfigs/{config_id}`.
+      `projects/{project_id}/transferConfigs/{config_id}` or `projects/{projec
+      t_id}/locations/{location_id}/transferConfigs/{config_id}`.
     startManualTransferRunsRequest: A StartManualTransferRunsRequest resource
       to be passed as the request body.
   """
@@ -452,9 +470,9 @@ class BigquerydatatransferProjectsTransferConfigsCreateRequest(_messages.Message
       the application.
     parent: Required. The BigQuery project id where the transfer configuration
       should be created. Must be in the format
-      projects/{project_id}/locations/{location_id} If specified location and
-      location of the destination bigquery dataset do not match - the request
-      will fail.
+      projects/{project_id}/locations/{location_id} or projects/{project_id}.
+      If specified location and location of the destination bigquery dataset
+      do not match - the request will fail.
     serviceAccountName: Optional service account name. If this field is set,
       transfer config will be created with this service account credentials.
       It requires that requesting user calling this API has permissions to act
@@ -481,7 +499,8 @@ class BigquerydatatransferProjectsTransferConfigsDeleteRequest(_messages.Message
 
   Fields:
     name: Required. The field will contain name of the resource requested, for
-      example: `projects/{project_id}/transferConfigs/{config_id}`
+      example: `projects/{project_id}/transferConfigs/{config_id}` or `project
+      s/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -492,7 +511,8 @@ class BigquerydatatransferProjectsTransferConfigsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The field will contain name of the resource requested, for
-      example: `projects/{project_id}/transferConfigs/{config_id}`
+      example: `projects/{project_id}/transferConfigs/{config_id}` or `project
+      s/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -511,7 +531,8 @@ class BigquerydatatransferProjectsTransferConfigsListRequest(_messages.Message):
       `ListTransfersResponse` outputs a `next_page` token, which can be used
       as the `page_token` value to request the next page of list results.
     parent: Required. The BigQuery project id for which data sources should be
-      returned: `projects/{project_id}`.
+      returned: `projects/{project_id}` or
+      `projects/{project_id}/locations/{location_id}`
   """
 
   dataSourceIds = _messages.StringField(1, repeated=True)
@@ -577,7 +598,9 @@ class BigquerydatatransferProjectsTransferConfigsRunsDeleteRequest(_messages.Mes
   Fields:
     name: Required. The field will contain name of the resource requested, for
       example:
-      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}`
+      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` or `pr
+      ojects/{project_id}/locations/{location_id}/transferConfigs/{config_id}/
+      runs/{run_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -589,7 +612,9 @@ class BigquerydatatransferProjectsTransferConfigsRunsGetRequest(_messages.Messag
   Fields:
     name: Required. The field will contain name of the resource requested, for
       example:
-      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}`
+      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` or `pr
+      ojects/{project_id}/locations/{location_id}/transferConfigs/{config_id}/
+      runs/{run_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -612,7 +637,8 @@ class BigquerydatatransferProjectsTransferConfigsRunsListRequest(_messages.Messa
       used as the `page_token` value to request the next page of list results.
     parent: Required. Name of transfer configuration for which transfer runs
       should be retrieved. Format of transfer configuration resource name is:
-      `projects/{project_id}/transferConfigs/{config_id}`.
+      `projects/{project_id}/transferConfigs/{config_id}` or `projects/{projec
+      t_id}/locations/{location_id}/transferConfigs/{config_id}`.
     runAttempt: Indicates how run attempts are to be pulled.
     states: When specified, only transfer runs with requested states are
       returned.
@@ -671,7 +697,9 @@ class BigquerydatatransferProjectsTransferConfigsRunsTransferLogsListRequest(_me
       `ListTransferLogsResponse` outputs a `next_page` token, which can be
       used as the `page_token` value to request the next page of list results.
     parent: Required. Transfer run name in the form:
-      `projects/{project_id}/transferConfigs/{config_Id}/runs/{run_id}`.
+      `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` or `pr
+      ojects/{project_id}/locations/{location_id}/transferConfigs/{config_id}/
+      runs/{run_id}`
   """
 
   class MessageTypesValueValuesEnum(_messages.Enum):
@@ -700,7 +728,8 @@ class BigquerydatatransferProjectsTransferConfigsScheduleRunsRequest(_messages.M
 
   Fields:
     parent: Required. Transfer configuration name in the form:
-      `projects/{project_id}/transferConfigs/{config_id}`.
+      `projects/{project_id}/transferConfigs/{config_id}` or `projects/{projec
+      t_id}/locations/{location_id}/transferConfigs/{config_id}`.
     scheduleTransferRunsRequest: A ScheduleTransferRunsRequest resource to be
       passed as the request body.
   """
@@ -715,7 +744,8 @@ class BigquerydatatransferProjectsTransferConfigsStartManualRunsRequest(_message
 
   Fields:
     parent: Transfer configuration name in the form:
-      `projects/{project_id}/transferConfigs/{config_id}`.
+      `projects/{project_id}/transferConfigs/{config_id}` or `projects/{projec
+      t_id}/locations/{location_id}/transferConfigs/{config_id}`.
     startManualTransferRunsRequest: A StartManualTransferRunsRequest resource
       to be passed as the request body.
   """

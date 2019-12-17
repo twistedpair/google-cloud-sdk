@@ -1557,6 +1557,10 @@
         "management": {
           "description": "Specifies the node management options for NAP created node-pools.",
           "$ref": "NodeManagement"
+        },
+        "minCpuPlatform": {
+          "description": "Minimum CPU platform to be used for NAP created node pools.\nThe instance may be scheduled on the specified or newer CPU platform.\nApplicable values are the friendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read [how to specify min CPU\nplatform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform)\nTo unset the min cpu platform field pass \"automatic\" as field value.",
+          "type": "string"
         }
       }
     },

@@ -295,6 +295,10 @@ class FileShareConfig(_messages.Message):
   r"""File share configuration for the instance.
 
   Fields:
+    backup: The resource name of the backup, in the format
+      projects/{project_id}/locations/{location_id}/backups/{backup_id}, that
+      this file share has been restored from. Empty, if the file share is
+      created from scratch and not restored from a backup.
     capacityGb: File share capacity in gigabytes (GB). Cloud Filestore defines
       1 GB as 1024^3 bytes.
     exports: Exports. If exports are omitted, a default allowed_ip_ranges is
@@ -303,17 +307,23 @@ class FileShareConfig(_messages.Message):
     name: The name of the file share (must be 16 characters or less).
     nfsExportOptions: Nfs Export Options. There is a limit of 10 export
       options per file share.
+    snapshot: The resource name of the snapshot, in the format
+      projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id},
+      that this file share has been restored from. Empty, if the file share is
+      created from scratch and not restored from a snapshot.
     sourceSnapshot: The resource name of the snapshot, in the format
       projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id},
       that this file share has been restored from. Empty, if the file share is
       created from scratch and not restored from a snapshot.
   """
 
-  capacityGb = _messages.IntegerField(1)
-  exports = _messages.MessageField('ExportConfig', 2, repeated=True)
-  name = _messages.StringField(3)
-  nfsExportOptions = _messages.MessageField('NfsExportOptions', 4, repeated=True)
-  sourceSnapshot = _messages.StringField(5)
+  backup = _messages.StringField(1)
+  capacityGb = _messages.IntegerField(2)
+  exports = _messages.MessageField('ExportConfig', 3, repeated=True)
+  name = _messages.StringField(4)
+  nfsExportOptions = _messages.MessageField('NfsExportOptions', 5, repeated=True)
+  snapshot = _messages.StringField(6)
+  sourceSnapshot = _messages.StringField(7)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message):
@@ -839,8 +849,8 @@ class Instance(_messages.Message):
       ERROR: The instance is experiencing an issue and might be unusable. You
         can get further details from the `statusMessage` field of the
         `Instance` resource.
-      RESTORING: The instance is restoring a snapshot to an existing file
-        share and may be unusable during this time.
+      RESTORING: The instance is restoring a snapshot or backup to an existing
+        file share and may be unusable during this time.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1

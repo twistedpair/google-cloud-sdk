@@ -91,7 +91,7 @@ class Binding(_messages.Message):
       example, `admins@example.com`.  *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
-      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
       retains the role in the binding.  *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
@@ -1013,10 +1013,9 @@ class Operation(_messages.Message):
   operations, use the globalOperations resource.  - For regional operations,
   use the regionOperations resource.  - For zonal operations, use the
   zonalOperations resource.    For more information, read  Global, Regional,
-  and Zonal Resources. (== resource_for v1.globalOperations ==) (==
-  resource_for beta.globalOperations ==) (== resource_for v1.regionOperations
-  ==) (== resource_for beta.regionOperations ==) (== resource_for
-  v1.zoneOperations ==) (== resource_for beta.zoneOperations ==)
+  and Zonal Resources. (== resource_for {$api_version}.globalOperations ==)
+  (== resource_for {$api_version}.regionOperations ==) (== resource_for
+  {$api_version}.zoneOperations ==)
 
   Messages:
     ErrorValue: [Output Only] If errors are generated during processing of the

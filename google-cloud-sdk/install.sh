@@ -179,9 +179,8 @@ if [ -z "$CLOUDSDK_GSUTIL_PYTHON" ]; then
   fi
 fi
 
-# bq requires python2 so it can not use CLOUDSDK_PYTHON which may be python3.
 if [ -z "$CLOUDSDK_BQ_PYTHON" ]; then
-  CLOUDSDK_BQ_PYTHON=$(order_python python2 python2.7 python)
+  CLOUDSDK_BQ_PYTHON="$CLOUDSDK_PYTHON"
 fi
 
 export CLOUDSDK_ROOT_DIR

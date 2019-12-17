@@ -146,7 +146,7 @@ class Binding(_messages.Message):
       that represents a Google group.    For example, `admins@example.com`.  *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
-      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
       retains the role in the binding.  *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
@@ -935,7 +935,7 @@ class CryptoKeyVersion(_messages.Message):
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
-        encryption by an external KMS.
+        encryption by an external key manager.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -963,7 +963,7 @@ class CryptoKeyVersion(_messages.Message):
       PROTECTION_LEVEL_UNSPECIFIED: Not specified.
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
-      EXTERNAL: Crypto operations are performed by an external KMS.
+      EXTERNAL: Crypto operations are performed by an external key manager.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
@@ -1075,7 +1075,7 @@ class CryptoKeyVersionTemplate(_messages.Message):
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
-        encryption by an external KMS.
+        encryption by an external key manager.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -1103,7 +1103,7 @@ class CryptoKeyVersionTemplate(_messages.Message):
       PROTECTION_LEVEL_UNSPECIFIED: Not specified.
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
-      EXTERNAL: Crypto operations are performed by an external KMS.
+      EXTERNAL: Crypto operations are performed by an external key manager.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
@@ -1288,7 +1288,7 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
-        encryption by an external KMS.
+        encryption by an external key manager.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1
@@ -1401,7 +1401,7 @@ class ImportJob(_messages.Message):
       PROTECTION_LEVEL_UNSPECIFIED: Not specified.
       SOFTWARE: Crypto operations are performed in software.
       HSM: Crypto operations are performed in a Hardware Security Module.
-      EXTERNAL: Crypto operations are performed by an external KMS.
+      EXTERNAL: Crypto operations are performed by an external key manager.
     """
     PROTECTION_LEVEL_UNSPECIFIED = 0
     SOFTWARE = 1
@@ -1766,7 +1766,7 @@ class PublicKey(_messages.Message):
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
-        encryption by an external KMS.
+        encryption by an external key manager.
     """
     CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
     GOOGLE_SYMMETRIC_ENCRYPTION = 1

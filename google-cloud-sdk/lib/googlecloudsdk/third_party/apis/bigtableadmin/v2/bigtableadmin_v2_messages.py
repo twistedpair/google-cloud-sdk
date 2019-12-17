@@ -389,8 +389,9 @@ class BigtableadminProjectsInstancesClustersBackupsListRequest(_messages.Message
       of the backup is before 2018-03-28T14:50:00Z.   * `size_bytes >
       10000000000` --> The backup's size is greater than 10GB
     orderBy: An expression for specifying the sort order of the results of the
-      request. The string value should specify only one field in Backup.
-      Fields supported are:    * name    * source_table    * expire_time    *
+      request. The string value should specify one or more fields in Backup.
+      The full syntax is described at https://aip.dev/132#ordering.  Fields
+      supported are:    * name    * source_table    * expire_time    *
       start_time    * end_time    * size_bytes    * state  For example,
       "start_time". The default sorting order is ascending. To specify
       descending order for the field, a suffix " desc" should be appended to
@@ -867,7 +868,7 @@ class Binding(_messages.Message):
       that represents a Google group.    For example, `admins@example.com`.  *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
-      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
       retains the role in the binding.  *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address

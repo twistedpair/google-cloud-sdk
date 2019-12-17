@@ -1725,6 +1725,11 @@ class NodeConfig(_messages.Message):
     preemptible: Whether the nodes are created as preemptible VM instances.
       See: https://cloud.google.com/compute/docs/instances/preemptible for
       more information about preemptible VM instances.
+    reservationAffinity: The optional reservation affinity. Setting this field
+      will apply the specified [Zonal Compute
+      Reservation](/compute/docs/instances/reserving-zonal-resources) to this
+      node pool.
+    sandboxConfig: Sandbox configuration for this node.
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs. If no Service Account is specified, the "default" service
       account is used.
@@ -1818,10 +1823,12 @@ class NodeConfig(_messages.Message):
   nodeImageConfig = _messages.MessageField('CustomImageConfig', 10)
   oauthScopes = _messages.StringField(11, repeated=True)
   preemptible = _messages.BooleanField(12)
-  serviceAccount = _messages.StringField(13)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 14)
-  tags = _messages.StringField(15, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 16, repeated=True)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 13)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 14)
+  serviceAccount = _messages.StringField(15)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 16)
+  tags = _messages.StringField(17, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 18, repeated=True)
 
 
 class NodeManagement(_messages.Message):
@@ -2136,6 +2143,42 @@ class RecurringTimeWindow(_messages.Message):
   window = _messages.MessageField('TimeWindow', 2)
 
 
+class ReservationAffinity(_messages.Message):
+  r"""[ReservationAffinity](/compute/docs/instances/reserving-zonal-resources)
+  is the configuration of desired reservation which instances could take
+  capacity from.
+
+  Enums:
+    ConsumeReservationTypeValueValuesEnum: Corresponds to the type of
+      reservation consumption.
+
+  Fields:
+    consumeReservationType: Corresponds to the type of reservation
+      consumption.
+    key: Corresponds to the label key of reservation resource.
+    values: Corresponds to the label value(s) of reservation resource(s).
+  """
+
+  class ConsumeReservationTypeValueValuesEnum(_messages.Enum):
+    r"""Corresponds to the type of reservation consumption.
+
+    Values:
+      UNSPECIFIED: Default value. This should not be used.
+      NO_RESERVATION: Do not consume from any reserved capacity.
+      ANY_RESERVATION: Consume any reservation available.
+      SPECIFIC_RESERVATION: Must consume from a specific reservation. Must
+        specify key value fields for specifying the reservations.
+    """
+    UNSPECIFIED = 0
+    NO_RESERVATION = 1
+    ANY_RESERVATION = 2
+    SPECIFIC_RESERVATION = 3
+
+  consumeReservationType = _messages.EnumField('ConsumeReservationTypeValueValuesEnum', 1)
+  key = _messages.StringField(2)
+  values = _messages.StringField(3, repeated=True)
+
+
 class ResourceLimit(_messages.Message):
   r"""Contains information about amount of some resource in the cluster. For
   memory, value should be in GB.
@@ -2195,6 +2238,30 @@ class RollbackNodePoolUpgradeRequest(_messages.Message):
   nodePoolId = _messages.StringField(3)
   projectId = _messages.StringField(4)
   zone = _messages.StringField(5)
+
+
+class SandboxConfig(_messages.Message):
+  r"""SandboxConfig contains configurations of the sandbox to use for the
+  node.
+
+  Enums:
+    TypeValueValuesEnum: Type of the sandbox to use for the node.
+
+  Fields:
+    type: Type of the sandbox to use for the node.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the sandbox to use for the node.
+
+    Values:
+      UNSPECIFIED: Default value. This should not be used.
+      GVISOR: Run sandbox using gvisor.
+    """
+    UNSPECIFIED = 0
+    GVISOR = 1
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
 class ServerConfig(_messages.Message):

@@ -807,11 +807,15 @@ class MergedResult(_messages.Message):
   Fields:
     outcome: Outcome of the resource
     state: State of the resource
-    testSuiteOverviews: List of roll up test suite overview contents: counts
-      of rolled up test cases within the environment (e.g. same test cases
-      from different runs or test cases from different shards that belong to
-      the same test suite).  Present if the step(s) of the environment has
-      test_suite_overviews.
+    testSuiteOverviews: The combined and rolled-up result of each test suite
+      that was run as part of this environment.  Combining: When the test
+      cases from a suite are run in different steps (sharding), the results
+      are added back together in one overview. (e.g., if shard1 has 2 failures
+      and shard2 has 1 failure than the overview failure_count = 3).  Rollup:
+      When test cases from the same suite are run multiple times (flaky), the
+      results are combined (e.g., if testcase1.run1 fails, testcase1.run2
+      passes, and both testcase2.run1 and testcase2.run2 fail then the
+      overview flaky_count = 1 and failure_count = 1).
   """
 
   class StateValueValuesEnum(_messages.Enum):

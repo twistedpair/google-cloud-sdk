@@ -227,6 +227,9 @@ apis:
     v2:
       discovery_doc: cloudtasks_v2.json
       default: true
+  cloudtrace:
+    v2beta1:
+      discovery_doc: cloudtrace_v2beta1.json
   cloudscheduler:
     v1alpha1:
       discovery_doc: cloudscheduler_v1alpha1.json
@@ -377,12 +380,6 @@ apis:
     v1alpha1:
       discovery_doc: domains_v1alpha1.json
       default: true
-  edge:
-    v1alpha1:
-      discovery_doc: edge_v1alpha1.json
-  edgeml:
-    v1beta1:
-      discovery_doc: edgeml_v1beta1.json
   eventflow:
     v1beta2:
       discovery_doc: eventflow_v1beta2.json

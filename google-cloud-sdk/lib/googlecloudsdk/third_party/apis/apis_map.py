@@ -400,6 +400,14 @@ MAP = {
                 messages_modulepath='cloudtasks_v2beta3_messages',
                 default_version=False),
     },
+    'cloudtrace': {
+        'v2beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.cloudtrace.v2beta1',
+                client_classpath='cloudtrace_v2beta1_client.CloudtraceV2beta1',
+                messages_modulepath='cloudtrace_v2beta1_messages',
+                default_version=True),
+    },
     'composer': {
         'v1':
             APIDef(
@@ -616,22 +624,6 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.domains.v1alpha1',
                 client_classpath='domains_v1alpha1_client.DomainsV1alpha1',
                 messages_modulepath='domains_v1alpha1_messages',
-                default_version=True),
-    },
-    'edge': {
-        'v1alpha1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.edge.v1alpha1',
-                client_classpath='edge_v1alpha1_client.EdgeV1alpha1',
-                messages_modulepath='edge_v1alpha1_messages',
-                default_version=True),
-    },
-    'edgeml': {
-        'v1beta1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.edgeml.v1beta1',
-                client_classpath='edgeml_v1beta1_client.EdgemlV1beta1',
-                messages_modulepath='edgeml_v1beta1_messages',
                 default_version=True),
     },
     'eventflow': {

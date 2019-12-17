@@ -189,6 +189,8 @@ class Feature(_messages.Message):
     meteringFeatureSpec: A MeteringFeatureSpec attribute.
     multiclusteringressFeatureSpec: A MultiClusterIngressFeatureSpec
       attribute.
+    multiclusterservicediscoveryFeatureSpec: An EAP feature for GKE multi-
+      cluster service discovery.
     name: Output only. The unique name of this feature resource in the format:
       `projects/[project_id]/locations/global/features/[feature_id]`.
     servicemeshFeatureSpec: A ServiceMeshFeatureSpec attribute.
@@ -227,9 +229,10 @@ class Feature(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 7)
   multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 8)
-  name = _messages.StringField(9)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 10)
-  updateTime = _messages.StringField(11)
+  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 9)
+  name = _messages.StringField(10)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 11)
+  updateTime = _messages.StringField(12)
 
 
 class FeatureState(_messages.Message):
@@ -321,6 +324,8 @@ class FeatureStateDetails(_messages.Message):
     meteringFeatureState: A MeteringFeatureState attribute.
     multiclusteringressFeatureState: A MultiClusterIngressFeatureState
       attribute.
+    multiclusterservicediscoveryFeatureState: A
+      MultiClusterServiceDiscoveryFeatureState attribute.
     servicemeshFeatureState: A ServiceMeshFeatureState attribute.
     updateTime: The last update time of this status by the controllers
   """
@@ -343,8 +348,9 @@ class FeatureStateDetails(_messages.Message):
   description = _messages.StringField(3)
   meteringFeatureState = _messages.MessageField('MeteringFeatureState', 4)
   multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 5)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 6)
-  updateTime = _messages.StringField(7)
+  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 6)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 7)
+  updateTime = _messages.StringField(8)
 
 
 class GenerateConnectAgentManifestResponse(_messages.Message):
@@ -812,6 +818,20 @@ class MultiClusterIngressFeatureState(_messages.Message):
   the MultiClusterIngress feature. This is just a placeholder and more fields
   will be added when we have more state information to report for this
   feature.
+  """
+
+
+
+class MultiClusterServiceDiscoveryFeatureSpec(_messages.Message):
+  r"""An empty spec for multi-cluster service discovery feature. This is
+  required since Feature proto requires a spec.
+  """
+
+
+
+class MultiClusterServiceDiscoveryFeatureState(_messages.Message):
+  r"""An empty state for multi-cluster service discovery feature. This is
+  required since FeatureStateDetails requires a state.
   """
 
 

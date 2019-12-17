@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 import os.path
 import subprocess
 from googlecloudsdk.core import config
-from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files as file_utils
 import six
 
@@ -56,25 +55,17 @@ class MinikubeCluster(object):
     """
     self.context_name = profile
 
-  def ServiceUrl(self, service):
-    """Get the URL for a service."""
-    cmd = [
-        _FindMinikube(), '-p', self.context_name, 'service', service, '--url'
-    ]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    stdout, _ = p.communicate()
-    return stdout.strip()
-
 
 class Minikube(object):
   """Start and stop a minikube cluster."""
 
-  def __init__(self, cluster_name, delete_cluster=True):
+  def __init__(self, cluster_name, delete_cluster=True, vm_driver='kvm2'):
     self._cluster_name = cluster_name
     self._delete_cluster = delete_cluster
+    self._vm_driver = vm_driver
 
   def __enter__(self):
-    _StartCluster(self._cluster_name)
+    _StartCluster(self._cluster_name, self._vm_driver)
     return MinikubeCluster(self._cluster_name)
 
   def __exit__(self, exc_type, exc_value, tb):
@@ -82,12 +73,12 @@ class Minikube(object):
       _DeleteMinikube(self._cluster_name)
 
 
-def _StartCluster(cluster_name):
+def _StartCluster(cluster_name, vm_driver):
   """Start a minikube cluster."""
   if not _IsClusterUp(cluster_name):
     cmd = [
         _FindMinikube(), 'start', '-p', cluster_name, '--keep-context',
-        '--vm-driver=kvm2'
+        '--vm-driver=' + vm_driver
     ]
     subprocess.check_call(cmd)
 
@@ -97,7 +88,7 @@ def _IsClusterUp(cluster_name):
   cmd = [_FindMinikube(), 'status', '-p', cluster_name]
   p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
   stdout, _ = p.communicate()
-  lines = six.text_type(stdout).strip().splitlines()
+  lines = six.ensure_text(stdout).strip().splitlines()
   status = dict(line.split(':', 1) for line in lines)
   return 'host' in status and status['host'].strip() == 'Running'
 
@@ -122,22 +113,6 @@ class ExternalCluster(object):
       cluster_name: Name of the cluster.
     """
     self.context_name = cluster_name
-
-  def ServiceUrl(self, service_name):
-    """Get the URL for a service."""
-    cmd = ['kubectl', 'get', 'services', service_name, '--output=yaml']
-
-    # Run until an ingress appears on the load balancer. While the load
-    # load balancer's external ip is pending, the load blancer is represented
-    # by an empty object.
-    while True:
-      p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-      stdout, _ = p.communicate()
-      service_yaml = yaml.load(stdout)
-      load_balancer = service_yaml['status']['loadBalancer']
-      if load_balancer:
-        return ('http://%s:%s' % (load_balancer['ingress'][0]['ip'],
-                                  service_yaml['spec']['ports'][0]['port']))
 
 
 class ExternalClusterContext(object):

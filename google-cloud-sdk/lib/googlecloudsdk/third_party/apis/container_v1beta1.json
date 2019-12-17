@@ -471,6 +471,10 @@
           "description": "Sandbox configuration for this node.",
           "$ref": "SandboxConfig"
         },
+        "reservationAffinity": {
+          "description": "The optional reservation affinity. Setting this field will apply\nthe specified [Zonal Compute\nReservation](\/compute\/docs\/instances\/reserving-zonal-resources)\nto this node pool.",
+          "$ref": "ReservationAffinity"
+        },
         "diskType": {
           "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd')\n\nIf unspecified, the default disk type is 'pd-standard'",
           "type": "string"
@@ -489,6 +493,10 @@
           "items": {
             "$ref": "NodeTaint"
           }
+        },
+        "bootDiskKmsKey": {
+          "description": "\nThe Customer Managed Encryption Key used to encrypt the boot disk attached\nto each node in the node pool. This should be of the form\nprojects\/[KEY_PROJECT_ID]\/locations\/[LOCATION]\/keyRings\/[RING_NAME]\/cryptoKeys\/[KEY_NAME].\nFor more information about protecting resources with Cloud KMS Keys please\nsee:\nhttps:\/\/cloud.google.com\/compute\/docs\/disks\/customer-managed-encryption",
+          "type": "string"
         },
         "shieldedInstanceConfig": {
           "description": "Shielded Instance options.",
@@ -539,6 +547,52 @@
         "sandboxType": {
           "description": "Type of the sandbox to use for the node (e.g. 'gvisor')",
           "type": "string"
+        },
+        "type": {
+          "description": "Type of the sandbox to use for the node.",
+          "enumDescriptions": [
+            "Default value. This should not be used.",
+            "Run sandbox using gvisor."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "GVISOR"
+          ]
+        }
+      }
+    },
+    "ReservationAffinity": {
+      "id": "ReservationAffinity",
+      "description": "[ReservationAffinity](\/compute\/docs\/instances\/reserving-zonal-resources) is\nthe configuration of desired reservation which instances could take\ncapacity from.",
+      "type": "object",
+      "properties": {
+        "consumeReservationType": {
+          "description": "Corresponds to the type of reservation consumption.",
+          "enumDescriptions": [
+            "Default value. This should not be used.",
+            "Do not consume from any reserved capacity.",
+            "Consume any reservation available.",
+            "Must consume from a specific reservation. Must specify key value fields\nfor specifying the reservations."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "NO_RESERVATION",
+            "ANY_RESERVATION",
+            "SPECIFIC_RESERVATION"
+          ]
+        },
+        "key": {
+          "description": "Corresponds to the label key of reservation resource.",
+          "type": "string"
+        },
+        "values": {
+          "description": "Corresponds to the label value(s) of reservation resource(s).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1325,6 +1379,10 @@
         "management": {
           "description": "Specifies the node management options for NAP created node-pools.",
           "$ref": "NodeManagement"
+        },
+        "minCpuPlatform": {
+          "description": "Minimum CPU platform to be used for NAP created node pools.\nThe instance may be scheduled on the specified or newer CPU platform.\nApplicable values are the friendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read [how to specify min CPU\nplatform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform)\nTo unset the min cpu platform field pass \"automatic\" as field value.",
+          "type": "string"
         }
       }
     },

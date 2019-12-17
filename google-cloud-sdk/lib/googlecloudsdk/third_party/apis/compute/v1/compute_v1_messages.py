@@ -34,7 +34,7 @@ class AcceleratorType(_messages.Message):
   graphics processing units (accelerators) that you can add to VM instances to
   improve or accelerate performance when working with intensive workloads. For
   more information, read GPUs on Compute Engine. (== resource_for
-  beta.acceleratorTypes ==) (== resource_for v1.acceleratorTypes ==)
+  {$api_version}.acceleratorTypes ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -548,9 +548,8 @@ class Address(_messages.Message):
   external IP addresses are IPv4 or IPv6 addresses. They can only be assigned
   to global forwarding rules for HTTP(S), SSL Proxy, or TCP Proxy load
   balancers in Premium Tier. For more information, read Global resources. (==
-  resource_for beta.addresses ==) (== resource_for v1.addresses ==) (==
-  resource_for beta.globalAddresses ==) (== resource_for v1.globalAddresses
-  ==)
+  resource_for {$api_version}.addresses ==) (== resource_for
+  {$api_version}.globalAddresses ==)
 
   Enums:
     AddressTypeValueValuesEnum: The type of address to reserve, either
@@ -1254,6 +1253,7 @@ class AttachedDisk(_messages.Message):
       the disk later.  Instance templates do not store customer-supplied
       encryption keys, so you cannot use your own keys to encrypt disks in a
       managed instance group.
+    diskSizeGb: The size of the disk in GB.
     guestOsFeatures: A list of features to enable on the guest operating
       system. Applicable only for bootable images. Read  Enabling guest
       operating system features to see a list of available options.
@@ -1330,15 +1330,16 @@ class AttachedDisk(_messages.Message):
   boot = _messages.BooleanField(2)
   deviceName = _messages.StringField(3)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
-  index = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 7)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 8)
-  kind = _messages.StringField(9, default=u'compute#attachedDisk')
-  licenses = _messages.StringField(10, repeated=True)
-  mode = _messages.EnumField('ModeValueValuesEnum', 11)
-  source = _messages.StringField(12)
-  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  diskSizeGb = _messages.IntegerField(5)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 6, repeated=True)
+  index = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 8)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 9)
+  kind = _messages.StringField(10, default=u'compute#attachedDisk')
+  licenses = _messages.StringField(11, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 12)
+  source = _messages.StringField(13)
+  type = _messages.EnumField('TypeValueValuesEnum', 14)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -1552,9 +1553,8 @@ class Autoscaler(_messages.Message):
   defined autoscaling policy. For more information, read Autoscaling Groups of
   Instances.  For zonal managed instance groups resource, use the autoscaler
   resource.  For regional managed instance groups, use the regionAutoscalers
-  resource. (== resource_for beta.autoscalers ==) (== resource_for
-  v1.autoscalers ==) (== resource_for beta.regionAutoscalers ==) (==
-  resource_for v1.regionAutoscalers ==)
+  resource. (== resource_for {$api_version}.autoscalers ==) (== resource_for
+  {$api_version}.regionAutoscalers ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the autoscaler
@@ -2679,8 +2679,8 @@ class BackendBucketList(_messages.Message):
 class BackendService(_messages.Message):
   r"""Represents a Backend Service resource.  A backend service contains
   configuration values for Google Cloud Platform load balancing services.  For
-  more information, read Backend Services.  (== resource_for v1.backendService
-  ==) (== resource_for beta.backendService ==)
+  more information, read Backend Services.  (== resource_for
+  {$api_version}.backendService ==)
 
   Enums:
     LoadBalancingSchemeValueValuesEnum: Specifies the load balancer type.
@@ -3474,7 +3474,7 @@ class Binding(_messages.Message):
       example, `admins@example.com`.  *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
-      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
       retains the role in the binding.  *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
@@ -3573,8 +3573,8 @@ class Commitment(_messages.Message):
   resource means that you are purchasing a committed use contract with an
   explicit start and end time. You can create commitments based on vCPUs and
   memory usage and receive discounted rates. For full details, read Signing Up
-  for Committed Use Discounts. (== resource_for beta.regionCommitments ==) (==
-  resource_for v1.regionCommitments ==)
+  for Committed Use Discounts. (== resource_for
+  {$api_version}.regionCommitments ==)
 
   Enums:
     PlanValueValuesEnum: The plan for this commitment, which determines
@@ -17772,9 +17772,8 @@ class Disk(_messages.Message):
   storage options, read Storage options.  The disks resource represents a
   zonal persistent disk. For more information, read Zonal persistent disks.
   The regionDisks resource represents a regional persistent disk. For more
-  information, read  Regional resources. (== resource_for beta.disks ==) (==
-  resource_for v1.disks ==) (== resource_for v1.regionDisks ==) (==
-  resource_for beta.regionDisks ==)
+  information, read  Regional resources. (== resource_for {$api_version}.disks
+  ==) (== resource_for {$api_version}.regionDisks ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of disk creation.
@@ -18355,9 +18354,8 @@ class DiskType(_messages.Message):
   diskTypes resource represents disk types for a zonal persistent disk. For
   more information, read Zonal persistent disks.  The regionDiskTypes resource
   represents disk types for a regional persistent disk. For more information,
-  read Regional persistent disks. (== resource_for beta.diskTypes ==) (==
-  resource_for v1.diskTypes ==) (== resource_for v1.regionDiskTypes ==) (==
-  resource_for beta.regionDiskTypes ==)
+  read Regional persistent disks. (== resource_for {$api_version}.diskTypes
+  ==) (== resource_for {$api_version}.regionDiskTypes ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -19763,10 +19761,9 @@ class ForwardingRule(_messages.Message):
   Cloud Platform load balancer. Forwarding rules can also reference target
   instances and Cloud VPN Classic gateways (targetVpnGateway).  For more
   information, read Forwarding rule concepts and Using protocol forwarding.
-  (== resource_for beta.forwardingRules ==) (== resource_for
-  v1.forwardingRules ==) (== resource_for beta.globalForwardingRules ==) (==
-  resource_for v1.globalForwardingRules ==) (== resource_for
-  beta.regionForwardingRules ==) (== resource_for v1.regionForwardingRules ==)
+  (== resource_for {$api_version}.forwardingRules ==) (== resource_for
+  {$api_version}.globalForwardingRules ==) (== resource_for
+  {$api_version}.regionForwardingRules ==)
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies. For
@@ -22218,7 +22215,7 @@ class HttpsHealthCheckList(_messages.Message):
 class Image(_messages.Message):
   r"""Represents an Image resource.  You can use images to create boot disks
   for your VM instances. For more information, read Images. (== resource_for
-  beta.images ==) (== resource_for v1.images ==)
+  {$api_version}.images ==)
 
   Enums:
     SourceTypeValueValuesEnum: The type of the image used to create this disk.
@@ -22572,8 +22569,7 @@ class ImageList(_messages.Message):
 class Instance(_messages.Message):
   r"""Represents an Instance resource.  An instance is a virtual machine that
   is hosted on Google Cloud Platform. For more information, read Virtual
-  Machine Instances. (== resource_for beta.instances ==) (== resource_for
-  v1.instances ==)
+  Machine Instances. (== resource_for {$api_version}.instances ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
@@ -22910,14 +22906,16 @@ class InstanceAggregatedList(_messages.Message):
 
 
 class InstanceGroup(_messages.Message):
-  r"""Represents an unmanaged Instance Group resource.  Use unmanaged instance
-  groups if you need to apply load balancing to groups of heterogeneous
-  instances or if you need to manage the instances yourself. For more
-  information, read  Instance groups.  For zonal unmanaged Instance Group, use
-  instanceGroups resource.  For regional unmanaged Instance Group, use
-  regionInstanceGroups resource. (== resource_for beta.instanceGroups ==) (==
-  resource_for v1.instanceGroups ==) (== resource_for
-  beta.regionInstanceGroups ==) (== resource_for v1.regionInstanceGroups ==)
+  r"""Represents an Instance Group resource.  Instance Groups can be used to
+  configure a target for load balancing.  Instance groups can either be
+  managed or unmanaged.  To create  managed instance groups, use the
+  instanceGroupManager or regionInstanceGroupManager resource instead.  Use
+  zonal unmanaged instance groups if you need to apply load balancing to
+  groups of heterogeneous instances or if you need to manage the instances
+  yourself. You cannot create regional unmanaged instance groups.  For more
+  information, read Instance groups.  (== resource_for
+  {$api_version}.instanceGroups ==) (== resource_for
+  {$api_version}.regionInstanceGroups ==)
 
   Fields:
     creationTimestamp: [Output Only] The creation timestamp for this instance
@@ -23249,9 +23247,8 @@ class InstanceGroupManager(_messages.Message):
   information, read Instance groups.  For zonal Managed Instance Group, use
   the instanceGroupManagers resource.  For regional Managed Instance Group,
   use the regionInstanceGroupManagers resource. (== resource_for
-  beta.instanceGroupManagers ==) (== resource_for v1.instanceGroupManagers ==)
-  (== resource_for beta.regionInstanceGroupManagers ==) (== resource_for
-  v1.regionInstanceGroupManagers ==)
+  {$api_version}.instanceGroupManagers ==) (== resource_for
+  {$api_version}.regionInstanceGroupManagers ==)
 
   Fields:
     autoHealingPolicies: The autohealing policy for this managed instance
@@ -24732,7 +24729,7 @@ class InstanceTemplate(_messages.Message):
   r"""Represents an Instance Template resource.  You can use instance
   templates to create VM instances and managed instance groups. For more
   information, read Instance Templates. (== resource_for
-  beta.instanceTemplates ==) (== resource_for v1.instanceTemplates ==)
+  {$api_version}.instanceTemplates ==)
 
   Fields:
     creationTimestamp: [Output Only] The creation timestamp for this instance
@@ -25172,7 +25169,7 @@ class Interconnect(_messages.Message):
   r"""Represents an Interconnect resource.  An Interconnect resource is a
   dedicated connection between the GCP network and your on-premises network.
   For more information, read the  Dedicated Interconnect Overview. (==
-  resource_for v1.interconnects ==) (== resource_for beta.interconnects ==)
+  resource_for {$api_version}.interconnects ==)
 
   Enums:
     InterconnectTypeValueValuesEnum: Type of interconnect, which can take one
@@ -25371,8 +25368,7 @@ class InterconnectAttachment(_messages.Message):
   Interconnect attachments (VLANS) to connect your Virtual Private Cloud
   networks to your on-premises networks through an Interconnect. For more
   information, read  Creating VLAN Attachments. (== resource_for
-  beta.interconnectAttachments ==) (== resource_for v1.interconnectAttachments
-  ==)
+  {$api_version}.interconnectAttachments ==)
 
   Enums:
     BandwidthValueValuesEnum: Provisioned bandwidth capacity for the
@@ -27146,8 +27142,8 @@ class LogConfigDataAccessOptions(_messages.Message):
 class MachineType(_messages.Message):
   r"""Represents a Machine Type resource.  You can use specific machine types
   for your VM instances based on performance and pricing requirements. For
-  more information, read Machine Types. (== resource_for v1.machineTypes ==)
-  (== resource_for beta.machineTypes ==)
+  more information, read Machine Types. (== resource_for
+  {$api_version}.machineTypes ==)
 
   Messages:
     ScratchDisksValueListEntry: A ScratchDisksValueListEntry object.
@@ -27921,8 +27917,7 @@ class NamedPort(_messages.Message):
 class Network(_messages.Message):
   r"""Represents a VPC Network resource.  Networks connect resources to each
   other and to the internet. For more information, read Virtual Private Cloud
-  (VPC) Network. (== resource_for v1.networks ==) (== resource_for
-  beta.networks ==)
+  (VPC) Network. (== resource_for {$api_version}.networks ==)
 
   Fields:
     IPv4Range: Deprecated in favor of subnet mode networks. The range of
@@ -28000,8 +27995,7 @@ class NetworkEndpoint(_messages.Message):
 class NetworkEndpointGroup(_messages.Message):
   r"""Represents a collection of network endpoints.  For more information read
   Setting up network endpoint groups in load balancing. (== resource_for
-  v1.networkEndpointGroups ==) (== resource_for beta.networkEndpointGroups ==)
-  Next ID: 21
+  {$api_version}.networkEndpointGroups ==) Next ID: 21
 
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
@@ -28970,8 +28964,7 @@ class NodeGroup(_messages.Message):
   specific project. Use sole-tenant nodes to keep your instances physically
   separated from instances in other projects, or to group your instances
   together on the same host hardware. For more information, read Sole-tenant
-  nodes. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups
-  ==)
+  nodes. (== resource_for {$api_version}.nodeGroups ==)
 
   Enums:
     StatusValueValuesEnum:
@@ -29615,8 +29608,8 @@ class NodeGroupsSetNodeTemplateRequest(_messages.Message):
 class NodeTemplate(_messages.Message):
   r"""Represent a sole-tenant Node Template resource.  You can use a template
   to define properties for nodes in a node group. For more information, read
-  Creating node groups and instances. (== resource_for beta.nodeTemplates ==)
-  (== resource_for v1.nodeTemplates ==)
+  Creating node groups and instances. (== resource_for
+  {$api_version}.nodeTemplates ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the node template. One
@@ -30133,7 +30126,7 @@ class NodeType(_messages.Message):
   and memory for that node. Currently, the only available node type is
   n1-node-96-624 node type that has 96 vCPUs and 624 GB of memory, available
   in multiple zones. For more information read Node types. (== resource_for
-  beta.nodeTypes ==) (== resource_for v1.nodeTypes ==)
+  {$api_version}.nodeTypes ==)
 
   Fields:
     cpuPlatform: [Output Only] The CPU platform used by this node type.
@@ -30570,10 +30563,9 @@ class Operation(_messages.Message):
   operations, use the globalOperations resource.  - For regional operations,
   use the regionOperations resource.  - For zonal operations, use the
   zonalOperations resource.    For more information, read  Global, Regional,
-  and Zonal Resources. (== resource_for v1.globalOperations ==) (==
-  resource_for beta.globalOperations ==) (== resource_for v1.regionOperations
-  ==) (== resource_for beta.regionOperations ==) (== resource_for
-  v1.zoneOperations ==) (== resource_for beta.zoneOperations ==)
+  and Zonal Resources. (== resource_for {$api_version}.globalOperations ==)
+  (== resource_for {$api_version}.regionOperations ==) (== resource_for
+  {$api_version}.zoneOperations ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the operation, which
@@ -31452,8 +31444,7 @@ class Policy(_messages.Message):
 class Project(_messages.Message):
   r"""Represents a Project resource.  A project is used to organize resources
   in a Google Cloud Platform environment. For more information, read about the
-  Resource Hierarchy. (== resource_for v1.projects ==) (== resource_for
-  beta.projects ==)
+  Resource Hierarchy. (== resource_for {$api_version}.projects ==)
 
   Enums:
     DefaultNetworkTierValueValuesEnum: This signifies the default network tier
@@ -31818,7 +31809,7 @@ class Reference(_messages.Message):
 class Region(_messages.Message):
   r"""Represents a Region resource.  A region is a geographical area where a
   resource is located. For more information, read Regions and Zones. (==
-  resource_for beta.regions ==) (== resource_for v1.regions ==)
+  resource_for {$api_version}.regions ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] Status of the region, either UP or
@@ -32875,7 +32866,7 @@ class Reservation(_messages.Message):
   r"""Represents a reservation resource. A reservation ensures that capacity
   is held in a specific zone even if the reserved VMs are not running. For
   more information, read  Reserving zonal resources. (== resource_for
-  beta.reservations ==) (== resource_for v1.reservations ==)
+  {$api_version}.reservations ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the reservation.
@@ -34080,7 +34071,7 @@ class Route(_messages.Message):
   r"""Represents a Route resource.  A route defines a path from VM instances
   in the VPC network to a specific destination. This destination can be inside
   or outside the VPC network. For more information, read the Routes overview.
-  (== resource_for beta.routes ==) (== resource_for v1.routes ==)
+  (== resource_for {$api_version}.routes ==)
 
   Messages:
     WarningsValueListEntry: A WarningsValueListEntry object.
@@ -35570,8 +35561,7 @@ class SecurityPolicy(_messages.Message):
   r"""Represents a Cloud Armor Security Policy resource.  Only external
   backend services that use load balancers can reference a Security Policy.
   For more information, read  Cloud Armor Security Policy Concepts. (==
-  resource_for v1.securityPolicies ==) (== resource_for beta.securityPolicies
-  ==)
+  resource_for {$api_version}.securityPolicies ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -35959,8 +35949,7 @@ class SignedUrlKey(_messages.Message):
 class Snapshot(_messages.Message):
   r"""Represents a Persistent Disk Snapshot resource.  You can use snapshots
   to back up data on a regular interval. For more information, read  Creating
-  persistent disk snapshots. (== resource_for beta.snapshots ==) (==
-  resource_for v1.snapshots ==)
+  persistent disk snapshots. (== resource_for {$api_version}.snapshots ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the snapshot. This can
@@ -36259,10 +36248,8 @@ class SslCertificate(_messages.Message):
   r"""Represents an SSL Certificate resource.  This SSL certificate resource
   also contains a private key. You can use SSL keys and certificates to secure
   connections to a load balancer. For more information, read  Creating and
-  Using SSL Certificates. (== resource_for beta.sslCertificates ==) (==
-  resource_for v1.sslCertificates ==) (== resource_for
-  beta.regionSslCertificates ==) (== resource_for v1.regionSslCertificates ==)
-  Next ID: 17
+  Using SSL Certificates. (== resource_for {$api_version}.sslCertificates ==)
+  (== resource_for {$api_version}.regionSslCertificates ==) Next ID: 17
 
   Fields:
     certificate: A local certificate file. The certificate must be in PEM
@@ -36829,8 +36816,7 @@ class SslPolicy(_messages.Message):
   r"""Represents a Cloud Armor Security Policy resource.  Only external
   backend services used by HTTP or HTTPS load balancers can reference a
   Security Policy. For more information, read read  Cloud Armor Security
-  Policy Concepts. (== resource_for beta.sslPolicies ==) (== resource_for
-  v1.sslPolicies ==)
+  Policy Concepts. (== resource_for {$api_version}.sslPolicies ==)
 
   Enums:
     MinTlsVersionValueValuesEnum: The minimum version of SSL protocol that can
@@ -37078,8 +37064,8 @@ class Subnetwork(_messages.Message):
   r"""Represents a Subnetwork resource.  A subnetwork (also known as a subnet)
   is a logical partition of a Virtual Private Cloud network with one primary
   IP range and zero or more secondary IP ranges. For more information, read
-  Virtual Private Cloud (VPC) Network. (== resource_for beta.subnetworks ==)
-  (== resource_for v1.subnetworks ==)
+  Virtual Private Cloud (VPC) Network. (== resource_for
+  {$api_version}.subnetworks ==)
 
   Enums:
     PurposeValueValuesEnum: The purpose of the resource. This field can be
@@ -37958,9 +37944,8 @@ class TargetHttpProxy(_messages.Message):
   component of GCP HTTP load balancers. Forwarding rules reference a target
   HTTP proxy, and the target proxy then references a URL map. For more
   information, read Using Target Proxies and  Forwarding rule concepts. (==
-  resource_for beta.targetHttpProxies ==) (== resource_for
-  v1.targetHttpProxies ==) (== resource_for beta.regionTargetHttpProxies ==)
-  (== resource_for v1.regionTargetHttpProxies ==)
+  resource_for {$api_version}.targetHttpProxies ==) (== resource_for
+  {$api_version}.regionTargetHttpProxies ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -38330,9 +38315,8 @@ class TargetHttpsProxy(_messages.Message):
   component of GCP HTTPS load balancers. Forwarding rules reference a target
   HTTPS proxy, and the target proxy then references a URL map. For more
   information, read Using Target Proxies and  Forwarding rule concepts. (==
-  resource_for beta.targetHttpsProxies ==) (== resource_for
-  v1.targetHttpsProxies ==) (== resource_for beta.regionTargetHttpsProxies ==)
-  (== resource_for v1.regionTargetHttpsProxies ==)
+  resource_for {$api_version}.targetHttpsProxies ==) (== resource_for
+  {$api_version}.regionTargetHttpsProxies ==)
 
   Enums:
     QuicOverrideValueValuesEnum: Specifies the QUIC override policy for this
@@ -38698,8 +38682,7 @@ class TargetInstance(_messages.Message):
   handle traffic for one or more forwarding rules, which is ideal for
   forwarding protocol traffic that is managed by a single source. For example,
   ESP, AH, TCP, or UDP. For more information, read Target instances. (==
-  resource_for beta.targetInstances ==) (== resource_for v1.targetInstances
-  ==)
+  resource_for {$api_version}.targetInstances ==)
 
   Enums:
     NatPolicyValueValuesEnum: NAT option controlling how IPs are NAT'ed to the
@@ -39149,7 +39132,7 @@ class TargetPool(_messages.Message):
   TCP/UDP load balancing. A target pool references member instances, an
   associated legacy HttpHealthCheck resource, and, optionally, a backup target
   pool. For more information, read Using target pools. (== resource_for
-  beta.targetPools ==) (== resource_for v1.targetPools ==)
+  {$api_version}.targetPools ==)
 
   Enums:
     SessionAffinityValueValuesEnum: Session affinity option, must be one of
@@ -39774,7 +39757,7 @@ class TargetSslProxy(_messages.Message):
   component of a SSL Proxy load balancer. Global forwarding rules reference a
   target SSL proxy, and the target proxy then references an external backend
   service. For more information, read Using Target Proxies. (== resource_for
-  beta.targetSslProxies ==) (== resource_for v1.targetSslProxies ==)
+  {$api_version}.targetSslProxies ==)
 
   Enums:
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
@@ -39998,8 +39981,7 @@ class TargetTcpProxy(_messages.Message):
   component of a TCP Proxy load balancer. Global forwarding rules reference
   target TCP proxy, and the target proxy then references an external backend
   service. For more information, read TCP Proxy Load Balancing Concepts. (==
-  resource_for beta.targetTcpProxies ==) (== resource_for v1.targetTcpProxies
-  ==)
+  resource_for {$api_version}.targetTcpProxies ==)
 
   Enums:
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
@@ -40176,8 +40158,8 @@ class TargetTcpProxyList(_messages.Message):
 class TargetVpnGateway(_messages.Message):
   r"""Represents a Target VPN Gateway resource.  The target VPN gateway
   resource represents a Classic Cloud VPN gateway. For more information, read
-  the the Cloud VPN Overview. (== resource_for beta.targetVpnGateways ==) (==
-  resource_for v1.targetVpnGateways ==)
+  the the Cloud VPN Overview. (== resource_for
+  {$api_version}.targetVpnGateways ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the VPN gateway, which
@@ -42170,8 +42152,8 @@ class VpnGatewaysScopedList(_messages.Message):
 
 class VpnTunnel(_messages.Message):
   r"""Represents a Cloud VPN Tunnel resource.  For more information about VPN,
-  read the the Cloud VPN Overview. (== resource_for beta.vpnTunnels ==) (==
-  resource_for v1.vpnTunnels ==)
+  read the the Cloud VPN Overview. (== resource_for {$api_version}.vpnTunnels
+  ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the VPN tunnel, which
@@ -42926,7 +42908,7 @@ class Zone(_messages.Message):
   r"""Represents a Zone resource.  A zone is a deployment area. These
   deployment areas are subsets of a region. For example the zone us-east1-a is
   located in the us-east1 region. For more information, read Regions and
-  Zones. (== resource_for beta.zones ==) (== resource_for v1.zones ==)
+  Zones. (== resource_for {$api_version}.zones ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] Status of the zone, either UP or

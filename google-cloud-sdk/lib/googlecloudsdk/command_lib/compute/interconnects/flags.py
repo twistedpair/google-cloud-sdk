@@ -160,6 +160,7 @@ def AddInterconnectTypeBetaAndAlpha(parser):
       action=calliope_actions.DeprecationAction(
           'interconnect-type',
           removed=False,
+          show_add_help=False,
           show_message=_ShouldShowDeprecatedWarning,
           warn=('IT_PRIVATE will be deprecated '
                 'for {flag_name}. '

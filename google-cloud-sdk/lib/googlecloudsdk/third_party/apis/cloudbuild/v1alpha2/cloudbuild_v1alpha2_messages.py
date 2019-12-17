@@ -517,7 +517,7 @@ class CloudbuildProjectsWorkerPoolsCreateRequest(_messages.Message):
     workerPool: A WorkerPool resource to be passed as the request body.
     workerPoolId: Required. Immutable. The ID to use for the `WorkerPool`,
       which will become the final component of the resource name.  This value
-      should be 4-63 characters, and valid characters are /a-z-/.
+      should be 1-63 characters, and valid characters are /a-z-/.
   """
 
   parent = _messages.StringField(1, required=True)

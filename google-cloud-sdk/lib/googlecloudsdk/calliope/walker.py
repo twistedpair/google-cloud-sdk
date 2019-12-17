@@ -131,8 +131,13 @@ class Walker(object):
       Returns:
         The return value of the outer Visit() call.
       """
+      if not node.is_group:
+        self._Visit(node, parent, is_group=False)
+        return parent
+
       parent = self._Visit(node, parent, is_group=True)
       commands_and_groups = []
+
       if node.commands:
         for name, command in six.iteritems(node.commands):
           if _Include(command):

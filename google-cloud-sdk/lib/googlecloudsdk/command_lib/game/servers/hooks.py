@@ -115,9 +115,14 @@ def ProcessFleetConfigsFile(fleet_configs_file):
 
   messages = utils.GetMessages()
   message_class = messages.FleetConfig
+  fleet_configs_message = []
   try:
-    fleet_configs_message = [encoding.DictToMessage(fc, message_class)
-                             for fc in fleet_configs]
+    for fc in fleet_configs:
+      f = encoding.DictToMessage(fc, message_class)
+      spec = yaml.load(f.fleetSpec)
+      spec_as_json_str = json.dumps(spec)
+      f.fleetSpec = spec_as_json_str
+      fleet_configs_message.append(f)
   except AttributeError:
     raise InvalidSchemaError(
         'Invalid schema: expected proper fleet configs')
@@ -156,10 +161,13 @@ def ProcessScalingConfigsFile(scaling_configs_file):
       if not esc.selectors:
         # Add default selector if not set
         esc.selectors = [selector]
-      scaling_configs_message.append(esc)
       # Set priority to None as the priority field will be removed from API.
       esc.priority = None
-
+      # Convert yaml to json
+      spec = yaml.load(esc.fleetAutoscalerSpec)
+      spec_as_json_str = json.dumps(spec)
+      esc.fleetAutoscalerSpec = spec_as_json_str
+      scaling_configs_message.append(esc)
   except AttributeError:
     raise InvalidSchemaError(
         'Invalid schema: expected proper scaling configs')

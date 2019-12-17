@@ -276,10 +276,9 @@ class GoogleCloudMlV1ExplainRequest(_messages.Message):
 
 class GoogleCloudMlV1ExplanationConfig(_messages.Message):
   r"""Message holding configuration options for explaining model predictions.
-  Currently, the only supported mechanism to explain a model's prediction is
-  through attributing its output back to its inputs which is essentially a
-  credit assignment task. We support multiple attribution methods, some
-  specific to particular frameworks like Tensorflow and XGBoost. Next idx: 7.
+  There are two feature attribution methods supported for TensorFlow models:
+  integrated gradients and sampled Shapley. <a href="/ml-engine/docs/ai-
+  explanations/overview">Learn more about feature attributions</a>.
 
   Fields:
     ablationAttribution: Tensorflow framework explanation methods.
@@ -878,8 +877,7 @@ class GoogleCloudMlV1Model(_messages.Message):
     defaultVersion: Output only. The default version of the model. This
       version will be used to handle prediction requests that do not specify a
       version.  You can change the default version by calling
-      [projects.methods.versions.setDefault](/ml-
-      engine/reference/rest/v1/projects.models.versions/setDefault).
+      projects.models.versions.setDefault.
     description: Optional. The description specified for the model when it was
       created.
     etag: `etag` is used for optimistic concurrency control as a way to help
@@ -1806,8 +1804,7 @@ class GoogleCloudMlV1Version(_messages.Message):
   r"""Represents a version of the model.  Each version is a trained model
   deployed in the cloud, ready to handle prediction requests. A model can have
   multiple versions. You can get information about all of the versions of a
-  given model by calling [projects.models.versions.list](/ml-
-  engine/reference/rest/v1/projects.models.versions/list).
+  given model by calling projects.models.versions.list.
 
   Enums:
     FrameworkValueValuesEnum: Optional. The machine learning framework AI
@@ -1847,12 +1844,11 @@ class GoogleCloudMlV1Version(_messages.Message):
     deploymentUri: Required. The Cloud Storage location of the trained model
       used to create the version. See the [guide to model deployment](/ml-
       engine/docs/tensorflow/deploying-models) for more information.  When
-      passing Version to [projects.models.versions.create](/ml-
-      engine/reference/rest/v1/projects.models.versions/create) the model
-      service uses the specified location as the source of the model. Once
-      deployed, the model version is hosted by the prediction service, so this
-      location is useful only as a historical record. The total number of
-      model files can't exceed 1000.
+      passing Version to projects.models.versions.create the model service
+      uses the specified location as the source of the model. Once deployed,
+      the model version is hosted by the prediction service, so this location
+      is useful only as a historical record. The total number of model files
+      can't exceed 1000.
     description: Optional. The description specified for the version when it
       was created.
     errorMessage: Output only. The details of a failure or a cancellation.
@@ -1881,8 +1877,7 @@ class GoogleCloudMlV1Version(_messages.Message):
       This image must be in Google Container Registry.
     isDefault: Output only. If true, this version will be used to handle
       prediction requests that do not specify a version.  You can change the
-      default version by calling [projects.methods.versions.setDefault](/ml-
-      engine/reference/rest/v1/projects.models.versions/setDefault).
+      default version by calling projects.methods.versions.setDefault.
     labels: Optional. One or more labels that you can add, to organize your
       model versions. Each label is a key-value pair, where both the key and
       the value are arbitrary strings that you supply. For more information,
@@ -1956,8 +1951,10 @@ class GoogleCloudMlV1Version(_messages.Message):
       set, the default version is '2.7'. Python '3.5' is available when
       `runtime_version` is set to '1.4' and above. Python '2.7' works with all
       supported runtime versions.
-    requestLoggingConfig: Optional. Configures the request-response pair
-      logging on predictions from this Version.
+    requestLoggingConfig: Optional. *Only* specify this field in a
+      projects.models.versions.patch request. Specifying it in a
+      projects.models.versions.create request has no effect.  Configures the
+      request-response pair logging on predictions from this Version.
     runtimeVersion: Optional. The AI Platform runtime version to use for this
       deployment. If not set, AI Platform uses the default stable version,
       1.0. For more information, see the [runtime version list](/ml-
@@ -2160,7 +2157,7 @@ class GoogleIamV1Binding(_messages.Message):
       that represents a Google group.    For example, `admins@example.com`.  *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
-      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
       retains the role in the binding.  *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
@@ -2840,8 +2837,7 @@ class MlProjectsModelsVersionsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the version. You can get the names of all the
-      versions of a model by calling [projects.models.versions.list](/ml-
-      engine/reference/rest/v1/projects.models.versions/list).
+      versions of a model by calling projects.models.versions.list.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2891,9 +2887,10 @@ class MlProjectsModelsVersionsPatchRequest(_messages.Message):
       be specified as `description`, and the `PATCH` request body would
       specify the new value, as follows:  ``` {   "description": "foo" } ```
       Currently the only supported update mask fields are `description`,
-      `autoScaling.minNodes`, and `manualScaling.nodes`. However, you can only
-      update `manualScaling.nodes` if the version uses a [Compute Engine (N1)
-      machine type](/ml-engine/docs/machine-types-online-prediction).
+      `requestLoggingConfig`, `autoScaling.minNodes`, and
+      `manualScaling.nodes`. However, you can only update
+      `manualScaling.nodes` if the version uses a [Compute Engine (N1) machine
+      type](/ml-engine/docs/machine-types-online-prediction).
   """
 
   googleCloudMlV1Version = _messages.MessageField('GoogleCloudMlV1Version', 1)
@@ -2910,8 +2907,7 @@ class MlProjectsModelsVersionsSetDefaultRequest(_messages.Message):
       request body.
     name: Required. The name of the version to make the default for the model.
       You can get the names of all the versions of a model by calling
-      [projects.models.versions.list](/ml-
-      engine/reference/rest/v1/projects.models.versions/list).
+      projects.models.versions.list.
   """
 
   googleCloudMlV1SetDefaultVersionRequest = _messages.MessageField('GoogleCloudMlV1SetDefaultVersionRequest', 1)

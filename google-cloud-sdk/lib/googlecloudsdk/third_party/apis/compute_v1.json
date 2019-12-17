@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20191121",
+ "revision": "20191206",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -109,7 +109,7 @@
   "AcceleratorType": {
    "id": "AcceleratorType",
    "type": "object",
-   "description": "Represents an Accelerator Type resource.\n\nGoogle Cloud Platform provides graphics processing units (accelerators) that you can add to VM instances to improve or accelerate performance when working with intensive workloads. For more information, read GPUs on Compute Engine. (== resource_for beta.acceleratorTypes ==) (== resource_for v1.acceleratorTypes ==)",
+   "description": "Represents an Accelerator Type resource.\n\nGoogle Cloud Platform provides graphics processing units (accelerators) that you can add to VM instances to improve or accelerate performance when working with intensive workloads. For more information, read GPUs on Compute Engine. (== resource_for {$api_version}.acceleratorTypes ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -525,7 +525,7 @@
   "Address": {
    "id": "Address",
    "type": "object",
-   "description": "Represents an IP Address resource.\n\nAn address resource represents a regional internal IP address. Regional internal IP addresses are RFC 1918 addresses that come from either a primary or secondary IP range of a subnet in a VPC network. Regional external IP addresses can be assigned to GCP VM instances, Cloud VPN gateways, regional external forwarding rules for network load balancers (in either Standard or Premium Tier), and regional external forwarding rules for HTTP(S), SSL Proxy, and TCP Proxy load balancers in Standard Tier. For more information, read IP addresses.\n\nA globalAddresses resource represent a global external IP address. Global external IP addresses are IPv4 or IPv6 addresses. They can only be assigned to global forwarding rules for HTTP(S), SSL Proxy, or TCP Proxy load balancers in Premium Tier. For more information, read Global resources. (== resource_for beta.addresses ==) (== resource_for v1.addresses ==) (== resource_for beta.globalAddresses ==) (== resource_for v1.globalAddresses ==)",
+   "description": "Represents an IP Address resource.\n\nAn address resource represents a regional internal IP address. Regional internal IP addresses are RFC 1918 addresses that come from either a primary or secondary IP range of a subnet in a VPC network. Regional external IP addresses can be assigned to GCP VM instances, Cloud VPN gateways, regional external forwarding rules for network load balancers (in either Standard or Premium Tier), and regional external forwarding rules for HTTP(S), SSL Proxy, and TCP Proxy load balancers in Standard Tier. For more information, read IP addresses.\n\nA globalAddresses resource represent a global external IP address. Global external IP addresses are IPv4 or IPv6 addresses. They can only be assigned to global forwarding rules for HTTP(S), SSL Proxy, or TCP Proxy load balancers in Premium Tier. For more information, read Global resources. (== resource_for {$api_version}.addresses ==) (== resource_for {$api_version}.globalAddresses ==)",
    "properties": {
     "address": {
      "type": "string",
@@ -1086,6 +1086,11 @@
      "$ref": "CustomerEncryptionKey",
      "description": "Encrypts or decrypts a disk using a customer-supplied encryption key.\n\nIf you are creating a new disk, this field encrypts the new disk using an encryption key that you provide. If you are attaching an existing disk that is already encrypted, this field decrypts the disk using the customer-supplied encryption key.\n\nIf you encrypt a disk using a customer-supplied key, you must provide the same key again when you attempt to use this resource at a later time. For example, you must provide the key when you create a snapshot or an image from the disk or when you attach the disk to a virtual machine instance.\n\nIf you do not provide an encryption key, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the disk later.\n\nInstance templates do not store customer-supplied encryption keys, so you cannot use your own keys to encrypt disks in a managed instance group."
     },
+    "diskSizeGb": {
+     "type": "string",
+     "description": "The size of the disk in GB.",
+     "format": "int64"
+    },
     "guestOsFeatures": {
      "type": "array",
      "description": "A list of features to enable on the guest operating system. Applicable only for bootable images. Read  Enabling guest operating system features to see a list of available options.",
@@ -1297,7 +1302,7 @@
   "Autoscaler": {
    "id": "Autoscaler",
    "type": "object",
-   "description": "Represents an Autoscaler resource.\n\n\n\nUse autoscalers to automatically add or delete instances from a managed instance group according to your defined autoscaling policy. For more information, read Autoscaling Groups of Instances.\n\nFor zonal managed instance groups resource, use the autoscaler resource.\n\nFor regional managed instance groups, use the regionAutoscalers resource. (== resource_for beta.autoscalers ==) (== resource_for v1.autoscalers ==) (== resource_for beta.regionAutoscalers ==) (== resource_for v1.regionAutoscalers ==)",
+   "description": "Represents an Autoscaler resource.\n\n\n\nUse autoscalers to automatically add or delete instances from a managed instance group according to your defined autoscaling policy. For more information, read Autoscaling Groups of Instances.\n\nFor zonal managed instance groups resource, use the autoscaler resource.\n\nFor regional managed instance groups, use the regionAutoscalers resource. (== resource_for {$api_version}.autoscalers ==) (== resource_for {$api_version}.regionAutoscalers ==)",
    "properties": {
     "autoscalingPolicy": {
      "$ref": "AutoscalingPolicy",
@@ -2101,7 +2106,7 @@
   "BackendService": {
    "id": "BackendService",
    "type": "object",
-   "description": "Represents a Backend Service resource.\n\nA backend service contains configuration values for Google Cloud Platform load balancing services.\n\nFor more information, read Backend Services.\n\n(== resource_for v1.backendService ==) (== resource_for beta.backendService ==)",
+   "description": "Represents a Backend Service resource.\n\nA backend service contains configuration values for Google Cloud Platform load balancing services.\n\nFor more information, read Backend Services.\n\n(== resource_for {$api_version}.backendService ==)",
    "properties": {
     "affinityCookieTtlSec": {
      "type": "integer",
@@ -2693,7 +2698,7 @@
     },
     "members": {
      "type": "array",
-     "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` .\n\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example,`alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding.\n\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`.",
+     "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` .\n\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding.\n\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`.",
      "items": {
       "type": "string"
      }
@@ -2785,7 +2790,7 @@
   "Commitment": {
    "id": "Commitment",
    "type": "object",
-   "description": "Represents a regional Commitment resource.\n\nCreating a commitment resource means that you are purchasing a committed use contract with an explicit start and end time. You can create commitments based on vCPUs and memory usage and receive discounted rates. For full details, read Signing Up for Committed Use Discounts. (== resource_for beta.regionCommitments ==) (== resource_for v1.regionCommitments ==)",
+   "description": "Represents a regional Commitment resource.\n\nCreating a commitment resource means that you are purchasing a committed use contract with an explicit start and end time. You can create commitments based on vCPUs and memory usage and receive discounted rates. For full details, read Signing Up for Committed Use Discounts. (== resource_for {$api_version}.regionCommitments ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -3453,7 +3458,7 @@
   "Disk": {
    "id": "Disk",
    "type": "object",
-   "description": "Represents a Persistent Disk resource.\n\nPersistent disks are required for running your VM instances. Create both boot and non-boot (data) persistent disks. For more information, read Persistent Disks. For more storage options, read Storage options.\n\nThe disks resource represents a zonal persistent disk. For more information, read Zonal persistent disks.\n\nThe regionDisks resource represents a regional persistent disk. For more information, read  Regional resources. (== resource_for beta.disks ==) (== resource_for v1.disks ==) (== resource_for v1.regionDisks ==) (== resource_for beta.regionDisks ==)",
+   "description": "Represents a Persistent Disk resource.\n\nPersistent disks are required for running your VM instances. Create both boot and non-boot (data) persistent disks. For more information, read Persistent Disks. For more storage options, read Storage options.\n\nThe disks resource represents a zonal persistent disk. For more information, read Zonal persistent disks.\n\nThe regionDisks resource represents a regional persistent disk. For more information, read  Regional resources. (== resource_for {$api_version}.disks ==) (== resource_for {$api_version}.regionDisks ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -3906,7 +3911,7 @@
   "DiskType": {
    "id": "DiskType",
    "type": "object",
-   "description": "Represents a Disk Type resource.\n\nYou can choose from a variety of disk types based on your needs. For more information, read Storage options.\n\nThe diskTypes resource represents disk types for a zonal persistent disk. For more information, read Zonal persistent disks.\n\nThe regionDiskTypes resource represents disk types for a regional persistent disk. For more information, read Regional persistent disks. (== resource_for beta.diskTypes ==) (== resource_for v1.diskTypes ==) (== resource_for v1.regionDiskTypes ==) (== resource_for beta.regionDiskTypes ==)",
+   "description": "Represents a Disk Type resource.\n\nYou can choose from a variety of disk types based on your needs. For more information, read Storage options.\n\nThe diskTypes resource represents disk types for a zonal persistent disk. For more information, read Zonal persistent disks.\n\nThe regionDiskTypes resource represents disk types for a regional persistent disk. For more information, read Regional persistent disks. (== resource_for {$api_version}.diskTypes ==) (== resource_for {$api_version}.regionDiskTypes ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -5136,7 +5141,7 @@
   "ForwardingRule": {
    "id": "ForwardingRule",
    "type": "object",
-   "description": "Represents a Forwarding Rule resource.\n\nA forwarding rule and its corresponding IP address represent the frontend configuration of a Google Cloud Platform load balancer. Forwarding rules can also reference target instances and Cloud VPN Classic gateways (targetVpnGateway).\n\nFor more information, read Forwarding rule concepts and Using protocol forwarding.\n\n(== resource_for beta.forwardingRules ==) (== resource_for v1.forwardingRules ==) (== resource_for beta.globalForwardingRules ==) (== resource_for v1.globalForwardingRules ==) (== resource_for beta.regionForwardingRules ==) (== resource_for v1.regionForwardingRules ==)",
+   "description": "Represents a Forwarding Rule resource.\n\nA forwarding rule and its corresponding IP address represent the frontend configuration of a Google Cloud Platform load balancer. Forwarding rules can also reference target instances and Cloud VPN Classic gateways (targetVpnGateway).\n\nFor more information, read Forwarding rule concepts and Using protocol forwarding.\n\n(== resource_for {$api_version}.forwardingRules ==) (== resource_for {$api_version}.globalForwardingRules ==) (== resource_for {$api_version}.regionForwardingRules ==)",
    "properties": {
     "IPAddress": {
      "type": "string",
@@ -7123,7 +7128,7 @@
   "Image": {
    "id": "Image",
    "type": "object",
-   "description": "Represents an Image resource.\n\nYou can use images to create boot disks for your VM instances. For more information, read Images. (== resource_for beta.images ==) (== resource_for v1.images ==)",
+   "description": "Represents an Image resource.\n\nYou can use images to create boot disks for your VM instances. For more information, read Images. (== resource_for {$api_version}.images ==)",
    "properties": {
     "archiveSizeBytes": {
      "type": "string",
@@ -7430,7 +7435,7 @@
   "Instance": {
    "id": "Instance",
    "type": "object",
-   "description": "Represents an Instance resource.\n\nAn instance is a virtual machine that is hosted on Google Cloud Platform. For more information, read Virtual Machine Instances. (== resource_for beta.instances ==) (== resource_for v1.instances ==)",
+   "description": "Represents an Instance resource.\n\nAn instance is a virtual machine that is hosted on Google Cloud Platform. For more information, read Virtual Machine Instances. (== resource_for {$api_version}.instances ==)",
    "properties": {
     "canIpForward": {
      "type": "boolean",
@@ -7714,7 +7719,7 @@
   "InstanceGroup": {
    "id": "InstanceGroup",
    "type": "object",
-   "description": "Represents an unmanaged Instance Group resource.\n\nUse unmanaged instance groups if you need to apply load balancing to groups of heterogeneous instances or if you need to manage the instances yourself. For more information, read  Instance groups.\n\nFor zonal unmanaged Instance Group, use instanceGroups resource.\n\nFor regional unmanaged Instance Group, use regionInstanceGroups resource. (== resource_for beta.instanceGroups ==) (== resource_for v1.instanceGroups ==) (== resource_for beta.regionInstanceGroups ==) (== resource_for v1.regionInstanceGroups ==)",
+   "description": "Represents an Instance Group resource.\n\nInstance Groups can be used to configure a target for load balancing.\n\nInstance groups can either be managed or unmanaged.\n\nTo create  managed instance groups, use the instanceGroupManager or regionInstanceGroupManager resource instead.\n\nUse zonal unmanaged instance groups if you need to apply load balancing to groups of heterogeneous instances or if you need to manage the instances yourself. You cannot create regional unmanaged instance groups.\n\nFor more information, read Instance groups.\n\n(== resource_for {$api_version}.instanceGroups ==) (== resource_for {$api_version}.regionInstanceGroups ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -8010,7 +8015,7 @@
   "InstanceGroupManager": {
    "id": "InstanceGroupManager",
    "type": "object",
-   "description": "Represents a Managed Instance Group resource.\n\nAn instance group is a collection of VM instances that you can manage as a single entity. For more information, read Instance groups.\n\nFor zonal Managed Instance Group, use the instanceGroupManagers resource.\n\nFor regional Managed Instance Group, use the regionInstanceGroupManagers resource. (== resource_for beta.instanceGroupManagers ==) (== resource_for v1.instanceGroupManagers ==) (== resource_for beta.regionInstanceGroupManagers ==) (== resource_for v1.regionInstanceGroupManagers ==)",
+   "description": "Represents a Managed Instance Group resource.\n\nAn instance group is a collection of VM instances that you can manage as a single entity. For more information, read Instance groups.\n\nFor zonal Managed Instance Group, use the instanceGroupManagers resource.\n\nFor regional Managed Instance Group, use the regionInstanceGroupManagers resource. (== resource_for {$api_version}.instanceGroupManagers ==) (== resource_for {$api_version}.regionInstanceGroupManagers ==)",
    "properties": {
     "autoHealingPolicies": {
      "type": "array",
@@ -9304,7 +9309,7 @@
   "InstanceTemplate": {
    "id": "InstanceTemplate",
    "type": "object",
-   "description": "Represents an Instance Template resource.\n\nYou can use instance templates to create VM instances and managed instance groups. For more information, read Instance Templates. (== resource_for beta.instanceTemplates ==) (== resource_for v1.instanceTemplates ==)",
+   "description": "Represents an Instance Template resource.\n\nYou can use instance templates to create VM instances and managed instance groups. For more information, read Instance Templates. (== resource_for {$api_version}.instanceTemplates ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -9701,7 +9706,7 @@
   "Interconnect": {
    "id": "Interconnect",
    "type": "object",
-   "description": "Represents an Interconnect resource.\n\nAn Interconnect resource is a dedicated connection between the GCP network and your on-premises network. For more information, read the  Dedicated Interconnect Overview. (== resource_for v1.interconnects ==) (== resource_for beta.interconnects ==)",
+   "description": "Represents an Interconnect resource.\n\nAn Interconnect resource is a dedicated connection between the GCP network and your on-premises network. For more information, read the  Dedicated Interconnect Overview. (== resource_for {$api_version}.interconnects ==)",
    "properties": {
     "adminEnabled": {
      "type": "boolean",
@@ -9849,7 +9854,7 @@
   "InterconnectAttachment": {
    "id": "InterconnectAttachment",
    "type": "object",
-   "description": "Represents an Interconnect Attachment (VLAN) resource.\n\nYou can use Interconnect attachments (VLANS) to connect your Virtual Private Cloud networks to your on-premises networks through an Interconnect. For more information, read  Creating VLAN Attachments. (== resource_for beta.interconnectAttachments ==) (== resource_for v1.interconnectAttachments ==)",
+   "description": "Represents an Interconnect Attachment (VLAN) resource.\n\nYou can use Interconnect attachments (VLANS) to connect your Virtual Private Cloud networks to your on-premises networks through an Interconnect. For more information, read  Creating VLAN Attachments. (== resource_for {$api_version}.interconnectAttachments ==)",
    "properties": {
     "adminEnabled": {
      "type": "boolean",
@@ -11335,7 +11340,7 @@
   "MachineType": {
    "id": "MachineType",
    "type": "object",
-   "description": "Represents a Machine Type resource.\n\nYou can use specific machine types for your VM instances based on performance and pricing requirements. For more information, read Machine Types. (== resource_for v1.machineTypes ==) (== resource_for beta.machineTypes ==)",
+   "description": "Represents a Machine Type resource.\n\nYou can use specific machine types for your VM instances based on performance and pricing requirements. For more information, read Machine Types. (== resource_for {$api_version}.machineTypes ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -11967,7 +11972,7 @@
   "Network": {
    "id": "Network",
    "type": "object",
-   "description": "Represents a VPC Network resource.\n\nNetworks connect resources to each other and to the internet. For more information, read Virtual Private Cloud (VPC) Network. (== resource_for v1.networks ==) (== resource_for beta.networks ==)",
+   "description": "Represents a VPC Network resource.\n\nNetworks connect resources to each other and to the internet. For more information, read Virtual Private Cloud (VPC) Network. (== resource_for {$api_version}.networks ==)",
    "properties": {
     "IPv4Range": {
      "type": "string",
@@ -12058,7 +12063,7 @@
   "NetworkEndpointGroup": {
    "id": "NetworkEndpointGroup",
    "type": "object",
-   "description": "Represents a collection of network endpoints.\n\nFor more information read Setting up network endpoint groups in load balancing. (== resource_for v1.networkEndpointGroups ==) (== resource_for beta.networkEndpointGroups ==) Next ID: 21",
+   "description": "Represents a collection of network endpoints.\n\nFor more information read Setting up network endpoint groups in load balancing. (== resource_for {$api_version}.networkEndpointGroups ==) Next ID: 21",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -12879,7 +12884,7 @@
   "NodeGroup": {
    "id": "NodeGroup",
    "type": "object",
-   "description": "Represent a sole-tenant Node Group resource.\n\nA sole-tenant node is a physical server that is dedicated to hosting VM instances only for your specific project. Use sole-tenant nodes to keep your instances physically separated from instances in other projects, or to group your instances together on the same host hardware. For more information, read Sole-tenant nodes. (== resource_for beta.nodeGroups ==) (== resource_for v1.nodeGroups ==)",
+   "description": "Represent a sole-tenant Node Group resource.\n\nA sole-tenant node is a physical server that is dedicated to hosting VM instances only for your specific project. Use sole-tenant nodes to keep your instances physically separated from instances in other projects, or to group your instances together on the same host hardware. For more information, read Sole-tenant nodes. (== resource_for {$api_version}.nodeGroups ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -13445,7 +13450,7 @@
   "NodeTemplate": {
    "id": "NodeTemplate",
    "type": "object",
-   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for beta.nodeTemplates ==) (== resource_for v1.nodeTemplates ==)",
+   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for {$api_version}.nodeTemplates ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -13854,7 +13859,7 @@
   "NodeType": {
    "id": "NodeType",
    "type": "object",
-   "description": "Represent a sole-tenant Node Type resource.\n\nEach node within a node group must have a node type. A node type specifies the total amount of cores and memory for that node. Currently, the only available node type is n1-node-96-624 node type that has 96 vCPUs and 624 GB of memory, available in multiple zones. For more information read Node types. (== resource_for beta.nodeTypes ==) (== resource_for v1.nodeTypes ==)",
+   "description": "Represent a sole-tenant Node Type resource.\n\nEach node within a node group must have a node type. A node type specifies the total amount of cores and memory for that node. Currently, the only available node type is n1-node-96-624 node type that has 96 vCPUs and 624 GB of memory, available in multiple zones. For more information read Node types. (== resource_for {$api_version}.nodeTypes ==)",
    "properties": {
     "cpuPlatform": {
      "type": "string",
@@ -14233,7 +14238,7 @@
   "Operation": {
    "id": "Operation",
    "type": "object",
-   "description": "Represents an Operation resource.\n\nYou can use an operation resource to manage asynchronous API requests. For more information, read Handling API responses.\n\nOperations can be global, regional or zonal.  \n- For global operations, use the globalOperations resource. \n- For regional operations, use the regionOperations resource. \n- For zonal operations, use the zonalOperations resource.  \n\nFor more information, read  Global, Regional, and Zonal Resources. (== resource_for v1.globalOperations ==) (== resource_for beta.globalOperations ==) (== resource_for v1.regionOperations ==) (== resource_for beta.regionOperations ==) (== resource_for v1.zoneOperations ==) (== resource_for beta.zoneOperations ==)",
+   "description": "Represents an Operation resource.\n\nYou can use an operation resource to manage asynchronous API requests. For more information, read Handling API responses.\n\nOperations can be global, regional or zonal.  \n- For global operations, use the globalOperations resource. \n- For regional operations, use the regionOperations resource. \n- For zonal operations, use the zonalOperations resource.  \n\nFor more information, read  Global, Regional, and Zonal Resources. (== resource_for {$api_version}.globalOperations ==) (== resource_for {$api_version}.regionOperations ==) (== resource_for {$api_version}.zoneOperations ==)",
    "properties": {
     "clientOperationId": {
      "type": "string",
@@ -14956,7 +14961,7 @@
   "Project": {
    "id": "Project",
    "type": "object",
-   "description": "Represents a Project resource.\n\nA project is used to organize resources in a Google Cloud Platform environment. For more information, read about the  Resource Hierarchy. (== resource_for v1.projects ==) (== resource_for beta.projects ==)",
+   "description": "Represents a Project resource.\n\nA project is used to organize resources in a Google Cloud Platform environment. For more information, read about the  Resource Hierarchy. (== resource_for {$api_version}.projects ==)",
    "properties": {
     "commonInstanceMetadata": {
      "$ref": "Metadata",
@@ -15326,7 +15331,7 @@
   "Region": {
    "id": "Region",
    "type": "object",
-   "description": "Represents a Region resource.\n\nA region is a geographical area where a resource is located. For more information, read Regions and Zones. (== resource_for beta.regions ==) (== resource_for v1.regions ==)",
+   "description": "Represents a Region resource.\n\nA region is a geographical area where a resource is located. For more information, read Regions and Zones. (== resource_for {$api_version}.regions ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -16305,7 +16310,7 @@
   "Reservation": {
    "id": "Reservation",
    "type": "object",
-   "description": "Represents a reservation resource. A reservation ensures that capacity is held in a specific zone even if the reserved VMs are not running. For more information, read  Reserving zonal resources. (== resource_for beta.reservations ==) (== resource_for v1.reservations ==)",
+   "description": "Represents a reservation resource. A reservation ensures that capacity is held in a specific zone even if the reserved VMs are not running. For more information, read  Reserving zonal resources. (== resource_for {$api_version}.reservations ==)",
    "properties": {
     "commitment": {
      "type": "string",
@@ -17347,7 +17352,7 @@
   "Route": {
    "id": "Route",
    "type": "object",
-   "description": "Represents a Route resource.\n\nA route defines a path from VM instances in the VPC network to a specific destination. This destination can be inside or outside the VPC network. For more information, read the Routes overview. (== resource_for beta.routes ==) (== resource_for v1.routes ==)",
+   "description": "Represents a Route resource.\n\nA route defines a path from VM instances in the VPC network to a specific destination. This destination can be inside or outside the VPC network. For more information, read the Routes overview. (== resource_for {$api_version}.routes ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -18736,7 +18741,7 @@
   "SecurityPolicy": {
    "id": "SecurityPolicy",
    "type": "object",
-   "description": "Represents a Cloud Armor Security Policy resource.\n\nOnly external backend services that use load balancers can reference a Security Policy. For more information, read  Cloud Armor Security Policy Concepts. (== resource_for v1.securityPolicies ==) (== resource_for beta.securityPolicies ==)",
+   "description": "Represents a Cloud Armor Security Policy resource.\n\nOnly external backend services that use load balancers can reference a Security Policy. For more information, read  Cloud Armor Security Policy Concepts. (== resource_for {$api_version}.securityPolicies ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -19113,7 +19118,7 @@
   "Snapshot": {
    "id": "Snapshot",
    "type": "object",
-   "description": "Represents a Persistent Disk Snapshot resource.\n\nYou can use snapshots to back up data on a regular interval. For more information, read  Creating persistent disk snapshots. (== resource_for beta.snapshots ==) (== resource_for v1.snapshots ==)",
+   "description": "Represents a Persistent Disk Snapshot resource.\n\nYou can use snapshots to back up data on a regular interval. For more information, read  Creating persistent disk snapshots. (== resource_for {$api_version}.snapshots ==)",
    "properties": {
     "autoCreated": {
      "type": "boolean",
@@ -19367,7 +19372,7 @@
   "SslCertificate": {
    "id": "SslCertificate",
    "type": "object",
-   "description": "Represents an SSL Certificate resource.\n\nThis SSL certificate resource also contains a private key. You can use SSL keys and certificates to secure connections to a load balancer. For more information, read  Creating and Using SSL Certificates. (== resource_for beta.sslCertificates ==) (== resource_for v1.sslCertificates ==) (== resource_for beta.regionSslCertificates ==) (== resource_for v1.regionSslCertificates ==) Next ID: 17",
+   "description": "Represents an SSL Certificate resource.\n\nThis SSL certificate resource also contains a private key. You can use SSL keys and certificates to secure connections to a load balancer. For more information, read  Creating and Using SSL Certificates. (== resource_for {$api_version}.sslCertificates ==) (== resource_for {$api_version}.regionSslCertificates ==) Next ID: 17",
    "properties": {
     "certificate": {
      "type": "string",
@@ -19854,7 +19859,7 @@
   "SslPolicy": {
    "id": "SslPolicy",
    "type": "object",
-   "description": "Represents a Cloud Armor Security Policy resource.\n\nOnly external backend services used by HTTP or HTTPS load balancers can reference a Security Policy. For more information, read read  Cloud Armor Security Policy Concepts. (== resource_for beta.sslPolicies ==) (== resource_for v1.sslPolicies ==)",
+   "description": "Represents a Cloud Armor Security Policy resource.\n\nOnly external backend services used by HTTP or HTTPS load balancers can reference a Security Policy. For more information, read read  Cloud Armor Security Policy Concepts. (== resource_for {$api_version}.sslPolicies ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -20031,7 +20036,7 @@
   "Subnetwork": {
    "id": "Subnetwork",
    "type": "object",
-   "description": "Represents a Subnetwork resource.\n\nA subnetwork (also known as a subnet) is a logical partition of a Virtual Private Cloud network with one primary IP range and zero or more secondary IP ranges. For more information, read  Virtual Private Cloud (VPC) Network. (== resource_for beta.subnetworks ==) (== resource_for v1.subnetworks ==)",
+   "description": "Represents a Subnetwork resource.\n\nA subnetwork (also known as a subnet) is a logical partition of a Virtual Private Cloud network with one primary IP range and zero or more secondary IP ranges. For more information, read  Virtual Private Cloud (VPC) Network. (== resource_for {$api_version}.subnetworks ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -20705,7 +20710,7 @@
   "TargetHttpProxy": {
    "id": "TargetHttpProxy",
    "type": "object",
-   "description": "Represents a Target HTTP Proxy resource.\n\nA target HTTP proxy is a component of GCP HTTP load balancers. Forwarding rules reference a target HTTP proxy, and the target proxy then references a URL map. For more information, read Using Target Proxies and  Forwarding rule concepts. (== resource_for beta.targetHttpProxies ==) (== resource_for v1.targetHttpProxies ==) (== resource_for beta.regionTargetHttpProxies ==) (== resource_for v1.regionTargetHttpProxies ==)",
+   "description": "Represents a Target HTTP Proxy resource.\n\nA target HTTP proxy is a component of GCP HTTP load balancers. Forwarding rules reference a target HTTP proxy, and the target proxy then references a URL map. For more information, read Using Target Proxies and  Forwarding rule concepts. (== resource_for {$api_version}.targetHttpProxies ==) (== resource_for {$api_version}.regionTargetHttpProxies ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -21017,7 +21022,7 @@
   "TargetHttpsProxy": {
    "id": "TargetHttpsProxy",
    "type": "object",
-   "description": "Represents a Target HTTPS Proxy resource.\n\nA target HTTPS proxy is a component of GCP HTTPS load balancers. Forwarding rules reference a target HTTPS proxy, and the target proxy then references a URL map. For more information, read Using Target Proxies and  Forwarding rule concepts. (== resource_for beta.targetHttpsProxies ==) (== resource_for v1.targetHttpsProxies ==) (== resource_for beta.regionTargetHttpsProxies ==) (== resource_for v1.regionTargetHttpsProxies ==)",
+   "description": "Represents a Target HTTPS Proxy resource.\n\nA target HTTPS proxy is a component of GCP HTTPS load balancers. Forwarding rules reference a target HTTPS proxy, and the target proxy then references a URL map. For more information, read Using Target Proxies and  Forwarding rule concepts. (== resource_for {$api_version}.targetHttpsProxies ==) (== resource_for {$api_version}.regionTargetHttpsProxies ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -21308,7 +21313,7 @@
   "TargetInstance": {
    "id": "TargetInstance",
    "type": "object",
-   "description": "Represents a Target Instance resource.\n\nYou can use a target instance to handle traffic for one or more forwarding rules, which is ideal for forwarding protocol traffic that is managed by a single source. For example, ESP, AH, TCP, or UDP. For more information, read Target instances. (== resource_for beta.targetInstances ==) (== resource_for v1.targetInstances ==)",
+   "description": "Represents a Target Instance resource.\n\nYou can use a target instance to handle traffic for one or more forwarding rules, which is ideal for forwarding protocol traffic that is managed by a single source. For example, ESP, AH, TCP, or UDP. For more information, read Target instances. (== resource_for {$api_version}.targetInstances ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -21678,7 +21683,7 @@
   "TargetPool": {
    "id": "TargetPool",
    "type": "object",
-   "description": "Represents a Target Pool resource.\n\nTarget pools are used for network TCP/UDP load balancing. A target pool references member instances, an associated legacy HttpHealthCheck resource, and, optionally, a backup target pool. For more information, read Using target pools. (== resource_for beta.targetPools ==) (== resource_for v1.targetPools ==)",
+   "description": "Represents a Target Pool resource.\n\nTarget pools are used for network TCP/UDP load balancing. A target pool references member instances, an associated legacy HttpHealthCheck resource, and, optionally, a backup target pool. For more information, read Using target pools. (== resource_for {$api_version}.targetPools ==)",
    "properties": {
     "backupPool": {
      "type": "string",
@@ -22198,7 +22203,7 @@
   "TargetSslProxy": {
    "id": "TargetSslProxy",
    "type": "object",
-   "description": "Represents a Target SSL Proxy resource.\n\nA target SSL proxy is a component of a SSL Proxy load balancer. Global forwarding rules reference a target SSL proxy, and the target proxy then references an external backend service. For more information, read Using Target Proxies. (== resource_for beta.targetSslProxies ==) (== resource_for v1.targetSslProxies ==)",
+   "description": "Represents a Target SSL Proxy resource.\n\nA target SSL proxy is a component of a SSL Proxy load balancer. Global forwarding rules reference a target SSL proxy, and the target proxy then references an external backend service. For more information, read Using Target Proxies. (== resource_for {$api_version}.targetSslProxies ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -22399,7 +22404,7 @@
   "TargetTcpProxy": {
    "id": "TargetTcpProxy",
    "type": "object",
-   "description": "Represents a Target TCP Proxy resource.\n\nA target TCP proxy is a component of a TCP Proxy load balancer. Global forwarding rules reference target TCP proxy, and the target proxy then references an external backend service. For more information, read TCP Proxy Load Balancing Concepts. (== resource_for beta.targetTcpProxies ==) (== resource_for v1.targetTcpProxies ==)",
+   "description": "Represents a Target TCP Proxy resource.\n\nA target TCP proxy is a component of a TCP Proxy load balancer. Global forwarding rules reference target TCP proxy, and the target proxy then references an external backend service. For more information, read TCP Proxy Load Balancing Concepts. (== resource_for {$api_version}.targetTcpProxies ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -22561,7 +22566,7 @@
   "TargetVpnGateway": {
    "id": "TargetVpnGateway",
    "type": "object",
-   "description": "Represents a Target VPN Gateway resource.\n\nThe target VPN gateway resource represents a Classic Cloud VPN gateway. For more information, read the the Cloud VPN Overview. (== resource_for beta.targetVpnGateways ==) (== resource_for v1.targetVpnGateways ==)",
+   "description": "Represents a Target VPN Gateway resource.\n\nThe target VPN gateway resource represents a Classic Cloud VPN gateway. For more information, read the the Cloud VPN Overview. (== resource_for {$api_version}.targetVpnGateways ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -24334,7 +24339,7 @@
   "VpnTunnel": {
    "id": "VpnTunnel",
    "type": "object",
-   "description": "Represents a Cloud VPN Tunnel resource.\n\nFor more information about VPN, read the the Cloud VPN Overview. (== resource_for beta.vpnTunnels ==) (== resource_for v1.vpnTunnels ==)",
+   "description": "Represents a Cloud VPN Tunnel resource.\n\nFor more information about VPN, read the the Cloud VPN Overview. (== resource_for {$api_version}.vpnTunnels ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -24948,7 +24953,7 @@
   "Zone": {
    "id": "Zone",
    "type": "object",
-   "description": "Represents a Zone resource.\n\nA zone is a deployment area. These deployment areas are subsets of a region. For example the zone us-east1-a is located in the us-east1 region. For more information, read Regions and Zones. (== resource_for beta.zones ==) (== resource_for v1.zones ==)",
+   "description": "Represents a Zone resource.\n\nA zone is a deployment area. These deployment areas are subsets of a region. For example the zone us-east1-a is located in the us-east1 region. For more information, read Regions and Zones. (== resource_for {$api_version}.zones ==)",
    "properties": {
     "availableCpuPlatforms": {
      "type": "array",

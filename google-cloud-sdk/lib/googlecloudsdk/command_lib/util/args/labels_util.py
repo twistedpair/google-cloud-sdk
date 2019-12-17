@@ -190,7 +190,9 @@ def GetRemoveLabelsFlag(extra_message, labels_name='labels'):
       action=arg_parsers.UpdateAction,
       help="""\
       List of label keys to remove. If a label does not exist it is
-      silently ignored.""" + extra_message)
+      silently ignored. If `--update-{labels}` is also specified then
+      `--remove-{labels}` is applied first.""".format(labels=labels_name) +
+      extra_message)
 
 
 def AddCreateLabelsFlags(parser):

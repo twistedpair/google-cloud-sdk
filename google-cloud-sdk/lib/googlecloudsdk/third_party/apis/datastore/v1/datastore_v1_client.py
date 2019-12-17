@@ -498,7 +498,7 @@ that a subset of the data has already been imported to Cloud Datastore.
 
     def ReserveIds(self, request, global_params=None):
       r"""Prevents the supplied keys' IDs from being auto-allocated by Cloud.
-Datastore. Used for imports only; other workloads are not supported.
+Datastore.
 
       Args:
         request: (DatastoreProjectsReserveIdsRequest) input message

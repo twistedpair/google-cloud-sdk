@@ -1029,7 +1029,6 @@ def _FlagIsExplicitlySet(args, flag):
 
 def VerifyOnePlatformFlags(args, release_track):
   """Raise ConfigurationError if args includes GKE only arguments."""
-  del release_track  # not currently checked by any flags
   error_msg = ('The `{flag}` flag is not supported on the fully managed '
                'version of Cloud Run. Specify `--platform {platform}` or run '
                '`gcloud config set run/platform {platform}` to work with '
@@ -1049,7 +1048,8 @@ def VerifyOnePlatformFlags(args, release_track):
             platform=PLATFORM_GKE,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
 
-  if _FlagIsExplicitlySet(args, 'cpu'):
+  if (_FlagIsExplicitlySet(args, 'cpu') and
+      release_track != base.ReleaseTrack.ALPHA):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--cpu',

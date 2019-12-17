@@ -805,7 +805,7 @@ class _SectionCompute(_Section):
         completer=('googlecloudsdk.command_lib.compute.completers:'
                    'RegionsCompleter'))
     self.gce_metadata_read_timeout_sec = self._Add(
-        'gce_metadata_read_timeout_sec', default=1, hidden=True)
+        'gce_metadata_read_timeout_sec', default=3, hidden=True)
     self.use_new_list_usable_subnets_api = self._AddBool(
         'use_new_list_usable_subnets_api',
         default=False,
@@ -1708,6 +1708,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.bigtableadmin = self._Add('bigtableadmin')
     self.binaryauthorization = self._Add('binaryauthorization')
     self.buildartifacts = self._Add('buildartifacts')
+    self.artifactregistry = self._Add('artifactregistry')
     self.categorymanager = self._Add('categorymanager')
     self.cloudbilling = self._Add('cloudbilling')
     self.cloudbuild = self._Add('cloudbuild')

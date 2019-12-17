@@ -56,6 +56,8 @@ from googlecloudsdk.third_party.appengine.api import appinfo_errors
 from googlecloudsdk.third_party.appengine.api import backendinfo
 from googlecloudsdk.third_party.appengine._internal import six_subset
 
+import six
+
 
 # pylint: enable=g-import-not-at-top
 
@@ -999,7 +1001,7 @@ class HttpHeadersDict(validation.ValidatedDict):
 
       HttpHeadersDict.ValueValidator.AssertHeaderNotTooLong(key, value)
 
-      return value
+      return six.ensure_text(value)
 
     @staticmethod
     def AssertHeaderNotTooLong(name, value):

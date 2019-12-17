@@ -136,6 +136,17 @@ class HTMLRenderer(renderer.Renderer):
     #   .*        A heading or definition list item. All words are retained.
     #
     # Finally, any remaining spaces are converted to '-'.
+
+    def SingularizeCommandAndGroupDocumentID(name):
+      """Returns singlularized name if name is 'COMMANDS' or 'GROUPS'."""
+
+      # Our html docs self reference COMMAND and GROUP from the synopsis
+      # using a local anchor tag. The section in markdown is pluralized,
+      # This leads to a broken anchor link. This method fixes that by ensuring
+      # that the DocumentID (section id) for COMMAND or GROUP is singular.
+
+      return re.sub(r'(COMMAND|GROUP)S$', r'\1', name)
+
     m = re.match(r'(-- |\[)*'
                  '(<[^>]*>)*'
                  '(?P<anchor>-[-_a-z0-9]+|[_A-Za-z.0-9 ][-_A-Za-z.0-9 ]*|'
@@ -145,6 +156,8 @@ class HTMLRenderer(renderer.Renderer):
     if m:
       name = m.group('anchor')
     name = name.strip(' ').replace(' ', '-')
+
+    name = SingularizeCommandAndGroupDocumentID(name)
 
     # Make sure the document_id return value is unique within this document.
     attempt = name

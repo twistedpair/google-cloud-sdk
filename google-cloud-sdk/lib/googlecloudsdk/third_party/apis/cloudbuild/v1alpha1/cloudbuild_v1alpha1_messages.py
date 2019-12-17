@@ -1064,7 +1064,7 @@ class WorkerPool(_messages.Message):
       STATUS_UNSPECIFIED: Status of the `WorkerPool` is unknown.
       CREATING: `WorkerPool` is being created.
       RUNNING: `WorkerPool` is running.
-      DELETING: `WorkerPool` is being deleting: cancelling builds and draining
+      DELETING: `WorkerPool` is being deleted: cancelling builds and draining
         workers.
       DELETED: `WorkerPool` is deleted.
     """

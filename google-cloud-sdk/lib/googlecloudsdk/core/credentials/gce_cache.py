@@ -27,6 +27,7 @@ import time
 from googlecloudsdk.core import config
 from googlecloudsdk.core.credentials import gce_read
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import retry
 
 import six
 from six.moves import http_client
@@ -34,6 +35,27 @@ from six.moves import urllib_error
 
 
 _GCE_CACHE_MAX_AGE = 10*60  # 10 minutes
+
+# Depending on how a firewall/ NAT behaves, we can have different
+# exceptions at different levels in the networking stack when trying to
+# access an address that we can't reach. Capture all these exceptions.
+_POSSIBLE_ERRORS_GCE_METADATA_CONNECTION = (urllib_error.URLError, socket.error,
+                                            http_client.HTTPException)
+
+_DOMAIN_NAME_RESOLVE_ERROR_MSG = 'Name or service not known'
+
+
+def _ShouldRetryMetadataServerConnection(exc_type, exc_value, exc_traceback,
+                                         state):
+  """Decides if we need to retry the metadata server connection."""
+  del exc_type, exc_traceback, state
+  if not isinstance(exc_value, _POSSIBLE_ERRORS_GCE_METADATA_CONNECTION):
+    return False
+  # It means the domain name cannot be resolved, which happens when not on GCE.
+  if (isinstance(exc_value, urllib_error.URLError) and
+      _DOMAIN_NAME_RESOLVE_ERROR_MSG in six.text_type(exc_value)):
+    return False
+  return True
 
 
 class _OnGCECache(object):
@@ -88,7 +110,7 @@ class _OnGCECache(object):
     return self.CheckServerRefreshAllCaches()
 
   def CheckServerRefreshAllCaches(self):
-    on_gce = self._CheckServer()
+    on_gce = self._CheckServerWithRetry()
     self._WriteDisk(on_gce)
     self._WriteMemory(on_gce, time.time() + _GCE_CACHE_MAX_AGE)
     return on_gce
@@ -105,6 +127,7 @@ class _OnGCECache(object):
     self.expiration_time = expiration_time
 
   def _CheckDisk(self):
+    """Reads cache from disk."""
     gce_cache_path = config.Paths().GCECachePath()
     with self.file_lock:
       try:
@@ -121,6 +144,7 @@ class _OnGCECache(object):
         return None, None
 
   def _WriteDisk(self, on_gce):
+    """Updates cache on disk."""
     gce_cache_path = config.Paths().GCECachePath()
     with self.file_lock:
       try:
@@ -134,17 +158,17 @@ class _OnGCECache(object):
         # one.
         pass
 
-  def _CheckServer(self):
+  def _CheckServerWithRetry(self):
     try:
-      numeric_project_id = gce_read.ReadNoProxy(
-          gce_read.GOOGLE_GCE_METADATA_NUMERIC_PROJECT_URI)
-    except (urllib_error.URLError, socket.error, http_client.HTTPException):
-      # Depending on how a firewall/ NAT behaves, we can have different
-      # exceptions at different levels in the networking stack when trying to
-      # access an address that we can't reach. Capture all these exceptions.
+      return self._CheckServer()
+    except _POSSIBLE_ERRORS_GCE_METADATA_CONNECTION:  # pylint: disable=catching-non-exception
       return False
-    else:
-      return numeric_project_id.isdigit()
+
+  @retry.RetryOnException(
+      max_retrials=3, should_retry_if=_ShouldRetryMetadataServerConnection)
+  def _CheckServer(self):
+    return gce_read.ReadNoProxy(
+        gce_read.GOOGLE_GCE_METADATA_NUMERIC_PROJECT_URI).isdigit()
 
 # Since a module is initialized only once, this is effective a singleton
 _SINGLETON_ON_GCE_CACHE = _OnGCECache()

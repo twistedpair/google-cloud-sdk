@@ -59,13 +59,13 @@ def GetSchedulingNodeAffinityListFromArgs(args, messages):
                 node_affinity.key, node_affinity.all_unrecognized_fields()))
 
       node_affinities.append(node_affinity)
-  if args.node_group:
+  if args.IsSpecified('node_group'):
     node_affinities.append(
         messages.SchedulingNodeAffinity(
             key='compute.googleapis.com/node-group-name',
             operator=operator_enum.IN,
             values=[args.node_group]))
-  if args.node:
+  if args.IsSpecified('node'):
     node_affinities.append(
         messages.SchedulingNodeAffinity(
             key='compute.googleapis.com/node-name',

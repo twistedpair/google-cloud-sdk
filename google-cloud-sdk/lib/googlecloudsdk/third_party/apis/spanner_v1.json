@@ -340,7 +340,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a user that has been recently deleted. For\n   example,`alice@example.com?uid=123456789012345678901`. If the user is\n   recovered, this value reverts to `user:{emailid}` and the recovered user\n   retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus\n   unique identifier) representing a service account that has been recently\n   deleted. For example,\n   `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.\n   If the service account is undeleted, this value reverts to\n   `serviceAccount:{emailid}` and the undeleted service account retains the\n   role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a Google group that has been recently\n   deleted. For example, `admins@example.com?uid=123456789012345678901`. If\n   the group is recovered, this value reverts to `group:{emailid}` and the\n   recovered group retains the role in the binding.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a user that has been recently deleted. For\n   example, `alice@example.com?uid=123456789012345678901`. If the user is\n   recovered, this value reverts to `user:{emailid}` and the recovered user\n   retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus\n   unique identifier) representing a service account that has been recently\n   deleted. For example,\n   `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.\n   If the service account is undeleted, this value reverts to\n   `serviceAccount:{emailid}` and the undeleted service account retains the\n   role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a Google group that has been recently\n   deleted. For example, `admins@example.com?uid=123456789012345678901`. If\n   the group is recovered, this value reverts to `group:{emailid}` and the\n   recovered group retains the role in the binding.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -558,7 +558,7 @@
           }
         },
         "endpointUris": {
-          "description": "Output only. The endpoint URIs based on the instance config.\nFor example, instances located in a specific cloud region (or multi region)\nsuch as nam3, would have a nam3 specific endpoint URI.\nThis URI is to be used implictly by SDK clients, with fallback to default\nURI. These endpoints are intended to optimize the network routing between\nthe client and the instance's serving resources.\nIf multiple endpoints are present, client may establish connections using\nany of the given URIs.",
+          "description": "Output only. A set of endpoint URIs based on your instance config\nthat you can use instead of the global endpoint `spanner.googleapis.com`.\n\nFor example, if your instance config is `us-central1` (a regional config\nin Iowa), then your instance specific endpoints may include\n`us-central1-spanner.googleapis.com`. By calling these endpoints instead of\nthe global endpoint, you optimize network routing which could reduce\nnetwork latency.\n\nThe client libraries, JDBC drivers, and other SDK clients automatically\ncall these instance specific endpoints.\n\nIf you are using DNS whitelists, firewalls, or filtering to control access\nto endpoints, make sure you grant access to `*spanner.googleapis.com`.",
           "type": "array",
           "items": {
             "type": "string"
@@ -587,11 +587,11 @@
       "type": "object",
       "properties": {
         "instance": {
-          "description": "Required. The instance to update, which must always include the instance\nname.  Otherwise, only fields mentioned in [][google.spanner.admin.instance.v1.UpdateInstanceRequest.field_mask] need be included.",
+          "description": "Required. The instance to update, which must always include the instance\nname.  Otherwise, only fields mentioned in field_mask need be included.",
           "$ref": "Instance"
         },
         "fieldMask": {
-          "description": "Required. A mask specifying which fields in [][google.spanner.admin.instance.v1.UpdateInstanceRequest.instance] should be updated.\nThe field mask must always be specified; this prevents any future fields in\n[][google.spanner.admin.instance.v1.Instance] from being erased accidentally by clients that do not know\nabout them.",
+          "description": "Required. A mask specifying which fields in Instance should be updated.\nThe field mask must always be specified; this prevents any future fields in\nInstance from being erased accidentally by clients that do not know\nabout them.",
           "type": "string",
           "format": "google-fieldmask"
         }
@@ -1353,7 +1353,7 @@
           "$ref": "Write"
         },
         "insertOrUpdate": {
-          "description": "Like insert, except that if the row already exists, then\nits column values are overwritten with the ones provided. Any\ncolumn values not explicitly written are preserved.",
+          "description": "Like insert, except that if the row already exists, then\nits column values are overwritten with the ones provided. Any\ncolumn values not explicitly written are preserved.\n\nWhen using insert_or_update, just as when using insert, all `NOT\nNULL` columns in the table must be given a value. This holds true\neven when the row already exists and will therefore actually be updated.",
           "$ref": "Write"
         },
         "replace": {
@@ -1766,7 +1766,7 @@
                   "type": "string"
                 },
                 "fieldMask": {
-                  "description": "If field_mask is present, specifies the subset of [][google.spanner.admin.instance.v1.Instance] fields that\nshould be returned.\nIf absent, all [][google.spanner.admin.instance.v1.Instance] fields are returned.",
+                  "description": "If field_mask is present, specifies the subset of Instance fields that\nshould be returned.\nIf absent, all Instance fields are returned.",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"

@@ -2768,10 +2768,14 @@ class GooglePrivacyDlpV2DeidentifyConfig(_messages.Message):
     recordTransformations: Treat the dataset as structured. Transformations
       can be applied to specific locations within structured datasets, such as
       transforming a column within a table.
+    transformationErrorHandling: Mode for handling transformation errors. If
+      left unspecified, the default mode is
+      `TransformationErrorHandling.ThrowError`.
   """
 
   infoTypeTransformations = _messages.MessageField('GooglePrivacyDlpV2InfoTypeTransformations', 1)
   recordTransformations = _messages.MessageField('GooglePrivacyDlpV2RecordTransformations', 2)
+  transformationErrorHandling = _messages.MessageField('GooglePrivacyDlpV2TransformationErrorHandling', 3)
 
 
 class GooglePrivacyDlpV2DeidentifyContentRequest(_messages.Message):
@@ -4057,6 +4061,15 @@ class GooglePrivacyDlpV2LargeCustomDictionaryStats(_messages.Message):
   approxNumPhrases = _messages.IntegerField(1)
 
 
+class GooglePrivacyDlpV2LeaveUntransformed(_messages.Message):
+  r"""Skips the data without modifying it if the requested transformation
+  would cause an error. For example, if a `DateShift` transformation were
+  applied an an IP address, this mode would leave the IP address unchanged in
+  the response.
+  """
+
+
+
 class GooglePrivacyDlpV2LikelihoodAdjustment(_messages.Message):
   r"""Message for specifying an adjustment to the likelihood of a finding as
   part of a detection rule.
@@ -4853,9 +4866,9 @@ class GooglePrivacyDlpV2StoredInfoType(_messages.Message):
 
 
 class GooglePrivacyDlpV2StoredInfoTypeConfig(_messages.Message):
-  r"""Configuration for stored infoT types. All fields and subfield are
-  provided by the user. For more information, see
-  https://cloud.google.com/dlp/docs/creating-custom-infotypes.
+  r"""Configuration for stored infoTypes. All fields and subfield are provided
+  by the user. For more information, see https://cloud.google.com/dlp/docs
+  /creating-custom-infotypes.
 
   Fields:
     description: Description of the StoredInfoType (max 256 characters).
@@ -5041,6 +5054,12 @@ class GooglePrivacyDlpV2TaggedField(_messages.Message):
   infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 4)
 
 
+class GooglePrivacyDlpV2ThrowError(_messages.Message):
+  r"""Throw an error and fail the request when a transformation error occurs.
+  """
+
+
+
 class GooglePrivacyDlpV2TimePartConfig(_messages.Message):
   r"""For use with `Date`, `Timestamp`, and `TimeOfDay`, extract or preserve a
   portion of the value.
@@ -5114,6 +5133,24 @@ class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
   endTime = _messages.StringField(2)
   startTime = _messages.StringField(3)
   timestampField = _messages.MessageField('GooglePrivacyDlpV2FieldId', 4)
+
+
+class GooglePrivacyDlpV2TransformationErrorHandling(_messages.Message):
+  r"""How to handle transformation errors during de-identification. A
+  transformation error occurs when the requested transformation is
+  incompatible with the data. For example, trying to de-identify an IP address
+  using a `DateShift` transformation would result in a transformation error,
+  since date info cannot be extracted from an IP address. Information about
+  any incompatible transformations, and how they were handled, is returned in
+  the response as part of the `TransformationOverviews`.
+
+  Fields:
+    leaveUntransformed: A GooglePrivacyDlpV2LeaveUntransformed attribute.
+    throwError: A GooglePrivacyDlpV2ThrowError attribute.
+  """
+
+  leaveUntransformed = _messages.MessageField('GooglePrivacyDlpV2LeaveUntransformed', 1)
+  throwError = _messages.MessageField('GooglePrivacyDlpV2ThrowError', 2)
 
 
 class GooglePrivacyDlpV2TransformationOverview(_messages.Message):

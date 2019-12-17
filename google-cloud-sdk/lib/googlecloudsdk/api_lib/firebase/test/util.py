@@ -31,17 +31,9 @@ from googlecloudsdk.core import properties
 
 OUTCOMES_FORMAT = """
           table[box](
-            outcome.color(red=Fail, green=Pass, yellow=Inconclusive),
-            axis_value:label=TEST_AXIS_VALUE,
-            test_details:label=TEST_DETAILS
-          )
-"""
-
-FLAKY_ATTEMPTS_OUTCOMES_FORMAT = """
-          table[box](
             outcome.color(red=Fail, green=Pass, blue=Flaky, yellow=Inconclusive),
             axis_value:label=TEST_AXIS_VALUE,
-            passed_executions:label=PASSED_EXECUTIONS
+            test_details:label=TEST_DETAILS
           )
 """
 

@@ -1035,6 +1035,386 @@
           }
         }
       }
+    },
+    "billingAccounts": {
+      "resources": {
+        "locations": {
+          "resources": {
+            "insightTypes": {
+              "resources": {
+                "insights": {
+                  "methods": {
+                    "list": {
+                      "id": "recommender.billingAccounts.locations.insightTypes.insights.list",
+                      "path": "v1alpha2/{+parent}/insights",
+                      "flatPath": "v1alpha2/billingAccounts/{billingAccountsId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The container resource on which to execute the request.\nAcceptable formats:\n\n1.\n\"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\",\n\nLOCATION here refers to GCP Locations:\nhttps:\/\/cloud.google.com\/about\/locations\/",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored. If not specified, the server will\ndetermine the number of results to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. If present, retrieves the next batch of results from the\npreceding call to this method. `page_token` must be the value of\n`next_page_token` from the previous response. The values of other method\nparameters must be identical to those in the previous call.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Filter expression to restrict the insights returned. Supported\nfilter fields: state\nEg: `state:\"DISMISSED\" or state:\"ACTIVE\"",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2ListInsightsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists insights for a Cloud project. Requires the recommender.*.list IAM\npermission for the specified insight type."
+                    },
+                    "get": {
+                      "id": "recommender.billingAccounts.locations.insightTypes.insights.get",
+                      "path": "v1alpha2/{+name}",
+                      "flatPath": "v1alpha2/billingAccounts/{billingAccountsId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights/{insightsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Name of the insight.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2Insight"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the requested insight. Requires the recommender.*.get IAM permission\nfor the specified insight type."
+                    },
+                    "markActive": {
+                      "id": "recommender.billingAccounts.locations.insightTypes.insights.markActive",
+                      "path": "v1alpha2/{+name}:markActive",
+                      "flatPath": "v1alpha2/billingAccounts/{billingAccountsId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights/{insightsId}:markActive",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Name of the insight.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2MarkInsightActiveRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2Insight"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Mark the Insight State as Active. Users can use this method to\nindicate to the Recommender API that a DISMISSED insight has to\nbe marked back as ACTIVE.\n\nMarkInsightActive can be applied to insights in DISMISSED state. Requires\nthe recommender.*.update IAM permission for the specified insight type."
+                    },
+                    "markDismissed": {
+                      "id": "recommender.billingAccounts.locations.insightTypes.insights.markDismissed",
+                      "path": "v1alpha2/{+name}:markDismissed",
+                      "flatPath": "v1alpha2/billingAccounts/{billingAccountsId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights/{insightsId}:markDismissed",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Name of the insight.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2MarkInsightDismissedRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2Insight"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Mark the Insight State as Dismissed. Users can use this method to\nindicate to the Recommender API that an ACTIVE insight should be dismissed.\n\nMarkInsightDismissed can be applied to insights in ACTIVE state. Requires\nthe recommender.*.update IAM permission for the specified insight type."
+                    },
+                    "markAccepted": {
+                      "id": "recommender.billingAccounts.locations.insightTypes.insights.markAccepted",
+                      "path": "v1alpha2/{+name}:markAccepted",
+                      "flatPath": "v1alpha2/billingAccounts/{billingAccountsId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights/{insightsId}:markAccepted",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Name of the insight.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2MarkInsightAcceptedRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2Insight"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Marks the Insight State as Accepted. Users can use this method to\nindicate to the Recommender API that they have applied some action based\non the insight. This stops the insight content from being updated.\n\nMarkInsightAccepted can be applied to insights in ACTIVE state. Requires\nthe recommender.*.update IAM permission for the specified insight."
+                    }
+                  }
+                }
+              }
+            },
+            "recommenders": {
+              "resources": {
+                "recommendations": {
+                  "methods": {
+                    "list": {
+                      "id": "recommender.billingAccounts.locations.recommenders.recommendations.list",
+                      "path": "v1alpha2/{+parent}/recommendations",
+                      "flatPath": "v1alpha2/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The container resource on which to execute the request.\nAcceptable formats:\n\n1.\n\"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\",\n\nLOCATION here refers to GCP Locations:\nhttps:\/\/cloud.google.com\/about\/locations\/",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored. If not specified, the server will\ndetermine the number of results to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. If present, retrieves the next batch of results from the\npreceding call to this method. `page_token` must be the value of\n`next_page_token` from the previous response. The values of other method\nparameters must be identical to those in the previous call.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Filter expression to restrict the recommendations returned. Supported\nfilter fields: state_info.state\nEg: `state_info.state:\"DISMISSED\" or state_info.state:\"FAILED\"",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2ListRecommendationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists recommendations for a Cloud project. Requires the recommender.*.list\nIAM permission for the specified recommender."
+                    },
+                    "get": {
+                      "id": "recommender.billingAccounts.locations.recommenders.recommendations.get",
+                      "path": "v1alpha2/{+name}",
+                      "flatPath": "v1alpha2/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Name of the recommendation.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2Recommendation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the requested recommendation. Requires the recommender.*.get\nIAM permission for the specified recommender."
+                    },
+                    "markActive": {
+                      "id": "recommender.billingAccounts.locations.recommenders.recommendations.markActive",
+                      "path": "v1alpha2/{+name}:markActive",
+                      "flatPath": "v1alpha2/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markActive",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Name of the recommendation.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2MarkRecommendationActiveRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2Recommendation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Mark the Recommendation State as Active. Users can use this method to\nindicate to the Recommender API that a DISMISSED recommendation has to\nbe marked back as ACTIVE.\n\nMarkRecommendationActive can be applied to recommendations in DISMISSED\nstate.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender."
+                    },
+                    "markDismissed": {
+                      "id": "recommender.billingAccounts.locations.recommenders.recommendations.markDismissed",
+                      "path": "v1alpha2/{+name}:markDismissed",
+                      "flatPath": "v1alpha2/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markDismissed",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Name of the recommendation.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2Recommendation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Mark the Recommendation State as Dismissed. Users can use this method to\nindicate to the Recommender API that an ACTIVE recommendation has to\nbe marked back as DISMISSED.\n\nMarkRecommendationDismissed can be applied to recommendations in ACTIVE\nstate.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender."
+                    },
+                    "markClaimed": {
+                      "id": "recommender.billingAccounts.locations.recommenders.recommendations.markClaimed",
+                      "path": "v1alpha2/{+name}:markClaimed",
+                      "flatPath": "v1alpha2/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markClaimed",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Name of the recommendation.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2Recommendation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Marks the Recommendation State as Claimed. Users can use this method to\nindicate to the Recommender API that they are starting to apply the\nrecommendation themselves. This stops the recommendation content from being\nupdated. Associated insights are frozen and placed in the ACCEPTED state.\n\nMarkRecommendationClaimed can be applied to recommendations in CLAIMED or\nACTIVE state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender."
+                    },
+                    "markSucceeded": {
+                      "id": "recommender.billingAccounts.locations.recommenders.recommendations.markSucceeded",
+                      "path": "v1alpha2/{+name}:markSucceeded",
+                      "flatPath": "v1alpha2/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markSucceeded",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Name of the recommendation.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2Recommendation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Marks the Recommendation State as Succeeded. Users can use this method to\nindicate to the Recommender API that they have applied the recommendation\nthemselves, and the operation was successful. This stops the recommendation\ncontent from being updated. Associated insights are frozen and placed in\nthe ACCEPTED state.\n\nMarkRecommendationSucceeded can be applied to recommendations in ACTIVE,\nCLAIMED, SUCCEEDED, or FAILED state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender."
+                    },
+                    "markFailed": {
+                      "id": "recommender.billingAccounts.locations.recommenders.recommendations.markFailed",
+                      "path": "v1alpha2/{+name}:markFailed",
+                      "flatPath": "v1alpha2/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markFailed",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Name of the recommendation.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2MarkRecommendationFailedRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudRecommenderV1alpha2Recommendation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Marks the Recommendation State as Failed. Users can use this method to\nindicate to the Recommender API that they have applied the recommendation\nthemselves, and the operation failed. This stops the recommendation content\nfrom being updated. Associated insights are frozen and placed in the\nACCEPTED state.\n\nMarkRecommendationFailed can be applied to recommendations in ACTIVE,\nCLAIMED, SUCCEEDED, or FAILED state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "basePath": ""

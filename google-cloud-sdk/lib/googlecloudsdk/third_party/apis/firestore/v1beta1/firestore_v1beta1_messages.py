@@ -542,7 +542,7 @@ class FirestoreProjectsDatabasesDocumentsBatchGetRequest(_messages.Message):
   Fields:
     batchGetDocumentsRequest: A BatchGetDocumentsRequest resource to be passed
       as the request body.
-    database: The database name. In the format:
+    database: Required. The database name. In the format:
       `projects/{project_id}/databases/{database_id}`.
   """
 
@@ -556,7 +556,7 @@ class FirestoreProjectsDatabasesDocumentsBeginTransactionRequest(_messages.Messa
   Fields:
     beginTransactionRequest: A BeginTransactionRequest resource to be passed
       as the request body.
-    database: The database name. In the format:
+    database: Required. The database name. In the format:
       `projects/{project_id}/databases/{database_id}`.
   """
 
@@ -569,7 +569,7 @@ class FirestoreProjectsDatabasesDocumentsCommitRequest(_messages.Message):
 
   Fields:
     commitRequest: A CommitRequest resource to be passed as the request body.
-    database: The database name. In the format:
+    database: Required. The database name. In the format:
       `projects/{project_id}/databases/{database_id}`.
   """
 
@@ -581,14 +581,14 @@ class FirestoreProjectsDatabasesDocumentsCreateDocumentRequest(_messages.Message
   r"""A FirestoreProjectsDatabasesDocumentsCreateDocumentRequest object.
 
   Fields:
-    collectionId: The collection ID, relative to `parent`, to list. For
-      example: `chatrooms`.
+    collectionId: Required. The collection ID, relative to `parent`, to list.
+      For example: `chatrooms`.
     document: A Document resource to be passed as the request body.
     documentId: The client-assigned document ID to use for this document.
       Optional. If not specified, an ID will be assigned by the service.
     mask_fieldPaths: The list of field paths in the mask. See Document.fields
       for a field path syntax reference.
-    parent: The parent resource. For example:
+    parent: Required. The parent resource. For example:
       `projects/{project_id}/databases/{database_id}/documents` or `projects/{
       project_id}/databases/{database_id}/documents/chatrooms/{chatroom_id}`
   """
@@ -608,9 +608,9 @@ class FirestoreProjectsDatabasesDocumentsDeleteRequest(_messages.Message):
       exist. When set to `false`, the target document must not exist.
     currentDocument_updateTime: When set, the target document must exist and
       have been last updated at that time.
-    name: The resource name of the Document to delete. In the format:
-      `projects/{project_id}/databases/{database_id}/documents/{document_path}
-      `.
+    name: Required. The resource name of the Document to delete. In the
+      format: `projects/{project_id}/databases/{database_id}/documents/{docume
+      nt_path}`.
   """
 
   currentDocument_exists = _messages.BooleanField(1)
@@ -624,7 +624,7 @@ class FirestoreProjectsDatabasesDocumentsGetRequest(_messages.Message):
   Fields:
     mask_fieldPaths: The list of field paths in the mask. See Document.fields
       for a field path syntax reference.
-    name: The resource name of the Document to get. In the format:
+    name: Required. The resource name of the Document to get. In the format:
       `projects/{project_id}/databases/{database_id}/documents/{document_path}
       `.
     readTime: Reads the version of the document at the given time. This may
@@ -644,7 +644,7 @@ class FirestoreProjectsDatabasesDocumentsListCollectionIdsRequest(_messages.Mess
   Fields:
     listCollectionIdsRequest: A ListCollectionIdsRequest resource to be passed
       as the request body.
-    parent: The parent document. In the format:
+    parent: Required. The parent document. In the format:
       `projects/{project_id}/databases/{database_id}/documents/{document_path}
       `. For example: `projects/my-project/databases/my-
       database/documents/chatrooms/my-chatroom`
@@ -658,15 +658,15 @@ class FirestoreProjectsDatabasesDocumentsListRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesDocumentsListRequest object.
 
   Fields:
-    collectionId: The collection ID, relative to `parent`, to list. For
-      example: `chatrooms` or `messages`.
+    collectionId: Required. The collection ID, relative to `parent`, to list.
+      For example: `chatrooms` or `messages`.
     mask_fieldPaths: The list of field paths in the mask. See Document.fields
       for a field path syntax reference.
     orderBy: The order to sort results by. For example: `priority desc, name`.
     pageSize: The maximum number of documents to return.
     pageToken: The `next_page_token` value returned from a previous List
       request, if any.
-    parent: The parent resource name. In the format:
+    parent: Required. The parent resource name. In the format:
       `projects/{project_id}/databases/{database_id}/documents` or `projects/{
       project_id}/databases/{database_id}/documents/{document_path}`. For
       example: `projects/my-project/databases/my-database/documents` or
@@ -697,7 +697,7 @@ class FirestoreProjectsDatabasesDocumentsListenRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesDocumentsListenRequest object.
 
   Fields:
-    database: The database name. In the format:
+    database: Required. The database name. In the format:
       `projects/{project_id}/databases/{database_id}`.
     listenRequest: A ListenRequest resource to be passed as the request body.
   """
@@ -736,7 +736,7 @@ class FirestoreProjectsDatabasesDocumentsRollbackRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesDocumentsRollbackRequest object.
 
   Fields:
-    database: The database name. In the format:
+    database: Required. The database name. In the format:
       `projects/{project_id}/databases/{database_id}`.
     rollbackRequest: A RollbackRequest resource to be passed as the request
       body.
@@ -750,7 +750,7 @@ class FirestoreProjectsDatabasesDocumentsRunQueryRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesDocumentsRunQueryRequest object.
 
   Fields:
-    parent: The parent resource name. In the format:
+    parent: Required. The parent resource name. In the format:
       `projects/{project_id}/databases/{database_id}/documents` or `projects/{
       project_id}/databases/{database_id}/documents/{document_path}`. For
       example: `projects/my-project/databases/my-database/documents` or
@@ -768,7 +768,7 @@ class FirestoreProjectsDatabasesDocumentsWriteRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesDocumentsWriteRequest object.
 
   Fields:
-    database: The database name. In the format:
+    database: Required. The database name. In the format:
       `projects/{project_id}/databases/{database_id}`. This is only required
       in the first message.
     writeRequest: A WriteRequest resource to be passed as the request body.
@@ -1519,7 +1519,7 @@ class RollbackRequest(_messages.Message):
   r"""The request for Firestore.Rollback.
 
   Fields:
-    transaction: The transaction to roll back.
+    transaction: Required. The transaction to roll back.
   """
 
   transaction = _messages.BytesField(1)

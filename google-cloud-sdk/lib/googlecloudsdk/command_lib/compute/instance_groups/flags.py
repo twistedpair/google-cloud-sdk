@@ -22,6 +22,7 @@ import enum
 from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags
@@ -267,6 +268,84 @@ def CreateGroupReference(client, resources, args):
   return resource_arg.ResolveAsResource(
       args, resources, default_scope=default_scope,
       scope_lister=scope_lister)
+
+
+_LIST_INSTANCES_FORMAT = """\
+        table(instance.basename():label=NAME,
+              instance.scope().segment(0):label=ZONE,
+              instanceStatus:label=STATUS,
+              currentAction:label=ACTION,
+              version.instanceTemplate.basename():label=INSTANCE_TEMPLATE,
+              version.name:label=VERSION_NAME,
+              lastAttempt.errors.errors.map().format(
+                "Error {0}: {1}", code, message).list(separator=", ")
+                :label=LAST_ERROR
+        )"""
+
+_LIST_INSTANCES_FORMAT_BETA = """\
+        table(instance.basename():label=NAME,
+              instance.scope().segment(0):label=ZONE,
+              instanceStatus:label=STATUS,
+              instanceHealth[0].detailedHealthState:label=HEALTH_STATE,
+              currentAction:label=ACTION,
+              version.instanceTemplate.basename():label=INSTANCE_TEMPLATE,
+              version.name:label=VERSION_NAME,
+              lastAttempt.errors.errors.map().format(
+                "Error {0}: {1}", code, message).list(separator=", ")
+                :label=LAST_ERROR
+        )"""
+
+_LIST_INSTANCES_FORMAT_ALPHA = """\
+        table(instance.basename():label=NAME,
+              instance.scope().segment(0):label=ZONE,
+              instanceStatus:label=STATUS,
+              instanceHealth[0].detailedHealthState:label=HEALTH_STATE,
+              currentAction:label=ACTION,
+              preservedState():label=PRESERVED_STATE,
+              version.instanceTemplate.basename():label=INSTANCE_TEMPLATE,
+              version.name:label=VERSION_NAME,
+              lastAttempt.errors.errors.map().format(
+                "Error {0}: {1}", code, message).list(separator=", ")
+                :label=LAST_ERROR
+        )"""
+
+_RELEASE_TRACK_TO_LIST_INSTANCES_FORAMT = {
+    base.ReleaseTrack.GA: _LIST_INSTANCES_FORMAT,
+    base.ReleaseTrack.BETA: _LIST_INSTANCES_FORMAT_BETA,
+    base.ReleaseTrack.ALPHA: _LIST_INSTANCES_FORMAT_ALPHA,
+}
+
+
+def _TransformPreservedState(instance):
+  """Transform for the PRESERVED_STATE field in the table output.
+
+  PRESERVED_STATE is generated from the fields preservedStateFromPolicy and
+  preservedStateFromConfig fields in the managedInstance message.
+
+  Args:
+    instance: instance dictionary for transform
+
+  Returns:
+    Preserved state status as one of ('POLICY', 'CONFIG', 'POLICY,CONFIG')
+  """
+  preserved_state_value = ''
+  if ('preservedStateFromPolicy' in instance and
+      instance['preservedStateFromPolicy']):
+    preserved_state_value += 'POLICY,'
+  if ('preservedStateFromConfig' in instance and
+      instance['preservedStateFromConfig']):
+    preserved_state_value += 'CONFIG'
+  if preserved_state_value.endswith(','):
+    preserved_state_value = preserved_state_value[:-1]
+  return preserved_state_value
+
+
+def AddListInstancesOutputFormat(parser, release_track=base.ReleaseTrack.GA):
+  parser.display_info.AddTransforms({
+      'preservedState': _TransformPreservedState,
+  })
+  parser.display_info.AddFormat(
+      _RELEASE_TRACK_TO_LIST_INSTANCES_FORAMT[release_track])
 
 
 def AddSettingStatefulDisksFlag(parser, required=False):
@@ -686,22 +765,22 @@ def AddMigInstanceRedistributionTypeFlag(parser):
       type=lambda x: x.upper(),
       choices=INSTANCE_REDISTRIBUTION_TYPES,
       help="""\
-      Specify type of instance redistribution policy. Instance redistribution
-      type gives possibility to enable or disable automatic instance
-      redistribution between zones to its target distribution. Target
-      distribution is a state of regional managed instance group where all
-      instances are spread out equally between all target zones.
+      Specifies the type of the instance redistribution policy. An instance
+      redistribution type lets you enable or disable automatic instance
+      redistribution across zones to meet the target distribution. The target
+      distribution is a state of a regional managed instance group where all
+      instances are spread out evenly across all target zones.
 
-      Instance redistribution type may be specified for non-autoscaled regional
-      managed instance group only. By default it is set to PROACTIVE.
+      An instance redistribution type can be specified only for a non-autoscaled
+      regional managed instance group. By default it is set to PROACTIVE.
 
       The following types are available:
 
-       * NONE - managed instance group will not take any action to bring
-         instances to its target distribution.
+       * NONE - The managed instance group does not redistribute instances
+         across zones.
 
-       * PROACTIVE - managed instance group will actively converge all instances
-         between zones to its target distribution.
+       * PROACTIVE - The managed instance group proactively redistributes
+         instances to meet its target distribution.
       """)
 
 
@@ -715,3 +794,40 @@ def ValidateMigInstanceRedistributionTypeFlag(instance_redistribution_type,
         message=(
             'Flag --instance-redistribution-type may be specified for regional '
             'managed instance groups only.'))
+
+
+DISTRIBUTION_POLICY_TARGET_SHAPES = ['EVEN', 'ANY']
+
+
+def AddMigDistributionPolicyTargetShapeFlag(parser):
+  """Add --target-distribution-shape flag to the parser."""
+  parser.add_argument(
+      '--target-distribution-shape',
+      metavar='SHAPE',
+      type=lambda x: x.upper(),
+      choices=DISTRIBUTION_POLICY_TARGET_SHAPES,
+      help="""\
+      Specify distribution policy target shape.
+
+      Target shape may be specified for regional managed instance group only.
+      By default it is set to EVEN.
+
+      The following target shapes are available:
+
+       * EVEN - managed instance group will create and delete instances
+         in a manner preserving or converging to even distribution.
+
+       * ANY - managed instance group will create instances based on present
+         capacity constraints and will not attempt to converge to even
+         distribution.
+      """)
+
+
+def ValidateMigDistributionPolicyTargetShapeFlag(target_shape, group_ref):
+  """Check correctness of --target-distribution-shape flag value."""
+  if target_shape and (group_ref.Collection() !=
+                       'compute.regionInstanceGroupManagers'):
+    raise exceptions.InvalidArgumentException(
+        parameter_name='--target-distribution-shape',
+        message=('Flag --target-distribution-shape may be specified for '
+                 'regional managed instance groups only.'))

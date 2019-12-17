@@ -300,8 +300,8 @@ class MachineImagesCompleter(ListCommandCompleter):
   def __init__(self, **kwargs):
     super(MachineImagesCompleter, self).__init__(
         collection='compute.machineImages',
-        list_command='alpha compute machine-images list --uri',
-        api_version='alpha',
+        list_command='beta compute machine-images list --uri',
+        api_version='beta',
         **kwargs)
 
 

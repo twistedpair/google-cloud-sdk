@@ -250,8 +250,7 @@ class Instance(_messages.Message):
       events   Redis 4.0 and above:   *   activedefrag  *   lfu-log-factor  *
       lfu-decay-time
     redisVersion: Optional. The version of Redis software. If not provided,
-      latest supported version will be used. Updating the version will perform
-      an upgrade/downgrade to the new version. Currently, the supported values
+      latest supported version will be used. Currently, the supported values
       are:   *   `REDIS_4_0` for Redis 4.0 compatibility (default)  *
       `REDIS_3_2` for Redis 3.2 compatibility
     reservedIpRange: Optional. The CIDR range of internal addresses that are

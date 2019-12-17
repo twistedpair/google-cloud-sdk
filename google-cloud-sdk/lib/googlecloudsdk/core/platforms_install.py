@@ -247,7 +247,7 @@ class _RcUpdater(object):
       _TraceAction(console_io.FormatRequiredUserAction(
           'Start a new shell for the changes to take effect.'))
 
-    if not self.completion_update:
+    if not self.completion_update and self._CompletionExists():
       _TraceAction(
           '==> Source [{rc}] in your profile to enable shell command '
           'completion for gcloud.'.format(rc=self.completion))

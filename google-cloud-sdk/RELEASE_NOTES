@@ -5,6 +5,79 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 274.0.0 (2019-12-17)
+
+### Cloud SDK
+
+* Cloud SDK now has GA support for Python 3. Please run
+  `gcloud topic startup` for:
+     * Information on configuring the Python interpreter used by the
+       Cloud SDK.
+     * List of tools in the Cloud SDK that still require a Python 2.7
+       interpreter.
+     * List of known issues with Python 3 support.
+
+### BigQuery
+
+* Added support for Python3.
+* Specifying unique prefixes for any flag name is no longer accepted. For
+example using `--project` instead of `--project_id` will throw an error.
+This change is a result of changing the underlying flag library from gflags to
+abseil-flags.
+* Added `--service_account_name` flag in `bq mk --transfer_confg` and
+`bq update --transfer_config --update_credential` to use a service account
+credential on transfer config or scheduled query.
+* Removed support for Reservation v1alpha2 API.
+
+### Cloud Access Context Manager
+
+* Fixed a bug where `access-context-manager` commands couldn't run without `--policy` specified; commands now use the default policy ID if one isn't provided.
+
+### Compute Engine
+
+* Added ubuntu-1804 option to `--os` flag of `gcloud beta compute images import`
+  and `gcloud beta compute instances import`.
+* Promoted `--target-distribution-shape` flag of `compute instance-groups managed create` to GA.
+* Promoted `--erase-windows-vss-signature` flag of `compute disks create` to beta.
+* Promoted `compute machine-images` command group to beta.
+* Promoted `--source-machine-image`, `--source-machine-image-csek-key-file`, and `--erase-windows-vss-signature` flags of `compute instances create` to beta.
+* Fixed issue where `gcloud compute os-login` commands failed with
+  `--impersonate-service-account` flag.
+* Promoted `gcloud compute os-config guest-policies` command group to beta.
+* Removed `--description` flag from
+  `gcloud beta compute os-config guest-policies create` command to only allow
+  creating a guest policy from a file.
+* Removed `--description` and `--etag` flags from
+  `gcloud beta compute os-config guest-policies update` command to only allow
+  updating a guest policy from a file.
+* Removed `--organization` and `--folder` flags from the following commands to
+  only allow managing project-level guest policies:
+  * `gcloud beta compute os-config guest-policies create`
+  * `gcloud beta compute os-config guest-policies describe`
+  * `gcloud beta compute os-config guest-policies delete`
+  * `gcloud beta compute os-config guest-policies update`
+* Promoted `--maintenance-policy` flag of `gcloud compute sole-tenancy node-groups create` to beta.
+* Promoted `--min-node-cpu` flag of `compute instances create` to beta.
+* Added `--min-node-cpu` and `--clear-min-node-cpu` to `gcloud compute instances set-scheduling` beta.
+* Added `--node-group`, `--node`, `--node-affinity-file`, and `--clear-node-affinities` flags to `compute instances set-scheduling` beta.
+
+
+### Kubernetes Engine
+
+* Added `--boot-disk-kms-key` to `gcloud beta container
+    clusters create` and `--boot-disk-kms-key` to `gcloud
+    beta container node-pools create` to specify a
+    customer managed encryption key to encrypt the node boot disks with.
+
+### Miscellaneous
+
+* Modified the account loader to print a warning if there is no active account,
+  and the configuration file can not be found.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 273.0.0 (2019-12-10)
 
 ### Cloud SDK

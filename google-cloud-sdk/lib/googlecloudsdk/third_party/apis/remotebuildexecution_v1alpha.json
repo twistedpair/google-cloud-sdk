@@ -311,7 +311,7 @@
           "type": "string"
         },
         "diskType": {
-          "description": "Required. Disk Type to use for the worker.\nSee [Storage\noptions](https:\/\/cloud.google.com\/compute\/docs\/disks\/#introduction).\nCurrently only `pd-standard` is supported.",
+          "description": "Required. Disk Type to use for the worker.\nSee [Storage\noptions](https:\/\/cloud.google.com\/compute\/docs\/disks\/#introduction).\nCurrently only `pd-standard` and `pd-ssd` are supported.",
           "type": "string"
         },
         "diskSizeGb": {
@@ -1043,6 +1043,37 @@
         "message": {
           "description": "The error message.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsRemotebuildbotResourceUsage": {
+      "id": "GoogleDevtoolsRemotebuildbotResourceUsage",
+      "description": "ResourceUsage is the system resource usage of the host machine.",
+      "type": "object",
+      "properties": {
+        "diskUsage": {
+          "$ref": "GoogleDevtoolsRemotebuildbotResourceUsageStat"
+        },
+        "memoryUsage": {
+          "$ref": "GoogleDevtoolsRemotebuildbotResourceUsageStat"
+        },
+        "cpuUsedPercent": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleDevtoolsRemotebuildbotResourceUsageStat": {
+      "id": "GoogleDevtoolsRemotebuildbotResourceUsageStat",
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "used": {
+          "type": "string",
+          "format": "uint64"
         }
       }
     },

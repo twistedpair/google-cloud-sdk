@@ -836,7 +836,7 @@
     },
     "GoogleCloudMlV1__ExplanationConfig": {
       "id": "GoogleCloudMlV1__ExplanationConfig",
-      "description": "Message holding configuration options for explaining model predictions.\nCurrently, the only supported mechanism to explain a model's prediction is\nthrough attributing its output back to its inputs which is essentially a\ncredit assignment task. We support multiple attribution methods, some\nspecific to particular frameworks like Tensorflow and XGBoost.\nNext idx: 7.",
+      "description": "Message holding configuration options for explaining model predictions.\nThere are two feature attribution methods supported for TensorFlow models:\nintegrated gradients and sampled Shapley.\n<a href=\"\/ml-engine\/docs\/ai-explanations\/overview\">Learn more about feature\nattributions<\/a>.",
       "type": "object",
       "properties": {
         "ablationAttribution": {
@@ -1441,7 +1441,7 @@
           "type": "string"
         },
         "defaultVersion": {
-          "description": "Output only. The default version of the model. This version will be used to\nhandle prediction requests that do not specify a version.\n\nYou can change the default version by calling\n[projects.methods.versions.setDefault](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/setDefault).",
+          "description": "Output only. The default version of the model. This version will be used to\nhandle prediction requests that do not specify a version.\n\nYou can change the default version by calling\nprojects.models.versions.setDefault.",
           "$ref": "GoogleCloudMlV1__Version"
         },
         "regions": {
@@ -1475,7 +1475,7 @@
     },
     "GoogleCloudMlV1__Version": {
       "id": "GoogleCloudMlV1__Version",
-      "description": "Represents a version of the model.\n\nEach version is a trained model deployed in the cloud, ready to handle\nprediction requests. A model can have multiple versions. You can get\ninformation about all of the versions of a given model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list).",
+      "description": "Represents a version of the model.\n\nEach version is a trained model deployed in the cloud, ready to handle\nprediction requests. A model can have multiple versions. You can get\ninformation about all of the versions of a given model by calling\nprojects.models.versions.list.",
       "type": "object",
       "properties": {
         "name": {
@@ -1487,11 +1487,11 @@
           "type": "string"
         },
         "isDefault": {
-          "description": "Output only. If true, this version will be used to handle prediction\nrequests that do not specify a version.\n\nYou can change the default version by calling\n[projects.methods.versions.setDefault](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/setDefault).",
+          "description": "Output only. If true, this version will be used to handle prediction\nrequests that do not specify a version.\n\nYou can change the default version by calling\nprojects.methods.versions.setDefault.",
           "type": "boolean"
         },
         "deploymentUri": {
-          "description": "Required. The Cloud Storage location of the trained model used to\ncreate the version. See the\n[guide to model\ndeployment](\/ml-engine\/docs\/tensorflow\/deploying-models) for more\ninformation.\n\nWhen passing Version to\n[projects.models.versions.create](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/create)\nthe model service uses the specified location as the source of the model.\nOnce deployed, the model version is hosted by the prediction service, so\nthis location is useful only as a historical record.\nThe total number of model files can't exceed 1000.",
+          "description": "Required. The Cloud Storage location of the trained model used to\ncreate the version. See the\n[guide to model\ndeployment](\/ml-engine\/docs\/tensorflow\/deploying-models) for more\ninformation.\n\nWhen passing Version to\nprojects.models.versions.create\nthe model service uses the specified location as the source of the model.\nOnce deployed, the model version is hosted by the prediction service, so\nthis location is useful only as a historical record.\nThe total number of model files can't exceed 1000.",
           "type": "string"
         },
         "createTime": {
@@ -1603,7 +1603,7 @@
           "type": "string"
         },
         "requestLoggingConfig": {
-          "description": "Optional. Configures the request-response pair logging on predictions from\nthis Version.",
+          "description": "Optional. *Only* specify this field in a\nprojects.models.versions.patch\nrequest. Specifying it in a\nprojects.models.versions.create\nrequest has no effect.\n\nConfigures the request-response pair logging on predictions from this\nVersion.",
           "$ref": "GoogleCloudMlV1__RequestLoggingConfig"
         },
         "explanationConfig": {
@@ -1830,7 +1830,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a user that has been recently deleted. For\n   example,`alice@example.com?uid=123456789012345678901`. If the user is\n   recovered, this value reverts to `user:{emailid}` and the recovered user\n   retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus\n   unique identifier) representing a service account that has been recently\n   deleted. For example,\n   `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.\n   If the service account is undeleted, this value reverts to\n   `serviceAccount:{emailid}` and the undeleted service account retains the\n   role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a Google group that has been recently\n   deleted. For example, `admins@example.com?uid=123456789012345678901`. If\n   the group is recovered, this value reverts to `group:{emailid}` and the\n   recovered group retains the role in the binding.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a user that has been recently deleted. For\n   example, `alice@example.com?uid=123456789012345678901`. If the user is\n   recovered, this value reverts to `user:{emailid}` and the recovered user\n   retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus\n   unique identifier) representing a service account that has been recently\n   deleted. For example,\n   `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.\n   If the service account is undeleted, this value reverts to\n   `serviceAccount:{emailid}` and the undeleted service account retains the\n   role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a Google group that has been recently\n   deleted. For example, `admins@example.com?uid=123456789012345678901`. If\n   the group is recovered, this value reverts to `group:{emailid}` and the\n   recovered group retains the role in the binding.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
           "type": "array",
           "items": {
             "type": "string"
@@ -2039,7 +2039,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Performs prediction on the data in the request.\nAI Platform implements a custom `predict` verb on top of an HTTP POST\nmethod. <p>For details of the request and response format, see the **guide\nto the [predict request format](\/ml-engine\/docs\/v1\/predict-request)**."
+          "description": "Performs prediction on the data in the request.\nAI Platform implements a custom `predict` verb on top of an HTTP POST\nmethod.\n\nFor details of the request and response format, see the **guide\nto the [predict request format](\/ml-engine\/docs\/v1\/predict-request)**."
         },
         "explain": {
           "id": "ml.projects.explain",
@@ -2067,7 +2067,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Performs explanation on the data in the request.\nAI Platform implements a custom `explain` verb on top of an HTTP POST\nmethod. <p>For details of the request and response format, see the **guide\nto the [explain request format](\/ml-engine\/docs\/v1\/explain-request)**."
+          "description": "Performs explanation on the data in the request.\nAI Platform implements a custom `explain` verb on top of an HTTP POST\nmethod.\n\nFor details of the request and response format, see the **guide\nto the [explain request format](\/ml-engine\/docs\/v1\/explain-request)**."
         },
         "getConfig": {
           "id": "ml.projects.getConfig",
@@ -2532,7 +2532,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates a model which will later contain one or more versions.\n\nYou must add at least one version before you can request predictions from\nthe model. Add versions by calling\n[projects.models.versions.create](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/create)."
+              "description": "Creates a model which will later contain one or more versions.\n\nYou must add at least one version before you can request predictions from\nthe model. Add versions by calling\nprojects.models.versions.create."
             },
             "list": {
               "id": "ml.projects.models.list",
@@ -2623,7 +2623,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes a model.\n\nYou can only delete a model if there are no versions in it. You can delete\nversions by calling\n[projects.models.versions.delete](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/delete)."
+              "description": "Deletes a model.\n\nYou can only delete a model if there are no versions in it. You can delete\nversions by calling\nprojects.models.versions.delete."
             },
             "patch": {
               "id": "ml.projects.models.patch",
@@ -2777,7 +2777,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new version of a model from a trained TensorFlow model.\n\nIf the version created in the cloud by this call is the first deployed\nversion of the specified model, it will be made the default version of the\nmodel. When you add a version to a model that already has one or more\nversions, the default version does not automatically change. If you want a\nnew version to be the default, you must call\n[projects.models.versions.setDefault](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/setDefault)."
+                  "description": "Creates a new version of a model from a trained TensorFlow model.\n\nIf the version created in the cloud by this call is the first deployed\nversion of the specified model, it will be made the default version of the\nmodel. When you add a version to a model that already has one or more\nversions, the default version does not automatically change. If you want a\nnew version to be the default, you must call\nprojects.models.versions.setDefault."
                 },
                 "patch": {
                   "id": "ml.projects.models.versions.patch",
@@ -2793,7 +2793,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Specifies the path, relative to `Version`, of the field to\nupdate. Must be present and non-empty.\n\nFor example, to change the description of a version to \"foo\", the\n`update_mask` parameter would be specified as `description`, and the\n`PATCH` request body would specify the new value, as follows:\n\n```\n{\n  \"description\": \"foo\"\n}\n```\n\nCurrently the only supported update mask fields are `description`,\n`autoScaling.minNodes`, and `manualScaling.nodes`. However, you can only\nupdate `manualScaling.nodes` if the version uses a [Compute Engine (N1)\nmachine type](\/ml-engine\/docs\/machine-types-online-prediction).",
+                      "description": "Required. Specifies the path, relative to `Version`, of the field to\nupdate. Must be present and non-empty.\n\nFor example, to change the description of a version to \"foo\", the\n`update_mask` parameter would be specified as `description`, and the\n`PATCH` request body would specify the new value, as follows:\n\n```\n{\n  \"description\": \"foo\"\n}\n```\n\nCurrently the only supported update mask fields are `description`,\n`requestLoggingConfig`, `autoScaling.minNodes`, and `manualScaling.nodes`.\nHowever, you can only update `manualScaling.nodes` if the version uses a\n[Compute Engine (N1)\nmachine type](\/ml-engine\/docs\/machine-types-online-prediction).",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2811,7 +2811,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the specified Version resource.\n\nCurrently the only update-able fields are `description` and\n`autoScaling.minNodes`."
+                  "description": "Updates the specified Version resource.\n\nCurrently the only update-able fields are `description`,\n`requestLoggingConfig`, `autoScaling.minNodes`, and `manualScaling.nodes`."
                 },
                 "list": {
                   "id": "ml.projects.models.versions.list",
@@ -2877,7 +2877,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets information about a model version.\n\nModels can have multiple versions. You can call\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list)\nto get the same information that this method returns for all of the\nversions of a model."
+                  "description": "Gets information about a model version.\n\nModels can have multiple versions. You can call\nprojects.models.versions.list\nto get the same information that this method returns for all of the\nversions of a model."
                 },
                 "delete": {
                   "id": "ml.projects.models.versions.delete",
@@ -2886,7 +2886,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the version. You can get the names of all the\nversions of a model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list).",
+                      "description": "Required. The name of the version. You can get the names of all the\nversions of a model by calling\nprojects.models.versions.list.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
@@ -2911,7 +2911,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the version to make the default for the model. You\ncan get the names of all the versions of a model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list).",
+                      "description": "Required. The name of the version to make the default for the model. You\ncan get the names of all the versions of a model by calling\nprojects.models.versions.list.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",

@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 
 
-def AddNodeAffinityFlagToParser(parser):
+def AddNodeAffinityFlagToParser(parser, is_update=False):
   """Adds a node affinity flag used for scheduling instances."""
   sole_tenancy_group = parser.add_group('Sole Tenancy.', mutex=True)
   sole_tenancy_group.add_argument(
@@ -49,13 +49,12 @@ def AddNodeAffinityFlagToParser(parser):
       help='The name of the node group to schedule this instance on.')
   sole_tenancy_group.add_argument(
       '--node', help='The name of the node to schedule this instance on.')
-
-
-def AddMinNodeCpusArg(parser):
-  parser.add_argument(
-      '--min-node-cpus',
-      type=int,
-      help="""\
-      Minimum number of virtual CPUs this instance will consume when running on
-      a sole-tenant node.
-      """)
+  if is_update:
+    sole_tenancy_group.add_argument(
+        '--clear-node-affinities',
+        action='store_true',
+        help="""\
+          Removes the node affinities field from the instance. If specified,
+          the instance node settings will be cleared. The instance will not be
+          scheduled onto a sole-tenant node.
+          """)

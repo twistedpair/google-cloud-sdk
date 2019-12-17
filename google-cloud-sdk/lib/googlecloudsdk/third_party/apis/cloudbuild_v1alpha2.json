@@ -901,7 +901,7 @@
                   "type": "string"
                 },
                 "workerPoolId": {
-                  "description": "Required. Immutable. The ID to use for the `WorkerPool`, which will become the final component\nof the resource name.\n\nThis value should be 4-63 characters, and valid characters\nare \/a-z-\/.",
+                  "description": "Required. Immutable. The ID to use for the `WorkerPool`, which will become the final component\nof the resource name.\n\nThis value should be 1-63 characters, and valid characters\nare \/a-z-\/.",
                   "location": "query",
                   "type": "string"
                 }

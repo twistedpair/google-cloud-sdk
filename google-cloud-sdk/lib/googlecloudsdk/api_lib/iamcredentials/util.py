@@ -21,7 +21,9 @@ from __future__ import unicode_literals
 
 import datetime
 
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis_internal
+from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.credentials import http as http_creds
 
@@ -40,15 +42,28 @@ def GenerateAccessToken(service_account_id, scopes):
       allow_account_impersonation=False, force_resource_quota=True)
   iam_client = apis_internal._GetClientInstance(
       'iamcredentials', 'v1', http_client=http_client)
-  response = iam_client.projects_serviceAccounts.GenerateAccessToken(
-      iam_client.MESSAGES_MODULE
-      .IamcredentialsProjectsServiceAccountsGenerateAccessTokenRequest(
-          name=service_account_ref.RelativeName(),
-          generateAccessTokenRequest=iam_client.MESSAGES_MODULE
-          .GenerateAccessTokenRequest(scope=scopes)
-      )
-  )
-  return response
+
+  try:
+    response = iam_client.projects_serviceAccounts.GenerateAccessToken(
+        iam_client.MESSAGES_MODULE
+        .IamcredentialsProjectsServiceAccountsGenerateAccessTokenRequest(
+            name=service_account_ref.RelativeName(),
+            generateAccessTokenRequest=iam_client.MESSAGES_MODULE
+            .GenerateAccessTokenRequest(scope=scopes)
+        )
+    )
+    return response
+  except apitools_exceptions.HttpForbiddenError as e:
+    raise exceptions.HttpException(
+        e,
+        error_format='Error {code} (Forbidden) - failed to impersonate '
+                     '[{service_acc}]. Make sure the account that\'s trying '
+                     'to impersonate it has access to the service account '
+                     'itself and the "roles/iam.serviceAccountTokenCreator" '
+                     'role.'.format(
+                         code=e.status_code, service_acc=service_account_id))
+  except apitools_exceptions.HttpError as e:
+    raise exceptions.HttpException(e)
 
 
 def GenerateIdToken(service_account_id, audience, include_email=False):

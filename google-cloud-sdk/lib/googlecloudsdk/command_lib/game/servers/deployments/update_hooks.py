@@ -97,7 +97,7 @@ def SetUpdateMask(ref, args, request):
   del ref
   update_mask = []
 
-  if args.default_config:
+  if args.IsSpecified('default_config'):
     update_mask.append('defaultGameServerConfig')
   if args.config_overrides_file or args.clear_config_overrides:
     update_mask.append('gameServerConfigOverrides')

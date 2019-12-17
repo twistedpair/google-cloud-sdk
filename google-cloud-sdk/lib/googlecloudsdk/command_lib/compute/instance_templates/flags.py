@@ -78,6 +78,24 @@ def AddMeshModeConfigArgs(parser):
       Used to intercept the incoming traffic to the workload. If not provided, no
       incoming traffic is intercepted.
       """)
+  mesh_group.add_argument(
+      '--mesh-labels',
+      hidden=True,
+      metavar='KEY=VALUE, ...',
+      type=arg_parsers.ArgDict(),
+      help="""\
+      Specifies the mesh-level labels as key-value pairs.
+      """)
+  mesh_group.add_argument(
+      '--mesh-proxy-config',
+      hidden=True,
+      metavar='KEY=VALUE, ...',
+      type=arg_parsers.ArgDict(),
+      help="""\
+      Specifies per-proxy configuration as key-value pairs.
+      See all options at
+      http://cloud/traffic-director/docs/traffic-director-per-proxy-config
+      """)
 
 
 def ValidateMeshModeFlags(args):

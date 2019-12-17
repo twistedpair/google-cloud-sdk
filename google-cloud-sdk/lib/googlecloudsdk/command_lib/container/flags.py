@@ -181,7 +181,7 @@ The default Kubernetes version is available using the following command.
   return parser.add_argument('--cluster-version', help=help, hidden=suppressed)
 
 
-def AddReleaseChannelFlag(parser, is_update=False):
+def AddReleaseChannelFlag(parser, is_update=False, hidden=False):
   """Adds a --release-channel flag to the given parser."""
   short_text = """\
 Release channel a cluster is subscribed to.
@@ -238,7 +238,7 @@ Clusters on 'rapid' cannot be taken off of the release channel.
       metavar='CHANNEL',
       choices=choices,
       help=help_text,
-      hidden=False)
+      hidden=hidden)
 
 
 def AddClusterAutoscalingFlags(parser, update_group=None, hidden=False):
@@ -325,6 +325,23 @@ https://cloud.google.com/compute/docs/disks/local-ssd for more information."""
       hidden=suppressed,
       type=int,
       default=0)
+
+
+def AddBootDiskKmsKeyFlag(parser, suppressed=False, help_text=''):
+  """Adds a --boot-disk-kms-key flag to the given parser."""
+  help_text += """\
+The Customer Managed Encryption Key used to encrypt the boot disk attached
+to each node in the node pool. This should be of the form
+projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME].
+For more information about protecting resources with Cloud KMS Keys please
+see:
+https://cloud.google.com/compute/docs/disks/customer-managed-encryption"""
+  parser.add_argument(
+      '--boot-disk-kms-key',
+      help=help_text,
+      hidden=suppressed,
+      type=str,
+      default='')
 
 
 def AddAcceleratorArgs(parser):
@@ -1633,11 +1650,14 @@ def AddTagOrDigestPositional(parser,
 
 
 def AddImagePositional(parser, verb):
+  image_path_format = '*.gcr.io/PROJECT_ID/IMAGE_PATH[:TAG|@sha256:DIGEST]'
+  if verb == 'list tags for':
+    image_path_format = '*.gcr.io/PROJECT_ID/IMAGE_PATH'
   parser.add_argument(
       'image_name',
       help=('The name of the image to {verb}. The name format should be '
-            '*.gcr.io/PROJECT_ID/IMAGE_PATH[:TAG|@sha256:DIGEST]. '.format(
-                verb=verb)))
+            '{image_format}. '.format(
+                verb=verb, image_format=image_path_format)))
 
 
 def AddNodeLocationsFlag(parser):
@@ -2860,3 +2880,26 @@ Use --no-enable-cost-management to disable this feature.
       action='store_true',
       default=None,
       help=help_text)
+
+
+def AddReservationAffinityFlags(parser, for_node_pool=False):
+  """Adds the argument to handle reservation affinity configurations."""
+  target = 'node pool' if for_node_pool else 'default initial node pool'
+
+  group_text = """\
+Specifies the reservation for the {}.""".format(target)
+  group = parser.add_group(help=group_text)
+
+  affinity_text = """\
+The type of the reservation for the {}.""".format(target)
+  group.add_argument(
+      '--reservation-affinity',
+      choices=['any', 'none', 'specific'],
+      default=None,
+      help=affinity_text)
+  group.add_argument(
+      '--reservation',
+      default=None,
+      help="""
+The name of the reservation, required when `--reservation-affinity=specific`.
+""")

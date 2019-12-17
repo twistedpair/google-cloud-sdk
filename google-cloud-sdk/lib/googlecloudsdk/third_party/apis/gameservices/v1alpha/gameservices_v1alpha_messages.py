@@ -209,7 +209,7 @@ class Binding(_messages.Message):
       that represents a Google group.    For example, `admins@example.com`.  *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
-      example,`alice@example.com?uid=123456789012345678901`. If the user is
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
       retains the role in the binding.  *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
@@ -674,6 +674,7 @@ class GameServerCluster(_messages.Message):
     connectionInfo: Game server cluster connection information. This
       information is used to manage game server clusters.
     createTime: Output only. The creation time.
+    description: Human readable description of the cluster.
     etag: ETag of the resource.
     labels: The labels associated with this game server cluster. Each label is
       a key-value pair.
@@ -712,10 +713,11 @@ class GameServerCluster(_messages.Message):
 
   connectionInfo = _messages.MessageField('GameServerClusterConnectionInfo', 1)
   createTime = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class GameServerClusterConnectionInfo(_messages.Message):
@@ -812,6 +814,7 @@ class GameServerDeployment(_messages.Message):
 
   Fields:
     createTime: Output only. The creation time.
+    description: Human readable description of the game server deployment.
     etag: ETag of the resource.
     labels: The labels associated with this game server deployment. Each label
       is a key-value pair.
@@ -851,12 +854,13 @@ class GameServerDeployment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  etag = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  newGameServerTemplate = _messages.MessageField('GameServerTemplate', 5)
-  stableGameServerTemplate = _messages.MessageField('GameServerTemplate', 6)
-  updateTime = _messages.StringField(7)
+  description = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  newGameServerTemplate = _messages.MessageField('GameServerTemplate', 6)
+  stableGameServerTemplate = _messages.MessageField('GameServerTemplate', 7)
+  updateTime = _messages.StringField(8)
 
 
 class GameServerDeploymentRollout(_messages.Message):
@@ -2336,16 +2340,16 @@ class Realm(_messages.Message):
 
   Fields:
     createTime: Output only. The creation time.
+    description: Human readable description of the realm.
     etag: ETag of the resource.
     labels: The labels associated with this realm. Each label is a key-value
       pair.
     name: The resource name of the realm, using the form:
       `projects/{project_id}/locations/{location}/realms/{realm_id}`. For
       example, `projects/my-project/locations/{location}/realms/my-realm`.
-    timeZone: Time zone where all realm-specific policies are evaluated. The
-      value of this field must be from the IANA time zone database:
-      https://www.iana.org/time-zones. If not specified, UTC is assumed by
-      default.
+    timeZone: Required. Time zone where all realm-specific policies are
+      evaluated. The value of this field must be from the IANA time zone
+      database: https://www.iana.org/time-zones.
     updateTime: Output only. The last-modified time.
   """
 
@@ -2374,11 +2378,12 @@ class Realm(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  etag = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  timeZone = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  description = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  timeZone = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class RealmSelector(_messages.Message):

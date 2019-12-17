@@ -133,7 +133,7 @@ snapshot:
     help: The name of the Google Compute Engine snapshot.
 
 machine_image:
-  name: machine_image
+  name: machine image
   collection: compute.machineImages
   attributes:
   - *project
