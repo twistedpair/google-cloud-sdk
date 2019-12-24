@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,11 @@
 # limitations under the License.
 """Code that's shared between multiple backend-buckets subcommands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute.backend_buckets import flags as backend_buckets_flags
 
 
@@ -33,8 +39,7 @@ def AddUpdatableArgs(cls, parser, operation_type):
 
   parser.add_argument(
       '--enable-cdn',
-      action='store_true',
-      default=None,  # Tri-valued, None => don't change the setting.
+      action=arg_parsers.StoreTrueFalseAction,
       help="""\
       Enable Cloud CDN for the backend bucket. Cloud CDN can cache HTTP
       responses from a backend bucket at the edge of the network, close to

@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,12 +15,16 @@
 
 """Common flags for the consumers subcommand group."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.endpoints import services_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
 
 
-_SERVICES_LIST_COMMAND = ('service-management list --format=disable '
+_SERVICES_LIST_COMMAND = ('endpoints services list --format=disable '
                           '--flatten=serviceName')
 
 

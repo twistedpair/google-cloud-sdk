@@ -24,7 +24,7 @@ class ServiceuserV1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new serviceuser handle."""
     url = url or self.BASE_URL
     super(ServiceuserV1, self).__init__(
@@ -33,7 +33,8 @@ class ServiceuserV1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.projects_services = self.ProjectsServicesService(self)
     self.projects = self.ProjectsService(self)
     self.services = self.ServicesService(self)
@@ -49,7 +50,7 @@ class ServiceuserV1(base_api.BaseApiClient):
           }
 
     def Disable(self, request, global_params=None):
-      """Disable a service so it can no longer be used with a.
+      r"""Disable a service so it can no longer be used with a.
 project. This prevents unintended usage that may cause unexpected billing
 charges or security leaks.
 
@@ -79,7 +80,7 @@ Operation<response: google.protobuf.Empty>
     )
 
     def Enable(self, request, global_params=None):
-      """Enable a service so it can be used with a project.
+      r"""Enable a service so it can be used with a project.
 See [Cloud Auth Guide](https://cloud.google.com/docs/authentication) for
 more information.
 
@@ -109,7 +110,7 @@ Operation<response: google.protobuf.Empty>
     )
 
     def List(self, request, global_params=None):
-      """List enabled services for the specified consumer.
+      r"""List enabled services for the specified consumer.
 
       Args:
         request: (ServiceuserProjectsServicesListRequest) input message
@@ -155,7 +156,7 @@ Operation<response: google.protobuf.Empty>
           }
 
     def Search(self, request, global_params=None):
-      """Search available services.
+      r"""Search available services.
 
 When no filter is specified, returns all accessible services. For
 authenticated users, also returns all services the calling user has

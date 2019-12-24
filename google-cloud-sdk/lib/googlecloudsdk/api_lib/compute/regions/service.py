@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +15,20 @@
 
 """Regions service."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.compute import constants
+
+
+def Get(region, compute_client, project):
+  """Return region resource."""
+  client = compute_client.apitools_client
+  messages = compute_client.messages
+  request = (client.regions, 'Get',
+             messages.ComputeRegionsGetRequest(region=region, project=project))
+  return compute_client.MakeRequests([request])
 
 
 def List(compute_client, project):

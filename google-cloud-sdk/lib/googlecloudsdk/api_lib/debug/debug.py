@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +15,12 @@
 
 """Debug apis layer."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import re
 import threading
-import urllib
 
 from apitools.base.py import exceptions as apitools_exceptions
 
@@ -26,6 +30,9 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import retry
+
+import six
+from six.moves import urllib
 
 # Names for default module and version. In App Engine, the default module and
 # version don't report explicit names to the debugger, so use these strings
@@ -157,7 +164,7 @@ def DebugViewUrl(breakpoint):
       ('dbgee', breakpoint.target_id),
       ('bp', breakpoint.id)
   ]
-  return debug_view_url + urllib.urlencode(data)
+  return debug_view_url + urllib.parse.urlencode(data)
 
 
 def LogQueryV2String(breakpoint, separator=' '):
@@ -207,7 +214,7 @@ def LogViewUrl(breakpoint):
       ('project', breakpoint.project),
       ('advancedFilter', LogQueryV2String(breakpoint, separator='\n') + '\n')
   ]
-  return debug_view_url + urllib.urlencode(data)
+  return debug_view_url + urllib.parse.urlencode(data)
 
 
 class DebugObject(object):
@@ -366,28 +373,27 @@ class Debugger(DebugObject):
     latest_debuggees = _FilterStaleMinorVersions(all_debuggees)
 
     # Find all debuggees specified by ID, plus all debuggees which are the
-    # latest minor version when specified by name. The sets should be
-    # disjoint, but ensure that there are no duplicates, since the list will
-    # tend to be very small and it is cheap to handle that case.
-    debuggees = set(
-        [d for d in all_debuggees if d.target_id == pattern] +
-        [d for d in latest_debuggees if pattern == d.name])
+    # latest minor version when specified by name.
+    debuggees = ([d for d in all_debuggees if d.target_id == pattern] +
+                 [d for d in latest_debuggees if pattern == d.name])
     if not debuggees:
       # Try matching as an RE on name or description. Name and description
       # share common substrings, so filter out duplicates.
       match_re = re.compile(pattern)
-      debuggees = set(
+      debuggees = (
           [d for d in latest_debuggees if match_re.search(d.name)] +
           [d for d in latest_debuggees
            if d.description and match_re.search(d.description)])
 
     if not debuggees:
       raise errors.NoDebuggeeError(pattern, debuggees=all_debuggees)
-    if len(debuggees) > 1:
+
+    debuggee_ids = set(d.target_id for d in debuggees)
+    if len(debuggee_ids) > 1:
       raise errors.MultipleDebuggeesError(pattern, debuggees)
 
     # Just one possible target
-    return list(debuggees)[0]
+    return debuggees[0]
 
   def RegisterDebuggee(self, description, uniquifier, agent_version=None):
     """Register a debuggee with the Cloud Debugger.
@@ -517,7 +523,7 @@ class Debuggee(DebugObject):
 
   def ListBreakpoints(self, location_regexp=None, resource_ids=None,
                       include_all_users=False, include_inactive=False,
-                      restrict_to_type=None):
+                      restrict_to_type=None, full_details=False):
     """Returns all breakpoints matching the given IDs or patterns.
 
     Lists all breakpoints for this debuggee, and returns every breakpoint
@@ -538,6 +544,8 @@ class Debuggee(DebugObject):
         whether or not this flag is set.
       restrict_to_type: An optional breakpoint type (LOGPOINT_TYPE or
         SNAPSHOT_TYPE)
+      full_details: If true, issue a GetBreakpoint request for every result to
+        get full details including the call stack and variable table.
     Returns:
       A list of all matching breakpoints.
     Raises:
@@ -601,7 +609,17 @@ class Debuggee(DebugObject):
               if _BreakpointMatchesIdOrRegexp(bp, [], [p])]:
         raise errors.NoMatchError(self._BreakpointDescription(restrict_to_type),
                                   p.pattern)
-    return self._FilteredDictListWithInfo(result, restrict_to_type)
+    result = self._FilteredDictListWithInfo(result, restrict_to_type)
+    if full_details:
+      def IsCompletedSnapshot(bp):
+        return ((not bp.action or
+                 bp.action == self.BreakpointAction(self.SNAPSHOT_TYPE)) and
+                bp.isFinalState and not (bp.status and bp.status.isError))
+      result = [
+          self.GetBreakpoint(bp.id) if IsCompletedSnapshot(bp) else bp
+          for bp in result
+      ]
+    return result
 
   def CreateSnapshot(self, location, condition=None, expressions=None,
                      user_email=None, labels=None):
@@ -627,7 +645,7 @@ class Debuggee(DebugObject):
           additionalProperties=[
               self._debug_messages.Breakpoint.LabelsValue.AdditionalProperty(
                   key=key, value=value)
-              for key, value in labels.iteritems()])
+              for key, value in six.iteritems(labels)])
     location = self._LocationFromString(location)
     if not expressions:
       expressions = []
@@ -682,7 +700,7 @@ class Debuggee(DebugObject):
           additionalProperties=[
               self._debug_messages.Breakpoint.LabelsValue.AdditionalProperty(
                   key=key, value=value)
-              for key, value in labels.iteritems()])
+              for key, value in six.iteritems(labels)])
     location = self._LocationFromString(location)
     if log_level:
       log_level = (

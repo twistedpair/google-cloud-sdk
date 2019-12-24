@@ -15,7 +15,6 @@
 """Source apis layer."""
 import json
 import os
-import sys
 
 from apitools.base.py import exceptions
 
@@ -49,14 +48,6 @@ def _NormalizeToSourceAPIPath(path):
   """
 
   return path.replace(os.sep, '/')
-
-
-class NoEndpointException(Exception):
-
-  def __str__(self):
-    return (
-        'Source endpoint not initialized. Source.SetApiEndpoint must be '
-        'called before using this module.')
 
 
 class FileTooBigException(Exception):
@@ -132,41 +123,32 @@ def GetHttpErrorMessage(error):
       status, code, message)
 
 
-class Source(object):
-  """Base class for source api wrappers."""
-  _client = None
-  _resource_parser = None
-
-  def _CheckClient(self):
-    if not self._client:
-      raise NoEndpointException()
-
-  @classmethod
-  def SetApiEndpoint(cls):
-    cls._client = apis.GetClientInstance('source', 'v1')
-
-  @classmethod
-  def SetResourceParser(cls, parser):
-    cls._resource_parser = parser
+def GetClientInstance():
+  return apis.GetClientInstance('source', 'v1')
 
 
-class Project(Source):
+def GetMessagesModule(client=None):
+  client = client or GetClientInstance()
+  return client.MESSAGES_MODULE
+
+
+class Project(object):
   """Abstracts source project."""
 
-  def __init__(self, project_id):
-    self._CheckClient()
+  def __init__(self, project_id, client=None, messages=None):
     self._id = project_id
-    self.messages = self._client.MESSAGES_MODULE
+    self.client = client or GetClientInstance()
+    self.messages = messages or GetMessagesModule(client)
+    self._service = self.client.projects_repos
 
   def ListRepos(self):
     """Returns list of repos."""
     request = self.messages.SourceProjectsReposListRequest(projectId=self._id)
     try:
-      return self._client.projects_repos.List(request).repos
+      return self._service.List(request).repos
     except exceptions.HttpError as error:
-      msg = GetHttpErrorMessage(error)
-      unused_type, unused_value, traceback = sys.exc_info()
-      raise base_exceptions.HttpException, msg, traceback
+      core_exceptions.reraise(
+          base_exceptions.HttpException(GetHttpErrorMessage(error)))
 
   def GetRepo(self, repo_name):
     """Finds details on the named repo, if it exists.
@@ -183,7 +165,7 @@ class Project(Source):
     request = self.messages.SourceProjectsReposGetRequest(
         projectId=self._id, repoName=repo_name)
     try:
-      return self._client.projects_repos.Get(request)
+      return self._service.Get(request)
     except exceptions.HttpNotFoundError:
       # If the repo does not exist, we get an HTTP 404
       return None
@@ -203,7 +185,7 @@ class Project(Source):
         projectId=self._id,
         name=repo_name,
         vcs=vcs)
-    return self._client.projects_repos.Create(request)
+    return self._service.Create(request)
 
   def DeleteRepo(self, repo_name):
     """Deletes a repo.
@@ -214,29 +196,32 @@ class Project(Source):
     request = self.messages.SourceProjectsReposDeleteRequest(
         projectId=self._id,
         repoName=repo_name)
-    self._client.projects_repos.Delete(request)
+    self._service.Delete(request)
 
 
-class Repo(Source):
+class Repo(object):
   """Abstracts a source repository.
 
   TODO(b/36055862) Increase coverage of the API.
   """
 
-  def __init__(self, project_id, name=''):
+  def __init__(self, project_id, name='', client=None, messages=None):
     """Initialize to wrap the given repo in a project.
 
     Args:
       project_id: (string) The id of the project.
       name: (string) The name of the repo. If not specified, use the default
         repo for the project.
+      client: (apitools.BaseApiService) The API client to use.
+      messages: (module) The module containing the API messages to use.
     """
-    self._CheckClient()
     if not name:
       name = 'default'
     self._repo_name = name
     self._project_id = project_id
-    self.messages = self._client.MESSAGES_MODULE
+    self.client = client or GetClientInstance()
+    self.messages = messages or GetMessagesModule(client)
+    self._service = self.client.projects_repos_workspaces
 
   def ListWorkspaces(self):
     """Request a list of workspaces.
@@ -248,7 +233,7 @@ class Repo(Source):
         projectId=self._project_id, repoName=self._repo_name,
         view=self.messages.SourceProjectsReposWorkspacesListRequest.
         ViewValueValuesEnum.MINIMAL)
-    response = self._client.projects_repos_workspaces.List(request)
+    response = self._service.List(request)
     for ws in response.workspaces:
       yield Workspace(self._project_id, ws.id.name, repo_name=self._repo_name,
                       state=ws)
@@ -268,7 +253,7 @@ class Repo(Source):
     request = self.messages.SourceProjectsReposWorkspacesGetRequest(
         projectId=self._project_id, repoName=self._repo_name,
         name=workspace_name)
-    ws = self._client.projects_repos_workspaces.Get(request)
+    ws = self._service.Get(request)
     return Workspace(self._project_id, ws.id.name, repo_name=self._repo_name,
                      state=ws)
 
@@ -296,7 +281,7 @@ class Repo(Source):
                 baseline=expected_baseline)))
     return Workspace(
         self._project_id, workspace_name, repo_name=self._repo_name,
-        state=self._client.projects_repos_workspaces.Create(request))
+        state=self._service.Create(request))
 
   def DeleteWorkspace(self, workspace_name, current_snapshot=None):
     """Delete a workspace from the repo.
@@ -311,10 +296,10 @@ class Repo(Source):
     request = self.messages.SourceProjectsReposWorkspacesDeleteRequest(
         projectId=self._project_id, repoName=self._repo_name,
         name=workspace_name, currentSnapshotId=current_snapshot)
-    self._client.projects_repos_workspaces.Delete(request)
+    self._service.Delete(request)
 
 
-class Workspace(Source):
+class Workspace(object):
   """Abstracts a workspace."""
 
   # Maximum amount of data to buffer/maximum file size. Each modification
@@ -323,7 +308,8 @@ class Workspace(Source):
   # is a good threshold.
   SIZE_THRESHOLD = 256 * 2**10
 
-  def __init__(self, project_id, workspace_name, repo_name='', state=None):
+  def __init__(self, project_id, workspace_name, repo_name='', state=None,
+               client=None, messages=None):
     """Initialize from a workspace message.
 
     Args:
@@ -334,15 +320,18 @@ class Workspace(Source):
       state: (messages.Workspace) Server-supplied workspace information.
         Since this argument usually comes from a call to the server, the repo
         will usually be specified by a uid rather than a name.
+      client: (apitools.BaseApiService) The API client to use.
+      messages: (module) The module containing the API messages to use.
     """
-    self._CheckClient()
     self._project_id = project_id
     self._repo_name = repo_name
     self._workspace_name = workspace_name
     self._pending_actions = []
     self._workspace_state = state
     self._post_callback = None
-    self.messages = self._client.MESSAGES_MODULE
+    self.client = client or GetClientInstance()
+    self.messages = messages or GetMessagesModule(client)
+    self._service = self.client.projects_repos_workspaces
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and str(self) == str(other)
@@ -391,7 +380,7 @@ class Workspace(Source):
         modifyWorkspaceRequest=self.messages.ModifyWorkspaceRequest(
             actions=self._pending_actions))
     self._workspace_state = (
-        self._client.projects_repos_workspaces.ModifyWorkspace(request))
+        self._service.ModifyWorkspace(request))
     if self._post_callback:
       self._post_callback(len(self._pending_actions))
     self._pending_actions = []

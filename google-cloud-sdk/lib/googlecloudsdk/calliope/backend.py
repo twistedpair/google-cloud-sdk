@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +19,12 @@ Not to be used by mortals.
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import argparse
+import collections
 import re
 import textwrap
 
@@ -32,9 +38,11 @@ from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.calliope import usage_text
+from googlecloudsdk.calliope.concepts import handlers
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.util import text
+import six
 
 
 class _Notes(object):
@@ -75,7 +83,7 @@ class CommandCommon(object):
     """Create a new CommandCommon.
 
     Args:
-      common_type: base._Command, The actual loaded user written command or
+      common_type: base._Common, The actual loaded user written command or
         group class.
       path: [str], A list of group names that got us down to this command group
         with respect to the CLI itself.  This path should be used for things
@@ -92,6 +100,7 @@ class CommandCommon(object):
       parent_group: CommandGroup, The parent of this command or group. None if
         at the root.
     """
+    self.category = common_type.category
     self._parent_group = parent_group
 
     self.name = path[-1]
@@ -119,7 +128,7 @@ class CommandCommon(object):
         self._common_type._is_unicode_supported = True
       # Propagate down notices from the deprecation decorator.
       if parent_group.Notices():
-        for tag, msg in parent_group.Notices().iteritems():
+        for tag, msg in six.iteritems(parent_group.Notices()):
           self._common_type.AddNotice(tag, msg, preserve_existing=True)
 
     self.detailed_help = getattr(self._common_type, 'detailed_help', {})
@@ -294,7 +303,8 @@ class CommandCommon(object):
         nargs=1,
         metavar='ATTRIBUTES',
         type=arg_parsers.ArgDict(),
-        help=argparse.SUPPRESS)
+        hidden=True,
+        help='THIS TEXT SHOULD BE HIDDEN')
 
     self._AcquireArgs()
 
@@ -397,6 +407,19 @@ class CommandCommon(object):
       # Add parent arguments to the list of all arguments.
       for arg in self._parent_group.ai.arguments:
         self.ai.arguments.append(arg)
+      # Add parent concepts to children, if they aren't represented already
+      if self._parent_group.ai.concept_handler:
+        if not self.ai.concept_handler:
+          self.ai.add_concepts(handlers.RuntimeHandler())
+        # pylint: disable=protected-access
+        for concept_details in self._parent_group.ai.concept_handler._all_concepts:
+          try:
+            self.ai.concept_handler.AddConcept(**concept_details)
+          except handlers.RepeatedConceptName:
+            raise parser_errors.ArgumentException(
+                'repeated concept in {command}: {concept_name}'.format(
+                    command=self.dotted_name,
+                    concept_name=concept_details['name']))
       # Add parent flags to children, if they aren't represented already
       for flag in self._parent_group.GetAllAvailableFlags():
         if flag.is_replicated:
@@ -433,13 +456,13 @@ class CommandCommon(object):
       return flags
     return [f for f in flags if
             (include_global or not f.is_global) and
-            (include_hidden or f.help != argparse.SUPPRESS)]
+            (include_hidden or not f.hidden)]
 
   def GetSpecificFlags(self, include_hidden=True):
     flags = self.ai.flag_args
     if include_hidden:
       return flags
-    return [f for f in flags if f.help != argparse.SUPPRESS]
+    return [f for f in flags if not f.hidden]
 
   def GetExistingAlternativeReleaseTracks(self, value=None):
     """Gets the names for the command in other release tracks.
@@ -460,8 +483,8 @@ class CommandCommon(object):
     if alternates:
       top_element = self._TopCLIElement()
       # Pre-sort by the release track prefix so GA commands always list first.
-      for _, command_path in sorted(alternates.iteritems(),
-                                    key=lambda x: x[0].prefix):
+      for _, command_path in sorted(six.iteritems(alternates),
+                                    key=lambda x: x[0].prefix or ''):
         alternative_cmd = top_element.LoadSubElementByPath(command_path[1:])
         if alternative_cmd and not alternative_cmd.IsHidden():
           existing_alternatives.append(' '.join(command_path))
@@ -541,11 +564,11 @@ class CommandGroup(CommandCommon):
     # pylint: disable=protected-access, This is the same class.
     other_group._groups_to_load.update(
         {name: impl_paths
-         for name, impl_paths in self._groups_to_load.iteritems()
+         for name, impl_paths in six.iteritems(self._groups_to_load)
          if name not in ignore})
     other_group._commands_to_load.update(
         {name: impl_paths
-         for name, impl_paths in self._commands_to_load.iteritems()
+         for name, impl_paths in six.iteritems(self._commands_to_load)
          if name not in ignore})
 
   def SubParser(self):
@@ -688,6 +711,38 @@ class CommandGroup(CommandCommon):
       self._parent_group.RunGroupFilter(context, args)
     self._common_type().Filter(context, args)
 
+  def GetCategoricalUsage(self):
+    return usage_text.GetCategoricalUsage(
+        self, self._GroupSubElementsByCategory())
+
+  def GetUncategorizedUsage(self):
+    return usage_text.GetUncategorizedUsage(self)
+
+  def GetHelpHint(self):
+    return usage_text.GetHelpHint(self)
+
+  def _GroupSubElementsByCategory(self):
+    """Returns dictionary mapping each category to its set of subelements."""
+
+    def _GroupSubElementsOfSameTypeByCategory(elements):
+      """Returns dictionary mapping specific to element type."""
+      categorized_dict = collections.defaultdict(set)
+      for element in elements.values():
+        if element.category:
+          categorized_dict[element.category].add(element)
+        else:
+          categorized_dict[base.UNCATEGORIZED_CATEGORY].add(element)
+      return categorized_dict
+
+    self.LoadAllSubElements()
+    categories = {}
+    categories['command'] = (
+        _GroupSubElementsOfSameTypeByCategory(self.commands))
+    categories['command_group'] = (
+        _GroupSubElementsOfSameTypeByCategory(self.groups))
+
+    return categories
+
 
 class Command(CommandCommon):
   """A class that encapsulates the configuration for a single command."""
@@ -748,11 +803,7 @@ class Command(CommandCommon):
 
     command_instance = self._common_type(cli=cli, context=tool_context)
 
-    log.debug(u'Running [{cmd}] with arguments: [{args}]'.format(
-        cmd=self.dotted_name,
-        args=u', '.join(
-            u'{arg}: "{value}"'.format(arg=arg, value=value)
-            for arg, value in sorted(args.GetSpecifiedArgs().iteritems()))))
+    base.LogCommand(self.dotted_name, args)
     resources = command_instance.Run(args)
     resources = display.Displayer(command_instance, args, resources,
                                   display_info=self.ai.display_info).Display()

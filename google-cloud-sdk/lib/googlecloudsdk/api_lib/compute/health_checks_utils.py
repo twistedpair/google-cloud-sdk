@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +14,13 @@
 # limitations under the License.
 """Code that's shared between multiple health-checks subcommands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import copy
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 
 
 THRESHOLD_UPPER_BOUND = 10
@@ -34,9 +40,9 @@ def AddProtocolAgnosticCreationArgs(parser, protocol_string):
       default='5s',
       help="""\
       How often to perform a health check for an instance. For example,
-      specifying ``10s'' will run the check every 10 seconds. Valid units
-      for this flag are ``s'' for seconds and ``m'' for minutes.
-      The default value is ``5s''.
+      specifying ``10s'' will run the check every 10 seconds. The default
+      value is ``5s''.
+      See $ gcloud topic datetimes for information on duration formats.
        """)
 
   parser.add_argument(
@@ -48,8 +54,8 @@ def AddProtocolAgnosticCreationArgs(parser, protocol_string):
       instance by the time specified by the value of this flag, the health
       check request is considered a failure. For example, specifying ``10s''
       will cause the check to wait for 10 seconds before considering the
-      request a failure.  Valid units for this flag are ``s'' for seconds and
-      ``m'' for minutes.  The default value is ``5s''.
+      request a failure. The default value is ``5s''.
+      See $ gcloud topic datetimes for information on duration formats.
       """)
 
   parser.add_argument(
@@ -86,8 +92,8 @@ def AddProtocolAgnosticUpdateArgs(parser, protocol_string):
       type=arg_parsers.Duration(),
       help="""\
       How often to perform a health check for an instance. For example,
-      specifying ``10s'' will run the check every 10 seconds. Valid units
-      for this flag are ``s'' for seconds and ``m'' for minutes.
+      specifying ``10s'' will run the check every 10 seconds.
+      See $ gcloud topic datetimes for information on duration formats.
       """)
 
   parser.add_argument(
@@ -98,8 +104,8 @@ def AddProtocolAgnosticUpdateArgs(parser, protocol_string):
       instance by the time specified by the value of this flag, the health
       check request is considered a failure. For example, specifying ``10s''
       will cause the check to wait for 10 seconds before considering the
-      request a failure.  Valid units for this flag are ``s'' for seconds and
-      ``m'' for minutes.
+      request a failure.
+      See $ gcloud topic datetimes for information on duration formats.
       """)
 
   parser.add_argument(
@@ -203,21 +209,8 @@ def AddTcpRelatedUpdateArgs(parser):
 def AddUdpRelatedArgs(parser, request_and_response_required=True):
   """Adds parser arguments related to UDP."""
 
-  parser.add_argument(
-      '--port',
-      type=int,
-      help="""\
-      The UDP port number that this health check monitors. The default is not
-      set.
-      """)
-
-  parser.add_argument(
-      '--port-name',
-      help="""\
-      The port name that this health check monitors. By default, this is
-      empty. Setting this to an empty string will clear any existing
-      port-name value.
-      """)
+  _AddPortRelatedCreationArgs(
+      parser, use_serving_port=False, port_type='UDP', default_port=None)
 
   parser.add_argument(
       '--request',
@@ -236,41 +229,66 @@ def AddUdpRelatedArgs(parser, request_and_response_required=True):
       """)
 
 
-def _AddPortRelatedCreationArgs(parser):
+def _AddPortRelatedCreationArgs(parser,
+                                use_serving_port=True,
+                                port_type='TCP',
+                                default_port=80):
   """Adds parser create subcommand arguments --port and --port-name."""
 
-  parser.add_argument(
+  port_group_help = [
+      'These flags configure the port that the health check monitors.'
+  ]
+  if default_port:
+    port_group_help.append(
+        'If none is specified, the default port of 80 is used; if'
+    )
+  else:
+    port_group_help.append('If')
+  port_group_help.append(
+      'both `--port` and `--port-name` are specified, `--port` takes '
+      'precedence.')
+  port_group = parser.add_group(help=' '.join(port_group_help))
+  port_group.add_argument(
       '--port',
       type=int,
-      default=80,
+      default=default_port,
       help="""\
-      The TCP port number that this health check monitors. The default value
-      is 80.
-      """)
+      The {} port number that this health check monitors.
+      """.format(port_type))
 
-  parser.add_argument(
+  port_group.add_argument(
       '--port-name',
       help="""\
       The port name that this health check monitors. By default, this is
       empty.
       """)
 
+  if use_serving_port:
+    _AddUseServingPortFlag(port_group)
+
 
 def _AddPortRelatedUpdateArgs(parser):
   """Adds parser update subcommand arguments --port and --port-name."""
 
-  parser.add_argument(
+  port_group = parser.add_group(help=(
+      'These flags configure the port that the health check monitors. '
+      'If both `--port` and `--port-name` are specified, `--port` takes '
+      'precedence.'))
+
+  port_group.add_argument(
       '--port',
       type=int,
       help='The TCP port number that this health check monitors.')
 
-  parser.add_argument(
+  port_group.add_argument(
       '--port-name',
       help="""\
       The port name that this health check monitors. By default, this is
       empty. Setting this to an empty string will clear any existing
       port-name value.
       """)
+
+  _AddUseServingPortFlag(port_group)
 
 
 def _AddTcpRelatedArgsImpl(add_info_about_clearing, parser):
@@ -338,7 +356,7 @@ def CheckProtocolAgnosticArgs(args):
   if (args.check_interval is not None
       and (args.check_interval < CHECK_INTERVAL_LOWER_BOUND_SEC
            or args.check_interval > CHECK_INTERVAL_UPPER_BOUND_SEC)):
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         '[--check-interval] must not be less than {0} second or greater '
         'than {1} seconds; received [{2}] seconds.'.format(
             CHECK_INTERVAL_LOWER_BOUND_SEC, CHECK_INTERVAL_UPPER_BOUND_SEC,
@@ -347,7 +365,7 @@ def CheckProtocolAgnosticArgs(args):
   if (args.timeout is not None
       and (args.timeout < TIMEOUT_LOWER_BOUND_SEC
            or args.timeout > TIMEOUT_UPPER_BOUND_SEC)):
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         '[--timeout] must not be less than {0} second or greater than {1} '
         'seconds; received: [{2}] seconds.'.format(
             TIMEOUT_LOWER_BOUND_SEC, TIMEOUT_UPPER_BOUND_SEC, args.timeout))
@@ -355,7 +373,7 @@ def CheckProtocolAgnosticArgs(args):
   if (args.healthy_threshold is not None
       and (args.healthy_threshold < THRESHOLD_LOWER_BOUND
            or args.healthy_threshold > THRESHOLD_UPPER_BOUND)):
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         '[--healthy-threshold] must be an integer between {0} and {1}, '
         'inclusive; received: [{2}].'.format(THRESHOLD_LOWER_BOUND,
                                              THRESHOLD_UPPER_BOUND,
@@ -364,8 +382,151 @@ def CheckProtocolAgnosticArgs(args):
   if (args.unhealthy_threshold is not None
       and (args.unhealthy_threshold < THRESHOLD_LOWER_BOUND
            or args.unhealthy_threshold > THRESHOLD_UPPER_BOUND)):
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         '[--unhealthy-threshold] must be an integer between {0} and {1}, '
         'inclusive; received [{2}].'.format(THRESHOLD_LOWER_BOUND,
                                             THRESHOLD_UPPER_BOUND,
                                             args.unhealthy_threshold))
+
+
+def _RaiseBadPortSpecificationError(invalid_flag, port_spec_flag,
+                                    invalid_value):
+  raise calliope_exceptions.InvalidArgumentException(
+      port_spec_flag, '{0} cannot be specified when using: {1}.'.format(
+          invalid_flag, invalid_value))
+
+
+def ValidateAndAddPortSpecificationToHealthCheck(args, x_health_check):
+  """Modifies the health check as needed and adds port spec to the check."""
+  if args.IsSpecified('port_name') and not args.IsSpecified('port'):
+    # When only portName is specified (port is unspecified), we should remove
+    # port so that its default value doesn't cause port to take precedence.
+    x_health_check.port = None
+  enum_class = type(x_health_check).PortSpecificationValueValuesEnum
+  if args.use_serving_port:
+    if args.IsSpecified('port_name'):
+      _RaiseBadPortSpecificationError('--port-name', '--use-serving-port',
+                                      '--use-serving-port')
+    if args.IsSpecified('port'):
+      _RaiseBadPortSpecificationError('--port', '--use-serving-port',
+                                      '--use-serving-port')
+    x_health_check.portSpecification = enum_class.USE_SERVING_PORT
+    x_health_check.port = None
+  else:
+    if args.IsSpecified('port') and args.IsSpecified('port_name'):
+      # Fixed port takes precedence over port name.
+      x_health_check.portSpecification = enum_class.USE_FIXED_PORT
+      x_health_check.portName = None
+    elif args.IsSpecified('port_name'):
+      x_health_check.portSpecification = enum_class.USE_NAMED_PORT
+    else:
+      x_health_check.portSpecification = enum_class.USE_FIXED_PORT
+
+
+def HandlePortRelatedFlagsForUpdate(args, x_health_check):
+  """Calculate port, port_name and port_specification for HC update."""
+  port = x_health_check.port
+  port_name = x_health_check.portName
+  port_specification = x_health_check.portSpecification
+  enum_class = type(x_health_check).PortSpecificationValueValuesEnum
+
+  if args.use_serving_port:
+    if args.IsSpecified('port_name'):
+      _RaiseBadPortSpecificationError('--port-name', '--use-serving-port',
+                                      '--use-serving-port')
+    if args.IsSpecified('port'):
+      _RaiseBadPortSpecificationError('--port', '--use-serving-port',
+                                      '--use-serving-port')
+    port = None
+    port_name = None
+    port_specification = enum_class.USE_SERVING_PORT
+
+  if args.IsSpecified('port'):
+    # Fixed port takes precedence over port name.
+    port = args.port
+    port_name = None
+    port_specification = enum_class.USE_FIXED_PORT
+  elif args.IsSpecified('port_name'):
+    if args.port_name:
+      port = None
+      port_name = args.port_name
+      port_specification = enum_class.USE_NAMED_PORT
+    else:
+      # Empty port_name value is used to clear out the field.
+      port_name = None
+      port_specification = enum_class.USE_FIXED_PORT
+  else:
+    # Inherited values from existing health check should remain.
+    pass
+
+  return port, port_name, port_specification
+
+
+def _AddUseServingPortFlag(parser):
+  """Adds parser argument for using serving port option."""
+  parser.add_argument(
+      '--use-serving-port',
+      action='store_true',
+      help="""\
+      If given, use the "serving port" for health checks:
+
+        - When health checking network endpoints in a Network Endpoint
+          Group, use the port specified with each endpoint.
+        - When health checking other backends, use the port or named port of
+          the backend service.""")
+
+
+def IsRegionalHealthCheckRef(health_check_ref):
+  """Returns True if the health check reference is regional."""
+
+  return health_check_ref.Collection() == 'compute.regionHealthChecks'
+
+
+def IsGlobalHealthCheckRef(health_check_ref):
+  """Returns True if the health check reference is global."""
+
+  return health_check_ref.Collection() == 'compute.healthChecks'
+
+
+def AddHealthCheckLoggingRelatedArgs(parser):
+  """Adds parser arguments for health check log config."""
+
+  # The parser automatically adds support for --no-enable-logging. Argument
+  # value is set to false internally, if --no-enable-logging is specified.
+  parser.add_argument(
+      '--enable-logging',
+      action='store_true',
+      default=None,
+      help="""Enable logging of health check probe results to Stackdriver.
+      Logging is disabled by default.
+
+      Use --no-enable-logging to disable logging.""")
+
+
+def CreateLogConfig(client, args):
+  """Returns a HealthCheckLogconfig message if args are valid."""
+
+  messages = client.messages
+  log_config = None
+  if args.enable_logging is not None:
+    log_config = messages.HealthCheckLogConfig(enable=args.enable_logging)
+  return log_config
+
+
+def ModifyLogConfig(client, args, existing_log_config):
+  """Returns a modified HealthCheckLogconfig message."""
+
+  messages = client.messages
+  log_config = None
+  if not existing_log_config:
+    # If log config has not changed then return early.
+    if args.enable_logging is None:
+      return log_config
+    log_config = messages.HealthCheckLogConfig()
+  else:
+    log_config = copy.deepcopy(existing_log_config)
+
+  if args.enable_logging is not None:
+    log_config.enable = args.enable_logging
+
+  return log_config

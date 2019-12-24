@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 
 """Error Reporting Handler."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 import sys
 import traceback
@@ -99,17 +104,18 @@ def _GetReportingClient(is_crash=True):
   return client_instance
 
 
-def ReportError(err, is_crash):
+def ReportError(is_crash):
   """Report the anonymous crash information to the Error Reporting service.
 
+  This will report the actively handled exception.
   Args:
-    err: Exception, the error that caused the crash.
     is_crash: bool, True if this is a crash, False if it is a user error.
   """
   if properties.VALUES.core.disable_usage_reporting.GetBool():
     return
 
-  stacktrace = traceback.format_exc(err)
+  # traceback prints the exception that is currently being handled
+  stacktrace = traceback.format_exc()
   stacktrace = error_reporting_util.RemovePrivateInformationFromTraceback(
       stacktrace)
   command = properties.VALUES.metrics.command_name.Get()
@@ -133,7 +139,7 @@ def ReportError(err, is_crash):
   except apitools_exceptions.Error as e:
     log.file_only_logger.error(
         'Unable to report crash stacktrace:\n{0}'.format(
-            console_attr.EncodeForConsole(e)))
+            console_attr.SafeText(e)))
 
 
 def HandleGcloudCrash(err):
@@ -142,14 +148,22 @@ def HandleGcloudCrash(err):
   Args:
     err: Exception err.
   """
-  err_string = console_attr.EncodeForConsole(err)
+  err_string = console_attr.SafeText(err)
   log.file_only_logger.exception('BEGIN CRASH STACKTRACE')
   if _IsInstallationCorruption(err):
     _PrintInstallationAction(err, err_string)
   else:
-    log.error(u'gcloud crashed ({0}): {1}'.format(
+    log.error('gcloud crashed ({0}): {1}'.format(
         getattr(err, 'error_name', type(err).__name__), err_string))
-    ReportError(err, is_crash=True)
+    if 'certificate verify failed' in err_string:
+      log.err.Print(
+          '\ngcloud\'s default CA certificates failed to verify your connection'
+          ', which can happen if you are behind a proxy or firewall.')
+      log.err.Print('To use a custom CA certificates file, please run the '
+                    'following command:')
+      log.err.Print(
+          '  gcloud config set core/custom_ca_certs_file /path/to/ca_certs')
+    ReportError(is_crash=True)
     log.err.Print('\nIf you would like to report this issue, please run the '
                   'following command:')
     log.err.Print('  gcloud feedback')

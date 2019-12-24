@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +15,13 @@
 
 """list format resource printer."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.util import encoding
+import six
 
 
 def _HasDefaultRepr(obj):
@@ -41,10 +47,10 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
     super(ListPrinter, self).__init__(*args, by_columns=True, **kwargs)
     self._process_record_orig = self._process_record
     self._process_record = self._ProcessRecord
-    self._separator = u' ' if 'compact' in self.attributes else u'\n   '
+    self._separator = ' ' if 'compact' in self.attributes else '\n   '
     title = self.attributes.get('title', None)
     if title and 'always-display-title' in self.attributes:
-      self._out.write(title + u'\n')
+      self._out.write(title + '\n')
       title = None
     self._title = title
 
@@ -60,7 +66,7 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
     if isinstance(record, (dict, list)) or _HasDefaultRepr(record):
       record = self._process_record_orig(record)
     if isinstance(record, dict):
-      return [u'{0}: {1}'.format(k, v) for k, v in sorted(record.iteritems())
+      return ['{0}: {1}'.format(k, v) for k, v in sorted(six.iteritems(record))
               if v is not None]
     if isinstance(record, list):
       return [i for i in record if i is not None]
@@ -74,6 +80,6 @@ class ListPrinter(resource_printer_base.ResourcePrinter):
       delimit: Prints resource delimiters if True.
     """
     if self._title:
-      self._out.write(self._title + u'\n')
+      self._out.write(self._title + '\n')
       self._title = None
-    self._out.write(u' - ' + self._separator.join(record) + u'\n')
+    self._out.write(' - ' + self._separator.join(record) + '\n')

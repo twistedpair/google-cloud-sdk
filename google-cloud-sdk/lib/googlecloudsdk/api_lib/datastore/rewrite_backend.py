@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +14,15 @@
 # limitations under the License.
 """Backend rewrite tool for Cloud Datastore operations."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import re
 
 from googlecloudsdk.api_lib.datastore import constants
 from googlecloudsdk.core.resource import resource_expr_rewrite
+import six
 
 
 class OperationsRewriteBackend(resource_expr_rewrite.Backend):
@@ -88,7 +94,7 @@ class OperationsRewriteBackend(resource_expr_rewrite.Backend):
     return self._KEY_OPERAND_MAPPING.get(key, {}).get(operand, operand)
 
   def _RewriteKey(self, key):
-    for regex, replacement in self._KEY_MAPPING.iteritems():
+    for regex, replacement in six.iteritems(self._KEY_MAPPING):
       if re.match(regex, key):
         return re.sub(regex, replacement, key)
     return key

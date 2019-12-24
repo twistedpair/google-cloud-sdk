@@ -1,5 +1,5 @@
 #
-# Copyright 2006 Google Inc.
+# Copyright 2006 Google LLC.
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,7 @@ Classes/variables/functions defined here:
 # this source file, please use comments.
 
 
+from __future__ import absolute_import
 
 
 import inspect
@@ -266,7 +267,7 @@ class APIProxyStubMap(object):
       service: string
       stub: stub
     """
-    assert not self.__stub_map.has_key(service), repr(service)
+    assert service not in self.__stub_map, repr(service)
     self.ReplaceStub(service, stub)
 
   def GetStub(self, service):
@@ -320,7 +321,7 @@ class APIProxyStubMap(object):
         rpc.MakeCall(service, call, request, response)
         rpc.Wait()
         rpc.CheckSuccess()
-      except Exception, err:
+      except Exception as err:
         self.__postcall_hooks.Call(service, call, request, response, rpc, err)
         raise
       else:
@@ -329,7 +330,7 @@ class APIProxyStubMap(object):
       self.__precall_hooks.Call(service, call, request, response)
       try:
         returned_response = stub.MakeSyncCall(service, call, request, response)
-      except Exception, err:
+      except Exception as err:
         self.__postcall_hooks.Call(service, call, request, response, None, err)
         raise
       else:
@@ -570,7 +571,7 @@ class UserRPC(object):
     self.wait()
     try:
       self.__rpc.CheckSuccess()
-    except Exception, err:
+    except Exception as err:
       # Call the postcall hooks, but only once.
       if not self.__postcall_hooks_called:
         self.__postcall_hooks_called = True
@@ -667,7 +668,7 @@ class UserRPC(object):
       cls.__local.may_interrupt_wait = True
       try:
         running.__rpc.Wait()
-      except apiproxy_errors.InterruptedError, err:
+      except apiproxy_errors.InterruptedError as err:
         # We don't care what happened, we just want to break out of
         # the Wait().  It's always __internal_callback() anyway.
         # Clear the exception on the RPC that raised it (not

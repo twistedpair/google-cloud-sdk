@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,9 +16,12 @@
 """Data objects to support the yaml command schema."""
 
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from enum import Enum
 
-from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import resource_arg_schema
@@ -30,9 +34,10 @@ RESOURCE_TYPE_FORMAT_KEY = '__resource_type__'
 
 
 class CommandData(object):
+  """A general holder object for yaml command schema."""
 
   def __init__(self, name, data):
-    self.is_hidden = data.get('is_hidden', False)
+    self.hidden = data.get('hidden', False)
     self.release_tracks = [
         base.ReleaseTrack.FromId(i) for i in data.get('release_tracks', [])]
     self.command_type = CommandType.ForName(data.get('command_type', name))
@@ -40,13 +45,17 @@ class CommandData(object):
     self.request = Request(self.command_type, data['request'])
     self.response = Response(data.get('response', {}))
     async_data = data.get('async')
+    iam_data = data.get('iam')
+    update_data = data.get('update')
     if self.command_type == CommandType.WAIT and not async_data:
       raise util.InvalidSchemaError(
           'Wait commands must include an async section.')
-    self.async = Async(async_data) if async_data else None
+    self.async_ = Async(async_data) if async_data else None
+    self.iam = IamData(iam_data) if iam_data else None
     self.arguments = Arguments(data['arguments'])
     self.input = Input(self.command_type, data.get('input', {}))
     self.output = Output(data.get('output', {}))
+    self.update = UpdateData(update_data) if update_data else None
 
 
 class CommandType(Enum):
@@ -61,6 +70,14 @@ class CommandType(Enum):
   DELETE = 'delete'
   CREATE = 'create'
   WAIT = 'get'
+  UPDATE = 'patch'
+  # IAM support currently implemented as subcommands
+  GET_IAM_POLICY = 'getIamPolicy'
+  SET_IAM_POLICY = 'setIamPolicy'
+  # For add/remove-iam-policy-binding commands, the actual API method to modify
+  # the iam support is 'setIamPolicy'.
+  ADD_IAM_POLICY_BINDING = 'setIamPolicy'
+  REMOVE_IAM_POLICY_BINDING = 'setIamPolicy'
   # Generic commands are those that don't extend a specific calliope command
   # base class.
   GENERIC = None
@@ -80,9 +97,12 @@ class CommandType(Enum):
 
 
 class Request(object):
+  """A holder object for api request information specified in yaml command."""
 
   def __init__(self, command_type, data):
     self.collection = data['collection']
+    self.disable_resource_check = data.get('disable_resource_check')
+    self.display_resource_type = data.get('display_resource_type')
     self.api_version = data.get('api_version')
     self.method = data.get('method', command_type.default_method)
     if not self.method:
@@ -90,19 +110,26 @@ class Request(object):
           'request.method was not specified and there is no default for this '
           'command type.')
     self.resource_method_params = data.get('resource_method_params', {})
+    self.parse_resource_into_request = data.get(
+        'parse_resource_into_request', True)
     self.static_fields = data.get('static_fields', {})
     self.modify_request_hooks = [
         util.Hook.FromPath(p) for p in data.get('modify_request_hooks', [])]
     self.create_request_hook = util.Hook.FromData(data, 'create_request_hook')
+    self.modify_method_hook = util.Hook.FromData(data, 'modify_method_hook')
     self.issue_request_hook = util.Hook.FromData(data, 'issue_request_hook')
+    self.use_relative_name = data.get('use_relative_name', True)
 
 
 class Response(object):
+  """A holder object for api response information specified in yaml command."""
 
   def __init__(self, data):
     self.id_field = data.get('id_field')
     self.result_attribute = data.get('result_attribute')
     self.error = ResponseError(data['error']) if 'error' in data else None
+    self.modify_response_hooks = [
+        util.Hook.FromPath(p) for p in data.get('modify_response_hooks', [])]
 
 
 class ResponseError(object):
@@ -114,11 +141,13 @@ class ResponseError(object):
 
 
 class Async(object):
+  """A holder object for api async information specified in yaml command."""
 
   def __init__(self, data):
     self.collection = data['collection']
     self.api_version = data.get('api_version')
     self.method = data.get('method', 'get')
+    self.request_issued_message = data.get('request_issued_message')
     self.response_name_field = data.get('response_name_field', 'name')
     self.extract_resource_result = data.get('extract_resource_result', True)
     resource_get_method = data.get('resource_get_method')
@@ -132,6 +161,21 @@ class Async(object):
     self.result_attribute = data.get('result_attribute')
     self.state = AsyncStateField(data.get('state', {}))
     self.error = AsyncErrorField(data.get('error', {}))
+    self.modify_request_hooks = [
+        util.Hook.FromPath(p) for p in data.get('modify_request_hooks', [])]
+
+
+class IamData(object):
+  """A holder object for IAM related information specified in yaml command."""
+
+  def __init__(self, data):
+    self.message_type_overrides = data.get('message_type_overrides', {})
+    self.set_iam_policy_request_path = data.get('set_iam_policy_request_path')
+    self.enable_condition = data.get('enable_condition', False)
+    self.policy_version = data.get('policy_version', None)
+    self.get_iam_policy_version_path = data.get(
+        'get_iam_policy_version_path',
+        'options.requestedPolicyVersion')
 
 
 class AsyncStateField(object):
@@ -152,12 +196,20 @@ class Arguments(object):
   """Everything about cli arguments are registered in this section."""
 
   def __init__(self, data):
-    self.resource = resource_arg_schema.YAMLResourceArgument.FromData(
+    self.resource = resource_arg_schema.YAMLConceptArgument.FromData(
         data.get('resource'))
     self.additional_arguments_hook = util.Hook.FromData(
         data, 'additional_arguments_hook')
     self.params = [
         Argument.FromData(param_data) for param_data in data.get('params', [])]
+    self.labels = Labels(data.get('labels')) if data.get('labels') else None
+
+
+class Labels(object):
+  """Everything about labels of GCP resources."""
+
+  def __init__(self, data):
+    self.api_field = data['api_field']
 
 
 class Argument(object):
@@ -192,8 +244,6 @@ class Argument(object):
       generated.
   """
 
-  STATIC_ACTIONS = {'store', 'store_true'}
-
   @classmethod
   def FromData(cls, data):
     """Gets the arg definition from the spec data.
@@ -207,8 +257,9 @@ class Argument(object):
     Raises:
       InvalidSchemaError: if the YAML command is malformed.
     """
-    if data.get('params'):
-      return ArgumentGroup.FromData(data)
+    group = data.get('group')
+    if group:
+      return ArgumentGroup.FromData(group)
 
     api_field = data.get('api_field')
     arg_name = data.get('arg_name', api_field)
@@ -216,15 +267,7 @@ class Argument(object):
       raise util.InvalidSchemaError(
           'An argument must have at least one of [api_field, arg_name].')
     is_positional = data.get('is_positional')
-
-    action = data.get('action', None)
-    if action and action not in cls.STATIC_ACTIONS:
-      action = util.Hook.FromPath(action)
-    if not action:
-      deprecation = data.get('deprecated')
-      if deprecation:
-        flag_name = arg_name if is_positional else '--' + arg_name
-        action = actions.DeprecationAction(flag_name, **deprecation)
+    flag_name = arg_name if is_positional else '--' + arg_name
 
     if data.get('default') and data.get('fallback'):
       raise util.InvalidSchemaError(
@@ -235,6 +278,8 @@ class Argument(object):
     except KeyError:
       raise util.InvalidSchemaError('An argument must have help_text.')
 
+    choices = data.get('choices')
+
     return cls(
         api_field,
         arg_name,
@@ -242,23 +287,23 @@ class Argument(object):
         metavar=data.get('metavar'),
         completer=util.Hook.FromData(data, 'completer'),
         is_positional=is_positional,
-        type=util.Hook.FromData(data, 'type'),
-        choices=data.get('choices'),
-        default=data.get('default'),
+        type=util.ParseType(data.get('type')),
+        choices=[util.Choice(d) for d in choices] if choices else None,
+        default=data.get('default', arg_utils.UNSPECIFIED),
         fallback=util.Hook.FromData(data, 'fallback'),
         processor=util.Hook.FromData(data, 'processor'),
         required=data.get('required', False),
         hidden=data.get('hidden', False),
-        action=action,
+        action=util.ParseAction(data.get('action'), flag_name),
         repeated=data.get('repeated'),
     )
 
   # pylint:disable=redefined-builtin, type param needs to match the schema.
   def __init__(self, api_field=None, arg_name=None, help_text=None,
                metavar=None, completer=None, is_positional=None, type=None,
-               choices=None, default=None, fallback=None, processor=None,
-               required=False, hidden=False, action=None, repeated=None,
-               generate=True):
+               choices=None, default=arg_utils.UNSPECIFIED, fallback=None,
+               processor=None, required=False, hidden=False, action=None,
+               repeated=None, generate=True):
     self.api_field = api_field
     self.arg_name = arg_name
     self.help_text = help_text
@@ -305,7 +350,9 @@ class Argument(object):
     if value is None:
       return
     field = arg_utils.GetFieldFromMessage(message, self.api_field)
-    value = arg_utils.ConvertValue(field, value, self)
+    value = arg_utils.ConvertValue(
+        field, value, repeated=self.repeated, processor=self.processor,
+        choices=util.Choice.ToChoiceMap(self.choices))
     arg_utils.SetFieldInMessage(message, self.api_field, value)
 
 
@@ -392,3 +439,13 @@ class Output(object):
 
   def __init__(self, data):
     self.format = data.get('format')
+    self.flatten = data.get('flatten')
+
+
+class UpdateData(object):
+  """A holder object for yaml update command."""
+
+  def __init__(self, data):
+    self.mask_field = data.get('mask_field', None)
+    self.read_modify_update = data.get('read_modify_update', False)
+    self.disable_auto_field_mask = data.get('disable_auto_field_mask', False)

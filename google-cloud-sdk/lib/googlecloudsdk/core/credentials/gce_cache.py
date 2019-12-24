@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,18 +15,47 @@
 
 """Caching logic for checking if we're on GCE."""
 
-import httplib
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import os
 import socket
-from threading import Lock
+import threading
 import time
-import urllib2
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core.credentials import gce_read
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import retry
+
+import six
+from six.moves import http_client
+from six.moves import urllib_error
+
 
 _GCE_CACHE_MAX_AGE = 10*60  # 10 minutes
+
+# Depending on how a firewall/ NAT behaves, we can have different
+# exceptions at different levels in the networking stack when trying to
+# access an address that we can't reach. Capture all these exceptions.
+_POSSIBLE_ERRORS_GCE_METADATA_CONNECTION = (urllib_error.URLError, socket.error,
+                                            http_client.HTTPException)
+
+_DOMAIN_NAME_RESOLVE_ERROR_MSG = 'Name or service not known'
+
+
+def _ShouldRetryMetadataServerConnection(exc_type, exc_value, exc_traceback,
+                                         state):
+  """Decides if we need to retry the metadata server connection."""
+  del exc_type, exc_traceback, state
+  if not isinstance(exc_value, _POSSIBLE_ERRORS_GCE_METADATA_CONNECTION):
+    return False
+  # It means the domain name cannot be resolved, which happens when not on GCE.
+  if (isinstance(exc_value, urllib_error.URLError) and
+      _DOMAIN_NAME_RESOLVE_ERROR_MSG in six.text_type(exc_value)):
+    return False
+  return True
 
 
 class _OnGCECache(object):
@@ -44,7 +74,7 @@ class _OnGCECache(object):
   def __init__(self, connected=None, expiration_time=None):
     self.connected = connected
     self.expiration_time = expiration_time
-    self.file_lock = Lock()
+    self.file_lock = threading.Lock()
 
   def GetOnGCE(self, check_age=True):
     """Check if we are on a GCE machine.
@@ -77,28 +107,35 @@ class _OnGCECache(object):
     if on_gce is not None:
       return on_gce
 
-    on_gce = self._CheckServer()
+    return self.CheckServerRefreshAllCaches()
+
+  def CheckServerRefreshAllCaches(self):
+    on_gce = self._CheckServerWithRetry()
     self._WriteDisk(on_gce)
     self._WriteMemory(on_gce, time.time() + _GCE_CACHE_MAX_AGE)
     return on_gce
 
   def _CheckMemory(self, check_age):
-    if not (check_age and self.expiration_time < time.time()):
+    if not check_age:
       return self.connected
+    if self.expiration_time and self.expiration_time >= time.time():
+      return self.connected
+    return None
 
   def _WriteMemory(self, on_gce, expiration_time):
     self.connected = on_gce
     self.expiration_time = expiration_time
 
   def _CheckDisk(self):
+    """Reads cache from disk."""
     gce_cache_path = config.Paths().GCECachePath()
     with self.file_lock:
       try:
-        with open(gce_cache_path) as gcecache_file:
-          mtime = os.stat(gce_cache_path).st_mtime
-          expiration_time = mtime + _GCE_CACHE_MAX_AGE
-          return gcecache_file.read() == str(True), expiration_time
-      except (OSError, IOError):
+        mtime = os.stat(gce_cache_path).st_mtime
+        expiration_time = mtime + _GCE_CACHE_MAX_AGE
+        gcecache_file_value = files.ReadFileContents(gce_cache_path)
+        return gcecache_file_value == six.text_type(True), expiration_time
+      except (OSError, IOError, files.Error):
         # Failed to read Google Compute Engine credential cache file.
         # This could be due to permission reasons, or because it doesn't yet
         # exist.
@@ -107,12 +144,13 @@ class _OnGCECache(object):
         return None, None
 
   def _WriteDisk(self, on_gce):
+    """Updates cache on disk."""
     gce_cache_path = config.Paths().GCECachePath()
     with self.file_lock:
       try:
-        with files.OpenForWritingPrivate(gce_cache_path) as gcecache_file:
-          gcecache_file.write(str(on_gce))
-      except (OSError, IOError):
+        files.WriteFileContents(
+            gce_cache_path, six.text_type(on_gce), private=True)
+      except (OSError, IOError, files.Error):
         # Failed to write Google Compute Engine credential cache file.
         # This could be due to permission reasons, or because it doesn't yet
         # exist.
@@ -120,17 +158,17 @@ class _OnGCECache(object):
         # one.
         pass
 
-  def _CheckServer(self):
+  def _CheckServerWithRetry(self):
     try:
-      numeric_project_id = gce_read.ReadNoProxy(
-          gce_read.GOOGLE_GCE_METADATA_NUMERIC_PROJECT_URI)
-    except (urllib2.URLError, socket.error, httplib.HTTPException):
-      # Depending on how a firewall/ NAT behaves, we can have different
-      # exceptions at different levels in the networking stack when trying to
-      # access an address that we can't reach. Capture all these exceptions.
+      return self._CheckServer()
+    except _POSSIBLE_ERRORS_GCE_METADATA_CONNECTION:  # pylint: disable=catching-non-exception
       return False
-    else:
-      return numeric_project_id.isdigit()
+
+  @retry.RetryOnException(
+      max_retrials=3, should_retry_if=_ShouldRetryMetadataServerConnection)
+  def _CheckServer(self):
+    return gce_read.ReadNoProxy(
+        gce_read.GOOGLE_GCE_METADATA_NUMERIC_PROJECT_URI).isdigit()
 
 # Since a module is initialized only once, this is effective a singleton
 _SINGLETON_ON_GCE_CACHE = _OnGCECache()
@@ -139,3 +177,8 @@ _SINGLETON_ON_GCE_CACHE = _OnGCECache()
 def GetOnGCE(check_age=True):
   """Helper function to abstract the caching logic of if we're on GCE."""
   return _SINGLETON_ON_GCE_CACHE.GetOnGCE(check_age)
+
+
+def ForceCacheRefresh():
+  """Force rechecking server status and refreshing of all the caches."""
+  return _SINGLETON_ON_GCE_CACHE.CheckServerRefreshAllCaches()

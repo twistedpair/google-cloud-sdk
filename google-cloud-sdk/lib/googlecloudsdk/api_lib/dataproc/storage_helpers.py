@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,17 +19,25 @@ Bulk object uploads and downloads use methods that shell out to gsutil.
 Lightweight metadata / streaming operations use the StorageClient class.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import os
 import sys
-import urlparse
 
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import transfer
 
+from googlecloudsdk.api_lib.dataproc import exceptions as dp_exceptions
+from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+import six.moves.urllib.parse
 
 
 # URI scheme for GCS.
@@ -39,11 +48,42 @@ HTTP_TIMEOUT = 60
 
 # Fix urlparse for storage paths.
 # This allows using urljoin in other files (that import this).
-urlparse.uses_relative.append(STORAGE_SCHEME)
-urlparse.uses_netloc.append(STORAGE_SCHEME)
+six.moves.urllib.parse.uses_relative.append(STORAGE_SCHEME)
+six.moves.urllib.parse.uses_netloc.append(STORAGE_SCHEME)
 
 
-def Upload(files, destination):
+def Upload(files, destination, storage_client=None):
+  # TODO(b/109938541): Remove gsutil implementation after the new
+  # implementation seems stable.
+  use_gsutil = properties.VALUES.storage.use_gsutil.GetBool()
+  if use_gsutil:
+    _UploadGsutil(files, destination)
+  else:
+    _UploadStorageClient(files, destination, storage_client=storage_client)
+
+
+def _UploadStorageClient(files, destination, storage_client=None):
+  """Upload a list of local files to GCS.
+
+  Args:
+    files: The list of local files to upload.
+    destination: A GCS "directory" to copy the files into.
+    storage_client: Storage api client used to copy files to gcs.
+  """
+  client = storage_client or storage_api.StorageClient()
+  for file_to_upload in files:
+    file_name = os.path.basename(file_to_upload)
+    dest_url = os.path.join(destination, file_name)
+    dest_object = storage_util.ObjectReference.FromUrl(dest_url)
+    try:
+      client.CopyFileToGCS(file_to_upload, dest_object)
+    except exceptions.BadFileException:
+      raise dp_exceptions.FileUploadError(
+          "Failed to upload files ['{0}'] to '{1}'.".format(
+              "', '".join(files), destination))
+
+
+def _UploadGsutil(files, destination):
   """Upload a list of local files to GCS.
 
   Args:
@@ -52,11 +92,11 @@ def Upload(files, destination):
   """
   args = files
   args += [destination]
-  exit_code = storage_util.RunGsutilCommand('cp', ' '.join(args))
+  exit_code = storage_util.RunGsutilCommand('cp', args)
   if exit_code != 0:
-    raise exceptions.ToolException(
-        "Failed to upload files {0} to '{1}' using gsutil.".format(
-            files, destination))
+    raise dp_exceptions.FileUploadError(
+        "Failed to upload files ['{0}'] to '{1}' using gsutil.".format(
+            "', '".join(files), destination))
 
 
 def GetObjectRef(path, messages):
@@ -114,7 +154,8 @@ class StorageClient(object):
     Returns:
       The download.
     """
-    download = transfer.Download.FromStream(stream, auto_transfer=False)
+    download = transfer.Download.FromStream(
+        stream, total_size=object_ref.size, auto_transfer=False)
     self._GetObject(object_ref, download=download)
     return download
 
@@ -195,7 +236,7 @@ class StorageObjectSeriesStream(object):
         try:
           object_info = self._GetObject(self._current_object_index)
         except apitools_exceptions.HttpError as error:
-          log.warn('Failed to fetch GCS output:\n%s', error)
+          log.warning('Failed to fetch GCS output:\n%s', error)
           break
         if not object_info:
           # Nothing to read yet.

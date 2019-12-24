@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,14 +17,37 @@
 Paths are typically given as positional params, like
 `gcloud app deploy <path1> <path2>...`.
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import collections
 import os
 
-from googlecloudsdk.api_lib.app import deploy_command_util
-from googlecloudsdk.api_lib.app import util
+from googlecloudsdk.api_lib.app import env
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.core import log
+
+_STANDARD_APP_YAML_URL = (
+    'https://cloud.google.com/appengine/docs/standard/python/config/appref')
+_FLEXIBLE_APP_YAML_URL = (
+    'https://cloud.google.com/'
+    'appengine/docs/flexible/python/configuring-your-app-with-app-yaml')
+
+APP_YAML_INSTRUCTIONS = (
+    'using the directions at {flex} (App Engine Flexible Environment) or {std} '
+    '(App Engine Standard Environment) under the tab for your language.'
+).format(flex=_FLEXIBLE_APP_YAML_URL, std=_STANDARD_APP_YAML_URL)
+
+FINGERPRINTING_WARNING = (
+    'As an alternative, create an app.yaml file yourself ' +
+    APP_YAML_INSTRUCTIONS)
+NO_YAML_ERROR = (
+    'An app.yaml (or appengine-web.xml) file is required to deploy this '
+    'directory as an App Engine application. Create an app.yaml file '
+    + APP_YAML_INSTRUCTIONS)
 
 
 class Service(object):
@@ -119,6 +143,38 @@ def ServiceYamlMatcher(path, stager):
   return None
 
 
+def JarMatcher(jar_path, stager):
+  """Generate a Service from a Java fatjar path.
+
+  This function is a path matcher that returns if and only if:
+  - `jar_path` points to  a jar file .
+
+  The service will be staged according to the stager as a jar runtime,
+  which is defined in staging.py.
+
+  Args:
+    jar_path: str, Unsanitized absolute path pointing to a file of jar type.
+    stager: staging.Stager, stager that will be invoked if there is a runtime
+      and environment match.
+
+  Raises:
+    staging.StagingCommandFailedError, staging command failed.
+
+  Returns:
+    Service, fully populated with entries that respect a staged deployable
+        service, or None if the path does not match the pattern described.
+  """
+  _, ext = os.path.splitext(jar_path)
+  if os.path.exists(jar_path) and ext in ['.jar']:
+    app_dir = os.path.abspath(os.path.join(jar_path, os.pardir))
+    descriptor = jar_path
+    staging_dir = stager.Stage(descriptor, app_dir, 'java-jar', env.STANDARD)
+    yaml_path = os.path.join(staging_dir, 'app.yaml')
+    service_info = yaml_parsing.ServiceYamlInfo.FromFile(yaml_path)
+    return Service(descriptor, app_dir, service_info, staging_dir)
+  return None
+
+
 def AppengineWebMatcher(path, stager):
   """Generate a Service from an appengine-web.xml source path.
 
@@ -148,17 +204,9 @@ def AppengineWebMatcher(path, stager):
   descriptor = os.path.join(app_dir, 'WEB-INF', 'appengine-web.xml')
   if not os.path.isfile(descriptor):
     return None
-  staging_dir = stager.Stage(descriptor, app_dir, 'java-xml',
-                             util.Environment.STANDARD)
+  staging_dir = stager.Stage(descriptor, app_dir, 'java-xml', env.STANDARD)
   if not staging_dir:
-    # If there is no staging defined, we should stop here. This is in order to
-    # support rolling out java staging in beta first, since the staging registry
-    # is already per release track.
-    # TODO(b/62723322): Remove this conditional when launched in GA.
-    log.warning('[%s] looks like an App Engine Standard app, which is '
-                'currently only deployable in beta, using '
-                '`gcloud beta app deploy`. If this is a Flexible app, you may '
-                'continue with automatic app detection.', app_dir)
+    # After GA launch of appengine-web.xml support, this should never occur.
     return None
   yaml_path = os.path.join(staging_dir, 'app.yaml')
   service_info = yaml_parsing.ServiceYamlInfo.FromFile(yaml_path)
@@ -166,33 +214,19 @@ def AppengineWebMatcher(path, stager):
 
 
 def UnidentifiedDirMatcher(path, stager):
-  """Generate a Service from a potential app directory.
-
-  This function is a path matcher that returns if and only if:
-  - `path` points to an `<app-dir>` where the fingerprinter identifies a runtime
-    and the user opts in to writing an `app.yaml` into `<app-dir>.
-
-  If the runtime and environment match an entry in the stager, the service will
-  be staged into a directory.
+  """Points out to the user that they need an app.yaml to deploy.
 
   Args:
     path: str, Unsanitized absolute path, may point to a directory or a file of
         any type. There is no guarantee that it exists.
-    stager: staging.Stager, stager that will be invoked if there is a runtime
-        and environment match.
-
-  Raises:
-    staging.StagingCommandFailedError, staging command failed.
-
+    stager: staging.Stager, stager that will not be invoked.
   Returns:
-    Service, fully populated with entries that respect a potentially
-        staged deployable service, or None if the path does not fulfill the
-        requirements described above.
+    None
   """
+  del stager
   if os.path.isdir(path):
-    log.warning('Automatic app detection is currently in Beta')
-    yaml = deploy_command_util.CreateAppYamlForAppDirectory(path)
-    return ServiceYamlMatcher(yaml, stager)
+    log.error(NO_YAML_ERROR)
+  return None
 
 
 def GetPathMatchers():
@@ -203,9 +237,9 @@ def GetPathMatchers():
     where fn returns a Service or None if no match.
   """
   return [
-      ServiceYamlMatcher,
-      AppengineWebMatcher,
-      UnidentifiedDirMatcher]
+      ServiceYamlMatcher, AppengineWebMatcher, JarMatcher,
+      UnidentifiedDirMatcher
+  ]
 
 
 class Services(object):
@@ -242,12 +276,12 @@ class Services(object):
     self._services[service.service_id] = service
 
   def GetAll(self):
-    """Retreive the service info objects in the order they were added.
+    """Retrieve the service info objects in the order they were added.
 
     Returns:
       List[Service], list of services.
     """
-    return self._services.values()
+    return list(self._services.values())
 
 
 class Configs(object):
@@ -278,7 +312,7 @@ class Configs(object):
     Returns:
       List[ConfigYamlInfo], list of config file objects.
     """
-    return self._configs.values()
+    return list(self._configs.values())
 
 
 def GetDeployables(args, stager, path_matchers):
@@ -319,7 +353,7 @@ def GetDeployables(args, stager, path_matchers):
   """
   if not args:
     args = ['.']
-  paths = map(os.path.abspath, args)
+  paths = [os.path.abspath(arg) for arg in args]
   configs = Configs()
   services = Services()
   for path in paths:
@@ -335,4 +369,3 @@ def GetDeployables(args, stager, path_matchers):
       continue
     raise exceptions.UnknownSourceError(path)
   return services.GetAll(), configs.GetAll()
-

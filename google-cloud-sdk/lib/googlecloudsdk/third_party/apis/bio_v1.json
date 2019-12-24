@@ -43,11 +43,6 @@
       ],
       "location": "query"
     },
-    "bearer_token": {
-      "type": "string",
-      "description": "OAuth bearer token.",
-      "location": "query"
-    },
     "callback": {
       "type": "string",
       "description": "JSONP",
@@ -66,12 +61,6 @@
     "oauth_token": {
       "type": "string",
       "description": "OAuth 2.0 token for the current user.",
-      "location": "query"
-    },
-    "pp": {
-      "type": "boolean",
-      "description": "Pretty-print response.",
-      "default": "true",
       "location": "query"
     },
     "prettyPrint": {
@@ -143,7 +132,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {
@@ -174,7 +163,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
       "type": "object",
       "properties": {
         "code": {
@@ -204,64 +193,6 @@
       "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
       "type": "object",
       "properties": {
-      }
-    },
-    "RunDeepVariantV1alphaRequest": {
-      "id": "RunDeepVariantV1alphaRequest",
-
-      "type": "object",
-      "properties": {
-        "sampleName": {
-          "description": "Required. Sample name.",
-          "type": "string"
-        },
-        "outputPath": {
-          "description": "Required. The Google Cloud Storage path for copying the final output files.\nFor example, 'gs:\/\/<user_bucket>\/<sample_name>'.",
-          "type": "string"
-        },
-        "inputFastq1": {
-          "description": "List of Google Cloud Storage paths of forward strand FASTQ.\nThe pairs of FASTQ files must occur at the same position in both lists.\ne.g.:\n\n  input_fastq1s = ['lane1_1.fastq', 'lane2_1.fastq', 'lane3_1.fastq']\n  input_fastq2s = ['lane1_2.fastq', 'lane2_2.fastq', 'lane3_2.fastq']",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "inputFastq2": {
-          "description": "List of Google Cloud Storage paths of reverse strand FASTQ.\nThe pairs of FASTQ files must occur at the same position in both lists.\ne.g.:\n\n  input_fastq1s = ['lane1_1.fastq', 'lane2_1.fastq', 'lane3_1.fastq']\n  input_fastq2s = ['lane1_2.fastq', 'lane2_2.fastq', 'lane3_2.fastq']",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "options": {
-          "description": "Common pipeline options.",
-          "$ref": "PipelineOptions"
-        }
-      }
-    },
-    "PipelineOptions": {
-      "id": "PipelineOptions",
-      "description": "Common pipeline options.",
-      "type": "object",
-      "properties": {
-        "labels": {
-          "description": "User-settable labels. Applied to the Operation and any associated pipeline\nresources, e.g. GCE VMs (if any).",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "computeZones": {
-          "description": "Google Compute Engine availability zones in which the workflow should start\nworker virtual machines, if any are needed for this particular workflow.\nMust be valid Google Compute Engine zone names, for example \"us-east1-d\".",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "requestId": {
-          "description": "Optional. If non-empty then requests are idempotent in that\nsending a second RunWorkflowRequest with the same project_id and request_id\nwill return the name of the same already-running operation, instead of\nstarting another.\nDo not reuse request_ids. Reusing a (project_id, request_id) for a\ndifferent request will result in an error.\nA common way of filling this value is with a random 64-bit number.",
-          "type": "string"
-        }
       }
     },
     "OperationMetadata": {
@@ -359,7 +290,6 @@
               "path": "v1/{+name}/operations",
               "flatPath": "v1/projects/{projectsId}/operations",
               "httpMethod": "GET",
-              "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id.",
               "parameters": {
                 "name": {
                   "description": "The name of the operation's parent resource.",
@@ -393,14 +323,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
             },
             "get": {
               "id": "bio.projects.operations.get",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/operations/{operationsId}",
               "httpMethod": "GET",
-              "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource.",
@@ -418,14 +348,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
             },
             "cancel": {
               "id": "bio.projects.operations.cancel",
               "path": "v1/{+name}:cancel",
               "flatPath": "v1/projects/{projectsId}/operations/{operationsId}:cancel",
               "httpMethod": "POST",
-              "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource to be cancelled.",
@@ -443,38 +373,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
-            }
-          }
-        },
-        "pipelines": {
-          "methods": {
-            "runDeepVariantV1alpha": {
-              "id": "bio.projects.pipelines.runDeepVariantV1alpha",
-              "path": "v1/projects/{projectId}/pipelines:runDeepVariantV1alpha",
-              "flatPath": "v1/projects/{projectId}/pipelines:runDeepVariantV1alpha",
-              "httpMethod": "POST",
-              "description": "Run a DeepVariant pipeline.",
-              "parameters": {
-                "projectId": {
-                  "description": "Required. The project associated with this DeepVariant pipeline run.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectId"
               ],
-              "request": {
-                "$ref": "RunDeepVariantV1alphaRequest"
-              },
-              "response": {
-                "$ref": "Operation"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
             }
           }
         }

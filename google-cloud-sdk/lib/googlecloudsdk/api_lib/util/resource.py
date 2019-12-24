@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2019 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for cloud resources."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 import re
 
@@ -37,8 +42,16 @@ class CollectionInfo(object):
       docs_url: str, URL to the API reference docs for this API.
   """
 
-  def __init__(self, api_name, api_version, base_url, docs_url, name,
-               path, flat_paths, params):
+  def __init__(self,
+               api_name,
+               api_version,
+               base_url,
+               docs_url,
+               name,
+               path,
+               flat_paths,
+               params,
+               enable_uri_parsing=True):
     self.api_name = api_name
     self.api_version = api_version
     self.base_url = base_url
@@ -47,6 +60,7 @@ class CollectionInfo(object):
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing
 
   @property
   def full_name(self):
@@ -99,9 +113,32 @@ class CollectionInfo(object):
       return self.path
     return self.flat_paths[subcollection]
 
-  def __cmp__(self, other):
-    return cmp((self.api_name, self.api_version, self.name),
-               (other.api_name, other.api_version, other.name))
+  def __eq__(self, other):
+    return (self.api_name == other.api_name and
+            self.api_version == other.api_version and
+            self.name == other.name)
+
+  def __ne__(self, other):
+    return not self == other
+
+  @classmethod
+  def _CmpHelper(cls, x, y):
+    """Just a helper equivalent to the cmp() function in Python 2."""
+    return (x > y) - (x < y)
+
+  def __lt__(self, other):
+    return self._CmpHelper((self.api_name, self.api_version, self.name),
+                           (other.api_name, other.api_version, other.name)) < 0
+
+  def __gt__(self, other):
+    return self._CmpHelper((self.api_name, self.api_version, self.name),
+                           (other.api_name, other.api_version, other.name)) > 0
+
+  def __le__(self, other):
+    return not self.__gt__(other)
+
+  def __ge__(self, other):
+    return not self.__lt__(other)
 
   def __str__(self):
     return self.full_name
@@ -118,43 +155,51 @@ class InvalidEndpointException(exceptions.Error):
 def SplitDefaultEndpointUrl(url):
   """Returns api_name, api_version, resource_path tuple for a default api url.
 
-  Supports four formats:
-  http(s)://www.googleapis.com/api/version/resource-path,
-  http(s)://www-googleapis-staging.sandbox.google.com/api/version/resource-path,
-  http(s)://api.googleapis.com/version/resource-path, and
-  http(s)://someotherdoman/api/version/resource-path.
-
-  If there is an api endpoint override defined that maches the url,
-  that api name will be returned.
+  Supports the following formats:
+  # Google API production/staging endpoints.
+  http(s)://www.googleapis.com/{api}/{version}/{resource-path}
+  http(s)://stagingdomain/{api}/{version}/{resource-path}
+  http(s)://{api}.googleapis.com/{api}/{version}/{resource-path}
+  http(s)://{api}.googleapis.com/apis/{kube-api.name}/{version}/{resource-path}
+  http(s)://{api}.googleapis.com/{version}/{resource-path}
+  http(s)://googledomain/{api}
+  # Non-Google API endpoints.
+  http(s)://someotherdomain/{api}/{version}/{resource-path}
 
   Args:
     url: str, The resource url.
 
   Returns:
-    (str, str, str): The API name, version, resource_path
+    (str, str, str): The API name, version, resource_path.
+    For a malformed URL, the return value for API name is undefined, version is
+    None, and resource path is ''.
+
+  Raises: InvalidEndpointException.
   """
   tokens = _StripUrl(url).split('/')
+  version_index = _GetApiVersionIndex(tokens)
+
   domain = tokens[0]
-  resource_path = ''
-  if ('googleapis' not in domain
-      or domain.startswith('www.') or domain.startswith('www-')):
-    if len(tokens) > 1:
-      api_name = tokens[1]
+  if version_index < 1:
+    return _ExtractApiNameFromDomain(domain), None, ''
+
+  version = tokens[version_index]
+  resource_path = '/'.join(tokens[version_index + 1:])
+
+  if version_index == 1:
+    # domain/{version}/{resource-path}
+    return _ExtractApiNameFromDomain(domain), version, resource_path
+
+  if version_index > 1:
+    if _IsKubernetesApi(_ExtractApiNameFromDomain(domain)):
+      # run-domain/apis/{kube-api.name}/{version}/{resource-path}
+      api_name = _ExtractApiNameFromDomain(domain)
     else:
-      api_name = None
-    if len(tokens) > 2:
-      version = tokens[2]
-    else:
-      version = None
-    resource_path = '/'.join(tokens[3:])
-  else:
-    api_name = tokens[0].split('.')[0]
-    if len(tokens) > 1:
-      version = tokens[1]
-      resource_path = '/'.join(tokens[2:])
-    else:
-      version = None
-  return api_name, version, resource_path
+      # domain/{api}/{version}/{resource-path}
+      api_name = tokens[version_index - 1]
+    return api_name, version, resource_path
+
+  raise InvalidEndpointException(url)
 
 
 def GetParamsFromPath(path):
@@ -186,3 +231,29 @@ def _StripUrl(url):
   if url.startswith('https://') or url.startswith('http://'):
     return url[url.index(':') + 1:].strip('/')
   raise InvalidEndpointException(url)
+
+
+def IsApiVersion(token):
+  """Check if the token parsed from Url is API version."""
+  versions = ('alpha', 'beta', 'v1', 'v2', 'v3', 'v4', 'dogfood', 'head')
+  for api_version in versions:
+    if api_version in token:
+      return True
+  return False
+
+
+def _GetApiVersionIndex(tokens):
+  for idx, token in enumerate(tokens):
+    if IsApiVersion(token):
+      return idx
+  return -1
+
+
+def _IsKubernetesApi(api_name):
+  k8s_api_names = ('run')
+  return api_name in k8s_api_names
+
+
+def _ExtractApiNameFromDomain(domain):
+  # Example: sql.googleapis.com -> sql
+  return domain.split('.')[0]

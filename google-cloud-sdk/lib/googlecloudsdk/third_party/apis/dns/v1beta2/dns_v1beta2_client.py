@@ -8,7 +8,7 @@ class DnsV1beta2(base_api.BaseApiClient):
   """Generated client library for service dns version v1beta2."""
 
   MESSAGES_MODULE = messages
-  BASE_URL = u'https://www.googleapis.com/dns/v1beta2/'
+  BASE_URL = u'https://dns.googleapis.com/dns/v1beta2/'
 
   _PACKAGE = u'dns'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/ndev.clouddns.readonly', u'https://www.googleapis.com/auth/ndev.clouddns.readwrite']
@@ -24,7 +24,7 @@ class DnsV1beta2(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new dns handle."""
     url = url or self.BASE_URL
     super(DnsV1beta2, self).__init__(
@@ -33,11 +33,13 @@ class DnsV1beta2(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.changes = self.ChangesService(self)
     self.dnsKeys = self.DnsKeysService(self)
     self.managedZoneOperations = self.ManagedZoneOperationsService(self)
     self.managedZones = self.ManagedZonesService(self)
+    self.policies = self.PoliciesService(self)
     self.projects = self.ProjectsService(self)
     self.resourceRecordSets = self.ResourceRecordSetsService(self)
 
@@ -52,7 +54,7 @@ class DnsV1beta2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Atomically update the ResourceRecordSet collection.
+      r"""Atomically update the ResourceRecordSet collection.
 
       Args:
         request: (DnsChangesCreateRequest) input message
@@ -78,7 +80,7 @@ class DnsV1beta2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Fetch the representation of an existing Change.
+      r"""Fetch the representation of an existing Change.
 
       Args:
         request: (DnsChangesGetRequest) input message
@@ -104,7 +106,7 @@ class DnsV1beta2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Enumerate Changes to a ResourceRecordSet collection.
+      r"""Enumerate Changes to a ResourceRecordSet collection.
 
       Args:
         request: (DnsChangesListRequest) input message
@@ -140,7 +142,7 @@ class DnsV1beta2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Fetch the representation of an existing DnsKey.
+      r"""Fetch the representation of an existing DnsKey.
 
       Args:
         request: (DnsDnsKeysGetRequest) input message
@@ -166,7 +168,7 @@ class DnsV1beta2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Enumerate DnsKeys to a ResourceRecordSet collection.
+      r"""Enumerate DnsKeys to a ResourceRecordSet collection.
 
       Args:
         request: (DnsDnsKeysListRequest) input message
@@ -202,7 +204,7 @@ class DnsV1beta2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Fetch the representation of an existing Operation.
+      r"""Fetch the representation of an existing Operation.
 
       Args:
         request: (DnsManagedZoneOperationsGetRequest) input message
@@ -228,7 +230,7 @@ class DnsV1beta2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Enumerate Operations for the given ManagedZone.
+      r"""Enumerate Operations for the given ManagedZone.
 
       Args:
         request: (DnsManagedZoneOperationsListRequest) input message
@@ -264,7 +266,7 @@ class DnsV1beta2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Create a new ManagedZone.
+      r"""Create a new ManagedZone.
 
       Args:
         request: (DnsManagedZonesCreateRequest) input message
@@ -290,13 +292,13 @@ class DnsV1beta2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Delete a previously created ManagedZone.
+      r"""Delete a previously created ManagedZone.
 
       Args:
         request: (DnsManagedZonesDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ManagedZonesDeleteResponse) The response message.
+        (DnsManagedZonesDeleteResponse) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -311,12 +313,12 @@ class DnsV1beta2(base_api.BaseApiClient):
         relative_path=u'projects/{project}/managedZones/{managedZone}',
         request_field='',
         request_type_name=u'DnsManagedZonesDeleteRequest',
-        response_type_name=u'ManagedZonesDeleteResponse',
+        response_type_name=u'DnsManagedZonesDeleteResponse',
         supports_download=False,
     )
 
     def Get(self, request, global_params=None):
-      """Fetch the representation of an existing ManagedZone.
+      r"""Fetch the representation of an existing ManagedZone.
 
       Args:
         request: (DnsManagedZonesGetRequest) input message
@@ -342,7 +344,7 @@ class DnsV1beta2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Enumerate ManagedZones that have been created but not yet deleted.
+      r"""Enumerate ManagedZones that have been created but not yet deleted.
 
       Args:
         request: (DnsManagedZonesListRequest) input message
@@ -368,7 +370,7 @@ class DnsV1beta2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Update an existing ManagedZone. This method supports patch semantics.
+      r"""Apply a partial update to an existing ManagedZone.
 
       Args:
         request: (DnsManagedZonesPatchRequest) input message
@@ -394,7 +396,7 @@ class DnsV1beta2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Update an existing ManagedZone.
+      r"""Update an existing ManagedZone.
 
       Args:
         request: (DnsManagedZonesUpdateRequest) input message
@@ -419,6 +421,172 @@ class DnsV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class PoliciesService(base_api.BaseApiService):
+    """Service class for the policies resource."""
+
+    _NAME = u'policies'
+
+    def __init__(self, client):
+      super(DnsV1beta2.PoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a new Policy.
+
+      Args:
+        request: (DnsPoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dns.policies.create',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'clientOperationId'],
+        relative_path=u'projects/{project}/policies',
+        request_field=u'policy',
+        request_type_name=u'DnsPoliciesCreateRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a previously created Policy. Will fail if the policy is still being referenced by a network.
+
+      Args:
+        request: (DnsPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DnsPoliciesDeleteResponse) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'dns.policies.delete',
+        ordered_params=[u'project', u'policy'],
+        path_params=[u'policy', u'project'],
+        query_params=[u'clientOperationId'],
+        relative_path=u'projects/{project}/policies/{policy}',
+        request_field='',
+        request_type_name=u'DnsPoliciesDeleteRequest',
+        response_type_name=u'DnsPoliciesDeleteResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Fetch the representation of an existing Policy.
+
+      Args:
+        request: (DnsPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dns.policies.get',
+        ordered_params=[u'project', u'policy'],
+        path_params=[u'policy', u'project'],
+        query_params=[u'clientOperationId'],
+        relative_path=u'projects/{project}/policies/{policy}',
+        request_field='',
+        request_type_name=u'DnsPoliciesGetRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Enumerate all Policies associated with a project.
+
+      Args:
+        request: (DnsPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PoliciesListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dns.policies.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'maxResults', u'pageToken'],
+        relative_path=u'projects/{project}/policies',
+        request_field='',
+        request_type_name=u'DnsPoliciesListRequest',
+        response_type_name=u'PoliciesListResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Apply a partial update to an existing Policy.
+
+      Args:
+        request: (DnsPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PoliciesPatchResponse) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'dns.policies.patch',
+        ordered_params=[u'project', u'policy'],
+        path_params=[u'policy', u'project'],
+        query_params=[u'clientOperationId'],
+        relative_path=u'projects/{project}/policies/{policy}',
+        request_field=u'policyResource',
+        request_type_name=u'DnsPoliciesPatchRequest',
+        response_type_name=u'PoliciesPatchResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update an existing Policy.
+
+      Args:
+        request: (DnsPoliciesUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PoliciesUpdateResponse) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PUT',
+        method_id=u'dns.policies.update',
+        ordered_params=[u'project', u'policy'],
+        path_params=[u'policy', u'project'],
+        query_params=[u'clientOperationId'],
+        relative_path=u'projects/{project}/policies/{policy}',
+        request_field=u'policyResource',
+        request_type_name=u'DnsPoliciesUpdateRequest',
+        response_type_name=u'PoliciesUpdateResponse',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -430,7 +598,7 @@ class DnsV1beta2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Fetch the representation of an existing Project.
+      r"""Fetch the representation of an existing Project.
 
       Args:
         request: (DnsProjectsGetRequest) input message
@@ -466,7 +634,7 @@ class DnsV1beta2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Enumerate ResourceRecordSets that have been created but not yet deleted.
+      r"""Enumerate ResourceRecordSets that have been created but not yet deleted.
 
       Args:
         request: (DnsResourceRecordSetsListRequest) input message

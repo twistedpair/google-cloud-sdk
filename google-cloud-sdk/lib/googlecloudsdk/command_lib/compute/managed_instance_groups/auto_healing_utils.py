@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,26 +14,43 @@
 # limitations under the License.
 """Functions for dealing with managed instances groups updates."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.compute.health_checks import flags as health_checks_flags
+
+HEALTH_CHECK_ARG = health_checks_flags.HealthCheckArgument(
+    '', '--health-check', required=False)
 
 
-def AddAutohealingArgs(parser, health_check_group):
+def AddAutohealingArgs(autohealing_params_group):
   """Adds autohealing-related commandline arguments to parser."""
-  health_check_group.add_argument(
-      '--http-health-check',
-      help=('Specifies the HTTP health check object used for autohealing '
-            'instances in this group.'))
-  health_check_group.add_argument(
-      '--https-health-check',
-      help=('Specifies the HTTPS health check object used for autohealing '
-            'instances in this group.'))
-  parser.add_argument(
+  autohealing_params_group.add_argument(
       '--initial-delay',
       type=arg_parsers.Duration(),
       help="""\
-      Specifies the length of the period during which the instance is known to
-      be initializing and should not be autohealed even if unhealthy.
-      Valid units for this flag are ``s'' for seconds, ``m'' for minutes and
-      ``h'' for hours. If no unit is specified, seconds is assumed. This value
-      cannot be greater than 1 hour.
+      Specifies the length of time during which the instance is known to be
+      initializing and should not be autohealed even if unhealthy.
+      This value cannot be greater than 1 hour.
+      See $ gcloud topic datetimes for information on duration formats.
       """)
+  health_check_group = autohealing_params_group.add_mutually_exclusive_group()
+  health_check_group.add_argument(
+      '--http-health-check',
+      help=('HTTP health check object used for autohealing instances in this '
+            'group.'),
+      action=actions.DeprecationAction(
+          'http-health-check',
+          warn='HttpHealthCheck is deprecated. Use --health-check instead.'))
+  health_check_group.add_argument(
+      '--https-health-check',
+      help=('HTTPS health check object used for autohealing instances in this '
+            'group.'),
+      action=actions.DeprecationAction(
+          'https-health-check',
+          warn='HttpsHealthCheck is deprecated. Use --health-check instead.'))
+  HEALTH_CHECK_ARG.AddArgument(health_check_group)

@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,11 @@
 # limitations under the License.
 """Manage and stream build logs from Cloud Builds."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import time
 
 from apitools.base.py import exceptions as api_exceptions
@@ -22,6 +28,9 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.credentials import http
+from googlecloudsdk.core.util import encoding
+
+import httplib2
 
 
 class NoLogsBucketException(exceptions.Error):
@@ -50,11 +59,12 @@ class LogTailer(object):
     self.out = out
 
   @classmethod
-  def FromBuild(cls, build):
+  def FromBuild(cls, build, out=log.out):
     """Build a LogTailer from a build resource.
 
     Args:
       build: Build resource, The build whose logs shall be streamed.
+      out: The output stream to write the logs to.
 
     Raises:
       NoLogsBucketException: If the build does not specify a logsBucket.
@@ -86,21 +96,33 @@ class LogTailer(object):
     return cls(
         bucket=log_bucket,
         obj=log_object,
-        out=log.out,
+        out=out,
         url_pattern='https://storage.googleapis.com/{bucket}/{obj}')
 
   def Poll(self, is_last=False):
     """Poll the GCS object and print any new bytes to the console.
 
     Args:
-      is_last: True if this is the last poll operation.
+      is_last: True if this is the final poll operation.
 
     Raises:
       api_exceptions.HttpError: if there is trouble connecting to GCS.
+      api_exceptions.CommunicationError: if there is trouble reaching the server
+          and is_last=True.
     """
-    (res, body) = self.http.request(
-        self.url, method='GET',
-        headers={'Range': 'bytes={0}-'.format(self.cursor)})
+    try:
+      (res, body) = self.http.request(
+          self.url,
+          method='GET',
+          headers={'Range': 'bytes={0}-'.format(self.cursor)})
+    except httplib2.HttpLib2Error as e:
+      # Sometimes this request fails due to read timeouts (b/121307719). When
+      # this happens we should just proceed and rely on the next poll to pick
+      # up any missed logs. If this is the last request, there won't be another
+      # request, and we can just fail.
+      if is_last:
+        raise api_exceptions.CommunicationError('Failed to connect: %s' % e)
+      return
 
     if res.status == 404:  # Not Found
       # Logfile hasn't been written yet (ie, build hasn't started).
@@ -122,7 +144,9 @@ class LogTailer(object):
       if self.cursor == 0:
         self._PrintFirstLine()
       self.cursor += len(body)
+      body = encoding.Decode(body)
       self._PrintLogLine(body.rstrip('\n'))
+
       if is_last:
         self._PrintLastLine()
       return
@@ -165,8 +189,8 @@ class CloudBuildClient(object):
   """Client for interacting with the Cloud Build API (and Cloud Build logs)."""
 
   def __init__(self, client=None, messages=None):
-    self.client = client or cloudbuild_util.GetClient()
-    self.messages = messages or cloudbuild_util.GetMessages()
+    self.client = client or cloudbuild_util.GetClientInstance()
+    self.messages = messages or cloudbuild_util.GetMessagesModule()
 
   def GetBuild(self, build_ref):
     """Get a Build message.
@@ -182,11 +206,12 @@ class CloudBuildClient(object):
             projectId=build_ref.projectId,
             id=build_ref.id))
 
-  def Stream(self, build_ref):
+  def Stream(self, build_ref, out=log.out):
     """Stream the logs for a build.
 
     Args:
       build_ref: Build reference, The build whose logs shall be streamed.
+      out: The output stream to write the logs to.
 
     Raises:
       NoLogsBucketException: If the build does not specify a logsBucket.
@@ -196,7 +221,7 @@ class CloudBuildClient(object):
       poll.
     """
     build = self.GetBuild(build_ref)
-    log_tailer = LogTailer.FromBuild(build)
+    log_tailer = LogTailer.FromBuild(build, out=out)
 
     statuses = self.messages.Build.StatusValueValuesEnum
     working_statuses = [
@@ -211,7 +236,7 @@ class CloudBuildClient(object):
 
     # Poll the logs one final time to ensure we have everything. We know this
     # final poll will get the full log contents because GCS is strongly
-    # consistent and Container Builder waits for logs to finish pushing before
+    # consistent and Cloud Build waits for logs to finish pushing before
     # marking the build complete.
     log_tailer.Poll(is_last=True)
 

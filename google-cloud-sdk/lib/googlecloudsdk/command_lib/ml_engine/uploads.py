@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,12 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Common ML file upload logic."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import hashlib
 import os
 
 from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import files as file_utils
+import six
+from six.moves import zip
 
 
 # For ease of mocking in tests without messing up core Python functionality
@@ -54,8 +63,6 @@ def UploadFiles(upload_pairs, bucket_ref, gs_prefix=None):
       same order they were provided.
   """
 
-  storage_client = storage_api.StorageClient()
-  dests = []
   checksum = file_utils.Checksum(algorithm=hashlib.sha256)
   for local_path, _ in upload_pairs:
     checksum.AddFileContents(local_path)
@@ -68,10 +75,9 @@ def UploadFiles(upload_pairs, bucket_ref, gs_prefix=None):
   storage_client = storage_api.StorageClient()
   dests = []
   for local_path, uploaded_path in upload_pairs:
-    obj = storage_client.CopyFileToGCS(
-        bucket_ref,
-        local_path,
-        '/'.join([gs_prefix, uploaded_path]))
+    obj_ref = storage_util.ObjectReference.FromBucketRef(
+        bucket_ref, '/'.join([gs_prefix, uploaded_path]))
+    obj = storage_client.CopyFileToGCS(local_path, obj_ref)
     dests.append('/'.join(['gs:/', obj.bucket, obj.name]))
   return dests
 
@@ -94,7 +100,7 @@ def _GetFilesRelative(root):
     list of str, the paths in the given directory.
   """
   paths = []
-  for dirpath, _, filenames in os.walk(root):
+  for dirpath, _, filenames in os.walk(six.text_type(root)):
     for filename in filenames:
       abs_path = os.path.join(dirpath, filename)
       paths.append(os.path.relpath(abs_path, start=root))
@@ -143,7 +149,7 @@ def UploadDirectoryIfNecessary(path, staging_bucket=None, gs_prefix=None):
   # We put `path` back in, so that UploadFiles can actually find them.
   full_files = [_PATH_SEP.join([path, f]) for f in files]
 
-  uploaded_paths = UploadFiles(zip(full_files, dests),
+  uploaded_paths = UploadFiles(list(zip(full_files, dests)),
                                staging_bucket,
                                gs_prefix=gs_prefix)
 

@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,19 +31,22 @@ class Collections(enum.Enum):
           '':
               'operations/{+operationId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS = (
       'projects',
       'projects/{projectId}',
       {},
-      ['projectId']
+      [u'projectId'],
+      True
   )
   PROJECTS_ZONES = (
       'projects.zones',
       'projects/{projectId}/zones/{zoneId}',
       {},
-      ['projectId', 'zoneId']
+      [u'projectId', u'zoneId'],
+      True
   )
   PROJECTS_ZONES_CLUSTERS = (
       'projects.zones.clusters',
@@ -51,11 +55,14 @@ class Collections(enum.Enum):
           '':
               'projects/{projectId}/zones/{zoneId}/clusters/{clusterId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

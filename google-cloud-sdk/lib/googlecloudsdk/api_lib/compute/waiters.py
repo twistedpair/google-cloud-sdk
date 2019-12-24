@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2019 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,9 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for waiting on Compute Engine operations."""
-import httplib
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+from apitools.base.py import exceptions as apitools_exceptions
+
 from googlecloudsdk.api_lib.compute import batch_helper
 from googlecloudsdk.api_lib.compute import path_simplifier
+from googlecloudsdk.api_lib.util import exceptions as http_exceptions
 from googlecloudsdk.command_lib.util import time_util
 from googlecloudsdk.core import log
 
@@ -31,18 +39,42 @@ _MAX_TIME_BETWEEN_POLLS_SEC = 5
 # In our status reporting, we use the following
 # mapping. Anything not in the map is reported as "Updated".
 _HUMAN_FRIENDLY_OPERATION_TYPE_SUFFIXES = {
-    'createSnapshot': {'past': 'created', 'present': 'create'},
+    'createSnapshot': {
+        'past': 'created',
+        'present': 'create'
+    },
     'recreateInstancesInstanceGroupManager': {
-        'past': 'recreated', 'present': 'recreate'},
-    'insert': {'past': 'created', 'present': 'create'},
-    'delete': {'past': 'deleted', 'present': 'delete'},
-    'update': {'past': 'updated', 'present': 'update'},
+        'past': 'recreated',
+        'present': 'recreate'
+    },
+    'createFirewallSecurityPolicy': {
+        'past': 'created',
+        'present': 'create'
+    },
+    'deleteFirewallSecurityPolicy': {
+        'past': 'deleted',
+        'present': 'delete'
+    },
+    'insert': {
+        'past': 'created',
+        'present': 'create'
+    },
+    'delete': {
+        'past': 'deleted',
+        'present': 'delete'
+    },
+    'update': {
+        'past': 'updated',
+        'present': 'update'
+    },
     'invalidateCache': {
         'past': 'completed invalidation for',
-        'present': 'complete invalidation for'}}
+        'present': 'complete invalidation for'
+    }
+}
 
 
-def _HumanFrieldlyNamesForOp(op_type):
+def _HumanFriendlyNamesForOp(op_type):
   for s in _HUMAN_FRIENDLY_OPERATION_TYPE_SUFFIXES:
     if op_type.endswith(s):
       return _HUMAN_FRIENDLY_OPERATION_TYPE_SUFFIXES.get(s)
@@ -50,16 +82,16 @@ def _HumanFrieldlyNamesForOp(op_type):
   return {'past': 'updated', 'present': 'update'}
 
 
-def _HumanFrieldlyNameForOpPastTense(op_type):
-  return _HumanFrieldlyNamesForOp(op_type)['past']
+def _HumanFriendlyNameForOpPastTense(op_type):
+  return _HumanFriendlyNamesForOp(op_type)['past']
 
 
-def _HumanFrieldlyNameForOpPresentTense(op_type):
-  return _HumanFrieldlyNamesForOp(op_type)['present']
+def _HumanFriendlyNameForOpPresentTense(op_type):
+  return _HumanFriendlyNamesForOp(op_type)['present']
 
 
 def _IsDeleteOp(op_type):
-  return _HumanFrieldlyNameForOpPastTense(op_type) == 'deleted'
+  return _HumanFriendlyNameForOpPastTense(op_type) == 'deleted'
 
 
 def _RecordProblems(operation, warnings, errors):
@@ -81,7 +113,7 @@ def _RecordUnfinishedOperations(operations, errors):
               'and describe commands or '
               'https://console.developers.google.com/ to '
               'check resource state').format(
-                  action=_HumanFrieldlyNameForOpPresentTense(
+                  action=_HumanFriendlyNameForOpPresentTense(
                       operations[0].operationType),
                   timeout=_POLLING_TIMEOUT_SEC,
                   links=', '.join(pending_resources))))
@@ -90,35 +122,200 @@ def _RecordUnfinishedOperations(operations, errors):
 class OperationData(object):
   """Holds all information necessary to poll given operation.
 
-  Fields:
+  Attributes:
     operation: An Operation object to poll.
-    project: str, The project to which the resource belong.
     operation_service: The service that can be used to get operation
       object.
     resource_service: The service of the collection being mutated by
       the operation. If the operation type is not delete, this service
       is used to fetch the mutated object after the operation is done.
+    project: str, The project to which the resource belong.
+    followup_override: str, Overrides the target resource name when
+      it is different from the resource name which is used to poll.
+    errors: An output parameter for capturing errors.
+    warnings: An output parameter for capturing warnings.
   """
 
-  def __init__(self, operation, project, operation_service, resource_service):
+  def __init__(self,
+               operation,
+               operation_service,
+               resource_service,
+               project=None,
+               followup_override=None):
     self.operation = operation
-    self.project = project
     self.operation_service = operation_service
     self.resource_service = resource_service
+    self.project = project
+    self.followup_override = followup_override
+
+    self.errors = []
+    self.warnings = []
 
   def __eq__(self, o):
     if not isinstance(o, OperationData):
       return False
     return (self.operation == o.operation and self.project == o.project and
             self.operation_service == o.operation_service and
-            self.resource_service == o.resource_service)
+            self.resource_service == o.resource_service and
+            self.followup_override == o.followup_override)
 
   def __hash__(self):
-    return (hash(self.operation) ^ hash(self.project) ^
-            hash(self.operation_service) ^ hash(self.resource_service))
+    return (hash(self.operation.selfLink) ^ hash(self.project)
+            ^ hash(self.operation_service) ^ hash(self.resource_service)
+            ^ hash(self.followup_override))
 
   def __ne__(self, o):
     return not self == o
+
+  def SetOperation(self, operation):
+    """"Updates the operation.
+
+    Args:
+      operation: Operation to be assigned.
+    """
+    self.operation = operation
+
+  def IsDone(self):
+    """Returns true if the operation is done."""
+    operation_type = self.operation_service.GetResponseType('Get')
+    done = operation_type.StatusValueValuesEnum.DONE
+    return self.operation.status == done
+
+  def _SupportOperationWait(self):
+    return 'Wait' in self.operation_service.GetMethodsList()
+
+  def ResourceGetRequest(self):
+    """"Generates apitools request message to get the resource."""
+
+    target_link = self.operation.targetLink
+
+    if self.project:
+      request = self.resource_service.GetRequestType('Get')(
+          project=self.project)
+    else:
+      # Gets the flexible resource ID.
+      if target_link is None:
+        log.status.write('{0}.\n'.format(
+            _HumanFriendlyNameForOpPastTense(
+                self.operation.operationType).capitalize()))
+        return
+      token_list = target_link.split('/')
+      flexible_resource_id = token_list[-1]
+      request = self.resource_service.GetRequestType('Get')(
+          securityPolicy=flexible_resource_id)
+    if self.operation.zone:
+      request.zone = path_simplifier.Name(self.operation.zone)
+    elif self.operation.region:
+      request.region = path_simplifier.Name(self.operation.region)
+    name_field = self.resource_service.GetMethodConfig('Get').ordered_params[-1]
+
+    resource_name = self.followup_override or path_simplifier.Name(
+        self.operation.targetLink)
+
+    setattr(request, name_field, resource_name)
+    return request
+
+  def _OperationRequest(self, verb):
+    """Generates apitools request message to poll the operation."""
+
+    if self.project:
+      request = self.operation_service.GetRequestType(verb)(
+          operation=self.operation.name, project=self.project)
+    else:
+      # Fetches the parent ID from the operation name.
+      token_list = self.operation.name.split('-')
+      parent_id = 'organizations/' + token_list[1]
+      request = self.operation_service.GetRequestType(verb)(
+          operation=self.operation.name, parentId=parent_id)
+    if self.operation.zone:
+      request.zone = path_simplifier.Name(self.operation.zone)
+    elif self.operation.region:
+      request.region = path_simplifier.Name(self.operation.region)
+    return request
+
+  def OperationGetRequest(self):
+    """Generates apitools request message for operations.get method."""
+    return self._OperationRequest('Get')
+
+  def OperationWaitRequest(self):
+    """Generates apitools request message for operations.wait method."""
+    return self._OperationRequest('Wait')
+
+  def _CallService(self, method, request):
+    try:
+      return method(request)
+    except apitools_exceptions.HttpError as e:
+      http_err = http_exceptions.HttpException(e)
+      self.errors.append((http_err.error.status_code, http_err.message))
+      _RecordProblems(self.operation, self.warnings, self.errors)
+      raise
+
+  def _PollUntilDoneUsingOperationGet(self, timeout_sec=_POLLING_TIMEOUT_SEC):
+    """Polls the operation with operation Get method."""
+    get_request = self.OperationGetRequest()
+    start = time_util.CurrentTimeSec()
+    poll_time_interval = 0
+    max_poll_interval = 5  # 5 seconds
+
+    while True:
+      if time_util.CurrentTimeSec() - start > timeout_sec:
+        self.errors.append(
+            (None, 'operation {} timed out'.format(self.operation.name)))
+        _RecordProblems(self.operation, self.warnings, self.errors)
+        return
+
+      try:
+        self.operation = self._CallService(self.operation_service.Get,
+                                           get_request)
+      except apitools_exceptions.HttpError:
+        return
+
+      if self.IsDone():
+        _RecordProblems(self.operation, self.warnings, self.errors)
+        return
+      poll_time_interval = min(poll_time_interval + 1, max_poll_interval)
+      time_util.Sleep(poll_time_interval)
+
+  def _PollUntilDoneUsingOperationWait(self, timeout_sec=_POLLING_TIMEOUT_SEC):
+    """Polls the operation with operation method."""
+    wait_request = self.OperationWaitRequest()
+    start = time_util.CurrentTimeSec()
+
+    while not self.IsDone():
+      if time_util.CurrentTimeSec() - start > timeout_sec:
+        self.errors.append(
+            (None, 'operation {} timed out'.format(self.operation.name)))
+        _RecordProblems(self.operation, self.warnings, self.errors)
+        return
+      try:
+        self.operation = self._CallService(self.operation_service.Wait,
+                                           wait_request)
+      except apitools_exceptions.HttpError:
+        return
+
+    _RecordProblems(self.operation, self.warnings, self.errors)
+
+  def PollUntilDone(self, timeout_sec=_POLLING_TIMEOUT_SEC):
+    """Polls the operation until it is done."""
+    if self.IsDone():
+      return
+
+    if self._SupportOperationWait():
+      self._PollUntilDoneUsingOperationWait(timeout_sec)
+    else:
+      self._PollUntilDoneUsingOperationGet(timeout_sec)
+
+  def GetResult(self, timeout_sec=_POLLING_TIMEOUT_SEC):
+    """Get the resource which is touched by the operation."""
+    self.PollUntilDone(timeout_sec)
+    if not self.operation.error and not _IsDeleteOp(
+        self.operation.operationType):
+      resource_get_request = self.ResourceGetRequest()
+      try:
+        return self._CallService(self.resource_service.Get,
+                                 resource_get_request)
+      except apitools_exceptions.HttpError:
+        pass
 
 
 def WaitForOperations(
@@ -142,45 +339,49 @@ def WaitForOperations(
     the operation type is not delete. Only resources whose
     corresponding operations reach done are yielded.
   """
+  if not operations_data:
+    return
   timeout = timeout or _POLLING_TIMEOUT_SEC
 
   # Operation -> OperationData mapping will be used to reify operation_service
   # and resource_service from operation_service.Get(operation) response.
   # It is necessary because poll operation is returning only response, but we
   # also need to get operation details to know the service to poll for all
-  # unfinished_operations.
+  # unprocessed_operations.
   operation_details = {}
-  unfinished_operations = []
+  unprocessed_operations = []
   for operation in operations_data:
     operation_details[operation.operation.selfLink] = operation
-    unfinished_operations.append(operation.operation)
+    unprocessed_operations.append(operation.operation)
 
-  responses = []
   start = time_util.CurrentTimeSec()
   sleep_sec = 0
+  # There is only one type of operation in compute API.
+  # We pick the type of the first operation in the list.
+  operation_type = operations_data[0].operation_service.GetResponseType('Get')
 
-  while unfinished_operations:
+  while unprocessed_operations:
     if progress_tracker:
       progress_tracker.Tick()
     resource_requests = []
     operation_requests = []
 
-    log.debug('Operations to inspect: %s', unfinished_operations)
-    for operation in unfinished_operations:
+    log.debug('Operations to inspect: %s', unprocessed_operations)
+    for operation in unprocessed_operations:
       # Reify operation
       data = operation_details[operation.selfLink]
-      project = data.project
+      # Need to update the operation since old operation may not have all the
+      # required information.
+      data.SetOperation(operation)
+
       operation_service = data.operation_service
       resource_service = data.resource_service
-
-      operation_type = operation_service.GetResponseType('Get')
 
       if operation.status == operation_type.StatusValueValuesEnum.DONE:
         # The operation has reached the DONE state, so we record any
         # problems it contains (if any) and proceed to get the target
         # resource if there were no problems and the operation is not
         # a deletion.
-
         _RecordProblems(operation, warnings, errors)
 
         # We shouldn't attempt to get the target resource if there was
@@ -188,7 +389,7 @@ def WaitForOperations(
         # httpErrorStatusCode is set only when the operation is not
         # successful.
         if (operation.httpErrorStatusCode and
-            operation.httpErrorStatusCode != httplib.OK):
+            operation.httpErrorStatusCode != 200):  # httplib.OK
           continue
 
         # Just in case the server did not set httpErrorStatusCode but
@@ -196,37 +397,24 @@ def WaitForOperations(
         if operation.error:
           continue
 
-        target_link = operation.targetLink
-
         # We shouldn't get the target resource if the operation type
         # is delete because there will be no resource left.
         if not _IsDeleteOp(operation.operationType):
-          request = resource_service.GetRequestType('Get')(project=project)
-          if operation.zone:
-            request.zone = path_simplifier.Name(operation.zone)
-          elif operation.region:
-            request.region = path_simplifier.Name(operation.region)
-          name_field = resource_service.GetMethodConfig(
-              'Get').ordered_params[-1]
-          setattr(request, name_field,
-                  path_simplifier.Name(operation.targetLink))
-          resource_requests.append((resource_service, 'Get', request))
+          request = data.ResourceGetRequest()
+          # Some operations do not have target and should not send get request.
+          if request:
+            resource_requests.append((resource_service, 'Get', request))
 
-        log.status.write('{0} [{1}].\n'.format(
-            _HumanFrieldlyNameForOpPastTense(
-                operation.operationType).capitalize(),
-            target_link))
+        # Only log when there is target link in the operation.
+        if operation.targetLink:
+          log.status.write('{0} [{1}].\n'.format(
+              _HumanFriendlyNameForOpPastTense(
+                  operation.operationType).capitalize(), operation.targetLink))
 
       else:
         # The operation has not reached the DONE state, so we add a
         # get request to poll the operation.
-        request = operation_service.GetRequestType('Get')(
-            operation=operation.name,
-            project=project)
-        if operation.zone:
-          request.zone = path_simplifier.Name(operation.zone)
-        elif operation.region:
-          request.region = path_simplifier.Name(operation.region)
+        request = data.OperationGetRequest()
         operation_requests.append((operation_service, 'Get', request))
 
     requests = resource_requests + operation_requests
@@ -237,29 +425,36 @@ def WaitForOperations(
         requests=requests,
         http=http,
         batch_url=batch_url)
+
     errors.extend(request_errors)
 
-    unfinished_operations = []
+    all_done = True
+    unprocessed_operations = []
     for response in responses:
       if isinstance(response, operation_type):
-        unfinished_operations.append(response)
+        unprocessed_operations.append(response)
+        if response.status != operation_type.StatusValueValuesEnum.DONE:
+          all_done = False
       else:
         yield response
 
     # If there are no more operations, we are done.
-    if not unfinished_operations:
+    if not unprocessed_operations:
       break
+
+    # If all of the operations are done, we should ignore the timeout and ignore
+    # the sleep.
+    if all_done:
+      continue
 
     # Did we time out? If so, record the operations that timed out so
     # they can be reported to the user.
     if time_util.CurrentTimeSec() - start > timeout:
       log.debug('Timeout of %ss reached.', timeout)
-      _RecordUnfinishedOperations(unfinished_operations, errors)
+      _RecordUnfinishedOperations(unprocessed_operations, errors)
       break
 
     # Sleeps before trying to poll the operations again.
-    sleep_sec += 1
-    # Don't re-use sleep_sec, since we want to keep the same time increment
-    sleep_time = min(sleep_sec, _MAX_TIME_BETWEEN_POLLS_SEC)
-    log.debug('Sleeping for %ss.', sleep_time)
-    time_util.Sleep(sleep_time)
+    sleep_sec = min(sleep_sec + 1, _MAX_TIME_BETWEEN_POLLS_SEC)
+    log.debug('Sleeping for %ss.', sleep_sec)
+    time_util.Sleep(sleep_sec)

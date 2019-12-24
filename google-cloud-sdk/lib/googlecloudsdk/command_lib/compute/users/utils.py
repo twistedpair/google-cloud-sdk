@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +15,7 @@
 
 """Common functions for users."""
 
+from __future__ import unicode_literals
 DEFAULT_LIST_FORMAT = """\
     table(
       name,

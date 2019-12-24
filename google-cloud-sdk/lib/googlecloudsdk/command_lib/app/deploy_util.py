@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,26 +12,30 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Utilities for `gcloud app` deployment.
 
 Mostly created to selectively enable Cloud Endpoints in the beta/preview release
 tracks.
 """
-import argparse
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import re
 from apitools.base.py import exceptions as apitools_exceptions
 import enum
 
-from googlecloudsdk.api_lib.app import appengine_client
+from googlecloudsdk.api_lib.app import build as app_cloud_build
 from googlecloudsdk.api_lib.app import deploy_app_command_util
 from googlecloudsdk.api_lib.app import deploy_command_util
+from googlecloudsdk.api_lib.app import env
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import runtime_builders
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app import yaml_parsing
-from googlecloudsdk.api_lib.app.appinfo import appinfo
-from googlecloudsdk.api_lib.cloudbuild import build as cloud_build
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.calliope import actions
@@ -40,6 +45,7 @@ from googlecloudsdk.command_lib.app import deployables
 from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.command_lib.app import flags
 from googlecloudsdk.command_lib.app import output_helpers
+from googlecloudsdk.command_lib.app import source_files_util
 from googlecloudsdk.command_lib.app import staging
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -49,11 +55,26 @@ from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files
+import six
 
 
 _TASK_CONSOLE_LINK = """\
 https://console.cloud.google.com/appengine/taskqueues/cron?project={}
 """
+
+# The regex for runtimes prior to runtime builders support. Used to deny the
+# use of pinned runtime builders when this feature is disabled.
+ORIGINAL_RUNTIME_RE_STRING = r'[a-z][a-z0-9\-]{0,29}'
+ORIGINAL_RUNTIME_RE = re.compile(ORIGINAL_RUNTIME_RE_STRING + r'\Z')
+
+
+# Max App Engine file size; see https://cloud.google.com/appengine/docs/quotas
+_MAX_FILE_SIZE_STANDARD = 32 * 1024 * 1024
+
+# 1rst gen runtimes that still need the _MAX_FILE_SIZE_STANDARD check:
+_RUNTIMES_WITH_FILE_SIZE_LIMITS = [
+    'java7', 'java8', 'java8g', 'python27', 'go19', 'php55'
+]
 
 
 class Error(core_exceptions.Error):
@@ -106,6 +127,18 @@ class FlexImageBuildOptions(enum.Enum):
   ON_SERVER = 2
 
 
+def GetFlexImageBuildOption(default_strategy=FlexImageBuildOptions.ON_CLIENT):
+  """Determines where the build should be performed."""
+  trigger_build_server_side = (properties.VALUES.app.trigger_build_server_side
+                               .GetBool(required=False))
+  if trigger_build_server_side is None:
+    return default_strategy
+  elif trigger_build_server_side:
+    return FlexImageBuildOptions.ON_SERVER
+  else:
+    return FlexImageBuildOptions.ON_CLIENT
+
+
 class DeployOptions(object):
   """Values of options that affect deployment process in general.
 
@@ -119,8 +152,6 @@ class DeployOptions(object):
       externalized runtimes).
     parallel_build: bool, whether to use parallel build and deployment path.
       Only supported in v1beta and v1alpha App Engine Admin API.
-    use_service_management: bool, whether to prepare for Flexible deployments
-      using Service Management.
     flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
       should upload files so that the server can build the image, or build the
       image on client.
@@ -131,13 +162,11 @@ class DeployOptions(object):
                stop_previous_version,
                runtime_builder_strategy,
                parallel_build=False,
-               use_service_management=True,
                flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
     self.promote = promote
     self.stop_previous_version = stop_previous_version
     self.runtime_builder_strategy = runtime_builder_strategy
     self.parallel_build = parallel_build
-    self.use_service_management = use_service_management
     self.flex_image_build_option = flex_image_build_option
 
   @classmethod
@@ -164,22 +193,9 @@ class DeployOptions(object):
     promote = properties.VALUES.app.promote_by_default.GetBool()
     stop_previous_version = (
         properties.VALUES.app.stop_previous_version.GetBool())
-    service_management = (
-        not properties.VALUES.app.use_deprecated_preparation.GetBool())
     return cls(promote, stop_previous_version,
-               runtime_builder_strategy, parallel_build, service_management,
+               runtime_builder_strategy, parallel_build,
                flex_image_build_option)
-
-
-def _ShouldRewriteRuntime(runtime, use_runtime_builders):
-  server_runtime_pattern = re.compile(appinfo.ORIGINAL_RUNTIME_RE_STRING +
-                                      r'\Z')
-  if server_runtime_pattern.match(runtime):
-    return False
-  elif use_runtime_builders:
-    return True
-  else:
-    raise InvalidRuntimeNameError(runtime, appinfo.ORIGINAL_RUNTIME_RE_STRING)
 
 
 class ServiceDeployer(object):
@@ -196,30 +212,18 @@ class ServiceDeployer(object):
     self.api_client = api_client
     self.deploy_options = deploy_options
 
-  def _PossiblyRewriteRuntime(self, service_info):
-    """Rewrites the effective runtime of the service to 'custom' if necessary.
-
-    Some runtimes which are valid client-side are *not* valid in the server.
-    Namely, `gs://` URL runtimes (which are effectively `custom`) and runtimes
-    with `.` in the names (ex. `go-1.8`). For these, we need to rewrite the
-    runtime that we send up to the server to "custom" so that it passes
-    validation.
-
-    This *only* applies when we're using runtime builders to build the
-    application (that is, runtime builders are turned on *and* the environment
-    is Flexible), since neither of these runtime types are valid otherwise. If
-    not, it results in an error.
+  def _ValidateRuntime(self, service_info):
+    """Validates explicit runtime builders are not used without the feature on.
 
     Args:
-      service_info: yaml_parsing.ServiceYamlInfo, service configuration to be
+      service_info: yaml_parsing.ServiceYamlInfo, service
+        configuration to be
         deployed
 
     Raises:
       InvalidRuntimeNameError: if the runtime name is invalid for the deployment
         (see above).
     """
-    # TODO(b/63040070) Remove this whole method (which is a hack) once the API
-    # can take the paths we need as a runtime name.
     runtime = service_info.runtime
     if runtime == 'custom':
       return
@@ -230,19 +234,20 @@ class ServiceDeployer(object):
     strategy = self.deploy_options.runtime_builder_strategy
     use_runtime_builders = deploy_command_util.ShouldUseRuntimeBuilders(
         service_info, strategy, needs_dockerfile)
-    if _ShouldRewriteRuntime(runtime, use_runtime_builders):
-      service_info.parsed.SetEffectiveRuntime('custom')
+    if not use_runtime_builders and not ORIGINAL_RUNTIME_RE.match(runtime):
+      raise InvalidRuntimeNameError(runtime, ORIGINAL_RUNTIME_RE_STRING)
 
-  def _PossiblyBuildAndPush(self, new_version, service, source_dir, image,
-                            code_bucket_ref, gcr_domain,
-                            flex_image_build_option):
+  def _PossiblyBuildAndPush(
+      self, new_version, service, upload_dir, source_files, image,
+      code_bucket_ref, gcr_domain, flex_image_build_option):
     """Builds and Pushes the Docker image if necessary for this service.
 
     Args:
       new_version: version_util.Version describing where to deploy the service
       service: yaml_parsing.ServiceYamlInfo, service configuration to be
         deployed
-      source_dir: str, path to the service's source directory
+      upload_dir: str, path to the service's upload directory
+      source_files: [str], relative paths to upload.
       image: str or None, the URL for the Docker image to be deployed (if image
         already exists).
       code_bucket_ref: cloud_storage.BucketReference where the service's files
@@ -257,8 +262,6 @@ class ServiceDeployer(object):
         an in-progress build, or the name of the container image for a serial
         build. Possibly None if the service does not require an image.
     """
-    if flex_image_build_option == FlexImageBuildOptions.ON_SERVER:
-      return None
 
     build = None
     if image:
@@ -266,13 +269,23 @@ class ServiceDeployer(object):
         log.warning('Deployment of service [{0}] will ignore the skip_files '
                     'field in the configuration file, because the image has '
                     'already been built.'.format(new_version.service))
-      return cloud_build.BuildArtifact.MakeImageArtifact(image)
+      return app_cloud_build.BuildArtifact.MakeImageArtifact(image)
     elif service.RequiresImage():
-      build = deploy_command_util.BuildAndPushDockerImage(
-          new_version.project, service, source_dir, new_version.id,
-          code_bucket_ref, gcr_domain,
-          self.deploy_options.runtime_builder_strategy,
-          self.deploy_options.parallel_build)
+      if flex_image_build_option == FlexImageBuildOptions.ON_SERVER:
+        cloud_build_options = {
+            'appYamlPath': service.GetAppYamlBasename(),
+        }
+        timeout = properties.VALUES.app.cloud_build_timeout.Get()
+        if timeout:
+          cloud_build_options['cloudBuildTimeout'] = timeout
+        build = app_cloud_build.BuildArtifact.MakeBuildOptionsArtifact(
+            cloud_build_options)
+      else:
+        build = deploy_command_util.BuildAndPushDockerImage(
+            new_version.project, service, upload_dir, source_files,
+            new_version.id, code_bucket_ref, gcr_domain,
+            self.deploy_options.runtime_builder_strategy,
+            self.deploy_options.parallel_build)
 
     return build
 
@@ -294,14 +307,15 @@ class ServiceDeployer(object):
             all_services, new_version, self.api_client,
             self.deploy_options.stop_previous_version)
       except apitools_exceptions.HttpError as err:
-        err_str = str(core_api_exceptions.HttpException(err))
+        err_str = six.text_type(core_api_exceptions.HttpException(err))
         raise VersionPromotionError(err_str)
     elif self.deploy_options.stop_previous_version:
       log.info('Not stopping previous version because new version was '
                'not promoted.')
 
-  def _PossiblyUploadFiles(self, image, service_info, source_dir,
-                           code_bucket_ref, flex_image_build_option):
+  def _PossiblyUploadFiles(
+      self, image, service_info, upload_dir, source_files, code_bucket_ref,
+      flex_image_build_option):
     """Uploads files for this deployment is required for this service.
 
     Uploads if flex_image_build_option is FlexImageBuildOptions.ON_SERVER,
@@ -312,7 +326,8 @@ class ServiceDeployer(object):
         already exists).
       service_info: yaml_parsing.ServiceYamlInfo, service configuration to be
         deployed
-      source_dir: str, path to the service's source directory
+      upload_dir: str, path to the service's upload directory
+      source_files: [str], relative paths to upload.
       code_bucket_ref: cloud_storage.BucketReference where the service's files
         have been uploaded
       flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
@@ -325,10 +340,15 @@ class ServiceDeployer(object):
     manifest = None
     # "Non-hermetic" services require file upload outside the Docker image
     # unless an image was already built.
-    if flex_image_build_option == FlexImageBuildOptions.ON_SERVER or (
-        not image and not service_info.is_hermetic):
+    if (not image and
+        (flex_image_build_option == FlexImageBuildOptions.ON_SERVER or
+         not service_info.is_hermetic)):
+      limit = None
+      if (service_info.env == env.STANDARD and
+          service_info.runtime in _RUNTIMES_WITH_FILE_SIZE_LIMITS):
+        limit = _MAX_FILE_SIZE_STANDARD
       manifest = deploy_app_command_util.CopyFilesToCodeBucket(
-          service_info, source_dir, code_bucket_ref)
+          upload_dir, source_files, code_bucket_ref, max_file_size=limit)
     return manifest
 
   def Deploy(self,
@@ -338,7 +358,9 @@ class ServiceDeployer(object):
              image,
              all_services,
              gcr_domain,
-             flex_image_build_option=False):
+             disable_build_cache,
+             flex_image_build_option=FlexImageBuildOptions.ON_CLIENT,
+             ignore_file=None):
     """Deploy the given service.
 
     Performs all deployment steps for the given service (if applicable):
@@ -347,7 +369,7 @@ class ServiceDeployer(object):
     * Upload files (non-hermetic deployments and flex deployments with
       flex_image_build_option=FlexImageBuildOptions.ON_SERVER)
     * Create the new version
-    * Promote the version to receieve all traffic (if --promote given (default))
+    * Promote the version to receive all traffic (if --promote given (default))
     * Stop the previous version (if new version promoted and
       --stop-previous-version given (default))
 
@@ -355,7 +377,7 @@ class ServiceDeployer(object):
       service: deployables.Service, service to be deployed.
       new_version: version_util.Version describing where to deploy the service
       code_bucket_ref: cloud_storage.BucketReference where the service's files
-        have been uploaded
+        will be uploaded
       image: str or None, the URL for the Docker image to be deployed (if image
         already exists).
       all_services: dict of service ID to service_util.Service objects
@@ -363,30 +385,45 @@ class ServiceDeployer(object):
         promote this version to receive all traffic, if applicable).
       gcr_domain: str, Cloud Registry domain, determines the physical location
         of the image. E.g. `us.gcr.io`.
+      disable_build_cache: bool, disable the build cache.
       flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
         should upload files so that the server can build the image or build the
         image on client.
+      ignore_file: custom ignore_file name.
+                Override .gcloudignore file to customize files to be skipped.
     """
     log.status.Print('Beginning deployment of service [{service}]...'
                      .format(service=new_version.service))
-    source_dir = service.upload_dir
-    service_info = service.service_info
-    self._PossiblyRewriteRuntime(service_info)
-    build = self._PossiblyBuildAndPush(new_version, service_info, source_dir,
-                                       image, code_bucket_ref, gcr_domain,
-                                       flex_image_build_option)
-    manifest = self._PossiblyUploadFiles(image, service_info, source_dir,
-                                         code_bucket_ref,
-                                         flex_image_build_option)
+    if (service.service_info.env == env.MANAGED_VMS
+        and flex_image_build_option == FlexImageBuildOptions.ON_SERVER):
+      # Server-side builds are not supported for Managed VMs.
+      flex_image_build_option = FlexImageBuildOptions.ON_CLIENT
 
-    extra_config_settings = None
-    if flex_image_build_option == FlexImageBuildOptions.ON_SERVER:
-      extra_config_settings = {
-          'cloud_build_timeout':
-              properties.VALUES.app.cloud_build_timeout.Get(),
-          'runtime_root':
-              properties.VALUES.app.runtime_root.Get(),
-      }
+    service_info = service.service_info
+    self._ValidateRuntime(service_info)
+
+    source_files = source_files_util.GetSourceFiles(
+        service.upload_dir,
+        service_info.parsed.skip_files.regex,
+        service_info.HasExplicitSkipFiles(),
+        service_info.runtime,
+        service_info.env, service.source, ignore_file=ignore_file)
+
+    # Tar-based upload for flex
+    build = self._PossiblyBuildAndPush(
+        new_version, service_info, service.upload_dir, source_files,
+        image, code_bucket_ref, gcr_domain, flex_image_build_option)
+
+    # Manifest-based incremental source upload for all envs
+    manifest = self._PossiblyUploadFiles(
+        image, service_info, service.upload_dir, source_files,
+        code_bucket_ref, flex_image_build_option)
+
+    del source_files  # Free some memory
+
+    extra_config_settings = {}
+    if disable_build_cache:
+      extra_config_settings['no-cache'] = 'true'
 
     # Actually create the new version of the service.
     metrics.CustomTimedEvent(metric_names.DEPLOY_API_START)
@@ -394,10 +431,7 @@ class ServiceDeployer(object):
                                   service_info, manifest, build,
                                   extra_config_settings)
     metrics.CustomTimedEvent(metric_names.DEPLOY_API)
-    message = 'Updating service [{service}]'.format(
-        service=new_version.service)
-    with progress_tracker.ProgressTracker(message):
-      self._PossiblyPromote(all_services, new_version)
+    self._PossiblyPromote(all_services, new_version)
 
 
 def ArgsDeploy(parser):
@@ -409,6 +443,7 @@ def ArgsDeploy(parser):
   flags.SERVER_FLAG.AddToParser(parser)
   flags.IGNORE_CERTS_FLAG.AddToParser(parser)
   flags.DOCKER_BUILD_FLAG.AddToParser(parser)
+  flags.IGNORE_FILE_FLAG.AddToParser(parser)
   parser.add_argument(
       '--version', '-v', type=flags.VERSION_TYPE,
       help='The version of the app that will be created or replaced by this '
@@ -431,8 +466,15 @@ def ArgsDeploy(parser):
       '--stop-previous-version',
       action=actions.StoreBooleanProperty(
           properties.VALUES.app.stop_previous_version),
-      help='Stop the previously running version when deploying a new version '
-           'that receives all traffic.')
+      help="""\
+      Stop the previously running version when deploying a new version that
+      receives all traffic.
+
+      Note that if the version is running on an instance
+      of an auto-scaled service in the App Engine Standard
+      environment, using `--stop-previous-version` will not work
+      and the previous version will continue to run because auto-scaled service
+      instances are always running.""")
   parser.add_argument(
       '--image-url',
       help='Deploy with a specific Docker image.  Docker url must be from one '
@@ -447,10 +489,12 @@ def ArgsDeploy(parser):
       '--skip-staging',
       action='store_true',
       default=False,
-      help=argparse.SUPPRESS)
+      hidden=True,
+      help='THIS ARGUMENT NEEDS HELP TEXT.')
   staging_group.add_argument(
       '--staging-command',
-      help=argparse.SUPPRESS)
+      hidden=True,
+      help='THIS ARGUMENT NEEDS HELP TEXT.')
 
 
 def _MakeStager(skip_staging, use_beta_stager, staging_command, staging_area):
@@ -488,7 +532,9 @@ def RunDeploy(
     use_beta_stager=False,
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
     parallel_build=True,
-    flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
+    flex_image_build_option=FlexImageBuildOptions.ON_CLIENT,
+    disable_build_cache=False,
+    dispatch_admin_api=False):
   """Perform a deployment based on the given args.
 
   Args:
@@ -506,6 +552,9 @@ def RunDeploy(
     flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
       should upload files so that the server can build the image or build the
       image on client.
+    disable_build_cache: bool, disable the build cache.
+    dispatch_admin_api: bool, speak to the (new) Admin API rather than the (old)
+      Admin Console for config push of dispatch.yaml.
 
   Returns:
     A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
@@ -536,12 +585,19 @@ def RunDeploy(
     # isn't being improved. We're in the process of migrating all of the calls
     # over to the Admin API, but a few things (notably config deployments)
     # haven't been ported over yet.
+    # Import only when necessary, to decrease startup time.
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.api_lib.app import appengine_client
+    # pylint: enable=g-import-not-at-top
     ac_client = appengine_client.AppengineClient(
         args.server, args.ignore_bad_certs)
 
     app = _PossiblyCreateApp(api_client, project)
     _RaiseIfStopped(api_client, app)
-    app = _PossiblyRepairApp(api_client, app)
+
+    # Call _PossiblyRepairApp when --bucket param is unspecified
+    if not args.bucket:
+      app = _PossiblyRepairApp(api_client, app)
 
     # Tell the user what is going to happen, and ask them to confirm.
     version_id = args.version or util.GenerateVersionId()
@@ -554,14 +610,11 @@ def RunDeploy(
       metrics.CustomTimedEvent(metric_names.GET_CODE_BUCKET_START)
       code_bucket_ref = args.bucket or flags.GetCodeBucket(app, project)
       metrics.CustomTimedEvent(metric_names.GET_CODE_BUCKET)
-      log.debug('Using bucket [{b}].'.format(b=code_bucket_ref.ToBucketUrl()))
+      log.debug('Using bucket [{b}].'.format(b=code_bucket_ref.ToUrl()))
 
       # Prepare Flex if any service is going to deploy an image.
       if any([s.RequiresImage() for s in service_infos]):
-        if deploy_options.use_service_management:
-          deploy_command_util.PossiblyEnableFlex(project)
-        else:
-          deploy_command_util.DoPrepareManagedVms(ac_client)
+        deploy_command_util.PossiblyEnableFlex(project)
 
       all_services = dict([(s.id, s) for s in api_client.ListServices()])
     else:
@@ -584,7 +637,9 @@ def RunDeploy(
           args.image_url,
           all_services,
           app.gcrDomain,
-          flex_image_build_option=flex_image_build_option)
+          disable_build_cache=disable_build_cache,
+          flex_image_build_option=flex_image_build_option,
+          ignore_file=args.ignore_file)
       new_versions.append(new_version)
       log.status.Print('Deployed service [{0}] to [{1}]'.format(
           service.service_id, deployed_urls[service.service_id]))
@@ -598,7 +653,10 @@ def RunDeploy(
     for config in configs:
       message = 'Updating config [{config}]'.format(config=config.name)
       with progress_tracker.ProgressTracker(message):
-        ac_client.UpdateConfig(config.name, config.parsed)
+        if config.name == 'dispatch' and dispatch_admin_api:
+          api_client.UpdateDispatchRules(config.GetRules())
+        else:
+          ac_client.UpdateConfig(config.name, config.parsed)
     metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG)
 
   updated_configs = [c.name for c in configs]

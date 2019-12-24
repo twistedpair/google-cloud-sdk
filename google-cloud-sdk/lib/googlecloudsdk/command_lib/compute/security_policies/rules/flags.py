@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flags and helpers for the compute security policies rules commands."""
+
 from __future__ import absolute_import
 from __future__ import division
-from __future__ import print_function
+from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
@@ -35,8 +37,10 @@ def AddPriority(parser, operation, is_plural=False):
       metavar='PRIORITY',
       nargs='*' if is_plural else None,
       completer=SecurityPolicyRulesCompleter,
-      help=('The priority of the rule{0} to {1}.'.format(
-          's' if is_plural else '', operation)))
+      help=('The priority of the rule{0} to {1}. Rules are evaluated in order '
+            'from highest priority to lowest priority where 0 is the highest '
+            'priority and 2147483647 is the lowest priority.'.format(
+                's' if is_plural else '', operation)))
 
 
 def AddMatcher(parser, required=True):
@@ -48,7 +52,8 @@ def AddMatcher(parser, required=True):
       '--src-ip-ranges',
       type=arg_parsers.ArgList(),
       metavar='SRC_IP_RANGE',
-      help='The source IP ranges to match for this rule.')
+      help=('The source IPs/IP ranges to match for this rule. '
+            'To match all IPs specify *.'))
   matcher.add_argument(
       '--expression',
       help='The Cloud Armor rules language expression to match for this rule.')

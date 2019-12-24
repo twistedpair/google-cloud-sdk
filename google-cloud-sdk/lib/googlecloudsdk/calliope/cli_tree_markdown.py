@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -39,7 +40,9 @@ Usage:
   markdown = generator.Edit()
 """
 
-import argparse
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -47,6 +50,18 @@ from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.calliope import markdown
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import properties
+
+import six
+
+
+if six.PY2:
+  FLAG_TYPE_NAME = b'flag'
+  POSITIONAL_TYPE_NAME = b'positional'
+  GROUP_TYPE_NAME = b'group'
+else:
+  FLAG_TYPE_NAME = 'flag'
+  POSITIONAL_TYPE_NAME = 'positional'
+  GROUP_TYPE_NAME = 'group'
 
 
 def _GetReleaseTrackFromId(release_id):
@@ -58,7 +73,7 @@ def _GetReleaseTrackFromId(release_id):
 
 def Flag(d):
   """Returns a flag object suitable for the calliope.markdown module."""
-  flag = type('flag', (object,), d)
+  flag = type(FLAG_TYPE_NAME, (object,), d)
   flag.is_group = False
   flag.is_hidden = d.get(cli_tree.LOOKUP_IS_HIDDEN, d.get('hidden', False))
   flag.hidden = flag.is_hidden
@@ -66,7 +81,7 @@ def Flag(d):
   flag.is_required = d.get(cli_tree.LOOKUP_IS_REQUIRED,
                            d.get(cli_tree.LOOKUP_REQUIRED, False))
   flag.required = flag.is_required
-  flag.help = argparse.SUPPRESS if flag.is_hidden else flag.description
+  flag.help = flag.description
   flag.dest = flag.name.lower().replace('-', '_')
   flag.metavar = flag.value
   flag.option_strings = [flag.name]
@@ -102,7 +117,7 @@ def Flag(d):
 
 def Positional(d):
   """Returns a positional object suitable for the calliope.markdown module."""
-  positional = type('positional', (object,), d)
+  positional = type(POSITIONAL_TYPE_NAME, (object,), d)
   positional.help = positional.description
   positional.is_group = False
   positional.is_hidden = False
@@ -124,7 +139,7 @@ def Argument(d):
     return Positional(d)
   if not d.get(cli_tree.LOOKUP_IS_GROUP, False):
     return Flag(d)
-  group = type('group', (object,), d)
+  group = type(GROUP_TYPE_NAME, (object,), d)
   group.arguments = [Argument(a) for a in d.get(cli_tree.LOOKUP_ARGUMENTS, [])]
   group.category = None
   group.help = group.description
@@ -156,8 +171,6 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
     self._tree = tree
     self._command = command
     self._command_path = command[cli_tree.LOOKUP_PATH]
-    self._subcommands = self.GetSubCommandHelp()
-    self._subgroups = self.GetSubGroupHelp()
     super(CliTreeMarkdownGenerator, self).__init__(
         self._command_path,
         _GetReleaseTrackFromId(self._command[cli_tree.LOOKUP_RELEASE]),
@@ -165,6 +178,8 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
                           self._command.get('hidden', False)))
     self._capsule = self._command[cli_tree.LOOKUP_CAPSULE]
     self._sections = self._command[cli_tree.LOOKUP_SECTIONS]
+    self._subcommands = self.GetSubCommandHelp()
+    self._subgroups = self.GetSubGroupHelp()
 
   def _GetCommandFromPath(self, command_path):
     """Returns the command node for command_path."""
@@ -194,16 +209,18 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
     try:
       return [Argument(a) for a in
               command[cli_tree.LOOKUP_CONSTRAINTS][cli_tree.LOOKUP_ARGUMENTS]]
-    except KeyError:
+    except (KeyError, TypeError):
       return []
 
-  def GetArgDetails(self, arg):
+  def GetArgDetails(self, arg, depth=None):
     """Returns the help text with auto-generated details for arg.
 
     The help text was already generated on the cli_tree generation side.
 
     Args:
       arg: The arg to auto-generate help text for.
+      depth: The indentation depth at which the details should be printed.
+        Added here only to maintain consistency with superclass during testing.
 
     Returns:
       The help text with auto-generated details for arg.
@@ -218,8 +235,8 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
                                  subcommand.get('hidden', False)),
         release_track=_GetReleaseTrackFromId(
             subcommand[cli_tree.LOOKUP_RELEASE]))
-            for name, subcommand in self._command[
-                cli_tree.LOOKUP_COMMANDS].iteritems()
+            for name, subcommand in six.iteritems(self._command[
+                cli_tree.LOOKUP_COMMANDS])
             if subcommand[cli_tree.LOOKUP_IS_GROUP] == is_group}
 
   def GetSubCommandHelp(self):

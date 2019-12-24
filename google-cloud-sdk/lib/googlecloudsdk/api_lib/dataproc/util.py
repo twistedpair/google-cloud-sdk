@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,20 +15,30 @@
 
 """Common utilities for the gcloud dataproc tool."""
 
-import time
-import urlparse
-import uuid
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
+import os
+import time
+import uuid
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.api_lib.dataproc import storage_helpers
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.export import util as export_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml_validator
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
+import six
+
+SCHEMA_DIR = os.path.join(os.path.dirname(__file__), 'schemas')
 
 
 def FormatRpcError(error):
@@ -40,12 +51,7 @@ def FormatRpcError(error):
     A ready-to-print string representation of the error.
   """
   log.debug('Error:\n' + encoding.MessageToJson(error))
-  formatted_error = error.message
-  # Only display details if the log level is INFO or finer.
-  if error.details and log.GetVerbosity() <= log.info:
-    formatted_error += (
-        '\nDetails:\n' + encoding.MessageToJson(error.details))
-  return formatted_error
+  return error.message
 
 
 def WaitForResourceDeletion(
@@ -74,10 +80,8 @@ def WaitForResourceDeletion(
       'Deleting resource [{0}] timed out.'.format(resource_ref))
 
 
-def GetJobId(job_id=None):
-  if job_id:
-    return job_id
-  return str(uuid.uuid4())
+def GetUniqueId():
+  return uuid.uuid4().hex
 
 
 class Bunch(object):
@@ -88,7 +92,7 @@ class Bunch(object):
   """
 
   def __init__(self, dictionary):
-    for key, value in dictionary.iteritems():
+    for key, value in six.iteritems(dictionary):
       if isinstance(value, dict):
         value = Bunch(value)
       self.__dict__[key] = value
@@ -143,7 +147,7 @@ def WaitForOperation(dataproc, operation, message, timeout_s, poll_period_s=5):
       # Drop a line to print nicely with the progress tracker.
       log.err.write(tracker_separator)
       for warning in new_warnings:
-        log.warn(warning)
+        log.warning(warning)
 
   with progress_tracker.ProgressTracker(message, autotick=True):
     while timeout_s > (time.time() - start_time):
@@ -193,36 +197,34 @@ def PrintWorkflowMetadata(metadata, status, operations, errors):
     metadata: Dataproc WorkflowMetadata message object, contains the latest
         states of a workflow template.
     status: Dictionary, stores all jobs' status in the current workflow
-        template.
+        template, as well as the status of the overarching workflow.
     operations: Dictionary, stores cluster operation status for the workflow
         template.
     errors: Dictionary, stores errors from the current workflow template.
   """
-  if metadata.template not in status or metadata.state != status[metadata.
-                                                                 template]:
-    log.status.Print('WorkflowTemplate [{0}] {1}'.format(
-        metadata.template, metadata.state))
-    status[metadata.template] = metadata.state
+  # Key chosen to avoid collision with job ids, which are at least 3 characters.
+  template_key = 'wt'
+  if template_key not in status or metadata.state != status[template_key]:
+    if metadata.template is not None:
+      log.status.Print('WorkflowTemplate [{0}] {1}'.format(
+          metadata.template, metadata.state))
+    else:
+      # Workflows instantiated inline do not store an id in their metadata.
+      log.status.Print('WorkflowTemplate {0}'.format(metadata.state))
+    status[template_key] = metadata.state
   if metadata.createCluster != operations['createCluster']:
     if hasattr(metadata.createCluster,
                'error') and metadata.createCluster.error is not None:
       log.status.Print(metadata.createCluster.error)
+    elif hasattr(metadata.createCluster,
+                 'done') and metadata.createCluster.done is not None:
+      log.status.Print('Created cluster: {0}.'.format(metadata.clusterName))
     elif hasattr(
         metadata.createCluster,
         'operationId') and metadata.createCluster.operationId is not None:
       log.status.Print('Creating cluster: Operation ID [{0}].'.format(
           metadata.createCluster.operationId))
     operations['createCluster'] = metadata.createCluster
-  if metadata.deleteCluster != operations['deleteCluster']:
-    if hasattr(metadata.deleteCluster,
-               'error') and metadata.deleteCluster.error is not None:
-      log.status.Print(metadata.deleteCluster.error)
-    elif hasattr(
-        metadata.deleteCluster,
-        'operationId') and metadata.deleteCluster.operationId is not None:
-      log.status.Print('Deleting cluster: Operation ID [{0}].'.format(
-          metadata.deleteCluster.operationId))
-    operations['deleteCluster'] = metadata.deleteCluster
   if hasattr(metadata.graph, 'nodes'):
     for node in metadata.graph.nodes:
       if not node.jobId:
@@ -234,12 +236,25 @@ def PrintWorkflowMetadata(metadata, status, operations, errors):
                          errors[node.jobId] != node.error):
         log.status.Print('Job ID {0} error: {1}'.format(node.jobId, node.error))
         errors[node.jobId] = node.error
+  if metadata.deleteCluster != operations['deleteCluster']:
+    if hasattr(metadata.deleteCluster,
+               'error') and metadata.deleteCluster.error is not None:
+      log.status.Print(metadata.deleteCluster.error)
+    elif hasattr(metadata.deleteCluster,
+                 'done') and metadata.deleteCluster.done is not None:
+      log.status.Print('Deleted cluster: {0}.'.format(metadata.clusterName))
+    elif hasattr(
+        metadata.deleteCluster,
+        'operationId') and metadata.deleteCluster.operationId is not None:
+      log.status.Print('Deleting cluster: Operation ID [{0}].'.format(
+          metadata.deleteCluster.operationId))
+    operations['deleteCluster'] = metadata.deleteCluster
 
 
 # TODO(b/36056506): Use api_lib.utils.waiter
 def WaitForWorkflowTemplateOperation(dataproc,
                                      operation,
-                                     timeout_s,
+                                     timeout_s=None,
                                      poll_period_s=5):
   """Poll dataproc Operation until its status is done or timeout reached.
 
@@ -264,7 +279,8 @@ def WaitForWorkflowTemplateOperation(dataproc,
   status = {}
   errors = {}
 
-  while timeout_s > (time.time() - start_time):
+  # If no timeout is specified, poll forever.
+  while timeout_s is None or timeout_s > (time.time() - start_time):
     try:
       operation = dataproc.client.projects_regions_operations.Get(request)
       metadata = ParseOperationJsonMetadata(operation.metadata,
@@ -309,8 +325,10 @@ class NoOpProgressDisplay(object):
 
 def WaitForJobTermination(dataproc,
                           job,
+                          job_ref,
                           message,
                           goal_state,
+                          error_state=None,
                           stream_driver_log=False,
                           log_poll_period_s=1,
                           dataproc_poll_period_s=10,
@@ -318,10 +336,13 @@ def WaitForJobTermination(dataproc,
   """Poll dataproc Job until its status is terminal or timeout reached.
 
   Args:
-    dataproc: wrapper for datarpoc resources, client and messages
+    dataproc: wrapper for dataproc resources, client and messages
     job: The job to wait to finish.
+    job_ref: Parsed dataproc.projects.regions.jobs resource containing a
+        projectId, region, and jobId.
     message: str, message to display to user while polling.
     goal_state: JobStatus.StateValueValuesEnum, the state to define success
+    error_state: JobStatus.StateValueValuesEnum, the state to define failure
     stream_driver_log: bool, Whether to show the Job's driver's output.
     log_poll_period_s: number, delay in seconds between checking on the log.
     dataproc_poll_period_s: number, delay in seconds between requests to
@@ -329,13 +350,11 @@ def WaitForJobTermination(dataproc,
     timeout_s: number, time out for job completion. None means no timeout.
 
   Returns:
-    Operation: the return value of the last successful operations.get
-    request.
+    Job: the return value of the last successful jobs.get request.
 
   Raises:
-    OperationError: if the operation times out or finishes with an error.
+    JobError: if the job finishes with an error.
   """
-  job_ref = ParseJob(job.reference.jobId, dataproc)
   request = dataproc.messages.DataprocProjectsRegionsJobsGetRequest(
       projectId=job_ref.projectId, region=job_ref.region, jobId=job_ref.jobId)
   driver_log_stream = None
@@ -387,7 +406,7 @@ def WaitForJobTermination(dataproc,
         try:
           job = dataproc.client.projects_regions_jobs.Get(request)
         except apitools_exceptions.HttpError as error:
-          log.warn('GetJob failed:\n{}'.format(str(error)))
+          log.warning('GetJob failed:\n{}'.format(six.text_type(error)))
           # Do not retry on 4xx errors.
           if IsClientHttpException(error):
             raise
@@ -395,7 +414,7 @@ def WaitForJobTermination(dataproc,
             job.driverOutputResourceUri != driver_output_uri):
           if driver_output_uri:
             PrintEqualsLine()
-            log.warn("Job attempt failed. Streaming new attempt's output.")
+            log.warning("Job attempt failed. Streaming new attempt's output.")
             PrintEqualsLine()
           driver_output_uri = job.driverOutputResourceUri
           driver_log_stream = storage_helpers.StorageObjectSeriesStream(
@@ -405,18 +424,24 @@ def WaitForJobTermination(dataproc,
 
   # TODO(b/34836493): Get better test coverage of the next 20 lines.
   state = job.status.state
-  if state is not goal_state and job.status.details:
-    # Just log details, because the state will be in the error message.
-    log.info(job.status.details)
 
+  # goal_state and error_state will always be terminal
   if state in dataproc.terminal_job_states:
     if stream_driver_log:
       if not driver_log_stream:
-        log.warn('Expected job output not found.')
+        log.warning('Expected job output not found.')
       elif driver_log_stream.open:
-        log.warn('Job terminated, but output did not finish streaming.')
+        log.warning('Job terminated, but output did not finish streaming.')
     if state is goal_state:
       return job
+    if error_state and state is error_state:
+      if job.status.details:
+        raise exceptions.JobError(
+            'Job [{0}] failed with error:\n{1}'.format(
+                job_ref.jobId, job.status.details))
+      raise exceptions.JobError('Job [{0}] failed.'.format(job_ref.jobId))
+    if job.status.details:
+      log.info('Details:\n' + job.status.details)
     raise exceptions.JobError(
         'Job [{0}] entered state [{1}] while waiting for [{2}].'.format(
             job_ref.jobId, state, goal_state))
@@ -424,76 +449,166 @@ def WaitForJobTermination(dataproc,
       'Job [{0}] timed out while in state [{1}].'.format(job_ref.jobId, state))
 
 
+# TODO(b/137899555): Remove and hard fail
+def ReturnDefaultRegionAndWarn():
+  log.warning('Dataproc --region flag will become required in January 2020. '
+              'Please either specify this flag, or set default by running '
+              "'gcloud config set dataproc/region <your-default-region>'")
+  return 'global'
+
+
+# This replicates the fallthrough logic of flags._RegionAttributeConfig.
+# It is necessary in cases like the --region flag where we are not parsing
+# ResourceSpecs
+def ResolveRegion(release_track):
+  region_prop = properties.VALUES.dataproc.region
+  if (release_track == base.ReleaseTrack.GA and
+      not region_prop.IsExplicitlySet()):
+    return ReturnDefaultRegionAndWarn()
+  else:
+    # Enforce flag or default value is required.
+    return region_prop.GetOrFail()
+
+
+# You probably want to use flags.AddClusterResourceArgument instead.
+# If calling this method, you *must* have called flags.AddRegionFlag first to
+# ensure a --region flag is stored into properties, which ResolveRegion
+# depends on. This is also mutually incompatible with any usage of args.CONCEPTS
+# which use --region as a resource attribute.
 def ParseCluster(name, dataproc):
-  """Parse Cluster name, ID, or URL into Cloud SDK reference."""
   ref = dataproc.resources.Parse(
       name,
       params={
-          'region': properties.VALUES.dataproc.region.GetOrFail,
+          'region': lambda: ResolveRegion(dataproc.release_track),
           'projectId': properties.VALUES.core.project.GetOrFail
       },
       collection='dataproc.projects.regions.clusters')
   return ref
 
 
+# You probably want to use flags.AddJobResourceArgument instead.
+# If calling this method, you *must* have called flags.AddRegionFlag first to
+# ensure a --region flag is stored into properties, which ResolveRegion
+# depends on. This is also mutually incompatible with any usage of args.CONCEPTS
+# which use --region as a resource attribute.
 def ParseJob(job_id, dataproc):
-  """Parse Job name, ID, or URL into Cloud SDK reference."""
   ref = dataproc.resources.Parse(
       job_id,
       params={
-          'region': properties.VALUES.dataproc.region.GetOrFail,
+          'region': lambda: ResolveRegion(dataproc.release_track),
           'projectId': properties.VALUES.core.project.GetOrFail
       },
       collection='dataproc.projects.regions.jobs')
   return ref
 
 
-def ParseOperation(operation, dataproc):
-  """Parse Operation name, ID, or URL into Cloud SDK reference."""
-  collection = 'dataproc.projects.regions.operations'
-  # Dataproc usually refers to Operations by relative name, which must be
-  # parsed explicitly until dataproc.resources.Parse supports it.
-  # TODO(b/36055864): Remove once Parse delegates to ParseRelativeName.
-  url = urlparse.urlparse(operation)
-  if not url.scheme and '/' in url.path and not url.path.startswith('/'):
-    return dataproc.resources.ParseRelativeName(
-        operation, collection=collection)
-  return dataproc.resources.Parse(
-      operation,
-      params={
-          'regionsId': properties.VALUES.dataproc.region.GetOrFail,
-          'projectsId': properties.VALUES.core.project.GetOrFail
-      },
-      collection=collection)
-
-
 def ParseOperationJsonMetadata(metadata_value, metadata_type):
+  """Returns an Operation message for a metadata value."""
   if not metadata_value:
     return metadata_type()
   return encoding.JsonToMessage(metadata_type,
                                 encoding.MessageToJson(metadata_value))
 
 
-def ParseWorkflowTemplates(template,
-                           dataproc,
-                           region=properties.VALUES.dataproc.region.GetOrFail):
-  # TODO(b/65845794): make caller to pass in region explicitly
-  ref = dataproc.resources.Parse(
-      template,
-      params={
-          'regionsId': region,
-          'projectsId': properties.VALUES.core.project.GetOrFail
-      },
-      collection='dataproc.projects.regions.workflowTemplates')
-  return ref
-
-
+# Used in bizarre scenarios where we want a qualified region rather than a
+# short name
 def ParseRegion(dataproc):
   ref = dataproc.resources.Parse(
       None,
       params={
-          'regionId': properties.VALUES.dataproc.region.GetOrFail,
+          'regionId': lambda: ResolveRegion(dataproc.release_track),
           'projectId': properties.VALUES.core.project.GetOrFail
       },
       collection='dataproc.projects.regions')
   return ref
+
+
+def ReadAutoscalingPolicy(dataproc, policy_id, policy_file_name=None):
+  """Returns autoscaling policy read from YAML file.
+
+  Validates it using the schema for the API version corresponding to the
+  dataproc instance, and backfills necessary fields.
+
+  Args:
+    dataproc: wrapper for dataproc resources, client and messages.
+    policy_id: The autoscaling policy id (last piece of the resource name).
+    policy_file_name: if set, location of the YAML file to read from. Otherwise,
+      reads from stdin.
+
+  Raises:
+    argparse.ArgumentError if duration formats are invalid or out of bounds.
+  """
+  # Read template from YAML file, validate it using the schema for the
+  # API version corresponding to the dataproc instance.
+  data = console_io.ReadFromFileOrStdin(policy_file_name or '-', binary=False)
+  schema_path = export_util.GetSchemaPath(
+      'dataproc', dataproc.api_version, 'AutoscalingPolicy', for_help=False)
+
+  try:
+    policy = export_util.Import(
+        message_type=dataproc.messages.AutoscalingPolicy,
+        stream=data,
+        schema_path=schema_path)
+  except yaml_validator.ValidationError as e:
+    raise exceptions.ValidationError(e.message)
+
+  # Ignore user set id in the file (if any), and overwrite with the policy_ref
+  # provided with this command
+  policy.id = policy_id
+
+  # Similarly, ignore the set resource name. This field is OUTPUT_ONLY, so we
+  # can just clear it.
+  policy.name = None
+
+  # Set duration fields to their seconds values
+  if policy.basicAlgorithm.cooldownPeriod is not None:
+    policy.basicAlgorithm.cooldownPeriod = str(
+        arg_parsers.Duration(lower_bound='2m', upper_bound='1d')(
+            policy.basicAlgorithm.cooldownPeriod)) + 's'
+  if policy.basicAlgorithm.yarnConfig.gracefulDecommissionTimeout is not None:
+    policy.basicAlgorithm.yarnConfig.gracefulDecommissionTimeout = str(
+        arg_parsers.Duration(lower_bound='0s', upper_bound='1d')(
+            policy.basicAlgorithm.yarnConfig.gracefulDecommissionTimeout)) + 's'
+
+  return policy
+
+
+def CreateAutoscalingPolicy(dataproc, name, policy):
+  """Returns the server-resolved policy after creating the given policy.
+
+  Args:
+    dataproc: wrapper for dataproc resources, client and messages.
+    name: The autoscaling policy resource name.
+    policy: The AutoscalingPolicy message to create.
+  """
+  # TODO(b/109837200) make the dataproc discovery doc parameters consistent
+  # Parent() fails for the collection because of projectId/projectsId and
+  # regionId/regionsId inconsistencies.
+  # parent = template_ref.Parent().RelativePath()
+  parent = '/'.join(name.split('/')[0:4])
+
+  request = \
+    dataproc.messages.DataprocProjectsRegionsAutoscalingPoliciesCreateRequest(
+        parent=parent,
+        autoscalingPolicy=policy)
+  policy = dataproc.client.projects_regions_autoscalingPolicies.Create(request)
+  log.status.Print('Created [{0}].'.format(policy.id))
+  return policy
+
+
+def UpdateAutoscalingPolicy(dataproc, name, policy):
+  """Returns the server-resolved policy after updating the given policy.
+
+  Args:
+    dataproc: wrapper for dataproc resources, client and messages.
+    name: The autoscaling policy resource name.
+    policy: The AutoscalingPolicy message to create.
+  """
+  # Though the name field is OUTPUT_ONLY in the API, the Update() method of the
+  # gcloud generated dataproc client expects it to be set.
+  policy.name = name
+
+  policy = \
+    dataproc.client.projects_regions_autoscalingPolicies.Update(policy)
+  log.status.Print('Updated [{0}].'.format(policy.id))
+  return policy

@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,10 +19,16 @@ This should only be called by api_lib.util.apis, core.resources, gcloud meta
 commands, and module tests.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apis import apis_map
+
+import six
 
 
 def _GetApiNameAndAlias(api_name):
@@ -32,7 +39,7 @@ def _GetApiNameAndAlias(api_name):
 def _GetDefaultVersion(api_name):
   api_name, _ = _GetApiNameAndAlias(api_name)
   api_vers = apis_map.MAP.get(api_name, {})
-  for ver, api_def in api_vers.iteritems():
+  for ver, api_def in six.iteritems(api_vers):
     if api_def.default_version:
       return ver
   return None
@@ -59,7 +66,7 @@ def _GetVersions(api_name):
   version_map = apis_map.MAP.get(api_name, None)
   if version_map is None:
     raise apis_util.UnknownAPIError(api_name)
-  return version_map.keys()
+  return list(version_map.keys())
 
 
 def _GetApiDef(api_name, api_version):
@@ -123,30 +130,31 @@ def _GetClientClassFromDef(api_def):
 
 
 def _GetClientInstance(api_name, api_version, no_http=False,
-                       check_response_func=None, enable_resource_quota=True):
+                       http_client=None,
+                       check_response_func=None):
   """Returns an instance of the API client specified in the args.
 
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
     no_http: bool, True to not create an http object for this client.
+    http_client: bring your own http client to use.
+      Incompatible with no_http=True.
     check_response_func: error handling callback to give to apitools.
-    enable_resource_quota: bool, By default, we are going to tell APIs to use
-      the quota of the project being operated on. For some APIs we want to use
-      gcloud's quota, so you can explicitly disable that behavior by passing
-      False here.
 
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
   """
+
   # pylint: disable=g-import-not-at-top
   if no_http:
-    http_client = None
-  else:
+    assert http_client is None
+  elif http_client is None:
+    # Normal gcloud authentication
     # Import http only when needed, as it depends on credential infrastructure
     # which is not needed in all cases.
-    from googlecloudsdk.core.credentials import http
-    http_client = http.Http(enable_resource_quota=enable_resource_quota)
+    from googlecloudsdk.core.credentials import http as http_creds
+    http_client = http_creds.Http(response_encoding=http_creds.ENCODING)
 
   client_class = _GetClientClass(api_name, api_version)
   client_instance = client_class(
@@ -176,7 +184,7 @@ def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
 def _GetDefaultEndpointUrl(url):
   """Looks up default endpoint based on overridden endpoint value."""
   endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
-  for api_name, overridden_url in endpoint_overrides.iteritems():
+  for api_name, overridden_url in six.iteritems(endpoint_overrides):
     if url.startswith(overridden_url):
       api_version = _GetDefaultVersion(api_name)
       return (_GetClientClass(api_name, api_version).BASE_URL +
@@ -227,4 +235,6 @@ def _GetApiCollections(api_name, api_version):
           collection.collection_name,
           collection.path,
           collection.flat_paths,
-          collection.params)
+          collection.params,
+          collection.enable_uri_parsing,
+      )

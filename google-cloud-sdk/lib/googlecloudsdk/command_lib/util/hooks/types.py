@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +15,14 @@
 
 """Various functions intended to be used as an argument type function."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import resources
+
+import six
 
 
 def Resource(collection, api_version=None):
@@ -38,8 +45,12 @@ def Resource(collection, api_version=None):
       return None
     ref = resources.REGISTRY.Parse(
         value, collection=collection,
-        params={k: f for k, f in arg_utils.DEFAULT_PARAMS.iteritems()
+        params={k: f for k, f in six.iteritems(arg_utils.DEFAULT_PARAMS)
                 if k in params})
     return ref
 
   return Parse
+
+
+def LowerCaseType(value):
+  return value.lower()

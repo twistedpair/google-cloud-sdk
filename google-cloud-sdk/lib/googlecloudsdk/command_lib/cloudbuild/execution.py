@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +15,15 @@
 
 """Support library for execution with the container builds submit command."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import threading
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import keyboard_interrupt
+import six
 
 
 class MashHandler(object):
@@ -53,5 +59,5 @@ def GetCancelBuildHandler(client, messages, build_ref):
         messages.CloudbuildProjectsBuildsCancelRequest(
             projectId=build_ref.projectId,
             id=build_ref.id))
-    log.status.Print('Cancelled [{r}].'.format(r=str(build_ref)))
+    log.status.Print('Cancelled [{r}].'.format(r=six.text_type(build_ref)))
   return _CancelBuildHandler

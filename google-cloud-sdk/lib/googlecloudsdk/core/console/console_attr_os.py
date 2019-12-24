@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +15,14 @@
 
 """OS specific console_attr helper functions."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import os
 import sys
+
+from googlecloudsdk.core.util import encoding
 
 
 def GetTermSize():
@@ -63,7 +70,7 @@ def _GetTermSizePosix():
     try:
       # This magic incantation converts a struct from ioctl(2) containing two
       # binary shorts to a (rows, columns) int tuple.
-      rc = struct.unpack('hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234'))
+      rc = struct.unpack(b'hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, 'junk'))
       return (rc[1], rc[0]) if rc else None
     except:  # pylint: disable=bare-except
       return None
@@ -101,7 +108,7 @@ def _GetTermSizeWindows():
     return None
   (unused_bufx, unused_bufy, unused_curx, unused_cury, unused_wattr,
    left, top, right, bottom,
-   unused_maxx, unused_maxy) = struct.unpack('hhhhHhhhhhh', csbi.raw)
+   unused_maxx, unused_maxy) = struct.unpack(b'hhhhHhhhhhh', csbi.raw)
   x = right - left + 1
   y = bottom - top + 1
   return (x, y)
@@ -115,9 +122,11 @@ def _GetTermSizeEnvironment():
 def _GetTermSizeTput():
   """Returns the terminal x and y dimemsions from tput(1)."""
   import subprocess  # pylint: disable=g-import-not-at-top
-  output = subprocess.check_output(['tput', 'cols'], stderr=subprocess.STDOUT)
+  output = encoding.Decode(subprocess.check_output(['tput', 'cols'],
+                                                   stderr=subprocess.STDOUT))
   cols = int(output)
-  output = subprocess.check_output(['tput', 'lines'], stderr=subprocess.STDOUT)
+  output = encoding.Decode(subprocess.check_output(['tput', 'lines'],
+                                                   stderr=subprocess.STDOUT))
   rows = int(output)
   return (cols, rows)
 
@@ -173,20 +182,29 @@ def _GetRawKeyFunctionPosix():
         'S': '<PAGE-UP>',
         'T': '<PAGE-DOWN>',
     }
+
+    # Flush pending output. sys.stdin.read() would do this, but it's explicitly
+    # bypassed in _GetKeyChar().
+    sys.stdout.flush()
+
     fd = sys.stdin.fileno()
+
+    def _GetKeyChar():
+      return encoding.Decode(os.read(fd, 1))
+
     old_settings = termios.tcgetattr(fd)
     try:
       tty.setraw(fd)
-      c = sys.stdin.read(1)
+      c = _GetKeyChar()
       if c == _ANSI_CSI:
-        c = sys.stdin.read(1)
+        c = _GetKeyChar()
         while True:
           if c == _ANSI_CSI:
             return c
           if c.isalpha():
             break
           prev_c = c
-          c = sys.stdin.read(1)
+          c = _GetKeyChar()
           if c == '~':
             c = prev_c
             break
@@ -222,10 +240,18 @@ def _GetRawKeyFunctionWindows():
         'G': '<HOME>',
         'O': '<END>',
     }
-    c = msvcrt.getch()
+
+    # Flush pending output. sys.stdin.read() would do this it's explicitly
+    # bypassed in _GetKeyChar().
+    sys.stdout.flush()
+
+    def _GetKeyChar():
+      return encoding.Decode(msvcrt.getch())
+
+    c = _GetKeyChar()
     # Special function key is a two character sequence; return the second char.
     if c in (_WINDOWS_CSI_1, _WINDOWS_CSI_2):
-      return windows_to_key.get(msvcrt.getch(), '')
+      return windows_to_key.get(_GetKeyChar(), '')
     return None if c in (_CONTROL_D, _CONTROL_Z) else c
 
   return _GetRawKeyWindows

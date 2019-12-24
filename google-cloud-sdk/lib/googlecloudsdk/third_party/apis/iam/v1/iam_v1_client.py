@@ -24,7 +24,7 @@ class IamV1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new iam handle."""
     url = url or self.BASE_URL
     super(IamV1, self).__init__(
@@ -33,15 +33,104 @@ class IamV1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
+    self.iamPolicies = self.IamPoliciesService(self)
     self.organizations_roles = self.OrganizationsRolesService(self)
     self.organizations = self.OrganizationsService(self)
     self.permissions = self.PermissionsService(self)
     self.projects_roles = self.ProjectsRolesService(self)
+    self.projects_serviceAccounts_identityBindings = self.ProjectsServiceAccountsIdentityBindingsService(self)
     self.projects_serviceAccounts_keys = self.ProjectsServiceAccountsKeysService(self)
     self.projects_serviceAccounts = self.ProjectsServiceAccountsService(self)
     self.projects = self.ProjectsService(self)
     self.roles = self.RolesService(self)
+
+  class IamPoliciesService(base_api.BaseApiService):
+    """Service class for the iamPolicies resource."""
+
+    _NAME = u'iamPolicies'
+
+    def __init__(self, client):
+      super(IamV1.IamPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def LintPolicy(self, request, global_params=None):
+      r"""Lints a Cloud IAM policy object or its sub fields. Currently supports.
+google.iam.v1.Policy, google.iam.v1.Binding and
+google.iam.v1.Binding.condition.
+
+Each lint operation consists of multiple lint validation units.
+Validation units have the following properties:
+
+- Each unit inspects the input object in regard to a particular
+  linting aspect and issues a google.iam.admin.v1.LintResult
+  disclosing the result.
+- Domain of discourse of each unit can be either
+  google.iam.v1.Policy, google.iam.v1.Binding, or
+  google.iam.v1.Binding.condition depending on the purpose of the
+  validation.
+- A unit may require additional data (like the list of all possible
+  enumerable values of a particular attribute used in the policy instance)
+  which shall be provided by the caller. Refer to the comments of
+  google.iam.admin.v1.LintPolicyRequest.context for more details.
+
+The set of applicable validation units is determined by the Cloud IAM
+server and is not configurable.
+
+Regardless of any lint issues or their severities, successful calls to
+`lintPolicy` return an HTTP 200 OK status code.
+
+      Args:
+        request: (LintPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LintPolicyResponse) The response message.
+      """
+      config = self.GetMethodConfig('LintPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LintPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'iam.iamPolicies.lintPolicy',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/iamPolicies:lintPolicy',
+        request_field='<request>',
+        request_type_name=u'LintPolicyRequest',
+        response_type_name=u'LintPolicyResponse',
+        supports_download=False,
+    )
+
+    def QueryAuditableServices(self, request, global_params=None):
+      r"""Returns a list of services that support service level audit logging.
+configuration for the given resource.
+
+      Args:
+        request: (QueryAuditableServicesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryAuditableServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryAuditableServices')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryAuditableServices.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'iam.iamPolicies.queryAuditableServices',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/iamPolicies:queryAuditableServices',
+        request_field='<request>',
+        request_type_name=u'QueryAuditableServicesRequest',
+        response_type_name=u'QueryAuditableServicesResponse',
+        supports_download=False,
+    )
 
   class OrganizationsRolesService(base_api.BaseApiService):
     """Service class for the organizations_roles resource."""
@@ -54,7 +143,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new Role.
+      r"""Creates a new Role.
 
       Args:
         request: (IamOrganizationsRolesCreateRequest) input message
@@ -81,7 +170,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Soft deletes a role. The role is suspended and cannot be used to create new.
+      r"""Soft deletes a role. The role is suspended and cannot be used to create new.
 IAM Policy Bindings.
 The Role will not be included in `ListRoles()` unless `show_deleted` is set
 in the `ListRolesRequest`. The Role contains the deleted boolean set.
@@ -114,7 +203,7 @@ with the role are removed.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a Role definition.
+      r"""Gets a Role definition.
 
       Args:
         request: (IamOrganizationsRolesGetRequest) input message
@@ -141,7 +230,7 @@ with the role are removed.
     )
 
     def List(self, request, global_params=None):
-      """Lists the Roles defined on a resource.
+      r"""Lists the Roles defined on a resource.
 
       Args:
         request: (IamOrganizationsRolesListRequest) input message
@@ -168,7 +257,7 @@ with the role are removed.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a Role definition.
+      r"""Updates a Role definition.
 
       Args:
         request: (IamOrganizationsRolesPatchRequest) input message
@@ -195,7 +284,7 @@ with the role are removed.
     )
 
     def Undelete(self, request, global_params=None):
-      """Undelete a Role, bringing it back in its previous state.
+      r"""Undelete a Role, bringing it back in its previous state.
 
       Args:
         request: (IamOrganizationsRolesUndeleteRequest) input message
@@ -242,7 +331,7 @@ with the role are removed.
           }
 
     def QueryTestablePermissions(self, request, global_params=None):
-      """Lists the permissions testable on a resource.
+      r"""Lists the permissions testable on a resource.
 A permission is testable if it can be tested for an identity on a resource.
 
       Args:
@@ -279,7 +368,7 @@ A permission is testable if it can be tested for an identity on a resource.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new Role.
+      r"""Creates a new Role.
 
       Args:
         request: (IamProjectsRolesCreateRequest) input message
@@ -306,7 +395,7 @@ A permission is testable if it can be tested for an identity on a resource.
     )
 
     def Delete(self, request, global_params=None):
-      """Soft deletes a role. The role is suspended and cannot be used to create new.
+      r"""Soft deletes a role. The role is suspended and cannot be used to create new.
 IAM Policy Bindings.
 The Role will not be included in `ListRoles()` unless `show_deleted` is set
 in the `ListRolesRequest`. The Role contains the deleted boolean set.
@@ -339,7 +428,7 @@ with the role are removed.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a Role definition.
+      r"""Gets a Role definition.
 
       Args:
         request: (IamProjectsRolesGetRequest) input message
@@ -366,7 +455,7 @@ with the role are removed.
     )
 
     def List(self, request, global_params=None):
-      """Lists the Roles defined on a resource.
+      r"""Lists the Roles defined on a resource.
 
       Args:
         request: (IamProjectsRolesListRequest) input message
@@ -393,7 +482,7 @@ with the role are removed.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a Role definition.
+      r"""Updates a Role definition.
 
       Args:
         request: (IamProjectsRolesPatchRequest) input message
@@ -420,7 +509,7 @@ with the role are removed.
     )
 
     def Undelete(self, request, global_params=None):
-      """Undelete a Role, bringing it back in its previous state.
+      r"""Undelete a Role, bringing it back in its previous state.
 
       Args:
         request: (IamProjectsRolesUndeleteRequest) input message
@@ -446,6 +535,131 @@ with the role are removed.
         supports_download=False,
     )
 
+  class ProjectsServiceAccountsIdentityBindingsService(base_api.BaseApiService):
+    """Service class for the projects_serviceAccounts_identityBindings resource."""
+
+    _NAME = u'projects_serviceAccounts_identityBindings'
+
+    def __init__(self, client):
+      super(IamV1.ProjectsServiceAccountsIdentityBindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a.
+ServiceAccountIdentityBinding
+and returns it.
+
+      Args:
+        request: (IamProjectsServiceAccountsIdentityBindingsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAccountIdentityBinding) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings',
+        http_method=u'POST',
+        method_id=u'iam.projects.serviceAccounts.identityBindings.create',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}/identityBindings',
+        request_field=u'createServiceAccountIdentityBindingRequest',
+        request_type_name=u'IamProjectsServiceAccountsIdentityBindingsCreateRequest',
+        response_type_name=u'ServiceAccountIdentityBinding',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a.
+ServiceAccountIdentityBinding.
+
+      Args:
+        request: (IamProjectsServiceAccountsIdentityBindingsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings/{identityBindingsId}',
+        http_method=u'DELETE',
+        method_id=u'iam.projects.serviceAccounts.identityBindings.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'IamProjectsServiceAccountsIdentityBindingsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the.
+ServiceAccountIdentityBinding
+for a service account.
+
+      Args:
+        request: (IamProjectsServiceAccountsIdentityBindingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAccountIdentityBinding) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings/{identityBindingsId}',
+        http_method=u'GET',
+        method_id=u'iam.projects.serviceAccounts.identityBindings.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'IamProjectsServiceAccountsIdentityBindingsGetRequest',
+        response_type_name=u'ServiceAccountIdentityBinding',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the.
+ServiceAccountIdentityBindings
+for a service account.
+
+      Args:
+        request: (IamProjectsServiceAccountsIdentityBindingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServiceAccountIdentityBindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings',
+        http_method=u'GET',
+        method_id=u'iam.projects.serviceAccounts.identityBindings.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}/identityBindings',
+        request_field='',
+        request_type_name=u'IamProjectsServiceAccountsIdentityBindingsListRequest',
+        response_type_name=u'ListServiceAccountIdentityBindingsResponse',
+        supports_download=False,
+    )
+
   class ProjectsServiceAccountsKeysService(base_api.BaseApiService):
     """Service class for the projects_serviceAccounts_keys resource."""
 
@@ -457,7 +671,7 @@ with the role are removed.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a ServiceAccountKey.
+      r"""Creates a ServiceAccountKey.
 and returns it.
 
       Args:
@@ -485,7 +699,7 @@ and returns it.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a ServiceAccountKey.
+      r"""Deletes a ServiceAccountKey.
 
       Args:
         request: (IamProjectsServiceAccountsKeysDeleteRequest) input message
@@ -512,7 +726,7 @@ and returns it.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the ServiceAccountKey.
+      r"""Gets the ServiceAccountKey.
 by key id.
 
       Args:
@@ -540,7 +754,7 @@ by key id.
     )
 
     def List(self, request, global_params=None):
-      """Lists ServiceAccountKeys.
+      r"""Lists ServiceAccountKeys.
 
       Args:
         request: (IamProjectsServiceAccountsKeysListRequest) input message
@@ -566,6 +780,36 @@ by key id.
         supports_download=False,
     )
 
+    def Upload(self, request, global_params=None):
+      r"""Upload public key for a given service account.
+This rpc will create a
+ServiceAccountKey that has the
+provided public key and returns it.
+
+      Args:
+        request: (IamProjectsServiceAccountsKeysUploadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAccountKey) The response message.
+      """
+      config = self.GetMethodConfig('Upload')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Upload.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys:upload',
+        http_method=u'POST',
+        method_id=u'iam.projects.serviceAccounts.keys.upload',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}/keys:upload',
+        request_field=u'uploadServiceAccountKeyRequest',
+        request_type_name=u'IamProjectsServiceAccountsKeysUploadRequest',
+        response_type_name=u'ServiceAccountKey',
+        supports_download=False,
+    )
+
   class ProjectsServiceAccountsService(base_api.BaseApiService):
     """Service class for the projects_serviceAccounts resource."""
 
@@ -577,7 +821,7 @@ by key id.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a ServiceAccount.
+      r"""Creates a ServiceAccount.
 and returns it.
 
       Args:
@@ -605,7 +849,7 @@ and returns it.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a ServiceAccount.
+      r"""Deletes a ServiceAccount.
 
       Args:
         request: (IamProjectsServiceAccountsDeleteRequest) input message
@@ -631,8 +875,88 @@ and returns it.
         supports_download=False,
     )
 
+    def Disable(self, request, global_params=None):
+      r"""DisableServiceAccount is currently in the alpha launch stage.
+
+Disables a ServiceAccount,
+which immediately prevents the service account from authenticating and
+gaining access to APIs.
+
+Disabled service accounts can be safely restored by using
+EnableServiceAccount at any point. Deleted service accounts cannot be
+restored using this method.
+
+Disabling a service account that is bound to VMs, Apps, Functions, or
+other jobs will cause those jobs to lose access to resources if they are
+using the disabled service account.
+
+To improve reliability of your services and avoid unexpected outages, it
+is recommended to first disable a service account rather than delete it.
+After disabling the service account, wait at least 24 hours to verify there
+are no unintended consequences, and then delete the service account.
+
+      Args:
+        request: (IamProjectsServiceAccountsDisableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Disable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Disable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:disable',
+        http_method=u'POST',
+        method_id=u'iam.projects.serviceAccounts.disable',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:disable',
+        request_field=u'disableServiceAccountRequest',
+        request_type_name=u'IamProjectsServiceAccountsDisableRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Enable(self, request, global_params=None):
+      r"""EnableServiceAccount is currently in the alpha launch stage.
+
+ Restores a disabled ServiceAccount
+ that has been manually disabled by using DisableServiceAccount. Service
+ accounts that have been disabled by other means or for other reasons,
+ such as abuse, cannot be restored using this method.
+
+ EnableServiceAccount will have no effect on a service account that is
+ not disabled.  Enabling an already enabled service account will have no
+ effect.
+
+      Args:
+        request: (IamProjectsServiceAccountsEnableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Enable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Enable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:enable',
+        http_method=u'POST',
+        method_id=u'iam.projects.serviceAccounts.enable',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:enable',
+        request_field=u'enableServiceAccountRequest',
+        request_type_name=u'IamProjectsServiceAccountsEnableRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
-      """Gets a ServiceAccount.
+      r"""Gets a ServiceAccount.
 
       Args:
         request: (IamProjectsServiceAccountsGetRequest) input message
@@ -659,8 +983,21 @@ and returns it.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Returns the IAM access control policy for a.
+      r"""Returns the Cloud IAM access control policy for a.
 ServiceAccount.
+
+Note: Service accounts are both
+[resources and
+identities](/iam/docs/service-accounts#service_account_permissions). This
+method treats the service account as a resource. It returns the Cloud IAM
+policy that reflects what members have access to the service account.
+
+This method does not return what resources the service account has access
+to. To see if a service account has access to a resource, call the
+`getIamPolicy` method on the target resource. For example, to view grants
+for a project, call the
+[projects.getIamPolicy](/resource-manager/reference/rest/v1/projects/getIamPolicy)
+method.
 
       Args:
         request: (IamProjectsServiceAccountsGetIamPolicyRequest) input message
@@ -678,7 +1015,7 @@ ServiceAccount.
         method_id=u'iam.projects.serviceAccounts.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'IamProjectsServiceAccountsGetIamPolicyRequest',
@@ -687,7 +1024,7 @@ ServiceAccount.
     )
 
     def List(self, request, global_params=None):
-      """Lists ServiceAccounts for a project.
+      r"""Lists ServiceAccounts for a project.
 
       Args:
         request: (IamProjectsServiceAccountsListRequest) input message
@@ -713,9 +1050,58 @@ ServiceAccount.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Patches a ServiceAccount.
+
+Currently, only the following fields are updatable:
+`display_name` and `description`.
+
+Only fields specified in the request are guaranteed to be returned in
+the response. Other fields in the response may be empty.
+
+Note: The field mask is required.
+
+      Args:
+        request: (IamProjectsServiceAccountsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAccount) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}',
+        http_method=u'PATCH',
+        method_id=u'iam.projects.serviceAccounts.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field=u'patchServiceAccountRequest',
+        request_type_name=u'IamProjectsServiceAccountsPatchRequest',
+        response_type_name=u'ServiceAccount',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the IAM access control policy for a.
+      r"""Sets the Cloud IAM access control policy for a.
 ServiceAccount.
+
+Note: Service accounts are both
+[resources and
+identities](/iam/docs/service-accounts#service_account_permissions). This
+method treats the service account as a resource. Use it to grant members
+access to the service account, such as when they need to impersonate it.
+
+This method does not grant the service account access to other resources,
+such as projects. To grant a service account access to resources, include
+the service account in the Cloud IAM policy for the desired resource, then
+call the appropriate `setIamPolicy` method on the target resource. For
+example, to grant a service account access to a project, call the
+[projects.setIamPolicy](/resource-manager/reference/rest/v1/projects/setIamPolicy)
+method.
 
       Args:
         request: (IamProjectsServiceAccountsSetIamPolicyRequest) input message
@@ -742,7 +1128,11 @@ ServiceAccount.
     )
 
     def SignBlob(self, request, global_params=None):
-      """Signs a blob using a service account's system-managed private key.
+      r"""**Note**: This method is in the process of being deprecated. Call the.
+[`signBlob()`](/iam/credentials/reference/rest/v1/projects.serviceAccounts/signBlob)
+method of the Cloud IAM Service Account Credentials API instead.
+
+Signs a blob using a service account's system-managed private key.
 
       Args:
         request: (IamProjectsServiceAccountsSignBlobRequest) input message
@@ -769,7 +1159,11 @@ ServiceAccount.
     )
 
     def SignJwt(self, request, global_params=None):
-      """Signs a JWT using a service account's system-managed private key.
+      r"""**Note**: This method is in the process of being deprecated. Call the.
+[`signJwt()`](/iam/credentials/reference/rest/v1/projects.serviceAccounts/signJwt)
+method of the Cloud IAM Service Account Credentials API instead.
+
+Signs a JWT using a service account's system-managed private key.
 
 If no expiry time (`exp`) is provided in the `SignJwtRequest`, IAM sets an
 an expiry time of one hour by default. If you request an expiry time of
@@ -800,7 +1194,7 @@ more than one hour, the request will fail.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Tests the specified permissions against the IAM access control policy.
+      r"""Tests the specified permissions against the IAM access control policy.
 for a ServiceAccount.
 
       Args:
@@ -827,12 +1221,43 @@ for a ServiceAccount.
         supports_download=False,
     )
 
+    def Undelete(self, request, global_params=None):
+      r"""Restores a deleted ServiceAccount.
+This is to be used as an action of last resort.  A service account may
+not always be restorable.
+
+      Args:
+        request: (IamProjectsServiceAccountsUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UndeleteServiceAccountResponse) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:undelete',
+        http_method=u'POST',
+        method_id=u'iam.projects.serviceAccounts.undelete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:undelete',
+        request_field=u'undeleteServiceAccountRequest',
+        request_type_name=u'IamProjectsServiceAccountsUndeleteRequest',
+        response_type_name=u'UndeleteServiceAccountResponse',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
-      """Updates a ServiceAccount.
+      r"""Note: This method is in the process of being deprecated. Use.
+PatchServiceAccount instead.
+
+Updates a ServiceAccount.
 
 Currently, only the following fields are updatable:
-`display_name` .
-The `etag` is mandatory.
+`display_name` and `description`.
 
       Args:
         request: (ServiceAccount) input message
@@ -879,7 +1304,7 @@ The `etag` is mandatory.
           }
 
     def Get(self, request, global_params=None):
-      """Gets a Role definition.
+      r"""Gets a Role definition.
 
       Args:
         request: (IamRolesGetRequest) input message
@@ -906,7 +1331,7 @@ The `etag` is mandatory.
     )
 
     def List(self, request, global_params=None):
-      """Lists the Roles defined on a resource.
+      r"""Lists the Roles defined on a resource.
 
       Args:
         request: (IamRolesListRequest) input message
@@ -932,7 +1357,7 @@ The `etag` is mandatory.
     )
 
     def QueryGrantableRoles(self, request, global_params=None):
-      """Queries roles that can be granted on a particular resource.
+      r"""Queries roles that can be granted on a particular resource.
 A role is grantable if it can be used as the role in a binding for a policy
 for that resource.
 

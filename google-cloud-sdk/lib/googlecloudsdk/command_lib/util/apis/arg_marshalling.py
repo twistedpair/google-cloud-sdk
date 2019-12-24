@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,19 +15,73 @@
 
 """Classes that generate and parse arguments for apitools messages."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from apitools.base.protorpclite import messages
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope.concepts import concept_parsers
+from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import multitype
 from googlecloudsdk.command_lib.util.apis import arg_utils
-from googlecloudsdk.command_lib.util.apis import resource_arg_schema
+from googlecloudsdk.command_lib.util.apis import update
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema
+from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_property
+import six
 
 
 class Error(Exception):
   """Base class for this module's exceptions."""
   pass
+
+
+def _GetLabelsClass(message, api_field):
+  return arg_utils.GetFieldFromMessage(message, api_field).type
+
+
+def _ParseLabelsIntoCreateMessage(message, args, api_field):
+  labels_cls = _GetLabelsClass(message, api_field)
+  labels_field = labels_util.ParseCreateArgs(args, labels_cls)
+  arg_utils.SetFieldInMessage(message, api_field, labels_field)
+
+
+def _AddLabelsToUpdateMask(static_field, update_mask_path):
+  if (update_mask_path not in static_field) or (
+      not static_field[update_mask_path]):
+    static_field[update_mask_path] = 'labels'
+    return
+
+  if 'labels' in static_field[update_mask_path].split(','):
+    return
+
+  static_field[
+      update_mask_path] = static_field[update_mask_path] + ',' + 'labels'
+
+
+def _RetrieveFieldValueFromMessage(message, api_field):
+  path = api_field.split('.')
+  for field_name in path:
+    try:
+      message = getattr(message, field_name)
+    except AttributeError:
+      raise AttributeError(
+          'The message does not have field specified in {}.'.format(api_field))
+  return message
+
+
+def _ParseLabelsIntoUpdateMessage(message, args, api_field):
+  existing_labels = _RetrieveFieldValueFromMessage(message, api_field)
+  diff = labels_util.Diff.FromUpdateArgs(args)
+  label_cls = _GetLabelsClass(message, api_field)
+  update_result = diff.Apply(label_cls, existing_labels)
+  if not update_result.needs_update:
+    return False
+  arg_utils.SetFieldInMessage(message, api_field, update_result.labels)
+  return True
 
 
 class DeclarativeArgumentGenerator(object):
@@ -64,8 +119,16 @@ class DeclarativeArgumentGenerator(object):
     args.extend(self._GenerateResourceArg())
     return args
 
-  def CreateRequest(self, namespace, static_fields=None,
-                    resource_method_params=None):
+  def CreateRequest(self,
+                    namespace,
+                    static_fields=None,
+                    resource_method_params=None,
+                    labels=None,
+                    command_type=None,
+                    use_relative_name=True,
+                    override_method=None,
+                    parse_resource_into_request=True,
+                    existing_message=None):
     """Generates the request object for the method call from the parsed args.
 
     Args:
@@ -77,20 +140,42 @@ class DeclarativeArgumentGenerator(object):
       resource_method_params: {str: str}, A mapping of API method parameter name
         to resource ref attribute name when the API method uses non-standard
         names.
+      labels: The labels section of the command spec.
+      command_type: Type of the command, i.e. CREATE, UPDATE.
+      use_relative_name: Use ref.RelativeName() if True otherwise ref.Name().
+      override_method: APIMethod, The method other than self.method, this is
+        used when the command has more than one API call.
+      parse_resource_into_request: bool, True if the resource reference should
+        be automatically parsed into the request.
+      existing_message: the apitools message returned from server, which is used
+        to construct the to-be-modified message when the command follows
+        get-modify-update pattern.
 
     Returns:
       The apitools message to be send to the method.
     """
-    static_fields = static_fields or {}
-    resource_method_params = resource_method_params or {}
-    message_type = self.method.GetRequestType()
+    message_type = (override_method or self.method).GetRequestType()
     message = message_type()
 
+    # If an apitools message is provided, use the existing one by default
+    # instead of creating an empty one.
+    if existing_message:
+      message = arg_utils.ParseExistingMessageIntoMessage(
+          message, existing_message, self.method)
+
+    # Add labels into message
+    if labels:
+      if command_type == yaml_command_schema.CommandType.CREATE:
+        _ParseLabelsIntoCreateMessage(message, namespace, labels.api_field)
+      elif command_type == yaml_command_schema.CommandType.UPDATE:
+        need_update = _ParseLabelsIntoUpdateMessage(message, namespace,
+                                                    labels.api_field)
+        if need_update:
+          update_mask_path = update.GetMaskFieldPath(override_method)
+          _AddLabelsToUpdateMask(static_fields, update_mask_path)
+
     # Insert static fields into message.
-    for field_path, value in static_fields.iteritems():
-      field = arg_utils.GetFieldFromMessage(message_type, field_path)
-      arg_utils.SetFieldInMessage(
-          message, field_path, arg_utils.ConvertValue(field, value))
+    arg_utils.ParseStaticFieldsIntoMessage(message, static_fields=static_fields)
 
     # Parse api Fields into message.
     self._ParseArguments(message, namespace)
@@ -99,25 +184,14 @@ class DeclarativeArgumentGenerator(object):
     if not ref:
       return message
 
-    # This only happens for non-list methods where the API method params don't
-    # match the resource parameters (basically only create methods). In this
-    # case, we re-parse the resource as its parent collection (to fill in the
-    # API parameters, and we insert the name of the resource itself into the
-    # correct position in the body of the request method.
-    if (self.method.resource_argument_collection.detailed_params !=
-        self.method.request_collection.detailed_params):
-      # Sets the name of the resource in the message object body.
-      arg_utils.SetFieldInMessage(
-          message, self.resource_arg.request_id_field, ref.Name())
-      # Create a reference for the parent resource to put in the API params.
-      ref = ref.Parent(
-          parent_collection=self.method.request_collection.full_name)
-
     # For each method path field, get the value from the resource reference.
-    relative_name = ref.RelativeName()
-    for p in self.method.params:
-      value = getattr(ref, resource_method_params.get(p, p), relative_name)
-      arg_utils.SetFieldInMessage(message, p, value)
+    if parse_resource_into_request:
+      arg_utils.ParseResourceIntoMessage(
+          ref, self.method, message,
+          resource_method_params=resource_method_params,
+          request_id_field=self.resource_arg.request_id_field,
+          use_relative_name=use_relative_name)
+
     return message
 
   def GetRequestResourceRef(self, namespace):
@@ -148,6 +222,7 @@ class DeclarativeArgumentGenerator(object):
     return resources.REGISTRY.Parse(
         id_value,
         collection=self.method.collection.full_name,
+        api_version=self.method.collection.api_version,
         params=parent_ref.AsDict())
 
   def Limit(self, namespace):
@@ -163,6 +238,26 @@ class DeclarativeArgumentGenerator(object):
     message = self.method.GetRequestType()
     return [arg.Generate(message) for arg in self.arg_info]
 
+  def _GetAnchorArgName(self):
+    """Get the anchor argument name for the resource spec."""
+    if self.resource_arg.name_override:
+      flag_name = self.resource_arg.name_override
+    elif hasattr(self.resource_spec, 'anchor'):
+      flag_name = self.resource_spec.anchor.name
+    else:
+      flag_name = self.resource_arg.name or self.resource_spec.name
+
+    # If left unspecified, decide whether the resource is positional based on
+    # the method.
+    if self.resource_arg.is_positional is None:
+      anchor_arg_is_flag = self.method.IsList()
+    else:
+      anchor_arg_is_flag = not self.resource_arg.is_positional
+    anchor_arg_name = (
+        '--' + flag_name if anchor_arg_is_flag
+        else flag_name)
+    return anchor_arg_name
+
   def _GenerateResourceArg(self):
     """Generates the flags to add to the parser that appear in the method path.
 
@@ -175,22 +270,31 @@ class DeclarativeArgumentGenerator(object):
     # The anchor arg is positional unless explicitly overridden by the
     # attributes or for list commands (where everything should be a flag since
     # the parent resource collection is being used).
-    anchor_arg_is_flag = (
-        not self.resource_arg.is_positional or self.method.IsList())
-    anchor_arg_name = (
-        '--' + self.resource_spec.anchor.name if anchor_arg_is_flag
-        else self.resource_spec.anchor.name)
-    no_gen = {n: '' for n in resource_arg_schema.IGNORED_FIELDS}
+    anchor_arg_name = self._GetAnchorArgName()
+    no_gen = {
+        n: ''
+        for _, n in six.iteritems(concepts.IGNORED_FIELDS)
+        if n in self.resource_arg.attribute_names
+    }
     no_gen.update({n: '' for n in self.resource_arg.removed_flags})
-
-    concept = concept_parsers.ConceptParser([
-        concept_parsers.ResourcePresentationSpec(
+    command_level_fallthroughs = {}
+    concept_parsers.UpdateFallthroughsMap(
+        command_level_fallthroughs,
+        anchor_arg_name,
+        self.resource_arg.command_level_fallthroughs)
+    presentation_spec_class = presentation_specs.ResourcePresentationSpec
+    if isinstance(self.resource_spec, multitype.MultitypeResourceSpec):
+      presentation_spec_class = (
+          presentation_specs.MultitypeResourcePresentationSpec)
+    concept = concept_parsers.ConceptParser(
+        [presentation_spec_class(
             anchor_arg_name,
             self.resource_spec,
             self.resource_arg.group_help,
             prefixes=False,
             required=True,
-            flag_name_overrides=no_gen)])
+            flag_name_overrides=no_gen)],
+        command_level_fallthroughs=command_level_fallthroughs)
     return [concept]
 
   def _ParseArguments(self, message, namespace):
@@ -216,8 +320,11 @@ class DeclarativeArgumentGenerator(object):
     if not self.resource_arg:
       return
 
-    return arg_utils.GetFromNamespace(
-        namespace.CONCEPTS, self.resource_spec.anchor.name).Parse()
+    result = arg_utils.GetFromNamespace(
+        namespace.CONCEPTS, self._GetAnchorArgName()).Parse()
+    if isinstance(result, multitype.TypedConceptResult):
+      result = result.result
+    return result
 
 
 class AutoArgumentGenerator(object):
@@ -265,6 +372,7 @@ class AutoArgumentGenerator(object):
     args = []
 
     def _UpdateArgs(arguments):
+      """Update args."""
       for arg in arguments:
         try:
           name = arg.name
@@ -365,6 +473,8 @@ class AutoArgumentGenerator(object):
         attributes = yaml_command_schema.Argument(name, name, field_help)
         arg = arg_utils.GenerateFlag(field, attributes, fix_bools=False,
                                      category='MESSAGE')
+        if not arg.kwargs.get('help'):
+          arg.kwargs['help'] = 'API doc needs help for field [{}].'.format(name)
         args.append(arg)
     return args
 
@@ -466,6 +576,7 @@ class AutoArgumentGenerator(object):
     defaults.update(params)
     return resources.REGISTRY.Parse(
         r, collection=self.method.request_collection.full_name,
+        api_version=self.method.request_collection.api_version,
         params=defaults)
 
   def _GetArgName(self, field_name, field_help=None):
@@ -487,6 +598,3 @@ class AutoArgumentGenerator(object):
         field_name.lower().endswith('request')):
       return 'request'
     return field_name
-
-
-

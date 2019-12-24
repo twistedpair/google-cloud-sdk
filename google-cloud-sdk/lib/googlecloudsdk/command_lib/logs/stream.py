@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,13 +22,22 @@ we want to generate an ordered list of logs.  So, we choose to not fetch logs
 in the most recent N seconds.  We also decided to skip logs that are returned
 too late (their timestamp is more than N seconds old).
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import datetime
 import time
 
 import enum
 
 from googlecloudsdk.api_lib.logging import common as logging_common
+from googlecloudsdk.core import log
 from googlecloudsdk.core.util import times
+
+
+_UNIX_ZERO_TIMESTAMP = '1970-01-01T01:00:00.000000000Z'
 
 
 class LogPosition(object):
@@ -37,8 +47,8 @@ class LogPosition(object):
   returned in order of insert_id.
   """
 
-  def __init__(self):
-    self.timestamp = '1970-01-01T01:00:00.000000000Z'
+  def __init__(self, timestamp=None):
+    self.timestamp = timestamp or _UNIX_ZERO_TIMESTAMP
     self.insert_id = ''
     self.need_insert_id_in_lb_filter = False
 
@@ -169,7 +179,8 @@ class LogFetcher(object):
   LOG_BATCH_SIZE = 1000  # API max
 
   def __init__(self, filters=None, polling_interval=10,
-               continue_func=lambda x: True, continue_interval=None):
+               continue_func=lambda x: True, continue_interval=None,
+               num_prev_entries=None):
     """Initializes the LogFetcher.
 
     Args:
@@ -181,12 +192,16 @@ class LogFetcher(object):
       continue_interval: int, how often to check whether the job is complete
         using continue_function. If not provided, defaults to the same as the
         polling interval.
+      num_prev_entries: int, if provided, will first perform a decending
+        query to set a lower bound timestamp equal to that of the n:th entry.
     """
     self.base_filters = filters or []
     self.polling_interval = polling_interval
     self.continue_interval = continue_interval or polling_interval
     self.should_continue = continue_func
-    self.log_position = LogPosition()
+    start_timestamp = _GetTailStartingTimestamp(filters, num_prev_entries)
+    log.debug('start timestamp: {}'.format(start_timestamp))
+    self.log_position = LogPosition(timestamp=start_timestamp)
 
   def GetLogs(self):
     """Retrieves a batch of logs.
@@ -229,8 +244,8 @@ class LogFetcher(object):
         logs = self.GetLogs()
         if logs:
           empty_polls = 0
-          for log in logs:
-            yield log
+          for log_entry in logs:
+            yield log_entry
         else:
           empty_polls += 1
       if self._Tasks.CHECK_CONTINUE in tasks:
@@ -238,3 +253,25 @@ class LogFetcher(object):
         if not should_continue:
           break
       tasks = timer.Wait()
+
+
+def _GetTailStartingTimestamp(filters, offset=None):
+  """Returns the starting timestamp to start streaming logs from.
+
+  Args:
+    filters: [str], existing filters, should not contain timestamp constraints.
+    offset: int, how many entries ago we should pick the starting timestamp.
+      If not provided, unix time zero will be returned.
+
+  Returns:
+    str, A timestamp that can be used as lower bound or None if no lower bound
+      is necessary.
+  """
+  if not offset:
+    return None
+  entries = list(logging_common.FetchLogs(log_filter=' AND '.join(filters),
+                                          order_by='DESC',
+                                          limit=offset))
+  if len(entries) < offset:
+    return None
+  return list(entries)[-1].timestamp

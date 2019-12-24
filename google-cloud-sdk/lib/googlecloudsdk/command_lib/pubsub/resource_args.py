@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Shared resource flags for Cloud Pub/Sub commands."""
-from googlecloudsdk.calliope.concepts import concept_parsers
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.calliope.concepts import deps
-from googlecloudsdk.core import properties
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
 def SubscriptionAttributeConfig():
@@ -30,28 +36,20 @@ def TopicAttributeConfig():
       help_text='Name of the topic.')
 
 
-def ProjectAttributeConfig():
-  return concepts.ResourceParameterAttributeConfig(
-      name='project',
-      help_text='The Cloud project for the {resource}. If not set, it will '
-                'use the project set in properties.',
-      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
-
-
 def GetSubscriptionResourceSpec():
   return concepts.ResourceSpec(
       'pubsub.projects.subscriptions',
       resource_name='subscription',
       subscriptionsId=SubscriptionAttributeConfig(),
-      projectsId=ProjectAttributeConfig())
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
-def GetTopicResourceSpec():
+def GetTopicResourceSpec(name='topic'):
   return concepts.ResourceSpec(
       'pubsub.projects.topics',
-      resource_name='topic',
+      resource_name=name,
       topicsId=TopicAttributeConfig(),
-      projectsId=ProjectAttributeConfig())
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
 def CreateSubscriptionResourceArg(verb, plural=False):
@@ -68,12 +66,13 @@ def CreateSubscriptionResourceArg(verb, plural=False):
     help_stem = 'One or more subscriptions'
   else:
     help_stem = 'Name of the subscription'
-  return concept_parsers.ResourcePresentationSpec(
+  return presentation_specs.ResourcePresentationSpec(
       'subscription',
       GetSubscriptionResourceSpec(),
       '{} {}'.format(help_stem, verb),
       required=True,
-      plural=plural)
+      plural=plural,
+      prefixes=True)
 
 
 def AddSubscriptionResourceArg(parser, verb, plural=False):
@@ -89,7 +88,11 @@ def AddSubscriptionResourceArg(parser, verb, plural=False):
   ).AddToParser(parser)
 
 
-def CreateTopicResourceArg(verb, positional=True, plural=False):
+def CreateTopicResourceArg(verb,
+                           positional=True,
+                           plural=False,
+                           required=True,
+                           flag_name='topic'):
   """Create a resource argument for a Cloud Pub/Sub Topic.
 
   Args:
@@ -98,26 +101,29 @@ def CreateTopicResourceArg(verb, positional=True, plural=False):
       than a flag. If not positional, this also creates a '--topic-project' flag
       as subscriptions and topics do not need to be in the same project.
     plural: bool, if True, use a resource argument that returns a list.
+    required: bool, if True, create topic resource arg will be required.
+    flag_name: str, name of the topic resource arg (singular).
 
   Returns:
     the PresentationSpec for the resource argument.
   """
   if positional:
-    name = 'topic'
+    name = flag_name
     flag_name_overrides = {}
   else:
-    name = '--topic' if not plural else '--topics'
-    flag_name_overrides = {'project': '--topic-project'}
+    name = '--' + flag_name if not plural else '--' + flag_name + 's'
+    flag_name_overrides = {'project': '--' + flag_name + '-project'}
   help_stem = 'Name of the topic'
   if plural:
     help_stem = 'One or more topics'
-  return concept_parsers.ResourcePresentationSpec(
+  return presentation_specs.ResourcePresentationSpec(
       name,
-      GetTopicResourceSpec(),
+      GetTopicResourceSpec(flag_name),
       '{} {}'.format(help_stem, verb),
-      required=True,
+      required=required,
       flag_name_overrides=flag_name_overrides,
-      plural=plural)
+      plural=plural,
+      prefixes=True)
 
 
 def AddTopicResourceArg(parser, verb, positional=True, plural=False):

@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,11 +41,15 @@ Pythonicness of the Transform*() methods:
       Exceptions for arguments explicitly under the caller's control are OK.
 """
 
-import httplib
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.core.resource import resource_transform
+import six
 
 
 def TransformFirewallRule(r, undefined=''):
@@ -83,11 +88,12 @@ def TransformImageAlias(r, undefined=''):
   Returns:
     A comma-separated list of alias names for the image in r.
   """
-  name = r.get('name', None)
+  name = resource_transform.GetKeyValue(r, 'name', None)
   if name is None:
     return undefined
   project = resource_transform.TransformScope(
-      r.get('selfLink', ''), 'projects').split('/')[0]
+      resource_transform.GetKeyValue(r, 'selfLink', ''),
+      'projects').split('/')[0]
   aliases = [alias for alias, value in constants.IMAGE_ALIASES.items()
              if name.startswith(value.name_prefix)
              and value.project == project]
@@ -105,8 +111,9 @@ def TransformLocation(r, undefined=''):
     The region or zone name.
   """
   for scope in ('zone', 'region'):
-    if scope in r:
-      return resource_transform.TransformBaseName(r[scope], undefined)
+    location = resource_transform.GetKeyValue(r, scope, None)
+    if location:
+      return resource_transform.TransformBaseName(location, undefined)
   return undefined
 
 
@@ -121,27 +128,29 @@ def TransformLocationScope(r, undefined=''):
     The location scope name, either region or zone.
   """
   for scope in ('zone', 'region'):
-    if scope in r:
+    location = resource_transform.GetKeyValue(r, scope, None)
+    if location:
       return scope
   return undefined
 
 
-def TransformMachineType(r):
+def TransformMachineType(r, undefined=''):
   """Return the formatted name for a machine type.
 
   Args:
     r: JSON-serializable object.
+    undefined: Returns this value if the resource cannot be formatted.
 
   Returns:
     The formatted name for a machine type.
   """
-  if not isinstance(r, basestring):
-    return r
+  if not isinstance(r, six.string_types):
+    return undefined
   custom_cpu, custom_ram = instance_utils.GetCpuRamFromCustomName(r)
   if not custom_cpu or not custom_ram:
     return r
   # Restricting output to 2 decimal places
-  custom_ram_gb = '{0:.2f}'.format(float(custom_ram) / (2 ** 10))
+  custom_ram_gb = '{0:.2f}'.format(float(custom_ram) / (2**10))
   return 'custom ({0} vCPU, {1} GiB)'.format(custom_cpu, custom_ram_gb)
 
 
@@ -181,8 +190,9 @@ def TransformOperationHttpStatus(r, undefined=''):
   Returns:
     The HTTP response code of the operation in r.
   """
-  if isinstance(r, dict) and r.get('status', None) == 'DONE':
-    return r.get('httpErrorStatusCode', None) or httplib.OK
+  if resource_transform.GetKeyValue(r, 'status', None) == 'DONE':
+    return (resource_transform.GetKeyValue(r, 'httpErrorStatusCode', None) or
+            200)  # httplib.OK
   return undefined
 
 
@@ -213,7 +223,10 @@ def TransformName(r, undefined=''):
     A project name for selfLink from r.
   """
   if r:
-    return r.split('/')[-1]
+    try:
+      return r.split('/')[-1]
+    except AttributeError:
+      pass
   return undefined
 
 
@@ -227,12 +240,10 @@ def TransformQuota(r, undefined=''):
   Returns:
     The quota in r as usage/limit.
   """
-  if not r:
-    return undefined
-  usage = r.get('usage', None)
+  usage = resource_transform.GetKeyValue(r, 'usage', None)
   if usage is None:
     return undefined
-  limit = r.get('limit', None)
+  limit = resource_transform.GetKeyValue(r, 'limit', None)
   if limit is None:
     return undefined
   try:
@@ -240,14 +251,18 @@ def TransformQuota(r, undefined=''):
       return '{0}/{1}'.format(int(usage), int(limit))
     return '{0:.2f}/{1:.2f}'.format(usage, limit)
   except (TypeError, ValueError):
-    return undefined
+    pass
+  return undefined
 
 
 def TransformScopedSuffixes(uris, undefined=''):
   """Get just the scoped part of the object the uri refers to."""
 
   if uris:
-    return [path_simplifier.ScopedSuffix(uri) for uri in uris]
+    try:
+      return sorted([path_simplifier.ScopedSuffix(uri) for uri in uris])
+    except TypeError:
+      pass
   return undefined
 
 
@@ -261,11 +276,33 @@ def TransformStatus(r, undefined=''):
   Returns:
     The machine status in r with deprecation information if applicable.
   """
-  status = r.get('status', None)
-  deprecated = r.get('deprecated', '')
+  status = resource_transform.GetKeyValue(r, 'status', None)
+  deprecated = resource_transform.GetKeyValue(r, 'deprecated', '')
   if deprecated:
     return '{0} ({1})'.format(status, deprecated.get('state', ''))
   return status or undefined
+
+
+def TransformVpnTunnelGateway(vpn_tunnel, undefined=''):
+  """Returns the gateway for the specified VPN tunnel resource if applicable.
+
+  Args:
+    vpn_tunnel: JSON-serializable object of a VPN tunnel.
+    undefined: Returns this value if the resource cannot be formatted.
+
+  Returns:
+    The VPN gateway information in the VPN tunnel object.
+  """
+  target_vpn_gateway = resource_transform.GetKeyValue(vpn_tunnel,
+                                                      'targetVpnGateway', None)
+  if target_vpn_gateway is not None:
+    return target_vpn_gateway
+
+  vpn_gateway = resource_transform.GetKeyValue(vpn_tunnel, 'vpnGateway', None)
+  if vpn_gateway is not None:
+    return vpn_gateway
+
+  return undefined
 
 
 def TransformZone(r, undefined=''):
@@ -286,12 +323,15 @@ def TransformZone(r, undefined=''):
 def TransformTypeSuffix(uri, undefined=''):
   """Get the type and the name of the object the uri refers to."""
 
-  # Since the path is assumed valid, we can just take the last two pieces.
-  return '/'.join(uri.split('/')[-2:]) or undefined
+  try:
+    # Since the path is assumed valid, we can just take the last two pieces.
+    return '/'.join(uri.split('/')[-2:]) or undefined
+  except (AttributeError, IndexError, TypeError):
+    pass
+  return undefined
 
 
 _TRANSFORMS = {
-
     'firewall_rule': TransformFirewallRule,
     'image_alias': TransformImageAlias,
     'location': TransformLocation,
@@ -305,6 +345,7 @@ _TRANSFORMS = {
     'scoped_suffixes': TransformScopedSuffixes,
     'status': TransformStatus,
     'type_suffix': TransformTypeSuffix,
+    'vpn_tunnel_gateway': TransformVpnTunnelGateway,
     'zone': TransformZone,
 }
 

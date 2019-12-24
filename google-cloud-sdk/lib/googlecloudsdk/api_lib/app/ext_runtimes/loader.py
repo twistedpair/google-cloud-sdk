@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Utilities for loading runtime defs from git."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 import contextlib
 import os
@@ -26,6 +31,7 @@ from dulwich import repo
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+import six
 
 # Fake out 'WindowsError' if it doesn't exist (the WindowsError exception
 # class only exists in Python on Windows, but we need to catch it in order to
@@ -77,14 +83,12 @@ def WrapClient(location):
     raise UnsupportedClientType(transport.__class__.__name__)
 
 
-class ClientWrapper(object):
+class ClientWrapper(six.with_metaclass(abc.ABCMeta, object)):
   """Base class for a git client wrapper.
 
   This provides a uniform interface around the various types of git clients
   from dulwich 0.10.1.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, transport, path):
     self._transport = transport
@@ -122,7 +126,7 @@ class HTTPClient(ClientWrapper):
     # work, at least until we get a more recent version of dulwich.
     # pylint:disable=protected-access
     url = self._transport._get_url(self._path)
-    refs, unused_capabilities = (
+    refs, unused_capabilities, url = (
         self._transport._discover_references(b'git-upload-pack', url))
     return refs
 
@@ -151,7 +155,7 @@ def _PullTags(local_repo, client_wrapper, target_dir):
   Raises:
     errors.HangupException: Hangup during communication to a remote repository.
   """
-  for ref, obj_id in client_wrapper.GetRefs().iteritems():
+  for ref, obj_id in six.iteritems(client_wrapper.GetRefs()):
     if ref.startswith('refs/tags/'):
       try:
         local_repo[ref] = obj_id
@@ -162,13 +166,13 @@ def _PullTags(local_repo, client_wrapper, target_dir):
   # Try to get the "latest" tag (latest released version)
   revision = None
   tag = None
-  for tag in ('refs/tags/latest', 'refs/heads/master'):
+  for tag in (b'refs/tags/latest', b'refs/heads/master'):
     try:
       log.debug('looking up ref %s', tag)
       revision = local_repo[tag]
       break
     except KeyError:
-      log.warn('Unable to checkout branch %s', tag)
+      log.warning('Unable to checkout branch %s', tag)
 
   else:
     raise AssertionError('No "refs/heads/master" tag found in repository.')
@@ -245,6 +249,8 @@ def _CheckoutLatestVersion(target_dir, url):
       raise InvalidTargetDirectoryError(
           'Unable to checkout directory {0}: {1}'.format(target_dir,
                                                          ex.message))
+  except (AssertionError) as ex:
+    raise InvalidRepositoryError()
   finally:
     local_repo.close()
 
@@ -274,6 +280,6 @@ def InstallRuntimeDef(url, target_dir):
   try:
     _FetchRepo(target_dir, url)
     _CheckoutLatestVersion(target_dir, url)
-  except errors.HangupException as ex:
+  except (errors.HangupException, errors.GitProtocolError) as ex:
     raise RepositoryCommunicationError('An error occurred accessing '
                                        '{0}: {1}'.format(url, ex.message))

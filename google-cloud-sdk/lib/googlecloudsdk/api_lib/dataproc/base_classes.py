@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +15,12 @@
 
 """Base command classes for shared logic between gcloud dataproc commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 import os
-import urlparse
 
 from apitools.base.py import encoding
 
@@ -25,16 +29,15 @@ from googlecloudsdk.api_lib.dataproc import dataproc as dp
 from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.util import labels_util
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
+import six
+import six.moves.urllib.parse
 
 
-class JobSubmitter(base.Command):
+class JobSubmitter(six.with_metaclass(abc.ABCMeta, base.Command)):
   """Submit a job to a cluster."""
-
-  # TODO(b/36051033): much of this class should be moved to command_lib
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, *args, **kwargs):
     super(JobSubmitter, self).__init__(*args, **kwargs)
@@ -105,26 +108,25 @@ class JobSubmitter(base.Command):
   def _GetStagedFile(self, file_str):
     """Validate file URI and register it for uploading if it is local."""
     drive, _ = os.path.splitdrive(file_str)
-    uri = urlparse.urlsplit(file_str, allow_fragments=False)
+    uri = six.moves.urllib.parse.urlsplit(file_str, allow_fragments=False)
     # Determine the file is local to this machine if no scheme besides a drive
     # is passed. file:// URIs are interpreted as living on VMs.
     is_local = drive or not uri.scheme
     if not is_local:
-      # Non-local files are already staged.
-      # TODO(b/36057257): Validate scheme.
+      # Non-local files are already staged. Let the API determine URI validation
       return file_str
 
     if not os.path.exists(file_str):
       raise files.Error('File Not Found: [{0}].'.format(file_str))
     basename = os.path.basename(file_str)
     self.files_to_stage.append(file_str)
-    staged_file = urlparse.urljoin(self._staging_dir, basename)
+    staged_file = six.moves.urllib.parse.urljoin(self._staging_dir, basename)
     return staged_file
 
   def ValidateAndStageFiles(self):
     """Validate file URIs and upload them if they are local."""
-    for file_type, file_or_files in self.files_by_type.iteritems():
-      # TODO(b/36049793): Validate file suffixes.
+    for file_type, file_or_files in six.iteritems(self.files_by_type):
+      # Let the API determine file validation
       if not file_or_files:
         continue
       elif isinstance(file_or_files, str):

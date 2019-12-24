@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,13 +15,15 @@
 
 """Flags and helpers for the compute disks commands."""
 
-import argparse
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 _DETAILED_SOURCE_SNAPSHOT_HELP = """\
-      A source snapshot used to create the disks. It is safe to
+      Source snapshot used to create the disks. It is safe to
       delete a snapshot after a disk has been created from the
       snapshot. In such cases, the disks will no longer reference
       the deleted snapshot. To get a list of snapshots in your
@@ -34,6 +37,21 @@ _DETAILED_SOURCE_SNAPSHOT_HELP = """\
       size of the disks.
 """
 
+_SOURCE_DISK_DETAILED_HELP = """\
+      Source disk used to create the disks. It is safe to
+      delete a source disk after a disk has been created from the
+      source disk. To get a list of disks in your current project,
+      run `gcloud compute disks list`. This flag is mutually
+      exclusive with *--image* and *--source-snapshot*.
+
+      When using this option, the size of the disks must be at least
+      as large as the source disk size. Use *--size* to adjust the
+      size of the disks.
+
+      The value for this option can be the name of a disk with the zone
+      specified via ``--source-disk-zone'' flag.
+"""
+
 
 DEFAULT_LIST_FORMAT = """\
     table(
@@ -45,6 +63,17 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
+MULTISCOPE_LIST_FORMAT = """
+    table(
+      name,
+      location(),
+      location_scope(),
+      sizeGb,
+      type.basename(),
+      status
+      )"""
+
+
 class SnapshotsCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
@@ -54,7 +83,7 @@ class SnapshotsCompleter(compute_completers.ListCommandCompleter):
         **kwargs)
 
 
-def MakeDiskArg(plural):
+def MakeDiskArgZonal(plural):
   return compute_flags.ResourceArgument(
       resource_name='disk',
       completer=compute_completers.DisksCompleter,
@@ -64,7 +93,7 @@ def MakeDiskArg(plural):
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
 
 
-def MakeDiskArgZonalOrRegional(plural):
+def MakeDiskArg(plural):
   return compute_flags.ResourceArgument(
       resource_name='disk',
       completer=compute_completers.DisksCompleter,
@@ -73,7 +102,7 @@ def MakeDiskArgZonalOrRegional(plural):
       zonal_collection='compute.disks',
       regional_collection='compute.regionDisks',
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
-      region_explanation=argparse.SUPPRESS)
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='snapshot',
@@ -82,5 +111,15 @@ SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     plural=False,
     required=False,
     global_collection='compute.snapshots',
-    short_help='A source snapshot used to create the disks.',
+    short_help='Source snapshot used to create the disks.',
     detailed_help=_DETAILED_SOURCE_SNAPSHOT_HELP,)
+
+SOURCE_DISK_ARG = compute_flags.ResourceArgument(
+    resource_name='source disk',
+    name='--source-disk',
+    completer=compute_completers.DisksCompleter,
+    short_help='Source disk used to create the disks.',
+    detailed_help=_SOURCE_DISK_DETAILED_HELP,
+    zonal_collection='compute.disks',
+    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
+    required=False)

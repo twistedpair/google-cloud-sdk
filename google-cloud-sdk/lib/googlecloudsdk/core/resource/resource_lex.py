@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -67,6 +68,10 @@ Typical resource usage:
     Process(key, args, operator, operand)
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import copy
 import re
 
@@ -74,6 +79,10 @@ from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.resource import resource_transform
+
+import six
+from six.moves import map  # pylint: disable=redefined-builtin
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 # Resource keys cannot contain unquoted operator characters.
@@ -539,7 +548,23 @@ class Lexer(object):
       required = not sep.isspace()
     return args
 
-  def Key(self):
+  def _CheckMapShorthand(self):
+    """Checks for N '*' chars shorthand for .map(N)."""
+    map_level = 0
+    while self.IsCharacter('*'):
+      map_level += 1
+    if not map_level:
+      return
+    # We have map_level '*'s. Do a simple text substitution on the input
+    # expression and let the lexer/parser handle map().
+    self._expr = '{}map({}).{}'.format(
+        self._expr[:self._position - map_level],
+        map_level,
+        self._expr[self._position:])
+    # Adjust the cursor to the beginning of the '*' chars just consumed.
+    self._position -= map_level
+
+  def KeyWithAttribute(self):
     """Parses a resource key from the expression.
 
     A resource key is a '.' separated list of names with optional [] slice or
@@ -563,16 +588,20 @@ class Lexer(object):
       ExpressionKeyError: The expression has a key syntax error.
 
     Returns:
-      The parsed key which is a list of string, int and/or None elements.
+      (key, attribute) The parsed key and attribute. attribute is the alias
+        attribute if there was an alias expansion, None otherwise.
     """
     key = []
+    attribute = None
     while not self.EndOfInput():
+      self._CheckMapShorthand()
       here = self.GetPosition()
       name = self.Token(_RESERVED_OPERATOR_CHARS, space=False)
       if name:
         is_function = self.IsCharacter('(', peek=True, eoi_ok=True)
         if not key and not is_function and name in self._defaults.aliases:
-          key.extend(self._defaults.aliases[name])
+          k, attribute = self._defaults.aliases[name]
+          key.extend(k)
         else:
           key.append(name)
       elif not self.IsCharacter('[', peek=True):
@@ -601,6 +630,11 @@ class Lexer(object):
         # Dangling '.' is not allowed.
         raise resource_exceptions.ExpressionSyntaxError(
             'Non-empty key name expected [{0}].'.format(self.Annotate()))
+    return key, attribute
+
+  def Key(self):
+    """Parses a resource key from the expression and returns the parsed key."""
+    key, _ = self.KeyWithAttribute()
     return key
 
   def _ParseSynthesize(self, args):
@@ -715,11 +749,11 @@ class Lexer(object):
               func_name, self.Annotate(here)))
     args = []
     kwargs = {}
-    doc = getattr(func, 'func_doc', None)
+    doc = getattr(func, '__doc__', None)
     if doc and resource_projection_spec.PROJECTION_ARG_DOC in doc:
       # The second transform arg is the caller projection.
       args.append(self._defaults)
-    if getattr(func, 'func_defaults', None):
+    if getattr(func, '__defaults__', None):
       # Separate the args from the kwargs.
       for arg in self.Args():
         name, sep, val = arg.partition('=')
@@ -845,7 +879,7 @@ def GetKeyName(key, quote=True, omit_indices=False):
       if parts:
         parts[-1] += part
         continue
-    elif isinstance(part, (int, long)):
+    elif isinstance(part, six.integer_types):
       if omit_indices:
         continue
       part = '[{part}]'.format(part=part)
@@ -855,6 +889,6 @@ def GetKeyName(key, quote=True, omit_indices=False):
     elif quote and re.search(r'[^-@\w]', part):
       part = part.replace('\\', '\\\\')
       part = part.replace('"', '\\"')
-      part = u'"{part}"'.format(part=part)
+      part = '"{part}"'.format(part=part)
     parts.append(part)
   return '.'.join(parts) if parts else '.'

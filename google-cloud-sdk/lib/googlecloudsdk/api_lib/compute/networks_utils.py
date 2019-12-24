@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Code that's shared between multiple networks subcommands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 
 def GetSubnetMode(network):
@@ -40,13 +45,16 @@ def CreateNetworkResourceFromArgs(messages, network_ref, network_args):
   """Creates a new network resource from flag arguments."""
 
   network = messages.Network(
-      name=network_ref.Name(),
-      description=network_args.description)
+      name=network_ref.Name(), description=network_args.description)
 
-  # TODO(b/64980447): Clean up the --mode flag after 3 months of deprecation.
-  if network_args.subnet_mode == 'legacy' or network_args.mode == 'legacy':
+  if hasattr(network_args,
+             'multicast_mode') and network_args.multicast_mode is not None:
+    network.multicastMode = messages.Network.MulticastModeValueValuesEnum(
+        network_args.multicast_mode.upper())
+
+  if network_args.subnet_mode == 'legacy':
     network.IPv4Range = network_args.range
-  elif network_args.subnet_mode == 'custom' or network_args.mode == 'custom':
+  elif network_args.subnet_mode == 'custom':
     network.autoCreateSubnetworks = False
   else:
     # If no subnet mode is specified, default to AUTO.
@@ -57,5 +65,8 @@ def CreateNetworkResourceFromArgs(messages, network_ref, network_args):
     network.routingConfig.routingMode = (
         messages.NetworkRoutingConfig.RoutingModeValueValuesEnum(
             network_args.bgp_routing_mode.upper()))
+
+  if hasattr(network_args, 'mtu') and network_args.mtu is not None:
+    network.mtu = network_args.mtu
 
   return network

@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,12 +15,25 @@
 
 """Helper methods for exporting record-sets."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from dns import name
 from dns import rdata
 from dns import rdataclass
 from dns import rdatatype
 from dns import zone
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.resource import resource_printer
+
+
+class Error(exceptions.Error):
+  """Base exception for all export errors."""
+
+
+class UnableToExportRecordsToFile(Error):
+  """Unable to export records to specified file."""
 
 
 def WriteToZoneFile(zone_file, record_sets, domain):

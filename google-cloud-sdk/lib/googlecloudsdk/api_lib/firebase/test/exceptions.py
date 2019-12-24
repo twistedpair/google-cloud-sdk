@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 
 """Exceptions raised by Testing API libs or commands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.firebase.test import exit_code
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
@@ -29,6 +34,14 @@ class MissingProjectError(TestingError):
 
 class BadMatrixError(TestingError):
   """BadMatrixException is for test matrices that fail prematurely."""
+
+
+class RestrictedServiceError(TestingError):
+  """RestrictedServiceError is for bad service request errors.
+
+  This is most likely due to whitelisted API features which are hidden behind a
+  visibility label.
+  """
 
 
 class ModelNotFoundError(TestingError):
@@ -88,6 +101,14 @@ class InvalidDimensionNameError(TestingError):
         "['model', 'version', 'locale', 'orientation']".format(d=dim_name))
 
 
+class XcodeVersionNotFoundError(TestingError):
+  """Failed to find an Xcode version in the test environment catalog."""
+
+  def __init__(self, version):
+    super(XcodeVersionNotFoundError, self).__init__(
+        "'{v}' is not a supported Xcode version".format(v=version))
+
+
 class TestExecutionNotFoundError(TestingError):
   """A test execution ID was not found within a test matrix."""
 
@@ -143,6 +164,10 @@ def ExternalArgNameFrom(arg_internal_name):
   Returns:
     The user visible name for the argument.
   """
+  if arg_internal_name == 'async_':
+    # The async flag has a special destination in the argparse namespace since
+    # 'async' is a reserved keyword as of Python 3.7.
+    return 'async'
   return arg_internal_name.replace('_', '-')
 
 

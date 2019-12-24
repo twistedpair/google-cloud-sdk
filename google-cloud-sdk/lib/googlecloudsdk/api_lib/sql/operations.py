@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,13 +14,21 @@
 # limitations under the License.
 """Common utility functions for sql operations."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import time
 
-from apitools.base.py import exceptions
+from apitools.base.py import exceptions as base_exceptions
 
-from googlecloudsdk.api_lib.sql import errors
+from googlecloudsdk.api_lib.sql import exceptions
 from googlecloudsdk.core.console import progress_tracker as console_progress_tracker
 from googlecloudsdk.core.util import retry
+
+_MS_PER_SECOND = 1000
+# Ten mins, based off of the max time it usually takes to create a SQL instance.
+_INSTANCE_CREATION_TIMEOUT_SECONDS = 600
 
 
 class _BaseOperations(object):
@@ -27,12 +36,15 @@ class _BaseOperations(object):
 
   _PRE_START_SLEEP_SEC = 1
   _INITIAL_SLEEP_MS = 2000
-  _MAX_WAIT_MS = 300000
   _WAIT_CEILING_MS = 20000
   _HTTP_MAX_RETRY_MS = 2000
 
   @classmethod
-  def WaitForOperation(cls, sql_client, operation_ref, message):
+  def WaitForOperation(cls,
+                       sql_client,
+                       operation_ref,
+                       message,
+                       max_wait_seconds=_INSTANCE_CREATION_TIMEOUT_SECONDS):
     """Wait for a Cloud SQL operation to complete.
 
     No operation is done instantly. Wait for it to finish following this logic:
@@ -45,18 +57,21 @@ class _BaseOperations(object):
       sql_client: apitools.BaseApiClient, The client used to make requests.
       operation_ref: resources.Resource, A reference for the operation to poll.
       message: str, The string to print while polling.
+      max_wait_seconds: integer or None, the number of seconds before the
+          poller times out.
 
     Returns:
       True if the operation succeeded without error.
 
     Raises:
       OperationError: If the operation has an error code, is in UNKNOWN state,
-          or if the operation takes more than 300s.
+          or if the operation takes more than max_wait_seconds when a value is
+          specified.
     """
 
     def ShouldRetryFunc(result, state):
       # In case of HttpError, retry for up to _HTTP_MAX_RETRY_MS at most.
-      if isinstance(result, exceptions.HttpError):
+      if isinstance(result, base_exceptions.HttpError):
         if state.time_passed_ms > _BaseOperations._HTTP_MAX_RETRY_MS:
           raise result
         return True
@@ -66,12 +81,16 @@ class _BaseOperations(object):
       # Otherwise let the retryer do it's job until the Operation is done.
       return not result
 
+    # Set the max wait time.
+    max_wait_ms = None
+    if max_wait_seconds:
+      max_wait_ms = max_wait_seconds * _MS_PER_SECOND
     with console_progress_tracker.ProgressTracker(
         message, autotick=False) as pt:
       time.sleep(_BaseOperations._PRE_START_SLEEP_SEC)
       retryer = retry.Retryer(
           exponential_sleep_multiplier=2,
-          max_wait_ms=_BaseOperations._MAX_WAIT_MS,
+          max_wait_ms=max_wait_ms,
           wait_ceiling_ms=_BaseOperations._WAIT_CEILING_MS)
       try:
         retryer.RetryOnResult(
@@ -80,7 +99,7 @@ class _BaseOperations(object):
             should_retry_if=ShouldRetryFunc,
             sleep_ms=_BaseOperations._INITIAL_SLEEP_MS)
       except retry.WaitException:
-        raise errors.OperationError(
+        raise exceptions.OperationError(
             ('Operation {0} is taking longer than expected. You can continue '
              'waiting for the operation by running `{1}`').format(
                  operation_ref, cls.GetOperationWaitCommand(operation_ref)))
@@ -120,9 +139,9 @@ class OperationsV1Beta3(_BaseOperations):
       # have to catch all exceptions here and return them.
       return e
     if op.error:
-      return errors.OperationError(op.error[0].code)
+      return exceptions.OperationError(op.error[0].code)
     if op.state == 'UNKNOWN':
-      return errors.OperationError(op.state)
+      return exceptions.OperationError(op.state)
     if op.state == 'DONE':
       return True
     return False
@@ -165,9 +184,14 @@ class OperationsV1Beta4(_BaseOperations):
       # have to catch all exceptions here and return them.
       return e
     if op.error and op.error.errors:
-      return errors.OperationError(op.error.errors[0].code)
+      error_object = op.error.errors[0]
+      # If there's an error message to show, show it in addition to the code.
+      error = '[{}]'.format(error_object.code)
+      if error_object.message:
+        error += ' ' + error_object.message
+      return exceptions.OperationError(error)
     if op.status == 'UNKNOWN':
-      return errors.OperationError(op.status)
+      return exceptions.OperationError(op.status)
     if op.status == 'DONE':
       return True
     return False

@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +15,16 @@
 
 """Prompt completion support module."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import os
 import sys
 
 from googlecloudsdk.core.console import console_attr
+
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 def _IntegerCeilingDivide(numerator, denominator):
@@ -123,7 +130,7 @@ class PromptCompleter(object):
   """
 
   _CONTROL_C = '\x03'
-  _DELETE = '\7f'
+  _DELETE = '\x7f'
 
   def __init__(self, prompt, choices=None, out=None, width=None, height=None,
                pad='  '):
@@ -141,7 +148,7 @@ class PromptCompleter(object):
     self._prompt = prompt
     self._choices = choices
     self._out = out or sys.stderr
-    self._attr = console_attr.ConsoleAttr(out=self._out)
+    self._attr = console_attr.ConsoleAttr()
     term_width, term_height = self._attr.GetTermSize()
     if width is None:
       width = 80
@@ -158,6 +165,7 @@ class PromptCompleter(object):
   def Input(self):
     """Reads and returns one line of user input with TAB complation."""
     all_choices = None
+    matches = []
     response = []
     if self._prompt:
       self._out.write(self._prompt)
@@ -235,5 +243,3 @@ class PromptCompleter(object):
       row_data.append(self._prompt)
     row_data.append(prefix)
     self._out.write(''.join(row_data))
-
-

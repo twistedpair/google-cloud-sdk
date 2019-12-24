@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,13 @@
 
 """Shared constants used by container commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+DEGRADED_WARNING = ("Cluster {cluster_name} is DEGRADED with message:"
+                    " \"{cluster_degraded_warning}\".\n")
+
 EXPIRE_WARNING_DAYS = 14
 
 EXPIRE_WARNING = """
@@ -28,17 +36,11 @@ KUBERNETES_ALPHA_PROMPT = (
     "- The cluster will be deleted after 30 days.\n"
 )
 
-KUBERNETES_REGIONAL_CHARGES_PROMPT = (
-    "This will create a regional cluster.\n"
-    "While this feature is available at no charge in Alpha, "
-    "in the future you may be charged for it.\n"
+KUBERNETES_GPU_LIMITATION_MSG = (
+    "Machines with GPUs have certain limitations "
+    "which may affect your workflow. Learn more at "
+    "https://cloud.google.com/kubernetes-engine/docs/how-to/gpus"
 )
-
-KUBERNETES_API_MISMATCH_PROMPT_TEMPLATE = (
-    "Warning: you invoked `gcloud {track}`, but with current configuration "
-    "Kubernetes Engine v1 API will be used instead of {api} API.\n"
-    "If you intended to use {api} API instead, please set "
-    "container/use_v1_api_client property to false.")
 
 USERNAME_PASSWORD_ERROR_MSG = (
     "Cannot specify --password with empty --username or --no-enable-basic-auth."

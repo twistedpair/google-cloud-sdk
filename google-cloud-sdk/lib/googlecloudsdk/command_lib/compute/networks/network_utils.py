@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +14,10 @@
 # limitations under the License.
 """Code that's shared between multiple networks subcommands."""
 
-from googlecloudsdk.calliope import actions as calliope_actions
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import parser_errors
 
 
@@ -25,7 +29,7 @@ RANGE_HELP_TEXT = """\
     This flag only works if mode is
     [legacy](https://cloud.google.com/compute/docs/vpc/legacy).
 
-    Using legacy networks is **not recommended**, given that many newer Google
+    Using legacy networks is **DEPRECATED**, given that many newer Google
     Cloud Platform features are not supported on legacy networks. Please be
     advised that legacy networks may not be supported in the future.
     """
@@ -44,12 +48,18 @@ _BGP_ROUTING_MODE_CHOICES = {
                 'learned BGP routes.',
 }
 
+_MULTICAST_MODE_CHOICES = {
+    'disabled': 'Multicast is disabled for this network.',
+    'zonal': 'Multicast is allowed within a zone.',
+}
+
 _CREATE_SUBNET_MODE_CHOICES = {
     'auto': 'Subnets are created automatically.  This is the recommended '
             'selection.',
     'custom': 'Create subnets manually.',
-    'legacy': 'Create an old style network that has a range and cannot have '
-              'subnets.  This is not recommended for new networks.',
+    'legacy':
+        '[Deprecated] Create an old style network that has a range and cannot '
+        'have subnets.  This is not recommended for new networks.',
 }
 
 
@@ -64,10 +74,8 @@ def AddCreateBaseArgs(parser):
 
 
 def AddCreateSubnetModeArg(parser):
-  """Adds the --subnet-mode and deprecated --mode flags."""
-  mode_args = parser.add_mutually_exclusive_group(required=False)
-
-  mode_args.add_argument(
+  """Adds the --subnet-mode flag."""
+  parser.add_argument(
       '--subnet-mode',
       choices=_CREATE_SUBNET_MODE_CHOICES,
       type=lambda mode: mode.lower(),
@@ -75,27 +83,16 @@ def AddCreateSubnetModeArg(parser):
       help="""The subnet mode of the network. If not specified, defaults to
               AUTO.""")
 
-  # TODO(b/64980447): Clean up the --mode flag after 3 months of deprecation.
-  mode_args.add_argument(
-      '--mode',
-      action=calliope_actions.DeprecationAction(
-          'mode',
-          removed=False,
-          warn='{flag_name} is deprecated. Please use subnet-mode instead.',
-          error='{flag_name} has been removed. Please use subnet-mode instead.'
-      ),
-      metavar='NETWORK_TYPE',
-      choices={
-          'auto': ('Subnets are created automatically. This is the recommended '
-                   'selection.'),
-          'custom':
-              'Create subnets manually.',
-          'legacy': (
-              'Create an old style network that has a range and cannot have '
-              'subnets.  This is not recommended for new networks.'),
-      },
-      required=False,
-      help='The network type.')
+
+def AddMtuArg(parser):
+  """Adds the --mtu flag."""
+  parser.add_argument(
+      '--mtu',
+      type=int,
+      help="""Maximum transmission unit(MTU) is the size of the largest frame
+              that can be transmitted on this network. Default value is
+              1460 bytes, the maximum is 1500 bytes. The MTU advertised
+              via DHCP to all instances attached to this network.""")
 
 
 def AddCreateBgpRoutingModeArg(parser):
@@ -108,6 +105,17 @@ def AddCreateBgpRoutingModeArg(parser):
       metavar='MODE',
       help="""The BGP routing mode for this network. If not specified, defaults
               to regional.""")
+
+
+def AddMulticastModeArg(parser):
+  """Adds the --multicast-mode flag."""
+  parser.add_argument(
+      '--multicast-mode',
+      choices=_MULTICAST_MODE_CHOICES,
+      type=lambda mode: mode.lower(),
+      hidden=True,
+      help="""The multicast mode for this network. If not specified, defaults to
+              disabled.""")
 
 
 def AddUpdateArgs(parser):
@@ -128,9 +136,22 @@ def AddUpdateArgs(parser):
       help="""The target BGP routing mode for this network.""")
 
 
+def AddUpdateArgsAlpha(parser):
+  """Adds arguments for updating a network."""
+
+  AddUpdateArgs(parser)
+
+  parser.add_argument(
+      '--multicast-mode',
+      choices=_MULTICAST_MODE_CHOICES,
+      type=lambda mode: mode.lower(),
+      hidden=True,
+      help="""The multicast mode for this network.""")
+  AddMtuArg(parser)
+
+
 def CheckRangeLegacyModeOrRaise(args):
   """Checks for range being used with incompatible mode and raises an error."""
-  if args.range is not None:
-    if ((args.subnet_mode and args.subnet_mode != 'legacy') or
-        (args.mode and args.mode != 'legacy')):
-      raise parser_errors.ArgumentError(_RANGE_NON_LEGACY_MODE_ERROR)
+  if args.IsSpecified('range') and args.IsSpecified(
+      'subnet_mode') and args.subnet_mode != 'legacy':
+    raise parser_errors.ArgumentError(_RANGE_NON_LEGACY_MODE_ERROR)

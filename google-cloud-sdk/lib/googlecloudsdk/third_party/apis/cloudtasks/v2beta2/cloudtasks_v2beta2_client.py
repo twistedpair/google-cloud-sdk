@@ -24,7 +24,7 @@ class CloudtasksV2beta2(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new cloudtasks handle."""
     url = url or self.BASE_URL
     super(CloudtasksV2beta2, self).__init__(
@@ -33,7 +33,8 @@ class CloudtasksV2beta2(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.projects_locations_queues_tasks = self.ProjectsLocationsQueuesTasksService(self)
     self.projects_locations_queues = self.ProjectsLocationsQueuesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -50,23 +51,19 @@ class CloudtasksV2beta2(base_api.BaseApiClient):
           }
 
     def Acknowledge(self, request, global_params=None):
-      """Acknowledges a pull task.
+      r"""Acknowledges a pull task.
 
-The lease holder, that is, the entity that received this task in
-a PullTasksResponse, must call this method to indicate that
-the work associated with the task has finished.
+The worker, that is, the entity that
+leased this task must call this method
+to indicate that the work associated with the task has finished.
 
-The lease holder must acknowledge a task within the
-PullTasksRequest.lease_duration or the lease will expire and
-the task will become ready to be returned in a different
-PullTasksResponse. After the task is acknowledged, it will
-not be returned by a later CloudTasks.PullTasks,
-CloudTasks.GetTask, or CloudTasks.ListTasks.
-
-To acknowledge multiple tasks at the same time, use
-[HTTP batching](/storage/docs/json_api/v1/how-tos/batch)
-or the batching documentation for your client library, for example
-https://developers.google.com/api-client-library/python/guide/batch.
+The worker must acknowledge a task within the
+lease_duration or the lease
+will expire and the task will become available to be leased
+again. After the task is acknowledged, it will not be returned
+by a later LeaseTasks,
+GetTask, or
+ListTasks.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksAcknowledgeRequest) input message
@@ -93,11 +90,12 @@ https://developers.google.com/api-client-library/python/guide/batch.
     )
 
     def CancelLease(self, request, global_params=None):
-      """Cancel a pull task's lease.
+      r"""Cancel a pull task's lease.
 
-The lease holder can use this method to cancel a task's lease
-by setting Task.schedule_time to now. This will make the task
-available to be leased to the next caller of CloudTasks.PullTasks.
+The worker can use this method to cancel a task's lease by
+setting its schedule_time to now. This will
+make the task available to be leased to the next caller of
+LeaseTasks.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksCancelLeaseRequest) input message
@@ -124,19 +122,13 @@ available to be leased to the next caller of CloudTasks.PullTasks.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a task and adds it to a queue.
-
-To add multiple tasks at the same time, use
-[HTTP batching](/storage/docs/json_api/v1/how-tos/batch)
-or the batching documentation for your client library, for example
-https://developers.google.com/api-client-library/python/guide/batch.
+      r"""Creates a task and adds it to a queue.
 
 Tasks cannot be updated after creation; there is no UpdateTask command.
 
-* For [App Engine queues](google.cloud.tasks.v2beta2.AppEngineHttpTarget),
-  the maximum task size is 100KB.
-* For [pull queues](google.cloud.tasks.v2beta2.PullTarget), this
-  the maximum task size is 1MB.
+* For App Engine queues, the maximum task size is
+  100KB.
+* For pull queues, the maximum task size is 1MB.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksCreateRequest) input message
@@ -163,7 +155,7 @@ Tasks cannot be updated after creation; there is no UpdateTask command.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a task.
+      r"""Deletes a task.
 
 A task can be deleted if it is scheduled or dispatched. A task
 cannot be deleted if it has completed successfully or permanently
@@ -194,7 +186,7 @@ failed.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a task.
+      r"""Gets a task.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksGetRequest) input message
@@ -220,13 +212,64 @@ failed.
         supports_download=False,
     )
 
-    def List(self, request, global_params=None):
-      """Lists the tasks in a queue.
+    def Lease(self, request, global_params=None):
+      r"""Leases tasks from a pull queue for.
+lease_duration.
 
-By default response_view is Task.View.BASIC; not all
-information is retrieved by default due to performance
-considerations; ListTasksRequest.response_view controls the
+This method is invoked by the worker to obtain a lease. The
+worker must acknowledge the task via
+AcknowledgeTask after they have
+performed the work associated with the task.
+
+The payload is intended to store data that
+the worker needs to perform the work associated with the task. To
+return the payloads in the response, set
+response_view to
+FULL.
+
+A maximum of 10 qps of LeaseTasks
+requests are allowed per
+queue. RESOURCE_EXHAUSTED
+is returned when this limit is
+exceeded. RESOURCE_EXHAUSTED
+is also returned when
+max_tasks_dispatched_per_second
+is exceeded.
+
+      Args:
+        request: (CloudtasksProjectsLocationsQueuesTasksLeaseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LeaseTasksResponse) The response message.
+      """
+      config = self.GetMethodConfig('Lease')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Lease.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks:lease',
+        http_method=u'POST',
+        method_id=u'cloudtasks.projects.locations.queues.tasks.lease',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v2beta2/{+parent}/tasks:lease',
+        request_field=u'leaseTasksRequest',
+        request_type_name=u'CloudtasksProjectsLocationsQueuesTasksLeaseRequest',
+        response_type_name=u'LeaseTasksResponse',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the tasks in a queue.
+
+By default, only the BASIC view is retrieved
+due to performance considerations;
+response_view controls the
 subset of information which is returned.
+
+The tasks may be returned in any order. The ordering may change at any
+time.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksListRequest) input message
@@ -244,7 +287,7 @@ subset of information which is returned.
         method_id=u'cloudtasks.projects.locations.queues.tasks.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'orderBy', u'pageSize', u'pageToken', u'responseView'],
+        query_params=[u'pageSize', u'pageToken', u'responseView'],
         relative_path=u'v2beta2/{+parent}/tasks',
         request_field='',
         request_type_name=u'CloudtasksProjectsLocationsQueuesTasksListRequest',
@@ -252,55 +295,12 @@ subset of information which is returned.
         supports_download=False,
     )
 
-    def Pull(self, request, global_params=None):
-      """Pulls tasks from a pull queue and acquires a lease on them for a.
-specified PullTasksRequest.lease_duration.
-
-This method is invoked by the lease holder to obtain the
-lease. The lease holder must acknowledge the task via
-CloudTasks.AcknowledgeTask after they have performed the work
-associated with the task.
-
-The payload is intended to store data that the lease holder needs
-to perform the work associated with the task. To return the
-payloads in the PullTasksResponse, set
-PullTasksRequest.response_view to Task.View.FULL.
-
-A maximum of 10 qps of CloudTasks.PullTasks requests are allowed per
-queue. google.rpc.Code.RESOURCE_EXHAUSTED is returned when this limit
-is exceeded. google.rpc.Code.RESOURCE_EXHAUSTED is also returned when
-RateLimits.max_tasks_dispatched_per_second is exceeded.
-
-      Args:
-        request: (CloudtasksProjectsLocationsQueuesTasksPullRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (PullTasksResponse) The response message.
-      """
-      config = self.GetMethodConfig('Pull')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Pull.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks:pull',
-        http_method=u'POST',
-        method_id=u'cloudtasks.projects.locations.queues.tasks.pull',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v2beta2/{+name}/tasks:pull',
-        request_field=u'pullTasksRequest',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesTasksPullRequest',
-        response_type_name=u'PullTasksResponse',
-        supports_download=False,
-    )
-
     def RenewLease(self, request, global_params=None):
-      """Renew the current lease of a pull task.
+      r"""Renew the current lease of a pull task.
 
-The lease holder can use this method to extend the lease by a new
+The worker can use this method to extend the lease by a new
 duration, starting from now. The new task lease will be
-returned in Task.schedule_time.
+returned in the task's schedule_time.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksRenewLeaseRequest) input message
@@ -327,33 +327,33 @@ returned in Task.schedule_time.
     )
 
     def Run(self, request, global_params=None):
-      """Forces a task to run now.
+      r"""Forces a task to run now.
+
+When this method is called, Cloud Tasks will dispatch the task, even if
+the task is already running, the queue has reached its RateLimits or
+is PAUSED.
 
 This command is meant to be used for manual debugging. For
-example, CloudTasks.RunTask can be used to retry a failed
+example, RunTask can be used to retry a failed
 task after a fix has been made or to manually force a task to be
 dispatched now.
 
-When this method is called, Cloud Tasks will dispatch the task to its
-target, even if the queue is Queue.QueueState.PAUSED.
-
 The dispatched task is returned. That is, the task that is returned
-contains the Task.task_status after the task is dispatched but
+contains the status after the task is dispatched but
 before the task is received by its target.
 
 If Cloud Tasks receives a successful response from the task's
-handler, then the task will be deleted; otherwise the task's
-Task.schedule_time will be reset to the time that
-CloudTasks.RunTask was called plus the retry delay specified
-in the queue and task's RetryConfig.
+target, then the task will be deleted; otherwise the task's
+schedule_time will be reset to the time that
+RunTask was called plus the retry delay specified
+in the queue's RetryConfig.
 
-CloudTasks.RunTask returns google.rpc.Code.NOT_FOUND when
-it is called on a task that has already succeeded or permanently
-failed. google.rpc.Code.FAILED_PRECONDITION is returned when
-CloudTasks.RunTask is called on task that is dispatched or
-already running.
+RunTask returns
+NOT_FOUND when it is called on a
+task that has already succeeded or permanently failed.
 
-CloudTasks.RunTask cannot be called on pull tasks.
+RunTask cannot be called on a
+pull task.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksRunRequest) input message
@@ -390,13 +390,18 @@ CloudTasks.RunTask cannot be called on pull tasks.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a queue.
+      r"""Creates a queue.
+
+Queues created with this method allow tasks to live for a maximum of 31
+days. After a task is 31 days old, the task will be deleted regardless of whether
+it was dispatched or not.
 
 WARNING: Using this method may have unintended side effects if you are
 using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
 Read
-[Overview of Queue Management and queue.yaml](/cloud-tasks/docs/queue-yaml)
-carefully before using this method.
+[Overview of Queue Management and
+queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml) before using
+this method.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesCreateRequest) input message
@@ -423,7 +428,7 @@ carefully before using this method.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a queue.
+      r"""Deletes a queue.
 
 This command will delete the queue even if it has tasks in it.
 
@@ -433,8 +438,9 @@ for 7 days.
 WARNING: Using this method may have unintended side effects if you are
 using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
 Read
-[Overview of Queue Management and queue.yaml](/cloud-tasks/docs/queue-yaml)
-carefully before using this method.
+[Overview of Queue Management and
+queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml) before using
+this method.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesDeleteRequest) input message
@@ -461,7 +467,7 @@ carefully before using this method.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a queue.
+      r"""Gets a queue.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesGetRequest) input message
@@ -488,12 +494,13 @@ carefully before using this method.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a Queue.
+      r"""Gets the access control policy for a Queue.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
-Authorization requires the following [Google IAM](/iam) permission on the
-specified resource parent:
+Authorization requires the following
+[Google IAM](https://cloud.google.com/iam) permission on the specified
+resource parent:
 
 * `cloudtasks.queues.getIamPolicy`
 
@@ -522,7 +529,7 @@ specified resource parent:
     )
 
     def List(self, request, global_params=None):
-      """Lists queues.
+      r"""Lists queues.
 
 Queues are returned in lexicographical order.
 
@@ -551,16 +558,21 @@ Queues are returned in lexicographical order.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a queue.
+      r"""Updates a queue.
 
 This method creates the queue if it does not exist and updates
 the queue if it does exist.
 
+Queues created with this method allow tasks to live for a maximum of 31
+days. After a task is 31 days old, the task will be deleted regardless of whether
+it was dispatched or not.
+
 WARNING: Using this method may have unintended side effects if you are
 using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
 Read
-[Overview of Queue Management and queue.yaml](/cloud-tasks/docs/queue-yaml)
-carefully before using this method.
+[Overview of Queue Management and
+queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml) before using
+this method.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesPatchRequest) input message
@@ -587,14 +599,13 @@ carefully before using this method.
     )
 
     def Pause(self, request, global_params=None):
-      """Pauses the queue.
+      r"""Pauses the queue.
 
-If a queue is paused then the system will stop executing the
-tasks in the queue until it is resumed via
-CloudTasks.ResumeQueue. Tasks can still be added when the
-queue is paused. The state of the queue is stored in
-Queue.queue_state; if paused it will be set to
-Queue.QueueState.PAUSED.
+If a queue is paused then the system will stop dispatching tasks
+until the queue is resumed via
+ResumeQueue. Tasks can still be added
+when the queue is paused. A queue is paused if its
+state is PAUSED.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesPauseRequest) input message
@@ -621,7 +632,7 @@ Queue.QueueState.PAUSED.
     )
 
     def Purge(self, request, global_params=None):
-      """Purges a queue by deleting all of its tasks.
+      r"""Purges a queue by deleting all of its tasks.
 
 All tasks created before this method is called are permanently deleted.
 
@@ -653,17 +664,19 @@ might be dispatched before the purge takes effect. A purge is irreversible.
     )
 
     def Resume(self, request, global_params=None):
-      """Resume a queue.
+      r"""Resume a queue.
 
 This method resumes a queue after it has been
-Queue.QueueState.PAUSED or Queue.QueueState.DISABLED. The state of
-a queue is stored in Queue.queue_state; after calling this method it
-will be set to Queue.QueueState.RUNNING.
+PAUSED or
+DISABLED. The state of a queue is stored
+in the queue's state; after calling this method it
+will be set to RUNNING.
 
 WARNING: Resuming many high-QPS queues at the same time can
 lead to target overloading. If you are resuming high-QPS
 queues, follow the 500/50/5 pattern described in
-[Managing Cloud Tasks Scaling Risks](/cloud-tasks/pdfs/managing-cloud-tasks-scaling-risks-2017-06-05.pdf).
+[Managing Cloud Tasks Scaling
+Risks](https://cloud.google.com/tasks/docs/manage-cloud-task-scaling).
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesResumeRequest) input message
@@ -690,14 +703,15 @@ queues, follow the 500/50/5 pattern described in
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy for a Queue. Replaces any existing.
+      r"""Sets the access control policy for a Queue. Replaces any existing.
 policy.
 
 Note: The Cloud Console does not check queue-level IAM permissions yet.
 Project-level permissions are required to use the Cloud Console.
 
-Authorization requires the following [Google IAM](/iam) permission on the
-specified resource parent:
+Authorization requires the following
+[Google IAM](https://cloud.google.com/iam) permission on the specified
+resource parent:
 
 * `cloudtasks.queues.setIamPolicy`
 
@@ -726,9 +740,9 @@ specified resource parent:
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on a Queue.
+      r"""Returns permissions that a caller has on a Queue.
 If the resource does not exist, this will return an empty set of
-permissions, not a google.rpc.Code.NOT_FOUND error.
+permissions, not a NOT_FOUND error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation
@@ -769,7 +783,7 @@ may "fail open" without warning.
           }
 
     def Get(self, request, global_params=None):
-      """Get information about a location.
+      r"""Gets information about a location.
 
       Args:
         request: (CloudtasksProjectsLocationsGetRequest) input message
@@ -796,7 +810,7 @@ may "fail open" without warning.
     )
 
     def List(self, request, global_params=None):
-      """Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service.
 
       Args:
         request: (CloudtasksProjectsLocationsListRequest) input message

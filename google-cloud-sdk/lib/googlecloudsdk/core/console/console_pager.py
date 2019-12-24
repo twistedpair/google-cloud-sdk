@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 
 """Simple console pager."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 import re
 import sys
@@ -33,7 +38,7 @@ class Pager(object):
   agnostic and miscalculates line lengths, and less(1) which displays control
   character names by default.
 
-  Attrinutes:
+  Attributes:
     _attr: The current ConsoleAttr handle.
     _clear: A string that clears the prompt when written to _out.
     _contents: The entire contents of the text lines to page.
@@ -99,7 +104,7 @@ class Pager(object):
     # prev_pos, prev_next values to force reprint
     self.prev_pos, self.prev_nxt = self.PREV_POS_NXT_REPRINT
     # Initialize the console attributes.
-    self._attr = console_attr.GetConsoleAttr(out=out)
+    self._attr = console_attr.GetConsoleAttr()
     self._width, self._height = self._attr.GetTermSize()
 
     # Initialize the prompt and the prompt clear string.
@@ -116,6 +121,10 @@ class Pager(object):
     for line in contents.splitlines():
       self._lines += self._attr.SplitLine(line, self._width)
 
+  def _Write(self, s):
+    """Mockable helper that writes s to self._out."""
+    self._out.write(s)
+
   def _GetSearchCommand(self, c):
     """Consumes a search command and returns the equivalent pager command.
 
@@ -128,15 +137,15 @@ class Pager(object):
     Returns:
       The pager command char.
     """
-    self._out.write(c)
+    self._Write(c)
     buf = ''
     while True:
       p = self._attr.GetRawKey()
       if p in (None, '\n', '\r') or len(p) != 1:
         break
-      self._out.write(p)
+      self._Write(p)
       buf += p
-    self._out.write('\r' + ' ' * len(buf) + '\r')
+    self._Write('\r' + ' ' * len(buf) + '\r')
     if buf:
       try:
         self._search_pattern = re.compile(buf)
@@ -152,16 +161,16 @@ class Pager(object):
     clear = self._height - (len(self.HELP_TEXT) -
                             len(self.HELP_TEXT.replace('\n', '')))
     if clear > 0:
-      self._out.write('\n' * clear)
-    self._out.write(self.HELP_TEXT)
+      self._Write('\n' * clear)
+    self._Write(self.HELP_TEXT)
     self._attr.GetRawKey()
-    self._out.write('\n')
+    self._Write('\n')
 
   def Run(self):
     """Run the pager."""
     # No paging if the contents are small enough.
     if len(self._lines) <= self._height:
-      self._out.write(self._contents)
+      self._Write(self._contents)
       return
 
     # We will not always reset previous values.
@@ -181,21 +190,21 @@ class Pager(object):
       # so we don't need to reprint all the lines.
       if self.prev_pos < pos < self.prev_nxt:
         # we start where the previous page ended.
-        self._out.write('\n'.join(self._lines[self.prev_nxt:nxt]) + '\n')
+        self._Write('\n'.join(self._lines[self.prev_nxt:nxt]) + '\n')
       elif pos != self.prev_pos and nxt != self.prev_nxt:
-        self._out.write('\n'.join(self._lines[pos:nxt]) + '\n')
+        self._Write('\n'.join(self._lines[pos:nxt]) + '\n')
 
       # Handle the prompt response.
-      percent = self._prompt.format(percent=100 * nxt / len(self._lines))
+      percent = self._prompt.format(percent=100 * nxt // len(self._lines))
       digits = ''
       while True:
         # We want to reset prev values if we just exited out of the while loop
         if reset_prev_values:
           self.prev_pos, self.prev_nxt = pos, nxt
           reset_prev_values = False
-        self._out.write(percent)
+        self._Write(percent)
         c = self._attr.GetRawKey()
-        self._out.write(self._clear)
+        self._Write(self._clear)
 
         # Parse the command.
         if c in (None,    # EOF.

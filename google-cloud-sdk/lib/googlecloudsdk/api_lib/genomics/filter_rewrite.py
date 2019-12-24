@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2018 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +15,14 @@
 
 """Genomics resource filter expression rewrite backend."""
 
-from googlecloudsdk.api_lib.genomics import genomics_util
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import re
 from googlecloudsdk.core.resource import resource_expr_rewrite
 from googlecloudsdk.core.util import times
+import six
 
 
 def _RewriteTimeTerm(key, op, operand):
@@ -28,42 +34,40 @@ def _RewriteTimeTerm(key, op, operand):
   except ValueError as e:
     raise ValueError(
         '{operand}: date-time value expected for {key}: {error}'
-        .format(operand=operand, key=key, error=str(e)))
-  seconds = int(times.GetTimeStampFromDateTime(dt))
+        .format(operand=operand, key=key, error=six.text_type(e)))
+
   if op == ':':
     op = '='
-  elif op == '<':
-    op = '<='
-    seconds -= 1
-  elif op == '>':
-    op = '>='
-    seconds += 1
-  return '{key} {op} {seconds}'.format(key=key, op=op, seconds=seconds)
+
+  return '{key} {op} "{dt}"'.format(
+      key=key, op=op, dt=times.FormatDateTime(dt, tzinfo=times.UTC))
 
 
-class Backend(resource_expr_rewrite.BackendBase):
-  """Genomics resource filter expression rewrite backend."""
+class OperationsBackend(resource_expr_rewrite.Backend):
+  """Limit filter expressions to those supported by the Genomics backend."""
 
-  def Rewrite(self, expr, defaults=None):
-    """Add a project id restriction to the backend rewrite."""
-    frontend, backend = super(Backend, self).Rewrite(expr, defaults=defaults)
+  _FORMAT = '{key} {op} {operand}'
+  _QUOTED_FORMAT = '{key} {op} "{operand}"'
 
-    # Add a project id restriction.
-    if backend:
-      backend += ' AND '
-    else:
-      backend = ''
-    backend += 'projectId={0}'.format(genomics_util.GetProjectId())
+  _TERMS = {
+      r'^done$': _FORMAT,
+      r'^error.code$': _FORMAT,
+      r'^metadata.labels\.(.*)': _QUOTED_FORMAT,
+      r'^metadata.events$': _QUOTED_FORMAT,
+  }
 
-    return frontend, backend
-
-  def RewriteAND(self, left, right):
-    """Rewrites <left AND right>."""
-    return '{left} AND {right}'.format(left=left, right=right)
+  _CREATE_TIME_TERMS = [
+      r'^metadata.create_time$',
+      r'^metadata.createTime$',
+  ]
 
   def RewriteTerm(self, key, op, operand, key_type):
-    """Rewrites <key op operand>."""
-    del key_type  # unused in RewriteTerm
-    if key == 'createTime':
-      return _RewriteTimeTerm(key, op, operand)
+    """Limit <key op operand> terms to expressions supported by the backend."""
+    for regex in self._CREATE_TIME_TERMS:
+      if re.match(regex, key):
+        return _RewriteTimeTerm(key, op, operand)
+
+    for regex, fmt in six.iteritems(self._TERMS):
+      if re.match(regex, key):
+        return fmt.format(key=key, op=op, operand=operand)
     return None

@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +14,14 @@
 # limitations under the License.
 
 """This module holds common flags used by the gcloud app commands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import argparse
 
 from googlecloudsdk.api_lib.app import logs_util
-from googlecloudsdk.api_lib.app.appinfo import appinfo
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -24,6 +29,7 @@ from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.docker import docker
+from googlecloudsdk.third_party.appengine.api import appinfo
 
 DOMAIN_FLAG = base.Argument(
     'domain',
@@ -45,7 +51,12 @@ IGNORE_CERTS_FLAG = base.Argument(
     '--ignore-bad-certs',
     action='store_true',
     default=False,
-    help=argparse.SUPPRESS)
+    hidden=True,
+    help='THIS ARGUMENT NEEDS HELP TEXT.')
+
+IGNORE_FILE_FLAG = base.Argument(
+    '--ignore-file',
+    help='Override the .gcloudignore file and use the specified file instead.')
 
 FIREWALL_PRIORITY_FLAG = base.Argument(
     'priority',
@@ -71,7 +82,8 @@ LOGS = base.Argument(
     metavar='APP_LOG',
     type=arg_parsers.ArgList(min_length=1))
 
-SERVER_FLAG = base.Argument('--server', help=argparse.SUPPRESS)
+SERVER_FLAG = base.Argument(
+    '--server', hidden=True, help='THIS ARGUMENT NEEDS HELP TEXT.')
 
 SERVICE = base.Argument(
     '--service', '-s', help='Limit to specific service.', required=False)
@@ -190,7 +202,8 @@ first to get one.
 
 DOCKER_BUILD_FLAG = base.Argument(
     '--docker-build',
-    help=argparse.SUPPRESS,
+    hidden=True,
+    help='THIS ARGUMENT NEEDS HELP TEXT.',
     type=ValidateDockerBuildFlag)
 
 
@@ -211,7 +224,7 @@ def GetCodeBucket(app, project):
   log.debug('No bucket specified, retrieving default bucket.')
   if not app.codeBucket:
     raise exceptions.DefaultBucketAccessError(project)
-  return storage_util.BucketReference.FromBucketUrl(app.codeBucket)
+  return storage_util.BucketReference.FromUrl(app.codeBucket)
 
 
 VERSION_TYPE = arg_parsers.RegexpValidator(

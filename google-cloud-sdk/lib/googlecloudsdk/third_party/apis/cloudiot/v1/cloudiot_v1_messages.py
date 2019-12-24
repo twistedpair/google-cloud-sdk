@@ -13,100 +13,65 @@ from apitools.base.py import extra_types
 package = 'cloudiot'
 
 
-class AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. The configuration
-  determines which permission types are logged, and what identities, if any,
-  are exempted from logging. An AuditConfig must have one or more
-  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
-  specific service, the union of the two AuditConfigs is used for that
-  service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted.  Example Policy with
-  multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices"           "audit_log_configs": [             {
-  "log_type": "DATA_READ",               "exempted_members": [
-  "user:foo@gmail.com"               ]             },             {
-  "log_type": "DATA_WRITE",             },             {
-  "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "fooservice.googleapis.com"           "audit_log_configs": [
-  {               "log_type": "DATA_READ",             },             {
-  "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:bar@gmail.com"               ]             }           ]         }
-  ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
-  and bar@gmail.com from DATA_WRITE logging.
+class BindDeviceToGatewayRequest(_messages.Message):
+  r"""Request for `BindDeviceToGateway`.
 
   Fields:
-    auditLogConfigs: The configuration for logging of each type of permission.
-      Next ID: 4
-    exemptedMembers: A string attribute.
-    service: Specifies a service that will be enabled for audit logging. For
-      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
-      `allServices` is a special value that covers all services.
+    deviceId: Required. The device to associate with the specified gateway.
+      The value of `device_id` can be either the device numeric ID or the
+      user-defined device identifier.
+    gatewayId: Required. The value of `gateway_id` can be either the device
+      numeric ID or the user-defined device identifier.
   """
 
-  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  exemptedMembers = _messages.StringField(2, repeated=True)
-  service = _messages.StringField(3)
+  deviceId = _messages.StringField(1)
+  gatewayId = _messages.StringField(2)
 
 
-class AuditLogConfig(_messages.Message):
-  """Provides the configuration for logging a type of permissions. Example:
-  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:foo@gmail.com"           ]
-  },         {           "log_type": "DATA_WRITE",         }       ]     }
-  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  foo@gmail.com from DATA_READ logging.
-
-  Enums:
-    LogTypeValueValuesEnum: The log type that this config enables.
-
-  Fields:
-    exemptedMembers: Specifies the identities that do not cause logging for
-      this type of permission. Follows the same format of Binding.members.
-    logType: The log type that this config enables.
-  """
-
-  class LogTypeValueValuesEnum(_messages.Enum):
-    """The log type that this config enables.
-
-    Values:
-      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
-      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
-      DATA_WRITE: Data writes. Example: CloudSQL Users create
-      DATA_READ: Data reads. Example: CloudSQL Users list
-    """
-    LOG_TYPE_UNSPECIFIED = 0
-    ADMIN_READ = 1
-    DATA_WRITE = 2
-    DATA_READ = 3
-
-  exemptedMembers = _messages.StringField(1, repeated=True)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+class BindDeviceToGatewayResponse(_messages.Message):
+  r"""Response for `BindDeviceToGateway`."""
 
 
 class Binding(_messages.Message):
-  """Associates `members` with a `role`.
+  r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
+    condition: The condition that is associated with this binding. NOTE: An
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
-      independently. This field is GOOGLE_INTERNAL.
+      independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
       with or without a Google account.  * `allAuthenticatedUsers`: A special
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
+      represents a specific Google    account. For example,
+      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: A Google Apps domain name that represents all the
-      users of that domain. For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding.  *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus    unique identifier) representing a service account that has been
+      recently    deleted. For example,    `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique    identifier) representing a Google group
+      that has been recently    deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If    the group is
+      recovered, this value reverts to `group:{emailid}` and the    recovered
+      group retains the role in the binding.   * `domain:{domain}`: The G
+      Suite domain (primary) that represents all the    users of that domain.
+      For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`. Required
+      `roles/editor`, or `roles/owner`.
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -114,14 +79,29 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class CloudiotProjectsLocationsRegistriesBindDeviceToGatewayRequest(_messages.Message):
+  r"""A CloudiotProjectsLocationsRegistriesBindDeviceToGatewayRequest object.
+
+  Fields:
+    bindDeviceToGatewayRequest: A BindDeviceToGatewayRequest resource to be
+      passed as the request body.
+    parent: Required. The name of the registry. For example, `projects
+      /example-project/locations/us-central1/registries/my-registry`.
+  """
+
+  bindDeviceToGatewayRequest = _messages.MessageField('BindDeviceToGatewayRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class CloudiotProjectsLocationsRegistriesCreateRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesCreateRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesCreateRequest object.
 
   Fields:
     deviceRegistry: A DeviceRegistry resource to be passed as the request
       body.
-    parent: The project and cloud region where this device registry must be
-      created. For example, `projects/example-project/locations/us-central1`.
+    parent: Required. The project and cloud region where this device registry
+      must be created. For example, `projects/example-project/locations/us-
+      central1`.
   """
 
   deviceRegistry = _messages.MessageField('DeviceRegistry', 1)
@@ -129,24 +109,25 @@ class CloudiotProjectsLocationsRegistriesCreateRequest(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesDeleteRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDeleteRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesDeleteRequest object.
 
   Fields:
-    name: The name of the device registry. For example, `projects/example-
-      project/locations/us-central1/registries/my-registry`.
+    name: Required. The name of the device registry. For example, `projects
+      /example-project/locations/us-central1/registries/my-registry`.
   """
 
   name = _messages.StringField(1, required=True)
 
 
 class CloudiotProjectsLocationsRegistriesDevicesConfigVersionsListRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDevicesConfigVersionsListRequest
+  r"""A CloudiotProjectsLocationsRegistriesDevicesConfigVersionsListRequest
   object.
 
   Fields:
-    name: The name of the device. For example, `projects/p0/locations/us-
-      central1/registries/registry0/devices/device0` or `projects/p0/locations
-      /us-central1/registries/registry0/devices/{num_id}`.
+    name: Required. The name of the device. For example,
+      `projects/p0/locations/us-central1/registries/registry0/devices/device0`
+      or `projects/p0/locations/us-
+      central1/registries/registry0/devices/{num_id}`.
     numVersions: The number of versions to list. Versions are listed in
       decreasing order of the version number. The maximum number of versions
       retained is 10. If this value is zero, it will return all the versions
@@ -158,12 +139,12 @@ class CloudiotProjectsLocationsRegistriesDevicesConfigVersionsListRequest(_messa
 
 
 class CloudiotProjectsLocationsRegistriesDevicesCreateRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDevicesCreateRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesDevicesCreateRequest object.
 
   Fields:
     device: A Device resource to be passed as the request body.
-    parent: The name of the device registry where this device should be
-      created. For example, `projects/example-project/locations/us-
+    parent: Required. The name of the device registry where this device should
+      be created. For example, `projects/example-project/locations/us-
       central1/registries/my-registry`.
   """
 
@@ -172,71 +153,113 @@ class CloudiotProjectsLocationsRegistriesDevicesCreateRequest(_messages.Message)
 
 
 class CloudiotProjectsLocationsRegistriesDevicesDeleteRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDevicesDeleteRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesDevicesDeleteRequest object.
 
   Fields:
-    name: The name of the device. For example, `projects/p0/locations/us-
-      central1/registries/registry0/devices/device0` or `projects/p0/locations
-      /us-central1/registries/registry0/devices/{num_id}`.
+    name: Required. The name of the device. For example,
+      `projects/p0/locations/us-central1/registries/registry0/devices/device0`
+      or `projects/p0/locations/us-
+      central1/registries/registry0/devices/{num_id}`.
   """
 
   name = _messages.StringField(1, required=True)
 
 
 class CloudiotProjectsLocationsRegistriesDevicesGetRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDevicesGetRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesDevicesGetRequest object.
 
   Fields:
-    name: The name of the device. For example, `projects/p0/locations/us-
-      central1/registries/registry0/devices/device0` or `projects/p0/locations
-      /us-central1/registries/registry0/devices/{num_id}`.
+    fieldMask: The fields of the `Device` resource to be returned in the
+      response. If the field mask is unset or empty, all fields are returned.
+    name: Required. The name of the device. For example,
+      `projects/p0/locations/us-central1/registries/registry0/devices/device0`
+      or `projects/p0/locations/us-
+      central1/registries/registry0/devices/{num_id}`.
   """
 
-  name = _messages.StringField(1, required=True)
+  fieldMask = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class CloudiotProjectsLocationsRegistriesDevicesListRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDevicesListRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesDevicesListRequest object.
+
+  Enums:
+    GatewayListOptionsGatewayTypeValueValuesEnum: If `GATEWAY` is specified,
+      only gateways are returned. If `NON_GATEWAY` is specified, only non-
+      gateway devices are returned. If `GATEWAY_TYPE_UNSPECIFIED` is
+      specified, all devices are returned.
 
   Fields:
-    deviceIds: A list of device string identifiers. If empty, it will ignore
-      this field. For example, `['device0', 'device12']`. This field cannot
-      hold more than 10,000 entries.
-    deviceNumIds: A list of device numerical ids. If empty, it will ignore
-      this field. This field cannot hold more than 10,000 entries.
+    deviceIds: A list of device string IDs. For example, `['device0',
+      'device12']`. If empty, this field is ignored. Maximum IDs: 10,000
+    deviceNumIds: A list of device numeric IDs. If empty, this field is
+      ignored. Maximum IDs: 10,000.
     fieldMask: The fields of the `Device` resource to be returned in the
-      response. The fields `id`, and `num_id` are always returned by default,
-      along with any other fields specified.
+      response. The fields `id` and `num_id` are always returned, along with
+      any other fields specified.
+    gatewayListOptions_associationsDeviceId: If set, returns only the gateways
+      with which the specified device is associated. The device ID can be
+      numeric (`num_id`) or the user-defined string (`id`). For example, if
+      `456` is specified, returns only the gateways to which the device with
+      `num_id` 456 is bound.
+    gatewayListOptions_associationsGatewayId: If set, only devices associated
+      with the specified gateway are returned. The gateway ID can be numeric
+      (`num_id`) or the user-defined string (`id`). For example, if `123` is
+      specified, only devices bound to the gateway with `num_id` 123 are
+      returned.
+    gatewayListOptions_gatewayType: If `GATEWAY` is specified, only gateways
+      are returned. If `NON_GATEWAY` is specified, only non-gateway devices
+      are returned. If `GATEWAY_TYPE_UNSPECIFIED` is specified, all devices
+      are returned.
     pageSize: The maximum number of devices to return in the response. If this
       value is zero, the service will select a default size. A call may return
-      fewer objects than requested, but if there is a non-empty `page_token`,
-      it indicates that more entries are available.
+      fewer objects than requested. A non-empty `next_page_token` in the
+      response indicates that more data is available.
     pageToken: The value returned by the last `ListDevicesResponse`; indicates
-      that this is a continuation of a prior `ListDevices` call, and that the
-      system should return the next page of data.
-    parent: The device registry path. Required. For example, `projects/my-
-      project/locations/us-central1/registries/my-registry`.
+      that this is a continuation of a prior `ListDevices` call and the system
+      should return the next page of data.
+    parent: Required. The device registry path. Required. For example,
+      `projects/my-project/locations/us-central1/registries/my-registry`.
   """
+
+  class GatewayListOptionsGatewayTypeValueValuesEnum(_messages.Enum):
+    r"""If `GATEWAY` is specified, only gateways are returned. If
+    `NON_GATEWAY` is specified, only non-gateway devices are returned. If
+    `GATEWAY_TYPE_UNSPECIFIED` is specified, all devices are returned.
+
+    Values:
+      GATEWAY_TYPE_UNSPECIFIED: <no description>
+      GATEWAY: <no description>
+      NON_GATEWAY: <no description>
+    """
+    GATEWAY_TYPE_UNSPECIFIED = 0
+    GATEWAY = 1
+    NON_GATEWAY = 2
 
   deviceIds = _messages.StringField(1, repeated=True)
   deviceNumIds = _messages.IntegerField(2, repeated=True, variant=_messages.Variant.UINT64)
   fieldMask = _messages.StringField(3)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
-  parent = _messages.StringField(6, required=True)
+  gatewayListOptions_associationsDeviceId = _messages.StringField(4)
+  gatewayListOptions_associationsGatewayId = _messages.StringField(5)
+  gatewayListOptions_gatewayType = _messages.EnumField('GatewayListOptionsGatewayTypeValueValuesEnum', 6)
+  pageSize = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(8)
+  parent = _messages.StringField(9, required=True)
 
 
 class CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfigRequest(_messages.Message):
-  """A
+  r"""A
   CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfigRequest
   object.
 
   Fields:
     modifyCloudToDeviceConfigRequest: A ModifyCloudToDeviceConfigRequest
       resource to be passed as the request body.
-    name: The name of the device. For example, `projects/p0/locations/us-
-      central1/registries/registry0/devices/device0` or `projects/p0/locations
-      /us-central1/registries/registry0/devices/{num_id}`.
+    name: Required. The name of the device. For example,
+      `projects/p0/locations/us-central1/registries/registry0/devices/device0`
+      or `projects/p0/locations/us-
+      central1/registries/registry0/devices/{num_id}`.
   """
 
   modifyCloudToDeviceConfigRequest = _messages.MessageField('ModifyCloudToDeviceConfigRequest', 1)
@@ -244,7 +267,7 @@ class CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfigRequest
 
 
 class CloudiotProjectsLocationsRegistriesDevicesPatchRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDevicesPatchRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesDevicesPatchRequest object.
 
   Fields:
     device: A Device resource to be passed as the request body.
@@ -253,10 +276,10 @@ class CloudiotProjectsLocationsRegistriesDevicesPatchRequest(_messages.Message):
       /us-central1/registries/registry0/devices/{num_id}`. When `name` is
       populated as a response from the service, it always ends in the device
       numeric ID.
-    updateMask: Only updates the `device` fields indicated by this mask. The
-      field mask must not be empty, and it must not contain fields that are
-      immutable or only set by the server. Mutable top-level fields:
-      `credentials`, `enabled_state`, and `metadata`
+    updateMask: Required. Only updates the `device` fields indicated by this
+      mask. The field mask must not be empty, and it must not contain fields
+      that are immutable or only set by the server. Mutable top-level fields:
+      `credentials`, `blocked`, and `metadata`
   """
 
   device = _messages.MessageField('Device', 1)
@@ -264,13 +287,31 @@ class CloudiotProjectsLocationsRegistriesDevicesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
-class CloudiotProjectsLocationsRegistriesDevicesStatesListRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDevicesStatesListRequest object.
+class CloudiotProjectsLocationsRegistriesDevicesSendCommandToDeviceRequest(_messages.Message):
+  r"""A CloudiotProjectsLocationsRegistriesDevicesSendCommandToDeviceRequest
+  object.
 
   Fields:
-    name: The name of the device. For example, `projects/p0/locations/us-
-      central1/registries/registry0/devices/device0` or `projects/p0/locations
-      /us-central1/registries/registry0/devices/{num_id}`.
+    name: Required. The name of the device. For example,
+      `projects/p0/locations/us-central1/registries/registry0/devices/device0`
+      or `projects/p0/locations/us-
+      central1/registries/registry0/devices/{num_id}`.
+    sendCommandToDeviceRequest: A SendCommandToDeviceRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  sendCommandToDeviceRequest = _messages.MessageField('SendCommandToDeviceRequest', 2)
+
+
+class CloudiotProjectsLocationsRegistriesDevicesStatesListRequest(_messages.Message):
+  r"""A CloudiotProjectsLocationsRegistriesDevicesStatesListRequest object.
+
+  Fields:
+    name: Required. The name of the device. For example,
+      `projects/p0/locations/us-central1/registries/registry0/devices/device0`
+      or `projects/p0/locations/us-
+      central1/registries/registry0/devices/{num_id}`.
     numStates: The number of states to list. States are listed in descending
       order of update time. The maximum number of states retained is 10. If
       this value is zero, it will return all the states available.
@@ -281,7 +322,7 @@ class CloudiotProjectsLocationsRegistriesDevicesStatesListRequest(_messages.Mess
 
 
 class CloudiotProjectsLocationsRegistriesGetIamPolicyRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesGetIamPolicyRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesGetIamPolicyRequest object.
 
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
@@ -296,29 +337,142 @@ class CloudiotProjectsLocationsRegistriesGetIamPolicyRequest(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesGetRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesGetRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesGetRequest object.
 
   Fields:
-    name: The name of the device registry. For example, `projects/example-
-      project/locations/us-central1/registries/my-registry`.
+    name: Required. The name of the device registry. For example, `projects
+      /example-project/locations/us-central1/registries/my-registry`.
   """
 
   name = _messages.StringField(1, required=True)
 
 
+class CloudiotProjectsLocationsRegistriesGroupsDevicesListRequest(_messages.Message):
+  r"""A CloudiotProjectsLocationsRegistriesGroupsDevicesListRequest object.
+
+  Enums:
+    GatewayListOptionsGatewayTypeValueValuesEnum: If `GATEWAY` is specified,
+      only gateways are returned. If `NON_GATEWAY` is specified, only non-
+      gateway devices are returned. If `GATEWAY_TYPE_UNSPECIFIED` is
+      specified, all devices are returned.
+
+  Fields:
+    deviceIds: A list of device string IDs. For example, `['device0',
+      'device12']`. If empty, this field is ignored. Maximum IDs: 10,000
+    deviceNumIds: A list of device numeric IDs. If empty, this field is
+      ignored. Maximum IDs: 10,000.
+    fieldMask: The fields of the `Device` resource to be returned in the
+      response. The fields `id` and `num_id` are always returned, along with
+      any other fields specified.
+    gatewayListOptions_associationsDeviceId: If set, returns only the gateways
+      with which the specified device is associated. The device ID can be
+      numeric (`num_id`) or the user-defined string (`id`). For example, if
+      `456` is specified, returns only the gateways to which the device with
+      `num_id` 456 is bound.
+    gatewayListOptions_associationsGatewayId: If set, only devices associated
+      with the specified gateway are returned. The gateway ID can be numeric
+      (`num_id`) or the user-defined string (`id`). For example, if `123` is
+      specified, only devices bound to the gateway with `num_id` 123 are
+      returned.
+    gatewayListOptions_gatewayType: If `GATEWAY` is specified, only gateways
+      are returned. If `NON_GATEWAY` is specified, only non-gateway devices
+      are returned. If `GATEWAY_TYPE_UNSPECIFIED` is specified, all devices
+      are returned.
+    pageSize: The maximum number of devices to return in the response. If this
+      value is zero, the service will select a default size. A call may return
+      fewer objects than requested. A non-empty `next_page_token` in the
+      response indicates that more data is available.
+    pageToken: The value returned by the last `ListDevicesResponse`; indicates
+      that this is a continuation of a prior `ListDevices` call and the system
+      should return the next page of data.
+    parent: Required. The device registry path. Required. For example,
+      `projects/my-project/locations/us-central1/registries/my-registry`.
+  """
+
+  class GatewayListOptionsGatewayTypeValueValuesEnum(_messages.Enum):
+    r"""If `GATEWAY` is specified, only gateways are returned. If
+    `NON_GATEWAY` is specified, only non-gateway devices are returned. If
+    `GATEWAY_TYPE_UNSPECIFIED` is specified, all devices are returned.
+
+    Values:
+      GATEWAY_TYPE_UNSPECIFIED: <no description>
+      GATEWAY: <no description>
+      NON_GATEWAY: <no description>
+    """
+    GATEWAY_TYPE_UNSPECIFIED = 0
+    GATEWAY = 1
+    NON_GATEWAY = 2
+
+  deviceIds = _messages.StringField(1, repeated=True)
+  deviceNumIds = _messages.IntegerField(2, repeated=True, variant=_messages.Variant.UINT64)
+  fieldMask = _messages.StringField(3)
+  gatewayListOptions_associationsDeviceId = _messages.StringField(4)
+  gatewayListOptions_associationsGatewayId = _messages.StringField(5)
+  gatewayListOptions_gatewayType = _messages.EnumField('GatewayListOptionsGatewayTypeValueValuesEnum', 6)
+  pageSize = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(8)
+  parent = _messages.StringField(9, required=True)
+
+
+class CloudiotProjectsLocationsRegistriesGroupsGetIamPolicyRequest(_messages.Message):
+  r"""A CloudiotProjectsLocationsRegistriesGroupsGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class CloudiotProjectsLocationsRegistriesGroupsSetIamPolicyRequest(_messages.Message):
+  r"""A CloudiotProjectsLocationsRegistriesGroupsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class CloudiotProjectsLocationsRegistriesGroupsTestIamPermissionsRequest(_messages.Message):
+  r"""A CloudiotProjectsLocationsRegistriesGroupsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class CloudiotProjectsLocationsRegistriesListRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesListRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesListRequest object.
 
   Fields:
     pageSize: The maximum number of registries to return in the response. If
       this value is zero, the service will select a default size. A call may
-      return fewer objects than requested, but if there is a non-empty
-      `page_token`, it indicates that more entries are available.
+      return fewer objects than requested. A non-empty `next_page_token` in
+      the response indicates that more data is available.
     pageToken: The value returned by the last `ListDeviceRegistriesResponse`;
       indicates that this is a continuation of a prior `ListDeviceRegistries`
-      call, and that the system should return the next page of data.
-    parent: The project and cloud region path. For example, `projects/example-
-      project/locations/us-central1`.
+      call and the system should return the next page of data.
+    parent: Required. The project and cloud region path. For example,
+      `projects/example-project/locations/us-central1`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -327,17 +481,17 @@ class CloudiotProjectsLocationsRegistriesListRequest(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesPatchRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesPatchRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesPatchRequest object.
 
   Fields:
     deviceRegistry: A DeviceRegistry resource to be passed as the request
       body.
     name: The resource path name. For example, `projects/example-
       project/locations/us-central1/registries/my-registry`.
-    updateMask: Only updates the `device_registry` fields indicated by this
-      mask. The field mask must not be empty, and it must not contain fields
-      that are immutable or only set by the server. Mutable top-level fields:
-      `event_notification_config`, `mqtt_config`, and
+    updateMask: Required. Only updates the `device_registry` fields indicated
+      by this mask. The field mask must not be empty, and it must not contain
+      fields that are immutable or only set by the server. Mutable top-level
+      fields: `event_notification_config`, `http_config`, `mqtt_config`, and
       `state_notification_config`.
   """
 
@@ -347,7 +501,7 @@ class CloudiotProjectsLocationsRegistriesPatchRequest(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesSetIamPolicyRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesSetIamPolicyRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -362,7 +516,7 @@ class CloudiotProjectsLocationsRegistriesSetIamPolicyRequest(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesTestIamPermissionsRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesTestIamPermissionsRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -376,17 +530,36 @@ class CloudiotProjectsLocationsRegistriesTestIamPermissionsRequest(_messages.Mes
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class CloudiotProjectsLocationsRegistriesUnbindDeviceFromGatewayRequest(_messages.Message):
+  r"""A CloudiotProjectsLocationsRegistriesUnbindDeviceFromGatewayRequest
+  object.
+
+  Fields:
+    parent: Required. The name of the registry. For example, `projects
+      /example-project/locations/us-central1/registries/my-registry`.
+    unbindDeviceFromGatewayRequest: A UnbindDeviceFromGatewayRequest resource
+      to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  unbindDeviceFromGatewayRequest = _messages.MessageField('UnbindDeviceFromGatewayRequest', 2)
+
+
 class Device(_messages.Message):
-  """The device resource.
+  r"""The device resource.
+
+  Enums:
+    LogLevelValueValuesEnum: **Beta Feature**  The logging verbosity for
+      device activity. If unspecified, DeviceRegistry.log_level will be used.
 
   Messages:
     MetadataValue: The metadata key-value pairs assigned to the device. This
       metadata is not interpreted or indexed by Cloud IoT Core. It can be used
       to add contextual information for the device.  Keys must conform to the
-      regular expression [a-zA-Z0-9-_]+ and be less than 128 bytes in length.
-      Values are free-form strings. Each value must be less than or equal to
-      32 KB in size.  The total size of all keys and values must be less than
-      256 KB, and the maximum number of key-value pairs is 500.
+      regular expression a-zA-Z+ and be less than 128 bytes in length.  Values
+      are free-form strings. Each value must be less than or equal to 32 KB in
+      size.  The total size of all keys and values must be less than 256 KB,
+      and the maximum number of key-value pairs is 500.
 
   Fields:
     blocked: If a device is blocked, connections or requests from this device
@@ -404,6 +577,7 @@ class Device(_messages.Message):
       a single device at a time. When new credentials are added to a device,
       they are verified against the registry credentials. For details, see the
       description of the `DeviceRegistry.credentials` field.
+    gatewayConfig: Gateway-related configuration and state.
     id: The user-defined device identifier. The device ID must be unique
       within a device registry.
     lastConfigAckTime: [Output only] The last time a cloud-to-device config
@@ -422,20 +596,23 @@ class Device(_messages.Message):
     lastEventTime: [Output only] The last time a telemetry event was received.
       Timestamps are periodically collected and written to storage; they may
       be stale by a few minutes.
-    lastHeartbeatTime: [Output only] The last time a heartbeat was received.
-      Timestamps are periodically collected and written to storage; they may
-      be stale by a few minutes. This field is only for devices connecting
-      through MQTT.
+    lastHeartbeatTime: [Output only] The last time an MQTT `PINGREQ` was
+      received. This field applies only to devices connecting through MQTT.
+      MQTT clients usually only send `PINGREQ` messages if the connection is
+      idle, and no other messages have been sent. Timestamps are periodically
+      collected and written to storage; they may be stale by a few minutes.
     lastStateTime: [Output only] The last time a state event was received.
       Timestamps are periodically collected and written to storage; they may
       be stale by a few minutes.
+    logLevel: **Beta Feature**  The logging verbosity for device activity. If
+      unspecified, DeviceRegistry.log_level will be used.
     metadata: The metadata key-value pairs assigned to the device. This
       metadata is not interpreted or indexed by Cloud IoT Core. It can be used
       to add contextual information for the device.  Keys must conform to the
-      regular expression [a-zA-Z0-9-_]+ and be less than 128 bytes in length.
-      Values are free-form strings. Each value must be less than or equal to
-      32 KB in size.  The total size of all keys and values must be less than
-      256 KB, and the maximum number of key-value pairs is 500.
+      regular expression a-zA-Z+ and be less than 128 bytes in length.  Values
+      are free-form strings. Each value must be less than or equal to 32 KB in
+      size.  The total size of all keys and values must be less than 256 KB,
+      and the maximum number of key-value pairs is 500.
     name: The resource path name. For example, `projects/p1/locations/us-
       central1/registries/registry0/devices/dev0` or `projects/p1/locations
       /us-central1/registries/registry0/devices/{num_id}`. When `name` is
@@ -448,15 +625,34 @@ class Device(_messages.Message):
       no state has been reported, this field is not present.
   """
 
+  class LogLevelValueValuesEnum(_messages.Enum):
+    r"""**Beta Feature**  The logging verbosity for device activity. If
+    unspecified, DeviceRegistry.log_level will be used.
+
+    Values:
+      LOG_LEVEL_UNSPECIFIED: No logging specified. If not specified, logging
+        will be disabled.
+      NONE: Disables logging.
+      ERROR: Error events will be logged.
+      INFO: Informational events will be logged, such as connections and
+        disconnections.
+      DEBUG: All events will be logged.
+    """
+    LOG_LEVEL_UNSPECIFIED = 0
+    NONE = 1
+    ERROR = 2
+    INFO = 3
+    DEBUG = 4
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """The metadata key-value pairs assigned to the device. This metadata is
+    r"""The metadata key-value pairs assigned to the device. This metadata is
     not interpreted or indexed by Cloud IoT Core. It can be used to add
     contextual information for the device.  Keys must conform to the regular
-    expression [a-zA-Z0-9-_]+ and be less than 128 bytes in length.  Values
-    are free-form strings. Each value must be less than or equal to 32 KB in
-    size.  The total size of all keys and values must be less than 256 KB, and
-    the maximum number of key-value pairs is 500.
+    expression a-zA-Z+ and be less than 128 bytes in length.  Values are free-
+    form strings. Each value must be less than or equal to 32 KB in size.  The
+    total size of all keys and values must be less than 256 KB, and the
+    maximum number of key-value pairs is 500.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -466,7 +662,7 @@ class Device(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -481,22 +677,24 @@ class Device(_messages.Message):
   blocked = _messages.BooleanField(1)
   config = _messages.MessageField('DeviceConfig', 2)
   credentials = _messages.MessageField('DeviceCredential', 3, repeated=True)
-  id = _messages.StringField(4)
-  lastConfigAckTime = _messages.StringField(5)
-  lastConfigSendTime = _messages.StringField(6)
-  lastErrorStatus = _messages.MessageField('Status', 7)
-  lastErrorTime = _messages.StringField(8)
-  lastEventTime = _messages.StringField(9)
-  lastHeartbeatTime = _messages.StringField(10)
-  lastStateTime = _messages.StringField(11)
-  metadata = _messages.MessageField('MetadataValue', 12)
-  name = _messages.StringField(13)
-  numId = _messages.IntegerField(14, variant=_messages.Variant.UINT64)
-  state = _messages.MessageField('DeviceState', 15)
+  gatewayConfig = _messages.MessageField('GatewayConfig', 4)
+  id = _messages.StringField(5)
+  lastConfigAckTime = _messages.StringField(6)
+  lastConfigSendTime = _messages.StringField(7)
+  lastErrorStatus = _messages.MessageField('Status', 8)
+  lastErrorTime = _messages.StringField(9)
+  lastEventTime = _messages.StringField(10)
+  lastHeartbeatTime = _messages.StringField(11)
+  lastStateTime = _messages.StringField(12)
+  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 13)
+  metadata = _messages.MessageField('MetadataValue', 14)
+  name = _messages.StringField(15)
+  numId = _messages.IntegerField(16, variant=_messages.Variant.UINT64)
+  state = _messages.MessageField('DeviceState', 17)
 
 
 class DeviceConfig(_messages.Message):
-  """The device configuration. Eventually delivered to devices.
+  r"""The device configuration. Eventually delivered to devices.
 
   Fields:
     binaryData: The device configuration data.
@@ -526,7 +724,7 @@ class DeviceConfig(_messages.Message):
 
 
 class DeviceCredential(_messages.Message):
-  """A server-stored device credential used for authentication.
+  r"""A server-stored device credential used for authentication.
 
   Fields:
     expirationTime: [Optional] The time at which this credential becomes
@@ -551,7 +749,12 @@ class DeviceCredential(_messages.Message):
 
 
 class DeviceRegistry(_messages.Message):
-  """A container for a group of devices.
+  r"""A container for a group of devices.
+
+  Enums:
+    LogLevelValueValuesEnum: **Beta Feature**  The default logging verbosity
+      for activity from devices in this registry. The verbosity level can be
+      overridden by Device.log_level.
 
   Fields:
     credentials: The credentials used to verify the device credentials. No
@@ -567,11 +770,19 @@ class DeviceRegistry(_messages.Message):
     eventNotificationConfigs: The configuration for notification of telemetry
       events received from the device. All telemetry events that were
       successfully published by the device and acknowledged by Cloud IoT Core
-      are guaranteed to be delivered to Cloud Pub/Sub. Only the first
-      configuration is used.
+      are guaranteed to be delivered to Cloud Pub/Sub. If multiple
+      configurations match a message, only the first matching configuration is
+      used. If you try to publish a device telemetry event using MQTT without
+      specifying a Cloud Pub/Sub topic for the device's registry, the
+      connection closes automatically. If you try to do so using an HTTP
+      connection, an error is returned. Up to 10 configurations may be
+      provided.
     httpConfig: The DeviceService (HTTP) configuration for this device
       registry.
     id: The identifier of this device registry. For example, `myRegistry`.
+    logLevel: **Beta Feature**  The default logging verbosity for activity
+      from devices in this registry. The verbosity level can be overridden by
+      Device.log_level.
     mqttConfig: The MQTT configuration for this device registry.
     name: The resource path name. For example, `projects/example-
       project/locations/us-central1/registries/my-registry`.
@@ -583,17 +794,38 @@ class DeviceRegistry(_messages.Message):
       state will still be stored in Cloud IoT Core.
   """
 
+  class LogLevelValueValuesEnum(_messages.Enum):
+    r"""**Beta Feature**  The default logging verbosity for activity from
+    devices in this registry. The verbosity level can be overridden by
+    Device.log_level.
+
+    Values:
+      LOG_LEVEL_UNSPECIFIED: No logging specified. If not specified, logging
+        will be disabled.
+      NONE: Disables logging.
+      ERROR: Error events will be logged.
+      INFO: Informational events will be logged, such as connections and
+        disconnections.
+      DEBUG: All events will be logged.
+    """
+    LOG_LEVEL_UNSPECIFIED = 0
+    NONE = 1
+    ERROR = 2
+    INFO = 3
+    DEBUG = 4
+
   credentials = _messages.MessageField('RegistryCredential', 1, repeated=True)
   eventNotificationConfigs = _messages.MessageField('EventNotificationConfig', 2, repeated=True)
   httpConfig = _messages.MessageField('HttpConfig', 3)
   id = _messages.StringField(4)
-  mqttConfig = _messages.MessageField('MqttConfig', 5)
-  name = _messages.StringField(6)
-  stateNotificationConfig = _messages.MessageField('StateNotificationConfig', 7)
+  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 5)
+  mqttConfig = _messages.MessageField('MqttConfig', 6)
+  name = _messages.StringField(7)
+  stateNotificationConfig = _messages.MessageField('StateNotificationConfig', 8)
 
 
 class DeviceState(_messages.Message):
-  """The device state, as reported by the device.
+  r"""The device state, as reported by the device.
 
   Fields:
     binaryData: The device state data.
@@ -606,7 +838,7 @@ class DeviceState(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -616,18 +848,23 @@ class Empty(_messages.Message):
 
 
 class EventNotificationConfig(_messages.Message):
-  """The configuration to forward telemetry events.
+  r"""The configuration for forwarding telemetry events.
 
   Fields:
     pubsubTopicName: A Cloud Pub/Sub topic name. For example,
       `projects/myProject/topics/deviceEvents`.
+    subfolderMatches: If the subfolder name matches this string exactly, this
+      configuration will be used. The string must not include the leading '/'
+      character. If empty, all strings are matched. This field is used only
+      for telemetry events; subfolders are not supported for state changes.
   """
 
   pubsubTopicName = _messages.StringField(1)
+  subfolderMatches = _messages.StringField(2)
 
 
 class Expr(_messages.Message):
-  """Represents an expression text. Example:      title: "User account
+  r"""Represents an expression text. Example:      title: "User account
   presence"     description: "Determines whether the request has a user
   account"     expression: "size(request.user) > 0"
 
@@ -650,12 +887,90 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GatewayConfig(_messages.Message):
+  r"""Gateway-related configuration and state.
+
+  Enums:
+    GatewayAuthMethodValueValuesEnum: Indicates how to authorize and/or
+      authenticate devices to access the gateway.
+    GatewayTypeValueValuesEnum: Indicates whether the device is a gateway.
+
+  Fields:
+    gatewayAuthMethod: Indicates how to authorize and/or authenticate devices
+      to access the gateway.
+    gatewayType: Indicates whether the device is a gateway.
+    lastAccessedGatewayId: [Output only] The ID of the gateway the device
+      accessed most recently.
+    lastAccessedGatewayTime: [Output only] The most recent time at which the
+      device accessed the gateway specified in `last_accessed_gateway`.
+  """
+
+  class GatewayAuthMethodValueValuesEnum(_messages.Enum):
+    r"""Indicates how to authorize and/or authenticate devices to access the
+    gateway.
+
+    Values:
+      GATEWAY_AUTH_METHOD_UNSPECIFIED: No authentication/authorization method
+        specified. No devices are allowed to access the gateway.
+      ASSOCIATION_ONLY: The device is authenticated through the gateway
+        association only. Device credentials are ignored even if provided.
+      DEVICE_AUTH_TOKEN_ONLY: The device is authenticated through its own
+        credentials. Gateway association is not checked.
+      ASSOCIATION_AND_DEVICE_AUTH_TOKEN: The device is authenticated through
+        both device credentials and gateway association. The device must be
+        bound to the gateway and must provide its own credentials.
+    """
+    GATEWAY_AUTH_METHOD_UNSPECIFIED = 0
+    ASSOCIATION_ONLY = 1
+    DEVICE_AUTH_TOKEN_ONLY = 2
+    ASSOCIATION_AND_DEVICE_AUTH_TOKEN = 3
+
+  class GatewayTypeValueValuesEnum(_messages.Enum):
+    r"""Indicates whether the device is a gateway.
+
+    Values:
+      GATEWAY_TYPE_UNSPECIFIED: If unspecified, the device is considered a
+        non-gateway device.
+      GATEWAY: The device is a gateway.
+      NON_GATEWAY: The device is not a gateway.
+    """
+    GATEWAY_TYPE_UNSPECIFIED = 0
+    GATEWAY = 1
+    NON_GATEWAY = 2
+
+  gatewayAuthMethod = _messages.EnumField('GatewayAuthMethodValueValuesEnum', 1)
+  gatewayType = _messages.EnumField('GatewayTypeValueValuesEnum', 2)
+  lastAccessedGatewayId = _messages.StringField(3)
+  lastAccessedGatewayTime = _messages.StringField(4)
+
+
 class GetIamPolicyRequest(_messages.Message):
-  """Request message for `GetIamPolicy` method."""
+  r"""Request message for `GetIamPolicy` method.
+
+  Fields:
+    options: OPTIONAL: A `GetPolicyOptions` object for specifying options to
+      `GetIamPolicy`. This field is only used by Cloud IAM.
+  """
+
+  options = _messages.MessageField('GetPolicyOptions', 1)
+
+
+class GetPolicyOptions(_messages.Message):
+  r"""Encapsulates settings provided to GetIamPolicy.
+
+  Fields:
+    requestedPolicyVersion: Optional. The policy format version to be
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
+  """
+
+  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class HttpConfig(_messages.Message):
-  """The configuration of the HTTP bridge for a device registry.
+  r"""The configuration of the HTTP bridge for a device registry.
 
   Enums:
     HttpEnabledStateValueValuesEnum: If enabled, allows devices to use
@@ -669,7 +984,7 @@ class HttpConfig(_messages.Message):
   """
 
   class HttpEnabledStateValueValuesEnum(_messages.Enum):
-    """If enabled, allows devices to use DeviceService via the HTTP protocol.
+    r"""If enabled, allows devices to use DeviceService via the HTTP protocol.
     Otherwise, any requests to DeviceService will fail for this registry.
 
     Values:
@@ -686,7 +1001,7 @@ class HttpConfig(_messages.Message):
 
 
 class ListDeviceConfigVersionsResponse(_messages.Message):
-  """Response for `ListDeviceConfigVersions`.
+  r"""Response for `ListDeviceConfigVersions`.
 
   Fields:
     deviceConfigs: The device configuration for the last few versions.
@@ -698,7 +1013,7 @@ class ListDeviceConfigVersionsResponse(_messages.Message):
 
 
 class ListDeviceRegistriesResponse(_messages.Message):
-  """Response for `ListDeviceRegistries`.
+  r"""Response for `ListDeviceRegistries`.
 
   Fields:
     deviceRegistries: The registries that matched the query.
@@ -712,7 +1027,7 @@ class ListDeviceRegistriesResponse(_messages.Message):
 
 
 class ListDeviceStatesResponse(_messages.Message):
-  """Response for `ListDeviceStates`.
+  r"""Response for `ListDeviceStates`.
 
   Fields:
     deviceStates: The last few device states. States are listed in descending
@@ -723,7 +1038,7 @@ class ListDeviceStatesResponse(_messages.Message):
 
 
 class ListDevicesResponse(_messages.Message):
-  """Response for `ListDevices`.
+  r"""Response for `ListDevices`.
 
   Fields:
     devices: The devices that match the request.
@@ -737,10 +1052,10 @@ class ListDevicesResponse(_messages.Message):
 
 
 class ModifyCloudToDeviceConfigRequest(_messages.Message):
-  """Request for `ModifyCloudToDeviceConfig`.
+  r"""Request for `ModifyCloudToDeviceConfig`.
 
   Fields:
-    binaryData: The configuration data for the device.
+    binaryData: Required. The configuration data for the device.
     versionToUpdate: The version number to update. If this value is zero, it
       will not check the version number of the server and will always update
       the current version; otherwise, this update will fail if the version
@@ -753,7 +1068,7 @@ class ModifyCloudToDeviceConfigRequest(_messages.Message):
 
 
 class MqttConfig(_messages.Message):
-  """The configuration of MQTT for a device registry.
+  r"""The configuration of MQTT for a device registry.
 
   Enums:
     MqttEnabledStateValueValuesEnum: If enabled, allows connections using the
@@ -765,8 +1080,8 @@ class MqttConfig(_messages.Message):
   """
 
   class MqttEnabledStateValueValuesEnum(_messages.Enum):
-    """If enabled, allows connections using the MQTT protocol. Otherwise, MQTT
-    connections to this registry will fail.
+    r"""If enabled, allows connections using the MQTT protocol. Otherwise,
+    MQTT connections to this registry will fail.
 
     Values:
       MQTT_STATE_UNSPECIFIED: No MQTT state specified. If not specified, MQTT
@@ -782,24 +1097,41 @@ class MqttConfig(_messages.Message):
 
 
 class Policy(_messages.Message):
-  """Defines an Identity and Access Management (IAM) policy. It is used to
-  specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
-  `role`, where the members can be user accounts, Google groups, Google
-  domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {       "bindings": [         {
-  "role": "roles/owner",           "members": [
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources.   A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members` to a single `role`.
+  Members can be user accounts, service accounts, Google groups, and domains
+  (such as G Suite). A `role` is a named list of permissions; each `role` can
+  be an IAM predefined role or a user-created custom role.  Optionally, a
+  `binding` can specify a `condition`, which is a logical expression that
+  allows access to a resource only if the expression evaluates to `true`. A
+  condition can add constraints based on attributes of the request, the
+  resource, or both.  **JSON example:**      {       "bindings": [         {
+  "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com",           ]         },         {
-  "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam).
+  "domain:google.com",             "serviceAccount:my-project-
+  id@appspot.gserviceaccount.com"           ]         },         {
+  "role": "roles/resourcemanager.organizationViewer",           "members":
+  ["user:eve@example.com"],           "condition": {             "title":
+  "expirable access",             "description": "Does not grant access after
+  Sep 2020",             "expression": "request.time <
+  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
+  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
+  bindings:     - members:       - user:mike@example.com       -
+  group:admins@example.com       - domain:google.com       - serviceAccount
+  :my-project-id@appspot.gserviceaccount.com       role:
+  roles/resourcemanager.organizationAdmin     - members:       -
+  user:eve@example.com       role: roles/resourcemanager.organizationViewer
+  condition:         title: expirable access         description: Does not
+  grant access after Sep 2020         expression: request.time <
+  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
+  version: 3  For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
-    auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. `bindings` with no
-      members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally, may
+      specify a `condition` that determines how and when the `bindings` are
+      applied. Each of the `bindings` must contain at least one member.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -807,21 +1139,33 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten blindly.
-    iamOwned: A boolean attribute.
-    version: Version of the `Policy`. The default version is 0.
+      policy.  **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
+    version: Specifies the format of the policy.  Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected.  Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations:  * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy   that includes conditions  **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost.  If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset.
   """
 
-  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
-  bindings = _messages.MessageField('Binding', 2, repeated=True)
-  etag = _messages.BytesField(3)
-  iamOwned = _messages.BooleanField(4)
-  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  bindings = _messages.MessageField('Binding', 1, repeated=True)
+  etag = _messages.BytesField(2)
+  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class PublicKeyCertificate(_messages.Message):
-  """A public key certificate format and data.
+  r"""A public key certificate format and data.
 
   Enums:
     FormatValueValuesEnum: The certificate format.
@@ -834,7 +1178,7 @@ class PublicKeyCertificate(_messages.Message):
   """
 
   class FormatValueValuesEnum(_messages.Enum):
-    """The certificate format.
+    r"""The certificate format.
 
     Values:
       UNSPECIFIED_PUBLIC_KEY_CERTIFICATE_FORMAT: The format has not been
@@ -853,7 +1197,7 @@ class PublicKeyCertificate(_messages.Message):
 
 
 class PublicKeyCredential(_messages.Message):
-  """A public key format and data.
+  r"""A public key format and data.
 
   Enums:
     FormatValueValuesEnum: The format of the key.
@@ -864,7 +1208,7 @@ class PublicKeyCredential(_messages.Message):
   """
 
   class FormatValueValuesEnum(_messages.Enum):
-    """The format of the key.
+    r"""The format of the key.
 
     Values:
       UNSPECIFIED_PUBLIC_KEY_FORMAT: The format has not been specified. This
@@ -900,7 +1244,7 @@ class PublicKeyCredential(_messages.Message):
 
 
 class RegistryCredential(_messages.Message):
-  """A server-stored registry credential used to validate device credentials.
+  r"""A server-stored registry credential used to validate device credentials.
 
   Fields:
     publicKeyCertificate: A public key certificate used to verify the device
@@ -910,26 +1254,42 @@ class RegistryCredential(_messages.Message):
   publicKeyCertificate = _messages.MessageField('PublicKeyCertificate', 1)
 
 
+class SendCommandToDeviceRequest(_messages.Message):
+  r"""Request for `SendCommandToDevice`.
+
+  Fields:
+    binaryData: Required. The command data to send to the device.
+    subfolder: Optional subfolder for the command. If empty, the command will
+      be delivered to the /devices/{device-id}/commands topic, otherwise it
+      will be delivered to the /devices/{device-id}/commands/{subfolder}
+      topic. Multi-level subfolders are allowed. This field must not have more
+      than 256 characters, and must not contain any MQTT wildcards ("+" or
+      "#") or null characters.
+  """
+
+  binaryData = _messages.BytesField(1)
+  subfolder = _messages.StringField(2)
+
+
+class SendCommandToDeviceResponse(_messages.Message):
+  r"""Response for `SendCommandToDevice`."""
+
+
 class SetIamPolicyRequest(_messages.Message):
-  """Request message for `SetIamPolicy` method.
+  r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
       size of the policy is limited to a few 10s of KB. An empty policy is a
       valid policy but certain Cloud Platform services (such as Projects)
       might reject them.
-    updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
-      modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used: paths: "bindings, etag"
-      This field is only used by Cloud IAM.
   """
 
   policy = _messages.MessageField('Policy', 1)
-  updateMask = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -939,14 +1299,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -958,7 +1316,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -970,7 +1328,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -982,21 +1340,19 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class StateNotificationConfig(_messages.Message):
-  """The configuration for notification of new states received from the
+  r"""The configuration for notification of new states received from the
   device.
 
   Fields:
@@ -1008,39 +1364,12 @@ class StateNotificationConfig(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). The error model is designed to be:
-  - Simple to use and understand for most users - Flexible enough to meet
-  unexpected needs  # Overview  The `Status` message contains three pieces of
-  data: error code, error message, and error details. The error code should be
-  an enum value of google.rpc.Code, but it may accept additional error codes
-  if needed.  The error message should be a developer-facing English message
-  that helps developers *understand* and *resolve* the error. If a localized
-  user-facing error message is needed, put the localized message in the error
-  details or localize it in the client. The optional error details may contain
-  arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` that can be used for common error
-  conditions.  # Language mapping  The `Status` message is the logical
-  representation of the error model, but it is not necessarily the actual wire
-  format. When the `Status` message is exposed in different client libraries
-  and different wire protocols, it can be mapped differently. For example, it
-  will likely be mapped to some exceptions in Java, but more likely mapped to
-  some error codes in C.  # Other uses  The error model and the `Status`
-  message can be used in a variety of environments, either with or without
-  APIs, to provide a consistent developer experience across different
-  environments.  Example uses of this error model include:  - Partial errors.
-  If a service needs to return partial errors to the client,     it may embed
-  the `Status` in the normal response to indicate the partial     errors.  -
-  Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting.  - Batch operations. If a
-  client uses batch request and batch response, the     `Status` message
-  should be used directly inside batch response, one for     each error sub-
-  response.  - Asynchronous operations. If an API call embeds asynchronous
-  operation     results in its response, the status of those operations should
-  be     represented directly using the `Status` message.  - Logging. If some
-  API errors are stored in logs, the message `Status` could     be used
-  directly after any stripping needed for security/privacy reasons.
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details.  You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
 
   Messages:
     DetailsValueListEntry: A DetailsValueListEntry object.
@@ -1056,7 +1385,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -1068,7 +1397,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -1086,7 +1415,7 @@ class Status(_messages.Message):
 
 
 class TestIamPermissionsRequest(_messages.Message):
-  """Request message for `TestIamPermissions` method.
+  r"""Request message for `TestIamPermissions` method.
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
@@ -1099,7 +1428,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
 
 class TestIamPermissionsResponse(_messages.Message):
-  """Response message for `TestIamPermissions` method.
+  r"""Response message for `TestIamPermissions` method.
 
   Fields:
     permissions: A subset of `TestPermissionsRequest.permissions` that the
@@ -1109,8 +1438,27 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class UnbindDeviceFromGatewayRequest(_messages.Message):
+  r"""Request for `UnbindDeviceFromGateway`.
+
+  Fields:
+    deviceId: Required. The device to disassociate from the specified gateway.
+      The value of `device_id` can be either the device numeric ID or the
+      user-defined device identifier.
+    gatewayId: Required. The value of `gateway_id` can be either the device
+      numeric ID or the user-defined device identifier.
+  """
+
+  deviceId = _messages.StringField(1)
+  gatewayId = _messages.StringField(2)
+
+
+class UnbindDeviceFromGatewayResponse(_messages.Message):
+  r"""Response for `UnbindDeviceFromGateway`."""
+
+
 class X509CertificateDetails(_messages.Message):
-  """Details of an X.509 certificate. For informational purposes only.
+  r"""Details of an X.509 certificate. For informational purposes only.
 
   Fields:
     expiryTime: The time the certificate becomes invalid.

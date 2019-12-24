@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -58,11 +59,17 @@ disables expiry check. These can be used by meta commands/functions to view
 and debug cache data without modifying the underlying persistent data.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 import time
-import urllib
 
 from googlecloudsdk.core.cache import exceptions
+
+import six
+import six.moves.urllib.parse
 
 
 def Now():
@@ -70,6 +77,7 @@ def Now():
   return time.time()
 
 
+@six.add_metaclass(abc.ABCMeta)
 class Table(object):
   """A persistent cache table object.
 
@@ -89,8 +97,6 @@ class Table(object):
     timeout: A float number of seconds. Tables older than (modified+timeout)
       are invalid. 0 means no timeout.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, cache, name, columns=1, keys=1, timeout=0, modified=0,
                restricted=False):
@@ -140,7 +146,7 @@ class Table(object):
     if not name:
       raise exceptions.CacheTableNameInvalid(
           'Cache table name [{}] is invalid.'.format(name))
-    return urllib.quote(name, '!@+,')
+    return six.moves.urllib.parse.quote(name, '!@+,')
 
   def _CheckRows(self, rows):
     """Raise an exception if the size of any row in rows is invalid.
@@ -244,6 +250,7 @@ class Table(object):
     pass
 
 
+@six.add_metaclass(abc.ABCMeta)
 class Cache(object):
   r"""A persistent cache object.
 
@@ -260,8 +267,6 @@ class Cache(object):
     version: A caller defined version string that must match the version string
       stored when the persistent object was created.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, name, create=True, timeout=None, version=None):
     self.name = Cache.EncodeName(name)
@@ -321,6 +326,7 @@ class Cache(object):
     """
     pass
 
+  @abc.abstractmethod
   def Table(self, name, create=True, columns=1, keys=1, timeout=None):
     """Returns the Table object for existing table name.
 

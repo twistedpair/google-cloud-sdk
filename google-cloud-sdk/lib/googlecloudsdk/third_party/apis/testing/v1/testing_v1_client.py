@@ -24,7 +24,7 @@ class TestingV1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new testing handle."""
     url = url or self.BASE_URL
     super(TestingV1, self).__init__(
@@ -33,10 +33,48 @@ class TestingV1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
+    self.applicationDetailService = self.ApplicationDetailServiceService(self)
     self.projects_testMatrices = self.ProjectsTestMatricesService(self)
     self.projects = self.ProjectsService(self)
     self.testEnvironmentCatalog = self.TestEnvironmentCatalogService(self)
+
+  class ApplicationDetailServiceService(base_api.BaseApiService):
+    """Service class for the applicationDetailService resource."""
+
+    _NAME = u'applicationDetailService'
+
+    def __init__(self, client):
+      super(TestingV1.ApplicationDetailServiceService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetApkDetails(self, request, global_params=None):
+      r"""Gets the details of an Android application APK.
+
+      Args:
+        request: (FileReference) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetApkDetailsResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetApkDetails')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetApkDetails.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'testing.applicationDetailService.getApkDetails',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/applicationDetailService/getApkDetails',
+        request_field='<request>',
+        request_type_name=u'FileReference',
+        response_type_name=u'GetApkDetailsResponse',
+        supports_download=False,
+    )
 
   class ProjectsTestMatricesService(base_api.BaseApiService):
     """Service class for the projects_testMatrices resource."""
@@ -49,7 +87,7 @@ class TestingV1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      """Cancels unfinished test executions in a test matrix.
+      r"""Cancels unfinished test executions in a test matrix.
 This call returns immediately and cancellation proceeds asychronously.
 If the matrix is already final, this operation will have no effect.
 
@@ -83,7 +121,7 @@ May return any of the following canonical error codes:
     )
 
     def Create(self, request, global_params=None):
-      """Request to run a matrix of tests according to the given specifications.
+      r"""Creates and runs a matrix of tests according to the given specifications.
 Unsupported environments will be returned in the state UNSUPPORTED.
 Matrices are limited to at most 200 supported executions.
 
@@ -117,7 +155,7 @@ May return any of the following canonical error codes:
     )
 
     def Get(self, request, global_params=None):
-      """Check the status of a test matrix.
+      r"""Checks the status of a test matrix.
 
 May return any of the following canonical error codes:
 
@@ -169,7 +207,7 @@ May return any of the following canonical error codes:
           }
 
     def Get(self, request, global_params=None):
-      """Get the catalog of supported test environments.
+      r"""Gets the catalog of supported test environments.
 
 May return any of the following canonical error codes:
 

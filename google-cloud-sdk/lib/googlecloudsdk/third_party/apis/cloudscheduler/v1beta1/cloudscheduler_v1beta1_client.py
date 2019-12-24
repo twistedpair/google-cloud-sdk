@@ -24,7 +24,7 @@ class CloudschedulerV1beta1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new cloudscheduler handle."""
     url = url or self.BASE_URL
     super(CloudschedulerV1beta1, self).__init__(
@@ -33,7 +33,8 @@ class CloudschedulerV1beta1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.projects_locations_jobs = self.ProjectsLocationsJobsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -49,7 +50,7 @@ class CloudschedulerV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a job.
+      r"""Creates a job.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsCreateRequest) input message
@@ -76,7 +77,7 @@ class CloudschedulerV1beta1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a job.
+      r"""Deletes a job.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsDeleteRequest) input message
@@ -103,7 +104,7 @@ class CloudschedulerV1beta1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets a job.
+      r"""Gets a job.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsGetRequest) input message
@@ -121,7 +122,7 @@ class CloudschedulerV1beta1(base_api.BaseApiClient):
         method_id=u'cloudscheduler.projects.locations.jobs.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'responseView'],
+        query_params=[],
         relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'CloudschedulerProjectsLocationsJobsGetRequest',
@@ -130,13 +131,7 @@ class CloudschedulerV1beta1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists jobs.
-
-ListJobsRequest.filter can be used to specify a subset of
-jobs. ListJobsRequest.response_view controls the subset of
-information returned. By default response_view is
-Job.View.BASIC; not all information is returned by default
-due to performance considerations.
+      r"""Lists jobs.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsListRequest) input message
@@ -154,7 +149,7 @@ due to performance considerations.
         method_id=u'cloudscheduler.projects.locations.jobs.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'responseView'],
+        query_params=[u'pageSize', u'pageToken'],
         relative_path=u'v1beta1/{+parent}/jobs',
         request_field='',
         request_type_name=u'CloudschedulerProjectsLocationsJobsListRequest',
@@ -162,21 +157,117 @@ due to performance considerations.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates a job.
+
+If successful, the updated Job is returned. If the job does
+not exist, `NOT_FOUND` is returned.
+
+If UpdateJob does not successfully return, it is possible for the
+job to be in an Job.State.UPDATE_FAILED state. A job in this state may
+not be executed. If this happens, retry the UpdateJob request
+until a successful response is received.
+
+      Args:
+        request: (CloudschedulerProjectsLocationsJobsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Job) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}',
+        http_method=u'PATCH',
+        method_id=u'cloudscheduler.projects.locations.jobs.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1beta1/{+name}',
+        request_field=u'job',
+        request_type_name=u'CloudschedulerProjectsLocationsJobsPatchRequest',
+        response_type_name=u'Job',
+        supports_download=False,
+    )
+
+    def Pause(self, request, global_params=None):
+      r"""Pauses a job.
+
+If a job is paused then the system will stop executing the job
+until it is re-enabled via ResumeJob. The
+state of the job is stored in state; if paused it
+will be set to Job.State.PAUSED. A job must be in Job.State.ENABLED
+to be paused.
+
+      Args:
+        request: (CloudschedulerProjectsLocationsJobsPauseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Job) The response message.
+      """
+      config = self.GetMethodConfig('Pause')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Pause.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:pause',
+        http_method=u'POST',
+        method_id=u'cloudscheduler.projects.locations.jobs.pause',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:pause',
+        request_field=u'pauseJobRequest',
+        request_type_name=u'CloudschedulerProjectsLocationsJobsPauseRequest',
+        response_type_name=u'Job',
+        supports_download=False,
+    )
+
+    def Resume(self, request, global_params=None):
+      r"""Resume a job.
+
+This method reenables a job after it has been Job.State.PAUSED. The
+state of a job is stored in Job.state; after calling this method it
+will be set to Job.State.ENABLED. A job must be in
+Job.State.PAUSED to be resumed.
+
+      Args:
+        request: (CloudschedulerProjectsLocationsJobsResumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Job) The response message.
+      """
+      config = self.GetMethodConfig('Resume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resume.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:resume',
+        http_method=u'POST',
+        method_id=u'cloudscheduler.projects.locations.jobs.resume',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:resume',
+        request_field=u'resumeJobRequest',
+        request_type_name=u'CloudschedulerProjectsLocationsJobsResumeRequest',
+        response_type_name=u'Job',
+        supports_download=False,
+    )
+
     def Run(self, request, global_params=None):
-      """Forces a job to run now.
+      r"""Forces a job to run now.
 
-When this method is called, Cloud Scheduler will immediately attempt the
-job. The attempt will be counted in the job's Job.total_attempt_count.
-
-The job's Execution.schedule_time is not modified, so the job
-will also be attempted according to its existing
-Execution.schedule_time.
+When this method is called, Cloud Scheduler will dispatch the job, even
+if the job is already running.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsRunRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (Job) The response message.
       """
       config = self.GetMethodConfig('Run')
       return self._RunMethod(
@@ -192,7 +283,7 @@ Execution.schedule_time.
         relative_path=u'v1beta1/{+name}:run',
         request_field=u'runJobRequest',
         request_type_name=u'CloudschedulerProjectsLocationsJobsRunRequest',
-        response_type_name=u'Empty',
+        response_type_name=u'Job',
         supports_download=False,
     )
 
@@ -207,7 +298,7 @@ Execution.schedule_time.
           }
 
     def Get(self, request, global_params=None):
-      """Get information about a location.
+      r"""Gets information about a location.
 
       Args:
         request: (CloudschedulerProjectsLocationsGetRequest) input message
@@ -234,7 +325,7 @@ Execution.schedule_time.
     )
 
     def List(self, request, global_params=None):
-      """Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service.
 
       Args:
         request: (CloudschedulerProjectsLocationsListRequest) input message

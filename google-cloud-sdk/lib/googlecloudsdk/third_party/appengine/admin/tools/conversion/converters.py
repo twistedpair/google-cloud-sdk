@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 # limitations under the License.
 """Conversions to translate between legacy YAML and OnePlatform protos."""
 
+from __future__ import absolute_import
 import re
 
 # pylint:disable=g-import-not-at-top
@@ -28,7 +29,7 @@ except ImportError:
 
 _SECONDS_PER_MINUTE = 60
 _MILLISECONDS_PER_SECOND = 1000
-_NANOSECONDS_PER_SECOND = 1000000000L
+_NANOSECONDS_PER_SECOND = 1000000000
 
 _COMMON_HANDLER_FIELDS = (
     'urlRegex',
@@ -120,7 +121,7 @@ def EnumConverter(prefix):
     raise ValueError(
         'Prefix should not contain a trailing underscore: "%s"' % prefix)
 
-  return lambda (value): '_'.join([prefix, value.upper()])
+  return lambda value: '_'.join([prefix, value.upper()])
 
 
 def Not(value):
@@ -365,26 +366,9 @@ def ConvertDispatchHandler(handler):
 
   Returns:
     Handler which has 'domain', 'path' and 'service' fields.
-
-  Raises:
-    ValueError: if both module and service presented in dispatch entry
-    or no module or service presented in dispatch entry.
   """
   dispatch_url = dispatchinfo.ParsedURL(handler['url'])
-
-  dispatch_service = None
-  if 'module' in handler:
-    dispatch_service = handler['module']
-  if 'service' in handler:
-    if dispatch_service:
-      raise ValueError(
-          "Both 'module' and 'service' in dispatch rule, "
-          "please use only one: %s" % handler)
-    else:
-      dispatch_service = handler['service']
-  if not dispatch_service:
-    raise ValueError(
-        "Missing required value 'service' in dispatch rule: %s" % handler)
+  dispatch_service = handler['service']
 
   dispatch_domain = dispatch_url.host
   if not dispatch_url.host_exact:
@@ -448,3 +432,24 @@ def ConvertEndpointsRolloutStrategyToEnum(value):
     return value.upper()
 
   raise ValueError('Unrecognized rollout strategy: %s' % value)
+
+
+def ConvertEntrypoint(entrypoint):
+  """Converts the raw entrypoint to a nested shell value.
+
+  In the YAML file, the user specifies an entrypoint value. However, the version
+  resource expects it to be nested under a 'shell' key. In addition, Zeus
+  always prepends 'exec' to the value provided, so we remove it here as it is
+  sometimes added client-side by the validation library.
+
+  Args:
+    entrypoint: string, entrypoint value.
+
+  Returns:
+    Dict containing entrypoint.
+  """
+  if entrypoint is None:
+    entrypoint = ''
+  if entrypoint.startswith('exec '):
+    entrypoint = entrypoint[len('exec '):]
+  return {'shell': entrypoint}

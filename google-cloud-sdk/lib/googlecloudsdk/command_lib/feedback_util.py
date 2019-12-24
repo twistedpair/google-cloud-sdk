@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,14 +12,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Utilities for the `gcloud feedback` command."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 import os
 import re
-import urllib
+import sys
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr_os
+import six
+
+from six.moves import range
+from six.moves import urllib
 
 
 NEW_ISSUE_URL = 'https://issuetracker.google.com/issues/new'
@@ -88,9 +98,9 @@ class CommentHolder(object):
 def _FormatNewIssueUrl(comment):
   params = {
       'description': comment,
-      'component': str(ISSUE_TRACKER_COMPONENT)
+      'component': six.text_type(ISSUE_TRACKER_COMPONENT)
   }
-  return NEW_ISSUE_URL + '?' + urllib.urlencode(params)
+  return NEW_ISSUE_URL + '?' + urllib.parse.urlencode(params)
 
 
 def OpenInBrowser(url):
@@ -105,7 +115,7 @@ def _UrlEncodeLen(string):
   """Return the length of string when URL-encoded."""
   # urlencode turns a dict into a string of 'key=value' pairs. We use a blank
   # key and don't want to count the '='.
-  encoded = urllib.urlencode({'': string})[1:]
+  encoded = urllib.parse.urlencode({'': string})[1:]
   return len(encoded)
 
 
@@ -281,32 +291,6 @@ def GetDivider(text=''):
   return text.center(width, '=')
 
 
-def _CommonPrefix(paths):
-  """Given a list of paths, return the longest shared directory prefix.
-
-  We want to:
-  (1) Only split at path boundaries (i.e.
-      _CommonPrefix(['/foo/bar', '/foo/baz']) => '/foo' , not '/foo/b')
-  (2) Ignore the path basenames, even when files are identical (i.e.
-      _CommonPrefix(['/foo/bar'] * 3') => '/foo'
-
-  For these reasons, we can't just us os.path.commonprefix.
-
-  Args:
-    paths: list of str, list of path names
-
-  Returns:
-    str, common prefix
-  """
-  prefix = os.path.commonprefix(map(os.path.dirname, paths))
-  if not prefix:
-    return prefix
-  if all([path.startswith(prefix + os.path.sep) for path in paths]):
-    return prefix + os.path.sep
-  else:
-    return os.path.dirname(prefix) + os.path.sep
-
-
 def _FormatIssueBody(info, log_data=None):
   """Construct a useful issue body with which to pre-populate the issue tracker.
 
@@ -319,7 +303,7 @@ def _FormatIssueBody(info, log_data=None):
         before stacktrace, the stacktrace portion of the comment, and the
         exception
   """
-  gcloud_info = str(info)
+  gcloud_info = six.text_type(info)
 
   formatted_command = ''
   if log_data and log_data.command:
@@ -371,6 +355,30 @@ def _StacktraceEntryReplacement(entry):
   return formatted_entry
 
 
+def _SysPath():
+  """Return the Python paths (can be mocked for testing)."""
+  return sys.path
+
+
+def _StripLongestSysPath(path):
+  python_paths = sorted(_SysPath(), key=len, reverse=True)
+  for python_path in python_paths:
+    prefix = python_path + os.path.sep
+    if path.startswith(prefix):
+      return path[len(prefix):]
+  return path
+
+
+def _StripCommonDir(path):
+  prefix = 'googlecloudsdk' + os.path.sep
+  return path[len(prefix):] if path.startswith(prefix) else path
+
+
+def _StripPath(path):
+  """Removes common elements (sys.path, common SDK directories) from path."""
+  return _StripCommonDir(os.path.normpath(_StripLongestSysPath(path)))
+
+
 def _FormatTraceback(traceback):
   """Compacts stack trace portion of traceback and extracts exception.
 
@@ -395,28 +403,9 @@ def _FormatTraceback(traceback):
   formatted_stacktrace += '\n'
 
   stacktrace_files = re.findall(r'File "(.*)"', stacktrace)
-  common_prefix = _CommonPrefix(stacktrace_files)
-  sep = os.path.sep
 
-  # Strip out lib/googlecloudsdk
-  formatted_stacktrace = formatted_stacktrace.replace(
-      common_prefix + 'lib' + sep + 'googlecloudsdk' + sep, '')
-  formatted_stacktrace = formatted_stacktrace.replace(
-      sep + 'lib' + sep + 'googlecloudsdk' + sep, sep)
-
-  # Strip out lib/third_party
-  formatted_stacktrace = formatted_stacktrace.replace(
-      common_prefix + 'lib' + sep + 'third_party' + sep, '')
-  formatted_stacktrace = formatted_stacktrace.replace(
-      sep + 'lib' + sep + 'third_party' + sep, sep)
-
-  # Strip out ./
-  formatted_stacktrace = formatted_stacktrace.replace(common_prefix + '.' + sep,
-                                                      '')
-  formatted_stacktrace = formatted_stacktrace.replace(sep + '.' + sep, sep)
-
-  # Strip out common  prefix
-  formatted_stacktrace = formatted_stacktrace.replace(common_prefix, '')
+  for path in stacktrace_files:
+    formatted_stacktrace = formatted_stacktrace.replace(path, _StripPath(path))
 
   # Make each stack frame entry more compact
   formatted_stacktrace = re.sub(TRACEBACK_ENTRY_REGEXP,
@@ -443,15 +432,15 @@ def OpenNewIssueInBrowser(info, log_data):
   if len(url) > MAX_URL_LENGTH:
     max_info_len = MAX_URL_LENGTH - len(_FormatNewIssueUrl(''))
     truncated, remaining = _ShortenIssueBody(comment, max_info_len)
-    log.warn('Truncating included information. '
-             'Please consider including the remainder:')
+    log.warning('Truncating included information. '
+                'Please consider including the remainder:')
     divider_text = 'TRUNCATED INFORMATION (PLEASE CONSIDER INCLUDING)'
     log.status.Print(GetDivider(divider_text))
     log.status.Print(remaining.strip())
     log.status.Print(GetDivider('END ' + divider_text))
-    log.warn('The output of gcloud info is too long to pre-populate the '
-             'new issue form.')
-    log.warn('Please consider including the remainder (above).')
+    log.warning('The output of gcloud info is too long to pre-populate the '
+                'new issue form.')
+    log.warning('Please consider including the remainder (above).')
     url = _FormatNewIssueUrl(truncated)
   OpenInBrowser(url)
   log.status.Print('Opening your browser to a new Google Cloud SDK issue.')

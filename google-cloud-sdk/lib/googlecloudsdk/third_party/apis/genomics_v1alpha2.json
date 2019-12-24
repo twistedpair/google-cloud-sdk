@@ -6,7 +6,7 @@
   "version": "v1alpha2",
   "revision": "0",
   "title": "Genomics API",
-  "description": "Upload, process, query, and search Genomics data in the cloud.",
+  "description": "Uploads, processes, queries, and searches Genomics data in the cloud.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -19,6 +19,7 @@
   "servicePath": "",
   "baseUrl": "https://genomics.googleapis.com/",
   "batchPath": "batch",
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -41,11 +42,6 @@
       ],
       "location": "query"
     },
-    "bearer_token": {
-      "type": "string",
-      "description": "OAuth bearer token.",
-      "location": "query"
-    },
     "callback": {
       "type": "string",
       "description": "JSONP",
@@ -64,12 +60,6 @@
     "oauth_token": {
       "type": "string",
       "description": "OAuth 2.0 token for the current user.",
-      "location": "query"
-    },
-    "pp": {
-      "type": "boolean",
-      "description": "Pretty-print response.",
-      "default": "true",
       "location": "query"
     },
     "prettyPrint": {
@@ -151,7 +141,7 @@
           "type": "string"
         },
         "metadata": {
-          "description": "An OperationMetadata object. This will always be returned with the Operation.",
+          "description": "An OperationMetadata or Metadata object. This will always be returned with the Operation.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -167,7 +157,7 @@
           "$ref": "Status"
         },
         "response": {
-          "description": "If importing ReadGroupSets, an ImportReadGroupSetsResponse is returned. If importing Variants, an ImportVariantsResponse is returned. For pipelines and exports, an Empty response is returned.",
+          "description": "An Empty object.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -178,7 +168,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
       "type": "object",
       "properties": {
         "code": {
@@ -354,8 +344,17 @@
           "format": "int32"
         },
         "noAddress": {
-          "description": "Whether to assign an external IP to the instance. This is an experimental\nfeature that may go away. Defaults to false.\nCorresponds to `--no_address` flag for [gcloud compute instances create]\n(https:\/\/cloud.google.com\/sdk\/gcloud\/reference\/compute\/instances\/create).\nIn order to use this, must be true for both create time and run time.\nCannot be true at run time if false at create time. If you need to ssh into\na private IP VM for debugging, you can ssh to a public VM and then ssh into\nthe private VM's Internal IP.  If noAddress is set, this pipeline run may\nonly load docker images from Google Container Registry and not Docker Hub.\nBefore using this, you must\n[configure access to Google services from internal IPs](https:\/\/cloud.google.com\/compute\/docs\/configure-private-google-access#configuring_access_to_google_services_from_internal_ips).",
+          "description": "Whether to assign an external IP to the instance. This is an experimental\nfeature that may go away. Defaults to false.\nCorresponds to `--no_address` flag for [gcloud compute instances create]\n(https:\/\/cloud.google.com\/sdk\/gcloud\/reference\/compute\/instances\/create).\nIn order to use this, must be true for both create time and run time.\nCannot be true at run time if false at create time. If you need to ssh into\na private IP VM for debugging, you can ssh to a public VM and then ssh into\nthe private VM's Internal IP.  If noAddress is set, this pipeline run may\nonly load docker images from Google Container Registry and not Docker Hub.\nBefore using this, you must\n[configure access to Google services from internal\nIPs](https:\/\/cloud.google.com\/compute\/docs\/configure-private-google-access#configuring_access_to_google_services_from_internal_ips).",
           "type": "boolean"
+        },
+        "acceleratorType": {
+          "description": "Optional. The Compute Engine defined accelerator type.\nBy specifying this parameter, you will download and install the following\nthird-party software onto your managed Compute Engine instances: NVIDIA\u00AE\nTesla\u00AE drivers and NVIDIA\u00AE CUDA toolkit.\nPlease see https:\/\/cloud.google.com\/compute\/docs\/gpus\/ for a list of\navailable accelerator types.",
+          "type": "string"
+        },
+        "acceleratorCount": {
+          "description": "Optional. The number of accelerators of the specified type to attach.\nBy specifying this parameter, you will download and install the following\nthird-party software onto your managed Compute Engine instances:\nNVIDIA\u00AE Tesla\u00AE drivers and NVIDIA\u00AE CUDA toolkit.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -532,44 +531,36 @@
       "type": "object",
       "properties": {
         "image": {
-
           "type": "string"
         },
         "cmd": {
-
           "type": "string"
         },
         "gcsLogPath": {
-
           "type": "string"
         },
         "machineType": {
-
           "type": "string"
         },
         "vars": {
-
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "disks": {
-
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "gcsSources": {
-
           "type": "object",
           "additionalProperties": {
             "$ref": "RepeatedString"
           }
         },
         "gcsSinks": {
-
           "type": "object",
           "additionalProperties": {
             "$ref": "RepeatedString"
@@ -579,11 +570,9 @@
     },
     "RepeatedString": {
       "id": "RepeatedString",
-
       "type": "object",
       "properties": {
         "values": {
-
           "type": "array",
           "items": {
             "type": "string"
@@ -597,18 +586,15 @@
       "type": "object",
       "properties": {
         "operationId": {
-
           "type": "string"
         },
         "timestampEvents": {
-
           "type": "array",
           "items": {
             "$ref": "TimestampEvent"
           }
         },
         "errorCode": {
-
           "enumDescriptions": [
             "Not an error; returned on success\n\nHTTP Mapping: 200 OK",
             "The operation was cancelled, typically by the caller.\n\nHTTP Mapping: 499 Client Closed Request",
@@ -625,7 +611,7 @@
             "The operation was attempted past the valid range.  E.g., seeking or\nreading past end-of-file.\n\nUnlike `INVALID_ARGUMENT`, this error indicates a problem that may\nbe fixed if the system state changes. For example, a 32-bit file\nsystem will generate `INVALID_ARGUMENT` if asked to read at an\noffset that is not in the range [0,2^32-1], but it will generate\n`OUT_OF_RANGE` if asked to read from an offset past the current\nfile size.\n\nThere is a fair bit of overlap between `FAILED_PRECONDITION` and\n`OUT_OF_RANGE`.  We recommend using `OUT_OF_RANGE` (the more specific\nerror) when it applies so that callers who are iterating through\na space can easily look for an `OUT_OF_RANGE` error to detect when\nthey are done.\n\nHTTP Mapping: 400 Bad Request",
             "The operation is not implemented or is not supported\/enabled in this\nservice.\n\nHTTP Mapping: 501 Not Implemented",
             "Internal errors.  This means that some invariants expected by the\nunderlying system have been broken.  This error code is reserved\nfor serious errors.\n\nHTTP Mapping: 500 Internal Server Error",
-            "The service is currently unavailable.  This is most likely a\ntransient condition, which can be corrected by retrying with\na backoff.\n\nSee the guidelines above for deciding between `FAILED_PRECONDITION`,\n`ABORTED`, and `UNAVAILABLE`.\n\nHTTP Mapping: 503 Service Unavailable",
+            "The service is currently unavailable.  This is most likely a\ntransient condition, which can be corrected by retrying with\na backoff. Note that it is not always safe to retry\nnon-idempotent operations.\n\nSee the guidelines above for deciding between `FAILED_PRECONDITION`,\n`ABORTED`, and `UNAVAILABLE`.\n\nHTTP Mapping: 503 Service Unavailable",
             "Unrecoverable data loss or corruption.\n\nHTTP Mapping: 500 Internal Server Error"
           ],
           "type": "string",
@@ -650,11 +636,9 @@
           ]
         },
         "errorMessage": {
-
           "type": "string"
         },
         "validationToken": {
-
           "type": "string",
           "format": "uint64"
         }
@@ -673,34 +657,6 @@
           "description": "The time this event occured.",
           "type": "string",
           "format": "google-datetime"
-        }
-      }
-    },
-    "ImportReadGroupSetsResponse": {
-      "id": "ImportReadGroupSetsResponse",
-      "description": "The read group set import response.",
-      "type": "object",
-      "properties": {
-        "readGroupSetIds": {
-          "description": "IDs of the read group sets that were created.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "ImportVariantsResponse": {
-      "id": "ImportVariantsResponse",
-      "description": "The variant data import response.",
-      "type": "object",
-      "properties": {
-        "callSetIds": {
-          "description": "IDs of the call sets created during the import.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -821,6 +777,238 @@
           }
         }
       }
+    },
+    "ContainerKilledEvent": {
+      "id": "ContainerKilledEvent",
+      "description": "An event generated when a container is forcibly terminated by the\nworker. Currently, this only occurs when the container outlives the\ntimeout specified by the user.",
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "description": "The numeric ID of the action that started the container.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ContainerStartedEvent": {
+      "id": "ContainerStartedEvent",
+      "description": "An event generated when a container starts.",
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "description": "The numeric ID of the action that started this container.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "portMappings": {
+          "description": "The container-to-host port mappings installed for this container. This\nset will contain any ports exposed using the `PUBLISH_EXPOSED_PORTS` flag\nas well as any specified in the `Action` definition.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "ipAddress": {
+          "description": "The public IP address that can be used to connect to the container. This\nfield is only populated when at least one port mapping is present. If the\ninstance was created with a private address, this field will be empty even\nif port mappings exist.",
+          "type": "string"
+        }
+      }
+    },
+    "ContainerStoppedEvent": {
+      "id": "ContainerStoppedEvent",
+      "description": "An event generated when a container exits.",
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "description": "The numeric ID of the action that started this container.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "exitStatus": {
+          "description": "The exit status of the container.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "stderr": {
+          "description": "The tail end of any content written to standard error by the container.\nIf the content emits large amounts of debugging noise or contains\nsensitive information, you can prevent the content from being printed by\nsetting the `DISABLE_STANDARD_ERROR_CAPTURE` flag.\n\nNote that only a small amount of the end of the stream is captured here.\nThe entire stream is stored in the `\/google\/logs` directory mounted into\neach action, and can be copied off the machine as described elsewhere.",
+          "type": "string"
+        }
+      }
+    },
+    "DelayedEvent": {
+      "id": "DelayedEvent",
+      "description": "An event generated whenever a resource limitation or transient error\ndelays execution of a pipeline that was otherwise ready to run.",
+      "type": "object",
+      "properties": {
+        "cause": {
+          "description": "A textual description of the cause of the delay. The string can change\nwithout notice because it is often generated by another service (such as\nCompute Engine).",
+          "type": "string"
+        },
+        "metrics": {
+          "description": "If the delay was caused by a resource shortage, this field lists the\nCompute Engine metrics that are preventing this operation from running\n(for example, `CPUS` or `INSTANCES`). If the particular metric is not\nknown, a single `UNKNOWN` metric will be present.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Event": {
+      "id": "Event",
+      "description": "Carries information about events that occur during pipeline execution.",
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "description": "The time at which the event occurred.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "description": {
+          "description": "A human-readable description of the event. Note that these strings can\nchange at any time without notice. Any application logic must use the\ninformation in the `details` field.",
+          "type": "string"
+        },
+        "details": {
+          "description": "Machine-readable details about the event.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "FailedEvent": {
+      "id": "FailedEvent",
+      "description": "An event generated when the execution of a pipeline has failed. Note\nthat other events can continue to occur after this event.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The Google standard error code that best describes this failure.",
+          "enumDescriptions": [
+            "Not an error; returned on success\n\nHTTP Mapping: 200 OK",
+            "The operation was cancelled, typically by the caller.\n\nHTTP Mapping: 499 Client Closed Request",
+            "Unknown error.  For example, this error may be returned when\na `Status` value received from another address space belongs to\nan error space that is not known in this address space.  Also\nerrors raised by APIs that do not return enough error information\nmay be converted to this error.\n\nHTTP Mapping: 500 Internal Server Error",
+            "The client specified an invalid argument.  Note that this differs\nfrom `FAILED_PRECONDITION`.  `INVALID_ARGUMENT` indicates arguments\nthat are problematic regardless of the state of the system\n(e.g., a malformed file name).\n\nHTTP Mapping: 400 Bad Request",
+            "The deadline expired before the operation could complete. For operations\nthat change the state of the system, this error may be returned\neven if the operation has completed successfully.  For example, a\nsuccessful response from a server could have been delayed long\nenough for the deadline to expire.\n\nHTTP Mapping: 504 Gateway Timeout",
+            "Some requested entity (e.g., file or directory) was not found.\n\nNote to server developers: if a request is denied for an entire class\nof users, such as gradual feature rollout or undocumented whitelist,\n`NOT_FOUND` may be used. If a request is denied for some users within\na class of users, such as user-based access control, `PERMISSION_DENIED`\nmust be used.\n\nHTTP Mapping: 404 Not Found",
+            "The entity that a client attempted to create (e.g., file or directory)\nalready exists.\n\nHTTP Mapping: 409 Conflict",
+            "The caller does not have permission to execute the specified\noperation. `PERMISSION_DENIED` must not be used for rejections\ncaused by exhausting some resource (use `RESOURCE_EXHAUSTED`\ninstead for those errors). `PERMISSION_DENIED` must not be\nused if the caller can not be identified (use `UNAUTHENTICATED`\ninstead for those errors). This error code does not imply the\nrequest is valid or the requested entity exists or satisfies\nother pre-conditions.\n\nHTTP Mapping: 403 Forbidden",
+            "The request does not have valid authentication credentials for the\noperation.\n\nHTTP Mapping: 401 Unauthorized",
+            "Some resource has been exhausted, perhaps a per-user quota, or\nperhaps the entire file system is out of space.\n\nHTTP Mapping: 429 Too Many Requests",
+            "The operation was rejected because the system is not in a state\nrequired for the operation's execution.  For example, the directory\nto be deleted is non-empty, an rmdir operation is applied to\na non-directory, etc.\n\nService implementors can use the following guidelines to decide\nbetween `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`:\n (a) Use `UNAVAILABLE` if the client can retry just the failing call.\n (b) Use `ABORTED` if the client should retry at a higher level\n     (e.g., when a client-specified test-and-set fails, indicating the\n     client should restart a read-modify-write sequence).\n (c) Use `FAILED_PRECONDITION` if the client should not retry until\n     the system state has been explicitly fixed.  E.g., if an \"rmdir\"\n     fails because the directory is non-empty, `FAILED_PRECONDITION`\n     should be returned since the client should not retry unless\n     the files are deleted from the directory.\n\nHTTP Mapping: 400 Bad Request",
+            "The operation was aborted, typically due to a concurrency issue such as\na sequencer check failure or transaction abort.\n\nSee the guidelines above for deciding between `FAILED_PRECONDITION`,\n`ABORTED`, and `UNAVAILABLE`.\n\nHTTP Mapping: 409 Conflict",
+            "The operation was attempted past the valid range.  E.g., seeking or\nreading past end-of-file.\n\nUnlike `INVALID_ARGUMENT`, this error indicates a problem that may\nbe fixed if the system state changes. For example, a 32-bit file\nsystem will generate `INVALID_ARGUMENT` if asked to read at an\noffset that is not in the range [0,2^32-1], but it will generate\n`OUT_OF_RANGE` if asked to read from an offset past the current\nfile size.\n\nThere is a fair bit of overlap between `FAILED_PRECONDITION` and\n`OUT_OF_RANGE`.  We recommend using `OUT_OF_RANGE` (the more specific\nerror) when it applies so that callers who are iterating through\na space can easily look for an `OUT_OF_RANGE` error to detect when\nthey are done.\n\nHTTP Mapping: 400 Bad Request",
+            "The operation is not implemented or is not supported\/enabled in this\nservice.\n\nHTTP Mapping: 501 Not Implemented",
+            "Internal errors.  This means that some invariants expected by the\nunderlying system have been broken.  This error code is reserved\nfor serious errors.\n\nHTTP Mapping: 500 Internal Server Error",
+            "The service is currently unavailable.  This is most likely a\ntransient condition, which can be corrected by retrying with\na backoff. Note that it is not always safe to retry\nnon-idempotent operations.\n\nSee the guidelines above for deciding between `FAILED_PRECONDITION`,\n`ABORTED`, and `UNAVAILABLE`.\n\nHTTP Mapping: 503 Service Unavailable",
+            "Unrecoverable data loss or corruption.\n\nHTTP Mapping: 500 Internal Server Error"
+          ],
+          "type": "string",
+          "enum": [
+            "OK",
+            "CANCELLED",
+            "UNKNOWN",
+            "INVALID_ARGUMENT",
+            "DEADLINE_EXCEEDED",
+            "NOT_FOUND",
+            "ALREADY_EXISTS",
+            "PERMISSION_DENIED",
+            "UNAUTHENTICATED",
+            "RESOURCE_EXHAUSTED",
+            "FAILED_PRECONDITION",
+            "ABORTED",
+            "OUT_OF_RANGE",
+            "UNIMPLEMENTED",
+            "INTERNAL",
+            "UNAVAILABLE",
+            "DATA_LOSS"
+          ]
+        },
+        "cause": {
+          "description": "The human-readable description of the cause of the failure.",
+          "type": "string"
+        }
+      }
+    },
+    "PullStartedEvent": {
+      "id": "PullStartedEvent",
+      "description": "An event generated when the worker starts pulling an image.",
+      "type": "object",
+      "properties": {
+        "imageUri": {
+          "description": "The URI of the image that was pulled.",
+          "type": "string"
+        }
+      }
+    },
+    "PullStoppedEvent": {
+      "id": "PullStoppedEvent",
+      "description": "An event generated when the worker stops pulling an image.",
+      "type": "object",
+      "properties": {
+        "imageUri": {
+          "description": "The URI of the image that was pulled.",
+          "type": "string"
+        }
+      }
+    },
+    "RunPipelineResponse": {
+      "id": "RunPipelineResponse",
+      "description": "The response to the RunPipeline method, returned in the operation's result\nfield on success.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UnexpectedExitStatusEvent": {
+      "id": "UnexpectedExitStatusEvent",
+      "description": "An event generated when the execution of a container results in a\nnon-zero exit status that was not otherwise ignored. Execution will\ncontinue, but only actions that are flagged as `ALWAYS_RUN` will be\nexecuted. Other actions will be skipped.",
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "description": "The numeric ID of the action that started the container.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "exitStatus": {
+          "description": "The exit status of the container.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "WorkerAssignedEvent": {
+      "id": "WorkerAssignedEvent",
+      "description": "An event generated after a worker VM has been assigned to run the\npipeline.",
+      "type": "object",
+      "properties": {
+        "zone": {
+          "description": "The zone the worker is running in.",
+          "type": "string"
+        },
+        "instance": {
+          "description": "The worker's instance name.",
+          "type": "string"
+        },
+        "machineType": {
+          "description": "The machine type that was assigned for the worker.",
+          "type": "string"
+        }
+      }
+    },
+    "WorkerReleasedEvent": {
+      "id": "WorkerReleasedEvent",
+      "description": "An event generated when the worker VM that was assigned to the pipeline\nhas been released (deleted).",
+      "type": "object",
+      "properties": {
+        "zone": {
+          "description": "The zone the worker was running in.",
+          "type": "string"
+        },
+        "instance": {
+          "description": "The worker's instance name.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {
@@ -831,7 +1019,6 @@
           "path": "v1alpha2/{+name}",
           "flatPath": "v1alpha2/operations",
           "httpMethod": "GET",
-          "description": "Lists operations that match the specified filter in the request.",
           "parameters": {
             "name": {
               "description": "The name of the operation's parent resource.",
@@ -841,12 +1028,12 @@
               "type": "string"
             },
             "filter": {
-              "description": "A string for filtering Operations.\nThe following filter fields are supported&#58;\n\n* projectId&#58; Required. Corresponds to\n  OperationMetadata.projectId.\n* createTime&#58; The time this job was created, in seconds from the\n  [epoch](http:\/\/en.wikipedia.org\/wiki\/Unix_time). Can use `>=` and\/or `<=`\n  operators.\n* status&#58; Can be `RUNNING`, `SUCCESS`, `FAILURE`, or `CANCELED`. Only\n  one status may be specified.\n* labels.key where key is a label key.\n\nExamples&#58;\n\n* `projectId = my-project AND createTime >= 1432140000`\n* `projectId = my-project AND createTime >= 1432140000 AND createTime <= 1432150000 AND status = RUNNING`\n* `projectId = my-project AND labels.color = *`\n* `projectId = my-project AND labels.color = red`",
+              "description": "A string for filtering Operations.\nIn v2alpha1, the following filter fields are supported&#58;\n\n* createTime&#58; The time this job was created\n* events&#58; The set of event (names) that have occurred while running\n  the pipeline.  The &#58; operator can be used to determine if a\n  particular event has occurred.\n* error&#58; If the pipeline is running, this value is NULL.  Once the\n  pipeline finishes, the value is the standard Google error code.\n* labels.key or labels.\"key with space\" where key is a label key.\n* done&#58; If the pipeline is running, this value is false. Once the\n  pipeline finishes, the value is true.\n\nIn v1 and v1alpha2, the following filter fields are supported&#58;\n\n* projectId&#58; Required. Corresponds to\n  OperationMetadata.projectId.\n* createTime&#58; The time this job was created, in seconds from the\n  [epoch](http:\/\/en.wikipedia.org\/wiki\/Unix_time). Can use `>=` and\/or `<=`\n  operators.\n* status&#58; Can be `RUNNING`, `SUCCESS`, `FAILURE`, or `CANCELED`. Only\n  one status may be specified.\n* labels.key where key is a label key.\n\nExamples&#58;\n\n* `projectId = my-project AND createTime >= 1432140000`\n* `projectId = my-project AND createTime >= 1432140000 AND createTime <= 1432150000 AND status = RUNNING`\n* `projectId = my-project AND labels.color = *`\n* `projectId = my-project AND labels.color = red`",
               "location": "query",
               "type": "string"
             },
             "pageSize": {
-              "description": "The maximum number of results to return. If unspecified, defaults to\n256. The maximum value is 2048.",
+              "description": "The maximum number of results to return. The maximum value is 256.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -866,14 +1053,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Lists operations that match the specified filter in the request.\nAuthorization requires the following [Google IAM](https:\/\/cloud.google.com\/iam) permission&#58;\n\n* `genomics.operations.list`"
         },
         "get": {
           "id": "genomics.operations.get",
           "path": "v1alpha2/{+name}",
           "flatPath": "v1alpha2/operations/{operationsId}",
           "httpMethod": "GET",
-          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
@@ -892,14 +1079,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Gets the latest state of a long-running operation.\nClients can use this method to poll the operation result at intervals as\nrecommended by the API service.\nAuthorization requires the following [Google IAM](https:\/\/cloud.google.com\/iam) permission&#58;\n\n* `genomics.operations.get`"
         },
         "cancel": {
           "id": "genomics.operations.cancel",
           "path": "v1alpha2/{+name}:cancel",
           "flatPath": "v1alpha2/operations/{operationsId}:cancel",
           "httpMethod": "POST",
-          "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. Clients may use Operations.GetOperation or Operations.ListOperations to check whether the cancellation succeeded or the operation completed despite cancellation.",
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be cancelled.",
@@ -921,7 +1108,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Starts asynchronous cancellation on a long-running operation.\nThe server makes a best effort to cancel the operation, but success is not\nguaranteed. Clients may use Operations.GetOperation\nor Operations.ListOperations\nto check whether the cancellation succeeded or the operation completed\ndespite cancellation.\nAuthorization requires the following [Google IAM](https:\/\/cloud.google.com\/iam) permission&#58;\n\n* `genomics.operations.cancel`"
         }
       }
     },
@@ -932,7 +1120,6 @@
           "path": "v1alpha2/pipelines",
           "flatPath": "v1alpha2/pipelines",
           "httpMethod": "POST",
-          "description": "Creates a pipeline that can be run later. Create takes a Pipeline that\nhas all fields other than `pipelineId` populated, and then returns\nthe same pipeline with `pipelineId` populated. This id can be used\nto run the pipeline.\n\nCaller must have WRITE permission to the project.",
           "parameters": {
           },
           "parameterOrder": [
@@ -946,14 +1133,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Creates a pipeline that can be run later. Create takes a Pipeline that\nhas all fields other than `pipelineId` populated, and then returns\nthe same pipeline with `pipelineId` populated. This id can be used\nto run the pipeline.\n\nCaller must have WRITE permission to the project."
         },
         "run": {
           "id": "genomics.pipelines.run",
           "path": "v1alpha2/pipelines:run",
           "flatPath": "v1alpha2/pipelines:run",
           "httpMethod": "POST",
-          "description": "Runs a pipeline. If `pipelineId` is specified in the request, then\nrun a saved pipeline. If `ephemeralPipeline` is specified, then run\nthat pipeline once without saving a copy.\n\nThe caller must have READ permission to the project where the pipeline\nis stored and WRITE permission to the project where the pipeline will be\nrun, as VMs will be created and storage will be used.\n\nIf a pipeline operation is still running after 6 days, it will be canceled.",
           "parameters": {
           },
           "parameterOrder": [
@@ -968,14 +1155,14 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Runs a pipeline. If `pipelineId` is specified in the request, then\nrun a saved pipeline. If `ephemeralPipeline` is specified, then run\nthat pipeline once without saving a copy.\n\nThe caller must have READ permission to the project where the pipeline\nis stored and WRITE permission to the project where the pipeline will be\nrun, as VMs will be created and storage will be used.\n\nIf a pipeline operation is still running after 6 days, it will be canceled."
         },
         "get": {
           "id": "genomics.pipelines.get",
           "path": "v1alpha2/pipelines/{pipelineId}",
           "flatPath": "v1alpha2/pipelines/{pipelineId}",
           "httpMethod": "GET",
-          "description": "Retrieves a pipeline based on ID.\n\nCaller must have READ permission to the project.",
           "parameters": {
             "pipelineId": {
               "description": "Caller must have READ access to the project in which this pipeline\nis defined.",
@@ -993,14 +1180,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Retrieves a pipeline based on ID.\n\nCaller must have READ permission to the project."
         },
         "list": {
           "id": "genomics.pipelines.list",
           "path": "v1alpha2/pipelines",
           "flatPath": "v1alpha2/pipelines",
           "httpMethod": "GET",
-          "description": "Lists pipelines.\n\nCaller must have READ permission to the project.",
           "parameters": {
             "projectId": {
               "description": "Required. The name of the project to search for pipelines. Caller\nmust have READ access to this project.",
@@ -1032,14 +1219,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Lists pipelines.\n\nCaller must have READ permission to the project."
         },
         "delete": {
           "id": "genomics.pipelines.delete",
           "path": "v1alpha2/pipelines/{pipelineId}",
           "flatPath": "v1alpha2/pipelines/{pipelineId}",
           "httpMethod": "DELETE",
-          "description": "Deletes a pipeline based on ID.\n\nCaller must have WRITE permission to the project.",
           "parameters": {
             "pipelineId": {
               "description": "Caller must have WRITE access to the project in which this pipeline\nis defined.",
@@ -1057,14 +1244,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Deletes a pipeline based on ID.\n\nCaller must have WRITE permission to the project."
         },
         "getControllerConfig": {
           "id": "genomics.pipelines.getControllerConfig",
           "path": "v1alpha2/pipelines:getControllerConfig",
           "flatPath": "v1alpha2/pipelines:getControllerConfig",
           "httpMethod": "GET",
-          "description": "Gets controller configuration information. Should only be called\nby VMs created by the Pipelines Service and not by end users.",
           "parameters": {
             "operationId": {
               "description": "The operation to retrieve controller configuration for.",
@@ -1085,14 +1272,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Gets controller configuration information. Should only be called\nby VMs created by the Pipelines Service and not by end users."
         },
         "setOperationStatus": {
           "id": "genomics.pipelines.setOperationStatus",
           "path": "v1alpha2/pipelines:setOperationStatus",
           "flatPath": "v1alpha2/pipelines:setOperationStatus",
           "httpMethod": "PUT",
-          "description": "Sets status of a given operation. Any new timestamps (as determined by\ndescription) are appended to TimestampEvents. Should only be called by VMs\ncreated by the Pipelines Service and not by end users.",
           "parameters": {
           },
           "parameterOrder": [
@@ -1106,7 +1293,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Sets status of a given operation. Any new timestamps (as determined by\ndescription) are appended to TimestampEvents. Should only be called by VMs\ncreated by the Pipelines Service and not by end users."
         }
       }
     }

@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,19 +14,24 @@
 # limitations under the License.
 """Facilities for getting a list of Cloud resources."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import itertools
 
 from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_expr_rewrite
 from googlecloudsdk.core.resource import resource_projector
+import six
 
 
 def _ConvertProtobufsToDicts(resources):
@@ -53,7 +59,7 @@ def ProcessResults(resources, field_selector, sort_key_fn=None,
   if sort_key_fn:
     resources = sorted(resources, key=sort_key_fn, reverse=reverse_sort)
 
-  if limit > 0:
+  if limit:
     resources = itertools.islice(resources, limit)
   for resource in resources:
     if field_selector:
@@ -350,8 +356,8 @@ class AllScopes(object):
         repr(self.projects), repr(self.zonal), repr(self.regional))
 
 
-class ListException(exceptions.ToolException):
-  pass
+class ListException(exceptions.Error):
+  """Base exception for lister exceptions."""
 
 
 # TODO(b/38256601) - Drop these flags
@@ -362,8 +368,8 @@ def AddBaseListerArgs(parser, hidden=False):
       action=actions.DeprecationAction(
           'names',
           show_message=bool,
-          warn='Argument NAME is deprecated. '
-          'Use --filter="name=( \'NAME\' ... )" instead.'),
+          warn='Argument `NAME` is deprecated. '
+          'Use `--filter="name=( \'NAME\' ... )"` instead.'),
       metavar='NAME',
       nargs='*',
       default=[],
@@ -378,28 +384,22 @@ def AddBaseListerArgs(parser, hidden=False):
       hidden=hidden,
       action=actions.DeprecationAction(
           'regexp',
-          warn='Flag --regexp is deprecated. '
-          'Use --filter="name~\'REGEXP\'" instead.'),
+          warn='Flag `--regexp` is deprecated. '
+          'Use `--filter="name~\'REGEXP\'"` instead.'),
       help="""\
-        A regular expression to filter the names of the results  on. Any names
+        Regular expression to filter the names of the results  on. Any names
         that do not match the entire regular expression will be filtered out.\
         """)
 
 
-# TODO(b/38256601) - Drop these flags
-def AddZonalListerArgs(parser):
+def AddZonalListerArgs(parser, hidden=False):
   """Add arguments defined by base_classes.ZonalLister."""
-  AddBaseListerArgs(parser)
+  AddBaseListerArgs(parser, hidden)
   parser.add_argument(
       '--zones',
-      action=actions.DeprecationAction(
-          'zones',
-          warn='Flag --zones is deprecated. '
-          'Use --filter="zone:( ZONE ... )" instead.\n'
-          'For example '
-          '--filter="zone:( europe-west1-b europe-west1-c )".'),
       metavar='ZONE',
       help='If provided, only resources from the given zones are queried.',
+      hidden=hidden,
       type=arg_parsers.ArgList(min_length=1),
       completer=compute_completers.ZonesCompleter,
       default=[])
@@ -422,10 +422,10 @@ def AddRegionsArg(parser, hidden=False):
       '--regions',
       action=actions.DeprecationAction(
           'regions',
-          warn='Flag --regions is deprecated. '
-               'Use --filter="region:( REGION ... )" instead.\n'
+          warn='Flag `--regions` is deprecated. '
+               'Use `--filter="region:( REGION ... )"` instead.\n'
                'For example '
-               '--filter="region:( europe-west1 europe-west2 )".'),
+               '`--filter="region:( europe-west1 europe-west2 )"`.'),
       metavar='REGION',
       hidden=hidden,
       help='If provided, only resources from the given regions are queried.',
@@ -445,10 +445,10 @@ def AddMultiScopeListerFlags(parser, zonal=False, regional=False,
         '--zones',
         action=actions.DeprecationAction(
             'zones',
-            warn='Flag --zones is deprecated. '
-            'Use --filter="zone:( ZONE ... )" instead.\n'
+            warn='Flag `--zones` is deprecated. '
+            'Use `--filter="zone:( ZONE ... )"` instead.\n'
             'For example '
-            '--filter="zone:( europe-west1-b europe-west1-c )".'),
+            '`--filter="zone:( europe-west1-b europe-west1-c )"`.'),
         metavar='ZONE',
         help=('If provided, only zonal resources are shown. '
               'If arguments are provided, only resources from the given '
@@ -459,10 +459,10 @@ def AddMultiScopeListerFlags(parser, zonal=False, regional=False,
         '--regions',
         action=actions.DeprecationAction(
             'regions',
-            warn='Flag --regions is deprecated. '
-            'Use --filter="region:( REGION ... )" instead.\n'
+            warn='Flag `--regions` is deprecated. '
+            'Use `--filter="region:( REGION ... )"` instead.\n'
             'For example '
-            '--filter="region:( europe-west1 europe-west2 )".'),
+            '`--filter="region:( europe-west1 europe-west2 )"`.'),
         metavar='REGION',
         help=('If provided, only regional resources are shown. '
               'If arguments are provided, only resources from the given '
@@ -535,13 +535,14 @@ def _GetBaseListerFrontendPrototype(args, message=None):
   """
   frontend = _GetListCommandFrontendPrototype(args, message=message)
   filter_args = []
+  default = args.filter  # must preserve '' and None for default processing
   if args.filter:
     filter_args.append('('+args.filter+')')
-  if args.regexp:
+  if getattr(args, 'regexp', None):
     filter_args.append(
         '(name ~ "^{}$")'.format(resource_expr_rewrite.BackendBase()
                                  .Quote(args.regexp)))
-  if args.names:
+  if getattr(args, 'names', None):
     name_regexp = ' '.join([
         resource_expr_rewrite.BackendBase().Quote(name) for name in args.names
         if not name.startswith('https://')
@@ -559,15 +560,16 @@ def _GetBaseListerFrontendPrototype(args, message=None):
           name_regexp, selflink_regexp))
   # Refine args.filter specification to reuse gcloud filtering logic
   # for filtering based on instance names
-  args.filter = ' AND '.join(filter_args)
+  args.filter = ' AND '.join(filter_args) or default
 
   return _Frontend(None, frontend.max_results, frontend.scope_set)
 
 
 def _TranslateZonesFlag(args, resources, message=None):
   """Translates --zones flag into filter expression and scope set."""
+  default = args.filter  # must preserve '' and None for default processing
   scope_set = ZoneSet([
-      resources.Parse(
+      resources.Parse(  # pylint: disable=g-complex-comprehension
           z,
           params={'project': properties.VALUES.core.project.GetOrFail},
           collection='compute.zones') for z in args.zones
@@ -579,7 +581,7 @@ def _TranslateZonesFlag(args, resources, message=None):
   # simple pattern?
   zone_regexp = ' '.join([zone for zone in args.zones])
   zone_arg = '(zone :({}))'.format(zone_regexp)
-  args.filter = filter_arg + zone_arg
+  args.filter = (filter_arg + zone_arg) or default
   args.filter, filter_expr = flags.RewriteFilter(args, message=message)
   return filter_expr, scope_set
 
@@ -617,8 +619,9 @@ def ParseZonalFlags(args, resources, message=None):
 
 def _TranslateRegionsFlag(args, resources, message=None):
   """Translates --regions flag into filter expression and scope set."""
+  default = args.filter  # must preserve '' and None for default processing
   scope_set = RegionSet([
-      resources.Parse(
+      resources.Parse(  # pylint: disable=g-complex-comprehension
           region,
           params={'project': properties.VALUES.core.project.GetOrFail},
           collection='compute.regions') for region in args.regions
@@ -630,7 +633,7 @@ def _TranslateRegionsFlag(args, resources, message=None):
   # simple pattern?
   region_regexp = ' '.join([region for region in args.regions])
   region_arg = '(region :({}))'.format(region_regexp)
-  args.filter = filter_arg + region_arg
+  args.filter = (filter_arg + region_arg) or default
   args.filter, filter_expr = flags.RewriteFilter(args, message=message)
   return filter_expr, scope_set
 
@@ -769,8 +772,8 @@ class ZonalLister(object):
     scope_set = frontend.scope_set
     filter_expr = frontend.filter
     if isinstance(scope_set, ZoneSet):
-      for project, zones in _GroupByProject(
-          sorted(list(scope_set))).iteritems():
+      for project, zones in six.iteritems(
+          _GroupByProject(sorted(list(scope_set)))):
         for item in GetZonalResourcesDicts(
             service=self.service,
             project=project,
@@ -837,8 +840,8 @@ class RegionalLister(object):
     scope_set = frontend.scope_set
     filter_expr = frontend.filter
     if isinstance(scope_set, RegionSet):
-      for project, regions in _GroupByProject(
-          sorted(list(scope_set))).iteritems():
+      for project, regions in six.iteritems(
+          _GroupByProject(sorted(list(scope_set)))):
         for item in GetRegionalResourcesDicts(
             service=self.service,
             project=project,
@@ -915,6 +918,7 @@ class GlobalLister(object):
       utils.RaiseException(errors, ListException)
 
 
+# TODO(b/139816191) Update all usages to use allow_partial_server_failure
 class MultiScopeLister(object):
   """General purpose lister implementation.
 
@@ -930,7 +934,7 @@ class MultiScopeLister(object):
       holder = base_classes.ComputeApiHolder(self.ReleaseTrack())
       client = holder.client
 
-      request_data = lister.ParseListCommandFlags(args, holder.resources)
+      request_data = lister.ParseMultiScopeFlags(args, holder.resources)
 
       list_implementation = lister.MultiScopeLister(
           client,
@@ -950,6 +954,8 @@ class MultiScopeLister(object):
     be listed using List call.
     aggregation_service: base_api.BaseApiService, Aggregation service whose
     resources will be listed using AggregatedList call.
+    allow_partial_server_failure: Allows Lister to continue presenting items
+    from scopes that return succesfully while logging failures as a warning.
   """
 
   def __init__(self,
@@ -957,45 +963,51 @@ class MultiScopeLister(object):
                zonal_service=None,
                regional_service=None,
                global_service=None,
-               aggregation_service=None):
+               aggregation_service=None,
+               allow_partial_server_failure=True):
     self.client = client
     self.zonal_service = zonal_service
     self.regional_service = regional_service
     self.global_service = global_service
     self.aggregation_service = aggregation_service
+    self.allow_partial_server_failure = allow_partial_server_failure
 
   def __deepcopy__(self, memodict=None):
     return self  # MultiScopeLister is immutable
 
   def __eq__(self, other):
     # MultiScopeLister is not suited for inheritance
-    return (isinstance(other, MultiScopeLister) and
-            self.client == other.client and
-            self.zonal_service == other.zonal_service and
-            self.regional_service == other.regional_service and
-            self.global_service == other.global_service and
-            self.aggregation_service == other.aggregation_service)
+    return (
+        isinstance(other, MultiScopeLister) and self.client == other.client and
+        self.zonal_service == other.zonal_service and
+        self.regional_service == other.regional_service and
+        self.global_service == other.global_service and
+        self.aggregation_service == other.aggregation_service and
+        self.allow_partial_server_failure == other.allow_partial_server_failure)
 
   def __ne__(self, other):
     return not self == other
 
   def __hash__(self):
     return hash((self.client, self.zonal_service, self.regional_service,
-                 self.global_service, self.aggregation_service))
+                 self.global_service, self.aggregation_service,
+                 self.allow_partial_server_failure))
 
   def __repr__(self):
-    return 'MultiScopeLister({}, {}, {}, {}, {})'.format(
+    return 'MultiScopeLister({}, {}, {}, {}, {}, {})'.format(
         repr(self.client),
         repr(self.zonal_service),
         repr(self.regional_service),
-        repr(self.global_service), repr(self.aggregation_service))
+        repr(self.global_service),
+        repr(self.aggregation_service),
+        repr(self.allow_partial_server_failure))
 
   def __call__(self, frontend):
     scope_set = frontend.scope_set
     requests = []
     if isinstance(scope_set, ZoneSet):
-      for project, zones in _GroupByProject(
-          sorted(list(scope_set))).iteritems():
+      for project, zones in six.iteritems(
+          _GroupByProject(sorted(list(scope_set)))):
         for zone_ref in zones:
           requests.append((self.zonal_service, 'List',
                            self.zonal_service.GetRequestType('List')(
@@ -1004,8 +1016,8 @@ class MultiScopeLister(object):
                                project=project,
                                zone=zone_ref.zone)))
     elif isinstance(scope_set, RegionSet):
-      for project, regions in _GroupByProject(
-          sorted(list(scope_set))).iteritems():
+      for project, regions in six.iteritems(
+          _GroupByProject(sorted(list(scope_set)))):
         for region_ref in regions:
           requests.append((self.regional_service, 'List',
                            self.regional_service.GetRequestType('List')(
@@ -1032,15 +1044,24 @@ class MultiScopeLister(object):
                  project=project_ref.project)))
 
     errors = []
+    response_count = 0
     for item in request_helper.ListJson(
         requests=requests,
         http=self.client.apitools_client.http,
         batch_url=self.client.batch_url,
         errors=errors):
+      response_count += 1
+
       yield item
 
     if errors:
-      utils.RaiseException(errors, ListException)
+      # If the command allows partial server errors, instead of raising an
+      # exception to show something went wrong, we show a warning message that
+      # contains the error messages instead.
+      if self.allow_partial_server_failure and response_count > 0:
+        utils.WarnIfPartialRequestFail(errors)
+      else:
+        utils.RaiseException(errors, ListException)
 
 
 class ZonalParallelLister(object):
@@ -1054,12 +1075,16 @@ class ZonalParallelLister(object):
     client: The compute client.
     service: Zonal service whose resources will be listed.
     resources: The compute resource registry.
+    allow_partial_server_failure: Allows Lister to continue presenting items
+    from scopes that return succesfully while logging failures as a warning.
   """
 
-  def __init__(self, client, service, resources):
+  def __init__(self, client, service, resources,
+               allow_partial_server_failure=True):
     self.client = client
     self.service = service
     self.resources = resources
+    self.allow_partial_server_failure = allow_partial_server_failure
 
   def __deepcopy__(self, memodict=None):
     return self  # ZonalParallelLister is immutable
@@ -1105,6 +1130,7 @@ class ZonalParallelLister(object):
         maxResults=frontend.max_results,
         scopeSet=zones)
     service_list_implementation = MultiScopeLister(
-        self.client, zonal_service=self.service)
+        self.client, zonal_service=self.service,
+        allow_partial_server_failure=self.allow_partial_server_failure)
 
     return Invoke(service_list_data, service_list_implementation)

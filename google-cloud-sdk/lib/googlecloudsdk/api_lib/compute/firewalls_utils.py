@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,12 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Common classes and functions for firewall rules."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import re
 
 import enum
+
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.core import exceptions
 
 ALLOWED_METAVAR = 'PROTOCOL[:PORT[-PORT]]'
 LEGAL_SPECS = re.compile(
@@ -49,8 +56,7 @@ class ActionType(enum.Enum):
 def AddCommonArgs(parser,
                   for_update=False,
                   with_egress_support=False,
-                  with_service_account=False,
-                  with_disabled=False):
+                  with_service_account=False):
   """Adds common arguments for firewall create or update subcommands."""
 
   min_length = 0 if for_update else 1
@@ -185,16 +191,18 @@ def AddCommonArgs(parser,
       """
   if with_service_account:
     target_tags_help = """\
-      A list of instance tags indicating the set of instances on the
-      network which may accept inbound connections that match the
-      firewall rule. If both target tags and target service account
-      are omitted, all instances on the network can receive inbound
-      connections that match the rule.
 
-      Tags can be assigned to instances during instance creation.
+      List of instance tags indicating the set of instances on the
+      network which may accept connections that match the
+      firewall rule.
+      Note that tags can be assigned to instances during instance creation.
 
-      If target tags are specified then neither a source nor target
+      If target tags are specified, then neither a source nor target
       service account can also be specified.
+
+      If both target tags and target service account
+      are omitted, all instances on the network can receive
+      connections that match the rule.
       """
   if for_update:
     target_tags_help += """
@@ -211,21 +219,17 @@ def AddCommonArgs(parser,
       help=target_tags_help)
 
   disabled_help = """\
-      Use this flag to disable a firewall rule and stop it from being enforced
-      in the network. Disabled firewall rules are not enforced, and the
-      associated network behaves as if the firewall rule did not exist. Use
+      Disable a firewall rule and stop it from being enforced in the network.
+      If a firewall rule is disabled, the associated network behaves as if the
+      rule did not exist. To enable a disabled rule, use:
 
-       $ gcloud alpha compute firewall-rules update MY-RULE --no-disabled
+       $ {parent_command} update MY-RULE --no-disabled
 
-      to enable a disabled rule.
       """
   if not for_update:
-    disabled_help += """\
-        If omitted firewall rule is considered enabled.
-    """
-  if with_disabled:
-    parser.add_argument(
-        '--disabled', action='store_true', default=None, help=disabled_help)
+    disabled_help += """Firewall rules are enabled by default."""
+  parser.add_argument(
+      '--disabled', action='store_true', default=None, help=disabled_help)
 
   # Add egress deny firewall cli support.
   if with_egress_support:
@@ -258,11 +262,6 @@ def AddArgsForEgress(parser, ruleset_parser, for_update=False):
       A port or port range can be specified after PROTOCOL to which the
       firewall rule apply on traffic through specific ports. If no port
       or port range is specified, connections through all ranges are applied.
-      For example, the following will create a rule that blocks TCP
-      traffic through port 80 and ICMP traffic:
-
-        $ {command} MY-RULE --action deny --rules tcp:80,icmp
-
       TCP and UDP rules must include a port or port range.
       """
   if for_update:
@@ -272,6 +271,11 @@ def AddArgsForEgress(parser, ruleset_parser, for_update=False):
   else:
     rules_help += """
       If specified, the flag --action must also be specified.
+
+      For example, the following will create a rule that blocks TCP
+      traffic through port 80 and ICMP traffic:
+
+        $ {command} MY-RULE --action deny --rules tcp:80,icmp
       """
   parser.add_argument(
       '--rules',

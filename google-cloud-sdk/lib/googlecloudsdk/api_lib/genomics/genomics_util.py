@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Common helper methods for Genomics commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import tempfile
 
 from apitools.base.protorpclite.messages import DecodeError
@@ -27,10 +32,10 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import files
-
-import yaml
+import six
 
 GCS_PREFIX = 'gs://'
 
@@ -73,30 +78,12 @@ def GetGenomicsMessages(version='v1'):
   return core_apis.GetMessagesModule('genomics', version)
 
 
-def GetDataset(dataset_id):
-  apitools_client = GetGenomicsClient()
-  genomics_messages = GetGenomicsMessages()
-
-  request = genomics_messages.GenomicsDatasetsGetRequest(
-      datasetId=str(dataset_id),
-  )
-
-  return apitools_client.datasets.Get(request)
-
-
-def GetCallSet(call_set_id):
-  apitools_client = GetGenomicsClient()
-  genomics_messages = GetGenomicsMessages()
-
-  request = genomics_messages.GenomicsCallsetsGetRequest(
-      callSetId=str(call_set_id),
-  )
-
-  return apitools_client.callsets.Get(request)
-
-
 def GetProjectId():
   return properties.VALUES.core.project.Get(required=True)
+
+
+def IsGcsPath(path):
+  return path.startswith(GCS_PREFIX)
 
 
 def GetFileAsMessage(path, message, client):
@@ -112,7 +99,7 @@ def GetFileAsMessage(path, message, client):
   Raises:
     files.Error, genomics_exceptions.GenomicsInputFileError
   """
-  if path.startswith(GCS_PREFIX):
+  if IsGcsPath(path):
     # Download remote file to a local temp file
     tf = tempfile.NamedTemporaryFile(delete=False)
     tf.close()
@@ -127,11 +114,12 @@ def GetFileAsMessage(path, message, client):
       del download  # Explicitly close the stream so the results are there
     except apitools_exceptions.HttpError as e:
       raise genomics_exceptions.GenomicsInputFileError(
-          'Unable to read remote file [{0}] due to [{1}]'.format(path, str(e)))
+          'Unable to read remote file [{0}] due to [{1}]'.format(
+              path, six.text_type(e)))
     path = tf.name
 
   # Read the file.
-  in_text = files.GetFileContents(path)
+  in_text = files.ReadFileContents(path)
   if not in_text:
     raise genomics_exceptions.GenomicsInputFileError(
         'Empty file [{0}]'.format(path))
@@ -139,7 +127,7 @@ def GetFileAsMessage(path, message, client):
   # Parse it, first trying YAML then JSON.
   try:
     result = encoding.PyValueToMessage(message, yaml.load(in_text))
-  except (ValueError, AttributeError, yaml.YAMLError) as e:
+  except (ValueError, AttributeError, yaml.YAMLParseError):
     try:
       result = encoding.JsonToMessage(message, in_text)
     except (ValueError, DecodeError) as e:
@@ -147,7 +135,7 @@ def GetFileAsMessage(path, message, client):
       # DecodeError is raised when a tag is badly formatted (not Base64)
       raise genomics_exceptions.GenomicsInputFileError(
           'Pipeline file [{0}] is not properly formatted YAML or JSON '
-          'due to [{1}]'.format(path, str(e)))
+          'due to [{1}]'.format(path, six.text_type(e)))
   return result
 
 
@@ -157,7 +145,7 @@ def ArgDictToAdditionalPropertiesList(argdict, message):
     return result
   # For consistent results (especially for deterministic testing), make
   # the return list ordered by key
-  for k, v in sorted(argdict.iteritems()):
+  for k, v in sorted(six.iteritems(argdict)):
     result.append(message(key=k, value=v))
   return result
 

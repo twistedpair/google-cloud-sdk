@@ -1,6 +1,6 @@
 # !/usr/bin/python2.4  # pylint: disable=g-unknown-interpreter
 #
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,9 +35,11 @@ This module is internal and should not be used by client applications.
 # pylint: disable=g-bad-name
 
 
+from __future__ import absolute_import
 from googlecloudsdk.third_party.appengine.googlestorage.onestore.v3 import entity_pb
 from googlecloudsdk.third_party.appengine.datastore import datastore_v4_pb
 from googlecloudsdk.third_party.appengine.datastore import entity_v4_pb
+import six
 
 _MIN_CLOUD_DATASTORE_VERSION = (6, 0, 0)
 _CLOUD_DATASTORE_ENABLED = False
@@ -235,7 +237,7 @@ def get_v1_mutation_key_and_entity(v1_mutation):
 
 
 def is_valid_utf8(s):
-  if isinstance(s, unicode):
+  if isinstance(s, six.text_type):
     return True
   try:
     s.decode('utf-8')
@@ -1039,7 +1041,7 @@ class _EntityConverter(object):
       is_projection: True if the v1_entity is from a projection query.
     """
     v3_entity.Clear()
-    for property_name, v1_value in v1_entity.properties.iteritems():
+    for property_name, v1_value in six.iteritems(v1_entity.properties):
 
       if v1_value.HasField('array_value'):
         if len(v1_value.array_value.values) == 0:

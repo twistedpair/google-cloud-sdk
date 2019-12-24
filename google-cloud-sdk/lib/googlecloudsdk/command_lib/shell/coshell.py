@@ -217,12 +217,17 @@ class _UnixCoshellBase(_CoshellBase):
     _shell: The coshell subprocess object.
   """
 
+  __metaclass__ = abc.ABCMeta
+
   SHELL_STATUS_EXIT = 'x'
   SHELL_STATUS_FD = 9
   SHELL_STDIN_FD = 8
 
   def __init__(self):
     super(_UnixCoshellBase, self).__init__()
+    self.status = None  # type: int
+    self._status_fd = None  # type: int
+    self._shell = None  # type: subprocess.Popen
 
   @staticmethod
   def _Quote(command):
@@ -300,6 +305,11 @@ class _UnixCoshellBase(_CoshellBase):
 
     # Set $? to 0.
     self._SendCommand('true')
+
+  @abc.abstractmethod
+  def _Run(self, command, check_modes=True):
+    """Runs command in the coshell and waits for it to complete."""
+    pass
 
   def Run(self, command, check_modes=True):
     """Runs command in the coshell and waits for it to complete."""
@@ -509,7 +519,7 @@ class _MinGWCoshell(_UnixCoshellBase):
 
   def Interrupt(self):
     """Sends the interrupt signal to the coshell."""
-    self._shell.send_signal(signal.CTRL_C_EVENT)
+    self._shell.send_signal(signal.CTRL_C_EVENT)  # pytype: disable=module-attr
 
 
 class _WindowsCoshell(_CoshellBase):
@@ -534,7 +544,7 @@ class _WindowsCoshell(_CoshellBase):
 def _RunningOnWindows():
   """Lightweight mockable Windows check."""
   try:
-    return bool(WindowsError)
+    return bool(WindowsError)  # pytype: disable=name-error
   except NameError:
     return False
 

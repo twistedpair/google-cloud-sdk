@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,12 +14,20 @@
 # limitations under the License.
 
 """SSH client utilities for key-generation, dispatching the ssh commands etc."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import errno
 import getpass
 import os
 import re
+import string
 import enum
 
+from googlecloudsdk.api_lib.oslogin import client as oslogin_client
+from googlecloudsdk.command_lib.oslogin import oslogin_utils
 from googlecloudsdk.command_lib.util import gaia
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -30,8 +39,11 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import retry
 
+import six
+
 
 PER_USER_SSH_CONFIG_FILE = os.path.join('~', '.ssh', 'config')
+OSLOGIN_ENABLE_METADATA_KEY = 'enable-oslogin'
 
 
 class InvalidKeyError(core_exceptions.Error):
@@ -54,7 +66,8 @@ class CommandError(core_exceptions.Error):
     message_text = '[{0}]'.format(message) if message else None
     return_code_text = ('return code [{0}]'.format(return_code)
                         if return_code else None)
-    why_failed = ' and '.join(filter(None, [message_text, return_code_text]))
+    why_failed = ' and '.join(
+        [f for f in [message_text, return_code_text] if f])
 
     super(CommandError, self).__init__(
         '[{0}] exited with {1}.'.format(self.cmd, why_failed),
@@ -68,6 +81,10 @@ class InvalidConfigurationError(core_exceptions.Error):
     super(InvalidConfigurationError, self).__init__(
         msg + '  Got sources: {}, destination: {}'
         .format(sources, destination))
+
+
+class BadCharacterError(core_exceptions.Error):
+  """Indicates a character was found that couldn't be escaped."""
 
 
 class Suite(enum.Enum):
@@ -131,7 +148,11 @@ class Environment(object):
     """
     self.suite = suite
     self.bin_path = bin_path
-    for key, cmd in self.COMMANDS[suite].iteritems():
+    self.ssh = None
+    self.ssh_term = None
+    self.scp = None
+    self.keygen = None
+    for key, cmd in six.iteritems(self.COMMANDS[suite]):
       setattr(self, key, files.FindExecutableOnPath(cmd, path=self.bin_path))
     self.ssh_exit_code = self.SSH_EXIT_CODES[suite]
 
@@ -246,7 +267,10 @@ class Keys(object):
       # convert to unicode. Assume UTF 8, but if we miss a character we can just
       # replace it with a '?'. The only source of issues would be the hostnames,
       # which are relatively inconsequential.
-      parts = key_string.strip().decode('utf8', 'replace').split(' ', 2)
+      decoded_key = key_string.strip()
+      if isinstance(key_string, six.binary_type):
+        decoded_key = decoded_key.decode('utf8', 'replace')
+      parts = decoded_key.split(' ', 2)
       if len(parts) < 2:
         raise InvalidKeyError('Public key [{}] is invalid.'.format(key_string))
       comment = parts[2].strip() if len(parts) > 2 else ''  # e.g. `me@host`
@@ -261,9 +285,9 @@ class Keys(object):
       Returns:
         str, A key string on the form `TYPE DATA` or `TYPE DATA COMMENT`.
       """
-      out_format = u'{type} {data}'
+      out_format = '{type} {data}'
       if include_comment and self.comment:
-        out_format += u' {comment}'
+        out_format += ' {comment}'
       return out_format.format(
           type=self.key_type, data=self.key_data, comment=self.comment)
 
@@ -285,7 +309,7 @@ class Keys(object):
           expansion.
       env: Environment, Current environment or None to infer from current.
     """
-    private_key_file = os.path.realpath(os.path.expanduser(key_file))
+    private_key_file = os.path.realpath(files.ExpandHomeDir(key_file))
     self.dir = os.path.dirname(private_key_file)
     self.env = env or Environment.Current()
     self.keys = {
@@ -362,12 +386,12 @@ class Keys(object):
       try:
         self.GetPublicKey()
       except InvalidKeyError:
-        log.warn('The public SSH key file [{}] is corrupt.'
-                 .format(self.keys[_KeyFileKind.PUBLIC]))
+        log.warning('The public SSH key file [{}] is corrupt.'
+                    .format(self.keys[_KeyFileKind.PUBLIC]))
         self.keys[_KeyFileKind.PUBLIC].status = KeyFileStatus.BROKEN
 
     # Summary
-    collected_values = [x.status for x in self.keys.itervalues()]
+    collected_values = [x.status for x in six.itervalues(self.keys)]
     if all(x == KeyFileStatus.ABSENT for x in collected_values):
       return KeyFileStatus.ABSENT
     elif all(x == KeyFileStatus.PRESENT for x in collected_values):
@@ -399,7 +423,7 @@ class Keys(object):
     if force_key_file_overwrite is False:
       raise console_io.OperationCancelledError(message + 'Operation aborted.')
     message += 'We are going to overwrite all above files.'
-    log.warn(message)
+    log.warning(message)
     if force_key_file_overwrite is None:
       # - Interactive when pressing 'Y', continue
       # - Interactive when pressing enter or 'N', raise OperationCancelledError
@@ -407,7 +431,7 @@ class Keys(object):
       console_io.PromptContinue(default=False, cancel_on_no=True)
 
     # Remove existing broken key files.
-    for key_file in self.keys.viewvalues():
+    for key_file in six.viewvalues(self.keys):
       try:
         os.remove(key_file.filename)
       except OSError as e:
@@ -418,7 +442,7 @@ class Keys(object):
   def _WarnOrReadFirstKeyLine(self, path, kind):
     """Returns the first line from the key file path.
 
-    A None return indicates an error and is always accompanied by a log.warn
+    A None return indicates an error and is always accompanied by a log.warning
     message.
 
     Args:
@@ -426,28 +450,23 @@ class Keys(object):
       kind: The kind of key file, 'private' or 'public'.
 
     Returns:
-      None (and prints a log.warn message) if the file does not exist, is not
+      None (and prints a log.warning message) if the file does not exist, is not
       readable, or is empty. Otherwise returns the first line utf8 decoded.
     """
     try:
-      with open(path) as f:
-        # Decode to utf8 to handle any unicode characters. Key data is base64
-        # encoded so it cannot contain any unicode. Comments may contain
-        # unicode, but they are ignored in the key file analysis here, so
-        # replacing invalid chars with ? is OK.
-        line = f.readline().strip().decode('utf8', 'replace')
+      with files.FileReader(path) as f:
+        line = f.readline().strip()
         if line:
           return line
         msg = 'is empty'
         status = KeyFileStatus.BROKEN
-    except IOError as e:
-      if e.errno == errno.ENOENT:
-        msg = 'does not exist'
-        status = KeyFileStatus.ABSENT
-      else:
-        msg = 'is not readable'
-        status = KeyFileStatus.BROKEN
-    log.warn('The %s SSH key file for gcloud %s.', kind, msg)
+    except files.MissingFileError:
+      msg = 'does not exist'
+      status = KeyFileStatus.ABSENT
+    except files.Error:
+      msg = 'is not readable'
+      status = KeyFileStatus.BROKEN
+    log.warning('The %s SSH key file for gcloud %s.', kind, msg)
     return status
 
   def GetPublicKey(self):
@@ -462,7 +481,7 @@ class Keys(object):
       Keys.PublicKey, a public key (that passed primitive validation).
     """
     filepath = self.keys[_KeyFileKind.PUBLIC].filename
-    with open(filepath) as f:
+    with files.FileReader(filepath) as f:
       # TODO(b/33467618): Currently we enforce that key exists on the first
       # line, but OpenSSH does not enforce that.
       first_line = f.readline()
@@ -491,8 +510,8 @@ class Keys(object):
     if key_files_validity is not KeyFileStatus.PRESENT:
       if key_files_validity is KeyFileStatus.ABSENT:
         # If key is broken, message is already displayed
-        log.warn('You do not have an SSH key for gcloud.')
-        log.warn('SSH keygen will be executed to generate a key.')
+        log.warning('You do not have an SSH key for gcloud.')
+        log.warning('SSH keygen will be executed to generate a key.')
 
       if not os.path.exists(self.dir):
         msg = ('This tool needs to create the directory [{0}] before being '
@@ -500,10 +519,31 @@ class Keys(object):
         console_io.PromptContinue(
             message=msg, cancel_on_no=True,
             cancel_string='SSH key generation aborted by user.')
-        files.MakeDir(self.dir, 0700)
+        files.MakeDir(self.dir, 0o700)
 
       cmd = KeygenCommand(self.key_file, allow_passphrase=allow_passphrase)
       cmd.Run(self.env)
+
+    if self.env.suite is Suite.PUTTY:
+      # This is to fix an encoding issue with PPK's we generated that was
+      # ignored in versions of PuTTY <=0.70, but became invalid in version 0.71.
+      # Since this only affects the PPK, we don't need to generate a new key; we
+      # can just correct the encoding of the PPK if necessary. We use a sentinel
+      # file in the config dir to check if the encoding is already correct.
+      valid_ppk_sentinel = config.Paths().valid_ppk_sentinel_file
+      if not os.path.exists(valid_ppk_sentinel):
+        if key_files_validity is KeyFileStatus.PRESENT:  # Initial validity
+          cmd = KeygenCommand(
+              self.key_file, allow_passphrase=False, reencode_ppk=True)
+          cmd.Run(self.env)
+        try:
+          files.WriteFileContents(valid_ppk_sentinel, '')
+        except files.Error as e:
+          # It's possible that writing the sentinel file fails, which means
+          # we'll potentially have to re-encode the PPK again the next time an
+          # SSH/SCP command is run. But we shouldn't let this prevent the user
+          # from running their current command.
+          log.debug('Failed to create sentinel file: [{}]'.format(e))
 
 
 class KnownHosts(object):
@@ -514,7 +554,7 @@ class KnownHosts(object):
   """
 
   # TODO(b/33467618): Rename the file itself
-  DEFAULT_PATH = os.path.realpath(os.path.expanduser(
+  DEFAULT_PATH = os.path.realpath(files.ExpandHomeDir(
       os.path.join('~', '.ssh', 'google_compute_known_hosts')))
 
   def __init__(self, known_hosts, file_path):
@@ -539,7 +579,7 @@ class KnownHosts(object):
       opened, the KnownHosts object will have no entries.
     """
     try:
-      known_hosts = files.GetFileContents(file_path).splitlines()
+      known_hosts = files.ReadFileContents(file_path).splitlines()
     except files.Error as e:
       known_hosts = []
       log.debug('SSH Known Hosts File [{0}] could not be opened: {1}'
@@ -592,10 +632,46 @@ class KnownHosts(object):
     else:
       self.known_hosts.append(new_key_entry)
 
+  def AddMultiple(self, hostname, host_keys, overwrite=False):
+    """Add or update multiple entries for the given hostname.
+
+    If there is no entry for the given hostname, the keys will be added. If
+    there is an entry already, and overwrite keys is False, nothing will be
+    changed. If there is an entry and overwrite_keys is True, all  current
+    entries for the given hostname will be removed and the new keys added.
+
+    Args:
+      hostname: str, The hostname for the known_hosts entry.
+      host_keys: list, A list of host keys for the given hostname.
+      overwrite: bool, If true, will overwrite the entries corresponding to
+        hostname with the new host_key if it already exists. If false and an
+        entry already exists for hostname, will ignore the new host_key values.
+    Returns:
+      bool, True if new keys were added.
+    """
+    new_keys_added = False
+    new_key_entries = ['{0} {1}'.format(hostname, host_key)
+                       for host_key in host_keys]
+    if not new_key_entries:
+      return new_keys_added
+    existing_entries = [key for key in self.known_hosts
+                        if key.startswith(hostname)]
+    if existing_entries:
+      if overwrite:
+        self.known_hosts = [key for key in self.known_hosts
+                            if not key.startswith(hostname)]
+        self.known_hosts.extend(new_key_entries)
+        new_keys_added = True
+    else:
+      self.known_hosts.extend(new_key_entries)
+      new_keys_added = True
+
+    return new_keys_added
+
   def Write(self):
     """Writes the file to disk."""
-    with files.OpenForWritingPrivate(self.file_path) as f:
-      f.write('\n'.join(self.known_hosts) + '\n')
+    files.WriteFileContents(
+        self.file_path, '\n'.join(self.known_hosts) + '\n', private=True)
 
 
 def GetDefaultSshUsername(warn_on_account_user=False):
@@ -619,14 +695,111 @@ def GetDefaultSshUsername(warn_on_account_user=False):
     full_account = properties.VALUES.core.account.Get(required=True)
     account_user = gaia.MapGaiaEmailToDefaultAccountName(full_account)
     if warn_on_account_user:
-      log.warn('Invalid characters in local username [{0}]. '
-               'Using username corresponding to active account: [{1}]'.format(
-                   user, account_user))
+      log.warning(
+          'Invalid characters in local username [{0}]. '
+          'Using username corresponding to active account: [{1}]'.format(
+              user, account_user))
     user = account_user
   return user
 
 
-def ParseAndSubstituteSSHFlags(args, remote, ip_address):
+def _MetadataHasOsloginEnable(metadata):
+  """Return true if the metadata has 'oslogin-enable' set and 'true'.
+
+  Args:
+    metadata: Instance or Project metadata.
+
+  Returns:
+    True if Enabled, False if Disabled, None if key is not present.
+  """
+  if not (metadata and metadata.items):
+    return None
+  matching_values = [item.value for item in metadata.items
+                     if item.key == OSLOGIN_ENABLE_METADATA_KEY]
+  if not matching_values:
+    return None
+  return matching_values[0].lower() == 'true'
+
+
+def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
+                              expiration_time, release_track):
+  """Check instance/project metadata for oslogin and return updated username.
+
+  Check to see if OS Login is enabled in metadata and if it is, return
+  the OS Login user and a boolean value indicating if OS Login is being used.
+
+  Args:
+    instance: instance, The object representing the instance we are
+      connecting to. If None, instance metadata will be ignored.
+    project: project, The object representing the current project.
+    requested_user: str, The default or requested username to connect as.
+    public_key: str, The public key of the user connecting.
+    expiration_time: int, Microseconds after epoch when the ssh key should
+      expire. If None, an existing key will not be modified and a new key will
+      not be set to expire.  If not None, an existing key may be modified
+      with the new expiry.
+    release_track: release_track, The object representing the release track.
+
+  Returns:
+    tuple, A string containing the oslogin username and a boolean indicating
+      wheather oslogin is being used.
+  """
+  # Instance metadata has priority
+  use_oslogin = False
+  oslogin_enabled = None
+  if instance is not None:
+    oslogin_enabled = _MetadataHasOsloginEnable(instance.metadata)
+  if oslogin_enabled is None:
+    project_metadata = project.commonInstanceMetadata
+    oslogin_enabled = _MetadataHasOsloginEnable(project_metadata)
+
+  if not oslogin_enabled:
+    return requested_user, use_oslogin
+
+  # Connect to the oslogin API and add public key to oslogin user account.
+  oslogin = oslogin_client.OsloginClient(release_track)
+  if not oslogin:
+    log.warning(
+        'OS Login is enabled on Instance/Project, but is not available '
+        'in the {0} version of gcloud.'.format(release_track.id))
+    return requested_user, use_oslogin
+  user_email = properties.VALUES.core.account.Get()
+
+  # Check to see if public key is already in profile and POSIX information
+  # exists associated with the project. If either are not set, import an SSH
+  # public key. Otherwise update the expiration time if needed.
+  login_profile = oslogin.GetLoginProfile(user_email, project.name)
+  keys = oslogin_utils.GetKeyDictionaryFromProfile(
+      user_email, oslogin, profile=login_profile)
+  fingerprint = oslogin_utils.FindKeyInKeyList(public_key, keys)
+  if not fingerprint or not login_profile.posixAccounts:
+    import_response = oslogin.ImportSshPublicKey(user_email, public_key,
+                                                 expiration_time)
+    login_profile = import_response.loginProfile
+  elif expiration_time:
+    oslogin.UpdateSshPublicKey(user_email, fingerprint, keys[fingerprint],
+                               'expirationTimeUsec',
+                               expiration_time=expiration_time)
+  use_oslogin = True
+
+  # Get the username for the oslogin user. If the username is the same as the
+  # default user, return that one. Otherwise, return the 'primary' username.
+  # If no 'primary' exists, return the first username.
+  oslogin_user = None
+  for pa in login_profile.posixAccounts:
+    oslogin_user = oslogin_user or pa.username
+    if pa.username == requested_user:
+      return requested_user, use_oslogin
+    elif pa.primary:
+      oslogin_user = pa.username
+
+  log.info('Using OS Login user [{0}] instead of default user [{1}]'.format(
+      oslogin_user, requested_user))
+  return oslogin_user, use_oslogin
+
+
+def ParseAndSubstituteSSHFlags(args, remote, instance_address,
+                               internal_address):
   """Obtain extra flags from the command arguments."""
   extra_flags = []
   if args.ssh_flag:
@@ -634,7 +807,8 @@ def ParseAndSubstituteSSHFlags(args, remote, ip_address):
       for flag_part in flag.split():  # We want grouping here
         dereferenced_flag = (
             flag_part.replace('%USER%', remote.user)
-            .replace('%INSTANCE%', ip_address))
+            .replace('%INSTANCE%', instance_address)
+            .replace('%INTERNAL%', internal_address))
         extra_flags.append(dereferenced_flag)
   return extra_flags
 
@@ -715,6 +889,147 @@ class Remote(object):
     return self.ToArg()
 
 
+def _EscapeProxyCommandArg(s, env):
+  """Returns s escaped such that it can be a ProxyCommand arg.
+
+  Args:
+    s: str, Argument to escape. Must be non-empty.
+    env: Environment, data about the ssh client.
+  Raises:
+    BadCharacterError: If s contains a bad character.
+  """
+  for c in s:
+    if not 0x20 <= ord(c) < 0x7f:
+      # For ease of implementation we ban control characters and non-ASCII.
+      raise BadCharacterError(
+          ('Special character %r (part of %r) couldn\'t be escaped for '
+           'ProxyCommand') % (c, s))
+  if env.suite is Suite.PUTTY:
+    # When using proxycmd with putty or plink, 3 unescapes happen:
+    # 1 putty/plink does command line -> argv unescape.
+    # 2 putty/plink does backslash and percent unescape.
+    # 3 Inner gcloud python binary does command line -> argv unescape.
+    #
+    # We reverse this, doing escapes in reverse order, doing 3, 2.
+    # We don't do the 1 escape here because that's done later inside the
+    # subprocess.Popen() function.
+    s = _EscapeWindowsArgvElement(s)
+    s = _EscapePuttyBackslashPercent(s)
+    return s
+  # When using ProxyCommand with OpenSSH, 2 unescapes happen:
+  # 1 OpenSSH does percent unescape.
+  # 2 bash does unescape.
+  # We do the corresponding escapes in reverse.
+  return _EscapeForBash(s).replace('%', '%%')
+
+
+def _EscapeWindowsArgvElement(s):
+  """Returns s escaped such that it can be passed to a windows executable.
+
+  Args:
+    s: str, What to escape. Must be ASCII and non-control.
+  """
+  # Each Windows binary can unescape its commandline arguments to argv how it
+  # wants, but they tend to behave like this:
+  # https://docs.microsoft.com/en-us/cpp/cpp/parsing-cpp-command-line-arguments?view=vs-2017
+  # We escape in that format because that format is similar to how python (of
+  # the inner gcloud) does it. The primary difference is what happens when
+  # inside a doublequoted string there is an even number of backslashes
+  # (possibly 0) then at least 2 doublequotes. This function never returns a
+  # string like that, so it avoids the ambiguity.
+  #
+  # We escape in reverse, because that's easiest.
+  result = []
+  # Whether (in the reversed input) we are following a non-broken chain of
+  # backslashes (possibly 0-length) after a doublequote.
+  # The final output will have a doublequote appended to the end, so the first
+  # character of the reversed input is considered to follow a doublequote.
+  following_quote = True
+  for c in s[::-1]:
+    if c == '"':
+      result.append('"\\')
+      following_quote = True
+    elif c == '\\':
+      if following_quote:
+        result.append('\\\\')
+      else:
+        result.append('\\')
+    else:
+      result.append(c)
+      following_quote = False
+  return '"' + ''.join(result)[::-1] + '"'
+
+
+def _EscapePuttyBackslashPercent(s):
+  # s must be ASCII and non-control.
+  # The putty unescaping is documented at
+  # https://the.earth.li/~sgtatham/putty/0.70/htmldoc/Chapter4.html#config-proxy-command
+  return s.replace('\\', '\\\\').replace('%', '%%')
+
+
+def _EscapeForBash(s):
+  """Returns s escaped so it can be used as a single bash argument.
+
+  Args:
+    s: str, What to escape. Must be ASCII, non-control, and non-empty.
+  """
+  # From https://stackoverflow.com/q/15783701
+  good_chars = set(string.ascii_letters + string.digits + '%+-./:=@_')
+  result = []
+  for c in s:
+    if c in good_chars:
+      result.append(c)
+    else:
+      result.append('\\' + c)
+  return ''.join(result)
+
+
+def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
+  """Calculate the ProxyCommand flags for IAP Tunnel if necessary.
+
+  IAP Tunnel with ssh runs an second inner version of gcloud by passing a
+  command to do so as a ProxyCommand argument to OpenSSH/Putty.
+
+  Args:
+    iap_tunnel_args: iap_tunnel.SshTunnelArgs or None, options about IAP Tunnel.
+    env: Environment, data about the ssh client.
+  Returns:
+    [str], the additional arguments for OpenSSH or Putty.
+  """
+  if not iap_tunnel_args:
+    return []
+
+  gcloud_command = execution_utils.ArgsForGcloud()
+  # Applying _EscapeProxyCommandArg to the first item (the python executable
+  # path) doesn't make 100% sense on Windows, because the full unescaping only
+  # happens to arguments, not to the executable path. But this escaping will be
+  # correct as long as the python executable path doesn't contain a doublequote
+  # or end with a backslash, which should never happen.
+  gcloud_command = [_EscapeProxyCommandArg(x, env) for x in gcloud_command]
+  # track, project, zone, instance, verbosity should only contain
+  # characters that don't need escaping, so don't bother escaping them.
+  if iap_tunnel_args.track:
+    gcloud_command.append(iap_tunnel_args.track)
+  port_token = '%port' if env.suite is Suite.PUTTY else '%p'
+  gcloud_command.extend([
+      'compute', 'start-iap-tunnel', iap_tunnel_args.instance, port_token,
+      '--listen-on-stdin',
+      '--project=' + iap_tunnel_args.project,
+      '--zone=' + iap_tunnel_args.zone])
+  for arg in iap_tunnel_args.pass_through_args:
+    gcloud_command.append(_EscapeProxyCommandArg(arg, env))
+
+  verbosity = log.GetVerbosityName()
+  if verbosity:
+    gcloud_command.append('--verbosity=' + verbosity)
+
+  if env.suite is Suite.PUTTY:
+    return ['-proxycmd', ' '.join(gcloud_command)]
+  else:
+    return ['-o', ' '.join(['ProxyCommand'] + gcloud_command),
+            '-o', 'ProxyUseFdpass=no']
+
+
 class KeygenCommand(object):
   """Platform independent SSH client key generation command.
 
@@ -736,12 +1051,16 @@ class KeygenCommand(object):
       - Running in an OpenSSH environment (Linux and Mac)
       - Running in interactive mode (from an actual TTY)
       - Prompts are enabled in gcloud
+    reencode_ppk: bool, If True, reencode the PPK file if it was generated with
+      a bad encoding, instead of generating a new key. This is only valid for
+      PuTTY.
   """
 
-  def __init__(self, identity_file, allow_passphrase=True):
+  def __init__(self, identity_file, allow_passphrase=True, reencode_ppk=False):
     """Construct a suite independent `ssh-keygen` command."""
     self.identity_file = identity_file
     self.allow_passphrase = allow_passphrase
+    self.reencode_ppk = reencode_ppk
 
   def Build(self, env=None):
     """Construct the actual command according to the given environment.
@@ -763,9 +1082,11 @@ class KeygenCommand(object):
     if env.suite is Suite.OPENSSH:
       prompt_passphrase = self.allow_passphrase and console_io.CanPrompt()
       if not prompt_passphrase:
-        args.extend(['-P', ''])  # Empty passphrase
+        args.extend(['-N', ''])  # Empty passphrase
       args.extend(['-t', 'rsa', '-f', self.identity_file])
     else:
+      if self.reencode_ppk:
+        args.append('--reencode-ppk')
       args.append(self.identity_file)
 
     return args
@@ -809,7 +1130,7 @@ class SSHCommand(object):
 
   def __init__(self, remote, port=None, identity_file=None,
                options=None, extra_flags=None, remote_command=None, tty=None,
-               remainder=None):
+               iap_tunnel_args=None, remainder=None):
     """Construct a suite independent SSH command.
 
     Note that `extra_flags` and `remote_command` arguments are lists of strings:
@@ -819,7 +1140,7 @@ class SSHCommand(object):
 
     Args:
       remote: Remote, the remote to connect to.
-      port: int, port.
+      port: str, port.
       identity_file: str, path to private key file.
       options: {str: str}, options (`-o`) for OpenSSH, see `ssh_config(5)`.
       extra_flags: [str], extra flags to append to ssh invocation. Both binary
@@ -827,6 +1148,8 @@ class SSHCommand(object):
       remote_command: [str], command to run remotely.
       tty: bool, launch a terminal. If None, determine automatically based on
         presence of remote command.
+      iap_tunnel_args: iap_tunnel.SshTunnelArgs or None, options about IAP
+        Tunnel.
       remainder: [str], NOT RECOMMENDED. Arguments to be appended directly to
         the native tool invocation, after the `[user@]host` part but prior to
         the remote command. On PuTTY, this can only be a remote command. On
@@ -841,6 +1164,7 @@ class SSHCommand(object):
     self.extra_flags = extra_flags or []
     self.remote_command = remote_command or []
     self.tty = tty
+    self.iap_tunnel_args = iap_tunnel_args
     self.remainder = remainder
 
   def Build(self, env=None):
@@ -874,8 +1198,10 @@ class SSHCommand(object):
 
     if env.suite is Suite.OPENSSH:
       # Always, always deterministic order
-      for key, value in sorted(self.options.iteritems()):
+      for key, value in sorted(six.iteritems(self.options)):
         args.extend(['-o', '{k}={v}'.format(k=key, v=value)])
+
+    args.extend(_BuildIapTunnelProxyCommandArgs(self.iap_tunnel_args, env))
     args.extend(self.extra_flags)
     args.append(self.remote.ToArg())
 
@@ -885,13 +1211,16 @@ class SSHCommand(object):
       args.extend(self.remainder)
 
     if self.remote_command:
-      if env.suite is Suite.OPENSSH:  # Putty doesn't like double dash
+      if env.suite is Suite.OPENSSH:
         args.append('--')
-      args.extend(self.remote_command)
+        args.extend(self.remote_command)
+      else:
+        args.append(' '.join(self.remote_command))
     return args
 
   def Run(self, env=None, force_connect=False,
-          explicit_output_file=None):
+          explicit_output_file=None,
+          explicit_error_file=None):
     """Run the SSH command using the given environment.
 
     Args:
@@ -899,8 +1228,8 @@ class SSHCommand(object):
       force_connect: bool, whether to inject 'y' into the prompts for `plink`,
         which is insecure and not recommended. It serves legacy compatibility
         purposes only.
-      explicit_output_file: File-like object into which pipe stdout.
-        Useful when some process is needed over the command.
+      explicit_output_file: Pipe stdout into this file-like object
+      explicit_error_file: Pipe stderr into this file-like object
 
     Raises:
       MissingCommandError: If SSH command(s) not found.
@@ -920,6 +1249,8 @@ class SSHCommand(object):
     extra_popen_kwargs = {}
     if explicit_output_file:
       extra_popen_kwargs['stdout'] = explicit_output_file
+    if explicit_error_file:
+      extra_popen_kwargs['stderr'] = explicit_error_file
 
     status = execution_utils.Exec(args, no_exit=True, in_str=in_str,
                                   **extra_popen_kwargs)
@@ -952,7 +1283,8 @@ class SCPCommand(object):
   """
 
   def __init__(self, sources, destination, recursive=False, compress=False,
-               port=None, identity_file=None, options=None, extra_flags=None):
+               port=None, identity_file=None, options=None, extra_flags=None,
+               iap_tunnel_args=None):
     """Construct a suite independent SCP command.
 
     Args:
@@ -963,11 +1295,13 @@ class SCPCommand(object):
         source, this must be local, and vice versa.
       recursive: bool, recursive directory copy.
       compress: bool, enable compression.
-      port: int, port.
+      port: str, port.
       identity_file: str, path to private key file.
       options: {str: str}, options (`-o`) for OpenSSH, see `ssh_config(5)`.
       extra_flags: [str], extra flags to append to scp invocation. Both binary
         style flags `['-b']` and flags with values `['-k', 'v']` are accepted.
+      iap_tunnel_args: iap_tunnel.SshTunnelArgs or None, options about IAP
+        Tunnel.
     """
     self.sources = [sources] if isinstance(sources, FileReference) else sources
     self.destination = destination
@@ -977,6 +1311,7 @@ class SCPCommand(object):
     self.identity_file = identity_file
     self.options = options or {}
     self.extra_flags = extra_flags or []
+    self.iap_tunnel_args = iap_tunnel_args
 
   @classmethod
   def Verify(cls, sources, destination, single_remote=False, env=None):
@@ -1062,9 +1397,10 @@ class SCPCommand(object):
     # SSH config options
     if env.suite is Suite.OPENSSH:
       # Always, always deterministic order
-      for key, value in sorted(self.options.iteritems()):
+      for key, value in sorted(six.iteritems(self.options)):
         args.extend(['-o', '{k}={v}'.format(k=key, v=value)])
 
+    args.extend(_BuildIapTunnelProxyCommandArgs(self.iap_tunnel_args, env))
     args.extend(self.extra_flags)
 
     # Positionals
@@ -1111,22 +1447,25 @@ class SSHPoller(object):
 
   def __init__(self, remote, port=None, identity_file=None,
                options=None, extra_flags=None, max_wait_ms=60*1000,
-               sleep_ms=5*1000):
+               sleep_ms=5*1000, iap_tunnel_args=None):
     """Construct a poller for an SSH connection.
 
     Args:
       remote: Remote, the remote to poll.
-      port: int, port to poll.
+      port: str, port to poll.
       identity_file: str, path to private key file.
       options: {str: str}, options (`-o`) for OpenSSH, see `ssh_config(5)`.
       extra_flags: [str], extra flags to append to ssh invocation. Both binary
         style flags `['-b']` and flags with values `['-k', 'v']` are accepted.
       max_wait_ms: int, number of ms to wait before raising.
       sleep_ms: int, time between trials.
+      iap_tunnel_args: iap_tunnel.SshTunnelArgs or None, information about IAP
+        Tunnel.
     """
     self.ssh_command = SSHCommand(
         remote, port=port, identity_file=identity_file, options=options,
-        extra_flags=extra_flags, remote_command=['true'], tty=False)
+        extra_flags=extra_flags, remote_command=['true'], tty=False,
+        iap_tunnel_args=iap_tunnel_args)
     self._sleep_ms = sleep_ms
     self._retryer = retry.Retryer(max_wait_ms=max_wait_ms, jitter_ms=0)
 
@@ -1134,7 +1473,7 @@ class SSHPoller(object):
     """Poll a remote for connectivity within the given timeout.
 
     The SSH command may prompt the user. It is recommended to wrap this call in
-    a progress tracker. If this method returns, a connection was succesfully
+    a progress tracker. If this method returns, a connection was successfully
     established. If not, this method will raise.
 
     Args:
@@ -1215,4 +1554,3 @@ class FileReference(object):
 
   def __repr__(self):
     return self.ToArg()
-

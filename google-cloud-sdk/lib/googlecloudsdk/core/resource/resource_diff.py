@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +15,12 @@
 
 """Unified diff resource printer."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import difflib
-import StringIO
+import io
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_printer
@@ -51,12 +56,12 @@ class ResourceDiff(object):
       defaults: Optional resource_projection_spec.ProjectionSpec defaults.
     """
     # Fill a buffer with the object as rendered originally.
-    buff_original = StringIO.StringIO()
+    buff_original = io.StringIO()
     printer = resource_printer.Printer(print_format, out=buff_original,
                                        defaults=defaults)
     printer.PrintSingleRecord(self.original)
     # Fill a buffer with the object as rendered after the change.
-    buff_changed = StringIO.StringIO()
+    buff_changed = io.StringIO()
     printer = resource_printer.Printer(print_format, out=buff_changed,
                                        defaults=defaults)
     printer.PrintSingleRecord(self.changed)

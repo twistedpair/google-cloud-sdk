@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,11 +14,16 @@
 # limitations under the License.
 """Utilities for the container analysis commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import itertools
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
+from six.moves import range
 
 # The maximum number of resource URLs by which to filter when showing
 # occurrences. This is required since filtering by too many causes the
@@ -92,5 +98,4 @@ def MakeGetNoteRequest(note_name, default_project):
   request = messages.ContaineranalysisProvidersNotesGetRequest(
       name=note_ref.RelativeName(),
   )
-  print 2, client
   return client.providers_notes.Get(request)

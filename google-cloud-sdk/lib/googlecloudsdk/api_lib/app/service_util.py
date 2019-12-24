@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +15,14 @@
 
 """Utilities for dealing with service resources."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import text
+import six
 
 
 class ServiceValidationError(exceptions.Error):
@@ -155,7 +161,7 @@ def ParseTrafficAllocations(args_allocations, split_method):
     raise err
 
   allocations = {}
-  for version, split in args_allocations.iteritems():
+  for version, split in six.iteritems(args_allocations):
     allocation = float(split) / sum_of_splits
     allocation = round(allocation, max_decimal_places)
     if allocation == 0.0:
@@ -184,7 +190,7 @@ def DeleteServices(api_client, services):
       operations_util.CallAndCollectOpErrors(
           api_client.DeleteService, service.id)
     except operations_util.MiscOperationError as err:
-      errors[service.id] = str(err)
+      errors[service.id] = six.text_type(err)
 
   if errors:
     printable_errors = {}
@@ -194,6 +200,5 @@ def DeleteServices(api_client, services):
     raise ServicesDeleteError(
         'Issue deleting {0}: [{1}]\n\n'.format(
             text.Pluralize(len(printable_errors), 'service'),
-            ', '.join(printable_errors.keys())) +
-        '\n\n'.join(printable_errors.values()))
-
+            ', '.join(list(printable_errors.keys()))) +
+        '\n\n'.join(list(printable_errors.values())))

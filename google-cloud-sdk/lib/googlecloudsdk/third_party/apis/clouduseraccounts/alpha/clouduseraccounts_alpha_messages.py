@@ -18,7 +18,7 @@ class AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted.  Example Policy with
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:  { "audit_configs": [ { "service": "allServices"
   "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
   "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE", }, { "log_type":
@@ -126,7 +126,8 @@ class Binding(_messages.Message):
     condition: The condition that is associated with this binding. NOTE: an
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
-      independently. This field is GOOGLE_INTERNAL.
+      independently. This field is only visible as GOOGLE_INTERNAL or
+      CONDITION_TRUSTED_TESTER.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
@@ -181,25 +182,22 @@ class ClouduseraccountsGlobalAccountsOperationsListRequest(_messages.Message):
   """A ClouduseraccountsGlobalAccountsOperationsListRequest object.
 
   Fields:
-    filter: Sets a filter {expression} for filtering listed resources. Your
-      {expression} must be in the format: field_name comparison_string
-      literal_string.  The field_name is the name of the field you want to
-      compare. Only atomic field types are supported (string, number,
-      boolean). The comparison_string must be either eq (equals) or ne (not
-      equals). The literal_string is the string value to filter to. The
-      literal value must be valid for the type of field you are filtering by
-      (string, number, boolean). For string fields, the literal value is
-      interpreted as a regular expression using RE2 syntax. The literal value
-      must match the entire field.  For example, to filter for instances that
-      do not have a name of example-instance, you would use name ne example-
-      instance.  You can filter on nested fields. For example, you could
-      filter on instances that have set the scheduling.automaticRestart field
-      to true. Use filtering on nested fields to take advantage of labels to
-      organize and search for results based on label values.  To filter on
-      multiple expressions, provide each separate expression within
-      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
-      us-central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -293,25 +291,22 @@ class ClouduseraccountsGroupsListRequest(_messages.Message):
   """A ClouduseraccountsGroupsListRequest object.
 
   Fields:
-    filter: Sets a filter {expression} for filtering listed resources. Your
-      {expression} must be in the format: field_name comparison_string
-      literal_string.  The field_name is the name of the field you want to
-      compare. Only atomic field types are supported (string, number,
-      boolean). The comparison_string must be either eq (equals) or ne (not
-      equals). The literal_string is the string value to filter to. The
-      literal value must be valid for the type of field you are filtering by
-      (string, number, boolean). For string fields, the literal value is
-      interpreted as a regular expression using RE2 syntax. The literal value
-      must match the entire field.  For example, to filter for instances that
-      do not have a name of example-instance, you would use name ne example-
-      instance.  You can filter on nested fields. For example, you could
-      filter on instances that have set the scheduling.automaticRestart field
-      to true. Use filtering on nested fields to take advantage of labels to
-      organize and search for results based on label values.  To filter on
-      multiple expressions, provide each separate expression within
-      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
-      us-central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -406,25 +401,22 @@ class ClouduseraccountsLinuxGetLinuxAccountViewsRequest(_messages.Message):
   """A ClouduseraccountsLinuxGetLinuxAccountViewsRequest object.
 
   Fields:
-    filter: Sets a filter {expression} for filtering listed resources. Your
-      {expression} must be in the format: field_name comparison_string
-      literal_string.  The field_name is the name of the field you want to
-      compare. Only atomic field types are supported (string, number,
-      boolean). The comparison_string must be either eq (equals) or ne (not
-      equals). The literal_string is the string value to filter to. The
-      literal value must be valid for the type of field you are filtering by
-      (string, number, boolean). For string fields, the literal value is
-      interpreted as a regular expression using RE2 syntax. The literal value
-      must match the entire field.  For example, to filter for instances that
-      do not have a name of example-instance, you would use name ne example-
-      instance.  You can filter on nested fields. For example, you could
-      filter on instances that have set the scheduling.automaticRestart field
-      to true. Use filtering on nested fields to take advantage of labels to
-      organize and search for results based on label values.  To filter on
-      multiple expressions, provide each separate expression within
-      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
-      us-central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
     instance: The fully-qualified URL of the virtual machine requesting the
       views.
     maxResults: The maximum number of results per page that should be
@@ -522,25 +514,22 @@ class ClouduseraccountsUsersListRequest(_messages.Message):
   """A ClouduseraccountsUsersListRequest object.
 
   Fields:
-    filter: Sets a filter {expression} for filtering listed resources. Your
-      {expression} must be in the format: field_name comparison_string
-      literal_string.  The field_name is the name of the field you want to
-      compare. Only atomic field types are supported (string, number,
-      boolean). The comparison_string must be either eq (equals) or ne (not
-      equals). The literal_string is the string value to filter to. The
-      literal value must be valid for the type of field you are filtering by
-      (string, number, boolean). For string fields, the literal value is
-      interpreted as a regular expression using RE2 syntax. The literal value
-      must match the entire field.  For example, to filter for instances that
-      do not have a name of example-instance, you would use name ne example-
-      instance.  You can filter on nested fields. For example, you could
-      filter on instances that have set the scheduling.automaticRestart field
-      to true. Use filtering on nested fields to take advantage of labels to
-      organize and search for results based on label values.  To filter on
-      multiple expressions, provide each separate expression within
-      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
-      us-central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -639,6 +628,7 @@ class Condition(_messages.Message):
       APPROVER: <no description>
       ATTRIBUTION: <no description>
       AUTHORITY: <no description>
+      CREDENTIALS_TYPE: <no description>
       JUSTIFICATION_TYPE: <no description>
       NO_ATTR: <no description>
       SECURITY_REALM: <no description>
@@ -646,9 +636,10 @@ class Condition(_messages.Message):
     APPROVER = 0
     ATTRIBUTION = 1
     AUTHORITY = 2
-    JUSTIFICATION_TYPE = 3
-    NO_ATTR = 4
-    SECURITY_REALM = 5
+    CREDENTIALS_TYPE = 3
+    JUSTIFICATION_TYPE = 4
+    NO_ATTR = 5
+    SECURITY_REALM = 6
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -957,7 +948,11 @@ class LogConfigDataAccessOptions(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """An Operation resource, used to manage asynchronous API requests.
+  """An Operation resource, used to manage asynchronous API requests. (==
+  resource_for v1.globalOperations ==) (== resource_for beta.globalOperations
+  ==) (== resource_for v1.regionOperations ==) (== resource_for
+  beta.regionOperations ==) (== resource_for v1.zoneOperations ==) (==
+  resource_for beta.zoneOperations ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the operation, which
@@ -997,7 +992,9 @@ class Operation(_messages.Message):
       operation will be complete. This number should monotonically increase as
       the operation progresses.
     region: [Output Only] The URL of the region where the operation resides.
-      Only available when performing regional operations.
+      Only available when performing regional operations. You must specify
+      this field as part of the HTTP request URL. It is not settable as a
+      field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     startTime: [Output Only] The time that this operation was started by the
       server. This value is in RFC3339 text format.
@@ -1015,7 +1012,9 @@ class Operation(_messages.Message):
     warnings: [Output Only] If warning messages are generated during
       processing of the operation, this field will be populated.
     zone: [Output Only] The URL of the zone where the operation resides. Only
-      available when performing per-zone operations.
+      available when performing per-zone operations. You must specify this
+      field as part of the HTTP request URL. It is not settable as a field in
+      the request body.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -1316,7 +1315,7 @@ class Policy(_messages.Message):
   "domain:google.com", "serviceAccount:my-other-
   app@appspot.gserviceaccount.com", ] }, { "role": "roles/viewer", "members":
   ["user:sean@example.com"] } ] }  For a description of IAM and its features,
-  see the [IAM developer's guide](https://cloud.google.com/iam).
+  see the [IAM developer's guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -1339,7 +1338,7 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
       will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)

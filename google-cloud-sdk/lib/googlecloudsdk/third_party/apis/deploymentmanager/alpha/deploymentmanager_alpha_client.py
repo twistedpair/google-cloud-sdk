@@ -24,7 +24,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new deploymentmanager handle."""
     url = url or self.BASE_URL
     super(DeploymentmanagerAlpha, self).__init__(
@@ -33,7 +33,8 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.compositeTypes = self.CompositeTypesService(self)
     self.deployments = self.DeploymentsService(self)
     self.manifests = self.ManifestsService(self)
@@ -53,7 +54,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes a composite type.
+      r"""Deletes a composite type.
 
       Args:
         request: (DeploymentmanagerCompositeTypesDeleteRequest) input message
@@ -79,7 +80,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets information about a specific composite type.
+      r"""Gets information about a specific composite type.
 
       Args:
         request: (DeploymentmanagerCompositeTypesGetRequest) input message
@@ -105,7 +106,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      """Creates a composite type.
+      r"""Creates a composite type.
 
       Args:
         request: (DeploymentmanagerCompositeTypesInsertRequest) input message
@@ -131,7 +132,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all composite types for Deployment Manager.
+      r"""Lists all composite types for Deployment Manager.
 
       Args:
         request: (DeploymentmanagerCompositeTypesListRequest) input message
@@ -157,7 +158,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a composite type. This method supports patch semantics.
+      r"""Patches a composite type.
 
       Args:
         request: (DeploymentmanagerCompositeTypesPatchRequest) input message
@@ -183,7 +184,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates a composite type.
+      r"""Updates a composite type.
 
       Args:
         request: (DeploymentmanagerCompositeTypesUpdateRequest) input message
@@ -219,7 +220,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
           }
 
     def CancelPreview(self, request, global_params=None):
-      """Cancels and removes the preview currently associated with the deployment.
+      r"""Cancels and removes the preview currently associated with the deployment.
 
       Args:
         request: (DeploymentmanagerDeploymentsCancelPreviewRequest) input message
@@ -245,7 +246,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a deployment and all of the resources in the deployment.
+      r"""Deletes a deployment and all of the resources in the deployment.
 
       Args:
         request: (DeploymentmanagerDeploymentsDeleteRequest) input message
@@ -271,7 +272,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets information about a specific deployment.
+      r"""Gets information about a specific deployment.
 
       Args:
         request: (DeploymentmanagerDeploymentsGetRequest) input message
@@ -297,7 +298,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (DeploymentmanagerDeploymentsGetIamPolicyRequest) input message
@@ -314,7 +315,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         method_id=u'deploymentmanager.deployments.getIamPolicy',
         ordered_params=[u'project', u'resource'],
         path_params=[u'project', u'resource'],
-        query_params=[],
+        query_params=[u'optionsRequestedPolicyVersion'],
         relative_path=u'projects/{project}/global/deployments/{resource}/getIamPolicy',
         request_field='',
         request_type_name=u'DeploymentmanagerDeploymentsGetIamPolicyRequest',
@@ -323,7 +324,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      """Creates a deployment and all of the resources described by the deployment manifest.
+      r"""Creates a deployment and all of the resources described by the deployment manifest.
 
       Args:
         request: (DeploymentmanagerDeploymentsInsertRequest) input message
@@ -340,7 +341,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         method_id=u'deploymentmanager.deployments.insert',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[u'preview'],
+        query_params=[u'createPolicy', u'preview'],
         relative_path=u'projects/{project}/global/deployments',
         request_field=u'deployment',
         request_type_name=u'DeploymentmanagerDeploymentsInsertRequest',
@@ -349,7 +350,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all deployments for a given project.
+      r"""Lists all deployments for a given project.
 
       Args:
         request: (DeploymentmanagerDeploymentsListRequest) input message
@@ -375,7 +376,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a deployment and all of the resources described by the deployment manifest. This method supports patch semantics.
+      r"""Patches a deployment and all of the resources described by the deployment manifest.
 
       Args:
         request: (DeploymentmanagerDeploymentsPatchRequest) input message
@@ -401,7 +402,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (DeploymentmanagerDeploymentsSetIamPolicyRequest) input message
@@ -420,14 +421,14 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         path_params=[u'project', u'resource'],
         query_params=[],
         relative_path=u'projects/{project}/global/deployments/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'globalSetPolicyRequest',
         request_type_name=u'DeploymentmanagerDeploymentsSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
     )
 
     def Stop(self, request, global_params=None):
-      """Stops an ongoing operation. This does not roll back any work that has already been completed, but prevents any new work from being started.
+      r"""Stops an ongoing operation. This does not roll back any work that has already been completed, but prevents any new work from being started.
 
       Args:
         request: (DeploymentmanagerDeploymentsStopRequest) input message
@@ -453,7 +454,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (DeploymentmanagerDeploymentsTestIamPermissionsRequest) input message
@@ -479,7 +480,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates a deployment and all of the resources described by the deployment manifest.
+      r"""Updates a deployment and all of the resources described by the deployment manifest.
 
       Args:
         request: (DeploymentmanagerDeploymentsUpdateRequest) input message
@@ -515,7 +516,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets information about a specific manifest.
+      r"""Gets information about a specific manifest.
 
       Args:
         request: (DeploymentmanagerManifestsGetRequest) input message
@@ -541,7 +542,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all manifests for a given deployment.
+      r"""Lists all manifests for a given deployment.
 
       Args:
         request: (DeploymentmanagerManifestsListRequest) input message
@@ -577,7 +578,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets information about a specific operation.
+      r"""Gets information about a specific operation.
 
       Args:
         request: (DeploymentmanagerOperationsGetRequest) input message
@@ -603,7 +604,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all operations for a project.
+      r"""Lists all operations for a project.
 
       Args:
         request: (DeploymentmanagerOperationsListRequest) input message
@@ -639,7 +640,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets information about a single resource.
+      r"""Gets information about a single resource.
 
       Args:
         request: (DeploymentmanagerResourcesGetRequest) input message
@@ -665,7 +666,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all resources in a given deployment.
+      r"""Lists all resources in a given deployment.
 
       Args:
         request: (DeploymentmanagerResourcesListRequest) input message
@@ -701,7 +702,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes a type provider.
+      r"""Deletes a type provider.
 
       Args:
         request: (DeploymentmanagerTypeProvidersDeleteRequest) input message
@@ -727,7 +728,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets information about a specific type provider.
+      r"""Gets information about a specific type provider.
 
       Args:
         request: (DeploymentmanagerTypeProvidersGetRequest) input message
@@ -753,7 +754,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def GetType(self, request, global_params=None):
-      """Gets a type info for a type provided by a TypeProvider.
+      r"""Gets a type info for a type provided by a TypeProvider.
 
       Args:
         request: (DeploymentmanagerTypeProvidersGetTypeRequest) input message
@@ -779,7 +780,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      """Creates a type provider.
+      r"""Creates a type provider.
 
       Args:
         request: (DeploymentmanagerTypeProvidersInsertRequest) input message
@@ -805,7 +806,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all resource type providers for Deployment Manager.
+      r"""Lists all resource type providers for Deployment Manager.
 
       Args:
         request: (DeploymentmanagerTypeProvidersListRequest) input message
@@ -831,7 +832,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def ListTypes(self, request, global_params=None):
-      """Lists all the type info for a TypeProvider.
+      r"""Lists all the type info for a TypeProvider.
 
       Args:
         request: (DeploymentmanagerTypeProvidersListTypesRequest) input message
@@ -857,7 +858,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a type provider. This method supports patch semantics.
+      r"""Patches a type provider.
 
       Args:
         request: (DeploymentmanagerTypeProvidersPatchRequest) input message
@@ -883,7 +884,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates a type provider.
+      r"""Updates a type provider.
 
       Args:
         request: (DeploymentmanagerTypeProvidersUpdateRequest) input message
@@ -918,34 +919,8 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Delete(self, request, global_params=None):
-      """Deletes a type and all of the resources in the type.
-
-      Args:
-        request: (DeploymentmanagerTypesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'deploymentmanager.types.delete',
-        ordered_params=[u'project', u'type'],
-        path_params=[u'project', u'type'],
-        query_params=[],
-        relative_path=u'projects/{project}/global/types/{type}',
-        request_field='',
-        request_type_name=u'DeploymentmanagerTypesDeleteRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
-      """Gets information about a specific type.
+      r"""Gets information about a specific type.
 
       Args:
         request: (DeploymentmanagerTypesGetRequest) input message
@@ -970,34 +945,8 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Insert(self, request, global_params=None):
-      """Creates a type.
-
-      Args:
-        request: (DeploymentmanagerTypesInsertRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Insert')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'deploymentmanager.types.insert',
-        ordered_params=[u'project'],
-        path_params=[u'project'],
-        query_params=[],
-        relative_path=u'projects/{project}/global/types',
-        request_field=u'type',
-        request_type_name=u'DeploymentmanagerTypesInsertRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
-      """Lists all resource types for Deployment Manager.
+      r"""Lists all resource types for Deployment Manager.
 
       Args:
         request: (DeploymentmanagerTypesListRequest) input message
@@ -1019,57 +968,5 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'DeploymentmanagerTypesListRequest',
         response_type_name=u'TypesListResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      """Updates a type. This method supports patch semantics.
-
-      Args:
-        request: (DeploymentmanagerTypesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PATCH',
-        method_id=u'deploymentmanager.types.patch',
-        ordered_params=[u'project', u'type'],
-        path_params=[u'project', u'type'],
-        query_params=[],
-        relative_path=u'projects/{project}/global/types/{type}',
-        request_field=u'typeResource',
-        request_type_name=u'DeploymentmanagerTypesPatchRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def Update(self, request, global_params=None):
-      """Updates a type.
-
-      Args:
-        request: (DeploymentmanagerTypesUpdateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Update')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'deploymentmanager.types.update',
-        ordered_params=[u'project', u'type'],
-        path_params=[u'project', u'type'],
-        query_params=[],
-        relative_path=u'projects/{project}/global/types/{type}',
-        request_field=u'typeResource',
-        request_type_name=u'DeploymentmanagerTypesUpdateRequest',
-        response_type_name=u'Operation',
         supports_download=False,
     )

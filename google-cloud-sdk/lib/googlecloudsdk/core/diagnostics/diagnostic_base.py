@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 
 """Base classes for diagnostics."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -32,7 +37,7 @@ class Diagnostic(object):
   _MAX_RETRIES = 5
 
   def __init__(self, intro, title, checklist):
-    """Initializes Diagnostic with neccessary attributes.
+    """Initializes Diagnostic with necessary attributes.
 
     Args:
       intro: A message to introduce the objectives and tasks of the diagnostic.
@@ -71,16 +76,18 @@ class Diagnostic(object):
           fixer = None
 
       if not result.passed and fixer and num_retries == self._MAX_RETRIES:
-        log.warn('Unable to fix {0} failure after {1} attempts.'.format(
+        log.warning('Unable to fix {0} failure after {1} attempts.'.format(
             self.title, num_retries))
       if result.passed:
         num_checks_passed += 1
 
     num_checks = len(self.checklist)
-    passed = (num_checks_passed == num_checks)
-    summary = '{check} ({num_passed}/{num_checks} checks) {passed}.\n'.format(
-        check=self.title, num_passed=num_checks_passed, num_checks=num_checks,
-        passed='passed' if passed else 'failed')
+    passed = num_checks_passed == num_checks
+    summary = ('{check} {status} ({num_passed}/{num_checks} checks passed).\n'.
+               format(check=self.title,
+                      num_passed=num_checks_passed,
+                      num_checks=num_checks,
+                      status='passed' if passed else 'failed'))
     self._Print(summary, as_error=not passed)
     return passed
 
@@ -97,4 +104,3 @@ class Diagnostic(object):
 
   def _PrintResult(self, result):
     self._Print(result.message, not result.passed)
-

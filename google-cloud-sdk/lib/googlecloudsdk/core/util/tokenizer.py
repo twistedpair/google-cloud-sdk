@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +15,11 @@
 
 """A utility for tokenizing strings."""
 
-import cStringIO
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import io
 
 __all__ = ['Literal', 'Separator', 'Tokenize']
 
@@ -55,8 +60,8 @@ def Tokenize(string, separators):
       Separator.
   """
   tokens = []
-  curr = cStringIO.StringIO()
-  buf = cStringIO.StringIO(string)
+  curr = io.StringIO()
+  buf = io.StringIO(string)
 
   while True:
     c = buf.read(1)
@@ -73,7 +78,7 @@ def Tokenize(string, separators):
     elif c in separators:
       tokens.append(Literal(curr.getvalue()))
       tokens.append(Separator(c))
-      curr = cStringIO.StringIO()
+      curr = io.StringIO()
     else:
       curr.write(c)
 

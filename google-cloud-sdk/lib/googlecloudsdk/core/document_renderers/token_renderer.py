@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,7 +41,7 @@ Cloud SDK.
 
 Usage:
 
-  import StringIO
+  from six.moves import StringIO
 
   from googlecloudsdk.core.document_renderers import token_renderer
   from googlecloudsdk.core.document_renderers import render_document
@@ -48,13 +49,18 @@ Usage:
   markdown = <markdown document string>
   tokens = render_document.MarkdownRenderer(
       token_renderer.TokenRenderer(width=W, height=H),
-      StringIO.StringIO(markdown)).Run()
+      StringIO(markdown)).Run()
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 import re
 
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.document_renderers import renderer
+
 from prompt_toolkit.token import Token
 
 
@@ -64,8 +70,6 @@ class TokenRenderer(renderer.Renderer):
   Attributes:
     _attr: console_attr.ConsoleAttr object.
     _bullet: List of bullet characters indexed by list level modulo #bullets.
-    _blank: True if the output already contains a blank line. Used to avoid
-      sequences of 2 or more blank lines in the output.
     _compact: Compact representation if True. Saves rendering real estate.
     _csi: The control sequence indicator character. Token does not
       have control sequences. This renderer uses them internally to manage
@@ -78,7 +82,6 @@ class TokenRenderer(renderer.Renderer):
     _ignore_width: True if the next output word should ignore _width.
     _indent: List of left indentations in characters indexed by _level.
     _level: The section or list level counting from 0.
-    _table: True if currently rendering a table.
     _tokens: The list of output tokens
     _truncated: The number of output lines exceeded the output height.
     _rows: current rows in table
@@ -106,12 +109,11 @@ class TokenRenderer(renderer.Renderer):
       self.indent = 0 if compact else TokenRenderer.INDENT
       self.hanging_indent = self.indent
 
-  def __init__(self, height=0, encoding='utf8', compact=True, *args, **kwargs):
-    super(TokenRenderer, self).__init__(*args, **kwargs)
+  def __init__(self, height=0, encoding='utf8', compact=True, **kwargs):
+    super(TokenRenderer, self).__init__(**kwargs)
     self._attr = console_attr.GetConsoleAttr(encoding=encoding)
     self._csi = self.CSI
     self._attr._csi = self._csi  # pylint: disable=protected-access
-    self._blank = True
     self._bullet = self._attr.GetBullets()
     self._compact = compact
     self._fill = 0
@@ -122,7 +124,6 @@ class TokenRenderer(renderer.Renderer):
     self._indent = [self.Indent(compact)]
     self._level = 0
     self._lines = []
-    self._table = False
     self._tokens = []
     self._truncated = False
     self._rows = []
@@ -269,10 +270,10 @@ class TokenRenderer(renderer.Renderer):
     self._ignore_width = False
     if self._fill:
       self._NewLine()
-      self._blank = False
+      self.Content()
       self._fill = 0
 
-  def _SetIndent(self, level, indent=None, hanging_indent=None):
+  def _SetIndent(self, level, indent=0, hanging_indent=None):
     """Sets the markdown list level and indentations.
 
     Args:
@@ -323,7 +324,7 @@ class TokenRenderer(renderer.Renderer):
     self._fill = self._indent[self._level].indent + self.INDENT
     self._AddToken(' ' * self._fill + line, Token.Markdown.Normal)
     self._NewLine()
-    self._blank = False
+    self.Content()
     self._fill = 0
 
   def Fill(self, line):
@@ -335,7 +336,7 @@ class TokenRenderer(renderer.Renderer):
     Args:
       line: The text line.
     """
-    self._blank = True
+    self.Blank()
     for word in line.split():
       if not self._fill:
         if self._level or not self._compact:
@@ -418,7 +419,7 @@ class TokenRenderer(renderer.Renderer):
       self._fill += self._attr.DisplayWidth(heading)
     else:
       self._NewLine()
-    self._blank = True
+    self.Blank()
     self._level = 0
     self._rows = []
 
@@ -427,8 +428,8 @@ class TokenRenderer(renderer.Renderer):
     if self._ignore_paragraph:
       return
     self._Flush()
-    if not self._blank:
-      self._blank = True
+    if not self.HaveBlank():
+      self.Blank()
       self._NewLine()
 
   def List(self, level, definition=None, end=False):
@@ -615,38 +616,12 @@ class TokenRenderer(renderer.Renderer):
     self._NewLine()
     self._NewLine()
 
-  def Table(self, line):
-    """Renders a table line.
-
-    Nested tables are not supported. The first call on a new table is:
-      Table(attributes)
-    the intermediate calls add the heading and data lines and the last call is:
-      Table(None)
+  def TableLine(self, line, indent=0):
+    """Adds an indented table line to the output.
 
     Args:
-      line: A CSV table data line.
+      line: The line to add. A newline will be added.
+      indent: The number of characters to indent the table.
     """
-    if line is None:
-      # TODO(b/31628974): Use resource_printer.TablePrinter().
-      if self._rows:
-        cols = len(self._rows[0])
-        width = [0 for _ in range(cols)]
-        for row in self._rows:
-          for i in range(min(len(row), cols) - 1):
-            w = len(row[i])
-            if width[i] <= w:
-              width[i] = w + 1
-        for row in self._rows:
-          self._AddToken(' ' * (self._indent[self._level].indent + 2))
-          for i in range(min(len(row), cols) - 1):
-            self._AddToken(row[i].ljust(width[i]))
-          self._AddToken(row[-1])
-          self._NewLine()
-        self._rows = []
-      self._table = False
-      self._NewLine()
-    elif not self._table:
-      self._table = True
-      self.Line()
-    else:
-      self._rows.append(line.split(','))
+    self._AddToken(indent * ' ' + line)
+    self._NewLine()

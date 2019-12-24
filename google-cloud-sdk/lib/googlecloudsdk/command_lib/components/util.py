@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,12 +15,13 @@
 
 """Utilities for components commands."""
 
-
-import os
-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core.updater import update_manager
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
 
@@ -45,9 +47,9 @@ def GetUpdateManager(group_args):
 
   platform = platforms.Platform.Current(os_override, arch_override)
 
-  root = (os.path.expanduser(group_args.sdk_root_override)
+  root = (files.ExpandHomeDir(group_args.sdk_root_override)
           if group_args.sdk_root_override else None)
-  url = (os.path.expanduser(group_args.snapshot_url_override)
+  url = (files.ExpandHomeDir(group_args.snapshot_url_override)
          if group_args.snapshot_url_override else None)
 
   return update_manager.UpdateManager(

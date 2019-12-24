@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +14,9 @@
 # limitations under the License.
 """Flags and helpers for the compute routers commands."""
 
-import argparse
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
@@ -34,6 +37,16 @@ _MODE_CHOICES = {
 
 _GROUP_CHOICES = {
     'ALL_SUBNETS': 'Automatically advertise all available subnets.',
+}
+
+_BFD_SESSION_INITIALIZATION_MODE_CHOICES = {
+    'ACTIVE':
+        'The Cloud Router will initiate the BFD session for this BGP peer.',
+    'PASSIVE':
+        'The Cloud Router will wait for the peer router to initiate the BFD '
+        'session for this BGP peer.',
+    'DISABLED':
+        'BFD is disabled for this BGP peer.',
 }
 
 
@@ -68,12 +81,9 @@ def RouterArgumentForVpnTunnel(required=True):
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
-def RouterArgumentForOtherResources(required=True, supress_region=True):
-  if supress_region:
-    region_explanation = argparse.SUPPRESS
-  else:
-    region_explanation = ('Should be the same as --region, if not specified, '
-                          'it will be inherited from --region.')
+def RouterArgumentForOtherResources(required=True, suppress_region=True):
+  region_explanation = ('Should be the same as --region, if not specified, '
+                        'it will be inherited from --region.')
   return compute_flags.ResourceArgument(
       resource_name='router',
       name='--router',
@@ -82,7 +92,20 @@ def RouterArgumentForOtherResources(required=True, supress_region=True):
       required=required,
       regional_collection='compute.routers',
       short_help='The Google Cloud Router to use for dynamic routing.',
-      region_explanation=region_explanation)
+      region_explanation=region_explanation,
+      region_hidden=suppress_region)
+
+
+def RouterArgumentForNat():
+  return compute_flags.ResourceArgument(
+      resource_name='router',
+      name='--router',
+      completer=RoutersCompleter,
+      plural=False,
+      required=True,
+      regional_collection='compute.routers',
+      short_help='The Router to use for NAT.',
+      region_hidden=True)
 
 
 def AddCreateRouterArgs(parser):
@@ -93,10 +116,34 @@ def AddCreateRouterArgs(parser):
 
   parser.add_argument(
       '--asn',
-      required=True,
+      required=False,
       type=int,
-      help='The BGP autonomous system number (ASN) for this router. '
-      'For more information see: https://tools.ietf.org/html/rfc6996.')
+      help='The optional BGP autonomous system number (ASN) for this router. '
+      'Must be a 16-bit or 32-bit private ASN as defined in '
+      'https://tools.ietf.org/html/rfc6996, for example `--asn=64512`.')
+
+
+def AddKeepaliveIntervalArg(parser):
+  """Adds keepalive interval argument for routers."""
+  parser.add_argument(
+      '--keepalive-interval',
+      type=arg_parsers.Duration(
+          default_unit='s', lower_bound='1s', upper_bound='120s'),
+      hidden=True,
+      help='The interval between BGP keepalive messages that are sent to the '
+      'peer. If set, this value must be between 1 and 120 seconds. The default '
+      'is 20 seconds. See $ gcloud topic datetimes for information on duration '
+      'formats.\n\n'
+      'BGP systems exchange keepalive messages to determine whether a link or '
+      'host has failed or is no longer available. Hold time is the length of '
+      'time in seconds that the BGP session is considered operational without '
+      'any activity. After the hold time expires, the session is dropped.\n\n'
+      'Hold time is three times the interval at which keepalive messages are '
+      'sent, and the hold time is the maximum number of seconds allowed to '
+      'elapse between successive keepalive messages that BGP receives from a '
+      'peer. BGP will use the smaller of either the local hold time value or '
+      'the peer\'s  hold time value as the hold time for the BGP connection '
+      'between the two peers.')
 
 
 def AddInterfaceArgs(parser, for_update=False):
@@ -119,11 +166,16 @@ def AddInterfaceArgs(parser, for_update=False):
   parser.add_argument(
       '--mask-length',
       type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=31),
-      # TODO(b/36051080): better help
-      help='The mask for network used for the server IP address.')
+      help='The subnet mask for the link-local IP range of the interface. '
+      'The interface IP address and BGP peer IP address must be selected from '
+      'the subnet defined by this link-local range.')
 
 
-def AddBgpPeerArgs(parser, for_add_bgp_peer=False):
+def AddBgpPeerArgs(parser,
+                   for_add_bgp_peer=False,
+                   support_bfd=False,
+                   support_enable=False,
+                   is_update=False):
   """Adds common arguments for managing BGP peers."""
 
   operation = 'updated'
@@ -145,7 +197,8 @@ def AddBgpPeerArgs(parser, for_add_bgp_peer=False):
       required=for_add_bgp_peer,
       type=int,
       help='The BGP autonomous system number (ASN) for this BGP peer. '
-      'For more information see: https://tools.ietf.org/html/rfc6996.')
+      'Must be a 16-bit or 32-bit private ASN as defined in '
+      'https://tools.ietf.org/html/rfc6996, for example `--asn=64512`.')
 
   # For add_bgp_peer, we only require the interface and infer the IP instead.
   if not for_add_bgp_peer:
@@ -171,8 +224,69 @@ def AddBgpPeerArgs(parser, for_add_bgp_peer=False):
       'the routes with lowest priority value win. 0 <= priority <= '
       '65535. If not specified, will use Google-managed priorities.')
 
+  if support_bfd:
+    bfd_group_help = (
+        'Arguments to {0} BFD (Bidirectional Forwarding Detection) '
+        'settings:'.format('update' if is_update else 'configure'))
+    bfd_group = parser.add_group(help=bfd_group_help,
+                                 hidden=True)
+    bfd_group.add_argument(
+        '--bfd-session-initialization-mode',
+        choices=_BFD_SESSION_INITIALIZATION_MODE_CHOICES,
+        type=lambda mode: mode.upper(),
+        metavar='BFD_SESSION_INITIALIZATION_MODE',
+        hidden=True,
+        help='The BFD session initialization mode for this BGP peer. Must be one '
+        'of:\n\n'
+        'ACTIVE - The Cloud Router will initiate the BFD session for this BGP '
+        'peer.\n\n'
+        'PASSIVE - The Cloud Router will wait for the peer router to initiate '
+        'the BFD session for this BGP peer.\n\n'
+        'DISABLED - BFD is disabled for this BGP peer.')
 
-def AddCustomAdvertisementArgs(parser, resource_str):
+    bfd_group.add_argument(
+        '--bfd-min-transmit-interval',
+        type=arg_parsers.Duration(
+            default_unit='ms',
+            lower_bound='100ms',
+            upper_bound='30000ms',
+            parsed_unit='ms'),
+        hidden=True,
+        help='The minimum transmit interval between BFD control packets. The '
+        'default is 300 milliseconds. See $ gcloud topic datetimes for '
+        'information on duration formats.')
+    bfd_group.add_argument(
+        '--bfd-min-receive-interval',
+        type=arg_parsers.Duration(
+            default_unit='ms',
+            lower_bound='100ms',
+            upper_bound='30000ms',
+            parsed_unit='ms'),
+        hidden=True,
+        help='The minimum receive interval between BFD control packets. The '
+        'default is 300 milliseconds. See $ gcloud topic datetimes for '
+        'information on duration formats.')
+    bfd_group.add_argument(
+        '--bfd-multiplier',
+        type=int,
+        hidden=True,
+        help='The number of consecutive BFD control packets that must be '
+        'missed before BFD declares that a peer is unavailable.')
+    enabled_display_help = (
+        'If enabled, the peer connection can be established with routing '
+        'information. If disabled, any active session with the peer is '
+        'terminated and all associated routing information is removed.')
+  if support_enable:
+    if not is_update:
+      enabled_display_help += ' Enabled by default.'
+    parser.add_argument(
+        '--enabled',
+        hidden=True,
+        action=arg_parsers.StoreTrueFalseAction,
+        help=enabled_display_help)
+
+
+def AddUpdateCustomAdvertisementArgs(parser, resource_str):
   """Adds common arguments for setting/updating custom advertisements."""
 
   AddReplaceCustomAdvertisementArgs(parser, resource_str)
@@ -190,7 +304,7 @@ def AddReplaceCustomAdvertisementArgs(parser, resource_str):
       help="""The new advertisement mode for this {0}.""".format(resource_str))
 
   parser.add_argument(
-      '--advertisement-groups',
+      '--set-advertisement-groups',
       type=arg_parsers.ArgList(
           choices=_GROUP_CHOICES, element_type=lambda group: group.upper()),
       metavar='GROUP',
@@ -199,16 +313,16 @@ def AddReplaceCustomAdvertisementArgs(parser, resource_str):
               custom advertisement mode.""".format(resource_str))
 
   parser.add_argument(
-      '--advertisement-ranges',
+      '--set-advertisement-ranges',
       type=arg_parsers.ArgDict(allow_key_only=True),
       metavar='CIDR_RANGE=DESC',
       help="""The list of individual IP ranges, in CIDR format, to dynamically
               advertise on this {0}. Each IP range can (optionally) be given a
               text description DESC. For example, to advertise a specific range,
-              use `--advertisement-ranges=192.168.10.0/24`.  To store a
+              use `--set-advertisement-ranges=192.168.10.0/24`.  To store a
               description with the range, use
-              `--advertisement-ranges=192.168.10.0/24=my-networks`. This list
-              can only be specified in custom advertisement mode."""
+              `--set-advertisement-ranges=192.168.10.0/24=my-networks`. This
+              list can only be specified in custom advertisement mode."""
       .format(resource_str))
 
 
@@ -248,8 +362,8 @@ def AddIncrementalCustomAdvertisementArgs(parser, resource_str):
               `--advertisement-ranges=192.168.10.0/24`.  To store a description
               with the range, use
               `--advertisement-ranges=192.168.10.0/24=my-networks`. This list
-              can only be specified in custom advertisement mode."""
-      .format(resource_str))
+              can only be specified in custom advertisement mode.""".format(
+                  resource_str))
 
   incremental_args.add_argument(
       '--remove-advertisement-ranges',
@@ -258,5 +372,15 @@ def AddIncrementalCustomAdvertisementArgs(parser, resource_str):
       help="""A list of individual IP ranges, in CIDR format, to remove from
               dynamic advertisement on this {0}. Each IP range in the list must
               exist in the current set of custom advertisements. This field can
-              only be specified in custom advertisement mode."""
-      .format(resource_str))
+              only be specified in custom advertisement mode.""".format(
+                  resource_str))
+
+
+def AddGetNatMappingInfoArgs(parser, include_nat_name_filter):
+  """Adds common arguments for get-nat-mapping-info."""
+
+  if include_nat_name_filter:
+    parser.add_argument(
+        '--nat-name',
+        required=False,
+        help='The NAT name to filter out NAT mapping information')

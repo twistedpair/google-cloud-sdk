@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +14,11 @@
 # limitations under the License.
 """Constants for the dataproc tool."""
 
-# TODO(b/36055865): Move defaults to the server
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
+# TODO(b/36055865): Move defaults to the server
 # Path inside of GCS bucket, where Dataproc stores metadata.
 GCS_METADATA_PREFIX = 'google-cloud-dataproc-metainfo'
 
@@ -24,7 +28,6 @@ JOB_OUTPUT_PREFIX = 'driveroutput'
 # The scopes that will be added to user-specified scopes. Used for
 # documentation only. Keep in sync with server specified list.
 MINIMUM_SCOPE_URIS = [
-    'https://www.googleapis.com/auth/cloud.useraccounts.readonly',
     'https://www.googleapis.com/auth/devstorage.read_write',
     'https://www.googleapis.com/auth/logging.write',
 ]

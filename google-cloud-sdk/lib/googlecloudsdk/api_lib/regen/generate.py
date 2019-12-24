@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,18 +14,25 @@
 # limitations under the License.
 """Utility wrappers around apitools generator."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import logging
 import os
 
 from apitools.gen import gen_client
 from googlecloudsdk.api_lib.regen import api_def
 from googlecloudsdk.api_lib.regen import resource_generator
+from googlecloudsdk.core.util import files
 from mako import runtime
 from mako import template
+import six
 
 
 _INIT_FILE_CONTENT = """\
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -81,10 +89,9 @@ def GenerateApi(base_dir, root_dir, api_name, api_version, api_config):
     package_dir = os.path.join(package_dir, subdir)
     init_file = os.path.join(package_dir, '__init__.py')
     if not os.path.isfile(init_file):
-      logging.warn('%s does not have __init__.py file, generating ...',
-                   package_dir)
-      with open(init_file, 'w') as f:
-        f.write(_INIT_FILE_CONTENT)
+      logging.warning('%s does not have __init__.py file, generating ...',
+                      package_dir)
+      files.WriteFileContents(init_file, _INIT_FILE_CONTENT)
 
 
 def _CamelCase(snake_case):
@@ -107,10 +114,10 @@ def _MakeApiMap(root_package, api_config):
   """
   apis_map = {}
   apis_with_default = set()
-  for api_name, api_version_config in api_config.iteritems():
+  for api_name, api_version_config in six.iteritems(api_config):
     api_versions_map = apis_map.setdefault(api_name, {})
     has_default = False
-    for api_version, api_config in api_version_config.iteritems():
+    for api_version, api_config in six.iteritems(api_version_config):
       default = api_config.get('default', len(api_version_config) == 1)
       if has_default and default:
         raise NoDefaultApiError(
@@ -118,9 +125,14 @@ def _MakeApiMap(root_package, api_config):
             .format(api_name))
       has_default = has_default or default
       version = api_config.get('version', api_version)
-      client_classpath = '.'.join([
-          '_'.join([api_name, version, 'client']),
-          _CamelCase(api_name) + _CamelCase(version)])
+      # TODO(b/142448542) Roll back the hacky
+      if api_name == 'admin' and version == 'v1':
+        client_classpath = 'admin_v1_client.AdminDirectoryV1'
+      else:
+        client_classpath = '.'.join([
+            '_'.join([api_name, version, 'client']),
+            _CamelCase(api_name) + _CamelCase(version)])
+
       messages_modulepath = '_'.join([api_name, version, 'messages'])
       api_versions_map[api_version] = api_def.APIDef(
           '.'.join([root_package, api_name, api_version]),
@@ -145,8 +157,7 @@ def GenerateApiMap(base_dir, root_dir, api_config):
   """
 
   api_def_filename, _ = os.path.splitext(api_def.__file__)
-  with open(api_def_filename + '.py', 'rU') as api_def_file:
-    api_def_source = api_def_file.read()
+  api_def_source = files.ReadFileContents(api_def_filename + '.py')
 
   tpl = template.Template(filename=os.path.join(os.path.dirname(__file__),
                                                 'template.tpl'))
@@ -154,7 +165,7 @@ def GenerateApiMap(base_dir, root_dir, api_config):
   logging.debug('Generating api map at %s', api_map_file)
   api_map = _MakeApiMap(root_dir.replace('/', '.'), api_config)
   logging.debug('Creating following api map %s', api_map)
-  with open(api_map_file, 'wb') as apis_map_file:
+  with files.FileWriter(api_map_file) as apis_map_file:
     ctx = runtime.Context(apis_map_file,
                           api_def_source=api_def_source,
                           apis_map=api_map)
@@ -179,9 +190,9 @@ def GenerateResourceModule(base_dir, root_dir, api_name, api_version,
   discovery_doc = resource_generator.DiscoveryDoc.FromJson(
       os.path.join(base_dir, root_dir, discovery_doc_path))
   if discovery_doc.api_version != api_version:
-    logging.warn('Discovery api version %s does not match %s, '
-                 'this client will be accessible via new alias.',
-                 discovery_doc.api_version, api_version)
+    logging.warning('Discovery api version %s does not match %s, '
+                    'this client will be accessible via new alias.',
+                    discovery_doc.api_version, api_version)
   if discovery_doc.api_name != api_name:
     raise WrongDiscoveryDoc('api name {0}, expected {1}'
                             .format(discovery_doc.api_name, api_name))
@@ -193,17 +204,19 @@ def GenerateResourceModule(base_dir, root_dir, api_name, api_version,
     for collection in resource_collections:
       if collection.name in custom_resources:
         matched_resources.add(collection.name)
-        custom_path = custom_resources[collection.name]
+        custom_path = custom_resources[collection.name]['path']
         if isinstance(custom_path, dict):
           collection.flat_paths.update(custom_path)
-        elif isinstance(custom_path, basestring):
+        elif isinstance(custom_path, six.string_types):
           collection.flat_paths[
               resource_generator.DEFAULT_PATH_NAME] = custom_path
     # Remaining must be new custom resources.
     for collection_name in set(custom_resources.keys()) - matched_resources:
-      collection_path = custom_resources[collection_name]
+      collection_def = custom_resources[collection_name]
+      collection_path = collection_def['path']
+      enable_uri_parsing = collection_def.get('enable_uri_parsing', True)
       collection_info = discovery_doc.MakeResourceCollection(
-          collection_name, collection_path, api_version)
+          collection_name, collection_path, enable_uri_parsing, api_version)
       resource_collections.append(collection_info)
 
   api_dir = os.path.join(base_dir, root_dir, api_name, api_version)
@@ -215,7 +228,7 @@ def GenerateResourceModule(base_dir, root_dir, api_name, api_version,
     logging.debug('Generating resource module at %s', resource_file_name)
     tpl = template.Template(filename=os.path.join(os.path.dirname(__file__),
                                                   'resources.tpl'))
-    with open(resource_file_name, 'wb') as output_file:
+    with files.FileWriter(resource_file_name) as output_file:
       ctx = runtime.Context(output_file,
                             collections=sorted(resource_collections),
                             base_url=resource_collections[0].base_url,

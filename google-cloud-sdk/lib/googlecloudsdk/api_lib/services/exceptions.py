@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2018 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +14,15 @@
 # limitations under the License.
 """Wrapper for user-visible error exceptions to raise in the CLI."""
 
-from googlecloudsdk.core import exceptions
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
 
 
-class Error(exceptions.Error):
+class Error(core_exceptions.Error):
   """Exceptions for Services errors."""
 
 
@@ -28,9 +34,42 @@ class ListServicesPermissionDeniedException(Error):
   pass
 
 
+class GetServicePermissionDeniedException(Error):
+  pass
+
+
+class CreateQuotaOverridePermissionDeniedException(Error):
+  pass
+
+
+class UpdateQuotaOverridePermissionDeniedException(Error):
+  pass
+
+
+class DeleteQuotaOverridePermissionDeniedException(Error):
+  pass
+
+
+class CreateConnectionsPermissionDeniedException(Error):
+  pass
+
+
+class ListConnectionsPermissionDeniedException(Error):
+  pass
+
+
+class GenerateServiceIdentityPermissionDeniedException(Error):
+  pass
+
+
 class OperationErrorException(Error):
   pass
 
 
 class TimeoutError(Error):
   pass
+
+
+def ReraiseError(err, klass):
+  """Transform and re-raise error helper."""
+  core_exceptions.reraise(klass(api_lib_exceptions.HttpException(err)))

@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,28 +31,29 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId']
+      [u'projectsId'],
+      True
   )
   PROJECTS_BUCKETS = (
       'projects.buckets',
       'projects/_/buckets/{bucketId}',
       {},
-      ['bucketId']
+      [u'bucketId'],
+      True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}',
-      },
-      [u'name']
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      [u'projectsId', u'locationsId'],
+      True
   )
   PROJECTS_LOCATIONS_FUNCTIONS = (
       'projects.locations.functions',
@@ -61,17 +63,21 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/functions/'
               '{functionsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROVIDERS_EVENT_TYPES = (
       'providers.event_types',
       'providers/{triggerProvider}/eventTypes/{triggerEvent}',
       {},
-      ['triggerProvider', 'triggerEvent']
+      [u'triggerProvider', u'triggerEvent'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

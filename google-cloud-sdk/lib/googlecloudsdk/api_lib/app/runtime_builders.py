@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -83,11 +84,14 @@ Or (even easier) use a 'custom' runtime:
     runtime: custom
     $ gcloud beta app deploy
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import contextlib
 import os
 import re
-import urllib2
-
 import enum
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import config as cloudbuild_config
@@ -97,17 +101,22 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-import yaml
+from googlecloudsdk.core import yaml
+import six
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
 
 
 # "test-{ga,beta}" runtimes are canaries for unit testing
 _WHITELISTED_RUNTIMES_GA = (
-    {'aspnetcore', 'php', 'nodejs', 'ruby', 'java', 'python'} |
-    {re.compile('^gs://')} |
-    {'test-ga', re.compile('test-re-[ab]')})
+    {'aspnetcore', 'php', 'nodejs', 'ruby', 'java',
+     re.compile(r'(python|python-.+)$'),
+     re.compile(r'(go|go1\..+)$'),
+     re.compile('^gs://'),
+     'test-ga', re.compile('test-re-[ab]')})
 _WHITELISTED_RUNTIMES_BETA = (
     _WHITELISTED_RUNTIMES_GA |
-    {re.compile(r'(go|go1\..+)$')} |
     {'test-beta'})
 
 
@@ -116,7 +125,11 @@ class FileReadError(exceptions.Error):
 
 
 class ManifestError(exceptions.Error):
-  """Error indicating the a problem parsing or using the manifest."""
+  """Error indicating a problem parsing or using the manifest."""
+
+
+class ExperimentsError(exceptions.Error):
+  """Error indicating a problem parsing or using the experiment config."""
 
 
 class CloudBuildLoadError(exceptions.Error):
@@ -248,7 +261,7 @@ def _Read(uri):
   """
   try:
     if uri.startswith('file://'):
-      with contextlib.closing(urllib2.urlopen(uri)) as req:
+      with contextlib.closing(six.moves.urllib.request.urlopen(uri)) as req:
         yield req
     elif uri.startswith('gs://'):
       storage_client = storage_api.StorageClient()
@@ -257,10 +270,10 @@ def _Read(uri):
         yield f
     else:
       raise InvalidRuntimeBuilderURI(uri)
-  except (urllib2.HTTPError, urllib2.URLError,
+  except (six.moves.urllib.error.HTTPError, six.moves.urllib.error.URLError,
           calliope_exceptions.BadFileException) as e:
     log.debug('', exc_info=True)
-    raise FileReadError(str(e))
+    raise FileReadError(six.text_type(e))
 
 
 class BuilderReference(object):
@@ -323,7 +336,7 @@ class BuilderReference(object):
   def WarnIfDeprecated(self):
     """Warns that this runtime is deprecated (if it has been marked as such)."""
     if self.deprecation_message:
-      log.warn(self.deprecation_message)
+      log.warning(self.deprecation_message)
 
   def __eq__(self, other):
     return (self.runtime == other.runtime and
@@ -387,7 +400,7 @@ class Manifest(object):
     """
     log.debug('Loading runtimes manifest from [%s]', uri)
     with _Read(uri) as f:
-      data = yaml.load(f)
+      data = yaml.load(f, file_hint=uri)
     return cls(uri, data)
 
   def __init__(self, uri, data):
@@ -411,7 +424,7 @@ class Manifest(object):
     Returns:
       [str], The runtime names.
     """
-    return self._data.get('runtimes', {}).keys()
+    return list(self._data.get('runtimes', {}).keys())
 
   def GetBuilderReference(self, runtime):
     """Gets the associated reference for the given runtime.
@@ -466,6 +479,92 @@ class Manifest(object):
       log.debug('Resolved runtime [%s] has no build configuration',
                 current_runtime)
       return BuilderReference(current_runtime, None, deprecation_msg)
+
+
+class Experiments(object):
+  """Runtime experiment configs as read from a gs:// or a file:// source.
+
+  The experiment config file follows the following protoish schema:
+
+  # Used to determine if this client can parse this manifest. If the number is
+  # less than or equal to the version this client knows about, it is compatible.
+  int schema_version; # Required
+
+  # Map of experiments and their rollout percentage.
+  # The key is the name of the experiment, the value is an integer between 0
+  # and 100 representing the rollout percentage
+  # In case no experiments are defined, an empty 'experiments:' section needs to
+  # be present.
+  <String, Number> experiments
+  """
+  SCHEMA_VERSION = 1
+  CONFIG_FILE = 'experiments.yaml'
+  TRIGGER_BUILD_SERVER_SIDE = 'trigger_build_server_side'
+
+  @classmethod
+  def LoadFromURI(cls, dir_uri):
+    """Loads a runtime experiment config from a gs:// or file:// path.
+
+    Args:
+      dir_uri: str, A gs:// or file:// URI pointing to a folder that contains
+        the file called Experiments.CONFIG_FILE
+
+    Returns:
+      Experiments, the loaded runtime experiments config.
+    """
+    uri = _Join(dir_uri, cls.CONFIG_FILE)
+    log.debug('Loading runtimes experiment config from [%s]', uri)
+    try:
+      with _Read(uri) as f:
+        data = yaml.load(f, file_hint=uri)
+      return cls(uri, data)
+    except FileReadError as e:
+      raise ExperimentsError(
+          'Unable to read the runtimes experiment config: [{}], error: {}'
+          .format(uri, e))
+    except yaml.YAMLParseError as e:
+      raise ExperimentsError(
+          'Unable to read the runtimes experiment config: [{}], error: {}'
+          .format(uri, e))
+
+  def __init__(self, uri, data):
+    """Use LoadFromFile, not this constructor directly."""
+    self._uri = uri
+    self._data = data
+    required_version = self._data.get('schema_version', None)
+    if required_version is None:
+      raise ExperimentsError(
+          'Unable to parse the runtimes experiment config due to missing '
+          'schema_version field: [{}]'.format(uri))
+    if required_version > Experiments.SCHEMA_VERSION:
+      raise ExperimentsError(
+          'Unable to parse the runtimes experiments config. Your client '
+          'supports schema version [{supported}] but requires [{required}]. '
+          'Please update your SDK to a newer version.'.format(
+              supported=Manifest.SCHEMA_VERSION, required=required_version))
+
+  def Experiments(self):
+    """Get all experiments and their rollout percentage.
+
+    Returns:
+      dict[str,int] Experiments and their rollout state.
+    """
+    return self._data.get('experiments')
+
+  def GetExperimentPercentWithDefault(self, experiment, default=0):
+    """Get the rollout percentage of an experiment or return 'default'.
+
+    Args:
+      experiment: the name of the experiment
+      default: the value to return if the experiment was not found
+
+    Returns:
+      int the percent of the experiment
+    """
+    try:
+      return self._data.get('experiments')[experiment]
+    except KeyError:
+      return default
 
 
 class Resolver(object):
@@ -603,7 +702,7 @@ class Resolver(object):
     version_file_uri = _Join(self.build_file_root, version_file_name)
     try:
       with _Read(version_file_uri) as f:
-        version = f.read().strip()
+        version = f.read().decode().strip()
     except FileReadError:
       log.debug('', exc_info=True)
       return None

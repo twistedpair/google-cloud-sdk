@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Provides helper methods for dealing with JSON files for Spanner IAM."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.spanner import databases
 from googlecloudsdk.api_lib.spanner import instances
@@ -30,8 +35,9 @@ def AddInstanceIamPolicyBinding(instance_ref, member, role):
 def SetInstanceIamPolicy(instance_ref, policy):
   """Sets the IAM policy on an instance."""
   msgs = apis.GetMessagesModule('spanner', 'v1')
-  policy = iam_util.ParsePolicyFile(policy, msgs.Policy)
-  return instances.SetPolicy(instance_ref, policy)
+  policy, field_mask = iam_util.ParsePolicyFileWithUpdateMask(policy,
+                                                              msgs.Policy)
+  return instances.SetPolicy(instance_ref, policy, field_mask)
 
 
 def RemoveInstanceIamPolicyBinding(instance_ref, member, role):

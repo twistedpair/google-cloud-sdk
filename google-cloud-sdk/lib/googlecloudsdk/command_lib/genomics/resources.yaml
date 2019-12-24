@@ -1,0 +1,7 @@
+dataset:
+  name: dataset
+  collection: genomics.datasets
+  attributes:
+  - parameter_name: datasetId
+    attribute_name: dataset
+    help: The name of the dataset.

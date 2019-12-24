@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,13 +14,18 @@
 # limitations under the License.
 """Common sql utility functions for validating."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import exceptions
 
 
 def ValidateInstanceName(instance_name):
   if ':' in instance_name:
-    possible_project = instance_name[:instance_name.rindex(':')]
-    possible_instance = instance_name[instance_name.rindex(':') + 1:]
+    name_components = instance_name.split(':')
+    possible_project = name_components[0]
+    possible_instance = name_components[-1]
     raise exceptions.ToolException("""\
 Instance names cannot contain the ':' character. If you meant to indicate the
 project for [{instance}], use only '{instance}' for the argument, and either add

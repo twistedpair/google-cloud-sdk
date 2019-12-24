@@ -1,7 +1,13 @@
 operation:
   name: operation
-  collection: videointelligence.operations
+  collection: videointelligence.projects.locations.operations
   attributes:
-    - parameter_name: operationsId
-      attribute_name: operation_id
-      help: The ID of the operation
+  - parameter_name: projectsId
+    attribute_name: project
+    help: Project of the {resource}.
+  - parameter_name: locationsId
+    attribute_name: location
+    help: Location of the {resource}.
+  - parameter_name: operationsId
+    attribute_name: operation
+    help: The ID of the operation

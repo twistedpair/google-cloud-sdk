@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """A shared library to support implementation of Firebase Test Lab commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import json
 
 from apitools.base.py import exceptions as apitools_exceptions
@@ -24,10 +29,9 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
-
 OUTCOMES_FORMAT = """
           table[box](
-            outcome.color(red=Fail, green=Pass, yellow=Inconclusive),
+            outcome.color(red=Fail, green=Pass, blue=Flaky, yellow=Inconclusive),
             axis_value:label=TEST_AXIS_VALUE,
             test_details:label=TEST_DETAILS
           )
@@ -112,9 +116,36 @@ def GetAndroidCatalog(context=None):
     client = apis.GetClientInstance('testing', 'v1')
     messages = apis.GetMessagesModule('testing', 'v1')
 
-  env_type = (messages.TestingTestEnvironmentCatalogGetRequest.
-              EnvironmentTypeValueValuesEnum.ANDROID)
+  env_type = (
+      messages.TestingTestEnvironmentCatalogGetRequest.
+      EnvironmentTypeValueValuesEnum.ANDROID)
   return _GetCatalog(client, messages, env_type).androidDeviceCatalog
+
+
+def GetIosCatalog(context=None):
+  """Gets the iOS catalog from the TestEnvironmentDiscoveryService.
+
+  Args:
+    context: {str:object}, The current context, which is a set of key-value
+      pairs that can be used for common initialization among commands.
+
+  Returns:
+    The iOS catalog.
+
+  Raises:
+    calliope_exceptions.HttpException: If it could not connect to the service.
+  """
+  if context:
+    client = context['testing_client']
+    messages = context['testing_messages']
+  else:
+    client = apis.GetClientInstance('testing', 'v1')
+    messages = apis.GetMessagesModule('testing', 'v1')
+
+  env_type = (
+      messages.TestingTestEnvironmentCatalogGetRequest.
+      EnvironmentTypeValueValuesEnum.IOS)
+  return _GetCatalog(client, messages, env_type).iosDeviceCatalog
 
 
 def GetNetworkProfileCatalog(context=None):
@@ -137,8 +168,9 @@ def GetNetworkProfileCatalog(context=None):
     client = apis.GetClientInstance('testing', 'v1')
     messages = apis.GetMessagesModule('testing', 'v1')
 
-  env_type = (messages.TestingTestEnvironmentCatalogGetRequest.
-              EnvironmentTypeValueValuesEnum.NETWORK_CONFIGURATION)
+  env_type = (
+      messages.TestingTestEnvironmentCatalogGetRequest.
+      EnvironmentTypeValueValuesEnum.NETWORK_CONFIGURATION)
   return _GetCatalog(client, messages, env_type).networkConfigurationCatalog
 
 
@@ -156,9 +188,10 @@ def _GetCatalog(client, messages, environment_type):
   Raises:
     calliope_exceptions.HttpException: If it could not connect to the service.
   """
+  project_id = properties.VALUES.core.project.Get()
   request = messages.TestingTestEnvironmentCatalogGetRequest(
       environmentType=environment_type,
-      projectId=properties.VALUES.core.project.Get())
+      projectId=project_id)
   try:
     return client.testEnvironmentCatalog.Get(request)
   except apitools_exceptions.HttpError as error:
@@ -201,7 +234,7 @@ def ParseRoboDirectiveKey(key):
   else:
     # Format: '<type>:<resource_name>=<input_value>'
     action_type = parts[0]
-    supported_action_types = ['text', 'click']
+    supported_action_types = ['text', 'click', 'ignore']
     if action_type not in supported_action_types:
       raise exceptions.InvalidArgException(
           'robo_directives',
@@ -209,3 +242,13 @@ def ParseRoboDirectiveKey(key):
               action_type, ', '.join(supported_action_types)))
 
   return (action_type, resource_name)
+
+
+def GetDeprecatedTagWarning(models):
+  """Returns a warning string iff any device model is marked deprecated."""
+  for model in models:
+    for tag in model.tags:
+      if 'deprecated' in tag:
+        return ('Some devices are deprecated. Learn more at https://firebase.'
+                'google.com/docs/test-lab/available-testing-devices#deprecated')
+  return None

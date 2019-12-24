@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 
 """Iterable peek utilities."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 
 class Peeker(object):
@@ -45,8 +50,8 @@ class Peeker(object):
     """Peeks the first item from the iterable."""
     try:
       # Object is a generator or iterator.
-      return self._iterable.next()
-    except AttributeError:
+      return next(self._iterable)
+    except TypeError:
       pass
     except StopIteration:
       self._peek_seen = True
@@ -60,14 +65,18 @@ class Peeker(object):
     return self._iterable
 
   def next(self):
+    """For Python 2 compatibility."""
+    return self.__next__()
+
+  def __next__(self):
     """Returns the next item in the iterable."""
     if not self._peek_seen:
       self._peek_seen = True
       return self._peek
     try:
       # Object is a generator or iterator.
-      return self._iterable.next()
-    except AttributeError:
+      return next(self._iterable)
+    except TypeError:
       pass
     try:
       # Object is a list.
@@ -171,8 +180,8 @@ class Tapper(object):
       return self._injected_value
     try:
       # Object is a generator or iterator.
-      return self._iterable.next()
-    except AttributeError:
+      return next(self._iterable)
+    except TypeError:
       pass
     except StopIteration:
       self._tap.Done()
@@ -193,6 +202,10 @@ class Tapper(object):
     return self._iterable
 
   def next(self):
+    """For Python 2 compatibility."""
+    return self.__next__()
+
+  def __next__(self):
     """Gets the next item, calls _tap.Tap() on it, and returns it."""
     while True:
       item = self._NextItem()

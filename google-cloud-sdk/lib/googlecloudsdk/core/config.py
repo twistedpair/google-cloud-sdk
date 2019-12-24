@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Config for Google Cloud Platform CLIs."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import json
 import os
 import time
@@ -24,11 +29,11 @@ from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import pkg_resources
 from googlecloudsdk.core.util import platforms
+import six
 
 
 class Error(exceptions.Error):
   """Exceptions for the cli module."""
-
 
 # Environment variable for the directory containing Cloud SDK configuration.
 CLOUDSDK_CONFIG = 'CLOUDSDK_CONFIG'
@@ -75,14 +80,9 @@ class InstallationConfig(object):
     Returns:
       InstallationSpecificData: The loaded data.
     """
-    data = json.loads(pkg_resources.GetResource(__name__, 'config.json'))
-
-    # Python versions prior to 2.6.5 do not allow the keys in a kwargs dict to
-    # be unicode strings.  The json module parses files as unicode.  We are not
-    # using any unicode in the keys for our config properties so a simple
-    # conversion to str is safe.
-    non_unicode_data = dict([(str(k), v) for k, v in data.iteritems()])
-    return InstallationConfig(**non_unicode_data)
+    data = json.loads(
+        encoding.Decode(pkg_resources.GetResource(__name__, 'config.json')))
+    return InstallationConfig(**data)
 
   @staticmethod
   def FormatRevision(time_struct):
@@ -92,12 +92,12 @@ class InstallationConfig(object):
       time_struct: time.struct_time, The time you want to format.
 
     Returns:
-      long, A revision number from a component snapshot.  This is a long int but
+      int, A revision number from a component snapshot.  This is a int but
       formatted as an actual date in seconds (i.e 20151009132504).  It is *NOT*
       seconds since the epoch.
     """
-    return long(time.strftime(InstallationConfig.REVISION_FORMAT_STRING,
-                              time_struct))
+    return int(time.strftime(
+        InstallationConfig.REVISION_FORMAT_STRING, time_struct))
 
   @staticmethod
   def ParseRevision(revision):
@@ -111,7 +111,7 @@ class InstallationConfig(object):
     Returns:
       time.struct_time, The parsed time.
     """
-    return time.strptime(str(revision),
+    return time.strptime(six.text_type(revision),
                          InstallationConfig.REVISION_FORMAT_STRING)
 
   @staticmethod
@@ -134,7 +134,7 @@ class InstallationConfig(object):
                release_channel, config_suffix):
     # JSON returns all unicode.  We know these are regular strings and using
     # unicode in environment variables on Windows doesn't work.
-    self.version = str(version)
+    self.version = version
     self.revision = revision
     self.user_agent = str(user_agent)
     self.documentation_url = str(documentation_url)
@@ -195,6 +195,7 @@ def EnsureSDKWriteAccess(sdk_root_override=None):
     raise exceptions.RequiresAdminRightsError(sdk_root)
 
 
+# Doesn't work in par or stub files.
 def GcloudPath():
   """Gets the path the main gcloud entrypoint.
 
@@ -220,13 +221,13 @@ def _GetGlobalConfigDir():
   if global_config_dir:
     return global_config_dir
   if platforms.OperatingSystem.Current() != platforms.OperatingSystem.WINDOWS:
-    return os.path.join(os.path.expanduser('~'), '.config',
+    return os.path.join(file_utils.GetHomeDir(), '.config',
                         _CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
   appdata = encoding.GetEncodedValue(os.environ, 'APPDATA')
   if appdata:
     return os.path.join(appdata, _CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
   # This shouldn't happen unless someone is really messing with things.
-  drive = os.environ.get('SystemDrive', 'C:')
+  drive = encoding.GetEncodedValue(os.environ, 'SystemDrive', 'C:')
   return os.path.join(drive, os.path.sep, _CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
 
 
@@ -279,17 +280,6 @@ class Paths(object):
   def completion_cache_dir(self):
     """Gets the legacy completion cache dir path."""
     return os.path.join(self.global_config_dir, 'completion_cache')
-
-  @property
-  def credentials_path(self):
-    """Gets the path to the file to store Oauth2Client credentials in.
-
-    This is oauth2client.contrib.multistore_file format file.
-
-    Returns:
-      str, The path to the credential file.
-    """
-    return os.path.join(self.global_config_dir, 'credentials')
 
   @property
   def credentials_db_path(self):
@@ -345,6 +335,19 @@ class Paths(object):
       str, The path to the file.
     """
     return os.path.join(self.global_config_dir, '.last_update_check.json')
+
+  @property
+  def survey_prompting_cache_path(self):
+    """Gets the path to the file to cache information about survey prompting.
+
+    This is stored in the config directory instead of the installation state
+    because if the SDK is installed as root, it will fail to persist the cache
+    when you are running gcloud as a normal user.
+
+    Returns:
+      str, The path to the file.
+    """
+    return os.path.join(self.global_config_dir, '.last_survey_prompt.yaml')
 
   @property
   def installation_properties_path(self):
@@ -407,6 +410,19 @@ class Paths(object):
       str, The path to the sentinel file.
     """
     return os.path.join(self.global_config_dir, 'config_sentinel')
+
+  @property
+  def valid_ppk_sentinel_file(self):
+    """Gets the path to the sentinel used to check for PPK encoding validity.
+
+    The presence of this file is simply used to indicate whether or not we've
+    correctly encoded the PPK used for ssh on Windows (re-encoding may be
+    necessary in order to fix a bug in an older version of winkeygen.exe).
+
+    Returns:
+      str, The path to the sentinel file.
+    """
+    return os.path.join(self.global_config_dir, '.valid_ppk_sentinel')
 
   @property
   def container_config_path(self):

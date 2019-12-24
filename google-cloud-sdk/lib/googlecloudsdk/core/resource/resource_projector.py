@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,33 @@
 
 """A class for projecting and transforming JSON-serializable objects.
 
+From the Cloud SDK doc "DD: gcloud resource projection algorithm":
+
+  Algorithm
+
+  The algorithm represents a resource R and projection P as trees. P is used
+  to color the nodes of R (with the colors {0, 1, 2, 3}) as follows:
+
+  1. Initialize the nodes in R to (id, 0, identity).
+  2. Do a DFS on P. Let p be the projection subtree and r be the resource
+     subtree at each level. Let f be a flag value at each level, and initialize
+     f to the flag value of the root node of P.
+     2.1. For each id i in p that is also in r, set r[i].flag |= p[i].flag | f,
+          and r[i].transform = p[i].transform if  r[i].transform != identity and
+          p[i].transform != identity.
+     2.2. If p contains a slice then repeat step 2.1 with i = slice.
+     2.3. If r[i].flag is 0 then prune the search at this node, otherwise
+     2.4. descend to the next level with r = r[i], p = p[i], and f = r[i].flag.
+  3. At the end of the search the nodes of R will be colored with the values
+     {0, 1, 2, 3}. The projected keys are the set of the longest paths from the
+     root of R ending with a flag value >= 2.
+
+  Remarks
+
+  If the initial value of f is PROJECT or PROJECT* (2 or 3) then all keys in R
+  are projected. Non-leaf keys may be projected in this model, resulting in dict
+  or list values instead of scalars.
+
 Example usage:
 
   projector = resource_projector.Compile(expression)
@@ -21,6 +49,10 @@ Example usage:
     obj = projector.Evaluate(resource)
     OperateOnProjectedResource(obj)
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 import datetime
 import json
@@ -30,7 +62,10 @@ from apitools.base.py import encoding as protorpc_encoding
 
 from googlecloudsdk.core.resource import resource_projection_parser
 from googlecloudsdk.core.resource import resource_property
+from googlecloudsdk.core.util import encoding
 
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 from google.protobuf import json_format as protobuf_encoding
 from google.protobuf import message as protobuf_message
 
@@ -58,8 +93,8 @@ class Projector(object):
 
   Attributes:
     _projection: The projection object.
-    _been_here_done_that: A LIFO of the current objects being projected. Used
-      to catch recursive objects like datetime.datetime.max.
+    _been_here_done_that: A set of the current object id()'s being projected.
+      Used to catch recursive objects like datetime.datetime.max.
     _by_columns: True if Projector projects to a list of columns.
     _columns: self._projection.Columns() column attributes.
     _ignore_default_transforms: Ignore default projection transforms if True.
@@ -85,7 +120,7 @@ class Projector(object):
     self._columns = self._projection.Columns()
     self._ignore_default_transforms = ignore_default_transforms
     self._retain_none_values = retain_none_values
-    self._been_here_done_that = []
+    self._been_here_done_that = set()
     attributes = projection.Attributes()
     if 'transforms' in attributes:
       self._transforms_enabled_attribute = True
@@ -148,10 +183,16 @@ class Projector(object):
       # The datetime.tzinfo object does not serialize, so we save the original
       # string representation, which by default has enough information to
       # reconstruct tzinfo.
-      r['datetime'] = unicode(obj)
+      r['datetime'] = six.text_type(obj)
       # Exclude tzinfo and the default recursive attributes that really should
       # be external constants anyway.
       exclude.update(('max', 'min', 'resolution', 'tzinfo'))
+    else:
+      try:
+        # Exclude static isupper class attributes.
+        exclude.update([a for a in dir(obj.__class__) if a.isupper()])
+      except AttributeError:
+        pass
     for attr in dir(obj):
       if attr.startswith('_'):
         # Omit private attributes.
@@ -195,10 +236,10 @@ class Projector(object):
       return obj
     res = {}
     try:
-      obj.iteritems()
+      six.iteritems(obj)
     except ValueError:
       return None
-    for key, val in obj.iteritems():
+    for key, val in six.iteritems(obj):
       f = flag
       if key in projection.tree:
         child_projection = projection.tree[key]
@@ -215,7 +256,7 @@ class Projector(object):
           f >= self._projection.PROJECT and self._columns):
         # Explicit projection paths always show none values.
         try:
-          res[unicode(key)] = val
+          res[encoding.Decode(key)] = val
         except UnicodeError:
           res[key] = val
     return res or None
@@ -265,8 +306,8 @@ class Projector(object):
           if (flag >= self._projection.PROJECT or
               projection.tree[index].attribute.flag):
             sliced = projection.tree[index]
-        elif (isinstance(index, (int, long)) and
-              index in xrange(-len(obj), len(obj))):
+        elif (isinstance(index, six.integer_types) and
+              index in range(-len(obj), len(obj))):
           indices.add(index)
 
     # Everything below a PROJECT node is projected.
@@ -334,7 +375,7 @@ class Projector(object):
   def _Project(self, obj, projection, flag, leaf=False):
     """Evaluate() helper function.
 
-    tl;dr This function takes a resource obj and a preprocessed projection. obj
+    This function takes a resource obj and a preprocessed projection. obj
     is a dense subtree of the resource schema (some keys values may be missing)
     and projection is a sparse, possibly improper, subtree of the resource
     schema. Improper in that it may contain paths that do not exist in the
@@ -358,14 +399,17 @@ class Projector(object):
       An object containing only the key:values selected by projection, or obj if
       the projection is None or empty.
     """
-    # ``obj in self._been_here_done_that'' does not work here because __eq__
-    # for some types raises exceptions on type mismatch. == or != raising
-    # exceptions is not a good plan. `is' avoids __eq__.
-    if any([obj is x for x in self._been_here_done_that]):
+    objid = id(obj)
+    if objid in self._been_here_done_that:
       return None
     elif obj is None:
       pass
-    elif isinstance(obj, basestring):
+    elif isinstance(obj, six.text_type) or isinstance(obj, six.binary_type):
+      # Don't use six.string_types because bytes are not considered a string
+      # on Python 3.
+      if isinstance(obj, six.binary_type):
+        # If it's bytes, first decode it, then continue.
+        obj = encoding.Decode(obj)
       # Check for {" because valid compact JSON keys are always "..." quoted.
       if (self._json_decode and (
           obj.startswith('{"') and obj.endswith('}') or
@@ -375,23 +419,24 @@ class Projector(object):
         except ValueError:
           # OK if it's not JSON.
           pass
-    elif isinstance(obj, (bool, int, long, float, complex)):
+    elif (isinstance(obj, (bool, float, complex)) or
+          isinstance(obj, six.integer_types)):
       # primitive data type
       pass
     elif isinstance(obj, bytearray):
       # bytearray copied to disassociate from original obj.
-      obj = unicode(obj)
+      obj = encoding.Decode(bytes(obj))
+    elif isinstance(obj, protorpc_message.Enum):
+      # protorpc enum
+      obj = obj.name
     else:
-      self._been_here_done_that.append(obj)
+      self._been_here_done_that.add(objid)
       if isinstance(obj, protorpc_message.Message):
         # protorpc message
         obj = protorpc_encoding.MessageToDict(obj)
       elif isinstance(obj, protobuf_message.Message):
         # protobuf message
         obj = protobuf_encoding.MessageToDict(obj)
-      elif isinstance(obj, protorpc_message.Enum):
-        # protorpc enum
-        obj = obj.name
       elif not hasattr(obj, '__iter__') or hasattr(obj, '_fields'):
         # class object or collections.namedtuple() (via the _fields test).
         obj = self._ProjectClass(obj, projection, flag)
@@ -402,7 +447,7 @@ class Projector(object):
         obj = projection.attribute.transform.Evaluate(obj)
       elif ((flag >= self._projection.PROJECT or projection and projection.tree)
             and hasattr(obj, '__iter__')):
-        if hasattr(obj, 'iteritems'):
+        if hasattr(obj, 'items'):
           try:
             obj = self._ProjectDict(obj, projection, flag)
           except (IOError, TypeError):
@@ -412,7 +457,7 @@ class Projector(object):
             obj = self._ProjectList(obj, projection, flag)
           except (IOError, TypeError):
             obj = None
-      self._been_here_done_that.pop()
+      self._been_here_done_that.discard(objid)
       return obj
     # _ProjectAttribute() may apply transforms functions on obj, even if it is
     # None. For example, a tranform that returns 'FAILED' for None values.
@@ -463,6 +508,8 @@ class Projector(object):
         flag = self._projection.DEFAULT
       else:
         flag = self._projection.PROJECT
+      if hasattr(obj, 'MakeSerializable'):
+        obj = obj.MakeSerializable()
       return self._Project(obj, self._projection.Tree(), flag)
     obj = self._Project(obj, self._projection.GetEmpty(),
                         self._projection.PROJECT)
@@ -505,3 +552,13 @@ def Compile(expression='', defaults=None, symbols=None, by_columns=False,
       expression, defaults=defaults, symbols=symbols, compiler=Compile)
   return Projector(projection, by_columns=by_columns,
                    retain_none_values=retain_none_values)
+
+
+class IdentityProjector(Projector):
+  """A no-op resource projector that preserves the original object."""
+
+  def __init__(self):
+    super(IdentityProjector, self).__init__(resource_projection_parser.Parse())
+
+  def Evaluate(self, obj):
+    return obj

@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Cloud SDK markdown document text renderer."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.document_renderers import renderer
 
@@ -24,15 +29,12 @@ class TextRenderer(renderer.Renderer):
   Attributes:
     _attr: console_attr.ConsoleAttr object.
     _bullet: List of bullet characters indexed by list level modulo #bullets.
-    _blank: True if the output already contains a blank line. Used to avoid
-      sequences of 2 or more blank lines in the output.
     _csi_char: The first control sequence indicator character or None if control
       sequences are not supported.
     _fill: The number of characters in the current output line.
     _ignore_width: True if the next output word should ignore _width.
     _indent: List of left indentations in characters indexed by _level.
     _level: The section or list level counting from 0.
-    _table: True if currently rendering a table.
   """
   INDENT = 4
   SPLIT_INDENT = 2
@@ -46,12 +48,7 @@ class TextRenderer(renderer.Renderer):
 
   def __init__(self, *args, **kwargs):
     super(TextRenderer, self).__init__(*args, **kwargs)
-    # We want the rendering to match the default console encoding. self._out
-    # could be a file or pipe to a pager, either way we still want to see rich
-    # encoding if the console supports it.
-    encoding = console_attr.GetConsoleAttr().GetEncoding()
-    self._attr = console_attr.GetConsoleAttr(out=self._out, encoding=encoding)
-    self._blank = True
+    self._attr = console_attr.GetConsoleAttr()
     self._bullet = self._attr.GetBullets()
     self._csi_char = self._attr.GetControlSequenceIndicator()
     if self._csi_char:
@@ -60,17 +57,16 @@ class TextRenderer(renderer.Renderer):
     self._ignore_width = False
     self._indent = [self.Indent()]
     self._level = 0
-    self._table = False
 
   def _Flush(self):
     """Flushes the current collection of Fill() lines."""
     self._ignore_width = False
     if self._fill:
       self._out.write('\n')
-      self._blank = False
+      self.Content()
       self._fill = 0
 
-  def _SetIndent(self, level, indent=None, hanging_indent=None):
+  def _SetIndent(self, level, indent=0, hanging_indent=None):
     """Sets the markdown list level and indentations.
 
     Args:
@@ -120,7 +116,7 @@ class TextRenderer(renderer.Renderer):
     """
     self._fill = self._indent[self._level].indent + self.INDENT
     self._out.write(' ' * self._fill + line + '\n')
-    self._blank = False
+    self.Content()
     self._fill = 0
 
   def Fill(self, line):
@@ -132,7 +128,7 @@ class TextRenderer(renderer.Renderer):
     Args:
       line: The text line.
     """
-    self._blank = True
+    self.Blank()
     for word in line.split():
       if not self._fill:
         self._fill = self._indent[self._level].indent - 1
@@ -197,15 +193,15 @@ class TextRenderer(renderer.Renderer):
                     self.Font(renderer.BOLD) + '\n')
     if level == 1:
       self._out.write('\n')
-    self._blank = True
+    self.Blank()
     self._level = 0
     self._rows = []
 
   def Line(self):
     """Renders a paragraph separating line."""
     self._Flush()
-    if not self._blank:
-      self._blank = True
+    if not self.HaveBlank():
+      self.Blank()
       self._out.write('\n')
 
   def List(self, level, definition=None, end=False):
@@ -388,38 +384,3 @@ class TextRenderer(renderer.Renderer):
       self._out.write(' ' + group)
       running_width += w
     self._out.write('\n\n')
-
-  def Table(self, line):
-    """Renders a table line.
-
-    Nested tables are not supported. The first call on a new table is:
-      Table(attributes)
-    the intermediate calls add the heading and data lines and the last call is:
-      Table(None)
-
-    Args:
-      line: A CSV table data line.
-    """
-    if line is None:
-      # TODO(b/31628974): Use resource_printer.TablePrinter().
-      if self._rows:
-        cols = len(self._rows[0])
-        width = [0 for _ in range(cols)]
-        for row in self._rows:
-          for i in range(cols - 1):
-            w = len(row[i])
-            if width[i] <= w:
-              width[i] = w + 1
-        for row in self._rows:
-          self._out.write(' ' * (self._indent[self._level].indent + 2))
-          for i in range(cols - 1):
-            self._out.write(row[i].ljust(width[i]))
-          self._out.write(row[-1] + '\n')
-        self._rows = []
-      self._table = False
-      self._out.write('\n')
-    elif not self._table:
-      self._table = True
-      self.Line()
-    else:
-      self._rows.append(line.split(','))

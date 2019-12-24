@@ -24,7 +24,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new tpu handle."""
     url = url or self.BASE_URL
     super(TpuV1alpha1, self).__init__(
@@ -33,11 +33,78 @@ class TpuV1alpha1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
+    self.projects_locations_acceleratorTypes = self.ProjectsLocationsAcceleratorTypesService(self)
     self.projects_locations_nodes = self.ProjectsLocationsNodesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_tensorflowVersions = self.ProjectsLocationsTensorflowVersionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsAcceleratorTypesService(base_api.BaseApiService):
+    """Service class for the projects_locations_acceleratorTypes resource."""
+
+    _NAME = u'projects_locations_acceleratorTypes'
+
+    def __init__(self, client):
+      super(TpuV1alpha1.ProjectsLocationsAcceleratorTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets AcceleratorType.
+
+      Args:
+        request: (TpuProjectsLocationsAcceleratorTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AcceleratorType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/acceleratorTypes/{acceleratorTypesId}',
+        http_method=u'GET',
+        method_id=u'tpu.projects.locations.acceleratorTypes.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'TpuProjectsLocationsAcceleratorTypesGetRequest',
+        response_type_name=u'AcceleratorType',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists accelerator types supported by this API.
+
+      Args:
+        request: (TpuProjectsLocationsAcceleratorTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAcceleratorTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/acceleratorTypes',
+        http_method=u'GET',
+        method_id=u'tpu.projects.locations.acceleratorTypes.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha1/{+parent}/acceleratorTypes',
+        request_field='',
+        request_type_name=u'TpuProjectsLocationsAcceleratorTypesListRequest',
+        response_type_name=u'ListAcceleratorTypesResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsNodesService(base_api.BaseApiService):
     """Service class for the projects_locations_nodes resource."""
@@ -50,7 +117,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a node.
+      r"""Creates a node.
 
       Args:
         request: (TpuProjectsLocationsNodesCreateRequest) input message
@@ -68,7 +135,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
         method_id=u'tpu.projects.locations.nodes.create',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'nodeId', u'serviceAccount'],
+        query_params=[u'nodeId'],
         relative_path=u'v1alpha1/{+parent}/nodes',
         request_field=u'node',
         request_type_name=u'TpuProjectsLocationsNodesCreateRequest',
@@ -77,7 +144,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a node.
+      r"""Deletes a node.
 
       Args:
         request: (TpuProjectsLocationsNodesDeleteRequest) input message
@@ -104,7 +171,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the details of a node.
+      r"""Gets the details of a node.
 
       Args:
         request: (TpuProjectsLocationsNodesGetRequest) input message
@@ -131,7 +198,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists nodes.
+      r"""Lists nodes.
 
       Args:
         request: (TpuProjectsLocationsNodesListRequest) input message
@@ -158,7 +225,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
     )
 
     def Reimage(self, request, global_params=None):
-      """Reimage a node's OS.
+      r"""Reimages a node's OS.
 
       Args:
         request: (TpuProjectsLocationsNodesReimageRequest) input message
@@ -176,43 +243,16 @@ class TpuV1alpha1(base_api.BaseApiClient):
         method_id=u'tpu.projects.locations.nodes.reimage',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'tensorflowVersion'],
+        query_params=[],
         relative_path=u'v1alpha1/{+name}:reimage',
-        request_field='',
+        request_field=u'reimageNodeRequest',
         request_type_name=u'TpuProjectsLocationsNodesReimageRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
 
-    def Reset(self, request, global_params=None):
-      """Resets a node, which stops and starts the VM.
-
-      Args:
-        request: (TpuProjectsLocationsNodesResetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Reset')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Reset.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:reset',
-        http_method=u'POST',
-        method_id=u'tpu.projects.locations.nodes.reset',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+name}:reset',
-        request_field='',
-        request_type_name=u'TpuProjectsLocationsNodesResetRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
     def Start(self, request, global_params=None):
-      """Start a node.
+      r"""Starts a node.
 
       Args:
         request: (TpuProjectsLocationsNodesStartRequest) input message
@@ -232,14 +272,14 @@ class TpuV1alpha1(base_api.BaseApiClient):
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v1alpha1/{+name}:start',
-        request_field='',
+        request_field=u'startNodeRequest',
         request_type_name=u'TpuProjectsLocationsNodesStartRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
 
     def Stop(self, request, global_params=None):
-      """Stops a node.
+      r"""Stops a node.
 
       Args:
         request: (TpuProjectsLocationsNodesStopRequest) input message
@@ -259,7 +299,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v1alpha1/{+name}:stop',
-        request_field='',
+        request_field=u'stopNodeRequest',
         request_type_name=u'TpuProjectsLocationsNodesStopRequest',
         response_type_name=u'Operation',
         supports_download=False,
@@ -275,8 +315,44 @@ class TpuV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation.  The server.
+makes a best effort to cancel the operation, but success is not
+guaranteed.  If the server doesn't support this method, it returns
+`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
+Operations.GetOperation or
+other methods to check whether the cancellation succeeded or whether the
+operation completed despite cancellation. On successful cancellation,
+the operation is not deleted; instead, it becomes an operation with
+an Operation.error value with a google.rpc.Status.code of 1,
+corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (TpuProjectsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method=u'POST',
+        method_id=u'tpu.projects.locations.operations.cancel',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:cancel',
+        request_field='',
+        request_type_name=u'TpuProjectsLocationsOperationsCancelRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
-      """Deletes a long-running operation. This method indicates that the client is.
+      r"""Deletes a long-running operation. This method indicates that the client is.
 no longer interested in the operation result. It does not cancel the
 operation. If the server doesn't support this method, it returns
 `google.rpc.Code.UNIMPLEMENTED`.
@@ -306,7 +382,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -335,7 +411,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the.
+      r"""Lists operations that match the specified filter in the request. If the.
 server doesn't support this method, it returns `UNIMPLEMENTED`.
 
 NOTE: the `name` binding allows API services to override the binding
@@ -370,6 +446,70 @@ is the parent resource, without the operations collection id.
         supports_download=False,
     )
 
+  class ProjectsLocationsTensorflowVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_tensorflowVersions resource."""
+
+    _NAME = u'projects_locations_tensorflowVersions'
+
+    def __init__(self, client):
+      super(TpuV1alpha1.ProjectsLocationsTensorflowVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets TensorFlow Version.
+
+      Args:
+        request: (TpuProjectsLocationsTensorflowVersionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TensorFlowVersion) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorflowVersions/{tensorflowVersionsId}',
+        http_method=u'GET',
+        method_id=u'tpu.projects.locations.tensorflowVersions.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'TpuProjectsLocationsTensorflowVersionsGetRequest',
+        response_type_name=u'TensorFlowVersion',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists TensorFlow versions supported by this API.
+
+      Args:
+        request: (TpuProjectsLocationsTensorflowVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTensorFlowVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorflowVersions',
+        http_method=u'GET',
+        method_id=u'tpu.projects.locations.tensorflowVersions.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha1/{+parent}/tensorflowVersions',
+        request_field='',
+        request_type_name=u'TpuProjectsLocationsTensorflowVersionsListRequest',
+        response_type_name=u'ListTensorFlowVersionsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
@@ -381,7 +521,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Get(self, request, global_params=None):
-      """Get information about a location.
+      r"""Gets information about a location.
 
       Args:
         request: (TpuProjectsLocationsGetRequest) input message
@@ -408,7 +548,7 @@ is the parent resource, without the operations collection id.
     )
 
     def List(self, request, global_params=None):
-      """Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service.
 
       Args:
         request: (TpuProjectsLocationsListRequest) input message

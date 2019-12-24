@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +15,14 @@
 
 """Flattened tree resource printer."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_transform
+
+import six
 
 
 def _Flatten(obj):
@@ -56,7 +63,7 @@ def _Flatten(obj):
         res.append((name, []))
     elif isinstance(obj, dict):
       if obj:
-        for k, v in sorted(obj.iteritems()):
+        for k, v in sorted(six.iteritems(obj)):
           Flatten(v, '{name}{dot}{key}'.format(
               name=name, dot='.' if name else '', key=k), res)
       else:
@@ -148,7 +155,7 @@ class FlattenedPrinter(resource_printer_base.ResourcePrinter):
         self._out.write(separator)
         if pad:
           self._out.write(' ' * (max_key_len - len(key)))
-        val = unicode(value)
+        val = six.text_type(value)
         # Value must be one text line with leading/trailing space quoted.
         if '\n' in val or val[0:1].isspace() or val[-1:].isspace():
           val = _StringQuote(val)

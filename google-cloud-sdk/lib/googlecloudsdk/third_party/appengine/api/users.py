@@ -1,5 +1,5 @@
 #
-# Copyright 2006 Google Inc.
+# Copyright 2006 Google LLC.
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,12 +22,14 @@
 # this source file, please place them in comments only.
 
 
+from __future__ import absolute_import
 __author__ = ['jonmac@google.com (Jon McAlister)',
               'ryanb@google.com (Ryan Barrett)']
 
 # See user_service.proto.
 
 import os
+from googlecloudsdk.third_party.appengine._internal import six_subset
 from googlecloudsdk.third_party.appengine.api import apiproxy_stub_map
 from googlecloudsdk.third_party.appengine.api import user_service_pb
 from googlecloudsdk.third_party.appengine.runtime import apiproxy_errors
@@ -182,7 +184,7 @@ class User(object):
     return self.__federated_provider
 
   def __unicode__(self):
-    return unicode(self.nickname())
+    return six_subset.text_type(self.nickname())
 
   def __str__(self):
     return str(self.nickname())
@@ -244,7 +246,7 @@ def create_login_url(dest_url=None, _auth_domain=None,
 
   try:
     apiproxy_stub_map.MakeSyncCall('user', 'CreateLoginURL', req, resp)
-  except apiproxy_errors.ApplicationError, e:
+  except apiproxy_errors.ApplicationError as e:
     if (e.application_error ==
         user_service_pb.UserServiceError.REDIRECT_URL_TOO_LONG):
       raise RedirectTooLongError
@@ -283,7 +285,7 @@ def create_logout_url(dest_url, _auth_domain=None):
 
   try:
     apiproxy_stub_map.MakeSyncCall('user', 'CreateLogoutURL', req, resp)
-  except apiproxy_errors.ApplicationError, e:
+  except apiproxy_errors.ApplicationError as e:
     if (e.application_error ==
         user_service_pb.UserServiceError.REDIRECT_URL_TOO_LONG):
       raise RedirectTooLongError

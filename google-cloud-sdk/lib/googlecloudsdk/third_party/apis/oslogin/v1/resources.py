@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://oslogin.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/compute/docs/oslogin/rest/'
+DOCS_URL = 'https://cloud.google.com/compute/docs/oslogin/'
 
 
 class Collections(enum.Enum):
@@ -27,13 +28,15 @@ class Collections(enum.Enum):
       'users',
       'users/{usersId}',
       {},
-      [u'usersId']
+      [u'usersId'],
+      True
   )
   USERS_PROJECTS = (
       'users.projects',
       'users/{user}/projects/{project}',
       {},
-      ['user', 'project']
+      [u'user', u'project'],
+      True
   )
   USERS_SSHPUBLICKEYS = (
       'users.sshPublicKeys',
@@ -42,11 +45,14 @@ class Collections(enum.Enum):
           '':
               'users/{usersId}/sshPublicKeys/{sshPublicKeysId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

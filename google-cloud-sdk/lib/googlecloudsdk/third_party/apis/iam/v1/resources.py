@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,11 +24,19 @@ DOCS_URL = 'https://cloud.google.com/iam/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  IAMPOLICIES = (
+      'iamPolicies',
+      'iamPolicies',
+      {},
+      [],
+      True
+  )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',
       {},
-      [u'organizationsId']
+      [u'organizationsId'],
+      True
   )
   ORGANIZATIONS_ROLES = (
       'organizations.roles',
@@ -36,13 +45,15 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/roles/{rolesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId']
+      [u'projectsId'],
+      True
   )
   PROJECTS_ROLES = (
       'projects.roles',
@@ -51,7 +62,8 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/roles/{rolesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_SERVICEACCOUNTS = (
       'projects.serviceAccounts',
@@ -60,7 +72,19 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/serviceAccounts/{serviceAccountsId}',
       },
-      [u'name']
+      [u'name'],
+      True
+  )
+  PROJECTS_SERVICEACCOUNTS_IDENTITYBINDINGS = (
+      'projects.serviceAccounts.identityBindings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/serviceAccounts/{serviceAccountsId}/'
+              'identityBindings/{identityBindingsId}',
+      },
+      [u'name'],
+      True
   )
   PROJECTS_SERVICEACCOUNTS_KEYS = (
       'projects.serviceAccounts.keys',
@@ -70,7 +94,8 @@ class Collections(enum.Enum):
               'projects/{projectsId}/serviceAccounts/{serviceAccountsId}/'
               'keys/{keysId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   ROLES = (
       'roles',
@@ -79,11 +104,14 @@ class Collections(enum.Enum):
           '':
               'roles/{rolesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

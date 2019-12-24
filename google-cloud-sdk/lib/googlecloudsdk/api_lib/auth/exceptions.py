@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2019 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 
 """User errors raised by auth commands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.core import exceptions
 
@@ -31,3 +36,15 @@ class WrongAccountError(exceptions.Error):
 
 class GitCredentialHelperError(exceptions.Error):
   """Raised for issues related to passing auth credentials to Git."""
+
+
+class InvalidIdentityTokenError(exceptions.Error):
+  """Raised when identity token of credential is None."""
+
+
+class WrongAccountTypeError(exceptions.Error):
+  """Raised when audiences are specified but account type is not service account."""
+
+
+class GCEIdentityTokenError(exceptions.Error):
+  """Raised when request for GCE ID token is wrong."""

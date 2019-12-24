@@ -1,5 +1,5 @@
 #
-# Copyright 2007 Google Inc.
+# Copyright 2007 Google LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+from __future__ import absolute_import
 from googlecloudsdk.third_party.appengine.proto import ProtocolBuffer
 
 __pychecker__ = """maxreturns=0 maxbranches=0 no-callinit

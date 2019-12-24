@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +15,9 @@
 
 """Flags and helpers for the compute disk-types commands."""
 
-import argparse
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
@@ -27,4 +30,4 @@ def MakeDiskTypeArg(regional):
       name='DISK_TYPE',
       zonal_collection='compute.diskTypes',
       regional_collection='compute.regionDiskTypes' if regional else None,
-      region_explanation=argparse.SUPPRESS if regional else None)
+      region_hidden=not regional)

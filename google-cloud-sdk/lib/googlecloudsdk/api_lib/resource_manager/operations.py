@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,12 +14,16 @@
 # limitations under the License.
 """CRM API Operations utilities."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import time
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import progress_tracker as tracker
 from googlecloudsdk.core.util import retry
@@ -140,7 +145,7 @@ class OperationPoller(object):
     return latest
 
 
-class OperationFailedException(calliope_exceptions.ToolException):
+class OperationFailedException(core_exceptions.Error):
 
   def __init__(self, operation_with_error):
     op_id = OperationNameToId(operation_with_error.name)

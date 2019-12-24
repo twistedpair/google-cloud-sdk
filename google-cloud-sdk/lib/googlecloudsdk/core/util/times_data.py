@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +23,13 @@
 # Cloud SDK. For example, CST is used for US/Central, China standard time and
 # Cuba Standard Time. Most service date/times will be UTC or have an explicit
 # numeric +/-HH:MM timezone offset, so duplicates will not be a big problem.
+
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+
 ABBREVIATION_TO_IANA = {
     'ACST': 'Australia/Adelaide',
     'AEST': 'Australia/Brisbane',

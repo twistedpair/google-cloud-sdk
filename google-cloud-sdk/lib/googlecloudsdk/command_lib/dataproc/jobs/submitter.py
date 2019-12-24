@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,25 +12,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Utilities for building the dataproc clusters CLI."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.dataproc import dataproc as dp
 from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.util import labels_util
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import log
 
 
 class JobSubmitter(base.Command):
   """Submit a job to a cluster."""
 
-  def __init__(self, *args, **kwargs):
-    super(JobSubmitter, self).__init__(*args, **kwargs)
-
-  @staticmethod
-  def Args(parser):
+  @classmethod
+  def Args(cls, parser):
     """Register flags for this command."""
     labels_util.AddCreateLabelsFlags(parser)
     parser.add_argument(
@@ -47,7 +47,10 @@ class JobSubmitter(base.Command):
     """This is what gets called when the user runs this command."""
     dataproc = dp.Dataproc(self.ReleaseTrack())
 
-    job_id = util.GetJobId(args.id)
+    request_id = util.GetUniqueId()
+    job_id = args.id if args.id else request_id
+
+    # Don't use ResourceArgument, because --id is hidden by default
     job_ref = util.ParseJob(job_id, dataproc)
 
     self.PopulateFilesByType(args)
@@ -81,18 +84,21 @@ class JobSubmitter(base.Command):
         projectId=job_ref.projectId,
         region=job_ref.region,
         submitJobRequest=dataproc.messages.SubmitJobRequest(
-            job=job))
+            job=job,
+            requestId=request_id))
 
     job = dataproc.client.projects_regions_jobs.Submit(request)
 
     log.status.Print('Job [{0}] submitted.'.format(job_id))
 
-    if not args.async:
+    if not args.async_:
       job = util.WaitForJobTermination(
           dataproc,
           job,
+          job_ref,
           message='Waiting for job completion',
           goal_state=dataproc.messages.JobStatus.StateValueValuesEnum.DONE,
+          error_state=dataproc.messages.JobStatus.StateValueValuesEnum.ERROR,
           stream_driver_log=True)
       log.status.Print('Job [{0}] finished successfully.'.format(job_id))
 
@@ -103,17 +109,3 @@ class JobSubmitter(base.Command):
     """Add type-specific job configuration to job message."""
     # Parse labels (if present)
     job.labels = labels_util.ParseCreateArgs(args, messages.Job.LabelsValue)
-
-
-@base.ReleaseTracks(base.ReleaseTrack.BETA)
-class JobSubmitterBeta(JobSubmitter):
-  """Submit a job to a cluster."""
-
-  @staticmethod
-  def Args(parser):
-    JobSubmitter.Args(parser)
-
-  @staticmethod
-  def ConfigureJob(messages, job, args):
-    # Configure Restartable job.
-    super(JobSubmitterBeta, JobSubmitterBeta).ConfigureJob(messages, job, args)

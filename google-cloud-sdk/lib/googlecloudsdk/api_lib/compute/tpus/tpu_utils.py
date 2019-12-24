@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """API Utilities for gcloud tpus commands."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 
@@ -67,3 +69,10 @@ class TpusClient(object):
             node=node,
             nodeId=name,
             parent=parent_ref.RelativeName()))
+
+  def Reimage(self, node_ref, version):
+    return self.client.projects_locations_nodes.Reimage(
+        self.messages.TpuProjectsLocationsNodesReimageRequest(
+            name=node_ref.RelativeName(),
+            reimageNodeRequest=self.messages.ReimageNodeRequest(
+                tensorflowVersion=version)))

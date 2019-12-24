@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Code that's shared between multiple backend-services subcommands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -35,7 +40,7 @@ def IsDefaultRegionalBackendServicePropertyNoneWarnOtherwise():
       properties.VALUES.core.default_regional_backend_service.GetBool())
   if default_regional is not None:
     # Print a warning if it is set.
-    log.warn(
+    log.warning(
         'core/default_regional_backend_service property is deprecated and '
         'has no meaning.')
 
@@ -64,16 +69,22 @@ def GetIAP(iap_arg, messages, existing_iap_settings=None):
     else:
       value = True
 
+    def _Repr(s):
+      r = repr(s)
+      if r.startswith('u'):
+        r = r[1:]
+      return r
+
     if subarg in ('enabled', 'disabled', 'oauth2-client-id',
                   'oauth2-client-secret'):
       if subarg in iap_arg_parsed:
         raise exceptions.InvalidArgumentException(
-            '--iap', 'Sub-argument %r specified multiple times' %
-            subarg)
+            '--iap', 'Sub-argument %s specified multiple times' %
+            _Repr(subarg))
       iap_arg_parsed[subarg] = value
     else:
       raise exceptions.InvalidArgumentException(
-          '--iap', 'Invalid sub-argument %r' % subarg)
+          '--iap', 'Invalid sub-argument %s' % _Repr(subarg))
 
   if not iap_arg_parsed or not iap_arg:
     raise exceptions.InvalidArgumentException(
@@ -119,7 +130,31 @@ def IapHttpWarning():
           'Data sent from the Load Balancer to your VM will not be encrypted.')
 
 
-def ValidateBalancingModeArgs(messages, add_or_update_backend_args,
+def _ValidateGroupMatchesArgs(args):
+  """Validate if the group arg is used with the correct group specific flags."""
+  invalid_arg = None
+  if args.instance_group:
+    if args.max_rate_per_endpoint is not None:
+      invalid_arg = '--max-rate-per-endpoint'
+    elif args.max_connections_per_endpoint is not None:
+      invalid_arg = '--max-connections-per-endpoint'
+    if invalid_arg is not None:
+      raise exceptions.InvalidArgumentException(
+          invalid_arg,
+          'cannot be set with --instance-group')
+  elif args.network_endpoint_group:
+    if args.max_rate_per_instance is not None:
+      invalid_arg = '--max-rate-per-instance'
+    elif args.max_connections_per_instance is not None:
+      invalid_arg = '--max-connections-per-instance'
+    if invalid_arg is not None:
+      raise exceptions.InvalidArgumentException(
+          invalid_arg,
+          'cannot be set with --network-endpoint-group')
+
+
+def ValidateBalancingModeArgs(messages,
+                              add_or_update_backend_args,
                               current_balancing_mode=None):
   """Check whether the setup of the backend LB related fields is valid.
 
@@ -131,37 +166,48 @@ def ValidateBalancingModeArgs(messages, add_or_update_backend_args,
       of the existing backend, in case of update-backend command. Must be
       None otherwise.
   """
+  balancing_mode_enum = messages.Backend.BalancingModeValueValuesEnum
   balancing_mode = current_balancing_mode
   if add_or_update_backend_args.balancing_mode:
-    balancing_mode = messages.Backend.BalancingModeValueValuesEnum(
+    balancing_mode = balancing_mode_enum(
         add_or_update_backend_args.balancing_mode)
 
+  _ValidateGroupMatchesArgs(add_or_update_backend_args)
+
   invalid_arg = None
-  if balancing_mode == messages.Backend.BalancingModeValueValuesEnum.RATE:
+  if balancing_mode == balancing_mode_enum.RATE:
     if add_or_update_backend_args.max_utilization is not None:
       invalid_arg = '--max-utilization'
     elif add_or_update_backend_args.max_connections is not None:
       invalid_arg = '--max-connections'
     elif add_or_update_backend_args.max_connections_per_instance is not None:
       invalid_arg = '--max-connections-per-instance'
+    elif add_or_update_backend_args.max_connections_per_endpoint is not None:
+      invalid_arg = '--max-connections-per-endpoint'
 
     if invalid_arg is not None:
       raise exceptions.InvalidArgumentException(
           invalid_arg,
           'cannot be set with RATE balancing mode')
-  elif (balancing_mode ==
-        messages.Backend.BalancingModeValueValuesEnum.CONNECTION):
+  elif balancing_mode == balancing_mode_enum.CONNECTION:
     if add_or_update_backend_args.max_utilization is not None:
       invalid_arg = '--max-utilization'
     elif add_or_update_backend_args.max_rate is not None:
       invalid_arg = '--max-rate'
     elif add_or_update_backend_args.max_rate_per_instance is not None:
       invalid_arg = '--max-rate-per-instance'
+    elif add_or_update_backend_args.max_rate_per_endpoint is not None:
+      invalid_arg = '--max-rate-per-endpoint'
 
     if invalid_arg is not None:
       raise exceptions.InvalidArgumentException(
           invalid_arg,
           'cannot be set with CONNECTION balancing mode')
+  elif balancing_mode == balancing_mode_enum.UTILIZATION:
+    if add_or_update_backend_args.network_endpoint_group is not None:
+      raise exceptions.InvalidArgumentException(
+          '--network-endpoint-group',
+          'cannot be set with UTILIZATION balancing mode')
 
 
 def UpdateCacheKeyPolicy(args, cache_key_policy):
@@ -306,34 +352,36 @@ def ApplyCdnPolicyArgs(client,
         **cdn_policy_args)
 
 
-def ApplyFailoverPolicyArgs(messages, args, backend_service):
+def ApplyFailoverPolicyArgs(messages, args, backend_service, support_failover):
   """Applies the FailoverPolicy arguments to the specified backend service.
 
   If there are no arguments related to FailoverPolicy, the backend service
   remains unmodified.
 
   Args:
-    messages: The avalible API proto messages.
+    messages: The available API proto messages.
     args: The arguments passed to the gcloud command.
     backend_service: The backend service proto message object.
+    support_failover: Failover functionality is supported.
   """
-  if ((args.connection_drain_on_failover is not None or
-       args.drop_traffic_if_unhealthy is not None) and
+  if ((support_failover and (args.IsSpecified('connection_drain_on_failover') or
+                             args.IsSpecified('drop_traffic_if_unhealthy'))) and
       backend_service.loadBalancingScheme ==
       messages.BackendService.LoadBalancingSchemeValueValuesEnum.EXTERNAL):
     raise exceptions.InvalidArgumentException(
         '--load-balancing-scheme',
         'can only specify --connection-drain-on-failover or '
         '--drop-traffic-if-unhealthy if the load balancing scheme is INTERNAL.')
-  if (args.connection_drain_on_failover is not None and
-      backend_service.protocol !=
+  if ((support_failover and args.IsSpecified('connection_drain_on_failover'))
+      and backend_service.protocol !=
       messages.BackendService.ProtocolValueValuesEnum.TCP):
     raise exceptions.InvalidArgumentException(
         '--protocol', 'can only specify --connection-drain-on-failover '
         'if the protocol is TCP.')
 
-  if (args.connection_drain_on_failover is not None or
-      args.drop_traffic_if_unhealthy is not None or args.failover_ratio):
+  if (support_failover and (args.IsSpecified('connection_drain_on_failover') or
+                            args.IsSpecified('drop_traffic_if_unhealthy') or
+                            args.IsSpecified('failover_ratio'))):
     failover_policy = (backend_service.failoverPolicy
                        if backend_service.failoverPolicy else
                        messages.BackendServiceFailoverPolicy())
@@ -342,6 +390,55 @@ def ApplyFailoverPolicyArgs(messages, args, backend_service):
           not args.connection_drain_on_failover)
     if args.drop_traffic_if_unhealthy is not None:
       failover_policy.dropTrafficIfUnhealthy = args.drop_traffic_if_unhealthy
-    if args.failover_ratio:
+    if args.failover_ratio is not None:
       failover_policy.failoverRatio = args.failover_ratio
     backend_service.failoverPolicy = failover_policy
+
+
+def ApplyLogConfigArgs(messages, args, backend_service, support_logging):
+  """Applies the LogConfig arguments to the specified backend service.
+
+  If there are no arguments related to LogConfig, the backend service
+  remains unmodified.
+
+  Args:
+    messages: The available API proto messages.
+    args: The arguments passed to the gcloud command.
+    backend_service: The backend service proto message object.
+    support_logging: Support logging functionality.
+  """
+  logging_specified = (
+      support_logging and (args.IsSpecified('enable_logging') or
+                           args.IsSpecified('logging_sample_rate')))
+  if (logging_specified and backend_service.protocol !=
+      messages.BackendService.ProtocolValueValuesEnum.HTTP and
+      backend_service.protocol !=
+      messages.BackendService.ProtocolValueValuesEnum.HTTPS and
+      backend_service.protocol !=
+      messages.BackendService.ProtocolValueValuesEnum.HTTP2):
+    raise exceptions.InvalidArgumentException(
+        '--protocol',
+        'can only specify --enable-logging or --logging-sample-rate if the '
+        'protocol is HTTP/HTTPS/HTTP2.')
+
+  if logging_specified:
+    if backend_service.logConfig:
+      log_config = backend_service.logConfig
+    else:
+      log_config = messages.BackendServiceLogConfig()
+    if args.enable_logging is not None:
+      log_config.enable = args.enable_logging
+    if args.logging_sample_rate is not None:
+      log_config.sampleRate = args.logging_sample_rate
+    backend_service.logConfig = log_config
+
+
+def SendGetRequest(client, backend_service_ref):
+  """Send Backend Services get request."""
+  if backend_service_ref.Collection() == 'compute.regionBackendServices':
+    return client.apitools_client.regionBackendServices.Get(
+        client.messages.ComputeRegionBackendServicesGetRequest(
+            **backend_service_ref.AsDict()))
+  return client.apitools_client.backendServices.Get(
+      client.messages.ComputeBackendServicesGetRequest(
+          **backend_service_ref.AsDict()))

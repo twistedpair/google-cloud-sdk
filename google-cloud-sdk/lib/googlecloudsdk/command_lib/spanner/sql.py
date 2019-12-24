@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +14,16 @@
 # limitations under the License.
 """Common methods to display parts of SQL query results."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from functools import partial
 from apitools.base.py import encoding
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import text
+from sqlparse import lexer
+from sqlparse import tokens as T
 
 
 def _GetAdditionalProperty(properties, property_key, not_found_value='Unknown'):
@@ -52,20 +59,81 @@ def _ConvertToTree(plan_nodes):
   Returns:
     A Node, root of a tree built from `plan_nodes`.
   """
-  # A dictionary from the index in plan_nodes to Node object.
-  node_dict = {}
-  # If we start at the end then by the time we get to a node's parent, that
-  # node must already exist in node_dict.
-  for node in reversed(plan_nodes):
-    n = Node(node)
-    if node.childLinks:
-      for link in node.childLinks:
-        n.children.append(node_dict[link.childIndex])
-    if node.index:
-      node_dict[node.index] = n
-    # The only node without an index is the root.
-    else:
-      return n
+  # plan_nodes is a topologically sorted list, with the root node first.
+  return _BuildSubTree(plan_nodes, plan_nodes[0])
+
+
+def _BuildSubTree(plan_nodes, node):
+  """Helper for building the subtree of a query plan node.
+
+  Args:
+    plan_nodes (spanner_v1_messages.PlanNode[]): The plan_nodes from the server
+      response. Plan nodes are topologically sorted.
+    node (spanner_v1_messages.PlanNode): The root node of the subtree to be
+      built.
+
+  Returns:
+    A Node object.
+  """
+  children = None
+  if node.childLinks:
+    children = [_BuildSubTree(plan_nodes, plan_nodes[link.childIndex])
+                for link in node.childLinks]
+  return Node(node, children)
+
+
+def _ConvertToStringValue(prop):
+  """Converts the prop to a string if it exists.
+
+  Args:
+    prop (object_value): The value returned from _GetAdditionalProperty.
+
+  Returns:
+    A string value for the given prop, or the `not_found_value` if the prop does
+    not exist.
+  """
+  return getattr(prop, 'string_value', prop)
+
+
+def _DisplayNumberOfRowsModified(row_count, is_exact_count, out):
+  """Prints number of rows modified by a DML statement.
+
+  Args:
+    row_count: Either the exact number of rows modified by statement or the
+      lower bound of rows modified by a Partitioned DML statement.
+    is_exact_count: Boolean stating whether the number is the exact count.
+    out: Output stream to which we print.
+  """
+  if is_exact_count is True:
+    output_str = 'Statement modified {} {}'
+  else:
+    output_str = 'Statement modified a lower bound of {} {}'
+
+  if row_count is 1:
+    out.Print(output_str.format(row_count, 'row'))
+  else:
+    out.Print(output_str.format(row_count, 'rows'))
+
+
+def QueryHasDml(sql):
+  """Determines if the sql string contains a DML query.
+
+  Args:
+    sql (string): The sql string entered by the user.
+
+  Returns:
+    A boolean.
+  """
+  sql = sql.lstrip().lower()
+  tokenized = lexer.tokenize(sql)
+  for token in list(tokenized):
+    has_dml = (
+        token == (T.Keyword.DML, 'insert') or
+        token == (T.Keyword.DML, 'update') or
+        token == (T.Keyword.DML, 'delete'))
+    if has_dml is True:
+      return True
+  return False
 
 
 def QueryHasAggregateStats(result):
@@ -92,14 +160,12 @@ def DisplayQueryAggregateStats(query_stats, out):
       stats taken from the server response to a query.
     out: Output stream to which we print.
   """
-  # additional_properties = query_stats.additionalProperties
-
   get_prop = partial(_GetAdditionalProperty, query_stats.additionalProperties)
   stats = {
-      'total_elapsed_time': get_prop('elapsed_time'),
-      'cpu_time': get_prop('cpu_time'),
-      'rows_returned': get_prop('rows_returned'),
-      'rows_scanned': get_prop('rows_scanned')
+      'total_elapsed_time': _ConvertToStringValue(get_prop('elapsed_time')),
+      'cpu_time': _ConvertToStringValue(get_prop('cpu_time')),
+      'rows_returned': _ConvertToStringValue(get_prop('rows_returned')),
+      'rows_scanned': _ConvertToStringValue(get_prop('rows_scanned'))
   }
   resource_printer.Print(
       stats,
@@ -125,18 +191,31 @@ def DisplayQueryResults(result, out):
     result (spanner_v1_messages.ResultSet): The server response to a query.
     out: Output stream to which we print.
   """
-  # Print "(Unspecified)" for computed columns.
-  fields = [
-      field.name or '(Unspecified)' for field in result.metadata.rowType.fields
-  ]
+  if hasattr(result.stats,
+             'rowCountExact') and result.stats.rowCountExact is not None:
+    _DisplayNumberOfRowsModified(result.stats.rowCountExact, True, out)
 
-  # Create the format string we pass to the table layout.
-  table_format = ','.join('row.slice({0}).join():label="{1}"'.format(i, f)
-                          for i, f in enumerate(fields))
-  rows = [{'row': encoding.MessageToPyValue(row.entry)} for row in result.rows]
+  if hasattr(
+      result.stats,
+      'rowCountLowerBound') and result.stats.rowCountLowerBound is not None:
+    _DisplayNumberOfRowsModified(result.stats.rowCountLowerBound, False, out)
 
-  # Can't use the PrintText method because we want special formatting.
-  resource_printer.Print(rows, 'table({0})'.format(table_format), out=out)
+  if len(result.metadata.rowType.fields) is not 0:
+    # Print "(Unspecified)" for computed columns.
+    fields = [
+        field.name or '(Unspecified)'
+        for field in result.metadata.rowType.fields
+    ]
+
+    # Create the format string we pass to the table layout.
+    table_format = ','.join('row.slice({0}).join():label="{1}"'.format(i, f)
+                            for i, f in enumerate(fields))
+    rows = [{
+        'row': encoding.MessageToPyValue(row.entry)
+    } for row in result.rows]
+
+    # Can't use the PrintText method because we want special formatting.
+    resource_printer.Print(rows, 'table({0})'.format(table_format), out=out)
 
 
 class Node(object):

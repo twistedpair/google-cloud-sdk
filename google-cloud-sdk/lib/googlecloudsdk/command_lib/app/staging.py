@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,13 +31,21 @@ The interface is defined as follows:
   STDOUT and STDERR of the staging command (which are surfaced to the user as an
   ERROR message).
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
-import cStringIO
+import io
 import os
 import re
+import shutil
 import tempfile
 
-from googlecloudsdk.api_lib.app import util
+from googlecloudsdk.api_lib.app import env
+from googlecloudsdk.api_lib.app import runtime_registry
+from googlecloudsdk.command_lib.app import jarfile
 from googlecloudsdk.command_lib.util import java
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
@@ -45,13 +54,11 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
-
+import six
 
 _JAVA_APPCFG_ENTRY_POINT = 'com.google.appengine.tools.admin.AppCfg'
 
-_JAVA_APPCFG_STAGE_FLAGS = [
-    '--enable_jar_splitting',
-    '--enable_jar_classes']
+_JAVA_APPCFG_STAGE_FLAGS = ['--enable_new_staging_defaults']
 
 _STAGING_COMMAND_OUTPUT_TEMPLATE = """\
 ------------------------------------ STDOUT ------------------------------------
@@ -71,6 +78,13 @@ class NoSdkRootError(StagingCommandNotFoundError):
   def __init__(self):
     super(NoSdkRootError, self).__init__(
         'No SDK root could be found. Please check your installation.')
+
+
+class NoMainClassError(exceptions.Error):
+
+  def __init__(self):
+    super(NoMainClassError, self).__init__(
+        'Invalid jar file: it does not contain a Main-Class Manifest entry.')
 
 
 class StagingCommandFailedError(exceptions.Error):
@@ -104,7 +118,7 @@ def _JavaStagingMapper(command_path, descriptor, app_dir, staging_dir):
   return args
 
 
-class _Command(object):
+class _Command(six.with_metaclass(abc.ABCMeta, object)):
   """Interface for a staging command to be invoked on the user source.
 
   This abstract class facilitates running an executable command that conforms to
@@ -113,8 +127,6 @@ class _Command(object):
   It implements the parts that are common to any such command while allowing
   interface implementors to swap out how the command is created.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def EnsureInstalled(self):
@@ -166,12 +178,13 @@ class _Command(object):
     staging_dir = tempfile.mkdtemp(dir=staging_area)
     args = self.GetArgs(descriptor, app_dir, staging_dir)
     log.info('Executing staging command: [{0}]\n\n'.format(' '.join(args)))
-    out = cStringIO.StringIO()
-    err = cStringIO.StringIO()
-    return_code = execution_utils.Exec(args, no_exit=True, out_func=out.write,
-                                       err_func=err.write)
-    message = _STAGING_COMMAND_OUTPUT_TEMPLATE.format(out=out.getvalue(),
-                                                      err=err.getvalue())
+    out = io.StringIO()
+    err = io.StringIO()
+    return_code = execution_utils.Exec(
+        args, no_exit=True, out_func=out.write, err_func=err.write)
+    message = _STAGING_COMMAND_OUTPUT_TEMPLATE.format(
+        out=out.getvalue(), err=err.getvalue())
+    message = message.replace('\r\n', '\n')
     log.info(message)
     if return_code:
       raise StagingCommandFailedError(args, return_code, message)
@@ -199,6 +212,51 @@ class NoopCommand(_Command):
 
   def __eq__(self, other):
     return isinstance(other, NoopCommand)
+
+
+class CreateJava11YamlCommand(_Command):
+  """A command that creates a java11 runtime app.yaml from a jar file."""
+
+  def EnsureInstalled(self):
+    pass
+
+  def GetPath(self):
+    return None
+
+  def GetArgs(self, descriptor, jar_file, staging_dir):
+    return None
+
+  def Run(self, staging_area, jar_file, app_dir):
+    # Logic is simple: copy the jar in the staged area, and create a simple
+    # file app.yaml for runtime: java11.
+    shutil.copy2(jar_file, staging_area)
+    files.WriteFileContents(
+        os.path.join(staging_area, 'app.yaml'),
+        'runtime: java11\n',
+        private=True)
+    manifest = jarfile.ReadManifest(jar_file)
+    if manifest:
+      main_entry = manifest.main_section.get('Main-Class')
+      if main_entry is None:
+        raise NoMainClassError()
+      classpath_entry = manifest.main_section.get('Class-Path')
+      if classpath_entry:
+        libs = classpath_entry.split()
+        for lib in libs:
+          dependent_file = os.path.join(app_dir, lib)
+          # We copy the dep jar in the correct staging sub directories
+          # and only if it exists,
+          if os.path.isfile(dependent_file):
+            destination = os.path.join(staging_area, lib)
+            files.MakeDir(os.path.abspath(os.path.join(destination, os.pardir)))
+            if hasattr(os, 'symlink'):
+              os.symlink(dependent_file, destination)
+            else:
+              shutil.copy(dependent_file, destination)
+    return staging_area
+
+  def __eq__(self, other):
+    return isinstance(other, CreateJava11YamlCommand)
 
 
 class _BundledCommand(_Command):
@@ -318,131 +376,38 @@ class ExecutableCommand(_Command):
 _GO_APP_STAGER_DIR = os.path.join('platform', 'google_appengine')
 
 # Path to the jar which contains the staging command
-_APPENGINE_TOOLS_JAR = os.path.join(
-    'platform', 'google_appengine', 'google', 'appengine', 'tools', 'java',
-    'lib', 'appengine-tools-api.jar')
-
-
-class RegistryEntry(object):
-  """An entry in the Registry.
-
-  Attributes:
-    runtime: str or re.RegexObject, the runtime to be staged
-    envs: set(util.Environment), the environments to be staged
-  """
-
-  def __init__(self, runtime, envs):
-    self.runtime = runtime
-    self.envs = envs
-
-  def _RuntimeMatches(self, runtime):
-    try:
-      return self.runtime.match(runtime)
-    except AttributeError:
-      return self.runtime == runtime
-
-  def _EnvMatches(self, env):
-    return env in self.envs
-
-  def Matches(self, runtime, env):
-    """Returns True iff the given runtime and environmt match this entry.
-
-    The runtime matches if it is an exact string match.
-
-    The environment matches if it is an exact Enum match or if this entry has a
-    "wildcard" (that is, None) for the environment.
-
-    Args:
-      runtime: str, the runtime to match
-      env: util.Environment, the environment to match
-
-    Returns:
-      bool, whether the given runtime and environment match.
-    """
-    return self._RuntimeMatches(runtime) and self._EnvMatches(env)
-
-  def __hash__(self):
-    # Sets are unhashable; Environments are unorderable
-    return hash((self.runtime, sum(sorted(map(hash, self.envs)))))
-
-  def __eq__(self, other):
-    return self.runtime == other.runtime and self.envs == other.envs
-
-  def __ne__(self, other):
-    return not self.__eq__(other)
-
-
-class Registry(object):
-  """A registry of stagers for various runtimes.
-
-  The registry is a map of (runtime, app-engine-environment) to _Command object;
-  it should look something like the following:
-
-  STAGING_REGISTRY = {
-    RegistryEntry('intercal', {util.Environment.FLEX}):
-        _BundledCommand(
-            os.path.join('command_dir', 'stage-intercal-flex.sh'),
-            os.path.join('command_dir', 'stage-intercal-flex.exe'),
-            component='app-engine-intercal'),
-    RegistryEntry('x86-asm', {util.Environment.STANDARD}):
-        _BundledCommand(
-            os.path.join('command_dir', 'stage-x86-asm-standard'),
-            os.path.join('command_dir', 'stage-x86-asm-standard.exe'),
-            component='app-engine-intercal'),
-  }
-
-  Attributes:
-    mappings: dict of {RegistryEntry: _Command}, the stagers to use
-      per runtime/environment.
-    override: _Command or None, if given the registry *always* uses this command
-      rather than checking the registry.
-  """
-
-  def __init__(self, mappings=None, override=None):
-    self.mappings = mappings or {}
-    self.override = override
-
-  def Get(self, runtime, env):
-    """Return the command to use for the given runtime/environment.
-
-    Args:
-      runtime: str, the runtime to get a stager for
-      env: util.Environment, the environment to get a stager for
-
-    Returns:
-      _Command, the command to use. May be a NoopCommand if no command is
-        registered.
-    """
-    if self.override:
-      return self.override
-
-    for entry, command in self.mappings.items():
-      if entry.Matches(runtime, env):
-        return command
-    log.debug(('No staging command found for runtime [%s] and environment '
-               '[%s].'), runtime, env.name)
-    return NoopCommand()
+_APPENGINE_TOOLS_JAR = os.path.join('platform', 'google_appengine', 'google',
+                                    'appengine', 'tools', 'java', 'lib',
+                                    'appengine-tools-api.jar')
 
 _STAGING_REGISTRY = {
-    RegistryEntry(re.compile(r'(go|go1\..+)$'),
-                  {util.Environment.FLEX, util.Environment.STANDARD,
-                   util.Environment.MANAGED_VMS}):
+    runtime_registry.RegistryEntry(
+        re.compile(r'(go|go1\..+)$'), {env.FLEX, env.MANAGED_VMS}):
         _BundledCommand(
             os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
             os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
             component='app-engine-go'),
-}
-
-# _STAGING_REGISTRY_BETA extends _STAGING_REGISTRY, overriding entries if the
-# same key is used.
-_STAGING_REGISTRY_BETA = {
-    RegistryEntry('java-xml', {util.Environment.STANDARD}):
+    runtime_registry.RegistryEntry(
+        re.compile(r'(go|go1\..+|%s)$' % env.GO_TI_RUNTIME_EXPR.pattern), {
+            env.STANDARD,
+        }):
+        _BundledCommand(
+            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
+            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
+            component='app-engine-go'),
+    runtime_registry.RegistryEntry('java-xml', {env.STANDARD}):
         _BundledCommand(
             _APPENGINE_TOOLS_JAR,
             _APPENGINE_TOOLS_JAR,
             component='app-engine-java',
-            mapper=_JavaStagingMapper)
+            mapper=_JavaStagingMapper),
+    runtime_registry.RegistryEntry('java-jar', {env.STANDARD}):
+        CreateJava11YamlCommand(),
 }
+
+# _STAGING_REGISTRY_BETA extends _STAGING_REGISTRY, overriding entries if the
+# same key is used.
+_STAGING_REGISTRY_BETA = {}
 
 
 class Stager(object):
@@ -458,8 +423,8 @@ class Stager(object):
       descriptor: str, path to the unstaged <service>.yaml or appengine-web.xml
       app_dir: str, path to the unstaged app directory
       runtime: str, the name of the runtime for the application to stage
-      environment: api_lib.app.util.Environment, the environment for the
-          application to stage
+      environment: api_lib.app.env.Environment, the environment for the
+        application to stage
 
     Returns:
       str, the path to the staged directory or None if no corresponding staging
@@ -470,18 +435,20 @@ class Stager(object):
       StagingCommandFailedError: if the staging command process exited non-zero.
     """
     command = self.registry.Get(runtime, environment)
+    if not command:
+      return None
     command.EnsureInstalled()
     return command.Run(self.staging_area, descriptor, app_dir)
 
 
 def GetRegistry():
-  return Registry(_STAGING_REGISTRY)
+  return runtime_registry.Registry(_STAGING_REGISTRY, default=NoopCommand())
 
 
 def GetBetaRegistry():
   mappings = _STAGING_REGISTRY.copy()
   mappings.update(_STAGING_REGISTRY_BETA)
-  return Registry(mappings)
+  return runtime_registry.Registry(mappings, default=NoopCommand())
 
 
 def GetStager(staging_area):
@@ -496,9 +463,12 @@ def GetBetaStager(staging_area):
 
 def GetNoopStager(staging_area):
   """Get a stager with an empty registry."""
-  return Stager(Registry({}), staging_area)
+  return Stager(
+      runtime_registry.Registry({}, default=NoopCommand()), staging_area)
 
 
 def GetOverrideStager(command, staging_area):
   """Get a stager with a registry that always calls the given command."""
-  return Stager(Registry(None, command), staging_area)
+  return Stager(
+      runtime_registry.Registry(None, override=command, default=NoopCommand()),
+      staging_area)

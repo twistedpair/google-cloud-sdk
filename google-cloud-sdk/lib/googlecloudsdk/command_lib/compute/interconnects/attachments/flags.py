@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,24 +14,31 @@
 # limitations under the License.
 """Flags and helpers for the compute interconnects commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import collections
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
-
-_BANDWIDTH_CHOICES = {
-    'bps-50m': '50 Mbit/s',
-    'bps-100m': '100 Mbit/s',
-    'bps-200m': '200 Mbit/s',
-    'bps-300m': '300 Mbit/s',
-    'bps-400m': '400 Mbit/s',
-    'bps-500m': '500 Mbit/s',
-    'bps-1g': '1 Gbit/s',
-    'bps-2g': '2 Gbit/s',
-    'bps-5g': '5 Gbit/s',
-    'bps-10g': '10 Gbit/s',
-}
+_BANDWIDTH_CHOICES = collections.OrderedDict([
+    ('50m', '50 Mbit/s'),
+    ('100m', '100 Mbit/s'),
+    ('200m', '200 Mbit/s'),
+    ('300m', '300 Mbit/s'),
+    ('400m', '400 Mbit/s'),
+    ('500m', '500 Mbit/s'),
+    ('1g', '1 Gbit/s'),
+    ('2g', '2 Gbit/s'),
+    ('5g', '5 Gbit/s'),
+    ('10g', '10 Gbit/s'),
+    ('20g', '20 Gbit/s'),
+    ('50g', '50 Gbit/s'),
+])
 
 _EDGE_AVAILABILITY_DOMAIN_CHOICES = {
     'availability-domain-1': 'Edge Availability Domain 1',
@@ -77,47 +85,57 @@ def InterconnectAttachmentArgumentForRouter(required=False,
 
 def AddAdminEnabled(parser, default_behavior=True, update=False):
   """Adds adminEnabled flag to the argparse.ArgumentParser."""
-
+  group = parser.add_group(mutex=True, required=False, help='')
   if update:
     # Update command
     help_text = """\
       Administrative status of the interconnect attachment.
       When this is enabled, the attachment is operational and will carry
-      traffic. Use --no-admin-enabled to disable it.
+      traffic. Use --no-enable-admin to disable it.
       """
   elif default_behavior:
     # Create command for dedicated attachments, backend default behavior is to
     # enable if not specified.
     help_text = """\
-      Administrative status of the interconnect attachment. If not provided on
-      creation, defaults to enabled.
+      Administrative status of the interconnect attachment. If not provided
+      on creation, defaults to enabled.
       When this is enabled, the attachment is operational and will carry
-      traffic. Use --no-admin-enabled to disable it.
+      traffic. Use --no-enable-admin to disable it.
       """
   else:
     # Create command for partner attachments, backend default behavior is to
     # disabled if not specified.
     help_text = """\
-      Administrative status of the interconnect attachment. If not provided on
-      creation, defaults to disabled.
+      Administrative status of the interconnect attachment. If not provided
+      on creation, defaults to disabled.
       When this is enabled, the attachment is operational and will carry
-      traffic. Use --no-admin-enabled to disable it.
+      traffic. Use --no-enable-admin to disable it.
       """
 
-  parser.add_argument(
+  group.add_argument(
       '--admin-enabled',
-      action='store_true',
+      hidden=True,
       default=None,
-      help=help_text)
+      action='store_true',
+      help='(DEPRECATED) Use --enable-admin instead.')
+
+  group.add_argument(
+      '--enable-admin', action='store_true', default=None, help=help_text)
 
 
 def AddBandwidth(parser, required):
   """Adds bandwidth flag to the argparse.ArgumentParser."""
+  help_text = """\
+      Provisioned capacity of the attachment.
+      """
+  choices = _BANDWIDTH_CHOICES
+
   base.ChoiceArgument(
       '--bandwidth',
-      choices=_BANDWIDTH_CHOICES,
+      # TODO(b/80311900): use arg_parsers.BinarySize()
+      choices=choices,
       required=required,
-      help_str=('Provisioned capacity of the attachment.')).AddToParser(parser)
+      help_str=help_text).AddToParser(parser)
 
 
 def AddVlan(parser):
@@ -144,27 +162,30 @@ def AddPartnerAsn(parser):
 
 def AddPartnerMetadata(parser, required=True):
   """Adds partner metadata flags to the argparse.ArgumentParser."""
-  parser.add_argument(
+  group = parser.add_group(
+      mutex=False, required=required, help='Partner metadata.')
+  group.add_argument(
       '--partner-name',
       required=required,
       help="""\
-      Plain text name of the Partner providing this attachment. This value may
-      be validated to match approved Partner values.
+      Plain text name of the Partner providing this attachment. This value
+      may be validated to match approved Partner values.
       """)
-  parser.add_argument(
+  group.add_argument(
       '--partner-interconnect-name',
       required=required,
       help="""\
-      Plain text name of the Interconnect this attachment is connected to, as
-      displayed in the Partner's portal. For instance "Chicago 1".
+      Plain text name of the Interconnect this attachment is connected to,
+      as displayed in the Partner's portal. For instance "Chicago 1".
       """)
-  parser.add_argument(
+  group.add_argument(
       '--partner-portal-url',
       required=required,
       help="""\
-      URL of the Partner's portal for this Attachment. The Partner may wish to
-      customise this to be a deep-link to the specific resource on the Partner
-      portal. This value may be validated to match approved Partner values.
+      URL of the Partner's portal for this Attachment. The Partner may wish
+      to customize this to be a deep-link to the specific resource on the
+      Partner portal. This value may be validated to match approved Partner
+      values.
       """)
 
 
@@ -223,3 +244,24 @@ def AddCandidateSubnets(parser):
       one of the candidate subnets. The request will fail if all /29s within the
       candidate subnets are in use at Google's edge.""",
       default=[])
+
+
+def AddDryRun(parser):
+  """Adds dry-run flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--dry-run',
+      default=None,
+      action='store_true',
+      help='If supplied, validates the attachment without creating it.')
+
+
+def AddMtu(parser):
+  """Adds mtu flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--mtu',
+      type=int,
+      help="""\
+      Maximum transmission unit(MTU) is the size of the largest frame passing
+      through this interconnect attachment. Only 1440 and 1500 are allowed.
+      If not specified, the value will default to 1440.
+      """)

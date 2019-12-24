@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Useful commands for interacting with the Cloud Datastore Operations API."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
@@ -84,8 +89,7 @@ def WaitForOperation(operation):
   """Waits for the given google.longrunning.Operation to complete."""
   operation_ref = resources.REGISTRY.Parse(
       operation.name, collection='datastore.projects.operations')
-  poller = waiter.CloudOperationPollerNoResources(GetService(),
-                                                  lambda x: x.RelativeName())
+  poller = waiter.CloudOperationPollerNoResources(GetService())
   return waiter.WaitFor(
       poller, operation_ref,
       'Waiting for [{0}] to finish'.format(operation_ref.RelativeName()))

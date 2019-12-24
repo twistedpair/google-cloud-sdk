@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,10 +16,17 @@
 
 This makes mocking for time-related functionality easier.
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import calendar
 import datetime
 import re
 import time
+
+from six.moves import map  # pylint: disable=redefined-builtin
 
 
 def CurrentTimeSec():
@@ -71,7 +79,7 @@ def Strptime(rfc3339_str):
   (year, month, day, hour, minute, second, frac_seconds,
    zulu, zone_sign, zone_hours, zone_minutes) = match.groups()
 
-  time_tuple = map(int, [year, month, day, hour, minute, second])
+  time_tuple = list(map(int, [year, month, day, hour, minute, second]))
 
   # Parse the time zone offset.
   if zulu == 'Z':  # explicit

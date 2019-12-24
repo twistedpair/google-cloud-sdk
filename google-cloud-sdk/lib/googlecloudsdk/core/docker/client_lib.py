@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,16 +13,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utility library for working with docker clients."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import errno
 import json
 import os
 import subprocess
 import sys
-import urlparse
 
 from distutils import version as distutils_version
+
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.util import encoding
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+
+import six
+from six.moves import urllib
 
 
 DOCKER_NOT_FOUND_ERROR = 'Docker is not installed.'
@@ -41,18 +52,19 @@ class InvalidDockerConfigError(DockerError):
 
 def _GetUserHomeDir():
   if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
-    # %HOME% has precedence over %USERPROFILE% for os.path.expanduser('~')
+    # %HOME% has precedence over %USERPROFILE% for files.GetHomeDir().
     # The Docker config resides under %USERPROFILE% on Windows
-    return os.path.expandvars('%USERPROFILE%')
+    return encoding.Decode(os.path.expandvars('%USERPROFILE%'))
   else:
-    return platforms.GetHomePath()
+    return files.GetHomeDir()
 
 
 def _GetNewConfigDirectory():
   # Return the value of $DOCKER_CONFIG, if it exists, otherwise ~/.docker
   # see https://github.com/docker/docker/blob/master/cliconfig/config.go
-  if os.environ.get('DOCKER_CONFIG') is not None:
-    return os.environ.get('DOCKER_CONFIG')
+  docker_config = encoding.GetEncodedValue(os.environ, 'DOCKER_CONFIG')
+  if docker_config is not None:
+    return docker_config
   else:
     return os.path.join(_GetUserHomeDir(), '.docker')
 
@@ -173,16 +185,16 @@ def GetDockerVersion():
 
 def GetNormalizedURL(server):
   """Sanitize and normalize the server input."""
-  parsed_url = urlparse.urlparse(server)
+  parsed_url = urllib.parse.urlparse(server)
   # Work around the fact that Python 2.6 does not properly
   # look for :// and simply splits on colon, so something
   # like 'gcr.io:1234' returns the scheme 'gcr.io'.
   if '://' not in server:
     # Server doesn't have a scheme, set it to HTTPS.
-    parsed_url = urlparse.urlparse('https://' + server)
+    parsed_url = urllib.parse.urlparse('https://' + server)
     if parsed_url.hostname == 'localhost':
       # Now that it parses, if the hostname is localhost switch to HTTP.
-      parsed_url = urlparse.urlparse('http://' + server)
+      parsed_url = urllib.parse.urlparse('http://' + server)
 
   return parsed_url
 
@@ -208,17 +220,16 @@ def ReadConfigurationFile(path):
   if not os.path.exists(path):
     return {}
 
-  with open(path) as reader:
-    contents = reader.read()
-    # If the file is empty, return empty JSON.
-    # This helps if someone 'touched' the file or manually
-    # deleted the contents.
-    if not contents or contents.isspace():
-      return {}
+  contents = files.ReadFileContents(path)
+  # If the file is empty, return empty JSON.
+  # This helps if someone 'touched' the file or manually
+  # deleted the contents.
+  if not contents or contents.isspace():
+    return {}
 
-    try:
-      return json.loads(contents)
-    except ValueError as err:
-      raise InvalidDockerConfigError(
-          ('Docker configuration file [{}] could not be read as JSON: '
-           '{}').format(path, str(err)))
+  try:
+    return json.loads(contents)
+  except ValueError as err:
+    raise InvalidDockerConfigError(
+        ('Docker configuration file [{}] could not be read as JSON: '
+         '{}').format(path, six.text_type(err)))

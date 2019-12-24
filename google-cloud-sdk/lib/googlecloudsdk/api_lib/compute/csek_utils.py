@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,15 +14,19 @@
 # limitations under the License.
 """Utility functions for managing customer supplied encryption keys."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 import base64
 import json
 import re
 
-from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.util import files
+from googlecloudsdk.core.console import console_io
+import six
 
 CSEK_HELP_URL = ('https://cloud.google.com/compute/docs/disks/'
                  'customer-supplied-encryption')
@@ -30,7 +35,11 @@ BASE64_RAW_KEY_LENGTH_IN_CHARS = 44
 BASE64_RSA_ENCRYPTED_KEY_LENGTH_IN_CHARS = 344
 
 
-class InvalidKeyFileException(core_exceptions.Error):
+class Error(exceptions.Error):
+  """Base exception for Csek(customer supplied encryption keys) exceptions."""
+
+
+class InvalidKeyFileException(Error):
   """There's a problem in a CSEK file."""
 
   def __init__(self, base_message):
@@ -105,7 +114,7 @@ def ValidateKey(base64_encoded_string, expected_key_length):
         base64_encoded_string,
         'Key contains non-ascii characters.')
 
-  if not re.match(r'^[a-zA-Z0-9+/=]*$', base64_encoded_string_as_str):
+  if not re.match(r'^[a-zA-Z0-9+/=]*$', base64_encoded_string):
     raise InvalidKeyExceptionNoContext(
         base64_encoded_string_as_str,
         'Key contains unexpected characters. Base64 encoded strings '
@@ -120,10 +129,8 @@ def ValidateKey(base64_encoded_string, expected_key_length):
         'Key is not valid base64: [{0}].'.format(t.message))
 
 
-class CsekKeyBase(object):
+class CsekKeyBase(six.with_metaclass(abc.ABCMeta, object)):
   """A class representing for CSEK keys."""
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, key_material):
     ValidateKey(key_material, expected_key_length=self.GetKeyLength())
@@ -207,10 +214,10 @@ class BadKeyTypeException(InvalidKeyFileException):
     super(BadKeyTypeException, self).__init__(msg)
 
 
-class MissingCsekKeyException(exceptions.ToolException):
+class MissingCsekException(Error):
 
   def __init__(self, resource):
-    super(MissingCsekKeyException, self).__init__(
+    super(MissingCsekException, self).__init__(
         'Key required for resource [{0}], but none found.'.format(resource))
 
 
@@ -284,8 +291,7 @@ class CsekKeyStore(object):
                                             larger than max_bytes.
     """
 
-    content = files.GetFileOrStdinContents(fname)
-
+    content = console_io.ReadFromFileOrStdin(fname, binary=False)
     return cls(content, allow_rsa_encrypted)
 
   @staticmethod
@@ -325,7 +331,7 @@ class CsekKeyStore(object):
       InvalidKeyFileException: if the input doesn't parse or is not well-formed.
     """
 
-    assert isinstance(s, str)
+    assert isinstance(s, six.string_types)
     state = {}
 
     try:
@@ -377,14 +383,14 @@ class CsekKeyStore(object):
 
     Raises:
       InvalidKeyFileException: if there are two records matching the resource.
-      MissingCsekKeyException: if raise_if_missing and no key is found
-        for the provided resoure.
+      MissingCsekException: if raise_if_missing and no key is found
+        for the provided resource.
     """
 
     assert isinstance(self.state, dict)
     search_state = (None, None)
 
-    for pat, key in self.state.iteritems():
+    for pat, key in six.iteritems(self.state):
       if pat.Matches(resource):
         if search_state[0]:
           raise InvalidKeyFileException(
@@ -395,7 +401,7 @@ class CsekKeyStore(object):
         search_state = (pat, key)
 
     if raise_if_missing and (search_state[1] is None):
-      raise MissingCsekKeyException(resource)
+      raise MissingCsekException(resource)
 
     return search_state[1]
 

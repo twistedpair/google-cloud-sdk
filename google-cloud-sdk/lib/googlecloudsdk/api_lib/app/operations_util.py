@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,8 +16,11 @@
 """Utilities for working with long running operations go/long-running-operation.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import json
-import sys
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
@@ -30,10 +34,11 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+import six
 
 # Default is to retry every 5 seconds for 1 hour.
 DEFAULT_OPERATION_RETRY_INTERVAL = 5
-DEFAULT_OPERATION_MAX_TRIES = (60 / DEFAULT_OPERATION_RETRY_INTERVAL) * 60
+DEFAULT_OPERATION_MAX_TRIES = (60 // DEFAULT_OPERATION_RETRY_INTERVAL) * 60
 
 
 def CallAndCollectOpErrors(method, *args, **kwargs):
@@ -58,10 +63,14 @@ def CallAndCollectOpErrors(method, *args, **kwargs):
     return method(*args, **kwargs)
   except apitools_exceptions.HttpError as http_err:
     # Create HttpException locally only to get its human friendly string
-    err_str = str(api_exceptions.HttpException(http_err))
-    raise MiscOperationError, err_str, sys.exc_info()[2]
+    _ReraiseMiscOperationError(api_exceptions.HttpException(http_err))
   except (OperationError, OperationTimeoutError, app_exceptions.Error) as err:
-    raise MiscOperationError, str(err), sys.exc_info()[2]
+    _ReraiseMiscOperationError(err)
+
+
+def _ReraiseMiscOperationError(err):
+  """Transform and re-raise error helper."""
+  exceptions.reraise(MiscOperationError(six.text_type(err)))
 
 
 class MiscOperationError(exceptions.Error):
@@ -149,17 +158,22 @@ def _GetInsertTime(operation):
 class AppEngineOperationPoller(waiter.OperationPoller):
   """A poller for appengine operations."""
 
-  def __init__(self, operation_service):
+  def __init__(self, operation_service, operation_metadata_type=None):
     """Sets up poller for appengine operations.
 
     Args:
       operation_service: apitools.base.py.base_api.BaseApiService, api service
         for retrieving information about ongoing operation.
+      operation_metadata_type: Message class for the Operation metadata (for
+        instance, OperationMetadataV1, or OperationMetadataV1Beta).
     """
     self.operation_service = operation_service
+    self.operation_metadata_type = operation_metadata_type
+    self.warnings_seen = set()
 
   def IsDone(self, operation):
     """Overrides."""
+    self._LogNewWarnings(operation)
     if operation.done:
       log.debug('Operation [{0}] complete. Result: {1}'.format(
           operation.name,
@@ -183,7 +197,18 @@ class AppEngineOperationPoller(waiter.OperationPoller):
     """
     request_type = self.operation_service.GetRequestType('Get')
     request = request_type(name=operation_ref.RelativeName())
-    return self.operation_service.Get(request)
+    operation = self.operation_service.Get(request)
+    self._LogNewWarnings(operation)
+    return operation
+
+  def _LogNewWarnings(self, operation):
+    if self.operation_metadata_type:
+      # Log any new warnings to the end user.
+      new_warnings = GetWarningsFromOperation(
+          operation, self.operation_metadata_type) - self.warnings_seen
+      for warning in new_warnings:
+        log.warning(warning + '\n')
+        self.warnings_seen.add(warning)
 
   def GetResult(self, operation):
     """Simply returns the operation.
@@ -197,11 +222,55 @@ class AppEngineOperationPoller(waiter.OperationPoller):
     return operation
 
 
+class AppEngineOperationBuildPoller(AppEngineOperationPoller):
+  """Waits for a build to be present, or for the operation to finish."""
+
+  def __init__(self, operation_service, operation_metadata_type):
+    """Sets up poller for appengine operations.
+
+    Args:
+      operation_service: apitools.base.py.base_api.BaseApiService, api service
+        for retrieving information about ongoing operation.
+      operation_metadata_type: Message class for the Operation metadata (for
+        instance, OperationMetadataV1, or OperationMetadataV1Beta).
+    """
+    super(AppEngineOperationBuildPoller, self).__init__(operation_service,
+                                                        operation_metadata_type)
+
+  def IsDone(self, operation):
+    if GetBuildFromOperation(operation, self.operation_metadata_type):
+      return True
+    return super(AppEngineOperationBuildPoller, self).IsDone(operation)
+
+
+def GetMetadataFromOperation(operation, operation_metadata_type):
+  if not operation.metadata:
+    return None
+  return encoding.JsonToMessage(
+      operation_metadata_type,
+      encoding.MessageToJson(operation.metadata))
+
+
+def GetBuildFromOperation(operation, operation_metadata_type):
+  metadata = GetMetadataFromOperation(operation, operation_metadata_type)
+  if not metadata or not metadata.createVersionMetadata:
+    return None
+  return metadata.createVersionMetadata.cloudBuildId
+
+
+def GetWarningsFromOperation(operation, operation_metadata_type):
+  metadata = GetMetadataFromOperation(operation, operation_metadata_type)
+  if not metadata:
+    return set()
+  return set(warning for warning in metadata.warning)
+
+
 def WaitForOperation(operation_service, operation,
                      max_retries=None,
                      retry_interval=None,
                      operation_collection='appengine.apps.operations',
-                     message=None):
+                     message=None,
+                     poller=None):
   """Wait until the operation is complete or times out.
 
   Args:
@@ -211,6 +280,7 @@ def WaitForOperation(operation_service, operation,
     retry_interval: Frequency of polling in seconds
     operation_collection: The resource collection of the operation.
     message: str, the message to display while progress tracker displays.
+    poller: AppEngineOperationPoller to poll with, defaulting to done.
   Returns:
     The operation resource when it has completed
   Raises:
@@ -218,7 +288,7 @@ def WaitForOperation(operation_service, operation,
     OperationTimeoutError: when the operation polling times out
 
   """
-  poller = AppEngineOperationPoller(operation_service)
+  poller = poller or AppEngineOperationPoller(operation_service)
   if poller.IsDone(operation):
     return poller.GetResult(operation)
   operation_ref = resources.REGISTRY.ParseRelativeName(

@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 # limitations under the License.
 """Definition for conversion between legacy YAML and the API JSON formats."""
 
+from __future__ import absolute_import
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import converters as c
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import schema as s
 
@@ -65,8 +66,16 @@ SCHEMA = s.Message(
             'target_read_bytes_per_sec'),
         target_disk_read_ops_per_sec=s.Value(
             'target_read_ops_per_sec'),
-        target_request_count_per_sec=s.Value(),
-        target_concurrent_requests=s.Value()),
+        target_request_count_per_sec=s.Value(
+            'target_request_count_per_second'),
+        target_concurrent_requests=s.Value(),
+        custom_metrics=s.RepeatedField(element=s.Message(
+            metric_name=s.Value(converter=c.ToJsonString),
+            target_type=s.Value(converter=c.ToJsonString),
+            target_utilization=s.Value('target_utilization'),
+            single_instance_assignment=s.Value('single_instance_assignment'),
+            filter=s.Value(converter=c.ToJsonString))),
+    ),
     basic_scaling=s.Message(
         idle_timeout=s.Value(converter=c.IdleTimeoutToDuration),
         max_instances=s.Value(converter=c.StringToInt())),
@@ -77,7 +86,9 @@ SCHEMA = s.Message(
         rollout_strategy=s.Value(
             converter=c.ConvertEndpointsRolloutStrategyToEnum),
         config_id=s.Value(),
+        trace_sampling=s.Value('disable_trace_sampling', converter=c.Not),
     ),
+    entrypoint=s.Value(converter=c.ConvertEntrypoint),
     env=s.Value(),
     env_variables=s.Map(),
     error_handlers=s.RepeatedField(element=s.Message(
@@ -140,6 +151,7 @@ SCHEMA = s.Message(
     libraries=s.RepeatedField(element=s.Message(
         version=s.Value(converter=c.ToJsonString),
         name=s.Value(converter=c.ToJsonString))),
+    main=s.Value('runtime_main_executable_path', converter=c.ToJsonString),
     manual_scaling=s.Message(
         instances=s.Value(converter=c.StringToInt())),
     network=s.Message(
@@ -150,6 +162,10 @@ SCHEMA = s.Message(
                                                         c.ToJsonString)),
         session_affinity=s.Value()
     ),
+    vpc_access_connector=s.Message(
+        name=s.Value(converter=c.ToJsonString),
+    ),
+    zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)),
     nobuild_files=s.Value('nobuild_files_regex', converter=c.ToJsonString),
     resources=s.Message(
         memory_gb=s.Value(),

@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,12 +14,16 @@
 # limitations under the License.
 
 """A module that converts API exceptions to core exceptions."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import collections
+import io
 import json
 import logging
 import string
-import StringIO
-import sys
-
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -29,12 +34,76 @@ from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import encoding
 
+import six
 
-# The underlying formatter treats bare : specially. It is escaped before passing
-# to the formatter as '{'+_ESCAPED_COLON+'}' and then reconstituted either as a
-# formatter variable named _ESCAPED_COLON or as the literal string
-# '{'+_ESCAPED_COLON+'}'.
-_ESCAPED_COLON = '?COLON?'
+
+# Some formatter characters are special inside {...}. The _Escape / _Expand pair
+# escapes special chars inside {...} and ignores them outside.
+_ESCAPE = '~'  # '\x01'
+_ESCAPED_COLON = 'C'
+_ESCAPED_ESCAPE = 'E'
+_ESCAPED_LEFT_CURLY = 'L'
+_ESCAPED_RIGHT_CURLY = 'R'
+
+
+def _Escape(s):
+  """Return s with format special characters escaped."""
+  r = []
+  n = 0
+  for c in s:
+    if c == _ESCAPE:
+      r.append(_ESCAPE + _ESCAPED_ESCAPE + _ESCAPE)
+    elif c == ':':
+      r.append(_ESCAPE + _ESCAPED_COLON + _ESCAPE)
+    elif c == '{':
+      if n > 0:
+        r.append(_ESCAPE + _ESCAPED_LEFT_CURLY + _ESCAPE)
+      else:
+        r.append('{')
+      n += 1
+    elif c == '}':
+      n -= 1
+      if n > 0:
+        r.append(_ESCAPE + _ESCAPED_RIGHT_CURLY + _ESCAPE)
+      else:
+        r.append('}')
+    else:
+      r.append(c)
+  return ''.join(r)
+
+
+def _Expand(s):
+  """Return s with escaped format special characters expanded."""
+  r = []
+  n = 0
+  i = 0
+  while i < len(s):
+    c = s[i]
+    i += 1
+    if c == _ESCAPE and i + 1 < len(s) and s[i + 1] == _ESCAPE:
+      c = s[i]
+      i += 2
+      if c == _ESCAPED_LEFT_CURLY:
+        if n > 0:
+          r.append(_ESCAPE + _ESCAPED_LEFT_CURLY)
+        else:
+          r.append('{')
+        n += 1
+      elif c == _ESCAPED_RIGHT_CURLY:
+        n -= 1
+        if n > 0:
+          r.append(_ESCAPE + _ESCAPED_RIGHT_CURLY)
+        else:
+          r.append('}')
+      elif n > 0:
+        r.append(s[i - 3:i])
+      elif c == _ESCAPED_COLON:
+        r.append(':')
+      elif c == _ESCAPED_ESCAPE:
+        r.append(_ESCAPE)
+    else:
+      r.append(c)
+  return ''.join(r)
 
 
 class _JsonSortedDict(dict):
@@ -52,6 +121,8 @@ class HttpErrorPayload(string.Formatter):
     api_version: The url version.
     content: The dumped JSON content.
     details: A list of {'@type': TYPE, 'detail': STRING} typed details.
+    violations: map of subject to error message for that subject.
+    field_violations: map of field name to error message for that field.
     error_info: content['error'].
     instance_name: The url instance name.
     message: The human readable error message.
@@ -94,6 +165,8 @@ class HttpErrorPayload(string.Formatter):
     self.api_version = ''
     self.content = {}
     self.details = []
+    self.violations = {}
+    self.field_violations = {}
     self.error_info = None
     self.instance_name = ''
     self.resource_item = ''
@@ -103,7 +176,7 @@ class HttpErrorPayload(string.Formatter):
     self.status_description = ''
     self.status_message = ''
     self.url = ''
-    if isinstance(http_error, basestring):
+    if isinstance(http_error, six.string_types):
       self.message = http_error
     else:
       self._ExtractResponseAndJsonContent(http_error)
@@ -128,17 +201,21 @@ class HttpErrorPayload(string.Formatter):
     Returns:
       The value of field_name for string.Formatter.format().
     """
-    if field_name.startswith('?'):
-      if field_name == '?':
-        return self._value, field_name
-      if field_name == _ESCAPED_COLON:
-        return ':', field_name
-    parts = field_name.replace('{' + _ESCAPED_COLON + '}', ':').split('?', 1)
+    field_name = _Expand(field_name)
+    if field_name == '?':
+      return self._value, field_name
+    parts = field_name.split('?', 1)
     subparts = parts.pop(0).split(':', 1)
     name = subparts.pop(0)
     printer_format = subparts.pop(0) if subparts else None
     recursive_format = parts.pop(0) if parts else None
-    if '.' in name:
+    if name.startswith('field_violations.'):
+      _, field = name.split('.', 1)
+      value = self.field_violations.get(field)
+    elif name.startswith('violations.'):
+      _, subject = name.split('.', 1)
+      value = self.violations.get(subject)
+    elif '.' in name:
       if name.startswith('.'):
         # Only check self.content.
         check_payload_attributes = False
@@ -159,14 +236,15 @@ class HttpErrorPayload(string.Formatter):
       value = None
     if not value and not isinstance(value, (int, float)):
       return '', name
-    if printer_format or not isinstance(value, (basestring, int, float)):
-      buf = StringIO.StringIO()
+    if printer_format or not isinstance(
+        value, (six.text_type, six.binary_type, float) + six.integer_types):
+      buf = io.StringIO()
       resource_printer.Print(
           value, printer_format or 'default', out=buf, single=True)
       value = buf.getvalue().strip()
     if recursive_format:
       self._value = value
-      value = self.format(recursive_format)
+      value = self.format(_Expand(recursive_format))
     return value, name
 
   def _ExtractResponseAndJsonContent(self, http_error):
@@ -186,6 +264,8 @@ class HttpErrorPayload(string.Formatter):
         self.status_description = self.error_info.get('status', '')
       self.status_message = self.error_info.get('message', '')
       self.details = self.error_info.get('details', [])
+      self.violations = self._ExtractViolations(self.details)
+      self.field_violations = self._ExtractFieldViolations(self.details)
     except (KeyError, TypeError, ValueError):
       self.status_message = content
     except AttributeError:
@@ -230,26 +310,26 @@ class HttpErrorPayload(string.Formatter):
     """Makes a generic human readable message from the HttpError."""
     description = self._MakeDescription()
     if self.status_message:
-      return u'{0}: {1}'.format(description, self.status_message)
+      return '{0}: {1}'.format(description, self.status_message)
     return description
 
   def _MakeDescription(self):
     """Makes description for error by checking which fields are filled in."""
     if self.status_code and self.resource_item and self.instance_name:
       if self.status_code == 403:
-        return (u'User [{0}] does not have permission to access {1} [{2}] (or '
-                u'it may not exist)').format(
+        return ('User [{0}] does not have permission to access {1} [{2}] (or '
+                'it may not exist)').format(
                     properties.VALUES.core.account.Get(),
                     self.resource_item, self.instance_name)
       if self.status_code == 404:
-        return u'{0} [{1}] not found'.format(
+        return '{0} [{1}] not found'.format(
             self.resource_item.capitalize(), self.instance_name)
       if self.status_code == 409:
         if self.resource_item == 'project':
-          return (u'Resource in project [{0}] '
-                  u'is the subject of a conflict').format(self.instance_name)
+          return ('Resource in project [{0}] '
+                  'is the subject of a conflict').format(self.instance_name)
         else:
-          return u'{0} [{1}] is the subject of a conflict'.format(
+          return '{0} [{1}] is the subject of a conflict'.format(
               self.resource_item.capitalize(), self.instance_name)
 
     description = self.status_description
@@ -258,7 +338,72 @@ class HttpErrorPayload(string.Formatter):
         description = description[:-1]
       return description
     # Example: 'HTTPError 403'
-    return u'HTTPError {0}'.format(self.status_code)
+    return 'HTTPError {0}'.format(self.status_code)
+
+  def _ExtractViolations(self, details):
+    """Extracts a map of violations from the given error's details.
+
+    Args:
+      details: JSON-parsed details field from parsed json of error.
+
+    Returns:
+      Map[str, str] sub -> error description. The iterator of it is ordered by
+      the order the subjects first appear in the errror.
+    """
+    results = collections.OrderedDict()
+    for detail in details:
+      if 'violations' not in detail:
+        continue
+      violations = detail['violations']
+      if not isinstance(violations, list):
+        continue
+      sub = detail.get('subject')
+      for violation in violations:
+        try:
+          local_sub = violation.get('subject')
+          subject = sub or local_sub
+          if subject:
+            if subject in results:
+              results[subject] += '\n' + violation['description']
+            else:
+              results[subject] = violation['description']
+        except (KeyError, TypeError):
+          # If violation or description are the wrong type or don't exist.
+          pass
+    return results
+
+  def _ExtractFieldViolations(self, details):
+    """Extracts a map of field violations from the given error's details.
+
+    Args:
+      details: JSON-parsed details field from parsed json of error.
+
+    Returns:
+      Map[str, str] field (in dotted format) -> error description.
+      The iterator of it is ordered by the order the fields first
+      appear in the error.
+    """
+    results = collections.OrderedDict()
+    for deet in details:
+      if 'fieldViolations' not in deet:
+        continue
+      violations = deet['fieldViolations']
+      if not isinstance(violations, list):
+        continue
+      f = deet.get('field')
+      for viol in violations:
+        try:
+          local_f = viol.get('field')
+          field = f or local_f
+          if field:
+            if field in results:
+              results[field] += '\n' + viol['description']
+            else:
+              results[field] = viol['description']
+        except (KeyError, TypeError):
+          # If violation or description are the wrong type or don't exist.
+          pass
+    return results
 
 
 class HttpException(core_exceptions.Error):
@@ -282,12 +427,14 @@ class HttpException(core_exceptions.Error):
       error_format = '{message}{details?\n{?}}'
       if log.GetVerbosity() <= logging.DEBUG:
         error_format += '{.debugInfo?\n{?}}'
-    return self.payload.format(unicode(error_format).replace(
-        ':', '{' + _ESCAPED_COLON + '}'))
+    return _Expand(self.payload.format(_Escape(error_format)))
 
   @property
   def message(self):
-    return unicode(self)
+    return six.text_type(self)
+
+  def __hash__(self):
+    return hash(self.message)
 
   def __eq__(self, other):
     if isinstance(other, HttpException):
@@ -323,9 +470,7 @@ def CatchHTTPErrorRaiseHTTPException(format_str=None):
         return run_func(*args, **kwargs)
       except apitools_exceptions.HttpError as error:
         exc = HttpException(error, format_str)
-        unused_type, unused_value, traceback = sys.exc_info()
-        raise HttpException, unicode(exc), traceback
-
+        core_exceptions.reraise(exc)
     return Wrapper
 
   return CatchHTTPErrorRaiseHTTPExceptionDecorator

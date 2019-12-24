@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +17,7 @@
 import enum
 
 
-BASE_URL = 'https://categorymanager.googleapis.com/v1alpha1/'
+BASE_URL = 'https://categorymanager.googleapis.com/'
 DOCS_URL = 'https://cloud.google.com/'
 
 
@@ -27,51 +28,21 @@ class Collections(enum.Enum):
       'assets',
       'assets/{assetId}',
       {},
-      ['assetId']
+      [u'assetId'],
+      True
   )
   ASSETS_TAG = (
       'assets.tag',
       'assets/{assetId}/annotationTag',
       {},
-      ['assetId']
-  )
-  OPERATIONS = (
-      'operations',
-      '{+name}',
-      {
-          '':
-              'operations/{operationsId}',
-      },
-      [u'name']
-  )
-  TAXONOMYSTORES = (
-      'taxonomyStores',
-      'taxonomyStores/{taxonomyStoresId}',
-      {},
-      [u'taxonomyStoresId']
-  )
-  TAXONOMYSTORES_TAXONOMIES = (
-      'taxonomyStores.taxonomies',
-      '{+name}',
-      {
-          '':
-              'taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}',
-      },
-      [u'name']
-  )
-  TAXONOMYSTORES_TAXONOMIES_ANNOTATIONS = (
-      'taxonomyStores.taxonomies.annotations',
-      '{+name}',
-      {
-          '':
-              'taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}/'
-              'annotations/{annotationsId}',
-      },
-      [u'name']
+      [u'assetId'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

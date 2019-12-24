@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +15,15 @@
 
 """CSV resource printer."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import encoding
+
+import six
 
 
 class CsvPrinter(resource_printer_base.ResourcePrinter):
@@ -103,12 +110,12 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
         val = ''
       elif isinstance(col, dict):
         val = self._delimiter.join(
-            [self._QuoteField(u'{0}={1}'.format(
+            [self._QuoteField('{0}={1}'.format(
                 encoding.Decode(k), encoding.Decode(v)))
-             for k, v in sorted(col.iteritems())])
+             for k, v in sorted(six.iteritems(col))])
       elif isinstance(col, list):
         val = self._delimiter.join(
-            [self._QuoteField(encoding.Decode(x)) for x in col])
+            [self._QuoteField(encoding.Decode(x)) if x else '' for x in col])
       elif isinstance(col, float):
         val = self._QuoteField(resource_transform.TransformFloat(col))
       else:

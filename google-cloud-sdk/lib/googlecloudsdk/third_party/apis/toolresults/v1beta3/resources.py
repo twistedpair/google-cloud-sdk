@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,44 +28,68 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectId}',
       {},
-      [u'projectId']
+      [u'projectId'],
+      True
   )
   PROJECTS_HISTORIES = (
       'projects.histories',
       'projects/{projectId}/histories/{historyId}',
       {},
-      [u'projectId', u'historyId']
+      [u'projectId', u'historyId'],
+      True
   )
   PROJECTS_HISTORIES_EXECUTIONS = (
       'projects.histories.executions',
       'projects/{projectId}/histories/{historyId}/executions/{executionId}',
       {},
-      [u'projectId', u'historyId', u'executionId']
+      [u'projectId', u'historyId', u'executionId'],
+      True
   )
   PROJECTS_HISTORIES_EXECUTIONS_CLUSTERS = (
       'projects.histories.executions.clusters',
       'projects/{projectId}/histories/{historyId}/executions/{executionId}/'
       'clusters/{clusterId}',
       {},
-      [u'projectId', u'historyId', u'executionId', u'clusterId']
+      [u'projectId', u'historyId', u'executionId', u'clusterId'],
+      True
+  )
+  PROJECTS_HISTORIES_EXECUTIONS_ENVIRONMENTS = (
+      'projects.histories.executions.environments',
+      'projects/{projectId}/histories/{historyId}/executions/{executionId}/'
+      'environments/{environmentId}',
+      {},
+      [u'projectId', u'historyId', u'executionId', u'environmentId'],
+      True
   )
   PROJECTS_HISTORIES_EXECUTIONS_STEPS = (
       'projects.histories.executions.steps',
       'projects/{projectId}/histories/{historyId}/executions/{executionId}/'
       'steps/{stepId}',
       {},
-      [u'projectId', u'historyId', u'executionId', u'stepId']
+      [u'projectId', u'historyId', u'executionId', u'stepId'],
+      True
   )
   PROJECTS_HISTORIES_EXECUTIONS_STEPS_PERFSAMPLESERIES = (
       'projects.histories.executions.steps.perfSampleSeries',
       'projects/{projectId}/histories/{historyId}/executions/{executionId}/'
       'steps/{stepId}/perfSampleSeries/{sampleSeriesId}',
       {},
-      [u'projectId', u'historyId', u'executionId', u'stepId', u'sampleSeriesId']
+      [u'projectId', u'historyId', u'executionId', u'stepId', u'sampleSeriesId'],
+      True
+  )
+  PROJECTS_HISTORIES_EXECUTIONS_STEPS_TESTCASES = (
+      'projects.histories.executions.steps.testCases',
+      'projects/{projectId}/histories/{historyId}/executions/{executionId}/'
+      'steps/{stepId}/testCases/{testCaseId}',
+      {},
+      [u'projectId', u'historyId', u'executionId', u'stepId', u'testCaseId'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

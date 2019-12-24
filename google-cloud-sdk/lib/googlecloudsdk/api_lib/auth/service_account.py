@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Manages logic for service accounts."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import io
 import json
 import os
@@ -21,7 +26,9 @@ import os
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
+
 from oauth2client import service_account
 
 
@@ -43,7 +50,7 @@ class BadCredentialJsonFileException(Error):
 
 def CredentialsFromAdcFile(filename):
   """Load credentials from given service account json file."""
-  content = files.GetFileContents(filename)
+  content = files.ReadFileContents(filename)
   try:
     json_key = json.loads(content)
     return CredentialsFromAdcDict(json_key)
@@ -71,8 +78,7 @@ def CredentialsFromP12File(filename, account, password=None):
   """Create p12 service account credentials from given file."""
 
   try:
-    with open(filename, 'rb') as f:
-      private_key = f.read()
+    private_key = files.ReadBinaryFileContents(filename)
   except EnvironmentError as e:
     raise BadCredentialFileException('Could not read file {0}'.format(e))
 
@@ -92,7 +98,7 @@ def CredentialsFromP12Key(private_key, account, password=None):
         private_key_password=password,
         scopes=config.CLOUDSDK_SCOPES)
   except NotImplementedError:
-    if not os.environ.get('CLOUDSDK_PYTHON_SITEPACKAGES'):
+    if not encoding.GetEncodedValue(os.environ, 'CLOUDSDK_PYTHON_SITEPACKAGES'):
       raise UnsupportedCredentialsType(
           ('PyOpenSSL is not available. If you have already installed '
            'PyOpenSSL, you will need to enable site packages by '

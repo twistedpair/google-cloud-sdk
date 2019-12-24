@@ -129,8 +129,8 @@ def _ParseSegmentTimestamp(timestamp_string):
                        'amount and units (e.g. 1m3.456s, 2m, 14.4353s)'.format(
                            timestamp_string))
   else:
-    log.warn("Time unit missing ('s', 'm','h') for segment timestamp [{}], "
-             "parsed as microseconds.".format(timestamp_string))
+    log.warning("Time unit missing ('s', 'm','h') for segment timestamp [{}], "
+                "parsed as microseconds.".format(timestamp_string))
 
   if microseconds < 0:
     raise ValueError('Could not parse duration string [{}]. Timestamp must be'

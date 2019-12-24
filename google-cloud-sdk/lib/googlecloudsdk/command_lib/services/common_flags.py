@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,13 +15,19 @@
 
 """Common flags for the consumers subcommand group."""
 
-from googlecloudsdk.api_lib.service_management import services_util
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+from googlecloudsdk.api_lib.services import services_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
 
 
+_SERVICES_LEGACY_LIST_COMMAND = ('services list --format=disable '
+                                 '--flatten=serviceName')
 _SERVICES_LIST_COMMAND = ('beta services list --format=disable '
-                          '--flatten=serviceName')
+                          '--flatten=config.name')
 
 
 class ConsumerServiceCompleter(completers.ListCommandCompleter):
@@ -29,6 +36,16 @@ class ConsumerServiceCompleter(completers.ListCommandCompleter):
     super(ConsumerServiceCompleter, self).__init__(
         collection=services_util.SERVICES_COLLECTION,
         list_command=_SERVICES_LIST_COMMAND,
+        flags=['enabled'],
+        **kwargs)
+
+
+class ConsumerServiceLegacyCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(ConsumerServiceLegacyCompleter, self).__init__(
+        collection=services_util.SERVICES_COLLECTION,
+        list_command=_SERVICES_LEGACY_LIST_COMMAND,
         flags=['enabled'],
         **kwargs)
 

@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,12 @@
 # limitations under the License.
 
 """Maps from proxy type names to httplib2.socks enum values, and vice versa."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import six
 import socks
 
 
@@ -24,4 +31,4 @@ PROXY_TYPE_MAP = {
 }
 
 
-REVERSE_PROXY_TYPE_MAP = dict((v, k) for k, v in PROXY_TYPE_MAP.iteritems())
+REVERSE_PROXY_TYPE_MAP = dict((v, k) for k, v in six.iteritems(PROXY_TYPE_MAP))

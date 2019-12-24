@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,12 +14,19 @@
 # limitations under the License.
 """Constructs to poll compute operations."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
+import six
+from six.moves import zip
 
 
-class Error(core_exceptions.Error):
+class Error(exceptions.Error):
   """Errors raised by this module."""
 
 
@@ -98,7 +106,8 @@ class OperationBatch(object):
     return iter(self._operation_refs)
 
   def __str__(self):
-    return '[{0}]'.format(', '.join(str(r) for r in self._operation_refs))
+    return '[{0}]'.format(', '.join(
+        six.text_type(r) for r in self._operation_refs))
 
 
 class BatchPoller(waiter.OperationPoller):

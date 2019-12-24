@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,11 +12,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Backend service."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 
 
 class BackendService(object):
@@ -77,19 +81,21 @@ class BackendService(object):
                   project=self.ref.project,
                   backendService=self.ref.Name()))
 
-  def _MakeSetSecurityPolicyRequestTuple(self, security_policy):
+  def MakeSetSecurityPolicyRequestTuple(self, security_policy):
     region = getattr(self.ref, 'region', None)
     if region is not None:
-      raise exceptions.InvalidArgumentException(
+      raise calliope_exceptions.InvalidArgumentException(
           'region', 'Can only set security policy for global backend services.')
 
     return (
-        self._client.backendServices, 'SetSecurityPolicy',
+        self._client.backendServices,
+        'SetSecurityPolicy',
         self._messages.ComputeBackendServicesSetSecurityPolicyRequest(
             securityPolicyReference=self._messages.SecurityPolicyReference(
                 securityPolicy=security_policy),
             project=self.ref.project,
-            backendService=self.ref.Name()))
+            backendService=self.ref.Name()),
+    )
 
   def Delete(self, only_generate_request=False):
     requests = [self._MakeDeleteRequestTuple()]
@@ -141,7 +147,7 @@ class BackendService(object):
 
   def SetSecurityPolicy(self, security_policy='', only_generate_request=False):
     """Sets the security policy for the backend service."""
-    requests = [self._MakeSetSecurityPolicyRequestTuple(security_policy)]
+    requests = [self.MakeSetSecurityPolicyRequestTuple(security_policy)]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests

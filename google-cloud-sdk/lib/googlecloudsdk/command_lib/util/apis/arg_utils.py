@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,14 +14,26 @@
 # limitations under the License.
 
 """Utilities for generating and parsing arguments from API fields."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from collections import OrderedDict
 import re
 
 from apitools.base.protorpclite import messages
+from apitools.base.py import encoding
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_property
+from googlecloudsdk.core.util import http_encoding
+
+import six
+
+# Used to determine if a value has been set for an argument
+UNSPECIFIED = object()
 
 
 class Error(Exception):
@@ -34,21 +47,39 @@ class UnknownFieldError(Error):
   def __init__(self, field_name, message):
     super(UnknownFieldError, self).__init__(
         'Field [{}] not found in message [{}]. Available fields: [{}]'
-        .format(field_name, message.__name__,
+        .format(field_name, message.__class__.__name__,
                 ', '.join(f.name for f in message.all_fields())))
 
 
-def GetFieldFromMessage(message, field_path):
-  """Digs into the given message to extract the dotted field.
+class InvalidFieldPathError(Error):
+  """The referenced field path could not be found in the message object."""
 
-  If the field does not exist, and error is logged.
+  def __init__(self, field_path, message, reason):
+    super(InvalidFieldPathError, self).__init__(
+        'Invalid field path [{}] for message [{}]. Details: [{}]'
+        .format(field_path, message.__class__.__name__, reason))
+
+
+class ArgumentGenerationError(Error):
+  """Generic error when we can't auto generate an argument for an api field."""
+
+  def __init__(self, field_name, reason):
+    super(ArgumentGenerationError, self).__init__(
+        'Failed to generate argument for field [{}]: {}'
+        .format(field_name, reason))
+
+
+def GetFieldFromMessage(message, field_path):
+  """Extract the field object from the message using a dotted field path.
+
+  If the field does not exist, an error is logged.
 
   Args:
     message: The apitools message to dig into.
     field_path: str, The dotted path of attributes and sub-attributes.
 
   Returns:
-    The Field type.
+    The Field object.
   """
   fields = field_path.split('.')
   for f in fields[:-1]:
@@ -56,8 +87,66 @@ def GetFieldFromMessage(message, field_path):
   return _GetField(message, fields[-1])
 
 
+def GetFieldValueFromMessage(message, field_path):
+  """Extract the value of the field given a dotted field path.
+
+  If the field_path does not exist, an error is logged.
+
+  Args:
+    message: The apitools message to dig into.
+    field_path: str, The dotted path of attributes and sub-attributes.
+
+  Raises:
+    InvalidFieldPathError: When the path is invalid.
+
+  Returns:
+    The value or if not set, None.
+  """
+  root_message = message
+  fields = field_path.split('.')
+  for i, f in enumerate(fields):
+    index_found = re.match(r'(.+)\[(\d+)\]$', f)
+    if index_found:
+      # Split field path segment (e.g. abc[1]) into abc and 1.
+      f, index = index_found.groups()
+      index = int(index)
+
+    try:
+      field = message.field_by_name(f)
+    except KeyError:
+      raise InvalidFieldPathError(field_path, root_message,
+                                  UnknownFieldError(f, message))
+    if index_found:
+      if not field.repeated:
+        raise InvalidFieldPathError(
+            field_path, root_message,
+            'Index cannot be specified for non-repeated field [{}]'.format(f))
+    else:
+      if field.repeated and i < len(fields) - 1:
+        raise InvalidFieldPathError(
+            field_path, root_message,
+            'Index needs to be specified for repeated field [{}]'.format(f))
+
+    message = getattr(message, f)
+    if message and index_found:
+      message = message[index] if index < len(message) else None
+
+    if not message and i < len(fields) - 1:
+      if isinstance(field, messages.MessageField):
+        # Create an instance of the message so we can continue down the path, to
+        # verify if the path is valid.
+        message = field.type()
+      else:
+        raise InvalidFieldPathError(
+            field_path, root_message,
+            '[{}] is not a valid field on field [{}]'
+            .format(f, field.type.__name__))
+
+  return message
+
+
 def SetFieldInMessage(message, field_path, value):
-  """Sets the given field field in the message object.
+  """Sets the given field in the message object.
 
   Args:
     message: A constructed apitools message object to inject the value into.
@@ -74,6 +163,13 @@ def SetFieldInMessage(message, field_path, value):
         sub_message = [sub_message]
       setattr(message, f, sub_message)
     message = sub_message[0] if is_repeated else sub_message
+  field_type = _GetField(message, fields[-1]).type
+  if isinstance(value, dict):
+    value = encoding.PyValueToMessage(field_type, value)
+  if isinstance(value, list):
+    for i, item in enumerate(value):
+      if isinstance(item, dict):
+        value[i] = encoding.PyValueToMessage(field_type, item)
   setattr(message, fields[-1], value)
 
 
@@ -93,7 +189,10 @@ DEFAULT_PARAMS = {'project': properties.VALUES.core.project.Get,
 
 def GetFromNamespace(namespace, arg_name, fallback=None, use_defaults=False):
   """Gets the given argument from the namespace."""
-  value = getattr(namespace, arg_name.replace('-', '_'), None)
+  if arg_name.startswith('--'):
+    arg_name = arg_name[2:]
+  normalized_arg_name = arg_name.replace('-', '_')
+  value = getattr(namespace, normalized_arg_name, None)
   if not value and fallback:
     value = fallback()
   if not value and use_defaults:
@@ -103,15 +202,46 @@ def GetFromNamespace(namespace, arg_name, fallback=None, use_defaults=False):
 
 def Limit(method, namespace):
   """Gets the value of the limit flag (if present)."""
-  if method.IsPageableList() and method.ListItemField():
+  if (hasattr(namespace, 'limit') and method.IsPageableList() and
+      method.ListItemField()):
     return getattr(namespace, 'limit')
 
 
 def PageSize(method, namespace):
   """Gets the value of the page size flag (if present)."""
-  if (method.IsPageableList() and method.ListItemField() and
-      method.BatchPageSizeField()):
+  if (hasattr(namespace, 'page_size') and method.IsPageableList() and
+      method.ListItemField() and method.BatchPageSizeField()):
     return getattr(namespace, 'page_size')
+
+
+class RepeatedMessageBindableType(object):
+  """An interface for custom type generators that bind directly to a message.
+
+  An argparse type function converts the parsed string into an object. Some
+  types (like ArgDicts) can only be generated once we know what message it will
+  be bound to (because the spec of the ArgDict depends on the fields and types
+  in the message. This interface allows encapsulating the logic to generate a
+  type function at the point when the message it is being bound to is known.
+  """
+
+  def GenerateType(self, message):
+    """Generates an argparse type function to use to parse the argument.
+
+    Args:
+      message: The apitools message class.
+    """
+    pass
+
+  def Action(self):
+    """The argparse action to use for this argument.
+
+    'store' is the default action, but sometimes something like 'append' might
+    be required to allow the argument to be repeated and all values collected.
+
+    Returns:
+      str, The argparse action to use.
+    """
+    return 'store'
 
 
 def GenerateFlag(field, attributes, fix_bools=True, category=None):
@@ -125,6 +255,10 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
       False to just generate them as regular string flags.
     category: The help category to put the flag in.
 
+  Raises:
+    ArgumentGenerationError: When an argument could not be generated from the
+      API field.
+
   Returns:
     calliope.base.Argument, The generated argument.
   """
@@ -133,22 +267,61 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
 
   choices = None
   if attributes.choices is not None:
-    choices = sorted(attributes.choices.keys())
+    choice_map = {c.arg_value: c.help_text for c in attributes.choices}
+    # If help text is provided, give a choice map. Otherwise, just use the
+    # choice values.
+    choices = (choice_map if any(choice_map.values())
+               else sorted(choice_map.keys()))
   elif variant == messages.Variant.ENUM:
     choices = [EnumNameToChoice(name) for name in sorted(field.type.names())]
 
   action = attributes.action
-  if fix_bools and not action and variant == messages.Variant.BOOL:
+  if t == bool and fix_bools and not action:
+    # For boolean flags, we want to create a flag with action 'store_true'
+    # rather than a flag that takes a value and converts it to a boolean. Only
+    # do this if not using a custom action.
     action = 'store_true'
+  # Default action is store if one was not provided.
+  action = action or 'store'
 
-  # Note that a field will never be a message at this point, always a scalar.
   # pylint: disable=g-explicit-bool-comparison, only an explicit False should
   # override this, None just means to do the default.
-  if (field and field.repeated) and attributes.repeated != False:
-    t = arg_parsers.ArgList(element_type=t, choices=choices)
+  repeated = (field and field.repeated) and attributes.repeated != False
+
+  if repeated:
+    if action != 'store':
+      raise ArgumentGenerationError(
+          field.name,
+          'The field is repeated but is using a custom action. You might'
+          ' want to set repeated: False in your arg spec.')
+    if t:
+      # A special ArgDict wrapper type was given, bind it to the message so it
+      # can generate the message from the key/value pairs.
+      if isinstance(t, RepeatedMessageBindableType):
+        action = t.Action()
+        t = t.GenerateType(field.type)
+      # If a simple type was provided, just use a list of that type (even if it
+      # is a message). The type function will be responsible for converting to
+      # the correct value. If type is an ArgList or ArgDict, don't try to wrap
+      # it.
+      elif not isinstance(t, arg_parsers.ArgList):
+        t = arg_parsers.ArgList(element_type=t, choices=choices)
+        # Don't register the choices on the argparse arg because it is validated
+        # by the ArgList.
+        choices = None
+  elif isinstance(t, RepeatedMessageBindableType):
+    raise ArgumentGenerationError(
+        field.name, 'The given type can only be used on repeated fields.')
+
+  if field and not t and action == 'store' and not attributes.processor:
+    # The type is unknown and there is no custom action or processor, we don't
+    # know what to do with this.
+    raise ArgumentGenerationError(
+        field.name, 'The field is of an unknown type. You can specify a type '
+                    'function or a processor to manually handle this argument.')
+
   name = attributes.arg_name
   arg = base.Argument(
-      # TODO(b/38000796): Consider not using camel case for flags.
       name if attributes.is_positional else '--' + name,
       category=category if not attributes.is_positional else None,
       action=action,
@@ -156,7 +329,7 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
       help=attributes.help_text,
       hidden=attributes.hidden,
   )
-  if attributes.default is not None:
+  if attributes.default != UNSPECIFIED:
     arg.kwargs['default'] = attributes.default
   if action != 'store_true':
     # For this special action type, it won't accept a bunch of the common
@@ -166,13 +339,12 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
         metavar.replace('-', '_'))
     arg.kwargs['type'] = t
     arg.kwargs['choices'] = choices
-
   if not attributes.is_positional:
     arg.kwargs['required'] = attributes.required
   return arg
 
 
-def ConvertValue(field, value, attributes=None):
+def ConvertValue(field, value, repeated=None, processor=None, choices=None):
   """Coverts the parsed value into something to insert into a request message.
 
   If a processor is registered, that is called on the value.
@@ -185,43 +357,174 @@ def ConvertValue(field, value, attributes=None):
     field: The apitools field object.
     value: The parsed value. This must be a scalar for scalar fields and a list
       for repeated fields.
-    attributes: yaml_command_schema.Argument, The attributes used to
-        generate the arg.
+    repeated: bool, Set to False if this arg was forced to be singular even
+      though the API field it corresponds to is repeated.
+    processor: A function to process the value before putting it into the
+      message.
+    choices: {str: str} A mapping of argument value, to enum API enum value.
 
   Returns:
     The value to insert into the message.
   """
   # pylint: disable=g-explicit-bool-comparison, only an explicit False should
   # override this, None just means to do the default.
-  arg_repeated = field.repeated and (not attributes or
-                                     attributes.repeated != False)
+  arg_repeated = field.repeated and repeated != False
 
-  if attributes and attributes.processor:
-    value = attributes.processor(value)
+  if processor:
+    value = processor(value)
   else:
-    if attributes and attributes.choices:
+    valid_choices = None
+    if choices:
+      valid_choices = choices.keys()
       if arg_repeated:
-        value = [attributes.choices.get(v, v) for v in value]
+        value = [_MapChoice(choices, v) for v in value]
       else:
-        value = attributes.choices.get(value, value)
+        value = _MapChoice(choices, value)
     if field.variant == messages.Variant.ENUM:
       t = field.type
       if arg_repeated:
-        value = [ChoiceToEnum(v, t) for v in value]
+        value = [ChoiceToEnum(v, t, valid_choices=valid_choices) for v in value]
       else:
-        value = ChoiceToEnum(value, t)
+        value = ChoiceToEnum(value, t, valid_choices=valid_choices)
 
-  if field.repeated and not arg_repeated:
+  if field.repeated and not arg_repeated and not isinstance(value, list):
     # If we manually made this arg singular, but it is actually a repeated field
     # wrap it in a list.
     value = [value]
   return value
 
 
-def ChoiceToEnum(choice, enum_type):
+def _MapChoice(choices, value):
+  if isinstance(value, six.string_types):
+    value = value.lower()
+  return choices.get(value, value)
+
+
+def ParseResourceIntoMessage(ref, method, message, resource_method_params=None,
+                             request_id_field=None, use_relative_name=True):
+  """Set fields in message corresponding to a resource.
+
+  Args:
+    ref: googlecloudsdk.core.resources.Resource, the resource reference.
+    method: the API method.
+    message: apitools Message object.
+    resource_method_params: {str: str}, A mapping of API method parameter name
+      to resource ref attribute name, if any
+    request_id_field: str, the name that the ID of the resource arg takes if the
+      API method params and the resource params don't match.
+    use_relative_name: Used ref.RelativeName() if True, otherwise ref.Name().
+  """
+  resource_method_params = resource_method_params or {}
+  resource_method_params = resource_method_params.copy()
+
+  # This only happens for non-list methods where the API method params don't
+  # match the resource parameters (basically only create methods). In this
+  # case, we re-parse the resource as its parent collection (to fill in the
+  # API parameters, and we insert the name of the resource itself into the
+  # correct position in the body of the request method.
+  if (request_id_field and method.resource_argument_collection.detailed_params
+      != method.request_collection.detailed_params):
+    # Sets the name of the resource in the message object body.
+    SetFieldInMessage(message, request_id_field, ref.Name())
+    # Create a reference for the parent resource to put in the API params.
+    ref = ref.Parent(
+        parent_collection=method.request_collection.full_name)
+
+  ref_name = ref.RelativeName() if use_relative_name else ref.Name()
+  for p in method.params:
+    value = getattr(ref, resource_method_params.pop(p, p), ref_name)
+    SetFieldInMessage(message, p, value)
+  for message_field_name, ref_param_name in resource_method_params.items():
+    value = getattr(ref, ref_param_name, ref_name)
+    SetFieldInMessage(message, message_field_name, value)
+
+
+def ParseStaticFieldsIntoMessage(message, static_fields=None):
+  """Set fields in message corresponding to a dict of static field values.
+
+  Args:
+    message: the Apitools message.
+    static_fields: dict of fields to values.
+  """
+  static_fields = static_fields or {}
+  for field_path, value in six.iteritems(static_fields):
+    field = GetFieldFromMessage(message, field_path)
+    SetFieldInMessage(
+        message, field_path, ConvertValue(field, value))
+
+
+def ParseExistingMessageIntoMessage(message, existing_message, method):
+  """Sets fields in message based on an existing message.
+
+  This function is used for get-modify-update pattern. The request type of
+  update requests would be either the same as the response type of get requests
+  or one field inside the request would be the same as the get response.
+
+  For example:
+  1) update.request_type_name = ServiceAccount
+     get.response_type_name = ServiceAccount
+  2) update.request_type_name = updateInstanceRequest
+     updateInstanceRequest.instance = Instance
+     get.response_type_name = Instance
+
+  If the existing message has the same type as the message to be sent for the
+  request, then return the existing message instead. If they are different, find
+  the field in the message which has the same type as existing_message, then
+  assign exsiting message to that field.
+
+  Args:
+    message: the apitools message to construct a new request.
+    existing_message: the exsting apitools message returned from server.
+    method: APIMethod, the method to generate request for.
+
+  Returns:
+    A modified apitools message to be send to the method.
+  """
+  if type(existing_message) == type(message):  # pylint: disable=unidiomatic-typecheck
+    return existing_message
+
+  # For read-modify-update API calls, the field to modify will exist either in
+  # the request message itself, or in a nested message one level below the
+  # request. Assume at first that it exists in the request message itself:
+  field_path = method.request_field
+  field = message.field_by_name(method.request_field)
+  # If this is not the case, then the field must be nested one level below.
+  if field.message_type != type(existing_message):
+    # We don't know what the name of the field is in the nested message, so we
+    # look through all of them until we find one with the right type.
+    nested_message = field.message_type()
+    for nested_field in nested_message.all_fields():
+      try:
+        if nested_field.message_type == type(existing_message):
+          field_path += '.' + nested_field.name
+          break
+      except AttributeError:  # Ignore non-message fields.
+        pass
+
+  SetFieldInMessage(message, field_path, existing_message)
+  return message
+
+
+def ChoiceToEnum(choice, enum_type, item_type='choice', valid_choices=None):
   """Converts the typed choice into an apitools Enum value."""
-  name = choice.replace('-', '_').upper()
-  return enum_type.lookup_by_name(name)
+  if choice is None:
+    return None
+  name = ChoiceToEnumName(choice)
+  valid_choices = (valid_choices or
+                   [EnumNameToChoice(n) for n in enum_type.names()])
+  try:
+    return enum_type.lookup_by_name(name)
+  except KeyError:
+    raise arg_parsers.ArgumentTypeError(
+        'Invalid {item}: {selection}. Valid choices are: [{values}].'.format(
+            item=item_type,
+            selection=EnumNameToChoice(name),
+            values=', '.join(c for c in sorted(valid_choices))))
+
+
+def ChoiceToEnumName(choice):
+  """Converts a typeable choice to the string representation of the Enum."""
+  return choice.replace('-', '_').upper()
 
 
 def EnumNameToChoice(name):
@@ -229,25 +532,26 @@ def EnumNameToChoice(name):
   return name.replace('_', '-').lower()
 
 
+_LONG_TYPE = long if six.PY2 else int
+
+
 TYPES = {
     messages.Variant.DOUBLE: float,
     messages.Variant.FLOAT: float,
 
-    messages.Variant.INT64: long,
-    messages.Variant.UINT64: long,
-    messages.Variant.SINT64: long,
+    messages.Variant.INT64: _LONG_TYPE,
+    messages.Variant.UINT64: _LONG_TYPE,
+    messages.Variant.SINT64: _LONG_TYPE,
 
     messages.Variant.INT32: int,
     messages.Variant.UINT32: int,
     messages.Variant.SINT32: int,
 
-    messages.Variant.STRING: str,
+    messages.Variant.STRING: six.text_type,
+    messages.Variant.BOOL: bool,
 
-    # TODO(b/38000796): Do something with bytes.
-    messages.Variant.BYTES: None,
-    # For boolean flags, we wan't to create a flag with action 'store_true'
-    # rather than a flag that takes a value and converts it to a boolean.
-    messages.Variant.BOOL: None,
+    # TODO(b/70980549): Do something better with bytes.
+    messages.Variant.BYTES: http_encoding.Encode,
     # For enums, we want to accept upper and lower case from the user, but
     # always compare against lowercase enum choices.
     messages.Variant.ENUM: EnumNameToChoice,
@@ -306,6 +610,7 @@ def GetRecursiveMessageSpec(message):
     field_data = {'description': field_helps.get(field.name)}
     field_data['repeated'] = field.repeated
     if field.variant == messages.Variant.MESSAGE:
+      field_data['type'] = field.type.__name__
       field_data['fields'] = GetRecursiveMessageSpec(field.type)
     else:
       field_data['type'] = field.variant
@@ -363,7 +668,9 @@ class ChoiceEnumMapper(object):
                action=None,
                metavar=None,
                dest=None,
-               default=None):
+               default=None,
+               hidden=False,
+               include_filter=None):
     """Initialize ChoiceEnumMapper.
 
     Args:
@@ -382,18 +689,31 @@ class ChoiceEnumMapper(object):
           see base.ChoiceArgument().
       default: string, string, pass through for base.Argument,
           see base.ChoiceArgument().
+      hidden: boolean, pass through for base.Argument,
+          see base.ChoiceArgument().
+      include_filter: callable, function of type string->bool used to filter
+          enum values from message_enum that should be included in choices.
+          If include_filter returns True for a particular enum value, it will be
+          included otherwise it will be excluded. This is ignored if
+          custom_mappings is specified.
 
     Raises:
       ValueError: If no enum is given, mappings are incomplete
       TypeError: If invalid values are passed for base.Argument or
        custom_mapping
     """
-     # pylint:disable=protected-access
+    # pylint:disable=protected-access
     if not isinstance(message_enum, messages._EnumClass):
       raise ValueError('Invalid Message Enum: [{}]'.format(message_enum))
     self._arg_name = arg_name
     self._enum = message_enum
     self._custom_mappings = custom_mappings
+    if include_filter is not None and not callable(include_filter):
+      raise TypeError('include_filter must be callable received [{}]'.format(
+          include_filter))
+
+    self._filter = include_filter
+    self._filtered_enum = self._enum
     self._ValidateAndParseMappings()
     self._choice_arg = base.ChoiceArgument(
         arg_name,
@@ -403,7 +723,8 @@ class ChoiceEnumMapper(object):
         action=action,
         metavar=metavar,
         dest=dest,
-        default=default)
+        default=default,
+        hidden=hidden)
 
   def _ValidateAndParseMappings(self):
     """Validates and parses choice to enum mappings.
@@ -433,13 +754,18 @@ class ChoiceEnumMapper(object):
         self._ParseCustomMappingsFromStrings()
 
     else:  # No Custom Mappings so do automagic mapping
+      if callable(self._filter):
+        self._filtered_enum = [
+            e for e in self._enum if self._filter(e.name)
+        ]
+
       self._choice_to_enum = {
           EnumNameToChoice(x.name): x
-          for x in self._enum
+          for x in self._filtered_enum
       }
       self._enum_to_choice = {
           y.name: x
-          for x, y in self._choice_to_enum.iteritems()
+          for x, y in six.iteritems(self._choice_to_enum)
       }
       self._choices = sorted(self._choice_to_enum.keys())
 
@@ -456,7 +782,7 @@ class ChoiceEnumMapper(object):
     self._enum_to_choice = {}
     self._choices = OrderedDict()
     for enum_string, (choice, help_str) in sorted(
-        self._custom_mappings.iteritems()):
+        six.iteritems(self._custom_mappings)):
       self._choice_to_enum[choice] = self._enum(enum_string)
       self._enum_to_choice[enum_string] = choice
       self._choices[choice] = help_str
@@ -473,8 +799,9 @@ class ChoiceEnumMapper(object):
     self._choice_to_enum = {}
     self._choices = []
 
-    for enum_string, choice_string in sorted(self._custom_mappings.iteritems()):
-      if not isinstance(choice_string, basestring):
+    for enum_string, choice_string in sorted(
+        six.iteritems(self._custom_mappings)):
+      if not isinstance(choice_string, six.string_types):
         raise TypeError(
             self._CUSTOM_MAPPING_ERROR.format(self._custom_mappings))
       self._choice_to_enum[choice_string] = self._enum(enum_string)
@@ -483,7 +810,7 @@ class ChoiceEnumMapper(object):
 
   def GetChoiceForEnum(self, enum_value):
     """Converts an enum value to a choice argument value."""
-    return self._enum_to_choice.get(str(enum_value))
+    return self._enum_to_choice.get(six.text_type(enum_value))
 
   def GetEnumForChoice(self, choice_value):
     """Converts a mapped string choice value to an enum."""
@@ -498,6 +825,10 @@ class ChoiceEnumMapper(object):
     return self._enum
 
   @property
+  def filtered_enum(self):
+    return self._filtered_enum
+
+  @property
   def choice_arg(self):
     return self._choice_arg
 
@@ -508,3 +839,7 @@ class ChoiceEnumMapper(object):
   @property
   def custom_mappings(self):
     return self._custom_mappings
+
+  @property
+  def include_filter(self):
+    return self._filter

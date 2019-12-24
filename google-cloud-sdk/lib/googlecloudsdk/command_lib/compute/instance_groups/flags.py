@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,14 +14,24 @@
 # limitations under the License.
 """Flags and helpers for the compute instance groups commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import enum
 from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.util import completers
+import six
+
+
+# TODO(b/110191362): resign from passing whole args to functions in this file
 
 
 class RegionalInstanceGroupManagersCompleter(
@@ -52,6 +63,35 @@ class InstanceGroupManagersCompleter(completers.MultiResourceCompleter):
         completers=[RegionalInstanceGroupManagersCompleter,
                     ZonalInstanceGroupManagersCompleter],
         **kwargs)
+
+
+class AutoDeleteFlag(enum.Enum):
+  """CLI flag values for `auto-delete' flag."""
+
+  NEVER = 'never'
+  ON_PERMANENT_INSTANCE_DELETION = 'on-permanent-instance-deletion'
+
+  def GetAutoDeleteEnumValue(self, base_enum):
+    return base_enum(self.name)
+
+  @staticmethod
+  def ValidateAutoDeleteFlag(flag_value, flag_name):
+    values = [
+        auto_delete_flag_value.value
+        for auto_delete_flag_value in AutoDeleteFlag
+    ]
+    if flag_value not in values:
+      raise exceptions.InvalidArgumentException(
+          parameter_name=flag_name,
+          message='Value for [auto-delete] must be [never] or '
+          '[on-permanent-instance-deletion], not [{0}]'.format(flag_value))
+    return AutoDeleteFlag(flag_value)
+
+  @staticmethod
+  def ValidatorWithFlagName(flag_name):
+    def Validator(flag_value):
+      return AutoDeleteFlag.ValidateAutoDeleteFlag(flag_value, flag_name)
+    return Validator
 
 
 def MakeZonalInstanceGroupArg(plural=False):
@@ -178,11 +218,23 @@ def ValidateManagedInstanceGroupScopeArgs(args, resources):
           '--zones', 'Specified zones not in specified region.')
 
 
+def ValidateStatefulDisksDict(stateful_disks, flag_name):
+  """Validate device-name and auto-delete flags in a stateful disk for per-instance configs."""
+  device_names = set()
+  for stateful_disk in stateful_disks or []:
+    if not stateful_disk.get('device-name'):
+      raise exceptions.InvalidArgumentException(
+          parameter_name=flag_name, message='[device-name] is required')
+    if stateful_disk.get('device-name') in device_names:
+      raise exceptions.InvalidArgumentException(
+          parameter_name=flag_name,
+          message='[device-name] `{0}` is not unique in the collection'.format(
+              stateful_disk.get('device-name')))
+    device_names.add(stateful_disk.get('device-name'))
+
+
 def ValidateManagedInstanceGroupStatefulProperties(args):
-  if args.IsSpecified('stateful_disks') and args.IsSpecified(
-      'stateful_names') and not args.GetValue('stateful_names'):
-    raise exceptions.ConflictingArgumentsException('--stateful-disks',
-                                                   '--no-stateful-names')
+  ValidateStatefulDisksDict(args.stateful_disk, '--stateful-disk')
 
 
 def GetInstanceGroupManagerArg(zones_flag=False, region_flag=True):
@@ -218,6 +270,84 @@ def CreateGroupReference(client, resources, args):
       scope_lister=scope_lister)
 
 
+_LIST_INSTANCES_FORMAT = """\
+        table(instance.basename():label=NAME,
+              instance.scope().segment(0):label=ZONE,
+              instanceStatus:label=STATUS,
+              currentAction:label=ACTION,
+              version.instanceTemplate.basename():label=INSTANCE_TEMPLATE,
+              version.name:label=VERSION_NAME,
+              lastAttempt.errors.errors.map().format(
+                "Error {0}: {1}", code, message).list(separator=", ")
+                :label=LAST_ERROR
+        )"""
+
+_LIST_INSTANCES_FORMAT_BETA = """\
+        table(instance.basename():label=NAME,
+              instance.scope().segment(0):label=ZONE,
+              instanceStatus:label=STATUS,
+              instanceHealth[0].detailedHealthState:label=HEALTH_STATE,
+              currentAction:label=ACTION,
+              version.instanceTemplate.basename():label=INSTANCE_TEMPLATE,
+              version.name:label=VERSION_NAME,
+              lastAttempt.errors.errors.map().format(
+                "Error {0}: {1}", code, message).list(separator=", ")
+                :label=LAST_ERROR
+        )"""
+
+_LIST_INSTANCES_FORMAT_ALPHA = """\
+        table(instance.basename():label=NAME,
+              instance.scope().segment(0):label=ZONE,
+              instanceStatus:label=STATUS,
+              instanceHealth[0].detailedHealthState:label=HEALTH_STATE,
+              currentAction:label=ACTION,
+              preservedState():label=PRESERVED_STATE,
+              version.instanceTemplate.basename():label=INSTANCE_TEMPLATE,
+              version.name:label=VERSION_NAME,
+              lastAttempt.errors.errors.map().format(
+                "Error {0}: {1}", code, message).list(separator=", ")
+                :label=LAST_ERROR
+        )"""
+
+_RELEASE_TRACK_TO_LIST_INSTANCES_FORAMT = {
+    base.ReleaseTrack.GA: _LIST_INSTANCES_FORMAT,
+    base.ReleaseTrack.BETA: _LIST_INSTANCES_FORMAT_BETA,
+    base.ReleaseTrack.ALPHA: _LIST_INSTANCES_FORMAT_ALPHA,
+}
+
+
+def _TransformPreservedState(instance):
+  """Transform for the PRESERVED_STATE field in the table output.
+
+  PRESERVED_STATE is generated from the fields preservedStateFromPolicy and
+  preservedStateFromConfig fields in the managedInstance message.
+
+  Args:
+    instance: instance dictionary for transform
+
+  Returns:
+    Preserved state status as one of ('POLICY', 'CONFIG', 'POLICY,CONFIG')
+  """
+  preserved_state_value = ''
+  if ('preservedStateFromPolicy' in instance and
+      instance['preservedStateFromPolicy']):
+    preserved_state_value += 'POLICY,'
+  if ('preservedStateFromConfig' in instance and
+      instance['preservedStateFromConfig']):
+    preserved_state_value += 'CONFIG'
+  if preserved_state_value.endswith(','):
+    preserved_state_value = preserved_state_value[:-1]
+  return preserved_state_value
+
+
+def AddListInstancesOutputFormat(parser, release_track=base.ReleaseTrack.GA):
+  parser.display_info.AddTransforms({
+      'preservedState': _TransformPreservedState,
+  })
+  parser.display_info.AddFormat(
+      _RELEASE_TRACK_TO_LIST_INSTANCES_FORAMT[release_track])
+
+
 def AddSettingStatefulDisksFlag(parser, required=False):
   """Add --stateful-disks and --no-stateful-disks flags to the parser."""
   # TODO(b/69900323): merge this function with AddMigStatefulFlags
@@ -226,11 +356,11 @@ def AddSettingStatefulDisksFlag(parser, required=False):
       '--stateful-disks',
       metavar='DEVICE_NAME',
       type=arg_parsers.ArgList(min_length=1),
-      help=('Disks considered stateful by the instance group. Usually, the '
-            'managed instance group deletes disks when deleting instances; '
+      help=('Disks, specified in the group\'s instance template, to consider '
+            'stateful. Usually, a managed instance group deletes and recreates '
+            'disks from their original images when recreating instances; '
             'however, in the case of stateful disks, these disks are detached '
-            'from the deleted instance and attached to new instances the '
-            'managed instance group creates.'),
+            'and reattached when the instance is recreated.'),
   )
   stateful_disks.add_argument(
       '--no-stateful-disks',
@@ -247,26 +377,34 @@ STATEFUL_DISKS_HELP = """
       managed instance group creates.
       """
 
-
-def AddMigStatefulNamesFlag(parser):
-  parser.add_argument(
-      '--stateful-names',
-      action='store_true',
-      default=False,
-      help='Enable stateful names of instances. Whenever instances with those '
-      'names are restarted or recreated, they will have the same names as '
-      'before. Use --no-stateful-names to disable stateful names.')
+AUTO_DELETE_ARG_HELP = """
+      *auto-delete*::: (Optional) Specifies the auto deletion policy of the
+      stateful disk. Supported values are 'never' (never delete this disk) and
+      'on-permanent-instance-deletion' (delete the stateful disk when the given
+      instance is permanently deleted from the instance group; for example when
+      the group is resized down). If omitted, 'never' is used as the default.
+      """
 
 
 def AddMigCreateStatefulFlags(parser):
   """Adding stateful flags for disks and names to the parser."""
+  stateful_disks_help = STATEFUL_DISKS_HELP + """
+      Use this argument multiple times to attach more disks.
+
+      *device-name*::: (Requied) Device name of the disk to mark stateful.
+      """ + AUTO_DELETE_ARG_HELP
   parser.add_argument(
-      '--stateful-disks',
-      metavar='DEVICE_NAME',
-      type=arg_parsers.ArgList(min_length=1),
-      help=STATEFUL_DISKS_HELP,
+      '--stateful-disk',
+      type=arg_parsers.ArgDict(
+          spec={
+              'device-name':
+                  str,
+              'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
+                  '--stateful_disk'),
+          }),
+      action='append',
+      help=stateful_disks_help,
   )
-  AddMigStatefulNamesFlag(parser)
 
 
 def AddMigStatefulFlagsForInstanceConfigs(parser, for_update=False):
@@ -275,59 +413,55 @@ def AddMigStatefulFlagsForInstanceConfigs(parser, for_update=False):
       '--instance',
       required=True,
       help="""
-        URI to existing or non existing instance.
-
-        Name - last part of URI - will be preserved for existing per instance
-        configs.
-
-        For zonal managed instance groups there is no need to specify the whole
-        URI to the instance - for this case instance name can be applied instead
-        of URI.
+        URI/name of an existing instance in the managed instance group.
       """)
 
   stateful_disks_help = STATEFUL_DISKS_HELP + """
-      Besides preserving disks already attached to the instance by specifying
-      only device names, user have an option to attach (and preserve) other
-      existing persistent disk(s) to the given instance.
+      You can also attach and preserve disks, not defined in the group's
+      instance template, to a given instance.
 
-      The same disk can be attached to many instances but only in read-only
-      mode.
+      The same disk can be attached to more than one instance but only in
+      read-only mode.
       """
   if for_update:
     stateful_disks_help += """
       Use this argument multiple times to update multiple disks.
-      """
-  else:
-    stateful_disks_help += """
-      Use this argument multiple times to attach more disks.
-      """
-  stateful_disks_help += """
-      *device-name*::: Name under which disk is or will be attached.
 
-      *source*::: Optional argument used to specify URI of existing persistent
-      disk to attach under specified ``device-name''.
-
-      *mode*::: Specifies the mode of the disk to attach. Supported options are
-      ``ro'' for read-only and ``rw'' for read-write. If omitted when source is
-      specified, ``rw'' is used as a default.
-      """
-  if for_update:
-    stateful_disks_help += """
-      If stateful disk with given ``device-name'' exists in current instance
+      If stateful disk with given `device-name` exists in current instance
       config, its properties will be replaced by the newly provided ones. In
       other case new stateful disk definition will be added to the instance
       config.
-    """
-    argument_name = '--update-stateful-disk'
+      """
+    stateful_disk_argument_name = '--update-stateful-disk'
   else:
-    argument_name = '--stateful-disk'
+    stateful_disks_help += """
+      Use this argument multiple times to attach and preserve multiple disks.
+      """
+    stateful_disk_argument_name = '--stateful-disk'
+  stateful_disks_help += """
+      *device-name*::: Name under which disk is or will be attached.
+
+      *source*::: Optional argument used to specify the URI of an existing
+      persistent disk to attach under specified `device-name`.
+
+      *mode*::: Specifies the mode of the disk to attach. Supported options are
+      `ro` for read-only and `rw` for read-write. If omitted when source is
+      specified, `rw` is used as a default. `mode` can only be specified if
+      `source` is given.
+      """ + AUTO_DELETE_ARG_HELP
   parser.add_argument(
-      argument_name,
-      type=arg_parsers.ArgDict(spec={
-          'device-name': str,
-          'source': str,
-          'mode': str,
-      }),
+      stateful_disk_argument_name,
+      type=arg_parsers.ArgDict(
+          spec={
+              'device-name':
+                  str,
+              'source':
+                  str,
+              'mode':
+                  str,
+              'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
+                  stateful_disk_argument_name)
+          }),
       action='append',
       help=stateful_disks_help,
   )
@@ -336,33 +470,154 @@ def AddMigStatefulFlagsForInstanceConfigs(parser, for_update=False):
         '--remove-stateful-disks',
         metavar='DEVICE_NAME',
         type=arg_parsers.ArgList(min_length=1),
-        help=('List all device names which should be removed from current'
-              'instance config.'),
+        help='List all device names to remove from the instance\'s config.',
+    )
+
+  if for_update:
+    stateful_metadata_argument_name = '--update-stateful-metadata'
+  else:
+    stateful_metadata_argument_name = '--stateful-metadata'
+  stateful_metadata_help = """
+      Additional metadata to be made available to the guest operating system
+      in addition to the metadata defined in the instance template.
+
+      Stateful metadata may be used to define a key/value pair specific for
+      the one given instance to differentiate it from the other instances in
+      the managed instance group.
+
+      Stateful metadata have priority over the metadata defined in the
+      instance template. This means that stateful metadata that is defined for a
+      key that already exists in the instance template overrides the instance
+      template value.
+
+      Each metadata entry is a key/value pair separated by an equals sign.
+      Metadata keys must be unique and less than 128 bytes in length. Multiple
+      entries can be passed to this flag, e.g.,
+      ``{argument_name} key-1=value-1,key-2=value-2,key-3=value-3''.
+  """.format(argument_name=stateful_metadata_argument_name)
+  if for_update:
+    stateful_metadata_help += """
+      If stateful metadata with the given key exists in current instance config,
+      its value will be overridden with the newly provided one. If the key does
+      not exist in the current instance config, a new key/value pair will be
+      added.
+    """
+  parser.add_argument(
+      stateful_metadata_argument_name,
+      type=arg_parsers.ArgDict(min_length=1),
+      default={},
+      action=arg_parsers.StoreOnceAction,
+      metavar='KEY=VALUE',
+      help=stateful_metadata_help)
+  if for_update:
+    parser.add_argument(
+        '--remove-stateful-metadata',
+        metavar='KEY',
+        type=arg_parsers.ArgList(min_length=1),
+        help=('List all stateful metadata keys to remove from the'
+              'instance\'s config.'),
     )
 
 
-def AddMigStatefulForceInstanceUpdateFlag(parser):
+def AddCreateInstancesFlags(parser):
+  """Adding stateful flags for creating and updating instance configs."""
   parser.add_argument(
-      '--force-instance-update',
+      '--instance',
+      required=True,
+      help="""Name of the new instance to create.""")
+  stateful_disks_help = """
+      Stateful disk for the managed instance group to preserve. Usually,
+      a managed instance group deletes disks when deleting instances; however,
+      stateful disks are detached from deleted instances and are reattached
+      automatically to the instance on recreation, autohealing, updates, and any
+      other lifecycle transitions of the instance.
+
+      Stateful disks specified here form part of the per-instance config for
+      the new instance.
+
+      The same disk can be attached to many instances but only in read-only
+      mode.
+
+      Use this flag multiple times to attach more disks.
+
+      *device-name*::: (Required) Device name under which the disk is or will be
+      attached.
+
+      *source*::: (Required) URI of an existing persistent disk to attach under
+      the specified device-name.
+
+      *mode*::: Specifies the attachment mode of the disk. Supported options are
+      `ro` for read-only and `rw` for read-write. If omitted, defaults to `rw`.
+      `mode` can only be specified if `source` is given.
+      """ + AUTO_DELETE_ARG_HELP
+  parser.add_argument(
+      '--stateful-disk',
+      type=arg_parsers.ArgDict(
+          spec={
+              'device-name': str,
+              'source': str,
+              'mode': str,
+              'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
+                  '--stateful-disk'),
+          }),
+      action='append',
+      help=stateful_disks_help,
+  )
+  stateful_metadata_argument_name = '--stateful-metadata'
+  stateful_metadata_help = """
+      Additional metadata to be made available to the guest operating system
+      on the instance along with the metadata defined in the instance template.
+
+      Use stateful metadata to define key/value pairs specific to an instance to
+      differentiate it from other instances in the managed instance group. The
+      stateful metadata forms part of the per-instance config for the new
+      instance.
+
+      Stateful metadata key/value pairs are preserved on instance recreation,
+      autohealing, updates, and any other lifecycle transitions of the
+      instance.
+
+      Only metadata keys provided in this flag are mutated. Stateful metadata
+      values defined for the keys already existing in the instance template
+      override the  values from the instance template. Other metadata entries
+      from the instance  template will remain unaffected and available.
+
+      Each metadata entry is a key/value pair separated by an equals sign.
+      Metadata keys must be unique and less than 128 bytes in length.
+      Multiple entries can be passed to this flag, e.g.,
+      `--stateful-metadata key-1=value-1,key-2=value-2,key-3=value-3`.
+  """.format(argument_name=stateful_metadata_argument_name)
+  parser.add_argument(
+      stateful_metadata_argument_name,
+      type=arg_parsers.ArgDict(min_length=1),
+      default={},
+      action=arg_parsers.StoreOnceAction,
+      metavar='KEY=VALUE',
+      help=stateful_metadata_help)
+
+
+def AddMigStatefulUpdateInstanceFlag(parser):
+  parser.add_argument(
+      '--update-instance',
+      default=True,
       action='store_true',
       help="""
-        The changes will be applied immediately to the instances. If this flag
-        is not provided, the changes will be applied once the instances are
+        Apply the changes immediately to the instances. If this flag
+        is disabled, the changes will be applied once the instances are
         restarted or recreated.
 
-        Example: let's say we have an instance with a disk attached to it and an
-        override for the disk. If we decide to delete the override and provide
-        this flag, this will instantly recreate the instance and detach the disk
-        from it. Similarly if we have attached new disk or changed its
-        definition - with this flag it will instantly recreate instance with
-        newly applied overrides.
-
-        If we omit this flag, the instance will continue to exist with no
-        overrides changes applied until it gets restarted or recreated either
-        manually or by autohealer or updater.""")
+        Example: say you have an instance with a disk attached to it and you
+        created a stateful config for the disk. If you decide to delete the
+        stateful config for the disk and you provide this flag, the MIG
+        immediately refreshes the instance and removes the stateful config
+        for the disk. Similarly if you have attached a new disk or changed its
+        definition, with this flag the MIG immediately refreshes the instance
+        with the new config.""")
 
 
-def ValidateMigStatefulFlagsForInstanceConfigs(args, for_update=False):
+def ValidateMigStatefulFlagsForInstanceConfigs(args,
+                                               for_update=False,
+                                               need_disk_source=False):
   """Validates the values of stateful flags for instance configs."""
   if for_update:
     stateful_disks = args.update_stateful_disk
@@ -390,6 +645,11 @@ def ValidateMigStatefulFlagsForInstanceConfigs(args, for_update=False):
           message='Value for [mode] must be [rw] or [ro], not [{0}]'.format(
               mode_value))
 
+    if need_disk_source and not stateful_disk.get('source'):
+      raise exceptions.InvalidArgumentException(
+          parameter_name=flag_name,
+          message='[source] is required for all stateful disks')
+
     if mode_value and not stateful_disk.get('source'):
       raise exceptions.InvalidArgumentException(
           parameter_name=flag_name,
@@ -406,18 +666,41 @@ def ValidateMigStatefulFlagsForInstanceConfigs(args, for_update=False):
                      ' removed in one command call'.format(
                          stateful_disk_to_update.get('device-name'))))
 
+    remove_stateful_metadata_set = set(args.remove_stateful_metadata or [])
+    update_stateful_metadata_set = set(args.update_stateful_metadata.keys())
+    keys_intersection = remove_stateful_metadata_set.intersection(
+        update_stateful_metadata_set)
+    if keys_intersection:
+      raise exceptions.InvalidArgumentException(
+          parameter_name=flag_name,
+          message=('the same metadata key(s) `{0}` cannot be updated and'
+                   ' removed in one command call'.format(
+                       ', '.join(keys_intersection))))
+
 
 def AddMigUpdateStatefulFlags(parser):
-  """Add --add-stateful-disks and --remove-stateful-disks to the parser."""
+  """Add --update-stateful-disk and --remove-stateful-disks to the parser."""
+  stateful_disks_help = STATEFUL_DISKS_HELP + """
+      Use this argument multiple times to update more disks.
+
+      If stateful disk with given `device-name` exists in current instance
+      config, its properties will be replaced by the newly provided ones. In
+      other case new stateful disk definition will be added to the instance
+      config.
+
+      *device-name*::: (Requied) Device name of the disk to mark stateful.
+      """ + AUTO_DELETE_ARG_HELP
   parser.add_argument(
-      '--add-stateful-disks',
-      metavar='DEVICE_NAME',
-      type=arg_parsers.ArgList(min_length=1),
-      help=('Add more disks to be considered stateful by the instance group. '
-            'Usually, the managed instance group deletes disks when deleting '
-            'instances; however, in the case of stateful disks, these disks '
-            'are detached from the deleted instance and attached to new '
-            'instances the managed instance group creates.'),
+      '--update-stateful-disk',
+      type=arg_parsers.ArgDict(
+          spec={
+              'device-name':
+                  str,
+              'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
+                  '--update-stateful-disk')
+          }),
+      action='append',
+      help=stateful_disks_help,
   )
   parser.add_argument(
       '--remove-stateful-disks',
@@ -425,22 +708,21 @@ def AddMigUpdateStatefulFlags(parser):
       type=arg_parsers.ArgList(min_length=1),
       help='Stop considering the disks stateful by the instance group.',
   )
-  AddMigStatefulNamesFlag(parser)
 
 
-def GetValidatedUpdateStatefulPolicyParams(args, current_stateful_policy):
+def ValidateUpdateStatefulPolicyParams(args, current_stateful_policy):
   """Check stateful properties of update request; returns final device list."""
   current_device_names = set(
       managed_instance_groups_utils.GetDeviceNamesFromStatefulPolicy(
           current_stateful_policy))
-  if args.add_stateful_disks:
-    if any(
-        args.add_stateful_disks.count(x) > 1 for x in args.add_stateful_disks):
-      raise exceptions.InvalidArgumentException(
-          parameter_name='update',
-          message=(
-              'When adding device names to Stateful Policy, please provide '
-              'each name exactly once.'))
+  update_disk_names = []
+  if args.update_stateful_disk:
+    ValidateStatefulDisksDict(args.update_stateful_disk,
+                              '--update-stateful-disk')
+    update_disk_names = [
+        stateful_disk.get('device-name')
+        for stateful_disk in args.update_stateful_disk
+    ]
   if args.remove_stateful_disks:
     if any(
         args.remove_stateful_disks.count(x) > 1
@@ -451,36 +733,101 @@ def GetValidatedUpdateStatefulPolicyParams(args, current_stateful_policy):
               'When removing device names from Stateful Policy, please provide '
               'each name exactly once.'))
 
-  add_set = set(args.add_stateful_disks or [])
+  update_set = set(update_disk_names)
   remove_set = set(args.remove_stateful_disks or [])
-  intersection = add_set.intersection(remove_set)
+  intersection = update_set.intersection(remove_set)
 
   if intersection:
     raise exceptions.InvalidArgumentException(
         parameter_name='update',
         message=
         ('You cannot simultaneously add and remove the same device names {} to '
-         'Stateful Policy.'.format(str(intersection))))
+         'Stateful Policy.'.format(six.text_type(intersection))))
   not_current_device_names = remove_set - current_device_names
   if not_current_device_names:
     raise exceptions.InvalidArgumentException(
         parameter_name='update',
         message=('Disks [{}] are not currently set as stateful, '
                  'so they cannot be removed from Stateful Policy.'.format(
-                     str(not_current_device_names))))
-  already_added_device_names = current_device_names & add_set
-  if already_added_device_names:
+                     six.text_type(not_current_device_names))))
+  final_disks = current_device_names.union(update_set).difference(remove_set)
+  return final_disks
+
+
+INSTANCE_REDISTRIBUTION_TYPES = ['NONE', 'PROACTIVE']
+
+
+def AddMigInstanceRedistributionTypeFlag(parser):
+  """Add --instance-redistribution-type flag to the parser."""
+  parser.add_argument(
+      '--instance-redistribution-type',
+      metavar='TYPE',
+      type=lambda x: x.upper(),
+      choices=INSTANCE_REDISTRIBUTION_TYPES,
+      help="""\
+      Specifies the type of the instance redistribution policy. An instance
+      redistribution type lets you enable or disable automatic instance
+      redistribution across zones to meet the target distribution. The target
+      distribution is a state of a regional managed instance group where all
+      instances are spread out evenly across all target zones.
+
+      An instance redistribution type can be specified only for a non-autoscaled
+      regional managed instance group. By default it is set to PROACTIVE.
+
+      The following types are available:
+
+       * NONE - The managed instance group does not redistribute instances
+         across zones.
+
+       * PROACTIVE - The managed instance group proactively redistributes
+         instances to meet its target distribution.
+      """)
+
+
+def ValidateMigInstanceRedistributionTypeFlag(instance_redistribution_type,
+                                              group_ref):
+  """Check correctness of instance-redistribution-type flag value."""
+  if instance_redistribution_type and (group_ref.Collection() !=
+                                       'compute.regionInstanceGroupManagers'):
     raise exceptions.InvalidArgumentException(
-        parameter_name='update',
-        message=('Disks [{}] are currently set as stateful, '
-                 'so they cannot be added to Stateful Policy.'))
-  final_disks = current_device_names.union(add_set).difference(remove_set)
-  if final_disks and args.IsSpecified(
-      'stateful_names') and not args.GetValue('stateful_names'):
-    raise exceptions.InvalidArgumentException(
-        parameter_name='update',
+        parameter_name='--instance-redistribution-type',
         message=(
-            'Stateful Policy is not empty, so you cannot mark instance names '
-            'as non-stateful. Current device names are [{}]'.format(
-                str(final_disks))))
-  return sorted(list(final_disks))
+            'Flag --instance-redistribution-type may be specified for regional '
+            'managed instance groups only.'))
+
+
+DISTRIBUTION_POLICY_TARGET_SHAPES = ['EVEN', 'ANY']
+
+
+def AddMigDistributionPolicyTargetShapeFlag(parser):
+  """Add --target-distribution-shape flag to the parser."""
+  parser.add_argument(
+      '--target-distribution-shape',
+      metavar='SHAPE',
+      type=lambda x: x.upper(),
+      choices=DISTRIBUTION_POLICY_TARGET_SHAPES,
+      help="""\
+      Specify distribution policy target shape.
+
+      Target shape may be specified for regional managed instance group only.
+      By default it is set to EVEN.
+
+      The following target shapes are available:
+
+       * EVEN - managed instance group will create and delete instances
+         in a manner preserving or converging to even distribution.
+
+       * ANY - managed instance group will create instances based on present
+         capacity constraints and will not attempt to converge to even
+         distribution.
+      """)
+
+
+def ValidateMigDistributionPolicyTargetShapeFlag(target_shape, group_ref):
+  """Check correctness of --target-distribution-shape flag value."""
+  if target_shape and (group_ref.Collection() !=
+                       'compute.regionInstanceGroupManagers'):
+    raise exceptions.InvalidArgumentException(
+        parameter_name='--target-distribution-shape',
+        message=('Flag --target-distribution-shape may be specified for '
+                 'regional managed instance groups only.'))

@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for dealing with long-running operations (simple uri)."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.util import apis
@@ -72,11 +78,6 @@ class OperationsClient(object):
   def Cancel(self, operation_ref):
     return self.client.projects_operations.Cancel(
         self.messages.MlProjectsOperationsCancelRequest(
-            name=operation_ref.RelativeName()))
-
-  def Delete(self, operation_ref):
-    return self.client.projects_operations.Delete(
-        self.messages.MlProjectsOperationsDeleteRequest(
             name=operation_ref.RelativeName()))
 
   def WaitForOperation(self, operation, message=None):

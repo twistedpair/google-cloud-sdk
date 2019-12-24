@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,12 +14,17 @@
 # limitations under the License.
 """Utilities for OS Login subcommands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import time
 
 
-def GetKeyDictionaryFromProfile(user, oslogin_client):
+def GetKeyDictionaryFromProfile(user, oslogin_client, profile=None):
   """Return a dictionary of fingerprints/keys from the OS Login Profile."""
-  profile = oslogin_client.GetLoginProfile(user)
+  if not profile:
+    profile = oslogin_client.GetLoginProfile(user)
   key_dir = {}
 
   if not profile.sshPublicKeys:
@@ -72,4 +78,3 @@ def ConvertUsecToRfc3339(usec):
   usec = int(usec)
   sec = usec / 1000000
   return time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(sec))
-

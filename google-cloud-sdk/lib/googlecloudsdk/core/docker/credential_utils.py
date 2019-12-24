@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,13 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utility library for configuring docker credential helpers."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import collections
 import json
 
 from distutils import version as distutils_version
+
 from googlecloudsdk.core.docker import client_lib as client_utils
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.util import files
+import six
 
 MIN_DOCKER_CONFIG_HELPER_VERSION = distutils_version.LooseVersion('1.13')
 CREDENTIAL_HELPER_KEY = 'credHelpers'
@@ -31,23 +39,21 @@ class DockerConfigUpdateError(client_utils.DockerError):
 class Configuration(object):
   """Full Docker configuration configuration file and related meta-data."""
 
-  def __init__(self, config_data, version, path=None):
-    self.version = distutils_version.LooseVersion(version)
+  def __init__(self, config_data, path=None):
     self.contents = config_data
     self.path = path
+    self._version = None  # Evaluated lazily.
 
   def __eq__(self, other):
-    return (self.version == other.version and
-            self.contents == other.contents and
+    return (self.contents == other.contents and
             self.path == other.path)
 
   @classmethod
-  def FromJson(cls, json_string, version, path):
+  def FromJson(cls, json_string, path):
     """Build a Configuration object from a JSON string.
 
     Args:
       json_string: string, json content for Configuration
-      version: string, Docker version of Configuration
       path: string, file path to Docker Configuation File
 
     Returns:
@@ -57,15 +63,25 @@ class Configuration(object):
       config_dict = {}
     else:
       config_dict = json.loads(json_string)
-    return Configuration(config_dict, version, path)
+    return Configuration(config_dict, path)
 
   def ToJson(self):
     """Get this Configuration objects contents as a JSON string."""
     return json.dumps(self.contents, indent=2)
 
+  def DockerVersion(self):
+    if not self._version:
+      version_str = six.text_type(client_utils.GetDockerVersion())
+      self._version = distutils_version.LooseVersion(version_str)
+    return self._version
+
   def SupportsRegistryHelpers(self):
-    """Retruns True if this Configuration supports Docker registry helpers."""
-    return self.version >= MIN_DOCKER_CONFIG_HELPER_VERSION
+    """Returns True unless Docker is confirmed to not support helpers."""
+    try:
+      return self.DockerVersion() >= MIN_DOCKER_CONFIG_HELPER_VERSION
+    except:  # pylint: disable=bare-except
+      # Always fail open.
+      return True
 
   def GetRegisteredCredentialHelpers(self):
     """Returns credential helpers entry from the Docker config file.
@@ -104,7 +120,7 @@ class Configuration(object):
     if not self.SupportsRegistryHelpers():
       raise DockerConfigUpdateError('Credential Helpers not supported for this '
                                     'Docker client version {}'.format(
-                                        self.version))
+                                        self.DockerVersion()))
 
     self.contents[CREDENTIAL_HELPER_KEY] = mappings_dict
     self.WriteToDisk()
@@ -115,7 +131,7 @@ class Configuration(object):
       files.WriteFileAtomically(self.path, self.ToJson())
     except (TypeError, ValueError, OSError, IOError) as err:
       raise DockerConfigUpdateError('Error writing Docker configuration '
-                                    'to disk: {}'.format(str(err)))
+                                    'to disk: {}'.format(six.text_type(err)))
 
   # Defaulting to new config location since we know minimum version
   # for supporting credential helpers is > 1.7.
@@ -125,7 +141,7 @@ class Configuration(object):
 
     Reads configuration file and meta-data from default Docker location. Returns
     a Configuration object containing the full contents of the configuration
-    file, the configuration file path and Docker version.
+    file, and the configuration file path.
 
     Args:
       path: string, path to look for the Docker config file. If empty will
@@ -140,17 +156,21 @@ class Configuration(object):
     """
     path = path or client_utils.GetDockerConfigPath(True)[0]
     try:
-      version = str(client_utils.GetDockerVersion())
       content = client_utils.ReadConfigurationFile(path)
-    except (ValueError, client_utils.DockerError)  as err:
+    except (ValueError, client_utils.DockerError) as err:
       raise client_utils.InvalidDockerConfigError(
           ('Docker configuration file [{}] could not be read as JSON: {}'
-          ).format(path, str(err)))
+          ).format(path, six.text_type(err)))
 
-    return cls(content, version, path)
+    return cls(content, path)
 
 
-def _SupportedRegistries():
+def DefaultAuthenticatedRegistries():
+  """Return list of default gcloud credential helper registires."""
+  return constants.DEFAULT_REGISTRIES_TO_AUTHENTICATE
+
+
+def SupportedRegistries():
   """Return list of gcloud credential helper supported Docker registires."""
   return constants.ALL_SUPPORTED_REGISTRIES
 
@@ -167,10 +187,8 @@ def GetOrderedCredentialHelperRegistries():
   # Based on Docker credHelper docs this should work on Windows transparently
   # so we do not need to register .exe files seperately, see
   # https://docs.docker.com/engine/reference/commandline/login/#credential-helpers
-  return collections.OrderedDict([
-      (registry, 'gcloud')
-      for registry in _SupportedRegistries()
-  ])
+  return collections.OrderedDict(
+      [(registry, 'gcloud') for registry in DefaultAuthenticatedRegistries()])
 
 
 def GetGcloudCredentialHelperConfig():

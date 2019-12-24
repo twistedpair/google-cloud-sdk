@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,21 +15,37 @@
 
 """General console printing utilities used by the Cloud SDK."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+from collections import OrderedDict
 import contextlib
+
+import io
+import json
 import os
 import re
 import subprocess
 import sys
 import textwrap
+import threading
 
+import enum
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_pager
 from googlecloudsdk.core.console import prompt_completer
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+
+import six
+from six.moves import input  # pylint: disable=redefined-builtin
+from six.moves import map  # pylint: disable=redefined-builtin
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 class Error(exceptions.Error):
@@ -84,24 +101,52 @@ def _NarrowWrap(narrow_by):
   TEXTWRAP.width += narrow_by
 
 
-def _RawInput(prompt=None):
-  """A simple redirect to the built-in raw_input function.
-
-  If the prompt is given, it is correctly line wrapped.
-
-  Args:
-    prompt: str, An optional prompt.
-
-  Returns:
-    The input from stdin.
-  """
-  if prompt:
-    sys.stderr.write(_DoWrap(prompt))
-
+def _GetInput():
   try:
-    return raw_input()
+    return input()
   except EOFError:
     return None
+
+
+def ReadFromFileOrStdin(path, binary):
+  """Returns the contents of the specified file or stdin if path is '-'.
+
+  Args:
+    path: str, The path of the file to read.
+    binary: bool, True to open the file in binary mode.
+
+  Raises:
+    Error: If the file cannot be read or is larger than max_bytes.
+
+  Returns:
+    The contents of the file.
+  """
+  if path == '-':
+    return ReadStdin(binary=binary)
+  if binary:
+    return files.ReadBinaryFileContents(path)
+  return files.ReadFileContents(path)
+
+
+def ReadStdin(binary=False):
+  """Reads data from stdin, correctly accounting for encoding.
+
+  Anything that needs to read sys.stdin must go through this method.
+
+  Args:
+    binary: bool, True to read raw bytes, False to read text.
+
+  Returns:
+    A text string if binary is False, otherwise a byte string.
+  """
+  if binary:
+    return files.ReadStdinBytes()
+  else:
+    data = sys.stdin.read()
+    if six.PY2:
+      # On Python 2, stdin comes in a a byte string. Convert it to text.
+      data = console_attr.Decode(data)
+    return data
 
 
 def IsInteractive(output=False, error=False, heuristic=False):
@@ -143,7 +188,6 @@ def IsInteractive(output=False, error=False, heuristic=False):
   return True
 
 
-# TODO(b/69972740) Add this to metrics in addition to current isinteractive.
 def IsRunFromShellScript():
   """Check if command is being run from command line or a script."""
   # Commands run from a shell script typically have getppid() == getpgrp()
@@ -200,8 +244,62 @@ def PromptContinue(message=None, prompt_string=None, default=True,
       raise OperationCancelledError()
     return default
 
+  style = properties.VALUES.core.interactive_ux_style.Get()
+  prompt_generator = (
+      _TestPromptContinuePromptGenerator
+      if style == properties.VALUES.core.InteractiveUXStyles.TESTING.name
+      else _NormalPromptContinuePromptGenerator)
+
+  prompt, reprompt, ending = prompt_generator(
+      message=message, prompt_string=prompt_string, default=default,
+      throw_if_unattended=throw_if_unattended, cancel_on_no=cancel_on_no,
+      cancel_string=cancel_string)
+  sys.stderr.write(prompt)
+
+  def GetAnswer(reprompt):
+    """Get answer to input prompt."""
+    while True:
+      answer = _GetInput()
+      # pylint:disable=g-explicit-bool-comparison, We explicitly want to
+      # distinguish between empty string and None.
+      if answer == '':
+        # User just hit enter, return default.
+        return default
+      elif answer is None:
+        # This means we hit EOF, no input or user closed the stream.
+        if throw_if_unattended and not IsInteractive():
+          raise UnattendedPromptError()
+        else:
+          return default
+      elif answer.strip().lower() in ['y', 'yes']:
+        return True
+      elif answer.strip().lower() in ['n', 'no']:
+        return False
+      elif reprompt:
+        sys.stderr.write(reprompt)
+
+  try:
+    answer = GetAnswer(reprompt)
+  finally:
+    if ending:
+      sys.stderr.write(ending)
+
+  if not answer and cancel_on_no:
+    raise OperationCancelledError(cancel_string)
+  return answer
+
+
+def _NormalPromptContinuePromptGenerator(
+    message, prompt_string, default, throw_if_unattended, cancel_on_no,
+    cancel_string):
+  """Generates prompts for prompt continue under normal conditions."""
+  del throw_if_unattended
+  del cancel_on_no
+  del cancel_string
+
+  buf = io.StringIO()
   if message:
-    sys.stderr.write(_DoWrap(message) + '\n\n')
+    buf.write(_DoWrap(message) + '\n\n')
 
   if not prompt_string:
     prompt_string = 'Do you want to continue'
@@ -209,38 +307,22 @@ def PromptContinue(message=None, prompt_string=None, default=True,
     prompt_string += ' (Y/n)?  '
   else:
     prompt_string += ' (y/N)?  '
-  sys.stderr.write(_DoWrap(prompt_string))
+  buf.write(_DoWrap(prompt_string))
 
-  def GetAnswer():
-    while True:
-      answer = _RawInput()
-      # pylint:disable=g-explicit-bool-comparison, We explicitly want to
-      # distinguish between empty string and None.
-      if answer == '':
-        # User just hit enter, return default.
-        sys.stderr.write('\n')
-        return default
-      elif answer is None:
-        # This means we hit EOF, no input or user closed the stream.
-        if throw_if_unattended and not IsInteractive():
-          sys.stderr.write('\n')
-          raise UnattendedPromptError()
-        else:
-          sys.stderr.write('\n')
-          return default
-      elif answer.strip().lower() in ['y', 'yes']:
-        sys.stderr.write('\n')
-        return True
-      elif answer.strip().lower() in ['n', 'no']:
-        sys.stderr.write('\n')
-        return False
-      else:
-        sys.stderr.write("Please enter 'y' or 'n':  ")
+  return (buf.getvalue(), "Please enter 'y' or 'n':  ", '\n')
 
-  answer = GetAnswer()
-  if not answer and cancel_on_no:
-    raise OperationCancelledError(cancel_string)
-  return answer
+
+def _TestPromptContinuePromptGenerator(
+    message, prompt_string, default, throw_if_unattended, cancel_on_no,
+    cancel_string):
+  """Generates prompts for prompt continue under test."""
+  del default
+  del throw_if_unattended
+  del cancel_on_no
+  return (JsonUXStub(
+      UXElementType.PROMPT_CONTINUE, message=message,
+      prompt_string=prompt_string, cancel_string=cancel_string) + '\n',
+          None, None)
 
 
 def PromptResponse(message=None, choices=None):
@@ -258,7 +340,12 @@ def PromptResponse(message=None, choices=None):
     return None
   if choices and IsInteractive(error=True):
     return prompt_completer.PromptCompleter(message, choices=choices).Input()
-  return _RawInput(message)
+  if (properties.VALUES.core.interactive_ux_style.Get() ==
+      properties.VALUES.core.InteractiveUXStyles.TESTING.name):
+    sys.stderr.write(JsonUXStub(UXElementType.PROMPT_RESPONSE, message=message))
+  else:
+    sys.stderr.write(_DoWrap(message))
+  return _GetInput()
 
 
 def PromptWithDefault(message=None, default=None, choices=None):
@@ -322,7 +409,7 @@ def _ParseAnswer(answer, options, allow_freeform):
     return None
 
   try:
-    return map(str, options).index(answer) + 1
+    return list(map(str, options)).index(answer) + 1
   except ValueError:
     # Answer not an entry in the options list
     pass
@@ -350,19 +437,20 @@ def _SuggestFreeformAnswer(suggester, answer, options):
   return suggester.GetSuggestion(answer)
 
 
-def _PrintOptions(options, limit=None):
+def _PrintOptions(options, write, limit=None):
   """Prints the options provided to stderr.
 
   Args:
     options:  [object], A list of objects to print as choices.  Their str()
       method will be used to display them.
+    write: f(x)->None, A function to call to write the data.
     limit: int, If set, will only print the first number of options equal
       to the given limit.
   """
   limited_options = options if limit is None else options[:limit]
   for i, option in enumerate(limited_options):
-    sys.stderr.write(' [{index}] {option}\n'.format(
-        index=i + 1, option=str(option)))
+    write(' [{index}] {option}\n'.format(
+        index=i + 1, option=six.text_type(option)))
 
 
 # This defines the point at which, in a PromptChoice, the options
@@ -377,8 +465,8 @@ def PromptChoice(options, default=None, message=None,
   """Prompt the user to select a choice from a list of items.
 
   Args:
-    options:  [object], A list of objects to print as choices.  Their str()
-      method will be used to display them.
+    options:  [object], A list of objects to print as choices.  Their
+      six.text_type() method will be used to display them.
     default: int, The default index to return if prompting is disabled or if
       they do not enter a choice.
     message: str, An optional message to print before the choices are displayed.
@@ -414,24 +502,32 @@ def PromptChoice(options, default=None, message=None,
   if properties.VALUES.core.disable_prompts.GetBool():
     return default
 
+  style = properties.VALUES.core.interactive_ux_style.Get()
+  if style == properties.VALUES.core.InteractiveUXStyles.TESTING.name:
+    write = lambda x: None
+    sys.stderr.write(JsonUXStub(
+        UXElementType.PROMPT_CHOICE, message=message,
+        prompt_string=prompt_string,
+        choices=[six.text_type(o) for o in options]) + '\n')
+  else:
+    write = sys.stderr.write
+
   if message:
-    sys.stderr.write(_DoWrap(message) + '\n')
+    write(_DoWrap(message) + '\n')
 
   if maximum > PROMPT_OPTIONS_OVERFLOW:
-    _PrintOptions(options, limit=PROMPT_OPTIONS_OVERFLOW)
+    _PrintOptions(options, write, limit=PROMPT_OPTIONS_OVERFLOW)
     truncated = maximum - PROMPT_OPTIONS_OVERFLOW
-    sys.stderr.write('Did not print [{truncated}] options.\n'
-                     .format(truncated=truncated))
-    sys.stderr.write(('Too many options [{maximum}]. Enter "list" at '
-                      'prompt to print choices fully.\n').format(
-                          maximum=maximum))
+    write('Did not print [{truncated}] options.\n'.format(truncated=truncated))
+    write('Too many options [{maximum}]. Enter "list" at prompt to print '
+          'choices fully.\n'.format(maximum=maximum))
   else:
-    _PrintOptions(options)
+    _PrintOptions(options, write)
 
   if not prompt_string:
     if allow_freeform:
-      prompt_string = ('Please enter numeric choice or text value '
-                       '(must exactly match list item)')
+      prompt_string = ('Please enter numeric choice or text value (must exactly'
+                       ' match list item)')
     else:
       prompt_string = 'Please enter your numeric choice'
   if default is None:
@@ -440,29 +536,29 @@ def PromptChoice(options, default=None, message=None,
     suffix_string = ' ({default}):  '.format(default=default + 1)
 
   def _PrintPrompt():
-    sys.stderr.write(_DoWrap(prompt_string + suffix_string))
+    write(_DoWrap(prompt_string + suffix_string))
   _PrintPrompt()
 
   while True:
-    answer = _RawInput()
+    answer = _GetInput()
     if answer is None or (answer is '' and default is not None):
       # Return default if we failed to read from stdin.
       # Return default if the user hit enter and there is a valid default,
       # or raise OperationCancelledError if default is the cancel option.
       # Prompt again otherwise
-      sys.stderr.write('\n')
+      write('\n')
       if cancel_option and default == maximum - 1:
         raise OperationCancelledError()
       return default
     if answer == 'list':
-      _PrintOptions(options)
+      _PrintOptions(options, write)
       _PrintPrompt()
       continue
     num_choice = _ParseAnswer(answer, options, allow_freeform)
     if cancel_option and num_choice == maximum:
       raise OperationCancelledError()
     if num_choice is not None and num_choice >= 1 and num_choice <= maximum:
-      sys.stderr.write('\n')
+      write('\n')
       return num_choice - 1
 
     # Arriving here means that there is no choice matching the answer that
@@ -472,17 +568,16 @@ def PromptChoice(options, default=None, message=None,
                                           answer,
                                           options)
       if suggestion is not None:
-        sys.stderr.write('[{answer}] not in list. Did you mean [{suggestion}]?'
-                         .format(answer=answer, suggestion=suggestion))
-        sys.stderr.write('\n')
+        write('[{answer}] not in list. Did you mean [{suggestion}]?'
+              .format(answer=answer, suggestion=suggestion))
+        write('\n')
 
     if allow_freeform:
-      sys.stderr.write(('Please enter a value between 1 and {maximum}, '
-                        'or a value present in the list:  ')
-                       .format(maximum=maximum))
+      write('Please enter a value between 1 and {maximum}, or a value present '
+            'in the list:  '.format(maximum=maximum))
     else:
-      sys.stderr.write('Please enter a value between 1 and {maximum}:  '
-                       .format(maximum=maximum))
+      write('Please enter a value between 1 and {maximum}:  '
+            .format(maximum=maximum))
 
 
 def PromptWithValidator(validator, error_message, prompt_string,
@@ -509,7 +604,8 @@ def PromptWithValidator(validator, error_message, prompt_string,
     sys.stderr.write(_DoWrap(message) + '\n')
 
   while True:
-    answer = _RawInput(prompt_string)
+    sys.stderr.write(_DoWrap(prompt_string))
+    answer = _GetInput()
     if validator(answer):
       return answer
     else:
@@ -573,7 +669,88 @@ def FormatRequiredUserAction(s):
     return '\n==> ' + '\n==> '.join(wrapper.wrap(s)) + '\n'
 
 
-class ProgressBar(object):
+def ProgressBar(label, stream=log.status, total_ticks=60, first=True,
+                last=True, screen_reader=False):
+  """A simple progress bar for tracking completion of an action.
+
+  This progress bar works without having to use any control characters.  It
+  prints the action that is being done, and then fills a progress bar below it.
+  You should not print anything else on the output stream during this time as it
+  will cause the progress bar to break on lines.
+
+  Progress bars can be stacked into a group. first=True marks the first bar in
+  the group and last=True marks the last bar in the group. The default assumes
+  a singleton bar with first=True and last=True.
+
+  This class can also be used in a context manager.
+
+  Args:
+    label: str, The action that is being performed.
+    stream: The output stream to write to, stderr by default.
+    total_ticks: int, The number of ticks wide to make the progress bar.
+    first: bool, True if this is the first bar in a stacked group.
+    last: bool, True if this is the last bar in a stacked group.
+    screen_reader: bool, override for screen reader accessibility property
+      toggle.
+
+  Returns:
+    The progress bar.
+  """
+  style = properties.VALUES.core.interactive_ux_style.Get()
+  if style == properties.VALUES.core.InteractiveUXStyles.OFF.name:
+    return NoOpProgressBar()
+  elif style == properties.VALUES.core.InteractiveUXStyles.TESTING.name:
+    return _StubProgressBar(label, stream)
+  elif screen_reader or properties.VALUES.accessibility.screen_reader.GetBool():
+    return _TextPercentageProgressBar(label, stream)
+  else:
+    return _NormalProgressBar(label, stream, total_ticks, first, last)
+
+
+def SplitProgressBar(original_callback, weights):
+  """Splits a progress bar into logical sections.
+
+  Wraps the original callback so that each of the subsections can use the full
+  range of 0 to 1 to indicate its progress.  The overall progress bar will
+  display total progress based on the weights of the tasks.
+
+  Args:
+    original_callback: f(float), The original callback for the progress bar.
+    weights: [float], The weights of the tasks to create.  These can be any
+      numbers you want and the split will be based on their proportions to
+      each other.
+
+  Raises:
+    ValueError: If the weights don't add up to 1.
+
+  Returns:
+    (f(float), ), A tuple of callback functions, in order, for the subtasks.
+  """
+  if (original_callback is None or
+      original_callback == DefaultProgressBarCallback):
+    return tuple([DefaultProgressBarCallback for _ in range(len(weights))])
+
+  def MakeCallback(already_done, weight):
+    def Callback(done_fraction):
+      original_callback(already_done + (done_fraction * weight))
+    return Callback
+
+  total = sum(weights)
+  callbacks = []
+  already_done = 0
+  for weight in weights:
+    normalized_weight = weight / total
+    callbacks.append(MakeCallback(already_done, normalized_weight))
+    already_done += normalized_weight
+
+  return tuple(callbacks)
+
+
+def DefaultProgressBarCallback(progress_factor):
+  del progress_factor
+
+
+class _NormalProgressBar(object):
   """A simple progress bar for tracking completion of an action.
 
   This progress bar works without having to use any control characters.  It
@@ -588,53 +765,7 @@ class ProgressBar(object):
   This class can also be used in a context manager.
   """
 
-  @staticmethod
-  def _DefaultCallback(progress_factor):
-    pass
-
-  DEFAULT_CALLBACK = _DefaultCallback
-
-  @staticmethod
-  def SplitProgressBar(original_callback, weights):
-    """Splits a progress bar into logical sections.
-
-    Wraps the original callback so that each of the subsections can use the full
-    range of 0 to 1 to indicate its progress.  The overall progress bar will
-    display total progress based on the weights of the tasks.
-
-    Args:
-      original_callback: f(float), The original callback for the progress bar.
-      weights: [float], The weights of the tasks to create.  These can be any
-        numbers you want and the split will be based on their proportions to
-        each other.
-
-    Raises:
-      ValueError: If the weights don't add up to 1.
-
-    Returns:
-      (f(float), ), A tuple of callback functions, in order, for the subtasks.
-    """
-    if (original_callback is None or
-        original_callback == ProgressBar.DEFAULT_CALLBACK):
-      return tuple([ProgressBar.DEFAULT_CALLBACK for _ in range(len(weights))])
-
-    def MakeCallback(already_done, weight):
-      def Callback(done_fraction):
-        original_callback(already_done + (done_fraction * weight))
-      return Callback
-
-    total = float(sum(weights))
-    callbacks = []
-    already_done = 0
-    for weight in weights:
-      normalized_weight = weight / total
-      callbacks.append(MakeCallback(already_done, normalized_weight))
-      already_done += normalized_weight
-
-    return tuple(callbacks)
-
-  def __init__(self, label, stream=log.status, total_ticks=60, first=True,
-               last=True):
+  def __init__(self, label, stream, total_ticks, first, last):
     """Creates a progress bar for the given action.
 
     Args:
@@ -644,12 +775,13 @@ class ProgressBar(object):
       first: bool, True if this is the first bar in a stacked group.
       last: bool, True if this is the last bar in a stacked group.
     """
+    self._raw_label = label
     self._stream = stream
     self._ticks_written = 0
     self._total_ticks = total_ticks
     self._first = first
     self._last = last
-    attr = console_attr.ConsoleAttr(out=stream)
+    attr = console_attr.ConsoleAttr()
     self._box = attr.GetBoxLineCharacters()
     self._redraw = (self._box.d_dr != self._box.d_vr or
                     self._box.d_dl != self._box.d_vl)
@@ -670,15 +802,15 @@ class ProgressBar(object):
       label += ' ' * diff
     left = self._box.d_vr + self._box.d_h
     right = self._box.d_h + self._box.d_vl
-    self._label = u'{left} {label} {right}'.format(left=left, label=label,
-                                                   right=right)
+    self._label = '{left} {label} {right}'.format(
+        left=left, label=label, right=right)
 
   def Start(self):
     """Starts the progress bar by writing the top rule and label."""
     if self._first or self._redraw:
       left = self._box.d_dr if self._first else self._box.d_vr
       right = self._box.d_dl if self._first else self._box.d_vl
-      rule = u'{left}{middle}{right}\n'.format(
+      rule = '{left}{middle}{right}\n'.format(
           left=left, middle=self._box.d_h * self._total_ticks, right=right)
       self._Write(rule)
     self._Write(self._label + '\n')
@@ -722,6 +854,105 @@ class ProgressBar(object):
     self.Finish()
 
 
+class _TextPercentageProgressBar(object):
+  """A progress bar that outputs nothing at all."""
+
+  def __init__(self, label, stream, percentage_display_increments=5.0):
+    """Creates a progress bar for the given action.
+
+    Args:
+      label: str, The action that is being performed.
+      stream: The output stream to write to, stderr by default.
+      percentage_display_increments: Minimum change in percetnage to display new
+        progress
+    """
+    self._label = label
+    self._stream = stream
+    self._last_percentage = 0
+    self._percentage_display_increments = percentage_display_increments / 100.0
+
+  def Start(self):
+    self._Write(self._label)
+
+  def SetProgress(self, progress_factor):
+    progress_factor = min(progress_factor, 1.0)
+    should_update_progress = (
+        progress_factor >
+        self._last_percentage + self._percentage_display_increments)
+    if (should_update_progress or progress_factor == 1.0):
+      self._Write('{0:.0f}%'.format(progress_factor * 100.0))
+      self._last_percentage = progress_factor
+
+  def Finish(self):
+    """Mark the progress as done."""
+    self.SetProgress(1)
+
+  def _Write(self, msg):
+    self._stream.write(msg + '\n')
+
+  def __enter__(self):
+    self.Start()
+    return self
+
+  def __exit__(self, *args):
+    self.Finish()
+
+
+class NoOpProgressBar(object):
+  """A progress bar that outputs nothing at all."""
+
+  def __init__(self):
+    pass
+
+  def Start(self):
+    pass
+
+  def SetProgress(self, progress_factor):
+    pass
+
+  def Finish(self):
+    """Mark the progress as done."""
+    self.SetProgress(1)
+
+  def __enter__(self):
+    self.Start()
+    return self
+
+  def __exit__(self, *args):
+    self.Finish()
+
+
+class _StubProgressBar(object):
+  """A progress bar that only prints deterministic start and end points.
+
+  No UX about progress should be exposed here. This is strictly for being able
+  to tell that the progress bar was invoked, not what it actually looks like.
+  """
+
+  def __init__(self, label, stream):
+    self._raw_label = label
+    self._stream = stream
+
+  def Start(self):
+    self._stream.write(
+        JsonUXStub(UXElementType.PROGRESS_BAR, message=self._raw_label))
+
+  def SetProgress(self, progress_factor):
+    pass
+
+  def Finish(self):
+    """Mark the progress as done."""
+    self.SetProgress(1)
+    self._stream.write('\n')
+
+  def __enter__(self):
+    self.Start()
+    return self
+
+  def __exit__(self, *args):
+    self.Finish()
+
+
 def More(contents, out=None, prompt=None, check_pager=True):
   """Run a user specified pager or fall back to the internal pager.
 
@@ -742,7 +973,7 @@ def More(contents, out=None, prompt=None, check_pager=True):
     # Paging shenanigans to stdout.
     out = sys.stdout
   if check_pager:
-    pager = os.environ.get('PAGER', None)
+    pager = encoding.GetEncodedValue(os.environ, 'PAGER', None)
     if pager == '-':
       # Use the fallback Pager.
       pager = None
@@ -753,27 +984,30 @@ def More(contents, out=None, prompt=None, check_pager=True):
           pager = command
           break
     if pager:
-      less = os.environ.get('LESS', None)
-      if less is None:
-        os.environ['LESS'] = '-R'
+      # If the pager is less(1) then instruct it to display raw ANSI escape
+      # sequences to enable colors and font embellishments.
+      less_orig = encoding.GetEncodedValue(os.environ, 'LESS', None)
+      less = '-R' + (less_orig or '')
+      encoding.SetEncodedValue(os.environ, 'LESS', less)
       p = subprocess.Popen(pager, stdin=subprocess.PIPE, shell=True)
-      encoding = console_attr.GetConsoleAttr().GetEncoding()
-      p.communicate(input=contents.encode(encoding))
+      enc = console_attr.GetConsoleAttr().GetEncoding()
+      p.communicate(input=contents.encode(enc))
       p.wait()
-      if less is None:
-        os.environ.pop('LESS')
+      if less_orig is None:
+        encoding.SetEncodedValue(os.environ, 'LESS', None)
       return
   # Fall back to the internal pager.
   console_pager.Pager(contents, out, prompt).Run()
 
 
 class TickableProgressBar(object):
-  """A progress bar with a discrete number of tasks."""
+  """A thread safe progress bar with a discrete number of tasks."""
 
   def __init__(self, total, *args, **kwargs):
     self.completed = 0
     self.total = total
     self._progress_bar = ProgressBar(*args, **kwargs)
+    self._lock = threading.Lock()
 
   def __enter__(self):
     self._progress_bar.__enter__()
@@ -783,5 +1017,43 @@ class TickableProgressBar(object):
     self._progress_bar.__exit__(exc_type, exc_value, traceback)
 
   def Tick(self):
-    self.completed += 1
-    self._progress_bar.SetProgress(float(self.completed) / self.total)
+    with self._lock:
+      self.completed += 1
+      self._progress_bar.SetProgress(self.completed / self.total)
+
+
+def JsonUXStub(ux_type, **kwargs):
+  """Generates a stub message for UX console output."""
+  output = OrderedDict()
+  output['ux'] = ux_type.name
+  extra_args = list(set(kwargs) - set(ux_type.GetDataFields()))
+  if extra_args:
+    raise ValueError('Extraneous args for Ux Element {}: {}'.format(
+        ux_type.name, extra_args))
+  for field in ux_type.GetDataFields():
+    val = kwargs.get(field, None)
+    if val:
+      output[field] = val
+  return json.dumps(output)
+
+
+class UXElementType(enum.Enum):
+  """Describes the type of a ux element."""
+  PROGRESS_BAR = (0, 'message')
+  PROGRESS_TRACKER = (1, 'message', 'aborted_message', 'status')
+  STAGED_PROGRESS_TRACKER = (2, 'message', 'status',
+                             'succeeded_stages', 'failed_stage')
+  PROMPT_CONTINUE = (3, 'message', 'prompt_string', 'cancel_string')
+  PROMPT_RESPONSE = (4, 'message')
+  PROMPT_CHOICE = (5, 'message', 'prompt_string', 'choices')
+
+  def __init__(self, ordinal, *data_fields):
+    # We need to pass in something unique here because if two event types
+    # happen to have the same attributes, the Enum class interprets them to be
+    # the same and sets one value as an alias of the other.
+    del ordinal
+    self._data_fields = data_fields
+
+  def GetDataFields(self):
+    """Returns the ordered list of additional fields in the UX Element."""
+    return self._data_fields

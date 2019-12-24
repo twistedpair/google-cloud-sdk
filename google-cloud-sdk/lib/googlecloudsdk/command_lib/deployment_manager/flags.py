@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +15,13 @@
 
 """Helper methods for configuring deployment manager command flags."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.deployment_manager import dm_api_util
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
@@ -23,7 +29,7 @@ RESOURCES_AND_OUTPUTS_FORMAT = """
     table(
       resources:format='table(
         name,
-        type,
+        type:wrap,
         update.state.yesno(no="COMPLETED"),
         update.error.errors.group(code),
         update.intent)',
@@ -39,7 +45,8 @@ OPERATION_FORMAT = """
       operationType:label=TYPE,
       status,
       targetLink.basename():label=TARGET,
-      error.errors.group(code)
+      error.errors.group(code),
+      warnings.group(code)
     )
 """
 
@@ -48,7 +55,7 @@ DEPLOYMENT_FORMAT = """
       name, id, description, fingerprint,insertTime, manifest.basename(),
       labels, operation.operationType, operation.progress,
       operation.status, operation.user, operation.endTime, operation.startTime,
-      operation.error, update)
+      operation.error, operation.warnings, update)
 """
 
 _DELETE_FLAG_KWARGS = {
@@ -103,14 +110,7 @@ def AddPropertiesFlag(parser):
 
 def AddAsyncFlag(parser):
   """Add the async argument."""
-  parser.add_argument(
-      '--async',
-      help='Return immediately and print information about the Operation in '
-      'progress rather than waiting for the Operation to complete. '
-      '(default=False)',
-      dest='async',
-      default=False,
-      action='store_true')
+  base.ASYNC_FLAG.AddToParser(parser)
 
 
 def AddFingerprintFlag(parser):

@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Wrapper for user-visible error exceptions to raise in the CLI."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.core import exceptions
 
 
@@ -25,5 +30,9 @@ class OversizedDeployment(FunctionsError):
 
   def __init__(self, actual_size, max_allowed_size):
     super(OversizedDeployment, self).__init__(
-        'Uncompessed deployment is {}, bigger than maximum allowed size of {}.'
+        'Uncompressed deployment is {}, bigger than maximum allowed size of {}.'
         .format(actual_size, max_allowed_size))
+
+
+class FileNotFoundError(exceptions.Error):
+  """Exceptions for invalid files."""

@@ -24,7 +24,7 @@ class AppengineV1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new appengine handle."""
     url = url or self.BASE_URL
     super(AppengineV1, self).__init__(
@@ -33,7 +33,8 @@ class AppengineV1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.apps_authorizedCertificates = self.AppsAuthorizedCertificatesService(self)
     self.apps_authorizedDomains = self.AppsAuthorizedDomainsService(self)
     self.apps_domainMappings = self.AppsDomainMappingsService(self)
@@ -57,7 +58,7 @@ class AppengineV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Uploads the specified SSL certificate.
+      r"""Uploads the specified SSL certificate.
 
       Args:
         request: (AppengineAppsAuthorizedCertificatesCreateRequest) input message
@@ -84,7 +85,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified SSL certificate.
+      r"""Deletes the specified SSL certificate.
 
       Args:
         request: (AppengineAppsAuthorizedCertificatesDeleteRequest) input message
@@ -111,7 +112,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the specified SSL certificate.
+      r"""Gets the specified SSL certificate.
 
       Args:
         request: (AppengineAppsAuthorizedCertificatesGetRequest) input message
@@ -138,7 +139,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all SSL certificates the user is authorized to administer.
+      r"""Lists all SSL certificates the user is authorized to administer.
 
       Args:
         request: (AppengineAppsAuthorizedCertificatesListRequest) input message
@@ -165,7 +166,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified SSL certificate. To renew a certificate and maintain its existing domain mappings, update certificate_data with a new certificate. The new certificate must be applicable to the same domains as the original certificate. The certificate display_name may also be updated.
+      r"""Updates the specified SSL certificate. To renew a certificate and maintain its existing domain mappings, update certificate_data with a new certificate. The new certificate must be applicable to the same domains as the original certificate. The certificate display_name may also be updated.
 
       Args:
         request: (AppengineAppsAuthorizedCertificatesPatchRequest) input message
@@ -202,7 +203,7 @@ class AppengineV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Lists all domains the user is authorized to administer.
+      r"""Lists all domains the user is authorized to administer.
 
       Args:
         request: (AppengineAppsAuthorizedDomainsListRequest) input message
@@ -239,7 +240,7 @@ class AppengineV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Maps a domain to an application. A user must be authorized to administer a domain in order to map it to an application. For a list of available authorized domains, see AuthorizedDomains.ListAuthorizedDomains.
+      r"""Maps a domain to an application. A user must be authorized to administer a domain in order to map it to an application. For a list of available authorized domains, see AuthorizedDomains.ListAuthorizedDomains.
 
       Args:
         request: (AppengineAppsDomainMappingsCreateRequest) input message
@@ -266,7 +267,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified domain mapping. A user must be authorized to administer the associated domain in order to delete a DomainMapping resource.
+      r"""Deletes the specified domain mapping. A user must be authorized to administer the associated domain in order to delete a DomainMapping resource.
 
       Args:
         request: (AppengineAppsDomainMappingsDeleteRequest) input message
@@ -293,7 +294,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the specified domain mapping.
+      r"""Gets the specified domain mapping.
 
       Args:
         request: (AppengineAppsDomainMappingsGetRequest) input message
@@ -320,7 +321,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the domain mappings on an application.
+      r"""Lists the domain mappings on an application.
 
       Args:
         request: (AppengineAppsDomainMappingsListRequest) input message
@@ -347,7 +348,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified domain mapping. To map an SSL certificate to a domain mapping, update certificate_id to point to an AuthorizedCertificate resource. A user must be authorized to administer the associated domain in order to update a DomainMapping resource.
+      r"""Updates the specified domain mapping. To map an SSL certificate to a domain mapping, update certificate_id to point to an AuthorizedCertificate resource. A user must be authorized to administer the associated domain in order to update a DomainMapping resource.
 
       Args:
         request: (AppengineAppsDomainMappingsPatchRequest) input message
@@ -384,7 +385,7 @@ class AppengineV1(base_api.BaseApiClient):
           }
 
     def BatchUpdate(self, request, global_params=None):
-      """Replaces the entire firewall ruleset in one bulk operation. This overrides and replaces the rules of an existing firewall with the new rules.If the final rule does not match traffic with the '*' wildcard IP range, then an "allow all" rule is explicitly added to the end of the list.
+      r"""Replaces the entire firewall ruleset in one bulk operation. This overrides and replaces the rules of an existing firewall with the new rules.If the final rule does not match traffic with the '*' wildcard IP range, then an "allow all" rule is explicitly added to the end of the list.
 
       Args:
         request: (AppengineAppsFirewallIngressRulesBatchUpdateRequest) input message
@@ -411,7 +412,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      """Creates a firewall rule for the application.
+      r"""Creates a firewall rule for the application.
 
       Args:
         request: (AppengineAppsFirewallIngressRulesCreateRequest) input message
@@ -438,7 +439,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified firewall rule.
+      r"""Deletes the specified firewall rule.
 
       Args:
         request: (AppengineAppsFirewallIngressRulesDeleteRequest) input message
@@ -465,7 +466,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the specified firewall rule.
+      r"""Gets the specified firewall rule.
 
       Args:
         request: (AppengineAppsFirewallIngressRulesGetRequest) input message
@@ -492,7 +493,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the firewall rules of an application.
+      r"""Lists the firewall rules of an application.
 
       Args:
         request: (AppengineAppsFirewallIngressRulesListRequest) input message
@@ -519,7 +520,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified firewall rule.
+      r"""Updates the specified firewall rule.
 
       Args:
         request: (AppengineAppsFirewallIngressRulesPatchRequest) input message
@@ -566,7 +567,7 @@ class AppengineV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Get information about a location.
+      r"""Gets information about a location.
 
       Args:
         request: (AppengineAppsLocationsGetRequest) input message
@@ -593,7 +594,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service.
 
       Args:
         request: (AppengineAppsLocationsListRequest) input message
@@ -630,7 +631,7 @@ class AppengineV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (AppengineAppsOperationsGetRequest) input message
@@ -657,7 +658,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users/*/operations. To override the binding, API services can add a binding such as "/v1/{name=users/*}/operations" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users/*/operations. To override the binding, API services can add a binding such as "/v1/{name=users/*}/operations" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (AppengineAppsOperationsListRequest) input message
@@ -694,7 +695,7 @@ class AppengineV1(base_api.BaseApiClient):
           }
 
     def Debug(self, request, global_params=None):
-      """Enables debugging on a VM instance. This allows you to use the SSH command to connect to the virtual machine where the instance lives. While in "debug mode", the instance continues to serve live traffic. You should delete the instance when you are done debugging and then allow the system to take over and determine if another instance should be started.Only applicable for instances in App Engine flexible environment.
+      r"""Enables debugging on a VM instance. This allows you to use the SSH command to connect to the virtual machine where the instance lives. While in "debug mode", the instance continues to serve live traffic. You should delete the instance when you are done debugging and then allow the system to take over and determine if another instance should be started.Only applicable for instances in App Engine flexible environment.
 
       Args:
         request: (AppengineAppsServicesVersionsInstancesDebugRequest) input message
@@ -721,7 +722,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Stops a running instance.
+      r"""Stops a running instance.The instance might be automatically recreated based on the scaling settings of the version. For more information, see "How Instances are Managed" (standard environment (https://cloud.google.com/appengine/docs/standard/python/how-instances-are-managed) | flexible environment (https://cloud.google.com/appengine/docs/flexible/python/how-instances-are-managed)).To ensure that instances are not re-created and avoid getting billed, you can stop all instances within the target version by changing the serving status of the version to STOPPED with the apps.services.versions.patch (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions/patch) method.
 
       Args:
         request: (AppengineAppsServicesVersionsInstancesDeleteRequest) input message
@@ -748,7 +749,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets instance information.
+      r"""Gets instance information.
 
       Args:
         request: (AppengineAppsServicesVersionsInstancesGetRequest) input message
@@ -775,7 +776,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the instances of a version.Tip: To aggregate details about instances over time, see the Stackdriver Monitoring API (https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/list).
+      r"""Lists the instances of a version.Tip: To aggregate details about instances over time, see the Stackdriver Monitoring API (https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/list).
 
       Args:
         request: (AppengineAppsServicesVersionsInstancesListRequest) input message
@@ -812,7 +813,7 @@ class AppengineV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Deploys code and resource files to a new version.
+      r"""Deploys code and resource files to a new version.
 
       Args:
         request: (AppengineAppsServicesVersionsCreateRequest) input message
@@ -839,7 +840,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an existing Version resource.
+      r"""Deletes an existing Version resource.
 
       Args:
         request: (AppengineAppsServicesVersionsDeleteRequest) input message
@@ -866,7 +867,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the specified Version resource. By default, only a BASIC_VIEW will be returned. Specify the FULL_VIEW parameter to get the full resource.
+      r"""Gets the specified Version resource. By default, only a BASIC_VIEW will be returned. Specify the FULL_VIEW parameter to get the full resource.
 
       Args:
         request: (AppengineAppsServicesVersionsGetRequest) input message
@@ -893,7 +894,7 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the versions of a service.
+      r"""Lists the versions of a service.
 
       Args:
         request: (AppengineAppsServicesVersionsListRequest) input message
@@ -920,15 +921,20 @@ class AppengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified Version resource. You can specify the following fields depending on the App Engine environment and type of scaling that the version resource uses:.
-serving_status (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status):  For Version resources that use basic scaling, manual scaling, or run in  the App Engine flexible environment.
-instance_class (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.instance_class):  For Version resources that run in the App Engine standard environment.
-automatic_scaling.min_idle_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling):  For Version resources that use automatic scaling and run in the App  Engine standard environment.
-automatic_scaling.max_idle_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling):  For Version resources that use automatic scaling and run in the App  Engine standard environment.
-automatic_scaling.min_total_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling):  For Version resources that use automatic scaling and run in the App  Engine Flexible environment.
-automatic_scaling.max_total_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling):  For Version resources that use automatic scaling and run in the App  Engine Flexible environment.
-automatic_scaling.cool_down_period_sec (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling):  For Version resources that use automatic scaling and run in the App  Engine Flexible environment.
-automatic_scaling.cpu_utilization.target_utilization (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling):  For Version resources that use automatic scaling and run in the App  Engine Flexible environment.
+      r"""Updates the specified Version resource. You can specify the following fields depending on the App Engine environment and type of scaling that the version resource uses:Standard environment.
+instance_class (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.instance_class)automatic scaling in the standard environment:
+automatic_scaling.min_idle_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+automatic_scaling.max_idle_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+automaticScaling.standard_scheduler_settings.max_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
+automaticScaling.standard_scheduler_settings.min_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
+automaticScaling.standard_scheduler_settings.target_cpu_utilization (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
+automaticScaling.standard_scheduler_settings.target_throughput_utilization (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)basic scaling or manual scaling in the standard environment:
+serving_status (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)Flexible environment
+serving_status (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)automatic scaling in the flexible environment:
+automatic_scaling.min_total_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+automatic_scaling.max_total_instances (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+automatic_scaling.cool_down_period_sec (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+automatic_scaling.cpu_utilization.target_utilization (https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 
       Args:
         request: (AppengineAppsServicesVersionsPatchRequest) input message
@@ -965,7 +971,7 @@ automatic_scaling.cpu_utilization.target_utilization (https://cloud.google.com/a
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified service and all enclosed versions.
+      r"""Deletes the specified service and all enclosed versions.
 
       Args:
         request: (AppengineAppsServicesDeleteRequest) input message
@@ -992,7 +998,7 @@ automatic_scaling.cpu_utilization.target_utilization (https://cloud.google.com/a
     )
 
     def Get(self, request, global_params=None):
-      """Gets the current configuration of the specified service.
+      r"""Gets the current configuration of the specified service.
 
       Args:
         request: (AppengineAppsServicesGetRequest) input message
@@ -1019,7 +1025,7 @@ automatic_scaling.cpu_utilization.target_utilization (https://cloud.google.com/a
     )
 
     def List(self, request, global_params=None):
-      """Lists all the services in the application.
+      r"""Lists all the services in the application.
 
       Args:
         request: (AppengineAppsServicesListRequest) input message
@@ -1046,7 +1052,7 @@ automatic_scaling.cpu_utilization.target_utilization (https://cloud.google.com/a
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the configuration of the specified service.
+      r"""Updates the configuration of the specified service.
 
       Args:
         request: (AppengineAppsServicesPatchRequest) input message
@@ -1083,9 +1089,9 @@ automatic_scaling.cpu_utilization.target_utilization (https://cloud.google.com/a
           }
 
     def Create(self, request, global_params=None):
-      """Creates an App Engine application for a Google Cloud Platform project. Required fields:.
+      r"""Creates an App Engine application for a Google Cloud Platform project. Required fields:.
 id - The ID of the target Cloud Platform project.
-location - The region (https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.For more information about App Engine applications, see Managing Projects, Applications, and Billing (https://cloud.google.com/appengine/docs/python/console/).
+location - The region (https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.For more information about App Engine applications, see Managing Projects, Applications, and Billing (https://cloud.google.com/appengine/docs/standard/python/console/).
 
       Args:
         request: (Application) input message
@@ -1111,7 +1117,7 @@ location - The region (https://cloud.google.com/appengine/docs/locations) where 
     )
 
     def Get(self, request, global_params=None):
-      """Gets information about an application.
+      r"""Gets information about an application.
 
       Args:
         request: (AppengineAppsGetRequest) input message
@@ -1138,7 +1144,7 @@ location - The region (https://cloud.google.com/appengine/docs/locations) where 
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified Application resource. You can update the following fields:.
+      r"""Updates the specified Application resource. You can update the following fields:.
 auth_domain - Google authentication domain for controlling user access to the application.
 default_cookie_expiration - Cookie expiration policy for the application.
 
@@ -1167,7 +1173,7 @@ default_cookie_expiration - Cookie expiration policy for the application.
     )
 
     def Repair(self, request, global_params=None):
-      """Recreates the required App Engine features for the specified App Engine application, for example a Cloud Storage bucket or App Engine service account. Use this method if you receive an error message about a missing feature, for example, Error retrieving the App Engine service account.
+      r"""Recreates the required App Engine features for the specified App Engine application, for example a Cloud Storage bucket or App Engine service account. Use this method if you receive an error message about a missing feature, for example, Error retrieving the App Engine service account. If you have deleted your App Engine service account, this will not be able to recreate it. Instead, you should attempt to use the IAM undelete API if possible at https://cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/undelete?apix_params=%7B"name"%3A"projects%2F-%2FserviceAccounts%2Funique_id"%2C"resource"%3A%7B%7D%7D . If the deletion was recent, the numeric ID can be found in the Cloud Console Activity Log.
 
       Args:
         request: (AppengineAppsRepairRequest) input message

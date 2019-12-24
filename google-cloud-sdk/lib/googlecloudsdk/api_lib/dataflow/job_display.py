@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,8 +16,20 @@
 """Facility for displaying information about a Job message to a user.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.dataflow import apis
-from googlecloudsdk.command_lib.dataflow import time_util
+from googlecloudsdk.core.util import times
+
+
+def FormatDateTime(string):
+  """Returns a yyyy-mm-dd hh:mm:ss formatted date/time for string."""
+  dt = times.ParseDateTime(string)
+  if not times.GetTimeStampFromDateTime(dt):
+    return None
+  return times.FormatDateTime(dt, '%Y-%m-%d %H:%M:%S')
 
 
 class DisplayInfo(object):
@@ -48,8 +61,8 @@ class DisplayInfo(object):
     # Don't worry, be happy.
     #
     # pylint: disable=invalid-name
-    self.stateTime = time_util.FormatTimestamp(job.currentStateTime)
-    self.creationTime = time_util.FormatTimestamp(job.createTime)
+    self.stateTime = FormatDateTime(job.currentStateTime)
+    self.creationTime = FormatDateTime(job.createTime)
     # pylint: enable=invalid-name
 
   @staticmethod
@@ -80,8 +93,13 @@ class DisplayInfo(object):
     state_value_enum = apis.GetMessagesModule().Job.CurrentStateValueValuesEnum
     value_map = {
         state_value_enum.JOB_STATE_CANCELLED: 'Cancelled',
+        state_value_enum.JOB_STATE_CANCELLING: 'Cancelling',
         state_value_enum.JOB_STATE_DONE: 'Done',
+        state_value_enum.JOB_STATE_DRAINED: 'Drained',
+        state_value_enum.JOB_STATE_DRAINING: 'Draining',
         state_value_enum.JOB_STATE_FAILED: 'Failed',
+        state_value_enum.JOB_STATE_PENDING: 'Pending',
+        state_value_enum.JOB_STATE_QUEUED: 'Queued',
         state_value_enum.JOB_STATE_RUNNING: 'Running',
         state_value_enum.JOB_STATE_STOPPED: 'Stopped',
         state_value_enum.JOB_STATE_UPDATED: 'Updated',

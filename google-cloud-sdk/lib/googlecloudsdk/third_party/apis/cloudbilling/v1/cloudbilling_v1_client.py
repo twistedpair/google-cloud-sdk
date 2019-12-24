@@ -24,7 +24,7 @@ class CloudbillingV1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new cloudbilling handle."""
     url = url or self.BASE_URL
     super(CloudbillingV1, self).__init__(
@@ -33,7 +33,8 @@ class CloudbillingV1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.billingAccounts_projects = self.BillingAccountsProjectsService(self)
     self.billingAccounts = self.BillingAccountsService(self)
     self.projects = self.ProjectsService(self)
@@ -51,9 +52,10 @@ class CloudbillingV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Lists the projects associated with a billing account. The current.
-authenticated user must be an [owner of the billing
-account](https://support.google.com/cloud/answer/4430947).
+      r"""Lists the projects associated with a billing account. The current.
+authenticated user must have the `billing.resourceAssociations.list` IAM
+permission, which is often given to billing account
+[viewers](https://cloud.google.com/billing/docs/how-to/billing-access).
 
       Args:
         request: (CloudbillingBillingAccountsProjectsListRequest) input message
@@ -89,10 +91,45 @@ account](https://support.google.com/cloud/answer/4430947).
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a billing account.
+This method can only be used to create
+[billing subaccounts](https://cloud.google.com/billing/docs/concepts)
+by GCP resellers.
+When creating a subaccount, the current authenticated user must have the
+`billing.accounts.update` IAM permission on the master account, which is
+typically given to billing account
+[administrators](https://cloud.google.com/billing/docs/how-to/billing-access).
+This method will return an error if the master account has not been
+provisioned as a reseller account.
+
+      Args:
+        request: (BillingAccount) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BillingAccount) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudbilling.billingAccounts.create',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/billingAccounts',
+        request_field='<request>',
+        request_type_name=u'BillingAccount',
+        response_type_name=u'BillingAccount',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
-      """Gets information about a billing account. The current authenticated user.
-must be an [owner of the billing
-account](https://support.google.com/cloud/answer/4430947).
+      r"""Gets information about a billing account. The current authenticated user.
+must be a [viewer of the billing
+account](https://cloud.google.com/billing/docs/how-to/billing-access).
 
       Args:
         request: (CloudbillingBillingAccountsGetRequest) input message
@@ -118,9 +155,40 @@ account](https://support.google.com/cloud/answer/4430947).
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a billing account.
+The caller must have the `billing.accounts.getIamPolicy` permission on the
+account, which is often given to billing account
+[viewers](https://cloud.google.com/billing/docs/how-to/billing-access).
+
+      Args:
+        request: (CloudbillingBillingAccountsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/billingAccounts/{billingAccountsId}:getIamPolicy',
+        http_method=u'GET',
+        method_id=u'cloudbilling.billingAccounts.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[u'options_requestedPolicyVersion'],
+        relative_path=u'v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name=u'CloudbillingBillingAccountsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
-      """Lists the billing accounts that the current authenticated user.
-[owns](https://support.google.com/cloud/answer/4430947).
+      r"""Lists the billing accounts that the current authenticated user has.
+permission to
+[view](https://cloud.google.com/billing/docs/how-to/billing-access).
 
       Args:
         request: (CloudbillingBillingAccountsListRequest) input message
@@ -137,11 +205,103 @@ account](https://support.google.com/cloud/answer/4430947).
         method_id=u'cloudbilling.billingAccounts.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
         relative_path=u'v1/billingAccounts',
         request_field='',
         request_type_name=u'CloudbillingBillingAccountsListRequest',
         response_type_name=u'ListBillingAccountsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a billing account's fields.
+Currently the only field that can be edited is `display_name`.
+The current authenticated user must have the `billing.accounts.update`
+IAM permission, which is typically given to the
+[administrator](https://cloud.google.com/billing/docs/how-to/billing-access)
+of the billing account.
+
+      Args:
+        request: (CloudbillingBillingAccountsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BillingAccount) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/billingAccounts/{billingAccountsId}',
+        http_method=u'PATCH',
+        method_id=u'cloudbilling.billingAccounts.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/{+name}',
+        request_field=u'billingAccount',
+        request_type_name=u'CloudbillingBillingAccountsPatchRequest',
+        response_type_name=u'BillingAccount',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy for a billing account. Replaces any existing.
+policy.
+The caller must have the `billing.accounts.setIamPolicy` permission on the
+account, which is often given to billing account
+[administrators](https://cloud.google.com/billing/docs/how-to/billing-access).
+
+      Args:
+        request: (CloudbillingBillingAccountsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/billingAccounts/{billingAccountsId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'cloudbilling.billingAccounts.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'CloudbillingBillingAccountsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Tests the access control policy for a billing account. This method takes.
+the resource and a set of permissions as input and returns the subset of
+the input permissions that the caller is allowed for that resource.
+
+      Args:
+        request: (CloudbillingBillingAccountsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/billingAccounts/{billingAccountsId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'cloudbilling.billingAccounts.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1/{+resource}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'CloudbillingBillingAccountsTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -156,7 +316,7 @@ account](https://support.google.com/cloud/answer/4430947).
           }
 
     def GetBillingInfo(self, request, global_params=None):
-      """Gets the billing information for a project. The current authenticated user.
+      r"""Gets the billing information for a project. The current authenticated user.
 must have [permission to view the
 project](https://cloud.google.com/docs/permissions-overview#h.bgs0oxofvnoo
 ).
@@ -186,7 +346,7 @@ project](https://cloud.google.com/docs/permissions-overview#h.bgs0oxofvnoo
     )
 
     def UpdateBillingInfo(self, request, global_params=None):
-      """Sets or updates the billing account associated with a project. You specify.
+      r"""Sets or updates the billing account associated with a project. You specify.
 the new billing account by setting the `billing_account_name` in the
 `ProjectBillingInfo` resource to the resource name of a billing account.
 Associating a project with an open billing account enables billing on the
@@ -195,14 +355,14 @@ billing account, this method changes the billing account used for resource
 usage charges.
 
 *Note:* Incurred charges that have not yet been reported in the transaction
-history of the Google Cloud Console may be billed to the new billing
+history of the GCP Console might be billed to the new billing
 account, even if the charge occurred before the new billing account was
 assigned to the project.
 
 The current authenticated user must have ownership privileges for both the
 [project](https://cloud.google.com/docs/permissions-overview#h.bgs0oxofvnoo
 ) and the [billing
-account](https://support.google.com/cloud/answer/4430947).
+account](https://cloud.google.com/billing/docs/how-to/billing-access).
 
 You can disable billing on the project by setting the
 `billing_account_name` field to empty. This action disassociates the
@@ -253,7 +413,7 @@ disable billing, you should always call this method with the name of an
           }
 
     def List(self, request, global_params=None):
-      """Lists all publicly available SKUs for a given cloud service.
+      r"""Lists all publicly available SKUs for a given cloud service.
 
       Args:
         request: (CloudbillingServicesSkusListRequest) input message
@@ -290,7 +450,7 @@ disable billing, you should always call this method with the name of an
           }
 
     def List(self, request, global_params=None):
-      """Lists all public cloud services.
+      r"""Lists all public cloud services.
 
       Args:
         request: (CloudbillingServicesListRequest) input message

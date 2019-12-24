@@ -1,0 +1,1264 @@
+title: dataproc v1beta2 export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  jobs:
+    description: Required. The Directed Acyclic Graph of Jobs to submit.
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required:
+      - stepId
+      properties:
+        scheduling:
+          description: Job scheduling configuration.
+          type: object
+          additionalProperties: false
+          properties:
+            maxFailuresPerHour:
+              description: |-
+                Maximum number of times per hour a driver may be restarted as
+                a result of driver terminating with non-zero code before job
+                is reported failed.A job may be reported as thrashing if
+                driver exits with non-zero code 4 times within 10 minute
+                window.Maximum value is 10.
+              type: integer
+        stepId:
+          description: |-
+            Required. The step id. The id must be unique among all jobs within
+            the template.The step id is used as prefix for job id, as job
+            goog- dataproc-workflow-step-id label, and in prerequisiteStepIds
+            field from other steps.The id must contain only letters (a-z,
+            A-Z), numbers (0-9), underscores (_), and hyphens (-). Cannot
+            begin or end with underscore or hyphen. Must consist of between 3
+            and 50 characters.
+          type: string
+        hadoopJob:
+          description: Job is a Hadoop job.
+          type: object
+          additionalProperties: false
+          properties:
+            properties:
+              description: |-
+                A mapping of property names to values, used to configure
+                Hadoop. Properties that conflict with values set by the Cloud
+                Dataproc API may be overwritten. Can include properties set in
+                /etc/hadoop/conf/*-site and classes in user code.
+              type: object
+              additionalProperties:
+                description: Additional properties of type PropertiesValue
+                type: string
+            args:
+              description: |-
+                The arguments to pass to the driver. Do not include arguments,
+                such as -libjars or -Dfoo=bar, that can be set as job
+                properties, since a collision may occur that causes an
+                incorrect job submission.
+              type: array
+              items:
+                type: string
+            mainJarFileUri:
+              description: |-
+                The HCFS URI of the jar file containing the main class.
+              type: string
+            archiveUris:
+              description: |-
+                HCFS URIs of archives to be extracted in the working
+                directory of Hadoop drivers and tasks. Supported file
+                types: .jar, .tar, .tar.gz, .tgz, or .zip.
+              type: array
+              items:
+                type: string
+            mainClass:
+              description: |-
+                The name of the driver's main class. The jar file
+                containing the class must be in the default CLASSPATH
+                or specified in jar_file_uris.
+              type: string
+            loggingConfig:
+              description: The runtime log config for job execution.
+              type: object
+              additionalProperties: false
+              required:
+              - driverLogLevels
+              properties:
+                driverLogLevels:
+                  description: |-
+                    The per-package log levels for the driver. This
+                    may include "root" package name to configure
+                    rootLogger. Examples: 'com.google = FATAL', 'root
+                    = INFO', 'org.apache = DEBUG'
+                  type: object
+                  additionalProperties:
+                    description: |-
+                      Additional properties of type
+                      DriverLogLevelsValue
+                    type: string
+                    enum:
+                    - LEVEL_UNSPECIFIED
+                    - ALL
+                    - TRACE
+                    - DEBUG
+                    - INFO
+                    - WARN
+                    - ERROR
+                    - FATAL
+                    - OFF
+            jarFileUris:
+              description: |-
+                Jar file URIs to add to the CLASSPATHs of the Hadoop
+                driver and tasks.
+              type: array
+              items:
+                type: string
+            fileUris:
+              description: |-
+                HCFS (Hadoop Compatible Filesystem) URIs of files
+                to be copied to the working directory of Hadoop
+                drivers and distributed tasks. Useful for naively
+                parallel tasks.
+              type: array
+              items:
+                type: string
+        hiveJob:
+          description: Job is a Hive job.
+          type: object
+          additionalProperties: false
+          properties:
+            properties:
+              description: |-
+                A mapping of property names and values, used to configure
+                Hive. Properties that conflict with values set by the Cloud
+                Dataproc API may be overwritten. Can include properties set in
+                /etc/hadoop/conf/*-site.xml, /etc/hive/conf/hive-site.xml, and
+                classes in user code.
+              type: object
+              additionalProperties:
+                description: Additional properties of type PropertiesValue
+                type: string
+            scriptVariables:
+              description: |-
+                Mapping of query variable names to values (equivalent to the
+                Hive command: SET name="value";).
+              type: object
+              additionalProperties:
+                description: |-
+                  Additional properties of type ScriptVariablesValue
+                type: string
+            jarFileUris:
+              description: |-
+                HCFS URIs of jar files to add to the CLASSPATH of the Hive
+                server and Hadoop MapReduce (MR) tasks. Can contain Hive
+                SerDes and UDFs.
+              type: array
+              items:
+                type: string
+            continueOnFailure:
+              description: |-
+                Whether to continue executing queries if a query fails.
+                The default value is false. Setting to true can be useful
+                when executing independent parallel queries.
+              type: boolean
+            queryList:
+              description: A list of queries.
+              type: object
+              additionalProperties: false
+              required:
+              - queries
+              properties:
+                queries:
+                  description: |-
+                    Required. The queries to execute. You do not need to
+                    terminate a query with a semicolon. Multiple queries
+                    can be specified in one string by separating each with
+                    a semicolon. Here is an example of an Cloud Dataproc
+                    API snippet that uses a QueryList to specify a
+                    HiveJob: "hiveJob": {   "queryList": {     "queries":
+                    [       "query1", "query2",       "query3;query4",
+                    ]   } }
+                  type: array
+                  items:
+                    type: string
+            queryFileUri:
+              description: |-
+                The HCFS URI of the script that contains Hive queries.
+              type: string
+        labels:
+          description: |-
+            The labels to associate with this job.Label keys must be between 1
+            and 63 characters long, and must conform to the following regular
+            expression: \p{Ll}\p{Lo}{0,62}Label values must be between 1 and
+            63 characters long, and must conform to the following regular
+          type: object
+          additionalProperties:
+            description: Additional properties of type LabelsValue
+            type: string
+        prerequisiteStepIds:
+          description: |-
+            The optional list of prerequisite job step_ids. If not specified,
+            the job will start at the beginning of workflow.
+          type: array
+          items:
+            type: string
+        pigJob:
+          description: Job is a Pig job.
+          type: object
+          additionalProperties: false
+          properties:
+            properties:
+              description: |-
+                A mapping of property names to values, used to configure
+                Pig. Properties that conflict with values set by the Cloud
+                Dataproc API may be overwritten. Can include properties
+                set in /etc/hadoop/conf/*-site.xml,
+                /etc/pig/conf/pig.properties, and classes in user code.
+              type: object
+              additionalProperties:
+                description: Additional properties of type PropertiesValue
+                type: string
+            scriptVariables:
+              description: |-
+                Mapping of query variable names to values (equivalent to
+                the Pig command: name=[value]).
+              type: object
+              additionalProperties:
+                description: |-
+                  Additional properties of type ScriptVariablesValue
+                type: string
+            loggingConfig:
+              description: The runtime log config for job execution.
+              type: object
+              additionalProperties: false
+              required:
+              - driverLogLevels
+              properties:
+                driverLogLevels:
+                  description: |-
+                    The per-package log levels for the driver. This
+                    may include "root" package name to configure
+                    rootLogger. Examples: 'com.google = FATAL', 'root
+                    = INFO', 'org.apache = DEBUG'
+                  type: object
+                  additionalProperties:
+                    description: |-
+                      Additional properties of type
+                      DriverLogLevelsValue
+                    type: string
+                    enum:
+                    - LEVEL_UNSPECIFIED
+                    - ALL
+                    - TRACE
+                    - DEBUG
+                    - INFO
+                    - WARN
+                    - ERROR
+                    - FATAL
+                    - OFF
+            jarFileUris:
+              description: |-
+                HCFS URIs of jar files to add to the CLASSPATH of the Pig
+                Client and Hadoop MapReduce (MR) tasks. Can contain Pig
+                UDFs.
+              type: array
+              items:
+                type: string
+            continueOnFailure:
+              description: |-
+                Whether to continue executing queries if a query
+                fails. The default value is false. Setting to true can
+                be useful when executing independent parallel queries.
+              type: boolean
+            queryList:
+              description: A list of queries.
+              type: object
+              additionalProperties: false
+              required:
+              - queries
+              properties:
+                queries:
+                  description: |-
+                    Required. The queries to execute. You do not need
+                    to terminate a query with a semicolon. Multiple
+                    queries can be specified in one string by
+                    separating each with a semicolon. Here is an
+                    example of an Cloud Dataproc API snippet that uses
+                    a QueryList to specify a HiveJob: "hiveJob": {
+                    "queryList": {     "queries": [       "query1",
+                    "query2",       "query3;query4",     ]   } }
+                  type: array
+                  items:
+                    type: string
+            queryFileUri:
+              description: |-
+                The HCFS URI of the script that contains the Pig
+                queries.
+              type: string
+        pysparkJob:
+          description: Job is a Pyspark job.
+          type: object
+          additionalProperties: false
+          required:
+          - mainPythonFileUri
+          properties:
+            properties:
+              description: |-
+                A mapping of property names to values, used to configure
+                PySpark. Properties that conflict with values set by the
+                Cloud Dataproc API may be overwritten. Can include
+                properties set in /etc/spark/conf/spark-defaults.conf and
+                classes in user code.
+              type: object
+              additionalProperties:
+                description: Additional properties of type PropertiesValue
+                type: string
+            args:
+              description: |-
+                The arguments to pass to the driver. Do not include
+                arguments, such as --conf, that can be set as job
+                properties, since a collision may occur that causes an
+                incorrect job submission.
+              type: array
+              items:
+                type: string
+            archiveUris:
+              description: |-
+                HCFS URIs of archives to be extracted in the working
+                directory of .jar, .tar, .tar.gz, .tgz, and .zip.
+              type: array
+              items:
+                type: string
+            loggingConfig:
+              description: The runtime log config for job execution.
+              type: object
+              additionalProperties: false
+              required:
+              - driverLogLevels
+              properties:
+                driverLogLevels:
+                  description: |-
+                    The per-package log levels for the driver. This
+                    may include "root" package name to configure
+                    rootLogger. Examples: 'com.google = FATAL', 'root
+                    = INFO', 'org.apache = DEBUG'
+                  type: object
+                  additionalProperties:
+                    description: |-
+                      Additional properties of type
+                      DriverLogLevelsValue
+                    type: string
+                    enum:
+                    - LEVEL_UNSPECIFIED
+                    - ALL
+                    - TRACE
+                    - DEBUG
+                    - INFO
+                    - WARN
+                    - ERROR
+                    - FATAL
+                    - OFF
+            jarFileUris:
+              description: |-
+                HCFS URIs of jar files to add to the CLASSPATHs of
+                the Python driver and tasks.
+              type: array
+              items:
+                type: string
+            pythonFileUris:
+              description: |-
+                HCFS file URIs of Python files to pass to the
+                PySpark framework. Supported file types: .py,
+                .egg, and .zip.
+              type: array
+              items:
+                type: string
+            mainPythonFileUri:
+              description: |-
+                Required. The HCFS URI of the main Python
+                file to use as the driver. Must be a .py
+                file.
+              type: string
+            fileUris:
+              description: |-
+                HCFS URIs of files to be copied to the
+                working directory of Python drivers and
+                distributed tasks. Useful for naively
+                parallel tasks.
+              type: array
+              items:
+                type: string
+        sparkSqlJob:
+          description: Job is a SparkSql job.
+          type: object
+          additionalProperties: false
+          properties:
+            properties:
+              description: |-
+                A mapping of property names to values, used to configure
+                Spark SQL's SparkConf. Properties that conflict with
+                values set by the Cloud Dataproc API may be overwritten.
+              type: object
+              additionalProperties:
+                description: Additional properties of type PropertiesValue
+                type: string
+            scriptVariables:
+              description: |-
+                Mapping of query variable names to values (equivalent to
+                the Spark SQL command: SET name="value";).
+              type: object
+              additionalProperties:
+                description: |-
+                  Additional properties of type ScriptVariablesValue
+                type: string
+            loggingConfig:
+              description: The runtime log config for job execution.
+              type: object
+              additionalProperties: false
+              required:
+              - driverLogLevels
+              properties:
+                driverLogLevels:
+                  description: |-
+                    The per-package log levels for the driver. This
+                    may include "root" package name to configure
+                    rootLogger. Examples: 'com.google = FATAL', 'root
+                    = INFO', 'org.apache = DEBUG'
+                  type: object
+                  additionalProperties:
+                    description: |-
+                      Additional properties of type
+                      DriverLogLevelsValue
+                    type: string
+                    enum:
+                    - LEVEL_UNSPECIFIED
+                    - ALL
+                    - TRACE
+                    - DEBUG
+                    - INFO
+                    - WARN
+                    - ERROR
+                    - FATAL
+                    - OFF
+            jarFileUris:
+              description: |-
+                HCFS URIs of jar files to be added to the Spark CLASSPATH.
+              type: array
+              items:
+                type: string
+            queryList:
+              description: A list of queries.
+              type: object
+              additionalProperties: false
+              required:
+              - queries
+              properties:
+                queries:
+                  description: |-
+                    Required. The queries to execute. You do not need
+                    to terminate a query with a semicolon. Multiple
+                    queries can be specified in one string by
+                    separating each with a semicolon. Here is an
+                    example of an Cloud Dataproc API snippet that uses
+                    a QueryList to specify a HiveJob: "hiveJob": {
+                    "queryList": {     "queries": [       "query1",
+                    "query2",       "query3;query4",     ]   } }
+                  type: array
+                  items:
+                    type: string
+            queryFileUri:
+              description: |-
+                The HCFS URI of the script that contains SQL queries.
+              type: string
+        sparkJob:
+          description: Job is a Spark job.
+          type: object
+          additionalProperties: false
+          properties:
+            properties:
+              description: |-
+                A mapping of property names to values, used to configure
+                Spark. Properties that conflict with values set by the
+                Cloud Dataproc API may be overwritten. Can include
+                properties set in /etc/spark/conf/spark-defaults.conf and
+                classes in user code.
+              type: object
+              additionalProperties:
+                description: Additional properties of type PropertiesValue
+                type: string
+            args:
+              description: |-
+                The arguments to pass to the driver. Do not include
+                arguments, such as --conf, that can be set as job
+                properties, since a collision may occur that causes an
+                incorrect job submission.
+              type: array
+              items:
+                type: string
+            mainJarFileUri:
+              description: |-
+                The HCFS URI of the jar file that contains the main
+                class.
+              type: string
+            archiveUris:
+              description: |-
+                HCFS URIs of archives to be extracted in the working
+                directory of Spark drivers and tasks. Supported file
+                types: .jar, .tar, .tar.gz, .tgz, and .zip.
+              type: array
+              items:
+                type: string
+            mainClass:
+              description: |-
+                The name of the driver's main class. The jar file
+                that contains the class must be in the default
+                CLASSPATH or specified in jar_file_uris.
+              type: string
+            loggingConfig:
+              description: The runtime log config for job execution.
+              type: object
+              additionalProperties: false
+              required:
+              - driverLogLevels
+              properties:
+                driverLogLevels:
+                  description: |-
+                    The per-package log levels for the driver. This
+                    may include "root" package name to configure
+                    rootLogger. Examples: 'com.google = FATAL', 'root
+                    = INFO', 'org.apache = DEBUG'
+                  type: object
+                  additionalProperties:
+                    description: |-
+                      Additional properties of type
+                      DriverLogLevelsValue
+                    type: string
+                    enum:
+                    - LEVEL_UNSPECIFIED
+                    - ALL
+                    - TRACE
+                    - DEBUG
+                    - INFO
+                    - WARN
+                    - ERROR
+                    - FATAL
+                    - OFF
+            jarFileUris:
+              description: |-
+                HCFS URIs of jar files to add to the CLASSPATHs of
+                the Spark driver and tasks.
+              type: array
+              items:
+                type: string
+            fileUris:
+              description: |-
+                HCFS URIs of files to be copied to the working
+                directory of Spark drivers and distributed
+                tasks. Useful for naively parallel tasks.
+              type: array
+              items:
+                type: string
+  labels:
+    description: |-
+      The labels to associate with this template. These labels will be
+      propagated to all jobs and clusters created by the workflow
+      instance.Label keys must contain 1 to 63 characters, and must conform
+      to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).Label values may be
+      empty, but, if present, must contain 1 to 63 characters, and must
+      conform to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).No more
+      than 32 labels can be associated with a template.
+    type: object
+    additionalProperties:
+      description: Additional properties of type LabelsValue
+      type: string
+  placement:
+    description: Required. WorkflowTemplate scheduling information.
+    type: object
+    additionalProperties: false
+    properties:
+      managedCluster:
+        description: A cluster that is managed by the workflow.
+        type: object
+        additionalProperties: false
+        required:
+        - clusterName
+        properties:
+          config:
+            description: The cluster configuration.
+            type: object
+            additionalProperties: false
+            properties:
+              workerConfig:
+                description: |-
+                  The Compute Engine config settings for worker instances in
+                  a cluster.
+                type: object
+                additionalProperties: false
+                properties:
+                  accelerators:
+                    description: |-
+                      The Compute Engine accelerator configuration for these
+                      instances.Beta Feature: This feature is still under
+                      development. It may be changed before final release.
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required:
+                      - acceleratorTypeUri
+                      - acceleratorCount
+                      properties:
+                        acceleratorTypeUri:
+                          description: |-
+                            Full URL, partial URI, or short name of the
+                            accelerator type resource to expose to this
+                            instance. See Compute Engine AcceleratorTypes(
+                            /compute/docs/reference/beta/acceleratorTypes)
+                            Examples * https://www.googleapis.com/compute/
+                            beta/projects/[project_id]/zones /us-
+                            east1-a/acceleratorTypes/nvidia-tesla-k80 *
+                            projects/[project_id]/zones/us-
+                            east1-a/acceleratorTypes/nvidia-tesla-k80 *
+                            nvidia-tesla-k80Auto Zone Exception: If you
+                            are using the Cloud Dataproc Auto Zone
+                            Placement feature, you must use the short name
+                            of the accelerator type resource, for example,
+                            nvidia-tesla-k80.
+                          type: string
+                        acceleratorCount:
+                          description: |-
+                            The number of the accelerator cards of this
+                            type exposed to this instance.
+                          type: integer
+                  minCpuPlatform:
+                    description: |-
+                      Specifies the minimum cpu platform for the
+                      Instance Group. See Cloud Dataproc&rarr;Minimum
+                      CPU Platform.
+                    type: string
+                  numInstances:
+                    description: |-
+                      The number of VM instances in the instance group.
+                      For master instance groups, must be set to 1.
+                    type: integer
+                  isPreemptible:
+                    description: |-
+                      Specifies that this instance group contains
+                      preemptible instances.
+                    type: boolean
+                  diskConfig:
+                    description: Disk option config settings.
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      bootDiskSizeGb:
+                        description: |-
+                          Size in GB of the boot disk (default is
+                          500GB).
+                        type: integer
+                      numLocalSsds:
+                        description: |-
+                          Number of attached SSDs, from 0 to 4 (default
+                          is 0). If SSDs are not attached, the boot disk
+                          is used to store runtime logs and HDFS (https:
+                          //hadoop.apache.org/docs/r1.2.1/hdfs_user_guid
+                          e.html) data. If one or more SSDs are
+                          attached, this runtime bulk data is spread
+                          across them, and the boot disk contains only
+                          basic config and installed binaries.
+                        type: integer
+                      bootDiskType:
+                        description: |-
+                          Type of the boot disk (default is "pd-
+                          standard"). Valid values: "pd-ssd" (Persistent
+                          Disk Solid State Drive) or "pd- standard"
+                          (Persistent Disk Hard Disk Drive).
+                        type: string
+                  machineTypeUri:
+                    description: |-
+                      The Compute Engine machine type used for cluster
+                      instances.A full URL, partial URI, or short name
+                      are valid. Examples: https://www.googleapis.com/co
+                      mpute/v1/projects/[project_id]/zones/us-
+                      east1-a/machineTypes/n1-standard-2
+                      projects/[project_id]/zones/us-
+                      east1-a/machineTypes/n1-standard-2 n1-standard-
+                      2Auto Zone Exception: If you are using the Cloud
+                      Dataproc Auto Zone Placement feature, you must use
+                      the short name of the machine type resource, for
+                      example, n1-standard-2.
+                    type: string
+              gceClusterConfig:
+                description: |-
+                  The shared Compute Engine config settings for
+                  all instances in a cluster.
+                type: object
+                additionalProperties: false
+                properties:
+                  internalIpOnly:
+                    description: |-
+                      If true, all instances in the cluster will only have
+                      internal IP addresses. By default, clusters are not
+                      restricted to internal IP addresses, and will have
+                      ephemeral external IP addresses assigned to each
+                      instance. This internal_ip_only restriction can only
+                      be enabled for subnetwork enabled networks, and all
+                      off-cluster dependencies must be configured to be
+                      accessible without external IP addresses.
+                    type: boolean
+                  zoneUri:
+                    description: |-
+                      The zone where the Compute Engine cluster will be
+                      located. On a create request, it is required in the
+                      "global" region. If omitted in a non-global Cloud
+                      Dataproc region, the service will pick a zone in the
+                      corresponding Compute Engine region. On a get request,
+                      zone will always be present.A full URL, partial URI,
+                      or short name are valid. Examples: https://www.googlea
+                      pis.com/compute/v1/projects/[project_id]/zones/[zone]
+                      projects/[project_id]/zones/[zone] us-central1-f
+                    type: string
+                  serviceAccount:
+                    description: |-
+                      The service account of the instances. Defaults to the
+                      default Compute Engine service account. Custom service
+                      accounts need permissions equivalent to the following
+                      IAM roles: roles/logging.logWriter
+                      roles/storage.objectAdmin(see
+                      https://cloud.google.com/compute/docs/access/service-
+                      accounts#custom_service_accounts for more
+                      information). Example:
+                      [account_id]@[project_id].iam.gserviceaccount.com
+                    type: string
+                  subnetworkUri:
+                    description: |-
+                      The Compute Engine subnetwork to be used for machine
+                      communications. Cannot be specified with network_uri.A
+                      full URL, partial URI, or short name are valid.
+                      Examples: https://www.googleapis.com/compute/v1/projec
+                      ts/[project_id]/regions/us- east1/sub0
+                      projects/[project_id]/regions/us-east1/sub0 sub0
+                    type: string
+                  metadata:
+                    description: |-
+                      The Compute Engine metadata entries to add to all
+                      instances (see Project and instance metadata
+                      (https://cloud.google.com/compute/docs /storing-
+                      retrieving-metadata#project_and_instance_metadata)).
+                    type: object
+                    additionalProperties:
+                      description: |-
+                        Additional properties of type MetadataValue
+                      type: string
+                  networkUri:
+                    description: |-
+                      The Compute Engine network to be used for machine
+                      communications. Cannot be specified with
+                      subnetwork_uri. If neither network_uri nor
+                      subnetwork_uri is specified, the "default" network of
+                      the project is used, if it exists. Cannot be a "Custom
+                      Subnet Network" (see Using Subnetworks for more
+                      information).A full URL, partial URI, or short name
+                      are valid. Examples:
+                      https://www.googleapis.com/compute/v1/pr
+                      ojects/[project_id]/regions/global/default
+                      projects/[project_id]/regions/global/default default
+                    type: string
+                  tags:
+                    description: |-
+                      The Compute Engine tags to add to all instances (see
+                      Tagging instances).
+                    type: array
+                    items:
+                      type: string
+                  serviceAccountScopes:
+                    description: |-
+                      The URIs of service account scopes to be included
+                      in Compute Engine instances. The following base
+                      set of scopes is always included: https://www.goog
+                      leapis.com/auth/cloud.useraccounts.readonly https:
+                      //www.googleapis.com/auth/devstorage.read_write
+                      https://www.googleapis.com/auth/logging.writeIf no
+                      scopes are specified, the following defaults are
+                      also provided:
+                      https://www.googleapis.com/auth/bigquery https://w
+                      ww.googleapis.com/auth/bigtable.admin.table
+                      https://www.googleapis.com/auth/bigtable.data http
+                      s://www.googleapis.com/auth/devstorage.full_contro
+                      l
+                    type: array
+                    items:
+                      type: string
+              secondaryWorkerConfig:
+                description: |-
+                  The Compute Engine config settings for additional worker
+                  instances in a cluster.
+                type: object
+                additionalProperties: false
+                properties:
+                  accelerators:
+                    description: |-
+                      The Compute Engine accelerator configuration for these
+                      instances.Beta Feature: This feature is still under
+                      development. It may be changed before final release.
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required:
+                      - acceleratorTypeUri
+                      - acceleratorCount
+                      properties:
+                        acceleratorTypeUri:
+                          description: |-
+                            Full URL, partial URI, or short name of the
+                            accelerator type resource to expose to this
+                            instance. See Compute Engine AcceleratorTypes(
+                            /compute/docs/reference/beta/acceleratorTypes)
+                            Examples * https://www.googleapis.com/compute/
+                            beta/projects/[project_id]/zones /us-
+                            east1-a/acceleratorTypes/nvidia-tesla-k80 *
+                            projects/[project_id]/zones/us-
+                            east1-a/acceleratorTypes/nvidia-tesla-k80 *
+                            nvidia-tesla-k80Auto Zone Exception: If you
+                            are using the Cloud Dataproc Auto Zone
+                            Placement feature, you must use the short name
+                            of the accelerator type resource, for example,
+                            nvidia-tesla-k80.
+                          type: string
+                        acceleratorCount:
+                          description: |-
+                            The number of the accelerator cards of this
+                            type exposed to this instance.
+                          type: integer
+                  minCpuPlatform:
+                    description: |-
+                      Specifies the minimum cpu platform for the
+                      Instance Group. See Cloud Dataproc&rarr;Minimum
+                      CPU Platform.
+                    type: string
+                  numInstances:
+                    description: |-
+                      The number of VM instances in the instance group.
+                      For master instance groups, must be set to 1.
+                    type: integer
+                  isPreemptible:
+                    description: |-
+                      Specifies that this instance group contains
+                      preemptible instances.
+                    type: boolean
+                  diskConfig:
+                    description: Disk option config settings.
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      bootDiskSizeGb:
+                        description: |-
+                          Size in GB of the boot disk (default is
+                          500GB).
+                        type: integer
+                      numLocalSsds:
+                        description: |-
+                          Number of attached SSDs, from 0 to 4 (default
+                          is 0). If SSDs are not attached, the boot disk
+                          is used to store runtime logs and HDFS (https:
+                          //hadoop.apache.org/docs/r1.2.1/hdfs_user_guid
+                          e.html) data. If one or more SSDs are
+                          attached, this runtime bulk data is spread
+                          across them, and the boot disk contains only
+                          basic config and installed binaries.
+                        type: integer
+                      bootDiskType:
+                        description: |-
+                          Type of the boot disk (default is "pd-
+                          standard"). Valid values: "pd-ssd" (Persistent
+                          Disk Solid State Drive) or "pd- standard"
+                          (Persistent Disk Hard Disk Drive).
+                        type: string
+                  machineTypeUri:
+                    description: |-
+                      The Compute Engine machine type used for cluster
+                      instances.A full URL, partial URI, or short name
+                      are valid. Examples: https://www.googleapis.com/co
+                      mpute/v1/projects/[project_id]/zones/us-
+                      east1-a/machineTypes/n1-standard-2
+                      projects/[project_id]/zones/us-
+                      east1-a/machineTypes/n1-standard-2 n1-standard-
+                      2Auto Zone Exception: If you are using the Cloud
+                      Dataproc Auto Zone Placement feature, you must use
+                      the short name of the machine type resource, for
+                      example, n1-standard-2.
+                    type: string
+              encryptionConfig:
+                description: Encryption settings for the cluster.
+                type: object
+                additionalProperties: false
+                properties:
+                  gcePdKmsKeyName:
+                    description: |-
+                      The Cloud KMS key name to use for PD disk encryption
+                      for all instances in the cluster.
+                    type: string
+              initializationActions:
+                description: |-
+                  Commands to execute on each node after config is
+                  completed. By default, executables are run on master and
+                  all worker nodes. You can test a node's <code>role</code>
+                  metadata to run an executable on a master or worker node,
+                  as shown below using curl (you can also use wget):
+                  ROLE=$(curl -H Metadata-Flavor:Google http://metadata/comp
+                  uteMetadata/v1beta2/instance/attributes/dataproc- role) if
+                  [[ "${ROLE}" == 'Master' ]]; then   ... master specific
+                  actions ... else   ... worker specific actions ... fi
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - executableFile
+                  properties:
+                    executableFile:
+                      description: |-
+                        Required. Cloud Storage URI of executable file.
+                      type: string
+                    executionTimeout:
+                      description: |-
+                        Amount of time executable has to complete. Default
+                        is 10 minutes. Cluster creation fails with an
+                        explanatory error message (the name of the
+                        executable that caused the error and the exceeded
+                        timeout period) if the executable is not completed
+                        at end of the timeout period.
+                      type: string
+              configBucket:
+                description: |-
+                  A Cloud Storage staging bucket used for sharing
+                  generated SSH keys and config. If you do not specify a
+                  staging bucket, Cloud Dataproc will determine an
+                  appropriate Cloud Storage location (US, ASIA, or EU)
+                  for your cluster's staging bucket according to the
+                  Google Compute Engine zone where your cluster is
+                  deployed, and then it will create and manage this
+                  project-level, per-location bucket for you.
+                type: string
+              lifecycleConfig:
+                description: |-
+                  The config setting for auto delete cluster schedule.
+                type: object
+                additionalProperties: false
+                properties:
+                  idleDeleteTtl:
+                    description: |-
+                      The longest duration that cluster would keep alive
+                      while staying  idle; passing this threshold will
+                      cause cluster to be auto-deleted.
+                    type: string
+                  autoDeleteTime:
+                    description: |-
+                      The time when cluster will be auto-deleted.
+                    type: string
+                  autoDeleteTtl:
+                    description: |-
+                      The life duration of cluster, the cluster will be
+                      auto-deleted at the end of this duration.
+                    type: string
+              masterConfig:
+                description: |-
+                  The Compute Engine config settings for the master
+                  instance in a cluster.
+                type: object
+                additionalProperties: false
+                properties:
+                  accelerators:
+                    description: |-
+                      The Compute Engine accelerator configuration for
+                      these instances.Beta Feature: This feature is
+                      still under development. It may be changed before
+                      final release.
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required:
+                      - acceleratorTypeUri
+                      - acceleratorCount
+                      properties:
+                        acceleratorTypeUri:
+                          description: |-
+                            Full URL, partial URI, or short name of
+                            the accelerator type resource to expose to
+                            this instance. See Compute Engine
+                            AcceleratorTypes( /compute/docs/reference/
+                            beta/acceleratorTypes)Examples * https://w
+                            ww.googleapis.com/compute/beta/projects/[p
+                            roject_id]/zones /us-
+                            east1-a/acceleratorTypes/nvidia-tesla-k80
+                            * projects/[project_id]/zones/us-
+                            east1-a/acceleratorTypes/nvidia-tesla-k80
+                            * nvidia-tesla-k80Auto Zone Exception: If
+                            you are using the Cloud Dataproc Auto Zone
+                            Placement feature, you must use the short
+                            name of the accelerator type resource, for
+                            example, nvidia-tesla-k80.
+                          type: string
+                        acceleratorCount:
+                          description: |-
+                            The number of the accelerator cards of
+                            this type exposed to this instance.
+                          type: integer
+                  minCpuPlatform:
+                    description: |-
+                      Specifies the minimum cpu platform for the
+                      Instance Group. See Cloud
+                      Dataproc&rarr;Minimum CPU Platform.
+                    type: string
+                  numInstances:
+                    description: |-
+                      The number of VM instances in the instance
+                      group. For master instance groups, must be set
+                      to 1.
+                    type: integer
+                  isPreemptible:
+                    description: |-
+                      Specifies that this instance group contains
+                      preemptible instances.
+                    type: boolean
+                  diskConfig:
+                    description: Disk option config settings.
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      bootDiskSizeGb:
+                        description: |-
+                          Size in GB of the boot disk (default is
+                          500GB).
+                        type: integer
+                      numLocalSsds:
+                        description: |-
+                          Number of attached SSDs, from 0 to 4
+                          (default is 0). If SSDs are not attached,
+                          the boot disk is used to store runtime
+                          logs and HDFS (https://hadoop.apache.org/d
+                          ocs/r1.2.1/hdfs_user_guide.html) data. If
+                          one or more SSDs are attached, this
+                          runtime bulk data is spread across them,
+                          and the boot disk contains only basic
+                          config and installed binaries.
+                        type: integer
+                      bootDiskType:
+                        description: |-
+                          Type of the boot disk (default is "pd-
+                          standard"). Valid values: "pd-ssd"
+                          (Persistent Disk Solid State Drive) or
+                          "pd- standard" (Persistent Disk Hard Disk
+                          Drive).
+                        type: string
+                  machineTypeUri:
+                    description: |-
+                      The Compute Engine machine type used for
+                      cluster instances.A full URL, partial URI, or
+                      short name are valid. Examples: https://www.go
+                      ogleapis.com/compute/v1/projects/[project_id]/
+                      zones/us- east1-a/machineTypes/n1-standard-2
+                      projects/[project_id]/zones/us-
+                      east1-a/machineTypes/n1-standard-2 n1
+                      -standard-2Auto Zone Exception: If you are
+                      using the Cloud Dataproc Auto Zone Placement
+                      feature, you must use the short name of the
+                      machine type resource, for example,
+                      n1-standard-2.
+                    type: string
+              softwareConfig:
+                description: |-
+                  The config settings for software inside the cluster.
+                type: object
+                additionalProperties: false
+                properties:
+                  properties:
+                    description: |-
+                      The properties to set on daemon config
+                      files.Property keys are specified in
+                      prefix:property format, such as core:fs.defaultFS.
+                      The following are supported prefixes and their
+                    type: object
+                    additionalProperties:
+                      description: |-
+                        Additional properties of type PropertiesValue
+                      type: string
+                  imageVersion:
+                    description: |-
+                      The version of software inside the cluster. It
+                      must be one of the supported Cloud Dataproc
+                      Versions, such as "1.2" (including a subminor
+                      version, such as "1.2.29"), or the "preview"
+                      version. If unspecified, it defaults to the latest
+                      version.
+                    type: string
+          labels:
+            description: |-
+              The labels to associate with this cluster.Label keys must be
+              between 1 and 63 characters long, and must conform to the
+              following PCRE regular expression: \p{Ll}\p{Lo}{0,62}Label
+              values must be between 1 and 63 characters long, and must
+              conform to the following PCRE regular expression:
+              \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 32 labels can be
+              associated with a given cluster.
+            type: object
+            additionalProperties:
+              description: Additional properties of type LabelsValue
+              type: string
+          clusterName:
+            description: |-
+              Required. The cluster name prefix. A unique cluster name will
+              be formed by appending a random suffix.The name must contain
+              only lower- case letters (a-z), numbers (0-9), and hyphens
+              (-). Must begin with a letter. Cannot begin or end with
+              hyphen. Must consist of between 2 and 35 characters.
+            type: string
+      clusterSelector:
+        description: |-
+          A selector that chooses target cluster for jobs based on
+          metadata.The selector is evaluated at the time each job is
+          submitted.
+        type: object
+        additionalProperties: false
+        required:
+        - clusterLabels
+        properties:
+          clusterLabels:
+            description: |-
+              Required. The cluster labels. Cluster must have all labels to
+              match.
+            type: object
+            additionalProperties:
+              description: |-
+                Additional properties of type ClusterLabelsValue
+              type: string
+          zone:
+            description: |-
+              The zone where workflow process executes. This parameter does
+              not affect the selection of the cluster.If unspecified, the
+              zone of the first cluster matching the selector is used.
+            type: string
+  parameters:
+    description: |-
+      Template parameters whose values are substituted into the template.
+      Values for these parameters must be provided when the template is
+      instantiated.
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required:
+      - name
+      - fields
+      properties:
+        name:
+          description: |-
+            Required. User-friendly parameter name. This name is used as a
+            key when providing a value for this parameter when the
+            template is instantiated. Must contain only capital letters
+            (A-Z), numbers (0-9), and underscores (_), and must not start
+            with a number. The maximum length is 40 characters.
+          type: string
+        description:
+          description: |-
+            User-friendly description of the parameter. Must not exceed
+            1024 characters.
+          type: string
+        fields:
+          description: |-
+            Required. Paths to all fields that this parameter replaces.
+            Each field may appear in at most one Parameter's fields
+            list.Field path syntax:A field path is similar to a FieldMask.
+            For example, a field path that references the zone field of
+            the template's cluster selector would look
+            like:placement.clusterSelector.zoneThe only differences
+            between field paths and standard field masks are that: Values
+            in maps can be referenced by key.Example:
+            placement.clusterSelector.clusterLabels'key' Jobs in the jobs
+            list can be referenced by step id.Example: jobs'step-
+            id'.hadoopJob.mainJarFileUri Items in repeated fields can be
+            referenced by zero-based index.Example: jobs'step-
+            id'.sparkJob.args0NOTE: Maps and repeated fields may not be
+            parameterized in their entirety. Only individual map values
+            and items in repeated fields may be referenced. For example,
+            the following field paths are invalid: -
+            placement.clusterSelector.clusterLabels - jobs'step-
+            id'.sparkJob.argsParameterizable fields:Only certain types of
+            fields may be parameterized, specifically: - Labels - File
+            uris - Job properties - Job arguments - Script variables -
+            Main class (in HadoopJob and SparkJob) - Zone (in
+            ClusterSelector)Examples of parameterizable
+            fields:Labels:labels'key' placement.managedCluster.labels'key'
+            placement.clusterSelector.clusterLabels'key' jobs'step-
+            id'.labels'key'File uris:jobs'step-
+            id'.hadoopJob.mainJarFileUri jobs 'step-
+            id'.hiveJob.queryFileUri jobs'step-
+            id'.pySparkJob.mainPythonFileUri jobs'step-
+            id'.hadoopJob.jarFileUris0 jobs'step-
+            id'.hadoopJob.archiveUris0 jobs'step-id'.hadoopJob.fileUris0
+            jobs'step-id'.pySparkJob.pythonFileUris0Other:jobs'step-
+            id'.hadoopJob.properties'key' jobs'step-id'.hadoopJob.args0
+            jobs'step- id'.hiveJob.scriptVariables'key' jobs'step-
+            id'.hadoopJob.mainJarFileUri placement.clusterSelector.zone
+          type: array
+          items:
+            type: string
+        validation:
+          description: |-
+            Validation rules to be applied to this parameter's value.
+          type: object
+          additionalProperties: false
+          properties:
+            values:
+              description: |-
+                Validation based on a list of allowed values.
+              type: object
+              additionalProperties: false
+              required:
+              - values
+              properties:
+                values:
+                  description: |-
+                    Required. List of allowed values for this
+                    parameter.
+                  type: array
+                  items:
+                    type: string
+            regex:
+              description: Validation based on regular expressions.
+              type: object
+              additionalProperties: false
+              required:
+              - regexes
+              properties:
+                regexes:
+                  description: |-
+                    Required. RE2 regular expressions used to validate
+                    the parameter's value. The provided value must
+                    match the regexes in its entirety, e.g. substring
+                    matches are not enough.
+                  type: array
+                  items:
+                    type: string

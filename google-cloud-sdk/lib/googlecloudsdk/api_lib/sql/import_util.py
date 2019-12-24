@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,27 +16,31 @@
 
 from __future__ import absolute_import
 from __future__ import division
-from __future__ import print_function
+from __future__ import unicode_literals
 
 
-def SqlImportContext(sql_messages, uri, database=None):
+def SqlImportContext(sql_messages, uri, database=None, user=None):
   """Generates the ImportContext for the given args, for importing from SQL.
 
   Args:
     sql_messages: module, The messages module that should be used.
     uri: The URI of the bucket to import from; the output of the 'uri' arg.
     database: The database to import to; the output of the '--database' flag.
+    user: The Postgres user to import as; the output of the '--user' flag.
 
   Returns:
     ImportContext, for use in InstancesImportRequest.importContext.
   """
   return sql_messages.ImportContext(
-      uri=uri,
-      database=database,
-      fileType='SQL')
+      uri=uri, database=database, fileType='SQL', importUser=user)
 
 
-def CsvImportContext(sql_messages, uri, database, table, columns=None):
+def CsvImportContext(sql_messages,
+                     uri,
+                     database,
+                     table,
+                     columns=None,
+                     user=None):
   """Generates the ImportContext for the given args, for importing from CSV.
 
   Args:
@@ -44,14 +49,47 @@ def CsvImportContext(sql_messages, uri, database, table, columns=None):
     database: The database to import into; the output of the '--database' flag.
     table: The table to import into; the output of the '--table' flag.
     columns: The CSV columns to import form; the output of the '--columns' flag.
+    user: The Postgres user to import as; the output of the '--user' flag.
 
   Returns:
     ImportContext, for use in InstancesImportRequest.importContext.
   """
   return sql_messages.ImportContext(
       csvImportOptions=sql_messages.ImportContext.CsvImportOptionsValue(
-          columns=columns or [],
-          table=table),
+          columns=columns or [], table=table),
       uri=uri,
       database=database,
-      fileType='CSV')
+      fileType='CSV',
+      importUser=user)
+
+
+def BakImportContext(sql_messages, uri, database, cert_path, pvk_path,
+                     pvk_password):
+  """Generates the ImportContext for the given args, for importing from BAK.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    uri: The URI of the bucket to import from; the output of the `uri` arg.
+    database: The database to import to; the output of the `--database` flag.
+    cert_path: The certificate used for encrypted .bak; the output of the
+      `--cert-path` flag.
+    pvk_path: The private key used for encrypted .bak; the output of the
+      `--pvk-path` flag.
+    pvk_password: The private key password used for encrypted .bak; the output
+      of the `--pvk-password` or `--prompt-for-pvk-password` flag.
+
+  Returns:
+    ImportContext, for use in InstancesImportRequest.importContext.
+  """
+  bak_import_options = None
+  if cert_path and pvk_path and pvk_password:
+    bak_import_options = sql_messages.ImportContext.BakImportOptionsValue(
+        encryptionOptions=sql_messages.ImportContext.BakImportOptionsValue
+        .EncryptionOptionsValue(
+            certPath=cert_path, pvkPath=pvk_path, pvkPassword=pvk_password))
+
+  return sql_messages.ImportContext(
+      uri=uri,
+      database=database,
+      fileType='BAK',
+      bakImportOptions=bak_import_options)

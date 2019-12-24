@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,13 +14,18 @@
 # limitations under the License.
 """Support for uploading files to Cloud Source Repositories."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from datetime import datetime
 import os
-import re
 import uuid
 from apitools.base.py import exceptions
 from googlecloudsdk.api_lib.source import git
-from googlecloudsdk.api_lib.source.repos import sourcerepo
+from googlecloudsdk.api_lib.source import sourcerepo
+from googlecloudsdk.command_lib.util import gcloudignore
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 
 # The repo where uploads are stored.
@@ -52,6 +58,14 @@ def _GetUuid():
   return uuid.uuid4()
 
 
+class Error(core_exceptions.Error):
+  """Exceptions for this module."""
+
+
+class RepoNotFoundError(Error):
+  """Exception to be thrown when a repo cannot be found."""
+
+
 class UploadManager(object):
   """Provides methods for uploading files to Cloud Source Repositories."""
 
@@ -62,19 +76,16 @@ class UploadManager(object):
     if not project_id:
       project_id = properties.VALUES.core.project.Get(required=True)
     self._project_id = project_id
-    self._ignore_handler = git.GitIgnoreHandler()
-    # Add a top-level ignore for the .git directory (the expression matches
-    # the .git directory and any file contained in it).
-    self._ignore_handler.AddIgnoreRules(
-        '/', [(re.compile(r'^(.*/)?\.git(/.*)?'), True)])
 
-  def Upload(self, branch, root_path):
+  def Upload(self, branch, root_path, ignore_file=None):
     """Uploads files to a branch in Cloud Source Repositories.
 
     Args:
       branch: (string) The name of the branch to upload to. If empty, a
         name will be generated.
       root_path: (string) The path of a directory tree to upload.
+      ignore_file: (string) The file overrides the `.gcloudignore` file and
+        uses the specified file instead.
 
     Returns:
       A dictionary containing various status information:
@@ -87,18 +98,25 @@ class UploadManager(object):
         'files_skipped': The number of files skipped.
         'size_written': The total number of bytes in all files uploaded.
     """
-    if not sourcerepo.Source().GetRepo(sourcerepo.ParseRepo(UPLOAD_REPO_NAME)):
-      raise exceptions.Error(
+    try:
+      sourcerepo.Source().GetRepo(sourcerepo.ParseRepo(UPLOAD_REPO_NAME))
+    except exceptions.HttpNotFoundError:
+      raise RepoNotFoundError(
           REPO_NOT_FOUND_ERROR.format(UPLOAD_REPO_NAME, self._project_id))
 
+    file_chooser = gcloudignore.GetFileChooserForDir(
+        root_path, write_on_disk=False, ignore_file=ignore_file)
     branch = branch or (_GetNow().strftime(TIME_FORMAT) + '.' + _GetUuid().hex)
     all_paths = [
-        f for f in self._ignore_handler.GetFiles(os.path.abspath(root_path))
-        if not os.path.islink(f)
+        os.path.join(root_path, f)
+        for f in file_chooser.GetIncludedFiles(root_path, include_dirs=False)
     ]
-    paths = [f for f in all_paths if os.path.getsize(f) <= self.SIZE_THRESHOLD]
+    paths = [
+        f for f in all_paths
+        if not os.path.islink(f) and os.path.getsize(f) <= self.SIZE_THRESHOLD
+    ]
     git.Git(self._project_id, UPLOAD_REPO_NAME).ForcePushFilesToBranch(
-        branch, root_path, paths)
+        branch, root_path, sorted(paths))
 
     source_context = {
         'context': {
@@ -109,11 +127,9 @@ class UploadManager(object):
                         'repoName': UPLOAD_REPO_NAME
                     }
                 },
-                'revision': {
-                    'aliasContext': {
-                        'kind': 'MOVABLE',
-                        'name': branch
-                    }
+                'aliasContext': {
+                    'kind': 'MOVABLE',
+                    'name': branch
                 }
             }
         },

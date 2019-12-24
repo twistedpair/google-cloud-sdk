@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,9 +14,9 @@
 # limitations under the License.
 """Helper methods for constructing messages for the container CLI."""
 
-from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.container import constants
-from googlecloudsdk.core import properties
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 
 def AutoUpdateUpgradeRepairMessage(value, flag_name):
@@ -31,20 +32,8 @@ def AutoUpdateUpgradeRepairMessage(value, flag_name):
   """
   action = 'enable' if value else 'disable'
   plural = flag_name + 's'
-  link = 'node-management' if flag_name == 'autoupgrade' else 'node-auto-repair'
-  return ('This will {0} the {1} feature for nodes. Please see\n'
+  link = 'node-auto-upgrades' if flag_name == 'autoupgrade' else 'node-auto-repair'
+  return ('This will {0} the {1} feature for nodes. Please see '
           'https://cloud.google.com/kubernetes-engine/docs/'
-          '{2} for more\n'
-          'information on node {3}.\n').format(action, flag_name, link, plural)
-
-
-def NonGAFeatureUsingV1APIWarning(track):
-  if not properties.VALUES.container.use_v1_api_client.GetBool():
-    # No message if v1 API is not forced.
-    return None
-  tmpl = constants.KUBERNETES_API_MISMATCH_PROMPT_TEMPLATE
-  if track == base.ReleaseTrack.ALPHA:
-    return tmpl.format(track='alpha', api='v1alpha1')
-  if track == base.ReleaseTrack.BETA:
-    return tmpl.format(track='beta', api='v1beta1')
-  return None
+          '{2} for more '
+          'information on node {3}.').format(action, flag_name, link, plural)

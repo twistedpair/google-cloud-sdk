@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,76 +12,67 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Helpers for taxonomy store related operations in Cloud Categoty Manager."""
+"""Helpers for taxonomy store related operations in Cloud Category Manager."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.category_manager import utils
-from googlecloudsdk.core import resources
 
 
-def _GetService():
-  """Gets the data policy annotation service."""
-  return utils.GetClientInstance().taxonomyStores
-
-
-def GetDefault(project_ref):
-  """Makes an API call to the default taxonomy store for a project.
+def GetTaxonomyStoreFromOrgResource(org_resource):
+  """Gets a taxonomy store from an organization resource.
 
   Args:
-    project_ref: A resource reference of a project. Use the current active
-      project if not provided.
+    org_resource: A cloudresourcemanager.organizations core.Resource object.
 
   Returns:
-    A taxonomy store.
+    A TaxonomyStore message.
   """
-  return _GetService().GetDefault(
-      utils.GetMessagesModule().CategorymanagerTaxonomyStoresGetDefaultRequest(
-          projectId=project_ref.projectId))
+  messages = utils.GetMessagesModule()
+  req = messages.CategorymanagerOrganizationsGetTaxonomyStoreRequest(
+      parent=org_resource.RelativeName())
+  return utils.GetClientInstance().organizations.GetTaxonomyStore(request=req)
 
 
-def GetDefaultStoreId(project_ref):
-  """Get Id of the default store.
-
-  Args:
-    project_ref: A resource reference of a project. Use the current active
-      project if not provided.
-
-  Returns:
-    Id of a taxonomy store.
-  """
-  return resources.REGISTRY.ParseRelativeName(
-      GetDefault(project_ref).name,
-      'categorymanager.taxonomyStores',
-  ).taxonomyStoresId
-
-
-def GetIamPolicy(store_ref):
+def GetIamPolicy(taxonomy_store_resource):
   """Gets IAM policy for a given taxonomy store.
 
   Args:
-    store_ref: a taxonomy store resource reference.
+    taxonomy_store_resource: A categorymanager.taxonomyStores core.Resource
+      object.
 
   Returns:
     An IamPolicy message.
   """
   messages = utils.GetMessagesModule()
-  return _GetService().GetIamPolicy(
+  return utils.GetClientInstance().taxonomyStores.GetIamPolicy(
       messages.CategorymanagerTaxonomyStoresGetIamPolicyRequest(
-          resource=store_ref.RelativeName(),
+          resource=taxonomy_store_resource.RelativeName(),
           getIamPolicyRequest=messages.GetIamPolicyRequest()))
 
 
-def SetIamPolicy(store_ref, policy):
+def SetIamPolicy(taxonomy_store_resource, policy):
   """Sets IAM policy on a taxonomy store.
 
   Args:
-    store_ref: a taxonomy store resource reference.
+    taxonomy_store_resource: A categorymanager.taxonomyStores core.Resource
+      object.
     policy: An IamPolicy message.
 
   Returns:
     An IamPolicy message.
   """
   messages = utils.GetMessagesModule()
-  return _GetService().SetIamPolicy(
+  return utils.GetClientInstance().taxonomyStores.SetIamPolicy(
       messages.CategorymanagerTaxonomyStoresSetIamPolicyRequest(
-          resource=store_ref.RelativeName(),
+          resource=taxonomy_store_resource.RelativeName(),
           setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy)))
+
+
+def GetCommonStore():
+  """Gets the common taxonomy store."""
+  messages = utils.GetMessagesModule()
+  return utils.GetClientInstance().taxonomyStores.GetCommon(
+      messages.CategorymanagerTaxonomyStoresGetCommonRequest())

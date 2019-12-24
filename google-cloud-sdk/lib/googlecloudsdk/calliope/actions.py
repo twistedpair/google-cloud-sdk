@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,11 +16,16 @@
 """argparse Actions for use with calliope.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import argparse
+import io
 import os
-import StringIO
 import sys
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import markdown
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import log
@@ -27,6 +33,7 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.document_renderers import render_document
+import six
 
 
 class _AdditionalHelp(object):
@@ -85,12 +92,14 @@ def FunctionExitAction(func):
   """
 
   class Action(argparse.Action):
+    """The action created for FunctionExitAction."""
 
     def __init__(self, **kwargs):
       kwargs['nargs'] = 0
       super(Action, self).__init__(**kwargs)
 
     def __call__(self, parser, namespace, values, option_string=None):
+      base.LogCommand(parser.prog, namespace)
       metrics.Loaded()
       func()
       sys.exit(0)
@@ -398,6 +407,7 @@ def RenderDocumentAction(command, default_style=None):
   """
 
   class Action(argparse.Action):
+    """The action created for RenderDocumentAction."""
 
     def __init__(self, **kwargs):
       if default_style:
@@ -422,6 +432,7 @@ def RenderDocumentAction(command, default_style=None):
       Raises:
         parser_errors.ArgumentError: For unknown flag value attribute name.
       """
+      base.LogCommand(parser.prog, namespace)
       if default_style:
         # --help
         metrics.Loaded()
@@ -430,7 +441,7 @@ def RenderDocumentAction(command, default_style=None):
       title = None
 
       for attributes in values:
-        for name, value in attributes.iteritems():
+        for name, value in six.iteritems(attributes):
           if name == 'notes':
             notes = value
           elif name == 'style':
@@ -448,11 +459,16 @@ def RenderDocumentAction(command, default_style=None):
       # '--help' is set by the --help flag, the others by gcloud <style> ... .
       if style in ('--help', 'help', 'topic'):
         style = 'text'
-      md = StringIO.StringIO(markdown.Markdown(command))
-      out = (StringIO.StringIO() if console_io.IsInteractive(output=True)
+      md = io.StringIO(markdown.Markdown(command))
+      out = (io.StringIO() if console_io.IsInteractive(output=True)
              else None)
-      render_document.RenderDocument(style, md, out=out, notes=notes,
-                                     title=title)
+
+      if style == 'linter':
+        meta_data = GetCommandMetaData(command)
+      else:
+        meta_data = None
+      render_document.RenderDocument(style, md, out=out or log.out, notes=notes,
+                                     title=title, command_metadata=meta_data)
       metrics.Ran()
       if out:
         console_io.More(out.getvalue())
@@ -460,6 +476,17 @@ def RenderDocumentAction(command, default_style=None):
       sys.exit(0)
 
   return Action
+
+
+def GetCommandMetaData(command):
+  command_metadata = render_document.CommandMetaData()
+  for arg in command.GetAllAvailableFlags():
+    for arg_name in arg.option_strings:
+      command_metadata.flags.append(arg_name)
+      if isinstance(arg, argparse._StoreConstAction):
+        command_metadata.bool_flags.append(arg_name)
+  command_metadata.is_group = command.is_group
+  return command_metadata
 
 
 def _PreActionHook(action, func, additional_help=None):
@@ -491,7 +518,7 @@ def _PreActionHook(action, func, additional_help=None):
   if not callable(func):
     raise TypeError('func should be a callable of the form func(value)')
 
-  if not isinstance(action, basestring) and not issubclass(
+  if not isinstance(action, six.string_types) and not issubclass(
       action, argparse.Action):
     raise TypeError(('action should be either a subclass of argparse.Action '
                      'or a string representing one of the default argparse '
@@ -503,12 +530,12 @@ def _PreActionHook(action, func, additional_help=None):
 
     @classmethod
     def SetWrappedAction(cls, action):
-      # This looks potentially scary, but is 'okay' becaues the Action class
+      # This looks potentially scary, but is OK because the Action class
       # is enclosed within the _PreActionHook function.
       cls.wrapped_action = action
 
     def _GetActionClass(self):
-      if isinstance(self.wrapped_action, basestring):
+      if isinstance(self.wrapped_action, six.string_types):
         action_cls = GetArgparseBuiltInAction(self.wrapped_action)
       else:
         action_cls = self.wrapped_action
@@ -517,11 +544,10 @@ def _PreActionHook(action, func, additional_help=None):
     def __init__(self, *args, **kwargs):
       if additional_help:
         original_help = kwargs.get('help', '').rstrip()
-        if original_help != argparse.SUPPRESS:
-          kwargs['help'] = '{0} {1}\n+\n{2}'.format(
-              additional_help.label,
-              original_help,
-              additional_help.message)
+        kwargs['help'] = '{0} {1}\n+\n{2}'.format(
+            additional_help.label,
+            original_help,
+            additional_help.message)
 
       self._wrapped_action = self._GetActionClass()(*args, **kwargs)
       self.func = func
@@ -552,6 +578,7 @@ def _PreActionHook(action, func, additional_help=None):
 
 def DeprecationAction(flag_name,
                       show_message=lambda _: True,
+                      show_add_help=lambda _: True,
                       warn='Flag {flag_name} is deprecated.',
                       error='Flag {flag_name} has been removed.',
                       removed=False,
@@ -567,6 +594,7 @@ def DeprecationAction(flag_name,
         as input, validates it against some criteria and returns a boolean.
         If true deprecation message is shown at runtime. Deprecation message
         will always be appended to flag help.
+    show_add_help: boolean, whether to show additional help in help text.
     warn: string, warning message, 'flag_name' template will be replaced with
         value of flag_name parameter
     error: string, error message, 'flag_name' template will be replaced with
@@ -591,6 +619,9 @@ def DeprecationAction(flag_name,
       if removed:
         raise parser_errors.ArgumentError(add_help.message)
       else:
-        log.warn(add_help.message)
+        log.warning(add_help.message)
 
-  return _PreActionHook(action, DeprecationFunc, add_help)
+  if show_add_help:
+    return _PreActionHook(action, DeprecationFunc, add_help)
+
+  return _PreActionHook(action, DeprecationFunc, None)

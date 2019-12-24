@@ -24,7 +24,7 @@ class AlphaVisionV1alpha1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new alpha_vision handle."""
     url = url or self.BASE_URL
     super(AlphaVisionV1alpha1, self).__init__(
@@ -33,7 +33,8 @@ class AlphaVisionV1alpha1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.productSearch_catalogs_referenceImages = self.ProductSearchCatalogsReferenceImagesService(self)
     self.productSearch_catalogs = self.ProductSearchCatalogsService(self)
     self.productSearch = self.ProductSearchService(self)
@@ -49,7 +50,7 @@ class AlphaVisionV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates and returns a new `ReferenceImage` resource.
+      r"""Creates and returns a new `ReferenceImage` resource.
 
 The `product_category` and `boundingPoly` fields are optional and, if used,
 should both be specified.
@@ -76,7 +77,7 @@ Possible errors:
         request: (AlphaVisionProductSearchCatalogsReferenceImagesCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ReferenceImage) The response message.
+        (GoogleCloudVisionV1alpha1ReferenceImage) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -90,14 +91,14 @@ Possible errors:
         path_params=[u'parent'],
         query_params=[],
         relative_path=u'v1alpha1/{+parent}/referenceImages',
-        request_field=u'referenceImage',
+        request_field=u'googleCloudVisionV1alpha1ReferenceImage',
         request_type_name=u'AlphaVisionProductSearchCatalogsReferenceImagesCreateRequest',
-        response_type_name=u'ReferenceImage',
+        response_type_name=u'GoogleCloudVisionV1alpha1ReferenceImage',
         supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
-      """Marks a reference image for deletion. The image will remain in the catalog.
+      r"""Marks a reference image for deletion. The image will remain in the catalog.
 until the next time the catalog is indexed (currently daily).
 
 The actual image files are not deleted from Google Cloud Storage.
@@ -129,14 +130,14 @@ Returns `NOT_FOUND` if the reference image does not exist.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a reference image.
+      r"""Gets a reference image.
 Returns `NOT_FOUND` if the specified image does not exist.
 
       Args:
         request: (AlphaVisionProductSearchCatalogsReferenceImagesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ReferenceImage) The response message.
+        (GoogleCloudVisionV1alpha1ReferenceImage) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -152,12 +153,12 @@ Returns `NOT_FOUND` if the specified image does not exist.
         relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'AlphaVisionProductSearchCatalogsReferenceImagesGetRequest',
-        response_type_name=u'ReferenceImage',
+        response_type_name=u'GoogleCloudVisionV1alpha1ReferenceImage',
         supports_download=False,
     )
 
     def List(self, request, global_params=None):
-      """Lists reference images.
+      r"""Lists reference images.
 
 Possible errors:
 
@@ -172,7 +173,7 @@ is 1000. Page sizes higher than 1000 will be treated as 1000.
         request: (AlphaVisionProductSearchCatalogsReferenceImagesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListReferenceImagesResponse) The response message.
+        (GoogleCloudVisionV1alpha1ListReferenceImagesResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -188,7 +189,7 @@ is 1000. Page sizes higher than 1000 will be treated as 1000.
         relative_path=u'v1alpha1/{+parent}/referenceImages',
         request_field='',
         request_type_name=u'AlphaVisionProductSearchCatalogsReferenceImagesListRequest',
-        response_type_name=u'ListReferenceImagesResponse',
+        response_type_name=u'GoogleCloudVisionV1alpha1ListReferenceImagesResponse',
         supports_download=False,
     )
 
@@ -203,7 +204,7 @@ is 1000. Page sizes higher than 1000 will be treated as 1000.
           }
 
     def Create(self, request, global_params=None):
-      """Creates and returns a new catalog resource.
+      r"""Creates and returns a new catalog resource.
 
 Note: For v1alpha1, a catalog will not be returned by `ListCatalogs` until
 reference images have been added to it. Therefore it's important that you
@@ -212,10 +213,10 @@ returned by the `CreateCatalog` request as it is required for adding
 reference images.
 
       Args:
-        request: (Catalog) input message
+        request: (GoogleCloudVisionV1alpha1Catalog) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Catalog) The response message.
+        (GoogleCloudVisionV1alpha1Catalog) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -229,13 +230,13 @@ reference images.
         query_params=[],
         relative_path=u'v1alpha1/productSearch/catalogs',
         request_field='<request>',
-        request_type_name=u'Catalog',
-        response_type_name=u'Catalog',
+        request_type_name=u'GoogleCloudVisionV1alpha1Catalog',
+        response_type_name=u'GoogleCloudVisionV1alpha1Catalog',
         supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
-      """Permanently deletes a catalog and its reference images from the service.
+      r"""Permanently deletes a catalog and its reference images from the service.
 
 The actual image files are not deleted from Google Cloud Storage.
 
@@ -266,7 +267,7 @@ Returns NOT_FOUND if the catalog does not exist.
     )
 
     def DeleteReferenceImages(self, request, global_params=None):
-      """Marks all reference images associated with a product for deletion.
+      r"""Marks all reference images associated with a product for deletion.
 
 The actual image files are not deleted from Google Cloud Storage.
 
@@ -302,7 +303,7 @@ Possible errors:
     )
 
     def Import(self, request, global_params=None):
-      """Asynchronous API that imports a list of reference images to specified.
+      r"""Asynchronous API that imports a list of reference images to specified.
 catalogs based on a list of image names.
 
 This API implements the google.longrunning.Operation API allowing users
@@ -332,7 +333,7 @@ reference image. If not specified, the inferred bounding polygon is the
 entire image.
 
       Args:
-        request: (ImportCatalogsRequest) input message
+        request: (GoogleCloudVisionV1alpha1ImportCatalogsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -349,13 +350,13 @@ entire image.
         query_params=[],
         relative_path=u'v1alpha1/productSearch/catalogs:import',
         request_field='<request>',
-        request_type_name=u'ImportCatalogsRequest',
+        request_type_name=u'GoogleCloudVisionV1alpha1ImportCatalogsRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
 
     def List(self, request, global_params=None):
-      """Lists catalogs (in an unspecified order).
+      r"""Lists catalogs (in an unspecified order).
 
 Note: Does not return empty catalogs (catalogs without reference images).
 
@@ -363,7 +364,7 @@ Note: Does not return empty catalogs (catalogs without reference images).
         request: (AlphaVisionProductSearchCatalogsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListCatalogsResponse) The response message.
+        (GoogleCloudVisionV1alpha1ListCatalogsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -378,7 +379,7 @@ Note: Does not return empty catalogs (catalogs without reference images).
         relative_path=u'v1alpha1/productSearch/catalogs',
         request_field='',
         request_type_name=u'AlphaVisionProductSearchCatalogsListRequest',
-        response_type_name=u'ListCatalogsResponse',
+        response_type_name=u'GoogleCloudVisionV1alpha1ListCatalogsResponse',
         supports_download=False,
     )
 

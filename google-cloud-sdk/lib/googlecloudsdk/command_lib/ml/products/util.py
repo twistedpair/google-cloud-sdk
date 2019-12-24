@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +14,16 @@
 # limitations under the License.
 
 """Command Utilities for ml products commands."""
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
+import os
+
+from googlecloudsdk.api_lib.ml.products import product_util
+from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.core.util import files
+
 
 ALPHA_LIST_NOTE = ('Note: For alpha, only catalogs with associated '
                    'ReferenceImages will be displayed by the list command. '
@@ -42,3 +53,29 @@ table(
   category
   )
 """
+
+
+def GetImageFromPath(path):
+  """Builds an Image message from a path.
+
+  Args:
+    path: the path arg given to the command.
+
+  Raises:
+    ImagePathError: if the image path does not exist and does not seem to be
+        a remote URI.
+
+  Returns:
+    alpha_vision_v1_messages.Image: an image message containing information
+      for the API on the image to analyze.
+  """
+  messages = product_util.GetApiMessages(product_util.PRODUCTS_SEARCH_VERSION)
+  image = messages.Image()
+
+  if os.path.isfile(path):
+    image.content = files.ReadBinaryFileContents(path)
+  elif storage_util.ObjectReference.IsStorageUrl(path):
+    image.source = messages.ImageSource(imageUri=path)
+  else:
+    raise product_util.GcsPathError(obj='image', data=path)
+  return image

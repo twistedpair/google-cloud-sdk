@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,7 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """A library that is used to support Cloud Pub/Sub commands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.pubsub import subscriptions
 from googlecloudsdk.api_lib.pubsub import topics
 from googlecloudsdk.command_lib.projects import util as projects_util
@@ -20,6 +27,8 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.util import times
+
+import six
 
 # Format for the seek time argument.
 SEEK_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -79,7 +88,11 @@ def _GetProject(project_id):
 
 
 def SnapshotUriFunc(snapshot):
-  return ParseSnapshot(snapshot['name']).SelfLink()
+  if isinstance(snapshot, dict):
+    name = snapshot['name']
+  else:
+    name = snapshot
+  return ParseSnapshot(name).SelfLink()
 
 
 def SubscriptionUriFunc(subscription):
@@ -102,16 +115,28 @@ def TopicUriFunc(topic):
   return ParseTopic(name).SelfLink()
 
 
-def ParsePushConfig(push_endpoint, client=None):
+def ParsePushConfig(args, client=None):
+  """Parses configs of push subscription from args."""
+  push_endpoint = args.push_endpoint
+  if push_endpoint is None:
+    return None
+
   client = client or subscriptions.SubscriptionsClient()
-  push_config = None
-  if push_endpoint is not None:
-    push_config = client.messages.PushConfig(pushEndpoint=push_endpoint)
-  return push_config
+  oidc_token = None
+  service_account_email = getattr(args, 'SERVICE_ACCOUNT_EMAIL', None)
+
+  # Only set oidc_token when service_account_email is set.
+  if service_account_email is not None:
+    audience = getattr(args, 'OPTIONAL_AUDIENCE_OVERRIDE', None)
+    oidc_token = client.messages.OidcToken(
+        serviceAccountEmail=service_account_email, audience=audience)
+
+  return client.messages.PushConfig(
+      pushEndpoint=push_endpoint, oidcToken=oidc_token)
 
 
 def FormatSeekTime(time):
-  return times.FormatDateTime(time, fmt=SEEK_TIME_FORMAT)
+  return times.FormatDateTime(time, fmt=SEEK_TIME_FORMAT, tzinfo=times.UTC)
 
 
 def FormatDuration(duration):
@@ -120,9 +145,9 @@ def FormatDuration(duration):
   Args:
     duration (int): The duration in seconds.
   Returns:
-    str: The formatted duration.
+    unicode: The formatted duration.
   """
-  return str(duration) + 's'
+  return six.text_type(duration) + 's'
 
 
 def ParseAttributes(attribute_dict, messages=None):
@@ -138,7 +163,7 @@ def ParseAttributes(attribute_dict, messages=None):
   messages = messages or topics.GetMessagesModule()
   attributes = []
   if attribute_dict:
-    for key, value in sorted(attribute_dict.iteritems()):
+    for key, value in sorted(six.iteritems(attribute_dict)):
       attributes.append(
           messages.PubsubMessage.AttributesValue.AdditionalProperty(
               key=key,
@@ -249,4 +274,3 @@ def ListSnapshotDisplayDict(snapshot):
   result['topicId'] = topic_ref.topicsId
   result['expireTime'] = snapshot.expireTime
   return result
-

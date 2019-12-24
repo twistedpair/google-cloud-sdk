@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,12 +14,17 @@
 # limitations under the License.
 """Org Policies utilities."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from apitools.base.protorpclite.messages import DecodeError
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.resource_manager import exceptions
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
-import yaml
+import six
 
 CONSTRAINTS_PREFIX = 'constraints/'
 ORG_POLICIES_API_VERSION = 'v1'
@@ -46,7 +52,7 @@ def GetFileAsMessage(path, message):
   Raises:
     files.Error, exceptions.ResourceManagerInputFileError
   """
-  in_text = files.GetFileContents(path)
+  in_text = files.ReadFileContents(path)
   if not in_text:
     raise exceptions.ResourceManagerInputFileError(
         'Empty policy file [{0}]'.format(path))
@@ -54,7 +60,7 @@ def GetFileAsMessage(path, message):
   # Parse it, first trying YAML then JSON.
   try:
     result = encoding.PyValueToMessage(message, yaml.load(in_text))
-  except (ValueError, AttributeError, yaml.YAMLError) as e:
+  except (ValueError, AttributeError, yaml.YAMLParseError):
     try:
       result = encoding.JsonToMessage(message, in_text)
     except (ValueError, DecodeError) as e:
@@ -62,7 +68,7 @@ def GetFileAsMessage(path, message):
       # DecodeError is raised when a tag is badly formatted (not Base64)
       raise exceptions.ResourceManagerInputFileError(
           'Policy file [{0}] is not properly formatted YAML or JSON '
-          'due to [{1}]'.format(path, str(e)))
+          'due to [{1}]'.format(path, six.text_type(e)))
   return result
 
 

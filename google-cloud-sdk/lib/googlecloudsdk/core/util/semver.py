@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,7 +38,13 @@ operators, we follow the SemVer spec of precedence and ignore the build number
 and case of alphanumeric strings.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import re
+
+from six.moves import zip_longest
 
 
 # Only digits, with no leading zeros.
@@ -91,7 +98,7 @@ class SemVer(object):
       match = re.match(_SEMVER, version)
     except (TypeError, re.error) as e:
       raise ParseError('Error parsing version string: [{0}].  {1}'
-                       .format(version, e.message))
+                       .format(version, e))
 
     if not match:
       raise ParseError(
@@ -101,6 +108,11 @@ class SemVer(object):
     return (
         int(parts['major']), int(parts['minor']), int(parts['patch']),
         parts['prerelease'], parts['build'])
+
+  @classmethod
+  def _CmpHelper(cls, x, y):
+    """Just a helper equivalent to the cmp() function in Python 2."""
+    return (x > y) - (x < y)
 
   @classmethod
   def _ComparePrereleaseStrings(cls, s1, s2):
@@ -113,22 +125,29 @@ class SemVer(object):
     Returns:
       1 if s1 is greater than s2, -1 if s2 is greater than s1, and 0 if equal.
     """
-    # No prerelease is greater than any version with a prerelease.
-    if s1 is None and s2 is not None:
-      return 1
-    if s2 is None and s1 is not None:
-      return -1
+    s1 = s1.split('.') if s1 else []
+    s2 = s2.split('.') if s2 else []
 
-    # If both are the same (including None), they are equal
-    if s1 == s2:
-      return 0
+    for (this, other) in zip_longest(s1, s2):
+      # They can't both be None because empty parts of the string split will
+      # come through as the empty string. None indicates it ran out of parts.
+      if this is None:
+        return 1
+      elif other is None:
+        return -1
 
-    # Convert numeric segments into ints for numerical comparison.
-    to_comparable = lambda part: int(part) if part.isdigit() else part.lower()
-    # Split the version by dots so each part can be compared.
-    get_parts = lambda s: [to_comparable(part) for part in s.split('.')]
+      # Both parts have a value
+      if this == other:
+        # This part is the same, move on to the next.
+        continue
+      if this.isdigit() and other.isdigit():
+        # Numerical comparison if they are both numbers.
+        return SemVer._CmpHelper(int(this), int(other))
+      # Lexical comparison if either is a string. Numbers will always sort
+      # before strings.
+      return SemVer._CmpHelper(this.lower(), other.lower())
 
-    return cmp(get_parts(s1), get_parts(s2))
+    return 0
 
   def _Compare(self, other):
     """Compare this SemVer to other.
@@ -140,7 +159,7 @@ class SemVer(object):
       1 if self > other, -1 if other > self, 0 if equal.
     """
     # Compare the required parts.
-    result = cmp(
+    result = SemVer._CmpHelper(
         (self.major, self.minor, self.patch),
         (other.major, other.minor, other.patch))
     # Only if required parts are equal, compare the prerelease strings.
@@ -164,7 +183,7 @@ class SemVer(object):
     return major_diff, minor_diff, patch_diff
 
   def __eq__(self, other):
-    return (
+    return other and (
         (self.major, self.minor, self.patch, self.prerelease, self.build) ==
         (other.major, other.minor, other.patch, other.prerelease, other.build))
 

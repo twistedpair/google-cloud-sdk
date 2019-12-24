@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flag Utilities for cloud tpu commands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import base
 
 
@@ -41,12 +47,12 @@ def GetAcceleratorTypeFlag():
   """Set argument for choosing the TPU Accelerator type."""
   return base.Argument(
       '--accelerator-type',
-      default='tpu-v2',
+      default='v2-8',
       type=lambda x: x.lower(),
       required=False,
       help="""\
       TPU accelerator type for the TPU.
-       If not specified, this defaults to `tpu-v2`.
+       If not specified, this defaults to `v2-8`.
       """)
 
 
@@ -54,11 +60,10 @@ def GetVersionFlag():
   """Set argument for choosing the TPU Tensor Flow version."""
   return base.Argument(
       '--version',
-      required=False,
+      required=True,
       help="""\
-      TensorFlow version for the TPU.
-       If not specified, this defaults to latest TensorFlow version. Currently
-       available versions include `1.2`, `1.1`, `0.12`, `0.11` and `0.10`.
+      TensorFlow version for the TPU, such as `1.6`. For a list of available
+      TensorFlow versions please see https://www.tensorflow.org/versions/.
       """)
 
 

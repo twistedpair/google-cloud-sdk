@@ -24,7 +24,7 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new clouderrorreporting handle."""
     url = url or self.BASE_URL
     super(ClouderrorreportingV1beta1, self).__init__(
@@ -33,7 +33,8 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.projects_events = self.ProjectsEventsService(self)
     self.projects_groupStats = self.ProjectsGroupStatsService(self)
     self.projects_groups = self.ProjectsGroupsService(self)
@@ -50,7 +51,7 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Lists the specified events.
+      r"""Lists the specified events.
 
       Args:
         request: (ClouderrorreportingProjectsEventsListRequest) input message
@@ -77,14 +78,15 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
     )
 
     def Report(self, request, global_params=None):
-      """Report an individual error event.
+      r"""Report an individual error event.
 
-This endpoint accepts <strong>either</strong> an OAuth token,
-<strong>or</strong> an
-<a href="https://support.google.com/cloud/answer/6158862">API key</a>
+This endpoint accepts **either** an OAuth token,
+**or** an [API key](https://support.google.com/cloud/answer/6158862)
 for authentication. To use an API key, append it to the URL as the value of
 a `key` parameter. For example:
-<pre>POST https://clouderrorreporting.googleapis.com/v1beta1/projects/example-project/events:report?key=123ABC456</pre>
+
+`POST
+https://clouderrorreporting.googleapis.com/v1beta1/projects/example-project/events:report?key=123ABC456`
 
       Args:
         request: (ClouderrorreportingProjectsEventsReportRequest) input message
@@ -121,7 +123,7 @@ a `key` parameter. For example:
           }
 
     def List(self, request, global_params=None):
-      """Lists the specified groups.
+      r"""Lists the specified groups.
 
       Args:
         request: (ClouderrorreportingProjectsGroupStatsListRequest) input message
@@ -158,7 +160,7 @@ a `key` parameter. For example:
           }
 
     def Get(self, request, global_params=None):
-      """Get the specified group.
+      r"""Get the specified group.
 
       Args:
         request: (ClouderrorreportingProjectsGroupsGetRequest) input message
@@ -185,7 +187,7 @@ a `key` parameter. For example:
     )
 
     def Update(self, request, global_params=None):
-      """Replace the data for the specified group.
+      r"""Replace the data for the specified group.
 Fails if the group does not exist.
 
       Args:
@@ -223,7 +225,7 @@ Fails if the group does not exist.
           }
 
     def DeleteEvents(self, request, global_params=None):
-      """Deletes all error events of a given project.
+      r"""Deletes all error events of a given project.
 
       Args:
         request: (ClouderrorreportingProjectsDeleteEventsRequest) input message

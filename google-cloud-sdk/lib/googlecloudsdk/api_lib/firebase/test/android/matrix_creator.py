@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,16 +15,21 @@
 
 """Create Android test matrices in Firebase Test Lab."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import os
 import uuid
 
 from apitools.base.py import exceptions as apitools_exceptions
 
+from googlecloudsdk.api_lib.firebase.test import matrix_creator_common
 from googlecloudsdk.api_lib.firebase.test import matrix_ops
 from googlecloudsdk.api_lib.firebase.test import util
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import config
 from googlecloudsdk.core import log
+import six
 
 
 def CreateMatrix(args, context, history_id, gcs_results_root, release_track):
@@ -70,8 +76,16 @@ class MatrixCreator(object):
     self._messages = context['testing_messages']
     self._release_track = release_track
 
+  def _BuildAppReference(self, filename):
+    """Builds either a FileReference or an AppBundle message for a file."""
+    if filename.endswith('.aab'):
+      return None, self._messages.AppBundle(
+          bundleLocation=self._BuildFileReference(filename))
+    else:
+      return self._BuildFileReference(filename), None
+
   def _BuildFileReference(self, filename):
-    """Build a FileReference pointing to the GCS copy of an APK/OBB file."""
+    """Build a FileReference pointing to the GCS copy of a file."""
     return self._messages.FileReference(
         gcsPath=os.path.join(self._gcs_results_root,
                              os.path.basename(filename)))
@@ -79,10 +93,6 @@ class MatrixCreator(object):
   def _GetOrchestratorOption(self):
     orchestrator_options = (self._messages.AndroidInstrumentationTest.
                             OrchestratorOptionValueValuesEnum)
-    if not hasattr(self._args, u'use_orchestrator'):
-      # Do not use orchestrator if orchestrator flag is not registered in this
-      # release track.
-      return orchestrator_options.DO_NOT_USE_ORCHESTRATOR
     if self._args.use_orchestrator is None:
       return orchestrator_options.ORCHESTRATOR_OPTION_UNSPECIFIED
     elif self._args.use_orchestrator:
@@ -96,9 +106,10 @@ class MatrixCreator(object):
     action_types = self._messages.RoboDirective.ActionTypeValueValuesEnum
     action_type_mapping = {
         'click': action_types.SINGLE_CLICK,
-        'text': action_types.ENTER_TEXT
+        'text': action_types.ENTER_TEXT,
+        'ignore': action_types.IGNORE
     }
-    for key, value in (robo_directives_dict or {}).iteritems():
+    for key, value in six.iteritems((robo_directives_dict or {})):
       (action_type, resource_name) = util.ParseRoboDirectiveKey(key)
       robo_directives.append(
           self._messages.RoboDirective(
@@ -110,33 +121,40 @@ class MatrixCreator(object):
   def _BuildAndroidInstrumentationTestSpec(self):
     """Build a TestSpecification for an AndroidInstrumentationTest."""
     spec = self._BuildGenericTestSpec()
+    app_apk, app_bundle = self._BuildAppReference(self._args.app)
     spec.androidInstrumentationTest = self._messages.AndroidInstrumentationTest(
-        appApk=self._BuildFileReference(self._args.app),
+        appApk=app_apk,
+        appBundle=app_bundle,
         testApk=self._BuildFileReference(self._args.test),
         appPackageId=self._args.app_package,
         testPackageId=self._args.test_package,
         testRunnerClass=self._args.test_runner_class,
         testTargets=(self._args.test_targets or []),
-        orchestratorOption=self._GetOrchestratorOption())
+        orchestratorOption=self._GetOrchestratorOption(),
+        shardingOption=self._BuildShardingOption())
     return spec
 
   def _BuildAndroidRoboTestSpec(self):
     """Build a TestSpecification for an AndroidRoboTest."""
     spec = self._BuildGenericTestSpec()
+    app_apk, app_bundle = self._BuildAppReference(self._args.app)
     spec.androidRoboTest = self._messages.AndroidRoboTest(
-        appApk=self._BuildFileReference(self._args.app),
+        appApk=app_apk,
+        appBundle=app_bundle,
         appPackageId=self._args.app_package,
-        maxDepth=self._args.max_depth,
-        maxSteps=self._args.max_steps,
-        appInitialActivity=self._args.app_initial_activity,
         roboDirectives=self._BuildRoboDirectives(self._args.robo_directives))
+    if getattr(self._args, 'robo_script', None):
+      spec.androidRoboTest.roboScript = self._BuildFileReference(
+          self._args.robo_script)
     return spec
 
   def _BuildAndroidGameLoopTestSpec(self):
     """Build a TestSpecification for an AndroidTestLoop."""
     spec = self._BuildGenericTestSpec()
+    app_apk, app_bundle = self._BuildAppReference(self._args.app)
     spec.androidTestLoop = self._messages.AndroidTestLoop(
-        appApk=self._BuildFileReference(self._args.app),
+        appApk=app_apk,
+        appBundle=app_bundle,
         appPackageId=self._args.app_package)
     if self._args.scenario_numbers:
       spec.androidTestLoop.scenarios = self._args.scenario_numbers
@@ -147,16 +165,22 @@ class MatrixCreator(object):
   def _BuildGenericTestSpec(self):
     """Build a generic TestSpecification without test-type specifics."""
     device_files = []
-    if self._args.obb_files:
-      for obb_file in self._args.obb_files:
-        device_files.append(self._messages.DeviceFile(
-            obbFile=self._messages.ObbFile(
-                obbFileName=os.path.basename(obb_file),
-                obb=self._BuildFileReference(obb_file))))
+    for obb_file in self._args.obb_files or []:
+      device_files.append(
+          self._messages.DeviceFile(
+              obbFile=self._messages.ObbFile(
+                  obbFileName=os.path.basename(obb_file),
+                  obb=self._BuildFileReference(obb_file))))
+    for other_files in getattr(self._args, 'other_files', {}) or {}:
+      device_files.append(
+          self._messages.DeviceFile(
+              regularFile=self._messages.RegularFile(
+                  content=self._BuildFileReference(other_files),
+                  devicePath=self._args.other_files[other_files])))
 
     environment_variables = []
     if self._args.environment_variables:
-      for key, value in self._args.environment_variables.iteritems():
+      for key, value in six.iteritems(self._args.environment_variables):
         environment_variables.append(
             self._messages.EnvironmentVariable(key=key, value=value))
 
@@ -166,12 +190,18 @@ class MatrixCreator(object):
     if self._args.auto_google_login:
       account = self._messages.Account(googleAuto=self._messages.GoogleAuto())
 
+    additional_apks = [
+        self._messages.Apk(location=self._BuildFileReference(additional_apk))
+        for additional_apk in getattr(self._args, 'additional_apks', []) or []
+    ]
+
     setup = self._messages.TestSetup(
         filesToPush=device_files,
         account=account,
         environmentVariables=environment_variables,
         directoriesToPull=directories_to_pull,
-        networkProfile=getattr(self._args, 'network_profile', None))
+        networkProfile=getattr(self._args, 'network_profile', None),
+        additionalApks=additional_apks)
 
     return self._messages.TestSpecification(
         testTimeout=matrix_ops.ReformatDuration(self._args.timeout),
@@ -179,8 +209,33 @@ class MatrixCreator(object):
         disableVideoRecording=not self._args.record_video,
         disablePerformanceMetrics=not self._args.performance_metrics)
 
+  def _BuildShardingOption(self):
+    """Build a ShardingOption for an AndroidInstrumentationTest."""
+    if getattr(self._args, 'num_uniform_shards', {}):
+      return self._messages.ShardingOption(
+          uniformSharding=self._messages.UniformSharding(
+              numShards=self._args.num_uniform_shards))
+    elif getattr(self._args, 'test_targets_for_shard', {}):
+      return self._messages.ShardingOption(
+          manualSharding=self._BuildManualShard(
+              self._args.test_targets_for_shard))
+
+  def _BuildManualShard(self, test_targets_for_shard):
+    """Build a ManualShard for a ShardingOption."""
+    test_targets = [
+        self._BuildTestTargetsForShard(test_target)
+        for test_target in test_targets_for_shard
+    ]
+    return self._messages.ManualSharding(testTargetsForShard=test_targets)
+
+  def _BuildTestTargetsForShard(self, test_targets_for_each_shard):
+    return self._messages.TestTargetsForShard(testTargets=[
+        target for target in test_targets_for_each_shard.split(';')
+        if target is not None
+    ])
+
   def _TestSpecFromType(self, test_type):
-    """Map a test type into its corresponding TestSpecification message ."""
+    """Map a test type into its corresponding TestSpecification message."""
     if test_type == 'instrumentation':
       return self._BuildAndroidInstrumentationTestSpec()
     elif test_type == 'robo':
@@ -219,18 +274,16 @@ class MatrixCreator(object):
     results = self._messages.ResultStorage(googleCloudStorage=gcs,
                                            toolResultsHistory=hist)
 
+    client_info = matrix_creator_common.BuildClientInfo(
+        self._messages,
+        getattr(self._args, 'client_details', {}) or {}, self._release_track)
+
     return self._messages.TestMatrix(
         testSpecification=spec,
         environmentMatrix=environment_matrix,
-        clientInfo=self._messages.ClientInfo(
-            name='gcloud',
-            clientInfoDetails=[
-                self._messages.ClientInfoDetail(
-                    key='Cloud SDK Version', value=config.CLOUD_SDK_VERSION),
-                self._messages.ClientInfoDetail(
-                    key='Release Track', value=self._release_track)
-            ]),
-        resultStorage=results)
+        clientInfo=client_info,
+        resultStorage=results,
+        flakyTestAttempts=self._args.num_flaky_test_attempts or 0)
 
   def _BuildAndroidDevice(self, device_map):
     return self._messages.AndroidDevice(

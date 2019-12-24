@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 
 """Base class for Pig Job."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from apitools.base.py import encoding
 
@@ -84,10 +89,10 @@ class PigBase(job_base.JobBase):
     if args.queries:
       pig_job.queryList = messages.QueryList(queries=args.queries)
     if args.params:
-      pig_job.scriptVariables = encoding.DictToMessage(
+      pig_job.scriptVariables = encoding.DictToAdditionalPropertyMessage(
           args.params, messages.PigJob.ScriptVariablesValue)
     if args.properties:
-      pig_job.properties = encoding.DictToMessage(
+      pig_job.properties = encoding.DictToAdditionalPropertyMessage(
           args.properties, messages.PigJob.PropertiesValue)
 
     job.pigJob = pig_job

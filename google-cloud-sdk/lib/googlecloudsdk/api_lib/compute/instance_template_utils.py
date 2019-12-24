@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,9 +14,15 @@
 # limitations under the License.
 """Convenience functions for dealing with instance templates."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.compute import alias_ip_range_utils
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import image_utils
+from googlecloudsdk.api_lib.compute import instance_utils
+from googlecloudsdk.api_lib.compute import kms_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.networks.subnets import flags as subnet_flags
@@ -24,10 +31,16 @@ from googlecloudsdk.core import properties
 EPHEMERAL_ADDRESS = object()
 
 
-# TODO(b/36056459): Add unit tests for utilities
-def CreateNetworkInterfaceMessage(
-    resources, scope_lister, messages, network, region, subnet, address,
-    alias_ip_ranges_string=None, network_tier=None):
+def CreateNetworkInterfaceMessage(resources,
+                                  scope_lister,
+                                  messages,
+                                  network,
+                                  private_ip,
+                                  region,
+                                  subnet,
+                                  address,
+                                  alias_ip_ranges_string=None,
+                                  network_tier=None):
   """Creates and returns a new NetworkInterface message.
 
   Args:
@@ -35,6 +48,7 @@ def CreateNetworkInterfaceMessage(
     scope_lister: function, provides scopes for prompting subnet region,
     messages: GCE API messages,
     network: network,
+    private_ip: IPv4 internal IP address to assign to the instance.
     region: region for subnetwork,
     subnet: regional subnetwork,
     address: specify static address for instance template
@@ -72,6 +86,9 @@ def CreateNetworkInterfaceMessage(
         collection='compute.networks')
     network_interface.network = network_ref.SelfLink()
 
+  if private_ip is not None:
+    network_interface.networkIP = private_ip
+
   if address:
     access_config = messages.AccessConfig(
         name=constants.DEFAULT_ACCESS_CONFIG_NAME,
@@ -97,8 +114,7 @@ def CreateNetworkInterfaceMessage(
 
 
 def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
-                                   network_interface_arg, region,
-                                   support_network_tier):
+                                   network_interface_arg, region):
   """Create network interface messages.
 
   Args:
@@ -107,7 +123,6 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
     messages: creates resources.
     network_interface_arg: CLI argument specifying network interfaces.
     region: region of the subnetwork.
-    support_network_tier: indicates if network tier is supported.
   Returns:
     list, items are NetworkInterfaceMessages.
   """
@@ -119,22 +134,19 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
       if address == '':
         address = EPHEMERAL_ADDRESS
 
-      if support_network_tier:
-        network_tier = interface.get('network-tier', None)
-      else:
-        network_tier = None
+      network_tier = interface.get('network-tier', None)
 
-      result.append(CreateNetworkInterfaceMessage(
-          resources, scope_lister, messages, interface.get('network', None),
-          region,
-          interface.get('subnet', None),
-          address,
-          interface.get('aliases', None),
-          network_tier))
+      result.append(
+          CreateNetworkInterfaceMessage(
+              resources, scope_lister, messages, interface.get('network', None),
+              interface.get('private-network-ip', None), region,
+              interface.get('subnet', None), address,
+              interface.get('aliases', None), network_tier))
   return result
 
 
-def CreatePersistentAttachedDiskMessages(messages, disks):
+def CreatePersistentAttachedDiskMessages(
+    messages, disks, container_mount_disk=None):
   """Returns a list of AttachedDisk messages and the boot disk's reference.
 
   Args:
@@ -142,9 +154,11 @@ def CreatePersistentAttachedDiskMessages(messages, disks):
     disks: disk objects - contains following properties
              * name - the name of disk,
              * mode - 'rw' (R/W), 'ro' (R/O) access mode,
-             * boot - whether it is a boot disk,
-             * autodelete - whether disks is deleted when VM is deleted,
+             * boot - whether it is a boot disk ('yes' if True),
+             * autodelete - whether disks is deleted when VM is deleted ('yes'
+               if True),
              * device-name - device name on VM.
+    container_mount_disk: list of disks to be mounted to container, if any.
 
   Returns:
     list of API messages for attached disks
@@ -162,11 +176,13 @@ def CreatePersistentAttachedDiskMessages(messages, disks):
 
     boot = disk.get('boot') == 'yes'
     auto_delete = disk.get('auto-delete') == 'yes'
+    device_name = instance_utils.GetDiskDeviceName(disk, name,
+                                                   container_mount_disk)
 
     attached_disk = messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=boot,
-        deviceName=disk.get('device-name'),
+        deviceName=device_name,
         mode=mode,
         source=name,
         type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT)
@@ -180,8 +196,9 @@ def CreatePersistentAttachedDiskMessages(messages, disks):
   return disks_messages
 
 
-def CreatePersistentCreateDiskMessages(client, resources, user_project,
-                                       create_disks):
+def CreatePersistentCreateDiskMessages(
+    client, resources, user_project, create_disks, support_kms=False,
+    container_mount_disk=None):
   """Returns a list of AttachedDisk messages.
 
   Args:
@@ -190,14 +207,20 @@ def CreatePersistentCreateDiskMessages(client, resources, user_project,
     user_project: name of user project
     create_disks: disk objects - contains following properties
              * name - the name of disk,
+             * description - an optional description for the disk,
              * mode - 'rw' (R/W), 'ro' (R/O) access mode,
-             * disk-size - the size of the disk,
-             * disk-type - the type of the disk (HDD or SSD),
+             * size - the size of the disk,
+             * type - the type of the disk (HDD or SSD),
              * image - the name of the image to initialize from,
              * image-family - the image family name,
              * image-project - the project name that has the image,
-             * auto-delete - whether disks is deleted when VM is deleted,
-             * device-name - device name on VM.
+             * auto-delete - whether disks is deleted when VM is deleted ('yes'
+               if True),
+             * device-name - device name on VM,
+             * disk-resource-policy - resource policies applied to disk.
+
+    support_kms: if KMS is supported
+    container_mount_disk: list of disks to be mounted to container, if any.
 
   Returns:
     list of API messages for attached disks
@@ -215,25 +238,47 @@ def CreatePersistentCreateDiskMessages(client, resources, user_project,
 
     auto_delete = disk.get('auto-delete') == 'yes'
     disk_size_gb = utils.BytesToGb(disk.get('size'))
-    image_expander = image_utils.ImageExpander(client, resources)
-    image_uri, _ = image_expander.ExpandImageFlag(
-        user_project=user_project,
-        image=disk.get('image'),
-        image_family=disk.get('image-family'),
-        image_project=disk.get('image-project'),
-        return_image_resource=False)
+    img = disk.get('image')
+    img_family = disk.get('image-family')
+    img_project = disk.get('image-project')
+
+    image_uri = None
+    if img or img_family:
+      image_expander = image_utils.ImageExpander(client, resources)
+      image_uri, _ = image_expander.ExpandImageFlag(
+          user_project=user_project,
+          image=img,
+          image_family=img_family,
+          image_project=img_project,
+          return_image_resource=False)
+
+    disk_key = None
+    if support_kms:
+      disk_key = kms_utils.MaybeGetKmsKeyFromDict(
+          disk, client.messages, disk_key)
+
+    device_name = instance_utils.GetDiskDeviceName(disk, name,
+                                                   container_mount_disk)
+
+    init_params = client.messages.AttachedDiskInitializeParams(
+        diskName=name,
+        description=disk.get('description'),
+        sourceImage=image_uri,
+        diskSizeGb=disk_size_gb,
+        diskType=disk.get('type'))
+
+    policies = disk.get('disk-resource-policy')
+    if policies:
+      init_params.resourcePolicies = policies
 
     create_disk = client.messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=False,
-        deviceName=disk.get('device-name'),
-        initializeParams=client.messages.AttachedDiskInitializeParams(
-            diskName=name,
-            sourceImage=image_uri,
-            diskSizeGb=disk_size_gb,
-            diskType=disk.get('type')),
+        deviceName=device_name,
+        initializeParams=init_params,
         mode=mode,
-        type=client.messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT)
+        type=client.messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
+        diskEncryptionKey=disk_key)
 
     disks_messages.append(create_disk)
 
@@ -242,8 +287,14 @@ def CreatePersistentCreateDiskMessages(client, resources, user_project,
 
 def CreateDefaultBootAttachedDiskMessage(
     messages, disk_type, disk_device_name, disk_auto_delete, disk_size_gb,
-    image_uri):
+    image_uri, kms_args=None, support_kms=False):
   """Returns an AttachedDisk message for creating a new boot disk."""
+  disk_key = None
+
+  if support_kms:
+    disk_key = kms_utils.MaybeGetKmsKey(
+        kms_args, messages, disk_key, boot_disk_prefix=True)
+
   return messages.AttachedDisk(
       autoDelete=disk_auto_delete,
       boot=True,
@@ -253,7 +304,8 @@ def CreateDefaultBootAttachedDiskMessage(
           diskSizeGb=disk_size_gb,
           diskType=disk_type),
       mode=messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE,
-      type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT)
+      type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
+      diskEncryptionKey=disk_key)
 
 
 def CreateAcceleratorConfigMessages(messages, accelerator):

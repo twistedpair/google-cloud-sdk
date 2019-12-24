@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 
 """A library to build a test results summary."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 import collections
 
@@ -45,18 +50,20 @@ class TestOutcome(collections.namedtuple(
   """
 
 
-# Human-freindly test outcome names
+# Human-friendly test outcome names
 _SUCCESS = 'Passed'
+_FLAKY = 'Flaky'
 _FAILURE = 'Failed'
-_SKIPPED = 'Skipped'
 _INCONCLUSIVE = 'Inconclusive'
+_SKIPPED = 'Skipped'
 
 # Relative sort weightings for test outcomes
 _OUTCOME_SORTING = {
     _FAILURE: 10,
-    _SUCCESS: 20,
-    _INCONCLUSIVE: 30,
-    _SKIPPED: 40,
+    _FLAKY: 20,
+    _SUCCESS: 30,
+    _INCONCLUSIVE: 40,
+    _SKIPPED: 50,
 }
 
 
@@ -66,8 +73,7 @@ def _TestOutcomeSortKey(x):
 
 
 class ToolResultsSummaryFetcher(object):
-  """Creates Test Results summary using data from the Tool Results API.
-  """
+  """Creates Test Results summary using data from the ToolResults API."""
 
   def __init__(self, project, client, messages, tool_results_ids):
     """Constructs a ToolResultsSummaryFetcher.
@@ -86,18 +92,19 @@ class ToolResultsSummaryFetcher(object):
     self._outcome_names = {
         messages.Outcome.SummaryValueValuesEnum.success: _SUCCESS,
         messages.Outcome.SummaryValueValuesEnum.failure: _FAILURE,
+        messages.Outcome.SummaryValueValuesEnum.flaky: _FLAKY,
         messages.Outcome.SummaryValueValuesEnum.skipped: _SKIPPED,
         messages.Outcome.SummaryValueValuesEnum.inconclusive: _INCONCLUSIVE,
     }
 
   def FetchMatrixRollupOutcome(self):
-    """Gets a test execution's rolled-up outcome from the Tool Results service.
+    """Gets a test execution's rolled-up outcome from the ToolResults service.
 
     Returns:
       The rolled-up test execution outcome (type: toolresults_v1beta3.Outcome).
 
     Raises:
-      HttpException if the Tool Results service reports a back-end error.
+      HttpException if the ToolResults service reports a back-end error.
     """
     request = self._messages.ToolresultsProjectsHistoriesExecutionsGetRequest(
         projectId=self._project,
@@ -105,55 +112,45 @@ class ToolResultsSummaryFetcher(object):
         executionId=self._execution_id)
     try:
       response = self._client.projects_histories_executions.Get(request)
-      log.debug('\nTRHistoriesExecutions.Get response:\n{0}\n'.format(response))
       return response.outcome
     except apitools_exceptions.HttpError as error:
       msg = 'Http error fetching test roll-up outcome: ' + util.GetError(error)
       raise exceptions.HttpException(msg)
 
-  def CreateMatrixOutcomeSummary(self):
+  def CreateMatrixOutcomeSummaryUsingSteps(self):
     """Fetches test results and creates a test outcome summary.
 
     Lists all the steps in an execution and creates a high-level outcome summary
-    for each step (pass/fail/inconclusive). Each step represents a combination
-    of a test execution (e.g. running the tests on a Nexus 5 in portrait mode
-    using the en locale and API level 18).
+    for each step (pass/fail/inconclusive). Each step represents a test run on
+    a single device (e.g. running the tests on a Nexus 5 in portrait mode using
+    the en locale and API level 18).
 
     Returns:
       A list of TestOutcome objects.
 
     Raises:
-      HttpException if the Tool Results service reports a back-end error.
+      HttpException if the ToolResults service reports a back-end error.
     """
     outcomes = []
     steps = self._ListAllSteps()
     if not steps:
       log.warning(
-          'No results found, something went wrong. Try re-running the tests.')
+          'No test results found, something went wrong. Try re-running the tests.'
+      )
       return outcomes
 
     for step in steps:
-      axes = {}
-      for dimension in step.dimensionValue:
-        axes[dimension.key] = dimension.value
-      axis_value = ('{m}-{v}-{l}-{o}'
-                    .format(m=axes.get('Model', '?'),
-                            v=axes.get('Version', '?'),
-                            l=axes.get('Locale', '?'),
-                            o=axes.get('Orientation', '?')))
-      # It's a bug in Tool Results if we get no outcome, but this guard
+      dimension_value = step.dimensionValue
+      axis_value = self._GetAxisValue(dimension_value)
+      # It's a bug in ToolResults if we get no outcome, but this guard
       # prevents a stack trace if it should happen.
       if not step.outcome:
         log.warning('Step for [{0}] had no outcome value.'.format(axis_value))
       else:
         details = self._GetStepOutcomeDetails(step)
-        if _NATIVE_CRASH in details:
-          log.warning(_NATIVE_CRASH_DETAILED_FORMAT.format(axis_value))
-        if _INFRASTRUCTURE_FAILURE in details:
-          log.warning(
-              _INFRASTRUCTURE_FAILURE_DETAILED_FORMAT.format(
-                  axis_value, self._execution_id))
-        outcome_str = self._GetOutcomeSummaryDisplayName(step.outcome.summary)
+        self._LogWarnings(details, axis_value)
+        outcome_summary = step.outcome.summary
+        outcome_str = self._GetOutcomeSummaryDisplayName(outcome_summary)
         outcomes.append(
             TestOutcome(outcome=outcome_str,
                         axis_value=axis_value,
@@ -161,8 +158,74 @@ class ToolResultsSummaryFetcher(object):
 
     return sorted(outcomes, key=_TestOutcomeSortKey)
 
+  def CreateMatrixOutcomeSummaryUsingEnvironments(self):
+    """Fetches test results and creates a test outcome summary.
+
+    Lists all the environments in an execution and creates a high-level outcome
+    summary for each environment (pass/flaky/fail/skipped/inconclusive). Each
+    environment represents a combination of one or more test executions with the
+    same device configuration (e.g. running the tests on a Nexus 5 in portrait
+    mode using the en locale and API level 18).
+
+    Returns:
+      A list of TestOutcome objects.
+
+    Raises:
+      HttpException if the ToolResults service reports a back-end error.
+    """
+    outcomes = []
+    environments = self._ListAllEnvironments()
+    # It's a bug in ToolResults if we get no environment, but this guard
+    # prevents a stack trace if it should happen.
+    if not environments:
+      log.warning(
+          'Environment has no results, something went wrong. Displaying step '
+          'outcomes instead.')
+      return self.CreateMatrixOutcomeSummaryUsingSteps()
+
+    for environment in environments:
+      dimension_value = environment.dimensionValue
+      axis_value = self._GetAxisValue(dimension_value)
+      # It's a bug in ToolResults if we get no outcome, but this guard
+      # prevents a stack trace if it should happen.
+      if not environment.environmentResult.outcome:
+        log.warning('Environment for [{0}] had no outcome value. Displaying '
+                    'step outcomes instead.'.format(axis_value))
+        return self.CreateMatrixOutcomeSummaryUsingSteps()
+
+      details = self._GetEnvironmentOutcomeDetails(environment)
+      self._LogWarnings(details, axis_value)
+      outcome_summary = environment.environmentResult.outcome.summary
+      outcome_str = self._GetOutcomeSummaryDisplayName(outcome_summary)
+      outcomes.append(
+          TestOutcome(
+              outcome=outcome_str,
+              axis_value=axis_value,
+              test_details=details))
+
+    return sorted(outcomes, key=_TestOutcomeSortKey)
+
+  def _LogWarnings(self, details, axis_value):
+    """Log warnings if there was native crash or infrustructure failure."""
+    if _NATIVE_CRASH in details:
+      log.warning(_NATIVE_CRASH_DETAILED_FORMAT.format(axis_value))
+    if _INFRASTRUCTURE_FAILURE in details:
+      log.warning(
+          _INFRASTRUCTURE_FAILURE_DETAILED_FORMAT.format(
+              axis_value, self._execution_id))
+
+  def _GetAxisValue(self, dimensionvalue):
+    axes = {}
+    for dimension in dimensionvalue:
+      axes[dimension.key] = dimension.value
+    return ('{m}-{v}-{l}-{o}'.format(
+        m=axes.get('Model', '?'),
+        v=axes.get('Version', '?'),
+        l=axes.get('Locale', '?'),
+        o=axes.get('Orientation', '?')))
+
   def _ListAllSteps(self):
-    """Lists all steps for a test execution using the Tool Results service.
+    """Lists all steps for a test execution using the ToolResults service.
 
     Returns:
       The full list of steps for a test execution.
@@ -178,27 +241,72 @@ class ToolResultsSummaryFetcher(object):
     return steps
 
   def _ListSteps(self, page_token):
-    """Lists one page of steps using the Tool Results service.
+    """Lists one page of steps using the ToolResults service.
 
     Args:
-      page_token: A page token to attach to the List request.
+      page_token: A page token to attach to the List request. If it's None, then
+        it returns at most the first 200 steps.
 
     Returns:
       A ListStepsResponse containing a single page's steps.
 
     Raises:
-      HttpException if the Tool Results service reports a back-end error.
+      HttpException if the ToolResults service reports a back-end error.
     """
     request = (
         self._messages.ToolresultsProjectsHistoriesExecutionsStepsListRequest(
             projectId=self._project, historyId=self._history_id,
             executionId=self._execution_id, pageSize=100, pageToken=page_token))
     try:
-      response = self._client.projects_histories_executions_steps.List(request)
-      log.debug('\nToolResultsSteps.List response:\n{0}\n'.format(response))
-      return response
+      return self._client.projects_histories_executions_steps.List(request)
     except apitools_exceptions.HttpError as error:
-      msg = 'Http error while listing test results: ' +  util.GetError(error)
+      msg = 'Http error while listing test results of steps: ' + util.GetError(
+          error)
+      raise exceptions.HttpException(msg)
+
+  def _ListAllEnvironments(self):
+    """Lists all environments of a test execution using the ToolResults service.
+
+    Returns:
+      A ListEnvironmentsResponse containing all environments within execution.
+    """
+    response = self._ListEnvironments(None)
+    environments = []
+    environments.extend(response.environments)
+
+    while response.nextPageToken:
+      response = self._ListEnvironments(response.nextPageToken)
+      environments.extend(response.environments)
+
+    return environments
+
+  def _ListEnvironments(self, page_token):
+    """Lists one page of environments using the ToolResults service.
+
+    Args:
+      page_token: A page token to attach to the List request. If it's None, then
+        it returns a maximum of 200 Environments.
+
+    Returns:
+      A ListEnvironmentsResponse containing a single page's environments.
+
+    Raises:
+      HttpException if the ToolResults service reports a back-end error.
+    """
+
+    request = (
+        self._messages
+        .ToolresultsProjectsHistoriesExecutionsEnvironmentsListRequest(
+            projectId=self._project,
+            historyId=self._history_id,
+            executionId=self._execution_id,
+            pageSize=100,
+            pageToken=page_token))
+    try:
+      return self._client.projects_histories_executions_environments.List(
+          request)
+    except apitools_exceptions.HttpError as error:
+      msg = 'Http error while listing test results: ' + util.GetError(error)
       raise exceptions.HttpException(msg)
 
   def _GetOutcomeSummaryDisplayName(self, outcome):
@@ -219,13 +327,10 @@ class ToolResultsSummaryFetcher(object):
     """Turn test outcome counts and details into something human readable."""
     outcome = step.outcome
     summary_enum = self._messages.Outcome.SummaryValueValuesEnum
+    test_suite_overviews = step.testExecutionStep.testSuiteOverviews
 
     if outcome.summary == summary_enum.success:
-      total = 0
-      for overview in step.testExecutionStep.testSuiteOverviews:
-        total += overview.totalCount or 0
-      details = '{t} test cases passed'.format(t=total) if total else '--'
-
+      details = _GetSuccessCountDetails(test_suite_overviews)
       if outcome.successDetail and outcome.successDetail.otherNativeCrash:
         return '{d} ({c})'.format(d=details, c=_NATIVE_CRASH)
       else:
@@ -233,63 +338,128 @@ class ToolResultsSummaryFetcher(object):
 
     elif outcome.summary == summary_enum.failure:
       if outcome.failureDetail:
-        details = ''
-        # Note: crashed/timedOut/notInstalled flags are mutually exclusive
-        if outcome.failureDetail.crashed:
-          details = 'Application crashed'
-        elif outcome.failureDetail.timedOut:
-          details = 'Test timed out'
-        elif outcome.failureDetail.notInstalled:
-          details = 'App failed to install'
-        # otherNativeCrash is not mutually exclusive to other failureDetails
-        crash = _NATIVE_CRASH if outcome.failureDetail.otherNativeCrash else ''
-        if details and crash:
-          return '{d} ({c})'.format(d=details, c=crash)
-        elif details:
-          return details
-        elif crash:
-          return crash
-      return _GetFailedCountDetails(step)
+        return _GetFailureDetail(outcome, test_suite_overviews)
+      if not step.testExecutionStep:
+        return 'Unknown failure'
+      return _GetFailureOrFlakyCountDetails(test_suite_overviews)
 
     elif outcome.summary == summary_enum.inconclusive:
-      if outcome.inconclusiveDetail:
-        if outcome.inconclusiveDetail.infrastructureFailure:
-          return _INFRASTRUCTURE_FAILURE
-        if outcome.inconclusiveDetail.abortedByUser:
-          return 'Test run aborted by user'
-      return 'Unknown reason'
+      return _GetInconclusiveDetail(outcome)
 
     elif outcome.summary == summary_enum.skipped:
-      if outcome.skippedDetail:
-        if outcome.skippedDetail.incompatibleDevice:
-          return 'Incompatible device/OS combination'
-        if outcome.skippedDetail.incompatibleArchitecture:
-          return 'App does not support the device architecture'
-        if outcome.skippedDetail.incompatibleAppVersion:
-          return 'App does not support the OS version'
-      return 'Unknown reason'
+      return _GetSkippedDetail(outcome)
+
+    else:
+      return 'Unknown outcome'
+
+  def _GetEnvironmentOutcomeDetails(self, environment):
+    """Turn test outcome counts and details into something human readable."""
+    outcome = environment.environmentResult.outcome
+    summary_enum = self._messages.Outcome.SummaryValueValuesEnum
+    test_suite_overviews = environment.environmentResult.testSuiteOverviews
+
+    if outcome.summary == summary_enum.success:
+      details = _GetSuccessCountDetails(test_suite_overviews)
+      if outcome.successDetail and outcome.successDetail.otherNativeCrash:
+        return '{d} ({c})'.format(d=details, c=_NATIVE_CRASH)
+      else:
+        return details
+
+    elif outcome.summary == summary_enum.failure or outcome.summary == summary_enum.flaky:
+      if outcome.failureDetail:
+        return _GetFailureDetail(outcome, test_suite_overviews)
+      return _GetFailureOrFlakyCountDetails(test_suite_overviews)
+
+    elif outcome.summary == summary_enum.inconclusive:
+      return _GetInconclusiveDetail(outcome)
+
+    elif outcome.summary == summary_enum.skipped:
+      return _GetSkippedDetail(outcome)
 
     else:
       return 'Unknown outcome'
 
 
-def _GetFailedCountDetails(step):
-  """Build a string with status count sums for a step's testSuiteOverviews."""
-  if not step.testExecutionStep:
-    return 'Unknown failure'
+def _GetFailureDetail(outcome, test_suite_overviews):
+  """Build a string with failureDetail if present."""
+  details = ''
+  # Note: crashed/timedOut/notInstalled flags are mutually exclusive
+  if outcome.failureDetail.crashed:
+    details = 'Application crashed'
+  elif outcome.failureDetail.timedOut:
+    details = 'Test timed out'
+  elif outcome.failureDetail.notInstalled:
+    details = 'App failed to install'
+  # otherNativeCrash is not mutually exclusive to other failureDetails
+  crash = _NATIVE_CRASH if outcome.failureDetail.otherNativeCrash else ''
+  if details and crash:
+    return '{d} ({c})'.format(d=details, c=crash)
+  elif details:
+    return details
+  elif crash:
+    return crash
+  return _GetFailureOrFlakyCountDetails(test_suite_overviews)
+
+
+def _GetSkippedDetail(outcome):
+  """Build a string with skippedDetail if present."""
+  if outcome.skippedDetail:
+    if outcome.skippedDetail.incompatibleDevice:
+      return 'Incompatible device/OS combination'
+    if outcome.skippedDetail.incompatibleArchitecture:
+      return 'App does not support the device architecture'
+    if outcome.skippedDetail.incompatibleAppVersion:
+      return 'App does not support the OS version'
+  return 'Unknown reason'
+
+
+def _GetInconclusiveDetail(outcome):
+  """Build a string with inconclusiveDetail if present."""
+  if outcome.inconclusiveDetail:
+    if outcome.inconclusiveDetail.infrastructureFailure:
+      return _INFRASTRUCTURE_FAILURE
+    if outcome.inconclusiveDetail.abortedByUser:
+      return 'Test run aborted by user'
+  return 'Unknown reason'
+
+
+def _GetSuccessCountDetails(test_suite_overviews):
+  """Build a string with status count sums for testSuiteOverviews."""
+  total = 0
+  skipped = 0
+  for overview in test_suite_overviews:
+    total += overview.totalCount or 0
+    skipped += overview.skippedCount or 0
+  passed = total - skipped
+  if passed:
+    msg = '{p} test cases passed'.format(p=passed)
+    if skipped:
+      msg = '{m}, {s} skipped'.format(m=msg, s=skipped)
+    return msg
+  return '--'
+
+
+def _GetFailureOrFlakyCountDetails(test_suite_overviews):
+  """Build a string with status count sums for testSuiteOverviews."""
   total = 0
   error = 0
   failed = 0
   skipped = 0
-  for overview in step.testExecutionStep.testSuiteOverviews:
+  flaky = 0
+  for overview in test_suite_overviews:
     total += overview.totalCount or 0
     error += overview.errorCount or 0
     failed += overview.failureCount or 0
     skipped += overview.skippedCount or 0
+    flaky += overview.flakyCount or 0
 
   if total:
     msg = '{f} test cases failed'.format(f=failed)
-    passed = total - error - failed - skipped
+    passed = total - error - failed - skipped - flaky
+    if flaky and failed:
+      msg = '{m}, {f} flaky'.format(m=msg, f=flaky)
+    if flaky and not failed:
+      msg = '{f} test cases flaky'.format(f=flaky)
     if passed:
       msg = '{m}, {p} passed'.format(m=msg, p=passed)
     if error:

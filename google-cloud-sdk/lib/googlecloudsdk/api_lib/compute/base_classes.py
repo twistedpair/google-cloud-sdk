@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,11 +15,16 @@
 
 """Base classes for abstracting away common logic."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
-import collections
+import argparse  # pylint: disable=unused-import
 import json
 import textwrap
 
+from apitools.base.py import base_api  # pylint: disable=unused-import
 import enum
 from googlecloudsdk.api_lib.compute import base_classes_resource_registry as resource_registry
 from googlecloudsdk.api_lib.compute import client_adapter
@@ -29,15 +35,15 @@ from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import resource_specs
 from googlecloudsdk.api_lib.compute import scope_prompter
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import completers
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import text
-import yaml
+import six
 
 
 class ComputeApiHolder(object):
@@ -69,34 +75,6 @@ class ComputeApiHolder(object):
     return self._resources
 
 
-class ComputeUserAccountsApiHolder(object):
-  """Convenience class to hold lazy initialized client and resources."""
-
-  def __init__(self, release_track):
-    if release_track == base.ReleaseTrack.ALPHA:
-      self._api_version = 'alpha'
-    else:
-      self._api_version = 'beta'
-    self._client = None
-    self._resources = None
-
-  @property
-  def client(self):
-    """Specifies the compute client."""
-    if self._client is None:
-      self._client = core_apis.GetClientInstance(
-          'clouduseraccounts', self._api_version)
-    return self._client
-
-  @property
-  def resources(self):
-    """Specifies the resources parser for compute resources."""
-    if self._resources is None:
-      self._resources = resources.REGISTRY.Clone()
-      self._resources.RegisterApiByName('clouduseraccounts', self._api_version)
-    return self._resources
-
-
 class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   """Base class for all compute subcommands."""
 
@@ -106,8 +84,6 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
     self.__resource_spec = None
     self._project = properties.VALUES.core.project.Get(required=True)
     self._compute_holder = ComputeApiHolder(self.ReleaseTrack())
-    self._user_accounts_holder = ComputeUserAccountsApiHolder(
-        self.ReleaseTrack())
 
   @property
   def _resource_spec(self):
@@ -163,14 +139,6 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
     return self._compute_holder.resources
 
   @property
-  def clouduseraccounts(self):
-    return self._user_accounts_holder.client
-
-  @property
-  def clouduseraccounts_resources(self):
-    return self._user_accounts_holder.resources
-
-  @property
   def messages(self):
     """Specifies the API message classes."""
     return self.compute_client.messages
@@ -182,6 +150,11 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
 
 class BaseLister(base.ListCommand, BaseCommand):
   """Base class for the list subcommands."""
+
+  self_links = None
+  names = None
+  resource_refs = None
+  service = None
 
   @staticmethod
   def Args(parser):
@@ -197,7 +170,7 @@ class BaseLister(base.ListCommand, BaseCommand):
     parser.add_argument(
         '--regexp', '-r',
         help="""\
-        A regular expression to filter the names of the results on. Any names
+        Regular expression to filter the names of the results on. Any names
         that do not match the entire regular expression will be filtered out.
         """)
 
@@ -285,7 +258,8 @@ class BaseLister(base.ListCommand, BaseCommand):
     errors = []
 
     self.PopulateResourceFilteringStructures(args)
-    items = self.FilterResults(args, self.GetResources(args, errors))
+    items = self.FilterResults(
+        args, self.GetResources(args, errors))
     items = lister.ProcessResults(
         resources=items,
         field_selector=field_selector)
@@ -313,21 +287,52 @@ class GlobalLister(BaseLister):
 
 def GetGlobalListerHelp(resource):
   """Returns the detailed help dict for a global list command."""
-  return {
-      'brief': 'List Google Compute Engine ' + resource,
-      'DESCRIPTION': """\
-          *{{command}}* displays all Google Compute Engine {0} in a project.
-          """.format(resource),
-      'EXAMPLES': """\
-          To list all {0} in a project in table form, run:
+  if resource == 'routes':
+    detailed_help = {
+        'brief': 'List non-dynamic Google Compute Engine ' + resource,
+        'DESCRIPTION': """
+*{{command}}* displays all custom static, subnet, and peering {0} in
+VPC networks in a project.
 
-            $ {{command}}
+To list custom dynamic routes learned by Cloud Routers, query the
+status of the Cloud Router that learned the route using
+`gcloud compute routers get-status`. For more details, refer
+to https://cloud.google.com/vpc/docs/using-routes#listingroutes.
+""".format(resource),
+        'EXAMPLES': """
+To list all non-dynamic {0} in a project in table form, run:
 
-          To list the URIs of all {0} in a project, run:
+    $ {{command}}
 
-            $ {{command}} --uri
-            """.format(resource)
-  }
+To list the URIs of all non-dynamic {0} in a project, run:
+
+    $ {{command}} --uri
+""".format(resource)
+    }
+  else:
+    detailed_help = {
+        'brief': 'List Google Compute Engine ' + resource,
+        'DESCRIPTION': """
+*{{command}}* displays all Google Compute Engine {0} in a project.
+""".format(resource),
+        'EXAMPLES': """
+To list all {0} in a project in table form, run:
+
+  $ {{command}}
+
+To list the URIs of all {0} in a project, run:
+
+  $ {{command}} --uri
+""".format(resource)
+    }
+  if resource == 'images':
+    detailed_help['EXAMPLES'] += """
+To list the names of {0} older than one year from oldest to newest
+(`-P1Y` is an [ISO8601 duration](https://en.wikipedia.org/wiki/ISO_8601)):
+
+  $ {{command}} --format="value(NAME)" --filter="creationTimestamp < -P1Y"
+""".format(resource)
+  return detailed_help
 
 
 class RegionalLister(BaseLister):
@@ -362,26 +367,26 @@ def GetRegionalListerHelp(resource):
   """Returns the detailed help dict for a regional list command."""
   return {
       'brief': 'List Google Compute Engine ' + resource,
-      'DESCRIPTION': """\
-          *{{command}}* displays all Google Compute Engine {0} in a project.
+      'DESCRIPTION': """
+*{{command}}* displays all Google Compute Engine {0} in a project.
 
-          By default, {0} from all regions are listed. The results can be
-          narrowed down using a filter: `--filter="region:( REGION ... )"`.
-          """.format(resource),
-      'EXAMPLES': """\
-          To list all {0} in a project in table form, run:
+By default, {0} from all regions are listed. The results can be
+narrowed down using a filter: `--filter="region:( REGION ... )"`.
+""".format(resource),
+      'EXAMPLES': """
+To list all {0} in a project in table form, run:
 
-            $ {{command}}
+  $ {{command}}
 
-          To list the URIs of all {0} in a project, run:
+To list the URIs of all {0} in a project, run:
 
-            $ {{command}} --uri
+  $ {{command}} --uri
 
-          To list all {0} in the ``us-central1'' and ``europe-west1'' regions,
-          run:
+To list all {0} in the ``us-central1'' and ``europe-west1'' regions,
+run:
 
-            $ {{command}} --filter="region( us-central1 europe-west1 )"
-            """.format(resource)
+  $ {{command}} --filter="region:( us-central1 europe-west1 )"
+""".format(resource)
   }
 
 
@@ -417,26 +422,26 @@ def GetZonalListerHelp(resource):
   """Returns the detailed help dict for a zonal list command."""
   return {
       'brief': 'List Google Compute Engine ' + resource,
-      'DESCRIPTION': """\
-          *{{command}}* displays all Google Compute Engine {0} in a project.
+      'DESCRIPTION': """
+*{{command}}* displays all Google Compute Engine {0} in a project.
 
-          By default, {0} from all zones are listed. The results can be narrowed
-          down using a filter: `--filter="zone:( ZONE ... )"`.
-          """.format(resource),
-      'EXAMPLES': """\
-          To list all {0} in a project in table form, run:
+By default, {0} from all zones are listed. The results can be narrowed
+down using a filter: `--filter="zone:( ZONE ... )"`.
+""".format(resource),
+      'EXAMPLES': """
+To list all {0} in a project in table form, run:
 
-            $ {{command}}
+  $ {{command}}
 
-          To list the URIs of all {0} in a project, run:
+To list the URIs of all {0} in a project, run:
 
-            $ {{command}} --uri
+  $ {{command}} --uri
 
-          To list all {0} in the ``us-central1-b'' and ``europe-west1-d'' zones,
-          run:
+To list all {0} in the ``us-central1-b'' and ``europe-west1-d'' zones,
+run:
 
-            $ {{command}} --filter="zone:( us-central1-b europe-west1-d )"
-            """.format(resource)
+  $ {{command}} --filter="zone:( us-central1-b europe-west1-d )"
+""".format(resource)
   }
 
 
@@ -580,26 +585,23 @@ class MultiScopeLister(BaseLister):
 def GetMultiScopeListerHelp(resource, scopes):
   """Returns the detailed help dict for a global and regional list command."""
 
-  zone_example_text = """\
+  zone_example_text = """
+To list all {0} in zones ``us-central1-b''
+and ``europe-west1-d'', given they are zonal resources, run:
 
-          To list all {0} in zones ``us-central1-b''
-          and ``europe-west1-d'', given they are zonal resources, run:
+  $ {{command}} --filter="zone:( europe-west1-d us-central1-b )"
+"""
+  region_example_text = """
+To list all {0} in the ``us-central1'' and ``europe-west1'' regions,
+given they are regional resources, run:
 
-            $ {{command}} --filter="zone:( europe-west1-d us-central1-b )"
-  """
-  region_example_text = """\
+  $ {{command}} --filter="region:( europe-west1 us-central1 )"
+"""
+  global_example_text = """
+To list all global {0} in a project, run:
 
-          To list all {0} in the ``us-central1'' and ``europe-west1'' regions,
-          given they are regional resources, run:
-
-            $ {{command}} --filter="region:( europe-west1 us-central1 )"
-  """
-  global_example_text = """\
-
-          To list all global {0} in a project, run:
-
-            $ {{command}} --global
-  """
+  $ {{command}} --global
+"""
 
   allowed_flags = []
   default_result = []
@@ -620,22 +622,23 @@ def GetMultiScopeListerHelp(resource, scopes):
 
   return {
       'brief': 'List Google Compute Engine ' + resource,
-      'DESCRIPTION': """\
-          *{{command}}* displays all Google Compute Engine {0} in a project.
+      'DESCRIPTION': """
+*{{command}}* displays all Google Compute Engine {0} in a project.
 
-          By default, {1} are listed. The results can be narrowed down by
-          providing the {2} flag.
-          """.format(resource, default_result_text, allowed_flags_text),
-      'EXAMPLES': ("""\
-          To list all {0} in a project in table form, run:
+By default, {1} are listed. The results can be narrowed down by
+providing the {2} flag.
+""".format(resource, default_result_text, allowed_flags_text),
+      'EXAMPLES': ("""
+To list all {0} in a project in table form, run:
 
-            $ {{command}}
+  $ {{command}}
 
-          To list the URIs of all {0} in a project, run:
+To list the URIs of all {0} in a project, run:
 
-            $ {{command}} --uri
-          """ + (global_example_text
-                 if ScopeType.global_scope in scopes else '')
+  $ {{command}} --uri
+"""
+                   + (global_example_text
+                      if ScopeType.global_scope in scopes else '')
                    + (region_example_text
                       if ScopeType.regional_scope in scopes else '')
                    + (zone_example_text
@@ -667,6 +670,8 @@ def GetGlobalRegionalListerHelp(resource):
 
 class BaseDescriber(base.DescribeCommand, BaseCommand):
   """Base class for the describe subcommands."""
+
+  service = None
 
   @staticmethod
   def Args(parser, resource=None):
@@ -741,37 +746,30 @@ def GetMultiScopeDescriberHelp(resource, scopes):
   """
   article = text.GetArticle(resource)
   zone_example_text = """\
+To get details about a zonal {0} in the ``us-central1-b'' zone, run:
 
-          To get details about a zonal {0} in the ``us-central1-b'' zone, run:
-
-            $ {{command}} --zone us-central1-b
-  """
+  $ {{command}} --zone=us-central1-b
+"""
   region_example_text = """\
+To get details about a regional {0} in the ``us-central1'' regions, run:
 
-          To get details about a regional {0} in the ``us-central1'' regions,
-          run:
-
-            $ {{command}} --region us-central1
-  """
+  $ {{command}} --region=us-central1
+"""
   global_example_text = """\
+To get details about a global {0}, run:
 
-          To get details about a global {0}, run:
-
-            $ {{command}} --global
-  """
+  $ {{command}} --global
+"""
   return {
       'brief': ('Display detailed information about {0} {1}'
                 .format(article, resource)),
-      'DESCRIPTION': """\
-          *{{command}}* displays all data associated with {0} {1} in a project.
-          """.format(article, resource),
-      'EXAMPLES': ("""\
-          """ + (global_example_text
-                 if ScopeType.global_scope in scopes else '')
-                   + (region_example_text
-                      if ScopeType.regional_scope in scopes else '')
-                   + (zone_example_text
-                      if ScopeType.zonal_scope in scopes else ''))
+      'DESCRIPTION': """
+*{{command}}* displays all data associated with {0} {1} in a project.
+""".format(article, resource),
+      'EXAMPLES': (
+          (global_example_text if ScopeType.global_scope in scopes else '')
+          + (region_example_text if ScopeType.regional_scope in scopes else '')
+          + (zone_example_text if ScopeType.zonal_scope in scopes else ''))
                   .format(resource),
   }
 
@@ -795,21 +793,11 @@ HELP = textwrap.dedent("""\
 def SerializeDict(value, fmt):
   """Serializes value to either JSON or YAML."""
   if fmt == 'json':
-    return json.dumps(
-        value,
-        indent=2,
-        sort_keys=True,
-        separators=(',', ': '))
+    return six.text_type(
+        json.dumps(
+            value, indent=2, sort_keys=True, separators=(str(','), str(': '))))
   else:
-    yaml.add_representer(
-        collections.OrderedDict,
-        yaml.dumper.SafeRepresenter.represent_dict,
-        Dumper=yaml.dumper.SafeDumper)
-    return yaml.safe_dump(
-        value,
-        indent=2,
-        default_flow_style=False,
-        width=70)
+    return six.text_type(yaml.dump(value))
 
 
 def DeserializeValue(value, fmt):

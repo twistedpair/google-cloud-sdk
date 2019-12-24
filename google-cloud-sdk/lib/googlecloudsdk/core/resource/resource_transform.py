@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,16 +41,23 @@ Pythonicness of the Transform*() methods:
       Exceptions for arguments explicitly under the caller's control are OK.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import base64
 import datetime
+import io
 import re
-import StringIO
-import urllib2
 
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import times
+
+import six
+from six.moves import map  # pylint: disable=redefined-builtin
+from six.moves import urllib
 
 
 def GetBooleanArgValue(arg):
@@ -124,7 +132,7 @@ def TransformBaseName(r, undefined=''):
   """
   if not r:
     return undefined
-  s = unicode(r)
+  s = six.text_type(r)
   for separator in ('/', '\\'):
     i = s.rfind(separator)
     if i >= 0:
@@ -170,7 +178,7 @@ def TransformColor(r, red=None, yellow=None, green=None, blue=None, **kwargs):
     For the resource string "CAUTION means GO FASTER" displays the
     substring "CAUTION" in yellow.
   """
-  string = unicode(r)
+  string = six.text_type(r)
   for color, pattern in (('red', red), ('yellow', yellow), ('green', green),
                          ('blue', blue)):
     if pattern and re.search(pattern, string):
@@ -248,7 +256,7 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='',
 
   # Check if r is a serialized datetime object.
   original_repr = resource_property.Get(r, ['datetime'], None)
-  if original_repr and isinstance(original_repr, basestring):
+  if original_repr and isinstance(original_repr, six.string_types):
     r = original_repr
 
   tz_out = times.GetTimeZone(tz) if tz else None
@@ -367,7 +375,7 @@ def TransformDuration(r, start='', end='', parts=3, precision=3, calendar=True,
       non-zero part.
     precision: Format the last duration part with precision digits after the
       decimal point. Trailing "0" and "." are always stripped.
-    calendar: Allow time units larger than hours in formated durations if true.
+    calendar: Allow time units larger than hours in formatted durations if true.
       Durations specifying hours or smaller units are exact across daylight
       savings time boundaries. On by default. Use calendar=false to disable.
       For example, if `calendar=true` then at the daylight savings boundary
@@ -457,13 +465,16 @@ def TransformEncode(r, encoding, undefined=''):
   Returns:
     The encoded resource.
   """
-  # Some codecs support 'replace', all support 'strict' (the default).
-  for errors in ('replace', 'strict'):
+  if encoding == 'base64':
     try:
-      return r.encode(encoding, errors).rstrip('\n')
+      b = base64.b64encode(console_attr.EncodeToBytes(r))
+      return console_attr.SafeText(b).rstrip('\n')
     except:  # pylint: disable=bare-except, undefined for any exception
-      pass
-  return undefined
+      return undefined
+  try:
+    return console_attr.SafeText(r, encoding)
+  except:  # pylint: disable=bare-except, undefined for any exception
+    return undefined
 
 
 def TransformEnum(r, projection, enums, inverse=False, undefined=''):
@@ -487,7 +498,7 @@ def TransformEnum(r, projection, enums, inverse=False, undefined=''):
     if normal:
       # Create the inverse dict and memoize it in projection.symbols.
       descriptions = {}
-      for k, v in normal.iteritems():
+      for k, v in six.iteritems(normal):
         descriptions[v] = k
       projection.symbols[type_name] = descriptions
   return descriptions.get(r, undefined) if descriptions else undefined
@@ -505,25 +516,24 @@ def TransformError(r, message=None):
     Error: This will not generate a stack trace.
   """
   if message is None:
-    message = unicode(r)
+    message = six.text_type(r)
   raise resource_exceptions.Error(message)
 
 
 def TransformExtract(r, *keys):
-  """Extract an ordered list of values from the resource for the specified keys.
+  """Extract a list of non-empty values for the specified resource keys.
 
   Args:
     r: A JSON-serializable object.
-    *keys: The list of keys in the resource whose associated values will be
+    *keys: The list of keys in the resource whose non-empty values will be
         included in the result.
 
   Returns:
-    The list of extracted values.
+    The list of extracted values with empty / null values omitted.
   """
   try:
-    # Use undefined=TransformExtract to test if k is in r.
-    values = [GetKeyValue(r, k, TransformExtract) for k in keys]
-    return [v for v in values if v is not TransformExtract]
+    values = [GetKeyValue(r, k, None) for k in keys]
+    return [v for v in values if v]
   except TypeError:
     return []
 
@@ -539,8 +549,38 @@ def TransformFatal(r, message=None):
   Raises:
     InternalError: This generates a stack trace.
   """
-  raise resource_exceptions.InternalError(message if message is not None
-                                          else str(r))
+  raise resource_exceptions.InternalError(
+      message if message is not None else six.text_type(r))
+
+
+def TransformFilter(r, expression):
+  """Selects elements of r that match the filter expression.
+
+  Args:
+    r: A JSON-serializable object.
+    expression: The filter expression to apply to r.
+
+  Returns:
+    The elements of r that match the filter expression.
+
+  Example:
+    x.filter("key:val") selects elements of r that have 'key' fields containing
+    'val'.
+  """
+
+  # import loop
+  from googlecloudsdk.core.resource import resource_filter  # pylint: disable=g-import-not-at-top
+
+  if not r:
+    return r
+  select = resource_filter.Compile(expression).Evaluate
+  if not resource_property.IsListLike(r):
+    return r if select(r) else ''
+  transformed = []
+  for item in r:
+    if select(item):
+      transformed.append(item)
+  return transformed
 
 
 def TransformFirstOf(r, *keys):
@@ -563,6 +603,50 @@ def TransformFirstOf(r, *keys):
     if v is not None:
       return v
   return ''
+
+
+def TransformFlatten(r, show='', undefined='', separator=','):
+  """Formats nested dicts and/or lists into a compact comma separated list.
+
+  Args:
+    r: A JSON-serializable object.
+    show: If show=*keys* then list dict keys; if show=*values* then list dict
+      values; otherwise list dict key=value pairs.
+    undefined: Return this if the resource is empty.
+    separator: The list item separator string.
+
+  Returns:
+    The key=value pairs for a dict or list values for a list, separated by
+    separator. Returns undefined if r is empty, or r if it is not a dict or
+    list.
+
+  Example:
+    `--format="table(field.map(2).list().map().list().list()"`:::
+    Expression with explicit flattening.
+    `--format="table(field.flatten()"`:::
+    Equivalent expression using .flatten().
+  """
+
+  def Flatten(x):
+    return TransformFlatten(
+        x, show=show, undefined=undefined, separator=separator)
+
+  if isinstance(r, dict):
+    if show == 'keys':
+      r = separator.join(
+          [six.text_type(k) for k in sorted(r)])
+    elif show == 'values':
+      r = separator.join(
+          [Flatten(v) for _, v in sorted(six.iteritems(r))])
+    else:
+      r = separator.join(
+          ['{k}={v}'.format(k=k, v=Flatten(v))
+           for k, v in sorted(six.iteritems(r))])
+  if r and isinstance(r, list):
+    if isinstance(r[0], (dict, list)):
+      r = [Flatten(v) for v in r]
+    return separator.join(map(six.text_type, r))
+  return r or undefined
 
 
 def TransformFloat(r, precision=6, spec=None, undefined=''):
@@ -662,7 +746,7 @@ def TransformGroup(r, *keys):
   """
   if not r:
     return '[]'
-  buf = StringIO.StringIO()
+  buf = io.StringIO()
   sep = None
   parsed_keys = [_GetParsedKey(key) for key in keys]
   for item in r:
@@ -671,7 +755,7 @@ def TransformGroup(r, *keys):
     else:
       sep = ' '
     if not parsed_keys:
-      buf.write('[{0}]'.format(unicode(item)))
+      buf.write('[{0}]'.format(six.text_type(item)))
     else:
       buf.write('[')
       sub = None
@@ -683,7 +767,7 @@ def TransformGroup(r, *keys):
           sub = ': '
         value = resource_property.Get(item, key, None)
         if value is not None:
-          buf.write(unicode(value))
+          buf.write(six.text_type(value))
       buf.write(']')
   return buf.getvalue()
 
@@ -742,7 +826,7 @@ def TransformJoin(r, sep='/', undefined=''):
     Returns "a!b!c!d".
   """
   try:
-    parts = [unicode(i) for i in r]
+    parts = [six.text_type(i) for i in r]
     return sep.join(parts) or undefined
   except (AttributeError, TypeError):
     return undefined
@@ -780,14 +864,15 @@ def TransformList(r, show='', undefined='', separator=','):
   """
   if isinstance(r, dict):
     if show == 'keys':
-      return separator.join([unicode(k) for k in sorted(r)])
+      return separator.join([six.text_type(k) for k in sorted(r)])
     elif show == 'values':
-      return separator.join([unicode(v) for _, v in sorted(r.iteritems())])
+      return separator.join(
+          [six.text_type(v) for _, v in sorted(six.iteritems(r))])
     else:
-      return separator.join([u'{k}={v}'.format(k=k, v=v)
-                             for k, v in sorted(r.iteritems())])
+      return separator.join(['{k}={v}'.format(k=k, v=v)
+                             for k, v in sorted(six.iteritems(r))])
   if isinstance(r, list):
-    return separator.join(map(unicode, r))
+    return separator.join(map(six.text_type, r))
   return r or undefined
 
 
@@ -795,14 +880,18 @@ def TransformMap(r, depth=1):
   """Applies the next transform in the sequence to each resource list item.
 
   Example:
-    `list_field.map().foo().list()`:::
+    ```list_field.map().foo().list()```:::
     Applies foo() to each item in list_field and then list() to the resulting
     value to return a compact comma-separated list.
-    `list_field.map().foo().map().bar()`:::
+    ```list_field.*foo().list()```:::
+    ```*``` is shorthand for map().
+    ```list_field.map().foo().map().bar()```:::
     Applies foo() to each item in list_field and then bar() to each item in the
     resulting list.
-    `abc.xyz.map(2).foo()`:::
+    ```abc.xyz.map(2).foo()```:::
     Applies foo() to each item in xyz[] for all items in abc[].
+    ```abc.xyz.**foo()```:::
+    ```**``` is shorthand for map(2).
 
   Args:
     r: A resource.
@@ -900,14 +989,16 @@ def TransformScope(r, *args):
       component in r if none found.
 
   Example:
-    `"https://abc/foo/projects/bar/xyz".scope("projects")`:::
+    `"http://abc/foo/projects/bar/xyz".scope("projects")`:::
     Returns "bar/xyz".
-    `"https://xyz/foo/regions/abc".scope()`:::
+    `"http://xyz/foo/regions/abc".scope()`:::
     Returns "abc".
   """
   if not r:
     return ''
-  r = urllib2.unquote(unicode(r))
+  # pylint: disable=too-many-function-args
+  r = urllib.parse.unquote(six.text_type(r))
+  # pylint: enable=too-many-function-args
   if '/' not in r:
     return r
   # Checking for regions and/or zones is the most common use case.
@@ -933,7 +1024,9 @@ def TransformSegment(r, index=-1, undefined=''):
   """
   if not r:
     return undefined
-  r = urllib2.unquote(unicode(r))
+  # pylint: disable=too-many-function-args
+  r = urllib.parse.unquote(six.text_type(r))
+  # pylint: enable=too-many-function-args
   segments = r.split('/')
   try:
     return segments[int(index)] or undefined
@@ -1245,9 +1338,9 @@ def TransformUri(r, undefined='.'):
       attr = attr()
     except TypeError:
       pass
-    return attr if isinstance(attr, (basestring, buffer)) else None
+    return attr if isinstance(attr, six.string_types) else None
 
-  if isinstance(r, (basestring, buffer)):
+  if isinstance(r, six.string_types):
     if r.startswith('https://'):
       return r
   elif r:
@@ -1273,6 +1366,32 @@ def TransformYesNo(r, yes=None, no='No'):
   return (r if yes is None else yes) if r else no
 
 
+def TransformRegex(r, expression, does_match=None, nomatch=''):
+  """Returns does_match or r itself if r matches expression, nomatch otherwise.
+
+  Args:
+    r: A String.
+    expression: expression to apply to r.
+    does_match: If the string matches expression then return _does_match_
+      otherwise return the string itself if _does_match_ is not defined.
+    nomatch: Returns this value if the string does not match expression.
+
+  Returns:
+    does_match or r if r matches expression, nomatch otherwise.
+  """
+  if not r:
+    return nomatch
+
+  try:
+    if expression:
+      match_re = re.compile(expression)
+      if match_re.match(r):
+        return does_match or r
+  except (AttributeError, TypeError, ValueError):
+    pass  # Just return default
+
+  return nomatch
+
 # The builtin transforms.
 _BUILTIN_TRANSFORMS = {
     'always': TransformAlways,
@@ -1288,7 +1407,9 @@ _BUILTIN_TRANSFORMS = {
     'error': TransformError,
     'extract': TransformExtract,
     'fatal': TransformFatal,
+    'filter': TransformFilter,
     'firstof': TransformFirstOf,
+    'flatten': TransformFlatten,
     'float': TransformFloat,
     'format': TransformFormat,
     'group': TransformGroup,
@@ -1299,6 +1420,7 @@ _BUILTIN_TRANSFORMS = {
     'list': TransformList,
     'map': TransformMap,
     'notnull': TransformNotNull,
+    'regex': TransformRegex,
     'resolution': TransformResolution,
     'scope': TransformScope,
     'segment': TransformSegment,
@@ -1327,6 +1449,7 @@ _API_TO_TRANSFORMS = {
                   'GetTransforms'),
     'runtimeconfig': ('googlecloudsdk.api_lib.runtime_config.transforms',
                       'GetTransforms'),
+    'dns': ('googlecloudsdk.command_lib.dns.dns_keys', 'GetTransforms'),
 }
 
 

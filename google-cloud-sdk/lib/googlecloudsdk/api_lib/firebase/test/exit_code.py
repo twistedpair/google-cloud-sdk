@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,6 +19,10 @@ Note: Cloud-SDK-eng is reserving exit codes 1..9 for http errors, invalid args,
 bad filename, etc. Gcloud command surfaces are free to use exit codes 10..20.
 Gaps in exit_code numbering are left in case future expansion is needed.
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -54,7 +59,8 @@ def ExitCodeFromRollupOutcome(outcome, summary_enum):
   if not outcome or not outcome.summary:
     log.warning('Tool Results service did not provide a roll-up test outcome.')
     return INCONCLUSIVE
-  if outcome.summary == summary_enum.success:
+  if (outcome.summary == summary_enum.success
+      or outcome.summary == summary_enum.flaky):
     return ROLLUP_SUCCESS
   if outcome.summary == summary_enum.failure:
     return ROLLUP_FAILURE

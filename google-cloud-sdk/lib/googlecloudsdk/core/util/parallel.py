@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,12 +35,22 @@ The general usage is as follows:
 Errors are raised at the time of the Get() call on the future (which is implicit
 for Apply() and Map()).
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 import pickle
-import Queue
 import sys
 import threading
 import time
+
+from googlecloudsdk.core import exceptions
+import six
+from six.moves import map  # pylint: disable=redefined-builtin
+from six.moves import queue   # pylint: disable=redefined-builtin
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 ################################################################################
@@ -62,6 +73,7 @@ class InvalidStateException(Exception):
     super(InvalidStateException, self).__init__(msg)
 
 
+@six.add_metaclass(abc.ABCMeta)
 class BasePool(object):
   """Base class for parallel pools.
 
@@ -72,8 +84,6 @@ class BasePool(object):
   >>> with pool:
   ...  assert pool.Map(str, [1, 2, 3]) == ['1', '2', '3']
   """
-
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def Start(self):
@@ -93,6 +103,21 @@ class BasePool(object):
     """Applies func to each element in iterable and return a future."""
     return _MultiFuture([self.ApplyAsync(func, (arg,)) for arg in iterable])
 
+  def MapEagerFetch(self, func, iterable):
+    """Applies func to each element in iterable and return a generator.
+
+    The generator yields the result immediately after the task is done. So
+    result for faster task will be yielded earlier than for slower task.
+
+    Args:
+      func: a function object
+      iterable: an iterable object and each element is the arguments to func
+
+    Returns:
+      A generator to produce the results.
+    """
+    return self.MapAsync(func, iterable).GetResultsEagerFetch()
+
   def Apply(self, func, args):
     """Applies func to args and returns the result."""
     return self.ApplyAsync(func, args).Get()
@@ -110,16 +135,19 @@ class BasePool(object):
     self.Join()
 
 
+@six.add_metaclass(abc.ABCMeta)
 class BaseFuture(object):
   """A future object containing a value that may not be available yet."""
-
-  __metaclass__ = abc.ABCMeta
 
   def Get(self):
     return self.GetResult().GetOrRaise()
 
   @abc.abstractmethod
   def GetResult(self):
+    raise NotImplementedError
+
+  @abc.abstractmethod
+  def Done(self):
     raise NotImplementedError
 
 
@@ -155,7 +183,7 @@ class _Result(object):
     elif self.error:
       raise self.error  # pylint: disable=raising-bad-type
     else:
-      raise self.exc_info[0], self.exc_info[1], self.exc_info[2]
+      exceptions.reraise(self.exc_info[1], tb=self.exc_info[2])
 
   def ToPickleableResult(self):
     """Return a pickleable version of this _Result.
@@ -178,7 +206,7 @@ class _Result(object):
     except Exception as err:  # pylint: disable=broad-except
       return _Result(error=pickle.PicklingError(
           "Couldn't pickle result [{0}]: {1}".format(
-              pickleable_result, str(err))))
+              pickleable_result, six.text_type(err))))
     return pickleable_result
 
   def __str__(self):
@@ -190,8 +218,10 @@ class MultiError(Exception):
 
   def __init__(self, errors):
     self.errors = errors
+    fn = lambda e: '{}: {}'.format(type(e).__name__, six.text_type(e))
     super(MultiError, self).__init__(
-        'One or more errors occurred:\n' + '\n\n'.join(map(unicode, errors)))
+        'One or more errors occurred:\n' +
+        '\n\n'.join(map(fn, errors)))
 
 
 class _MultiFuture(BaseFuture):
@@ -217,6 +247,32 @@ class _MultiFuture(BaseFuture):
     if errors:
       return _Result(error=MultiError(errors))
     return _Result(value=(results,))
+
+  def Done(self):
+    return  all([future.Done() for future in self.futures])
+
+  def GetResultsEagerFetch(self):
+    """Collect the results of futures.
+
+    Results are yielded immediately after the task is done. So
+    result for faster task will be yielded earlier than for slower task.
+
+    Yields:
+      result which is done.
+    """
+    uncollected_future = self.futures
+    while uncollected_future:
+      next_uncollected_future = []
+      for future in uncollected_future:
+        if future.Done():
+          try:
+            yield future.Get()
+          except Exception as err:  # pylint: disable=broad-except
+            yield err
+        else:
+          next_uncollected_future.append(future)
+      uncollected_future = next_uncollected_future
+      time.sleep(_POLL_INTERVAL)
 
 
 class _Task(object):
@@ -254,6 +310,9 @@ class _DummyFuture(BaseFuture):
 
   def GetResult(self):
     return self.result
+
+  def Done(self):
+    return True
 
 
 class DummyPool(BasePool):
@@ -310,6 +369,10 @@ class _ThreadFuture(BaseFuture):
         return self._results_map[self._task]
       time.sleep(_POLL_INTERVAL)
 
+  def Done(self):
+    """Return True if the task finished with or without errors."""
+    return self._task in self._results_map
+
 
 class _ThreadTask(object):
 
@@ -342,7 +405,7 @@ class ThreadPool(BasePool):
 
   def __init__(self, num_threads):
     self.num_threads = num_threads
-    self._task_queue = Queue.Queue()
+    self._task_queue = queue.Queue()
     self.worker_threads = []
     self._results_map = {}
 

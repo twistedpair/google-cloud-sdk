@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,18 +21,26 @@ module lets you do operations on snapshots like getting dependency closures,
 as well as diff'ing snapshots.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import collections
 import json
 import os
 import re
 import ssl
-import urllib2
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import schemas
+from googlecloudsdk.core.util import encoding
+from googlecloudsdk.core.util import files
+
+import six
+from six.moves import urllib
 
 
 class Error(exceptions.Error):
@@ -128,8 +137,7 @@ class ComponentSnapshot(object):
     Returns:
       A ComponentSnapshot object
     """
-    with open(snapshot_file) as input_file:
-      data = json.load(input_file)
+    data = json.load(files.FileReader(snapshot_file))
     # Windows paths will start with a drive letter so they need an extra '/' up
     # front.  Also, URLs must only have forward slashes to work correctly.
     url = ('file://' +
@@ -190,7 +198,7 @@ class ComponentSnapshot(object):
     extra_repo = url if is_extra_repo else None
     try:
       response = installers.ComponentInstaller.MakeRequest(url, command_path)
-    except (urllib2.HTTPError, urllib2.URLError, ssl.SSLError):
+    except (urllib.error.HTTPError, urllib.error.URLError, ssl.SSLError):
       log.debug('Could not fetch [{url}]'.format(url=url), exc_info=True)
       response = None
     except ValueError as e:
@@ -204,8 +212,9 @@ class ComponentSnapshot(object):
     code = response.getcode()
     if code and code != 200:
       raise URLFetchError(code=code, extra_repo=extra_repo)
+    response_text = encoding.Decode(response.read())
     try:
-      data = json.loads(response.read())
+      data = json.loads(response_text)
       return data
     except ValueError as e:
       log.debug('Failed to parse snapshot [{}]: {}'.format(url, e))
@@ -290,12 +299,12 @@ class ComponentSnapshot(object):
     deps = dict((c.id, set(c.dependencies)) for c in sdk_definition.components)
     self.__dependencies = {}
     # Prune out unknown dependencies
-    for comp, dep_ids in deps.iteritems():
+    for comp, dep_ids in six.iteritems(deps):
       self.__dependencies[comp] = set(dep_id for dep_id in dep_ids
                                       if dep_id in deps)
 
     self.__consumers = dict((id, set()) for id in self.__dependencies)
-    for component_id, dep_ids in self.__dependencies.iteritems():
+    for component_id, dep_ids in six.iteritems(self.__dependencies):
       for dep_id in dep_ids:
         self.__consumers[dep_id].add(component_id)
 
@@ -368,7 +377,7 @@ class ComponentSnapshot(object):
     Returns:
       set(str), The matching component ids.
     """
-    return set(c_id for c_id, component in self.components.iteritems()
+    return set(c_id for c_id, component in six.iteritems(self.components)
                if component.platform.Matches(platform_filter))
 
   def DependencyClosureForComponents(self, component_ids, platform_filter=None):
@@ -463,10 +472,14 @@ class ComponentSnapshot(object):
       deps = [self.ComponentFromId(d)
               for d in self.__dependencies[component_id]]
       deps = [d for d in deps
-              if d.platform.Matches(platform_filter) and d.is_hidden and d.data]
+              if d.platform.Matches(platform_filter) and
+              d.is_hidden and d.data]
       for d in deps:
-        size += d.data.size
-
+        # If we get here, the component has a data section. The size should
+        # always be populated, but sometimes in the local state the size is
+        # deleted from the cached snapshot. The size data is not critical, so
+        # just substitute in 0 if we can't find the size so things don't crash.
+        size += d.data.size or 0
     return size
 
   def CreateDiff(self, latest_snapshot, platform_filter=None):
@@ -511,8 +524,8 @@ class ComponentSnapshot(object):
             .format(component_id,
                     ','.join([c['id'] for c in sdk_def_dict['components']])))
       if 'data' in component_dict[0]:
-        # Remove non-esential/random parts from component data.
-        for f in component_dict[0]['data'].keys():
+        # Remove non-essential/random parts from component data.
+        for f in list(component_dict[0]['data'].keys()):
           if f not in ('contents_checksum', 'type', 'source'):
             del component_dict[0]['data'][f]
         # Source field is required for global snapshot, but is not for
@@ -520,12 +533,11 @@ class ComponentSnapshot(object):
         component_dict[0]['data']['source'] = ''
       sdk_def_dict['components'] = component_dict
       # Remove unnecessary artifacts from snapshot.
-      for key in sdk_def_dict.keys():
+      for key in list(sdk_def_dict.keys()):
         if key not in ('components', 'schema_version', 'revision', 'version'):
           del sdk_def_dict[key]
-    with open(path, 'w') as fp:
-      json.dump(sdk_def_dict,
-                fp, indent=2, sort_keys=True)
+    files.WriteFileContents(
+        path, json.dumps(sdk_def_dict, indent=2, sort_keys=True))
 
 
 class ComponentSnapshotDiff(object):
@@ -673,7 +685,7 @@ class ComponentSnapshotDiff(object):
     Returns:
       set of str, The component ids that should be removed.
     """
-    installed_components = self.current.components.keys()
+    installed_components = list(self.current.components.keys())
     local_connected = self.current.ConnectedComponents(
         update_seed, platform_filter=self.__platform_filter)
     all_required = self.latest.DependencyClosureForComponents(

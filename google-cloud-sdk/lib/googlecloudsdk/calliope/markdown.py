@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,21 +15,26 @@
 
 """The Calliope command help document markdown generator."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
-import argparse
+import io
 import re
-import StringIO
 import textwrap
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core.console import console_io
+import six
 
 
 _SPLIT = 78  # Split lines longer than this.
 _SECTION_INDENT = 8  # Section or list within section indent.
 _FIRST_INDENT = 2  # First line indent.
 _SUBSEQUENT_INDENT = 6  # Subsequent line indent.
+_HANGING_OFFSET = 2  # Used to create hanging indentation using markdown.
 
 
 def _GetIndexFromCapsule(capsule):
@@ -45,7 +51,7 @@ def _GetIndexFromCapsule(capsule):
     The help doc index line for a capsule line.
   """
   # Strip leading tags: <markdown>(TAG)<markdown> or <markdown>[TAG]<markdown>.
-  capsule = re.sub(r'(\*?[[(][A-Z]+[])]\*? +)*', '', capsule)
+  capsule = re.sub(r'(\*?[\[(][A-Z]+[\])]\*? +)*', '', capsule)
   # Lower case first word if not an abbreviation.
   match = re.match(r'([A-Z])([^A-Z].*)', capsule)
   if match:
@@ -167,7 +173,7 @@ class ExampleCommandLineSplitter(object):
     return ''.join(lines)
 
 
-class MarkdownGenerator(object):
+class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
   """Command help markdown document generator base class.
 
   Attributes:
@@ -186,8 +192,6 @@ class MarkdownGenerator(object):
     _release_track: The calliope.base.ReleaseTrack.
   """
 
-  __metaclass__ = abc.ABCMeta
-
   def __init__(self, command_path, release_track, is_hidden):
     """Constructor.
 
@@ -198,8 +202,10 @@ class MarkdownGenerator(object):
     """
     self._command_path = command_path
     self._command_name = ' '.join(self._command_path)
+    self._subcommands = None
+    self._subgroups = None
     self._top = self._command_path[0] if self._command_path else ''
-    self._buf = StringIO.StringIO()
+    self._buf = io.StringIO()
     self._out = self._buf.write
     self._capsule = ''
     self._docstring = ''
@@ -293,6 +299,7 @@ class MarkdownGenerator(object):
         man_name=self._file_name,
         top_command=self._top,
         parent_command=' '.join(self._command_path[:-1]),
+        grandparent_command=' '.join(self._command_path[:-2]),
         index=self._capsule,
         **self._sections
     )
@@ -407,21 +414,23 @@ class MarkdownGenerator(object):
 
     self._out('\n')
 
-  def _PrintArgDefinition(self, arg, depth=0):
+  def _PrintArgDefinition(self, arg, depth=0, single=False):
     """Prints a positional or flag arg definition list item at depth."""
-    self._out(u'\n{usage}{depth}\n'.format(
-        usage=usage_text.GetArgUsage(arg, definition=True, markdown=True),
-        depth=':' * (depth + 2)))
-    if arg.is_required and depth:
-      modal = (' This {arg_type} must be specified if any of the other '
+    usage = usage_text.GetArgUsage(arg, definition=True, markdown=True)
+    if not usage:
+      return
+    self._out('\n{usage}{depth}\n'.format(
+        usage=usage, depth=':' * (depth + _HANGING_OFFSET)))
+    if arg.is_required and depth and not single:
+      modal = ('\nThis {arg_type} must be specified if any of the other '
                'arguments in this group are specified.').format(
                    arg_type=self._ArgTypeName(arg))
     else:
       modal = ''
-    self._out(u'\n{details}{modal}\n'.format(details=self.GetArgDetails(arg),
-                                             modal=modal))
+    self._out('\n{details}{modal}\n'.format(
+        details=self.GetArgDetails(arg, depth=depth), modal=modal))
 
-  def _PrintArgGroup(self, arg, depth=0):
+  def _PrintArgGroup(self, arg, depth=0, single=False):
     """Prints an arg group definition list at depth."""
 
     args = sorted(arg.arguments, key=usage_text.GetArgSortKey)
@@ -431,6 +440,7 @@ class MarkdownGenerator(object):
         heading.append(arg.help)
       if len(args) == 1 or args[0].is_required:
         if arg.is_required:
+          # TODO (b/77314072): Put this before (NOTE) section in resource args.
           heading.append('This must be specified.')
       elif arg.is_mutex:
         if arg.is_required:
@@ -440,38 +450,46 @@ class MarkdownGenerator(object):
       elif arg.is_required:
         heading.append('At least one of these must be specified:')
     for a in args:
-      if a.is_hidden or a.help == argparse.SUPPRESS:
+      if a.is_hidden:
         continue
       if heading:
-        self._out('\n{0} {1}\n\n'.format(':' * (depth + 2), ' '.join(heading)))
+        self._out('\n{0} {1}\n\n'.format(':' * (depth + _HANGING_OFFSET),
+                                         ' '.join(heading)))
         heading = None
         depth += 1
       if a.is_group:
+        single = False
         singleton = usage_text.GetSingleton(a)
         if singleton:
-          a = singleton
+          if not a.help:
+            a = singleton
+          else:
+            single = True
       if a.is_group:
-        self._PrintArgGroup(a, depth=depth)
+        self._PrintArgGroup(a, depth=depth, single=single)
       else:
-        self._PrintArgDefinition(a, depth=depth)
+        self._PrintArgDefinition(a, depth=depth, single=single)
 
-  def PrintPositionalDefinition(self, arg):
-    self._out('\n{0}::\n'.format(
-        usage_text.GetPositionalUsage(arg, markdown=True)))
+  def PrintPositionalDefinition(self, arg, depth=0):
+    self._out('\n{usage}{depth}\n'.format(
+        usage=usage_text.GetPositionalUsage(arg, markdown=True),
+        depth=':' * (depth + _HANGING_OFFSET)))
     self._out('\n{arghelp}\n'.format(arghelp=self.GetArgDetails(arg)))
 
-  def PrintFlagDefinition(self, flag, disable_header=False):
+  def PrintFlagDefinition(self, flag, disable_header=False, depth=0):
     """Prints a flags definition list item.
 
     Args:
       flag: The flag object to display.
       disable_header: Disable printing the section header if True.
+      depth: The indentation depth at which to print arg help text.
     """
     if not disable_header:
       self._out('\n')
-    self._out('{0}::\n'.format(
-        usage_text.GetFlagUsage(flag, markdown=True)))
-    self._out(u'\n{arghelp}\n'.format(arghelp=self.GetArgDetails(flag)))
+    self._out('{usage}{depth}\n'.format(
+        usage=usage_text.GetFlagUsage(flag, markdown=True),
+        depth=':' * (depth + _HANGING_OFFSET)))
+    self._out('\n{arghelp}\n'.format(arghelp=self.GetArgDetails(flag)))
 
   def PrintFlagSection(self, heading, arg, disable_header=False):
     """Prints a flag section.
@@ -552,7 +570,7 @@ class MarkdownGenerator(object):
       help_message = help_stuff
     if not disable_header:
       self.PrintSectionHeader(name)
-    self._out(u'{message}\n'.format(
+    self._out('{message}\n'.format(
         message=textwrap.dedent(help_message).strip()))
 
   def PrintExtraSections(self, disable_header=False):
@@ -591,7 +609,7 @@ class MarkdownGenerator(object):
     """
     # Determine if the section has any content.
     content = ''
-    for subcommand, help_info in sorted(subcommands.iteritems()):
+    for subcommand, help_info in sorted(six.iteritems(subcommands)):
       if self._is_hidden or not help_info.is_hidden:
         # If this group is already hidden, we can safely include hidden
         # sub-items.  Else, only include them if they are not hidden.
@@ -626,13 +644,13 @@ class MarkdownGenerator(object):
       if notes:
         self._out(notes + '\n\n')
 
-  def GetArgDetails(self, arg):
+  def GetArgDetails(self, arg, depth=0):
     """Returns the detailed help message for the given arg."""
     if getattr(arg, 'detailed_help', None):
       raise ValueError(
           '{}: Use add_argument(help=...) instead of detailed_help="""{}""".'
           .format(self._command_name, getattr(arg, 'detailed_help')))
-    return usage_text.GetArgDetails(arg)
+    return usage_text.GetArgDetails(arg, depth=depth)
 
   def _ExpandFormatReferences(self, doc):
     """Expand {...} references in doc."""
@@ -653,6 +671,11 @@ class MarkdownGenerator(object):
     if rep:
       doc = rep + doc[pos:]
     return doc
+
+  def _IsNotThisCommand(self, cmd):
+    # We should not include the link if it refers to the current page, per
+    # our research with screen readers. (See b/1723464.)
+    return '.'.join(cmd) != '.'.join(self._command_path)
 
   def _LinkMarkdown(self, doc, pat, with_args=True):
     """Build a representation of a doc, finding all command examples.
@@ -677,7 +700,7 @@ class MarkdownGenerator(object):
         break
       cmd, args = self._SplitCommandFromArgs(match.group('command').split(' '))
       lnk = self.FormatExample(cmd, args, with_args=with_args)
-      if lnk:
+      if self._IsNotThisCommand(cmd) and lnk:
         rep += doc[pos:match.start('command')] + lnk
       else:
         # Skip invalid commands.
@@ -771,14 +794,15 @@ class MarkdownGenerator(object):
     # are converted to unquoted strings with the _UserInput() font
     # embellishment. This is a subjective choice for aesthetically pleasing
     # renderings.
-    pat = re.compile(r"[^`](``([^`]*\w{2,}[^`']*)'')")
+    pat = re.compile(r"[^`](``([^`']*)'')")
     pos = 0
     rep = ''
-    while True:
-      match = pat.search(doc, pos)
-      if not match:
-        break
-      rep += doc[pos:match.start(1)] + self._UserInput(match.group(2))
+    for match in pat.finditer(doc):
+      if re.search(r'\w\w', match.group(2)):
+        quoted_string = self._UserInput(match.group(2))
+      else:
+        quoted_string = match.group(1)
+      rep += doc[pos:match.start(1)] + quoted_string
       pos = match.end(1)
     if rep:
       doc = rep + doc[pos:]
@@ -840,8 +864,6 @@ class CommandMarkdownGenerator(MarkdownGenerator):
     command.LoadAllSubElements()
     # pylint: disable=protected-access
     self._root_command = command._TopCLIElement()
-    self._subcommands = command.GetSubCommandHelps()
-    self._subgroups = command.GetSubGroupHelps()
     super(CommandMarkdownGenerator, self).__init__(
         command.GetPath(),
         command.ReleaseTrack(),

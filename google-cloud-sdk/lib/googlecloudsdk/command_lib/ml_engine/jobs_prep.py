@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,23 +16,29 @@
 
 The main entry point is UploadPythonPackages, which takes in parameters derived
 from the command line arguments and returns a list of URLs to be given to the
-Cloud ML Engine API. See its docstring for details.
+AI Platform API. See its docstring for details.
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 import collections
 import contextlib
-import cStringIO
+import io
 import os
 import sys
 import textwrap
 
 from googlecloudsdk.api_lib.storage import storage_util
-from googlecloudsdk.command_lib.ml_engine import flags
 from googlecloudsdk.command_lib.ml_engine import uploads
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
+import six
+from six.moves import map
 
 
 DEFAULT_SETUP_FILE = """\
@@ -40,11 +47,6 @@ from setuptools import setup
 if __name__ == '__main__':
     setup(name='{package_name}', packages=['{package_name}'])
 """
-
-
-_NO_PACKAGES_ERROR_MSG = (
-    'If `--package-path` is not specified, at least one Python package '
-    'must be specified via `--packages`.')
 
 
 class UploadFailureError(exceptions.Error):
@@ -73,10 +75,10 @@ class SysExecutableMissingError(UploadFailureError):
   """Error indicating that sys.executable was empty."""
 
   def __init__(self):
-    super(SysExecutableMissingError, self).__init__(textwrap.dedent("""\
+    super(SysExecutableMissingError, self).__init__(
+        textwrap.dedent("""\
         No Python executable found on path. A Python executable with setuptools
-        installed on the PYTHONPATH is required for building Cloud ML Engine
-        training jobs.
+        installed on the PYTHONPATH is required for building AI Platform training jobs.
         """))
 
 
@@ -107,6 +109,14 @@ class NoStagingLocationError(UploadFailureError):
   """No staging location was provided but one was required."""
 
 
+class InvalidSourceDirError(UploadFailureError):
+  """Error indicating that the source directory is invalid."""
+
+  def __init__(self, source_dir):
+    super(InvalidSourceDirError, self).__init__(
+        'Source directory [{}] is not a valid directory.'.format(source_dir))
+
+
 def _CopyIfNotWritable(source_dir, temp_dir):
   """Returns a writable directory with the same contents as source_dir.
 
@@ -124,8 +134,18 @@ def _CopyIfNotWritable(source_dir, temp_dir):
 
   Raises:
     UploadFailureError: if the command exits non-zero.
+    InvalidSourceDirError: if the source directory is not valid.
   """
-  if files.HasWriteAccessInDir(source_dir):
+  if not os.path.isdir(source_dir):
+    raise InvalidSourceDirError(source_dir)
+  # A race condition may cause a ValueError while checking for write access
+  # even if the directory was valid before.
+  try:
+    writable = files.HasWriteAccessInDir(source_dir)
+  except ValueError:
+    raise InvalidSourceDirError(source_dir)
+
+  if writable:
     return source_dir
 
   if files.IsDirAncestorOf(source_dir, temp_dir):
@@ -161,8 +181,7 @@ def _GenerateSetupPyIfNeeded(setup_py_path, package_name):
 
   setup_contents = DEFAULT_SETUP_FILE.format(package_name=package_name)
   log.info('Generating temporary setup.py file:\n%s', setup_contents)
-  with open(setup_py_path, 'w') as setup_file:
-    setup_file.write(setup_contents)
+  files.WriteFileContents(setup_py_path, setup_contents)
   return True
 
 
@@ -199,7 +218,7 @@ def _TempDirOrBackup(default_dir):
       temp_dir.__exit__(*sys.exc_info())
 
 
-class _SetupPyCommand(object):
+class _SetupPyCommand(six.with_metaclass(abc.ABCMeta, object)):
   """A command to run setup.py in a given environment.
 
   Includes the Python version to use and the arguments with which to run
@@ -211,8 +230,6 @@ class _SetupPyCommand(object):
     package_root: str, path to the directory containing the package to build
       (must be writable, or setuptools will fail)
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, setup_py_path, setup_py_args, package_root):
     self.setup_py_path = setup_py_path
@@ -253,15 +270,9 @@ class _CloudSdkPythonSetupPyCommand(_SetupPyCommand):
   """
 
   def GetArgs(self):
-    try:
-      return execution_utils.ArgsForPythonTool(self.setup_py_path,
-                                               *self.setup_py_args)
-    except ValueError:
-      # The most common cause of ValueError for ArgsForPythonTool is a missing
-      # executable; we want to display a more specific error in this case.
-      if not sys.executable:
-        raise SysExecutableMissingError()
-    raise
+    return execution_utils.ArgsForPythonTool(self.setup_py_path,
+                                             *self.setup_py_args,
+                                             python=GetPythonExecutable())
 
   def GetEnv(self):
     exec_env = os.environ.copy()
@@ -278,12 +289,19 @@ class _SystemPythonSetupPyCommand(_SetupPyCommand):
   """
 
   def GetArgs(self):
-    if not sys.executable:
-      raise SysExecutableMissingError()
-    return [sys.executable, self.setup_py_path] + self.setup_py_args
+    return [GetPythonExecutable(), self.setup_py_path] + self.setup_py_args
 
   def GetEnv(self):
     return None
+
+
+def GetPythonExecutable():
+  python_executable = None
+  try:
+    python_executable = execution_utils.GetPythonExecutable()
+  except ValueError:
+    raise SysExecutableMissingError()
+  return python_executable
 
 
 def _RunSetupTools(package_root, setup_py_path, output_dir):
@@ -362,7 +380,7 @@ def _RunSetupTools(package_root, setup_py_path, output_dir):
           setup_py_path, setup_py_args, package_root))
 
     for setup_py_command in setup_py_commands:
-      out = cStringIO.StringIO()
+      out = io.StringIO()
       return_code = setup_py_command.Execute(out)
       if not return_code:
         break
@@ -406,6 +424,7 @@ def BuildPackages(package_path, output_dir):
   Raises:
     SetuptoolsFailedError: If the setup.py file fails to successfully build.
     MissingInitError: If the package doesn't contain an `__init__.py` file.
+    InvalidSourceDirError: if the source directory is not valid.
   """
   package_path = os.path.abspath(package_path)
   package_root = os.path.dirname(package_path)
@@ -426,7 +445,7 @@ def BuildPackages(package_path, output_dir):
     try:
       return _RunSetupTools(package_root, setup_py_path, output_dir)
     except RuntimeError as err:
-      raise SetuptoolsFailedError(str(err), generated)
+      raise SetuptoolsFailedError(six.text_type(err), generated)
     finally:
       if generated:
         # For some reason, this artifact gets generated in the package root by
@@ -447,8 +466,8 @@ def _UploadFilesByPath(paths, staging_location):
   """Uploads files after validating and transforming input type."""
   if not staging_location:
     raise NoStagingLocationError()
-  counter = collections.Counter(map(os.path.basename, paths))
-  duplicates = [name for name, count in counter.iteritems() if count > 1]
+  counter = collections.Counter(list(map(os.path.basename, paths)))
+  duplicates = [name for name, count in six.iteritems(counter) if count > 1]
   if duplicates:
     raise DuplicateEntriesError(duplicates)
 
@@ -460,7 +479,7 @@ def _UploadFilesByPath(paths, staging_location):
 def UploadPythonPackages(packages=(), package_path=None, staging_location=None):
   """Uploads Python packages (if necessary), building them as-specified.
 
-  A Cloud ML Engine job needs one or more Python packages to run. These Python
+  An AI Platform job needs one or more Python packages to run. These Python
   packages can be specified in one of three ways:
 
     1. As a path to a local, pre-built Python package file.
@@ -469,15 +488,15 @@ def UploadPythonPackages(packages=(), package_path=None, staging_location=None):
     3. As a local Python source tree (the `--package-path` flag).
 
   In case 1, we upload the local files to Cloud Storage[1] and provide their
-  paths. These can then be given to the Cloud ML Engine API, which can fetch
+  paths. These can then be given to the AI Platform API, which can fetch
   these files.
 
   In case 2, we don't need to do anything. We can just send these paths directly
-  to the Cloud ML Engine API.
+  to the AI Platform API.
 
   In case 3, we perform a build using setuptools[2], and upload the resulting
   artifacts to Cloud Storage[1]. The paths to these artifacts can be given to
-  the Cloud ML Engine API. See the `BuildPackages` method.
+  the AI Platform API. See the `BuildPackages` method.
 
   These methods of specifying Python packages may be combined.
 
@@ -530,8 +549,6 @@ def UploadPythonPackages(packages=(), package_path=None, staging_location=None):
     # directory to still be around
     remote_paths.extend(_UploadFilesByPath(local_paths, staging_location))
 
-  if not remote_paths:
-    raise flags.ArgumentError(_NO_PACKAGES_ERROR_MSG)
   return remote_paths
 
 
@@ -539,10 +556,10 @@ def GetStagingLocation(job_id=None, staging_bucket=None, job_dir=None):
   """Get the appropriate staging location for the job given the arguments."""
   staging_location = None
   if staging_bucket:
-    staging_location = storage_util.ObjectReference(staging_bucket,
-                                                    job_id)
+    staging_location = storage_util.ObjectReference.FromBucketRef(
+        staging_bucket, job_id)
   elif job_dir:
-    staging_location = storage_util.ObjectReference(
-        job_dir.bucket_ref, '/'.join(filter(None, [job_dir.name.rstrip('/'),
-                                                   'packages'])))
+    staging_location = storage_util.ObjectReference.FromName(
+        job_dir.bucket, '/'.join([f for f in [job_dir.name.rstrip('/'),
+                                              'packages'] if f]))
   return staging_location

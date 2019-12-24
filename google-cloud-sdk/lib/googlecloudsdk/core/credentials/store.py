@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,24 +18,35 @@
 A detailed description of auth.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import datetime
 import json
 import os
 import textwrap
+import time
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import gce as c_gce
 from googlecloudsdk.core.util import files
+
 import httplib2
 from oauth2client import client
+from oauth2client import crypt
+from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
 from oauth2client.contrib import reauth_errors
+import six
+from six.moves import urllib
 
 
 GOOGLE_OAUTH2_PROVIDER_AUTHORIZATION_URI = (
@@ -43,6 +55,7 @@ GOOGLE_OAUTH2_PROVIDER_REVOKE_URI = (
     'https://accounts.google.com/o/oauth2/revoke')
 GOOGLE_OAUTH2_PROVIDER_TOKEN_URI = (
     'https://accounts.google.com/o/oauth2/token')
+_GRANT_TYPE = 'urn:ietf:params:oauth:grant-type:jwt-bearer'
 
 
 class Error(exceptions.Error):
@@ -68,7 +81,25 @@ class AuthenticationException(Error):
             message=message)))
 
 
-class NoCredentialsForAccountException(AuthenticationException):
+class PrintTokenAuthenticationException(Error):
+  """Exceptions that tell the users to run auth login."""
+
+  def __init__(self, message):
+    super(PrintTokenAuthenticationException, self).__init__(textwrap.dedent("""\
+        {message}
+        Please run:
+
+          $ gcloud auth login
+
+        to obtain new credentials.
+
+        For service account, please activate it first:
+
+          $ gcloud auth activate-service-account ACCOUNT""".format(
+              message=message)))
+
+
+class NoCredentialsForAccountException(PrintTokenAuthenticationException):
   """Exception for when no credentials are found for an account."""
 
   def __init__(self, account):
@@ -80,7 +111,11 @@ class NoCredentialsForAccountException(AuthenticationException):
 class NoActiveAccountException(AuthenticationException):
   """Exception for when there are no valid active credentials."""
 
-  def __init__(self):
+  def __init__(self, active_config_path=None):
+    if active_config_path:
+      if not os.path.exists(active_config_path):
+        log.warning('Could not open the configuration file: [%s].',
+                    active_config_path)
     super(NoActiveAccountException, self).__init__(
         'You do not currently have an active account selected.')
 
@@ -123,7 +158,12 @@ class InvalidCredentialFileException(Error):
   def __init__(self, f, e):
     super(InvalidCredentialFileException, self).__init__(
         'Failed to load credential file: [{f}].  {message}'
-        .format(f=f, message=str(e)))
+        .format(f=f, message=six.text_type(e)))
+
+
+class AccountImpersonationError(Error):
+  """Exception for when attempting to impersonate a service account fails."""
+  pass
 
 
 class CredentialFileSaveError(Error):
@@ -137,6 +177,13 @@ class FlowError(Error):
 
 class RevokeError(Error):
   """Exception for when there was a problem revoking."""
+
+
+class InvalidCodeVerifierError(Error):
+  """Exception for invalid code verifier for pkce."""
+
+
+IMPERSONATION_TOKEN_PROVIDER = None
 
 
 class StaticCredentialProviders(object):
@@ -249,13 +296,18 @@ def AvailableAccounts():
   return sorted(accounts)
 
 
-def LoadIfEnabled():
+def LoadIfEnabled(allow_account_impersonation=True):
   """Get the credentials associated with the current account.
 
   If credentials have been disabled via properties, this will return None.
   Otherwise it will load credentials like normal. If credential loading fails
   for any reason (including the user not being logged in), the usual exception
   is raised.
+
+  Args:
+    allow_account_impersonation: bool, True to allow use of impersonated service
+      account credentials (if that is configured). If False, the active user
+      credentials will always be loaded.
 
   Returns:
     The credentials or None. The only time None is returned is if credentials
@@ -272,16 +324,23 @@ def LoadIfEnabled():
   """
   if properties.VALUES.auth.disable_credentials.GetBool():
     return None
-  return Load()
+  return Load(allow_account_impersonation=allow_account_impersonation)
 
 
-def Load(account=None, scopes=None, prevent_refresh=False):
+def Load(account=None, scopes=None, prevent_refresh=False,
+         allow_account_impersonation=True):
   """Get the credentials associated with the provided account.
 
   This loads credentials regardless of whether credentials have been disabled
   via properties. Only use this when the functionality of the caller absolutely
   requires credentials (like printing out a token) vs logically requiring
   credentials (like for an http request).
+
+  Credential information may come from the stored credential file (representing
+  the last gcloud auth command), or the credential cache (representing the last
+  time the credentials were refreshed). If they come from the cache, the
+  token_response field will be None, as the full server response from the cached
+  request was not stored.
 
   Args:
     account: str, The account address for the credentials being fetched. If
@@ -291,6 +350,9 @@ def Load(account=None, scopes=None, prevent_refresh=False):
     prevent_refresh: bool, If True, do not refresh the access token even if it
         is out of date. (For use with operations that do not require a current
         access token, such as credential revocation.)
+    allow_account_impersonation: bool, True to allow use of impersonated service
+      account credentials (if that is configured). If False, the active user
+      credentials will always be loaded.
 
   Returns:
     oauth2client.client.Credentials, The specified credentials.
@@ -304,7 +366,30 @@ def Load(account=None, scopes=None, prevent_refresh=False):
         be reached.
     TokenRefreshError: If the credentials fail to refresh.
     TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
+    AccountImpersonationError: If impersonation is requested but an
+      impersonation provider is not configured.
   """
+  cred = _Load(account, scopes, prevent_refresh)
+  if not allow_account_impersonation:
+    return cred
+  impersonate_service_account = (
+      properties.VALUES.auth.impersonate_service_account.Get())
+  if not impersonate_service_account:
+    return cred
+  if not IMPERSONATION_TOKEN_PROVIDER:
+    raise AccountImpersonationError(
+        'gcloud is configured to impersonate service account [{}] but '
+        'impersonation support is not available.'
+        .format(impersonate_service_account))
+  log.warning(
+      'This command is using service account impersonation. All API calls will '
+      'be executed as [{}].'.format(impersonate_service_account))
+  return IMPERSONATION_TOKEN_PROVIDER.GetElevationAccessToken(
+      impersonate_service_account, scopes or config.CLOUDSDK_SCOPES)
+
+
+def _Load(account, scopes, prevent_refresh):
+  """Helper for Load()."""
   # If a credential file is set, just use that and ignore the active account
   # and whatever is in the credential store.
   cred_file_override = properties.VALUES.auth.credential_file_override.Get()
@@ -337,7 +422,7 @@ def Load(account=None, scopes=None, prevent_refresh=False):
     account = properties.VALUES.core.account.Get()
 
   if not account:
-    raise NoActiveAccountException()
+    raise NoActiveAccountException(named_configs.ActiveConfig(False).file_path)
 
   cred = STATIC_CREDENTIAL_PROVIDERS.GetCredentials(account)
   if cred is not None:
@@ -357,25 +442,124 @@ def Load(account=None, scopes=None, prevent_refresh=False):
   return cred
 
 
-def Refresh(credentials, http_client=None):
+def Refresh(credentials,
+            http_client=None,
+            is_impersonated_credential=False,
+            include_email=False,
+            gce_token_format='standard',
+            gce_include_license=False):
   """Refresh credentials.
 
   Calls credentials.refresh(), unless they're SignedJwtAssertionCredentials.
+  If the credentials correspond to a service account or impersonated credentials
+  issue an additional request to generate a fresh id_token.
 
   Args:
     credentials: oauth2client.client.Credentials, The credentials to refresh.
     http_client: httplib2.Http, The http transport to refresh with.
+    is_impersonated_credential: bool, True treat provided credential as an
+      impersonated service account credential. If False, treat as service
+      account or user credential. Needed to avoid circular dependency on
+      IMPERSONATION_TOKEN_PROVIDER.
+    include_email: bool, Specifies whether or not the service account email is
+      included in the identity token. Only applicable to impersonated service
+      account.
+    gce_token_format: str, Specifies whether or not the project and instance
+      details are included in the identity token. Choices are "standard",
+      "full".
+    gce_include_license: bool, Specifies whether or not license codes for images
+      associated with GCE instance are included in their identity tokens.
 
   Raises:
     TokenRefreshError: If the credentials fail to refresh.
     TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
   """
+  response_encoding = None if six.PY2 else 'utf-8'
+  request_client = http_client or http.Http(response_encoding=response_encoding)
   try:
-    credentials.refresh(http_client or http.Http())
+    credentials.refresh(request_client)
+
+    id_token = None
+    # Service accounts require an additional request to receive a fresh id_token
+    if is_impersonated_credential:
+      if not IMPERSONATION_TOKEN_PROVIDER:
+        raise AccountImpersonationError(
+            'gcloud is configured to impersonate a service account but '
+            'impersonation support is not available.')
+      if not IMPERSONATION_TOKEN_PROVIDER.IsImpersonationCredential(
+          credentials):
+        raise AccountImpersonationError(
+            'Invalid impersonation account for refresh {}'.format(credentials))
+      id_token = _RefreshImpersonatedAccountIdToken(
+          credentials, include_email=include_email)
+    # Service accounts require an additional request to receive a fresh id_token
+    elif isinstance(credentials, service_account.ServiceAccountCredentials):
+      id_token = _RefreshServiceAccountIdToken(credentials, request_client)
+    elif isinstance(credentials, oauth2client_gce.AppAssertionCredentials):
+      id_token = c_gce.Metadata().GetIdToken(
+          config.CLOUDSDK_CLIENT_ID,
+          token_format=gce_token_format,
+          include_license=gce_include_license)
+
+    if id_token:
+      if credentials.token_response:
+        credentials.token_response['id_token'] = id_token
+      credentials.id_tokenb64 = id_token
+
   except (client.AccessTokenRefreshError, httplib2.ServerNotFoundError) as e:
-    raise TokenRefreshError(e.message)
+    raise TokenRefreshError(six.text_type(e))
   except reauth_errors.ReauthError as e:
-    raise TokenRefreshReauthError(e.message)
+    raise TokenRefreshReauthError(str(e))
+
+
+def _RefreshImpersonatedAccountIdToken(cred, include_email):
+  """Get a fresh id_token for the given impersonated service account."""
+  # pylint: disable=protected-access
+  service_account_email = cred._service_account_id
+  return IMPERSONATION_TOKEN_PROVIDER.GetElevationIdToken(
+      service_account_email, config.CLOUDSDK_CLIENT_ID, include_email)
+  # pylint: enable=protected-access
+
+
+def _RefreshServiceAccountIdToken(cred, http_client):
+  """Get a fresh id_token for the given service account.
+
+  Args:
+    cred: ServiceAccountCredentials, service account for which to refresh the
+        id_token.
+    http_client: httplib2.Http, the http transport to refresh with.
+
+  Returns:
+    str, The id_token if refresh was successful. Otherwise None.
+  """
+  http_request = http_client.request
+
+  now = int(time.time())
+  # pylint: disable=protected-access
+  payload = {
+      'aud': cred.token_uri,
+      'iat': now,
+      'exp': now + cred.MAX_TOKEN_LIFETIME_SECS,
+      'iss': cred._service_account_email,
+      'target_audience': config.CLOUDSDK_CLIENT_ID,
+  }
+  assertion = crypt.make_signed_jwt(
+      cred._signer, payload, key_id=cred._private_key_id)
+
+  body = urllib.parse.urlencode({
+      'assertion': assertion,
+      'grant_type': _GRANT_TYPE,
+  })
+
+  resp, content = http_request(
+      cred.token_uri.encode('idna'), method='POST', body=body,
+      headers=cred._generate_refresh_request_headers())
+  # pylint: enable=protected-access
+  if resp.status == 200:
+    d = json.loads(content)
+    return d.get('id_token', None)
+  else:
+    return None
 
 
 def Store(credentials, account=None, scopes=None):
@@ -455,12 +639,18 @@ def Revoke(account=None):
         'This comes from your browser session and will not persist outside'
         'of your connected Cloud Shell session.')
 
-  rv = True
+  rv = False
   try:
-    RevokeCredentials(credentials)
+    if not account.endswith('.gserviceaccount.com'):
+      RevokeCredentials(credentials)
+      rv = True
   except client.TokenRevokeError as e:
     if e.args[0] == 'invalid_token':
-      rv = False
+      # Malformed or already revoked
+      pass
+    elif e.args[0] == 'invalid_request':
+      # Service account token
+      pass
     else:
       raise
 
@@ -506,6 +696,15 @@ def AcquireFromWebFlow(launch_browser=True,
   if client_secret is None:
     client_secret = properties.VALUES.auth.client_secret.Get(required=True)
 
+  code_verifier = properties.VALUES.auth.pkce_code_verifier.Get()
+  if code_verifier and not isinstance(code_verifier, six.binary_type):
+    # code_verifier should be a base64 encoded byte string,
+    # so ascii encoding should be enough.
+    try:
+      code_verifier = code_verifier.encode('ascii')
+    except UnicodeEncodeError:
+      raise InvalidCodeVerifierError('code verifier in auth/pkce_code_verifier '
+                                     'is invalid.')
   webflow = client.OAuth2WebServerFlow(
       client_id=client_id,
       client_secret=client_secret,
@@ -513,6 +712,8 @@ def AcquireFromWebFlow(launch_browser=True,
       user_agent=config.CLOUDSDK_USER_AGENT,
       auth_uri=auth_uri,
       token_uri=token_uri,
+      pkce=True,
+      code_verifier=code_verifier,
       prompt='select_account')
   return RunWebFlow(webflow, launch_browser=launch_browser)
 
@@ -581,16 +782,8 @@ def AcquireFromGCE(account=None):
       be reached.
     TokenRefreshError: If the credentials fail to refresh.
     TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
-    Error: If a non-default service account is used.
   """
-  default_account = c_gce.Metadata().DefaultAccount()
-  if account is None:
-    account = default_account
-  if account != default_account:
-    raise Error('Unable to use non-default GCE service accounts.')
-  # Metadata server does not yet provide multiple service accounts.
-
-  credentials = oauth2client_gce.AppAssertionCredentials()
+  credentials = oauth2client_gce.AppAssertionCredentials(email=account)
   Refresh(credentials)
   return credentials
 
@@ -626,13 +819,13 @@ def SaveCredentialsAsADC(credentials, file_path):
         credentials.user_agent,
         credentials.revoke_uri)
   try:
-    with files.OpenForWritingPrivate(file_path) as f:
-      json.dump(credentials.serialization_data, f, sort_keys=True,
-                indent=2, separators=(',', ': '))
-  except IOError as e:
+    contents = json.dumps(credentials.serialization_data, sort_keys=True,
+                          indent=2, separators=(',', ': '))
+    files.WriteFileContents(file_path, contents, private=True)
+  except files.Error as e:
     log.debug(e, exc_info=True)
     raise CredentialFileSaveError(
-        'Error saving Application Default Credentials: ' + str(e))
+        'Error saving Application Default Credentials: ' + six.text_type(e))
 
 
 class _LegacyGenerator(object):
@@ -709,9 +902,7 @@ class _LegacyGenerator(object):
       cred = self.credentials
       key = cred._private_key_pkcs12  # pylint: disable=protected-access
       password = cred._private_key_password  # pylint: disable=protected-access
-
-      with files.OpenForWritingPrivate(self._p12_key_path, binary=True) as pk:
-        pk.write(key)
+      files.WriteBinaryFileContents(self._p12_key_path, key, private=True)
 
       # the .boto file gets some different fields
       self._WriteFileContents(
@@ -732,10 +923,5 @@ class _LegacyGenerator(object):
       contents: str, The contents to write to the file.
     """
 
-    full_path = os.path.realpath(os.path.expanduser(filepath))
-
-    try:
-      with files.OpenForWritingPrivate(full_path) as cred_file:
-        cred_file.write(contents)
-    except (OSError, IOError) as e:
-      raise Exception('Failed to open %s for writing: %s' % (filepath, e))
+    full_path = os.path.realpath(files.ExpandHomeDir(filepath))
+    files.WriteFileContents(full_path, contents, private=True)

@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +15,21 @@
 
 """YAML format printer."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import collections
+import io
+
+from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_transform
+from googlecloudsdk.core.yaml import dict_like
+from googlecloudsdk.core.yaml import list_like
+
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 class YamlPrinter(resource_printer_base.ResourcePrinter):
@@ -24,8 +38,9 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
   [YAML](http://www.yaml.org), YAML ain't markup language.
 
   Printer attributes:
-    null=string: Display string instead of `null` for null/None values.
+    null="string": Display string instead of `null` for null/None values.
     no-undefined: Does not display resource data items with null values.
+    version=VERSION: Prints using the specified YAML version, default 1.2.
 
   For example:
 
@@ -49,9 +64,18 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
   def __init__(self, *args, **kwargs):
     super(YamlPrinter, self).__init__(*args, retain_none_values=True, **kwargs)
     # pylint:disable=g-import-not-at-top, Delay import for performance.
-    import yaml
-    self._yaml = yaml
+    from ruamel import yaml
+    self._yaml = yaml.YAML(typ='safe')
+    self._yaml.default_flow_style = False
+    self._yaml.old_indent = resource_printer_base.STRUCTURED_INDENTATION
+    self._yaml.allow_unicode = True
+    self._yaml.encoding = log.LOG_FILE_ENCODING
+
     null = self.attributes.get('null')
+    version = self.attributes.get('version')
+    # If no version specified, uses ruamel's default (1.2)
+    if version:
+      self._yaml.version = str(version)
 
     def _FloatPresenter(unused_dumper, data):
       return yaml.nodes.ScalarNode(
@@ -65,6 +89,9 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
         return dumper.represent_scalar('tag:yaml.org,2002:null', 'null')
       return dumper.represent_scalar('tag:yaml.org,2002:str', null)
 
+    def _OrderedDictPresenter(dumper, data):
+      return dumper.represent_mapping('tag:yaml.org,2002:map', data.items())
+
     def _UndefinedPresenter(dumper, data):
       r = repr(data)
       if r == '[]':
@@ -73,20 +100,18 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
         return dumper.represent_dict({})
       dumper.represent_undefined(data)
 
-    self._yaml.add_representer(float,
-                               _FloatPresenter,
-                               Dumper=yaml.dumper.SafeDumper)
-    self._yaml.add_representer(YamlPrinter._LiteralLines,
-                               _LiteralLinesPresenter,
-                               Dumper=yaml.dumper.SafeDumper)
-    self._yaml.add_representer(None,
-                               _UndefinedPresenter,
-                               Dumper=yaml.dumper.SafeDumper)
-    self._yaml.add_representer(type(None),
-                               _NullPresenter,
-                               Dumper=yaml.dumper.SafeDumper)
+    self._yaml.representer.add_representer(float,
+                                           _FloatPresenter)
+    self._yaml.representer.add_representer(YamlPrinter._LiteralLines,
+                                           _LiteralLinesPresenter)
+    self._yaml.representer.add_representer(None,
+                                           _UndefinedPresenter)
+    self._yaml.representer.add_representer(type(None),
+                                           _NullPresenter)
+    self._yaml.representer.add_representer(collections.OrderedDict,
+                                           _OrderedDictPresenter)
 
-  class _LiteralLines(unicode):
+  class _LiteralLines(six.text_type):
     """A yaml representer hook for literal strings containing newlines."""
 
   def _UpdateTypesForOutput(self, val):
@@ -98,13 +123,13 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
     Returns:
       An updated version of val.
     """
-    if isinstance(val, basestring) and '\n' in val:
+    if isinstance(val, six.string_types) and '\n' in val:
       return YamlPrinter._LiteralLines(val)
-    if isinstance(val, list):
+    if list_like(val):
       for i in range(len(val)):
         val[i] = self._UpdateTypesForOutput(val[i])
       return val
-    if isinstance(val, dict):
+    if dict_like(val):
       for key in val:
         val[key] = self._UpdateTypesForOutput(val[key])
       return val
@@ -117,10 +142,15 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
       record: A YAML-serializable Python object.
       delimit: Prints resource delimiters if True.
     """
+    stream = self._out
+    # In python 2, to dump unicode in ruamel, we need to use a byte stream,
+    # and handle the decoding ourselves. python 3 can handle it correctly.
+    if six.PY2 and  isinstance(self._out, io.StringIO):
+      stream = io.BytesIO()
     record = self._UpdateTypesForOutput(record)
-    self._yaml.safe_dump(
+    self._yaml.explicit_start = delimit
+    self._yaml.dump(
         record,
-        stream=self._out,
-        default_flow_style=False,
-        indent=resource_printer_base.STRUCTURED_INDENTATION,
-        explicit_start=delimit)
+        stream=stream)
+    if stream is not self._out:
+      self._out.write(stream.getvalue().decode(log.LOG_FILE_ENCODING))

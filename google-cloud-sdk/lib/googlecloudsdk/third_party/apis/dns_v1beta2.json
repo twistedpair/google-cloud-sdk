@@ -4,7 +4,7 @@
  "id": "dns:v1beta2",
  "name": "dns",
  "version": "v1beta2",
- "revision": "20170612",
+ "revision": "20191206",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -15,11 +15,11 @@
  },
  "documentationLink": "https://developers.google.com/cloud-dns",
  "protocol": "rest",
- "baseUrl": "https://www.googleapis.com/dns/v1beta2/projects/",
+ "baseUrl": "https://dns.googleapis.com/dns/v1beta2/projects/",
  "basePath": "/dns/v1beta2/projects/",
- "rootUrl": "https://www.googleapis.com/",
+ "rootUrl": "https://dns.googleapis.com/",
  "servicePath": "dns/v1beta2/projects/",
- "batchPath": "batch",
+ "batchPath": "batch/dns/v1beta2",
  "parameters": {
   "alt": {
    "type": "string",
@@ -56,12 +56,12 @@
   },
   "quotaUser": {
    "type": "string",
-   "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.",
+   "description": "An opaque string that represents a user for quota purposes. Must not exceed 40 characters.",
    "location": "query"
   },
   "userIp": {
    "type": "string",
-   "description": "IP address of the site where the request originates. Use this if you want to enforce per-user limits.",
+   "description": "Deprecated. Please use quotaUser instead.",
    "location": "query"
   }
  },
@@ -87,7 +87,7 @@
   "Change": {
    "id": "Change",
    "type": "object",
-   "description": "An atomic update to a collection of ResourceRecordSets.",
+   "description": "A Change represents a set of ResourceRecordSet additions and deletions applied atomically to a ManagedZone. ResourceRecordSets within a ManagedZone are modified by creating a new Change element in the Changes collection. In turn the Changes collection also records the past modifications to the ResourceRecordSets in a ManagedZone. The current state of the ManagedZone is the sum effect of applying all Change elements in the Changes collection in sequence.",
    "properties": {
     "additions": {
      "type": "array",
@@ -107,6 +107,10 @@
      "type": "string",
      "description": "Unique identifier for the resource; defined by the server (output only)."
     },
+    "isServing": {
+     "type": "boolean",
+     "description": "If the DNS queries for the zone will be served."
+    },
     "kind": {
      "type": "string",
      "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#change\".",
@@ -118,7 +122,7 @@
     },
     "status": {
      "type": "string",
-     "description": "Status of the operation (output only).",
+     "description": "Status of the operation (output only). A status of \"done\" means that the request to update the authoritative servers has been sent, but the servers might not be updated yet.",
      "enum": [
       "done",
       "pending"
@@ -289,7 +293,7 @@
     },
     "keyType": {
      "type": "string",
-     "description": "One of \"KEY_SIGNING\" or \"ZONE_SIGNING\". Keys of type KEY_SIGNING have the Secure Entry Point flag set and, when active, will be used to sign only resource record sets of type DNSKEY. Otherwise, the Secure Entry Point flag will be cleared and this key will be used to sign only resource record sets of other types.",
+     "description": "Specifies whether this is a key signing key (KSK) or a zone signing key (ZSK). Key signing keys have the Secure Entry Point flag set and, when active, will only be used to sign resource record sets of type DNSKEY. Zone signing keys do not have the Secure Entry Point flag set and will be used to sign all other types of resource record sets.",
      "enum": [
       "keySigning",
       "zoneSigning"
@@ -353,6 +357,10 @@
      "$ref": "ManagedZoneDnsSecConfig",
      "description": "DNSSEC configuration."
     },
+    "forwardingConfig": {
+     "$ref": "ManagedZoneForwardingConfig",
+     "description": "The presence for this field indicates that outbound forwarding is enabled for this zone. The value of this field contains the set of destinations to forward to."
+    },
     "id": {
      "type": "string",
      "description": "Unique identifier for the resource; defined by the server (output only)",
@@ -362,6 +370,13 @@
      "type": "string",
      "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZone\".",
      "default": "dns#managedZone"
+    },
+    "labels": {
+     "type": "object",
+     "description": "User labels.",
+     "additionalProperties": {
+      "type": "string"
+     }
     },
     "name": {
      "type": "string",
@@ -378,13 +393,21 @@
       "type": "string"
      }
     },
+    "peeringConfig": {
+     "$ref": "ManagedZonePeeringConfig",
+     "description": "The presence of this field indicates that DNS Peering is enabled for this zone. The value of this field contains the network to peer with."
+    },
     "privateVisibilityConfig": {
      "$ref": "ManagedZonePrivateVisibilityConfig",
-     "description": "For privately visible zones, the set of GCP resources that the zone is visible from."
+     "description": "For privately visible zones, the set of Virtual Private Cloud resources that the zone is visible from."
+    },
+    "reverseLookupConfig": {
+     "$ref": "ManagedZoneReverseLookupConfig",
+     "description": "The presence of this field indicates that this is a managed reverse lookup zone and Cloud DNS will resolve reverse lookup queries using automatically configured records for VPC resources. This only applies to networks listed under private_visibility_config."
     },
     "visibility": {
      "type": "string",
-     "description": "The zone's visibility: public zones are exposed to the Internet, while private zones are visible only to GCP resources.",
+     "description": "The zone's visibility: public zones are exposed to the Internet, while private zones are visible only to Virtual Private Cloud resources.",
      "enum": [
       "private",
       "public"
@@ -402,7 +425,7 @@
    "properties": {
     "defaultKeySpecs": {
      "type": "array",
-     "description": "Specifies parameters that will be used for generating initial DnsKeys for this ManagedZone. Output only while state is not OFF.",
+     "description": "Specifies parameters for generating initial DnsKeys for this ManagedZone. Can only be changed while the state is OFF.",
      "items": {
       "$ref": "DnsKeySpec"
      }
@@ -414,7 +437,7 @@
     },
     "nonExistence": {
      "type": "string",
-     "description": "Specifies the mechanism used to provide authenticated denial-of-existence responses. Output only while state is not OFF.",
+     "description": "Specifies the mechanism for authenticated denial-of-existence responses. Can only be changed while the state is OFF.",
      "enum": [
       "nsec",
       "nsec3"
@@ -437,6 +460,51 @@
       "",
       ""
      ]
+    }
+   }
+  },
+  "ManagedZoneForwardingConfig": {
+   "id": "ManagedZoneForwardingConfig",
+   "type": "object",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZoneForwardingConfig\".",
+     "default": "dns#managedZoneForwardingConfig"
+    },
+    "targetNameServers": {
+     "type": "array",
+     "description": "List of target name servers to forward to. Cloud DNS will select the best available name server if more than one target is given.",
+     "items": {
+      "$ref": "ManagedZoneForwardingConfigNameServerTarget"
+     }
+    }
+   }
+  },
+  "ManagedZoneForwardingConfigNameServerTarget": {
+   "id": "ManagedZoneForwardingConfigNameServerTarget",
+   "type": "object",
+   "properties": {
+    "forwardingPath": {
+     "type": "string",
+     "description": "Forwarding path for this NameServerTarget, if unset or set to DEFAULT, Cloud DNS will make forwarding decision based on address ranges, i.e. RFC1918 addresses go to the VPC, Non-RFC1918 addresses go to the Internet. When set to PRIVATE, Cloud DNS will always send queries through VPC for this target",
+     "enum": [
+      "default",
+      "private"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "ipv4Address": {
+     "type": "string",
+     "description": "IPv4 address of a target name server."
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZoneForwardingConfigNameServerTarget\".",
+     "default": "dns#managedZoneForwardingConfigNameServerTarget"
     }
    }
   },
@@ -465,6 +533,40 @@
     }
    }
   },
+  "ManagedZonePeeringConfig": {
+   "id": "ManagedZonePeeringConfig",
+   "type": "object",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZonePeeringConfig\".",
+     "default": "dns#managedZonePeeringConfig"
+    },
+    "targetNetwork": {
+     "$ref": "ManagedZonePeeringConfigTargetNetwork",
+     "description": "The network with which to peer."
+    }
+   }
+  },
+  "ManagedZonePeeringConfigTargetNetwork": {
+   "id": "ManagedZonePeeringConfigTargetNetwork",
+   "type": "object",
+   "properties": {
+    "deactivateTime": {
+     "type": "string",
+     "description": "The time at which the zone was deactivated, in RFC 3339 date-time format. An empty string indicates that the peering connection is active. The producer network can deactivate a zone. The zone is automatically deactivated if the producer network that the zone targeted is deleted. Output only."
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZonePeeringConfigTargetNetwork\".",
+     "default": "dns#managedZonePeeringConfigTargetNetwork"
+    },
+    "networkUrl": {
+     "type": "string",
+     "description": "The fully qualified URL of the VPC network to forward queries to. This should be formatted like https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network}"
+    }
+   }
+  },
   "ManagedZonePrivateVisibilityConfig": {
    "id": "ManagedZonePrivateVisibilityConfig",
    "type": "object",
@@ -476,7 +578,7 @@
     },
     "networks": {
      "type": "array",
-     "description": "The list of GCE private network IDs that can see this zone.",
+     "description": "The list of VPC networks that can see this zone.",
      "items": {
       "$ref": "ManagedZonePrivateVisibilityConfigNetwork"
      }
@@ -494,16 +596,18 @@
     },
     "networkUrl": {
      "type": "string",
-     "description": "The fully qualified URL of the GCE private network to bind to. This should be formatted like https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network}"
+     "description": "The fully qualified URL of the VPC network to bind to. This should be formatted like https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network}"
     }
    }
   },
-  "ManagedZonesDeleteResponse": {
-   "id": "ManagedZonesDeleteResponse",
+  "ManagedZoneReverseLookupConfig": {
+   "id": "ManagedZoneReverseLookupConfig",
    "type": "object",
    "properties": {
-    "header": {
-     "$ref": "ResponseHeader"
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZoneReverseLookupConfig\".",
+     "default": "dns#managedZoneReverseLookupConfig"
     }
    }
   },
@@ -556,7 +660,7 @@
     },
     "status": {
      "type": "string",
-     "description": "Status of the operation. Can be one of the following: \"PENDING\" or \"DONE\" (output only).",
+     "description": "Status of the operation. Can be one of the following: \"PENDING\" or \"DONE\" (output only). A status of \"DONE\" means that the request to update the authoritative servers has been sent, but the servers might not be updated yet.",
      "enum": [
       "done",
       "pending"
@@ -608,6 +712,159 @@
     }
    }
   },
+  "PoliciesListResponse": {
+   "id": "PoliciesListResponse",
+   "type": "object",
+   "properties": {
+    "header": {
+     "$ref": "ResponseHeader"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Type of resource.",
+     "default": "dns#policiesListResponse"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token.\n\nIn this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned will be an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size."
+    },
+    "policies": {
+     "type": "array",
+     "description": "The policy resources.",
+     "items": {
+      "$ref": "Policy"
+     }
+    }
+   }
+  },
+  "PoliciesPatchResponse": {
+   "id": "PoliciesPatchResponse",
+   "type": "object",
+   "properties": {
+    "header": {
+     "$ref": "ResponseHeader"
+    },
+    "policy": {
+     "$ref": "Policy"
+    }
+   }
+  },
+  "PoliciesUpdateResponse": {
+   "id": "PoliciesUpdateResponse",
+   "type": "object",
+   "properties": {
+    "header": {
+     "$ref": "ResponseHeader"
+    },
+    "policy": {
+     "$ref": "Policy"
+    }
+   }
+  },
+  "Policy": {
+   "id": "Policy",
+   "type": "object",
+   "description": "A policy is a collection of DNS rules applied to one or more Virtual Private Cloud resources.",
+   "properties": {
+    "alternativeNameServerConfig": {
+     "$ref": "PolicyAlternativeNameServerConfig",
+     "description": "Sets an alternative name server for the associated networks. When specified, all DNS queries are forwarded to a name server that you choose. Names such as .internal are not available when an alternative name server is specified."
+    },
+    "description": {
+     "type": "string",
+     "description": "A mutable string of at most 1024 characters associated with this resource for the user's convenience. Has no effect on the policy's function."
+    },
+    "enableInboundForwarding": {
+     "type": "boolean",
+     "description": "Allows networks bound to this policy to receive DNS queries sent by VMs or applications over VPN connections. When enabled, a virtual IP address will be allocated from each of the sub-networks that are bound to this policy."
+    },
+    "enableLogging": {
+     "type": "boolean",
+     "description": "Controls whether logging is enabled for the networks bound to this policy. Defaults to no logging if not set."
+    },
+    "id": {
+     "type": "string",
+     "description": "Unique identifier for the resource; defined by the server (output only).",
+     "format": "uint64"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#policy\".",
+     "default": "dns#policy"
+    },
+    "name": {
+     "type": "string",
+     "description": "User assigned name for this policy."
+    },
+    "networks": {
+     "type": "array",
+     "description": "List of network names specifying networks to which this policy is applied.",
+     "items": {
+      "$ref": "PolicyNetwork"
+     }
+    }
+   }
+  },
+  "PolicyAlternativeNameServerConfig": {
+   "id": "PolicyAlternativeNameServerConfig",
+   "type": "object",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#policyAlternativeNameServerConfig\".",
+     "default": "dns#policyAlternativeNameServerConfig"
+    },
+    "targetNameServers": {
+     "type": "array",
+     "description": "Sets an alternative name server for the associated networks. When specified, all DNS queries are forwarded to a name server that you choose. Names such as .internal are not available when an alternative name server is specified.",
+     "items": {
+      "$ref": "PolicyAlternativeNameServerConfigTargetNameServer"
+     }
+    }
+   }
+  },
+  "PolicyAlternativeNameServerConfigTargetNameServer": {
+   "id": "PolicyAlternativeNameServerConfigTargetNameServer",
+   "type": "object",
+   "properties": {
+    "forwardingPath": {
+     "type": "string",
+     "description": "Forwarding path for this TargetNameServer, if unset or set to DEFAULT, Cloud DNS will make forwarding decision based on address ranges, i.e. RFC1918 addresses go to the VPC, Non-RFC1918 addresses go to the Internet. When set to PRIVATE, Cloud DNS will always send queries through VPC for this target",
+     "enum": [
+      "default",
+      "private"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "ipv4Address": {
+     "type": "string",
+     "description": "IPv4 address to forward to."
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#policyAlternativeNameServerConfigTargetNameServer\".",
+     "default": "dns#policyAlternativeNameServerConfigTargetNameServer"
+    }
+   }
+  },
+  "PolicyNetwork": {
+   "id": "PolicyNetwork",
+   "type": "object",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#policyNetwork\".",
+     "default": "dns#policyNetwork"
+    },
+    "networkUrl": {
+     "type": "string",
+     "description": "The fully qualified URL of the VPC network to bind to. This should be formatted like https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network}"
+    }
+   }
+  },
   "Project": {
    "id": "Project",
    "type": "object",
@@ -653,6 +910,26 @@
      "description": "Maximum allowed number of managed zones in the project.",
      "format": "int32"
     },
+    "managedZonesPerNetwork": {
+     "type": "integer",
+     "description": "Maximum allowed number of managed zones which can be attached to a network.",
+     "format": "int32"
+    },
+    "networksPerManagedZone": {
+     "type": "integer",
+     "description": "Maximum allowed number of networks to which a privately scoped zone can be attached.",
+     "format": "int32"
+    },
+    "networksPerPolicy": {
+     "type": "integer",
+     "description": "Maximum allowed number of networks per policy.",
+     "format": "int32"
+    },
+    "policies": {
+     "type": "integer",
+     "description": "Maximum allowed number of policies per project.",
+     "format": "int32"
+    },
     "resourceRecordsPerRrset": {
      "type": "integer",
      "description": "Maximum allowed number of ResourceRecords per ResourceRecordSet.",
@@ -671,6 +948,16 @@
     "rrsetsPerManagedZone": {
      "type": "integer",
      "description": "Maximum allowed number of ResourceRecordSets per zone in the project.",
+     "format": "int32"
+    },
+    "targetNameServersPerManagedZone": {
+     "type": "integer",
+     "description": "Maximum allowed number of target name servers per managed forwarding zone.",
+     "format": "int32"
+    },
+    "targetNameServersPerPolicy": {
+     "type": "integer",
+     "description": "Maximum allowed number of alternative target name servers per policy.",
      "format": "int32"
     },
     "totalRrdataSizePerChange": {
@@ -703,7 +990,7 @@
     },
     "rrdatas": {
      "type": "array",
-     "description": "As defined in RFC 1035 (section 5) and RFC 1034 (section 3.6.1).",
+     "description": "As defined in RFC 1035 (section 5) and RFC 1034 (section 3.6.1) -- see examples.",
      "items": {
       "type": "string"
      }
@@ -722,7 +1009,7 @@
     },
     "type": {
      "type": "string",
-     "description": "The identifier of a supported record type, for example, A, AAAA, MX, TXT, and so on."
+     "description": "The identifier of a supported record type. See the list of Supported DNS record types."
     }
    }
   },
@@ -1185,9 +1472,6 @@
       "project",
       "managedZone"
      ],
-     "response": {
-      "$ref": "ManagedZonesDeleteResponse"
-     },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
@@ -1277,7 +1561,7 @@
      "id": "dns.managedZones.patch",
      "path": "{project}/managedZones/{managedZone}",
      "httpMethod": "PATCH",
-     "description": "Update an existing ManagedZone. This method supports patch semantics.",
+     "description": "Apply a partial update to an existing ManagedZone.",
      "parameters": {
       "clientOperationId": {
        "type": "string",
@@ -1345,6 +1629,228 @@
      },
      "response": {
       "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    }
+   }
+  },
+  "policies": {
+   "methods": {
+    "create": {
+     "id": "dns.policies.create",
+     "path": "{project}/policies",
+     "httpMethod": "POST",
+     "description": "Create a new Policy",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Identifies the project addressed by this request.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "Policy"
+     },
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "delete": {
+     "id": "dns.policies.delete",
+     "path": "{project}/policies/{policy}",
+     "httpMethod": "DELETE",
+     "description": "Delete a previously created Policy. Will fail if the policy is still being referenced by a network.",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+       "location": "query"
+      },
+      "policy": {
+       "type": "string",
+       "description": "User given friendly name of the policy addressed by this request.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Identifies the project addressed by this request.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "policy"
+     ],
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "get": {
+     "id": "dns.policies.get",
+     "path": "{project}/policies/{policy}",
+     "httpMethod": "GET",
+     "description": "Fetch the representation of an existing Policy.",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+       "location": "query"
+      },
+      "policy": {
+       "type": "string",
+       "description": "User given friendly name of the policy addressed by this request.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Identifies the project addressed by this request.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "policy"
+     ],
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "list": {
+     "id": "dns.policies.list",
+     "path": "{project}/policies",
+     "httpMethod": "GET",
+     "description": "Enumerate all Policies associated with a project.",
+     "parameters": {
+      "maxResults": {
+       "type": "integer",
+       "description": "Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.",
+       "format": "int32",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Optional. A tag returned by a previous list request that was truncated. Use this parameter to continue a previous list request.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Identifies the project addressed by this request.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "PoliciesListResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "patch": {
+     "id": "dns.policies.patch",
+     "path": "{project}/policies/{policy}",
+     "httpMethod": "PATCH",
+     "description": "Apply a partial update to an existing Policy.",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+       "location": "query"
+      },
+      "policy": {
+       "type": "string",
+       "description": "User given friendly name of the policy addressed by this request.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Identifies the project addressed by this request.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "policy"
+     ],
+     "request": {
+      "$ref": "Policy"
+     },
+     "response": {
+      "$ref": "PoliciesPatchResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "update": {
+     "id": "dns.policies.update",
+     "path": "{project}/policies/{policy}",
+     "httpMethod": "PUT",
+     "description": "Update an existing Policy.",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "description": "For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.",
+       "location": "query"
+      },
+      "policy": {
+       "type": "string",
+       "description": "User given friendly name of the policy addressed by this request.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Identifies the project addressed by this request.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "policy"
+     ],
+     "request": {
+      "$ref": "Policy"
+     },
+     "response": {
+      "$ref": "PoliciesUpdateResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",

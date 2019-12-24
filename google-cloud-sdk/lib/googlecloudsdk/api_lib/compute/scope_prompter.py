@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,15 +14,22 @@
 # limitations under the License.
 """Facilities for user prompting for request context."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import gce as c_gce
+
+import six
+from six.moves import zip  # pylint: disable=redefined-builtin
 
 
 def _GetGCERegion():
@@ -42,7 +50,7 @@ GCE_SUGGESTION_SOURCES = {
 }
 
 
-class Error(core_exceptions.Error):
+class Error(exceptions.Error):
   """Exceptions for the scope prompter."""
   pass
 
@@ -52,10 +60,38 @@ class _InvalidPromptInvocation(Error):
   pass
 
 
-class ScopePrompter(object):
+class ScopePrompter(six.with_metaclass(abc.ABCMeta, object)):
   """A mixin class prompting in the case of ambiguous resource context."""
 
-  __metaclass__ = abc.ABCMeta
+  @abc.abstractproperty
+  def resource_type(self):
+    """Specifies the name of the collection that should be printed."""
+    pass
+
+  @abc.abstractproperty
+  def http(self):
+    """Specifies the http client to be used for requests."""
+    pass
+
+  @abc.abstractproperty
+  def project(self):
+    """Specifies the user's project."""
+    pass
+
+  @abc.abstractproperty
+  def batch_url(self):
+    """Specifies the API batch URL."""
+    pass
+
+  @abc.abstractproperty
+  def compute(self):
+    """Specifies the compute client."""
+    pass
+
+  @abc.abstractproperty
+  def resources(self):
+    """Specifies the resources parser for compute resources."""
+    pass
 
   def FetchChoiceResources(self, attribute, service, flag_names,
                            prefix_filter=None):

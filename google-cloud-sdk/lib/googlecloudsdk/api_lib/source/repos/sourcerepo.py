@@ -16,19 +16,28 @@
 Parse methods accepts strings from command-line arguments, and it can accept
 more formats like "https://...". Get methods are strict about the arguments.
 """
-from apitools.base.py import exceptions
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
+class RepoResourceError(core_exceptions.Error):
+  """Raised when a repo could not be parsed."""
+
+
 def ParseRepo(repo):
   """Parse a string as a sourcerepo.projects.repos resource."""
-  return resources.REGISTRY.Parse(
-      repo,
-      params={'projectsId': properties.VALUES.core.project.GetOrFail},
-      collection='sourcerepo.projects.repos')
+  try:
+    return resources.REGISTRY.Parse(
+        repo,
+        params={'projectsId': properties.VALUES.core.project.GetOrFail},
+        collection='sourcerepo.projects.repos')
+  except core_exceptions.Error as e:
+    raise RepoResourceError(str(e))
 
 
 def GetDefaultProject():
@@ -98,11 +107,7 @@ class Source(object):
     """
     request = self.messages.SourcerepoProjectsReposGetRequest(
         name=repo_resource.RelativeName())
-    try:
-      return self._client.projects_repos.Get(request)
-    except exceptions.HttpNotFoundError:
-      # If the repo does not exist, we get an HTTP 404
-      return None
+    return self._client.projects_repos.Get(request)
 
   def CreateRepo(self, repo_resource):
     """Creates a repo.
@@ -129,3 +134,11 @@ class Source(object):
     request = self.messages.SourcerepoProjectsReposDeleteRequest(
         name=repo_resource.RelativeName())
     self._client.projects_repos.Delete(request)
+
+  def PatchRepo(self, repo, update_mask='pubsubConfigs'):
+    """Updates a repo's configuration."""
+    req = self.messages.SourcerepoProjectsReposPatchRequest(
+        name=repo.name,
+        updateRepoRequest=self.messages.UpdateRepoRequest(
+            repo=repo, updateMask=update_mask))
+    return self._client.projects_repos.Patch(req)

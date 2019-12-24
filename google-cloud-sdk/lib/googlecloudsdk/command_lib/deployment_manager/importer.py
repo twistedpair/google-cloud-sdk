@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,30 +12,40 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Library that handles importing files for Deployment Manager."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
+import glob
 import os
 import posixpath
 import re
-import urlparse
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.deployment_manager import exceptions
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
+from googlecloudsdk.core import yaml
+import googlecloudsdk.core.properties
+from googlecloudsdk.core.util import files
+
 import requests
-import yaml
+import six
+import six.moves.urllib.parse
 
 IMPORTS = 'imports'
 PATH = 'path'
 NAME = 'name'
 OUTPUTS = 'outputs'
+POSIX_PATH_SEPARATOR = '/'
 
 
 class _BaseImport(object):
   """An imported DM config object."""
 
-  def __init__(self):
+  def __init__(self, full_path, name):
+    self.full_path = full_path
+    self.name = name
     self.content = None
     self.base_name = None
 
@@ -56,9 +67,8 @@ class _ImportSyntheticCompositeTypeFile(_BaseImport):
   """Performs common operations on an imported composite type."""
 
   def __init__(self, full_path, properties=None):
-    super(_ImportSyntheticCompositeTypeFile, self).__init__()
-    self.full_path = full_path
-    self.name = full_path.split(':')[1]
+    name = full_path.split(':')[1]
+    super(_ImportSyntheticCompositeTypeFile, self).__init__(full_path, name)
     self.properties = properties
 
   def GetBaseName(self):
@@ -75,7 +85,7 @@ class _ImportSyntheticCompositeTypeFile(_BaseImport):
       resources = {'resources': [{'type': self.full_path, 'name': self.name}]}
       if self.properties:
         resources['resources'][0]['properties'] = self.properties
-      self.content = yaml.dump(resources, default_flow_style=False)
+      self.content = yaml.dump(resources)
     return self.content
 
   def BuildChildPath(self, unused_child_path):
@@ -86,9 +96,8 @@ class _ImportFile(_BaseImport):
   """Performs common operations on an imported file."""
 
   def __init__(self, full_path, name=None):
-    super(_ImportFile, self).__init__()
-    self.full_path = full_path
-    self.name = name if name else full_path
+    name = name if name else full_path
+    super(_ImportFile, self).__init__(full_path, name)
 
   def GetBaseName(self):
     if self.base_name is None:
@@ -101,11 +110,10 @@ class _ImportFile(_BaseImport):
   def GetContent(self):
     if self.content is None:
       try:
-        with open(self.full_path, 'r') as resource:
-          self.content = resource.read()
-      except IOError as e:
+        self.content = files.ReadFileContents(self.full_path)
+      except files.Error as e:
         raise exceptions.ConfigError(
-            "Unable to read file '%s'. %s" % (self.full_path, e.message))
+            "Unable to read file '%s'. %s" % (self.full_path, six.text_type(e)))
     return self.content
 
   def BuildChildPath(self, child_path):
@@ -119,15 +127,15 @@ class _ImportUrl(_BaseImport):
   """Class to perform operations on a URL import."""
 
   def __init__(self, full_path, name=None):
-    super(_ImportUrl, self).__init__()
-    self.full_path = self._ValidateUrl(full_path)
-    self.name = name if name else full_path
+    full_path = self._ValidateUrl(full_path)
+    name = name if name else full_path
+    super(_ImportUrl, self).__init__(full_path, name)
 
   def GetBaseName(self):
     if self.base_name is None:
       # We must use posixpath explicitly so this will work on Windows.
       self.base_name = posixpath.basename(
-          urlparse.urlparse(self.full_path).path)
+          six.moves.urllib.parse.urlparse(self.full_path).path)
     return self.base_name
 
   def Exists(self):
@@ -170,12 +178,12 @@ class _ImportUrl(_BaseImport):
   def BuildChildPath(self, child_path):
     if _IsUrl(child_path):
       return child_path
-    return urlparse.urljoin(self.full_path, child_path)
+    return six.moves.urllib.parse.urljoin(self.full_path, child_path)
 
   @staticmethod
   def _ValidateUrl(url):
     """Make sure the url fits the format we expect."""
-    parsed_url = urlparse.urlparse(url)
+    parsed_url = six.moves.urllib.parse.urlparse(url)
 
     if parsed_url.scheme not in ('http', 'https'):
       raise exceptions.ConfigError(
@@ -193,9 +201,36 @@ class _ImportUrl(_BaseImport):
     return url
 
 
+def _SanitizeWindowsPathsGlobs(filename_list, native_separator=os.sep):
+  r"""Clean up path separators for globbing-resolved filenames.
+
+  Python's globbing library resolves wildcards with OS-native path separators,
+  however users could use POSIX paths even for configs in a Windows environment.
+  This can result in multi-separator-character paths where /foo/bar/* will
+  return a path match like /foo/bar\\baz.yaml.
+  This function will make paths separators internally consistent.
+
+  Args:
+    filename_list: List of filenames resolved using python's glob library.
+    native_separator: OS native path separator. Override for testing only.
+
+  Returns:
+    List of filenames edited to have consistent path separator characters.
+  """
+  if native_separator == POSIX_PATH_SEPARATOR:
+    return filename_list
+  sanitized_paths = []
+  for f in filename_list:
+    if POSIX_PATH_SEPARATOR in f:
+      sanitized_paths.append(f.replace(native_separator, POSIX_PATH_SEPARATOR))
+    else:
+      sanitized_paths.append(f)
+  return sanitized_paths
+
+
 def _IsUrl(resource_handle):
   """Returns true if the passed resource_handle is a url."""
-  parsed = urlparse.urlparse(resource_handle)
+  parsed = six.moves.urllib.parse.urlparse(resource_handle)
   return parsed.scheme and parsed.netloc
 
 
@@ -207,9 +242,10 @@ def _IsValidCompositeTypeSyntax(composite_type_name):
 
   Catches most syntax errors by checking that the string contains the substring
   '/composite:' preceded and followed by at least one character, none of which
-  are colons, periods, slashes, or whitespace.
+  are colons, slashes, or whitespace. Periods may follow the substring, but not
+  proceed it.
   """
-  return re.match(r'^[^/:.\s]+/composite:[^/:.\s]+$', composite_type_name)
+  return re.match(r'^[^/:.\s]+/composite:[^/:\s]+$', composite_type_name)
 
 
 def _BuildFileImportObject(full_path, name=None):
@@ -234,11 +270,17 @@ def _BuildImportObject(config=None, template=None,
                                'composite type was specified.')
 
 
-def _GetYamlImports(import_object):
+def _GetYamlImports(import_object, globbing_enabled=False):
   """Extract the import section of a file.
+
+  If the glob_imports config is set to true, expand any globs (e.g. *.jinja).
+  Named imports cannot be used with globs that expand to more than one file.
+  If globbing is disabled or a glob pattern does not expand to match any files,
+  importer will use the literal string as the file path.
 
   Args:
     import_object: The object in which to look for imports.
+    globbing_enabled: If true, will resolved glob patterns dynamically.
 
   Returns:
     A list of dictionary objects, containing the keys 'path' and 'name' for each
@@ -248,25 +290,45 @@ def _GetYamlImports(import_object):
    ConfigError: If we cannont read the file, the yaml is malformed, or
        the import object does not contain a 'path' field.
   """
-  try:
-    content = import_object.GetContent()
-    yaml_content = yaml.safe_load(content)
-    imports = []
-    if yaml_content and IMPORTS in yaml_content:
-      imports = yaml_content[IMPORTS]
-      # Validate the yaml imports, and make sure the optional name is set.
-      for i in imports:
-        if PATH not in i:
-          raise exceptions.ConfigError(
-              'Missing required field %s in import in file %s.'
-              % (PATH, import_object.full_path))
-        # Populate the name field.
-        if NAME not in i:
-          i[NAME] = i[PATH]
-    return imports
-  except yaml.YAMLError as e:
-    raise exceptions.ConfigError(
-        'Invalid yaml file %s. %s' % (import_object.full_path, str(e)))
+  parent_dir = None
+  if not _IsUrl(import_object.full_path):
+    parent_dir = os.path.dirname(os.path.abspath(import_object.full_path))
+  content = import_object.GetContent()
+  yaml_content = yaml.load(content)
+  imports = []
+  if yaml_content and IMPORTS in yaml_content:
+    raw_imports = yaml_content[IMPORTS]
+    # Validate the yaml imports, and make sure the optional name is set.
+    for i in raw_imports:
+      if PATH not in i:
+        raise exceptions.ConfigError(
+            'Missing required field %s in import in file %s.' %
+            (PATH, import_object.full_path))
+      glob_matches = []
+      # Only expand globs if config set and the path is a local fs reference.
+      if globbing_enabled and parent_dir and not _IsUrl(i[PATH]):
+        # Set our working dir to the import_object's for resolving globs.
+        with files.ChDir(parent_dir):
+          # TODO(b/111880973): Replace with gcloud glob supporting ** wildcards.
+          glob_matches = glob.glob(i[PATH])
+          glob_matches = _SanitizeWindowsPathsGlobs(glob_matches)
+        # Multiple file case.
+        if len(glob_matches) > 1:
+          if NAME in i:
+            raise exceptions.ConfigError(
+                ('Cannot use import name %s for path glob in file %s that'
+                 ' matches multiple objects.') % (i[NAME],
+                                                  import_object.full_path))
+          imports.extend([{NAME: g, PATH: g} for g in glob_matches])
+          continue
+      # Single file case. (URL, discrete file, or single glob match)
+      if len(glob_matches) == 1:
+        i[PATH] = glob_matches[0]
+      # Populate the name field.
+      if NAME not in i:
+        i[NAME] = i[PATH]
+      imports.append(i)
+  return imports
 
 
 def _GetImportObjects(parent_object):
@@ -282,7 +344,10 @@ def _GetImportObjects(parent_object):
     ConfigError: If we cannont read the file, the yaml is malformed, or
        the import object does not contain a 'path' field.
   """
-  yaml_imports = _GetYamlImports(parent_object)
+  globbing_enabled = googlecloudsdk.core.properties.VALUES \
+      .deployment_manager.glob_imports.GetBool()
+  yaml_imports = _GetYamlImports(
+      parent_object, globbing_enabled=globbing_enabled)
 
   child_objects = []
 
@@ -477,22 +542,17 @@ def BuildConfig(config=None, template=None,
   if schema_object.Exists():
     schema_content = schema_object.GetContent()
     config_name = custom_resource['name']
-    try:
-      yaml_schema = yaml.safe_load(schema_content)
-      if yaml_schema and OUTPUTS in yaml_schema:
-        for output_name in yaml_schema[OUTPUTS].keys():
-          custom_outputs.append(
-              {'name': output_name,
-               'value': '$(ref.' + config_name + '.' + output_name + ')'})
-    except yaml.YAMLError as e:
-      raise exceptions.ConfigError(
-          'Invalid schema file %s. %s' % (schema_path, str(e)))
+    yaml_schema = yaml.load(schema_content, file_hint=schema_path)
+    if yaml_schema and OUTPUTS in yaml_schema:
+      for output_name in yaml_schema[OUTPUTS].keys():
+        custom_outputs.append(
+            {'name': output_name,
+             'value': '$(ref.' + config_name + '.' + output_name + ')'})
 
   if custom_outputs:
     custom_dict['outputs'] = custom_outputs
 
-  # Dump using default_flow_style=False to use spacing instead of '{ }'
-  custom_content = yaml.dump(custom_dict, default_flow_style=False)
+  custom_content = yaml.dump(custom_dict)
 
   # Override the template_object with it's new config_content
   return config_obj.SetContent(custom_content)
@@ -576,11 +636,11 @@ def BuildTargetConfigFromManifest(client, messages, project_id, deployment_id,
           'Manifest reuse with properties requires '
           'there only be a single resource.')
     single_resource = config_yaml['resources'][0]
-    if not single_resource.has_key('properties'):
+    if 'properties' not in single_resource:
       single_resource['properties'] = {}
     existing_properties = single_resource['properties']
-    for key, value in properties.iteritems():
+    for key, value in six.iteritems(properties):
       existing_properties[key] = value
-    config_file.content = yaml.dump(config_yaml, default_flow_style=False)
+    config_file.content = yaml.dump(config_yaml)
 
   return messages.TargetConfiguration(config=config_file, imports=imports)

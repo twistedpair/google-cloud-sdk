@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,11 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""container builds resource filter expression rewrite backend."""
+"""Cloud Build resource filter expression rewrite backend."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.core.resource import resource_expr_rewrite
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import times
+import six
 
 
 # If _STRING_FIELDS and _TIME_FIELDS are out of sync with the API then --filter
@@ -50,7 +56,7 @@ _TIME_FIELDS = {
 
 
 class Backend(resource_expr_rewrite.Backend):
-  """Container builds resource filter expression rewrite backend."""
+  """Cloud Build resource filter expression rewrite backend."""
 
   def __init__(self, ongoing=False, **kwargs):
     super(Backend, self).__init__(**kwargs)
@@ -73,7 +79,7 @@ class Backend(resource_expr_rewrite.Backend):
     except ValueError as e:
       raise ValueError(
           '{operand}: date-time value expected for {key}: {error}'
-          .format(operand=operand, key=key, error=str(e)))
+          .format(operand=operand, key=key, error=six.text_type(e)))
     dt_string = times.FormatDateTime(dt, '%Y-%m-%dT%H:%M:%S.%3f%Ez', times.UTC)
     return '{key}{op}{dt_string}'.format(
         key=key, op=op, dt_string=self.Quote(dt_string, always=True))

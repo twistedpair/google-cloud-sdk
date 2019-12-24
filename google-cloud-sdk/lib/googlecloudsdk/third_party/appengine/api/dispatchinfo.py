@@ -1,4 +1,4 @@
-# Copyright 2012 Google Inc. All Rights Reserved.
+# Copyright 2012 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 Library for parsing dispatch.yaml files and working with these in memory.
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 
 # WARNING: This file is externally viewable by our users.  All comments from
@@ -26,6 +28,7 @@ Library for parsing dispatch.yaml files and working with these in memory.
 
 import os
 import re
+from googlecloudsdk.third_party.appengine._internal import six_subset
 
 # pylint: disable=g-import-not-at-top
 if os.environ.get('APPENGINE_RUNTIME') == 'python27':
@@ -93,7 +96,7 @@ class DispatchEntryURLValidator(validation.Validator):
     """Validates an URL pattern."""
     if value is None:
       raise validation.MissingAttribute('url must be specified')
-    if not isinstance(value, basestring):
+    if not isinstance(value, six_subset.string_types):
       raise validation.ValidationError('url must be a string, not \'%r\'' %
                                        type(value))
 
@@ -175,8 +178,8 @@ class DispatchEntry(validation.Validated):
   """A Dispatch entry describes a mapping from a URL pattern to a module."""
   ATTRIBUTES = {
       URL: DispatchEntryURLValidator(),
-      MODULE: validation.Optional(appinfo.MODULE_ID_RE_STRING),
-      SERVICE: validation.Optional(appinfo.MODULE_ID_RE_STRING)
+      SERVICE: validation.Preferred(MODULE, appinfo.MODULE_ID_RE_STRING),
+      MODULE: validation.Deprecated(SERVICE, appinfo.MODULE_ID_RE_STRING),
   }
 
 
@@ -221,15 +224,5 @@ def LoadSingleDispatch(dispatch_info, open_fn=None):
   # The validation framework doesn't allow validating multiple fields at once,
   # so we have to check here.
   dispatch_info_external = parsed_yaml[0]
-  for dispatch in getattr(dispatch_info_external, DISPATCH) or []:
-    if dispatch.module and dispatch.service:
-      raise MalformedDispatchConfigurationError(
-          'Both module: and service: in dispatch entry. Please use only one.')
-    if not (dispatch.module or dispatch.service):
-      raise MalformedDispatchConfigurationError(
-          "Missing required value 'service'.")
-    # The important part is that just 'module' is sent to the API for now;
-    # eventually, we'll switch this to just check service.
-    dispatch.module = dispatch.module or dispatch.service
-    dispatch.service = None
+  dispatch_info_external.CheckInitialized()
   return dispatch_info_external

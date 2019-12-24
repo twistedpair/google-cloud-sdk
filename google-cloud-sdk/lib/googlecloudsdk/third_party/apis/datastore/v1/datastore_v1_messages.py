@@ -14,18 +14,18 @@ package = 'datastore'
 
 
 class AllocateIdsRequest(_messages.Message):
-  """The request for Datastore.AllocateIds.
+  r"""The request for Datastore.AllocateIds.
 
   Fields:
-    keys: A list of keys with incomplete key paths for which to allocate IDs.
-      No key may be reserved/read-only.
+    keys: Required. A list of keys with incomplete key paths for which to
+      allocate IDs. No key may be reserved/read-only.
   """
 
   keys = _messages.MessageField('Key', 1, repeated=True)
 
 
 class AllocateIdsResponse(_messages.Message):
-  """The response for Datastore.AllocateIds.
+  r"""The response for Datastore.AllocateIds.
 
   Fields:
     keys: The keys specified in the request (in the same order), each with its
@@ -36,22 +36,29 @@ class AllocateIdsResponse(_messages.Message):
 
 
 class ArrayValue(_messages.Message):
-  """An array value.
+  r"""An array value.
 
   Fields:
-    values: Values in the array. The order of this array may not be preserved
-      if it contains a mix of indexed and unindexed values.
+    values: Values in the array. The order of values in an array is preserved
+      as long as all values have identical settings for
+      'exclude_from_indexes'.
   """
 
   values = _messages.MessageField('Value', 1, repeated=True)
 
 
 class BeginTransactionRequest(_messages.Message):
-  """The request for Datastore.BeginTransaction."""
+  r"""The request for Datastore.BeginTransaction.
+
+  Fields:
+    transactionOptions: Options for a new transaction.
+  """
+
+  transactionOptions = _messages.MessageField('TransactionOptions', 1)
 
 
 class BeginTransactionResponse(_messages.Message):
-  """The response for Datastore.BeginTransaction.
+  r"""The response for Datastore.BeginTransaction.
 
   Fields:
     transaction: The transaction identifier (always present).
@@ -61,7 +68,7 @@ class BeginTransactionResponse(_messages.Message):
 
 
 class CommitRequest(_messages.Message):
-  """The request for Datastore.Commit.
+  r"""The request for Datastore.Commit.
 
   Enums:
     ModeValueValuesEnum: The type of commit to perform. Defaults to
@@ -82,7 +89,7 @@ class CommitRequest(_messages.Message):
   """
 
   class ModeValueValuesEnum(_messages.Enum):
-    """The type of commit to perform. Defaults to `TRANSACTIONAL`.
+    r"""The type of commit to perform. Defaults to `TRANSACTIONAL`.
 
     Values:
       MODE_UNSPECIFIED: Unspecified. This value must not be used.
@@ -102,7 +109,7 @@ class CommitRequest(_messages.Message):
 
 
 class CommitResponse(_messages.Message):
-  """The response for Datastore.Commit.
+  r"""The response for Datastore.Commit.
 
   Fields:
     indexUpdates: The number of index entries updated during the commit, or
@@ -116,7 +123,7 @@ class CommitResponse(_messages.Message):
 
 
 class CompositeFilter(_messages.Message):
-  """A filter that merges multiple other filters using the given operator.
+  r"""A filter that merges multiple other filters using the given operator.
 
   Enums:
     OpValueValuesEnum: The operator for combining multiple filters.
@@ -127,7 +134,7 @@ class CompositeFilter(_messages.Message):
   """
 
   class OpValueValuesEnum(_messages.Enum):
-    """The operator for combining multiple filters.
+    r"""The operator for combining multiple filters.
 
     Values:
       OPERATOR_UNSPECIFIED: Unspecified. This value must not be used.
@@ -141,12 +148,13 @@ class CompositeFilter(_messages.Message):
 
 
 class DatastoreProjectsAllocateIdsRequest(_messages.Message):
-  """A DatastoreProjectsAllocateIdsRequest object.
+  r"""A DatastoreProjectsAllocateIdsRequest object.
 
   Fields:
     allocateIdsRequest: A AllocateIdsRequest resource to be passed as the
       request body.
-    projectId: The ID of the project against which to make the request.
+    projectId: Required. The ID of the project against which to make the
+      request.
   """
 
   allocateIdsRequest = _messages.MessageField('AllocateIdsRequest', 1)
@@ -154,12 +162,13 @@ class DatastoreProjectsAllocateIdsRequest(_messages.Message):
 
 
 class DatastoreProjectsBeginTransactionRequest(_messages.Message):
-  """A DatastoreProjectsBeginTransactionRequest object.
+  r"""A DatastoreProjectsBeginTransactionRequest object.
 
   Fields:
     beginTransactionRequest: A BeginTransactionRequest resource to be passed
       as the request body.
-    projectId: The ID of the project against which to make the request.
+    projectId: Required. The ID of the project against which to make the
+      request.
   """
 
   beginTransactionRequest = _messages.MessageField('BeginTransactionRequest', 1)
@@ -167,23 +176,95 @@ class DatastoreProjectsBeginTransactionRequest(_messages.Message):
 
 
 class DatastoreProjectsCommitRequest(_messages.Message):
-  """A DatastoreProjectsCommitRequest object.
+  r"""A DatastoreProjectsCommitRequest object.
 
   Fields:
     commitRequest: A CommitRequest resource to be passed as the request body.
-    projectId: The ID of the project against which to make the request.
+    projectId: Required. The ID of the project against which to make the
+      request.
   """
 
   commitRequest = _messages.MessageField('CommitRequest', 1)
   projectId = _messages.StringField(2, required=True)
 
 
+class DatastoreProjectsExportRequest(_messages.Message):
+  r"""A DatastoreProjectsExportRequest object.
+
+  Fields:
+    googleDatastoreAdminV1ExportEntitiesRequest: A
+      GoogleDatastoreAdminV1ExportEntitiesRequest resource to be passed as the
+      request body.
+    projectId: Required. Project ID against which to make the request.
+  """
+
+  googleDatastoreAdminV1ExportEntitiesRequest = _messages.MessageField('GoogleDatastoreAdminV1ExportEntitiesRequest', 1)
+  projectId = _messages.StringField(2, required=True)
+
+
+class DatastoreProjectsImportRequest(_messages.Message):
+  r"""A DatastoreProjectsImportRequest object.
+
+  Fields:
+    googleDatastoreAdminV1ImportEntitiesRequest: A
+      GoogleDatastoreAdminV1ImportEntitiesRequest resource to be passed as the
+      request body.
+    projectId: Required. Project ID against which to make the request.
+  """
+
+  googleDatastoreAdminV1ImportEntitiesRequest = _messages.MessageField('GoogleDatastoreAdminV1ImportEntitiesRequest', 1)
+  projectId = _messages.StringField(2, required=True)
+
+
+class DatastoreProjectsIndexesDeleteRequest(_messages.Message):
+  r"""A DatastoreProjectsIndexesDeleteRequest object.
+
+  Fields:
+    indexId: The resource ID of the index to delete.
+    projectId: Project ID against which to make the request.
+  """
+
+  indexId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+
+
+class DatastoreProjectsIndexesGetRequest(_messages.Message):
+  r"""A DatastoreProjectsIndexesGetRequest object.
+
+  Fields:
+    indexId: The resource ID of the index to get.
+    projectId: Project ID against which to make the request.
+  """
+
+  indexId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+
+
+class DatastoreProjectsIndexesListRequest(_messages.Message):
+  r"""A DatastoreProjectsIndexesListRequest object.
+
+  Fields:
+    filter: A string attribute.
+    pageSize: The maximum number of items to return.  If zero, then all
+      results will be returned.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    projectId: Project ID against which to make the request.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  projectId = _messages.StringField(4, required=True)
+
+
 class DatastoreProjectsLookupRequest(_messages.Message):
-  """A DatastoreProjectsLookupRequest object.
+  r"""A DatastoreProjectsLookupRequest object.
 
   Fields:
     lookupRequest: A LookupRequest resource to be passed as the request body.
-    projectId: The ID of the project against which to make the request.
+    projectId: Required. The ID of the project against which to make the
+      request.
   """
 
   lookupRequest = _messages.MessageField('LookupRequest', 1)
@@ -191,7 +272,7 @@ class DatastoreProjectsLookupRequest(_messages.Message):
 
 
 class DatastoreProjectsOperationsCancelRequest(_messages.Message):
-  """A DatastoreProjectsOperationsCancelRequest object.
+  r"""A DatastoreProjectsOperationsCancelRequest object.
 
   Fields:
     name: The name of the operation resource to be cancelled.
@@ -201,7 +282,7 @@ class DatastoreProjectsOperationsCancelRequest(_messages.Message):
 
 
 class DatastoreProjectsOperationsDeleteRequest(_messages.Message):
-  """A DatastoreProjectsOperationsDeleteRequest object.
+  r"""A DatastoreProjectsOperationsDeleteRequest object.
 
   Fields:
     name: The name of the operation resource to be deleted.
@@ -211,7 +292,7 @@ class DatastoreProjectsOperationsDeleteRequest(_messages.Message):
 
 
 class DatastoreProjectsOperationsGetRequest(_messages.Message):
-  """A DatastoreProjectsOperationsGetRequest object.
+  r"""A DatastoreProjectsOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -221,7 +302,7 @@ class DatastoreProjectsOperationsGetRequest(_messages.Message):
 
 
 class DatastoreProjectsOperationsListRequest(_messages.Message):
-  """A DatastoreProjectsOperationsListRequest object.
+  r"""A DatastoreProjectsOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -236,11 +317,26 @@ class DatastoreProjectsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class DatastoreProjectsRollbackRequest(_messages.Message):
-  """A DatastoreProjectsRollbackRequest object.
+class DatastoreProjectsReserveIdsRequest(_messages.Message):
+  r"""A DatastoreProjectsReserveIdsRequest object.
 
   Fields:
-    projectId: The ID of the project against which to make the request.
+    projectId: Required. The ID of the project against which to make the
+      request.
+    reserveIdsRequest: A ReserveIdsRequest resource to be passed as the
+      request body.
+  """
+
+  projectId = _messages.StringField(1, required=True)
+  reserveIdsRequest = _messages.MessageField('ReserveIdsRequest', 2)
+
+
+class DatastoreProjectsRollbackRequest(_messages.Message):
+  r"""A DatastoreProjectsRollbackRequest object.
+
+  Fields:
+    projectId: Required. The ID of the project against which to make the
+      request.
     rollbackRequest: A RollbackRequest resource to be passed as the request
       body.
   """
@@ -250,10 +346,11 @@ class DatastoreProjectsRollbackRequest(_messages.Message):
 
 
 class DatastoreProjectsRunQueryRequest(_messages.Message):
-  """A DatastoreProjectsRunQueryRequest object.
+  r"""A DatastoreProjectsRunQueryRequest object.
 
   Fields:
-    projectId: The ID of the project against which to make the request.
+    projectId: Required. The ID of the project against which to make the
+      request.
     runQueryRequest: A RunQueryRequest resource to be passed as the request
       body.
   """
@@ -263,7 +360,7 @@ class DatastoreProjectsRunQueryRequest(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -273,9 +370,9 @@ class Empty(_messages.Message):
 
 
 class Entity(_messages.Message):
-  """A Datastore data object.  An entity is limited to 1 megabyte when stored.
-  That _roughly_ corresponds to a limit of 1 megabyte for the serialized form
-  of this message.
+  r"""A Datastore data object.  An entity is limited to 1 megabyte when
+  stored. That _roughly_ corresponds to a limit of 1 megabyte for the
+  serialized form of this message.
 
   Messages:
     PropertiesValue: The entity's properties. The map's keys are property
@@ -296,7 +393,7 @@ class Entity(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """The entity's properties. The map's keys are property names. A property
+    r"""The entity's properties. The map's keys are property names. A property
     name matching regex `__.*__` is reserved. A reserved property name is
     forbidden in certain documented contexts. The name must not contain more
     than 500 characters. The name cannot be `""`.
@@ -309,7 +406,7 @@ class Entity(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a PropertiesValue object.
+      r"""An additional property for a PropertiesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -326,7 +423,7 @@ class Entity(_messages.Message):
 
 
 class EntityResult(_messages.Message):
-  """The result of fetching an entity from Datastore.
+  r"""The result of fetching an entity from Datastore.
 
   Fields:
     cursor: A cursor that points to the position after the result entity. Set
@@ -345,7 +442,7 @@ class EntityResult(_messages.Message):
 
 
 class Filter(_messages.Message):
-  """A holder for any type of filter.
+  r"""A holder for any type of filter.
 
   Fields:
     compositeFilter: A composite filter.
@@ -356,59 +453,59 @@ class Filter(_messages.Message):
   propertyFilter = _messages.MessageField('PropertyFilter', 2)
 
 
-class GoogleDatastoreAdminV1beta1CommonMetadata(_messages.Message):
-  """Metadata common to all Datastore Admin operations.
+class GoogleDatastoreAdminV1CommonMetadata(_messages.Message):
+  r"""Metadata common to all Datastore Admin operations.
 
   Enums:
-    OperationTypeValueValuesEnum: The type of the operation.  Can be used as a
+    OperationTypeValueValuesEnum: The type of the operation. Can be used as a
       filter in ListOperationsRequest.
     StateValueValuesEnum: The current state of the Operation.
 
   Messages:
     LabelsValue: The client-assigned labels which were provided when the
-      operation was created.  May also include additional labels.
+      operation was created. May also include additional labels.
 
   Fields:
     endTime: The time the operation ended, either successfully or otherwise.
     labels: The client-assigned labels which were provided when the operation
-      was created.  May also include additional labels.
-    operationType: The type of the operation.  Can be used as a filter in
+      was created. May also include additional labels.
+    operationType: The type of the operation. Can be used as a filter in
       ListOperationsRequest.
     startTime: The time that work began on the operation.
     state: The current state of the Operation.
   """
 
   class OperationTypeValueValuesEnum(_messages.Enum):
-    """The type of the operation.  Can be used as a filter in
+    r"""The type of the operation. Can be used as a filter in
     ListOperationsRequest.
 
     Values:
       OPERATION_TYPE_UNSPECIFIED: Unspecified.
       EXPORT_ENTITIES: ExportEntities.
       IMPORT_ENTITIES: ImportEntities.
-      BUILD_INDEX: Build an index.
-      CLEAR_INDEX: Clear an index.
+      CREATE_INDEX: CreateIndex.
+      DELETE_INDEX: DeleteIndex.
     """
     OPERATION_TYPE_UNSPECIFIED = 0
     EXPORT_ENTITIES = 1
     IMPORT_ENTITIES = 2
-    BUILD_INDEX = 3
-    CLEAR_INDEX = 4
+    CREATE_INDEX = 3
+    DELETE_INDEX = 4
 
   class StateValueValuesEnum(_messages.Enum):
-    """The current state of the Operation.
+    r"""The current state of the Operation.
 
     Values:
       STATE_UNSPECIFIED: Unspecified.
       INITIALIZING: Request is being prepared for processing.
       PROCESSING: Request is actively being processed.
       CANCELLING: Request is in the process of being cancelled after user
-        called longrunning.Operations.CancelOperation on the operation.
+        called google.longrunning.Operations.CancelOperation on the operation.
       FINALIZING: Request has been processed and is in its finalization stage.
       SUCCESSFUL: Request has completed successfully.
       FAILED: Request has finished being processed, but encountered an error.
       CANCELLED: Request has finished being cancelled after user called
-        longrunning.Operations.CancelOperation.
+        google.longrunning.Operations.CancelOperation.
     """
     STATE_UNSPECIFIED = 0
     INITIALIZING = 1
@@ -421,8 +518,8 @@ class GoogleDatastoreAdminV1beta1CommonMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """The client-assigned labels which were provided when the operation was
-    created.  May also include additional labels.
+    r"""The client-assigned labels which were provided when the operation was
+    created. May also include additional labels.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -432,7 +529,428 @@ class GoogleDatastoreAdminV1beta1CommonMetadata(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  endTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 3)
+  startTime = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
+class GoogleDatastoreAdminV1EntityFilter(_messages.Message):
+  r"""Identifies a subset of entities in a project. This is specified as
+  combinations of kinds and namespaces (either or both of which may be all, as
+  described in the following examples). Example usage:  Entire project:
+  kinds=[], namespace_ids=[]  Kinds Foo and Bar in all namespaces:
+  kinds=['Foo', 'Bar'], namespace_ids=[]  Kinds Foo and Bar only in the
+  default namespace:   kinds=['Foo', 'Bar'], namespace_ids=['']  Kinds Foo and
+  Bar in both the default and Baz namespaces:   kinds=['Foo', 'Bar'],
+  namespace_ids=['', 'Baz']  The entire Baz namespace:   kinds=[],
+  namespace_ids=['Baz']
+
+  Fields:
+    kinds: If empty, then this represents all kinds.
+    namespaceIds: An empty list represents all namespaces. This is the
+      preferred usage for projects that don't use namespaces.  An empty string
+      element represents the default namespace. This should be used if the
+      project has data in non-default namespaces, but doesn't want to include
+      them. Each namespace in this list must be unique.
+  """
+
+  kinds = _messages.StringField(1, repeated=True)
+  namespaceIds = _messages.StringField(2, repeated=True)
+
+
+class GoogleDatastoreAdminV1ExportEntitiesMetadata(_messages.Message):
+  r"""Metadata for ExportEntities operations.
+
+  Fields:
+    common: Metadata common to all Datastore Admin operations.
+    entityFilter: Description of which entities are being exported.
+    outputUrlPrefix: Location for the export metadata and data files. This
+      will be the same value as the
+      google.datastore.admin.v1.ExportEntitiesRequest.output_url_prefix field.
+      The final output location is provided in
+      google.datastore.admin.v1.ExportEntitiesResponse.output_url.
+    progressBytes: An estimate of the number of bytes processed.
+    progressEntities: An estimate of the number of entities processed.
+  """
+
+  common = _messages.MessageField('GoogleDatastoreAdminV1CommonMetadata', 1)
+  entityFilter = _messages.MessageField('GoogleDatastoreAdminV1EntityFilter', 2)
+  outputUrlPrefix = _messages.StringField(3)
+  progressBytes = _messages.MessageField('GoogleDatastoreAdminV1Progress', 4)
+  progressEntities = _messages.MessageField('GoogleDatastoreAdminV1Progress', 5)
+
+
+class GoogleDatastoreAdminV1ExportEntitiesRequest(_messages.Message):
+  r"""The request for google.datastore.admin.v1.DatastoreAdmin.ExportEntities.
+
+  Messages:
+    LabelsValue: Client-assigned labels.
+
+  Fields:
+    entityFilter: Description of what data from the project is included in the
+      export.
+    labels: Client-assigned labels.
+    outputUrlPrefix: Required. Location for the export metadata and data
+      files.  The full resource URL of the external storage location.
+      Currently, only Google Cloud Storage is supported. So output_url_prefix
+      should be of the form: `gs://BUCKET_NAME[/NAMESPACE_PATH]`, where
+      `BUCKET_NAME` is the name of the Cloud Storage bucket and
+      `NAMESPACE_PATH` is an optional Cloud Storage namespace path (this is
+      not a Cloud Datastore namespace). For more information about Cloud
+      Storage namespace paths, see [Object name
+      considerations](https://cloud.google.com/storage/docs/naming#object-
+      considerations).  The resulting files will be nested deeper than the
+      specified URL prefix. The final output URL will be provided in the
+      google.datastore.admin.v1.ExportEntitiesResponse.output_url field. That
+      value should be used for subsequent ImportEntities operations.  By
+      nesting the data files deeper, the same Cloud Storage bucket can be used
+      in multiple ExportEntities operations without conflict.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Client-assigned labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  entityFilter = _messages.MessageField('GoogleDatastoreAdminV1EntityFilter', 1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  outputUrlPrefix = _messages.StringField(3)
+
+
+class GoogleDatastoreAdminV1ExportEntitiesResponse(_messages.Message):
+  r"""The response for
+  google.datastore.admin.v1.DatastoreAdmin.ExportEntities.
+
+  Fields:
+    outputUrl: Location of the output metadata file. This can be used to begin
+      an import into Cloud Datastore (this project or another project). See
+      google.datastore.admin.v1.ImportEntitiesRequest.input_url. Only present
+      if the operation completed successfully.
+  """
+
+  outputUrl = _messages.StringField(1)
+
+
+class GoogleDatastoreAdminV1ImportEntitiesMetadata(_messages.Message):
+  r"""Metadata for ImportEntities operations.
+
+  Fields:
+    common: Metadata common to all Datastore Admin operations.
+    entityFilter: Description of which entities are being imported.
+    inputUrl: The location of the import metadata file. This will be the same
+      value as the google.datastore.admin.v1.ExportEntitiesResponse.output_url
+      field.
+    progressBytes: An estimate of the number of bytes processed.
+    progressEntities: An estimate of the number of entities processed.
+  """
+
+  common = _messages.MessageField('GoogleDatastoreAdminV1CommonMetadata', 1)
+  entityFilter = _messages.MessageField('GoogleDatastoreAdminV1EntityFilter', 2)
+  inputUrl = _messages.StringField(3)
+  progressBytes = _messages.MessageField('GoogleDatastoreAdminV1Progress', 4)
+  progressEntities = _messages.MessageField('GoogleDatastoreAdminV1Progress', 5)
+
+
+class GoogleDatastoreAdminV1ImportEntitiesRequest(_messages.Message):
+  r"""The request for google.datastore.admin.v1.DatastoreAdmin.ImportEntities.
+
+  Messages:
+    LabelsValue: Client-assigned labels.
+
+  Fields:
+    entityFilter: Optionally specify which kinds/namespaces are to be
+      imported. If provided, the list must be a subset of the EntityFilter
+      used in creating the export, otherwise a FAILED_PRECONDITION error will
+      be returned. If no filter is specified then all entities from the export
+      are imported.
+    inputUrl: Required. The full resource URL of the external storage
+      location. Currently, only Google Cloud Storage is supported. So
+      input_url should be of the form:
+      `gs://BUCKET_NAME[/NAMESPACE_PATH]/OVERALL_EXPORT_METADATA_FILE`, where
+      `BUCKET_NAME` is the name of the Cloud Storage bucket, `NAMESPACE_PATH`
+      is an optional Cloud Storage namespace path (this is not a Cloud
+      Datastore namespace), and `OVERALL_EXPORT_METADATA_FILE` is the metadata
+      file written by the ExportEntities operation. For more information about
+      Cloud Storage namespace paths, see [Object name
+      considerations](https://cloud.google.com/storage/docs/naming#object-
+      considerations).  For more information, see
+      google.datastore.admin.v1.ExportEntitiesResponse.output_url.
+    labels: Client-assigned labels.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Client-assigned labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  entityFilter = _messages.MessageField('GoogleDatastoreAdminV1EntityFilter', 1)
+  inputUrl = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+
+
+class GoogleDatastoreAdminV1Index(_messages.Message):
+  r"""A minimal index definition.
+
+  Enums:
+    AncestorValueValuesEnum: Required. The index's ancestor mode.  Must not be
+      ANCESTOR_MODE_UNSPECIFIED.
+    StateValueValuesEnum: Output only. The state of the index.
+
+  Fields:
+    ancestor: Required. The index's ancestor mode.  Must not be
+      ANCESTOR_MODE_UNSPECIFIED.
+    indexId: Output only. The resource ID of the index.
+    kind: Required. The entity kind to which this index applies.
+    projectId: Output only. Project ID.
+    properties: Required. An ordered sequence of property names and their
+      index attributes.
+    state: Output only. The state of the index.
+  """
+
+  class AncestorValueValuesEnum(_messages.Enum):
+    r"""Required. The index's ancestor mode.  Must not be
+    ANCESTOR_MODE_UNSPECIFIED.
+
+    Values:
+      ANCESTOR_MODE_UNSPECIFIED: The ancestor mode is unspecified.
+      NONE: Do not include the entity's ancestors in the index.
+      ALL_ANCESTORS: Include all the entity's ancestors in the index.
+    """
+    ANCESTOR_MODE_UNSPECIFIED = 0
+    NONE = 1
+    ALL_ANCESTORS = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the index.
+
+    Values:
+      STATE_UNSPECIFIED: The state is unspecified.
+      CREATING: The index is being created, and cannot be used by queries.
+        There is an active long-running operation for the index. The index is
+        updated when writing an entity. Some index data may exist.
+      READY: The index is ready to be used. The index is updated when writing
+        an entity. The index is fully populated from all stored entities it
+        applies to.
+      DELETING: The index is being deleted, and cannot be used by queries.
+        There is an active long-running operation for the index. The index is
+        not updated when writing an entity. Some index data may exist.
+      ERROR: The index was being created or deleted, but something went wrong.
+        The index cannot by used by queries. There is no active long-running
+        operation for the index, and the most recently finished long-running
+        operation failed. The index is not updated when writing an entity.
+        Some index data may exist.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    ERROR = 4
+
+  ancestor = _messages.EnumField('AncestorValueValuesEnum', 1)
+  indexId = _messages.StringField(2)
+  kind = _messages.StringField(3)
+  projectId = _messages.StringField(4)
+  properties = _messages.MessageField('GoogleDatastoreAdminV1IndexedProperty', 5, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class GoogleDatastoreAdminV1IndexOperationMetadata(_messages.Message):
+  r"""Metadata for Index operations.
+
+  Fields:
+    common: Metadata common to all Datastore Admin operations.
+    indexId: The index resource ID that this operation is acting on.
+    progressEntities: An estimate of the number of entities processed.
+  """
+
+  common = _messages.MessageField('GoogleDatastoreAdminV1CommonMetadata', 1)
+  indexId = _messages.StringField(2)
+  progressEntities = _messages.MessageField('GoogleDatastoreAdminV1Progress', 3)
+
+
+class GoogleDatastoreAdminV1IndexedProperty(_messages.Message):
+  r"""A property of an index.
+
+  Enums:
+    DirectionValueValuesEnum: Required. The indexed property's direction.
+      Must not be DIRECTION_UNSPECIFIED.
+
+  Fields:
+    direction: Required. The indexed property's direction.  Must not be
+      DIRECTION_UNSPECIFIED.
+    name: Required. The property name to index.
+  """
+
+  class DirectionValueValuesEnum(_messages.Enum):
+    r"""Required. The indexed property's direction.  Must not be
+    DIRECTION_UNSPECIFIED.
+
+    Values:
+      DIRECTION_UNSPECIFIED: The direction is unspecified.
+      ASCENDING: The property's values are indexed so as to support sequencing
+        in ascending order and also query by <, >, <=, >=, and =.
+      DESCENDING: The property's values are indexed so as to support
+        sequencing in descending order and also query by <, >, <=, >=, and =.
+    """
+    DIRECTION_UNSPECIFIED = 0
+    ASCENDING = 1
+    DESCENDING = 2
+
+  direction = _messages.EnumField('DirectionValueValuesEnum', 1)
+  name = _messages.StringField(2)
+
+
+class GoogleDatastoreAdminV1ListIndexesResponse(_messages.Message):
+  r"""The response for google.datastore.admin.v1.DatastoreAdmin.ListIndexes.
+
+  Fields:
+    indexes: The indexes.
+    nextPageToken: The standard List next-page token.
+  """
+
+  indexes = _messages.MessageField('GoogleDatastoreAdminV1Index', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleDatastoreAdminV1Progress(_messages.Message):
+  r"""Measures the progress of a particular metric.
+
+  Fields:
+    workCompleted: The amount of work that has been completed. Note that this
+      may be greater than work_estimated.
+    workEstimated: An estimate of how much work needs to be performed. May be
+      zero if the work estimate is unavailable.
+  """
+
+  workCompleted = _messages.IntegerField(1)
+  workEstimated = _messages.IntegerField(2)
+
+
+class GoogleDatastoreAdminV1beta1CommonMetadata(_messages.Message):
+  r"""Metadata common to all Datastore Admin operations.
+
+  Enums:
+    OperationTypeValueValuesEnum: The type of the operation. Can be used as a
+      filter in ListOperationsRequest.
+    StateValueValuesEnum: The current state of the Operation.
+
+  Messages:
+    LabelsValue: The client-assigned labels which were provided when the
+      operation was created. May also include additional labels.
+
+  Fields:
+    endTime: The time the operation ended, either successfully or otherwise.
+    labels: The client-assigned labels which were provided when the operation
+      was created. May also include additional labels.
+    operationType: The type of the operation. Can be used as a filter in
+      ListOperationsRequest.
+    startTime: The time that work began on the operation.
+    state: The current state of the Operation.
+  """
+
+  class OperationTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the operation. Can be used as a filter in
+    ListOperationsRequest.
+
+    Values:
+      OPERATION_TYPE_UNSPECIFIED: Unspecified.
+      EXPORT_ENTITIES: ExportEntities.
+      IMPORT_ENTITIES: ImportEntities.
+    """
+    OPERATION_TYPE_UNSPECIFIED = 0
+    EXPORT_ENTITIES = 1
+    IMPORT_ENTITIES = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The current state of the Operation.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified.
+      INITIALIZING: Request is being prepared for processing.
+      PROCESSING: Request is actively being processed.
+      CANCELLING: Request is in the process of being cancelled after user
+        called google.longrunning.Operations.CancelOperation on the operation.
+      FINALIZING: Request has been processed and is in its finalization stage.
+      SUCCESSFUL: Request has completed successfully.
+      FAILED: Request has finished being processed, but encountered an error.
+      CANCELLED: Request has finished being cancelled after user called
+        google.longrunning.Operations.CancelOperation.
+    """
+    STATE_UNSPECIFIED = 0
+    INITIALIZING = 1
+    PROCESSING = 2
+    CANCELLING = 3
+    FINALIZING = 4
+    SUCCESSFUL = 5
+    FAILED = 6
+    CANCELLED = 7
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The client-assigned labels which were provided when the operation was
+    created. May also include additional labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -452,8 +970,8 @@ class GoogleDatastoreAdminV1beta1CommonMetadata(_messages.Message):
 
 
 class GoogleDatastoreAdminV1beta1EntityFilter(_messages.Message):
-  """Identifies a subset of entities in a project.  This is specified as
-  combinations of kind + namespace (either or both of which may be all, as
+  r"""Identifies a subset of entities in a project. This is specified as
+  combinations of kinds and namespaces (either or both of which may be all, as
   described in the following examples). Example usage:  Entire project:
   kinds=[], namespace_ids=[]  Kinds Foo and Bar in all namespaces:
   kinds=['Foo', 'Bar'], namespace_ids=[]  Kinds Foo and Bar only in the
@@ -464,9 +982,9 @@ class GoogleDatastoreAdminV1beta1EntityFilter(_messages.Message):
 
   Fields:
     kinds: If empty, then this represents all kinds.
-    namespaceIds: An empty list represents all namespaces.  This is the
+    namespaceIds: An empty list represents all namespaces. This is the
       preferred usage for projects that don't use namespaces.  An empty string
-      element represents the default namespace.  This should be used if the
+      element represents the default namespace. This should be used if the
       project has data in non-default namespaces, but doesn't want to include
       them. Each namespace in this list must be unique.
   """
@@ -476,7 +994,7 @@ class GoogleDatastoreAdminV1beta1EntityFilter(_messages.Message):
 
 
 class GoogleDatastoreAdminV1beta1ExportEntitiesMetadata(_messages.Message):
-  """Metadata for ExportEntities operations.
+  r"""Metadata for ExportEntities operations.
 
   Fields:
     common: Metadata common to all Datastore Admin operations.
@@ -498,7 +1016,7 @@ class GoogleDatastoreAdminV1beta1ExportEntitiesMetadata(_messages.Message):
 
 
 class GoogleDatastoreAdminV1beta1ExportEntitiesResponse(_messages.Message):
-  """The response for
+  r"""The response for
   google.datastore.admin.v1beta1.DatastoreAdmin.ExportEntities.
 
   Fields:
@@ -512,7 +1030,7 @@ class GoogleDatastoreAdminV1beta1ExportEntitiesResponse(_messages.Message):
 
 
 class GoogleDatastoreAdminV1beta1ImportEntitiesMetadata(_messages.Message):
-  """Metadata for ImportEntities operations.
+  r"""Metadata for ImportEntities operations.
 
   Fields:
     common: Metadata common to all Datastore Admin operations.
@@ -532,11 +1050,12 @@ class GoogleDatastoreAdminV1beta1ImportEntitiesMetadata(_messages.Message):
 
 
 class GoogleDatastoreAdminV1beta1Progress(_messages.Message):
-  """Measures the progress of a particular metric.
+  r"""Measures the progress of a particular metric.
 
   Fields:
-    workCompleted: Note that this may be greater than work_estimated.
-    workEstimated: An estimate of how much work needs to be performed.  May be
+    workCompleted: The amount of work that has been completed. Note that this
+      may be greater than work_estimated.
+    workEstimated: An estimate of how much work needs to be performed. May be
       zero if the work estimate is unavailable.
   """
 
@@ -545,7 +1064,7 @@ class GoogleDatastoreAdminV1beta1Progress(_messages.Message):
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):
-  """The response message for Operations.ListOperations.
+  r"""The response message for Operations.ListOperations.
 
   Fields:
     nextPageToken: The standard List next-page token.
@@ -558,8 +1077,8 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
 
 
 class GoogleLongrunningOperation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -577,7 +1096,7 @@ class GoogleLongrunningOperation(_messages.Message):
 
   Fields:
     done: If the value is `false`, it means the operation is still in
-      progress. If true, the operation is completed, and either `error` or
+      progress. If `true`, the operation is completed, and either `error` or
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
@@ -588,7 +1107,8 @@ class GoogleLongrunningOperation(_messages.Message):
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
-      the `name` should have the format of `operations/some/unique/name`.
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
     response: The normal response of the operation in case of success.  If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`.  If the original method is standard
@@ -600,7 +1120,7 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -614,7 +1134,7 @@ class GoogleLongrunningOperation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -628,7 +1148,7 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -645,7 +1165,7 @@ class GoogleLongrunningOperation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -665,7 +1185,7 @@ class GoogleLongrunningOperation(_messages.Message):
 
 
 class GqlQuery(_messages.Message):
-  """A [GQL
+  r"""A [GQL
   query](https://cloud.google.com/datastore/docs/apis/gql/gql_reference).
 
   Messages:
@@ -693,7 +1213,7 @@ class GqlQuery(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class NamedBindingsValue(_messages.Message):
-    """For each non-reserved named binding site in the query string, there
+    r"""For each non-reserved named binding site in the query string, there
     must be a named parameter with that name, but not necessarily the inverse.
     Key must match regex `A-Za-z_$*`, must not match regex `__.*__`, and must
     not be `""`.
@@ -707,7 +1227,7 @@ class GqlQuery(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a NamedBindingsValue object.
+      r"""An additional property for a NamedBindingsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -726,7 +1246,7 @@ class GqlQuery(_messages.Message):
 
 
 class GqlQueryParameter(_messages.Message):
-  """A binding parameter for a GQL query.
+  r"""A binding parameter for a GQL query.
 
   Fields:
     cursor: A query cursor. Query cursors are returned in query result
@@ -739,7 +1259,7 @@ class GqlQueryParameter(_messages.Message):
 
 
 class Key(_messages.Message):
-  """A unique identifier for an entity. If a key's partition ID or any of its
+  r"""A unique identifier for an entity. If a key's partition ID or any of its
   path kinds or names are reserved/read-only, the key is reserved/read-only. A
   reserved/read-only key is forbidden in certain documented contexts.
 
@@ -767,7 +1287,7 @@ class Key(_messages.Message):
 
 
 class KindExpression(_messages.Message):
-  """A representation of a kind.
+  r"""A representation of a kind.
 
   Fields:
     name: The name of the kind.
@@ -777,32 +1297,11 @@ class KindExpression(_messages.Message):
 
 
 class LatLng(_messages.Message):
-  """An object representing a latitude/longitude pair. This is expressed as a
+  r"""An object representing a latitude/longitude pair. This is expressed as a
   pair of doubles representing degrees latitude and degrees longitude. Unless
   specified otherwise, this must conform to the <a
   href="http://www.unoosa.org/pdf/icg/2012/template/WGS_84.pdf">WGS84
-  standard</a>. Values must be within normalized ranges.  Example of
-  normalization code in Python:      def NormalizeLongitude(longitude):
-  " " "Wraps decimal degrees longitude to [-180.0, 180.0]." " "       q, r =
-  divmod(longitude, 360.0)       if r > 180.0 or (r == 180.0 and q <= -1.0):
-  return r - 360.0       return r      def NormalizeLatLng(latitude,
-  longitude):       " " "Wraps decimal degrees latitude and longitude to
-  [-90.0, 90.0] and [-180.0, 180.0], respectively." " "       r = latitude %
-  360.0       if r <= 90.0:         return r, NormalizeLongitude(longitude)
-  elif r >= 270.0:         return r - 360, NormalizeLongitude(longitude)
-  else:         return 180 - r, NormalizeLongitude(longitude + 180.0)
-  assert 180.0 == NormalizeLongitude(180.0)     assert -180.0 ==
-  NormalizeLongitude(-180.0)     assert -179.0 == NormalizeLongitude(181.0)
-  assert (0.0, 0.0) == NormalizeLatLng(360.0, 0.0)     assert (0.0, 0.0) ==
-  NormalizeLatLng(-360.0, 0.0)     assert (85.0, 180.0) ==
-  NormalizeLatLng(95.0, 0.0)     assert (-85.0, -170.0) ==
-  NormalizeLatLng(-95.0, 10.0)     assert (90.0, 10.0) ==
-  NormalizeLatLng(90.0, 10.0)     assert (-90.0, -10.0) ==
-  NormalizeLatLng(-90.0, -10.0)     assert (0.0, -170.0) ==
-  NormalizeLatLng(-180.0, 10.0)     assert (0.0, -170.0) ==
-  NormalizeLatLng(180.0, 10.0)     assert (-90.0, 10.0) ==
-  NormalizeLatLng(270.0, 10.0)     assert (90.0, 10.0) ==
-  NormalizeLatLng(-270.0, 10.0)
+  standard</a>. Values must be within normalized ranges.
 
   Fields:
     latitude: The latitude in degrees. It must be in the range [-90.0, +90.0].
@@ -815,10 +1314,10 @@ class LatLng(_messages.Message):
 
 
 class LookupRequest(_messages.Message):
-  """The request for Datastore.Lookup.
+  r"""The request for Datastore.Lookup.
 
   Fields:
-    keys: Keys of entities to look up.
+    keys: Required. Keys of entities to look up.
     readOptions: The options for this lookup request.
   """
 
@@ -827,7 +1326,7 @@ class LookupRequest(_messages.Message):
 
 
 class LookupResponse(_messages.Message):
-  """The response for Datastore.Lookup.
+  r"""The response for Datastore.Lookup.
 
   Fields:
     deferred: A list of keys that were not looked up due to resource
@@ -847,7 +1346,7 @@ class LookupResponse(_messages.Message):
 
 
 class Mutation(_messages.Message):
-  """A mutation to apply to an entity.
+  r"""A mutation to apply to an entity.
 
   Fields:
     baseVersion: The version of the entity that this mutation is being applied
@@ -871,7 +1370,7 @@ class Mutation(_messages.Message):
 
 
 class MutationResult(_messages.Message):
-  """The result of applying a mutation.
+  r"""The result of applying a mutation.
 
   Fields:
     conflictDetected: Whether a conflict was detected for this mutation.
@@ -892,7 +1391,7 @@ class MutationResult(_messages.Message):
 
 
 class PartitionId(_messages.Message):
-  """A partition ID identifies a grouping of entities. The grouping is always
+  r"""A partition ID identifies a grouping of entities. The grouping is always
   by project and namespace, however the namespace ID may be empty.  A
   partition ID contains several dimensions: project ID and namespace ID.
   Partition dimensions:  - May be `""`. - Must be valid UTF-8 bytes. - Must
@@ -914,7 +1413,7 @@ class PartitionId(_messages.Message):
 
 
 class PathElement(_messages.Message):
-  """A (kind, ID/name) pair used to construct a key path.  If either name or
+  r"""A (kind, ID/name) pair used to construct a key path.  If either name or
   ID is set, the element is complete. If neither is set, the element is
   incomplete.
 
@@ -935,7 +1434,7 @@ class PathElement(_messages.Message):
 
 
 class Projection(_messages.Message):
-  """A representation of a property in a projection.
+  r"""A representation of a property in a projection.
 
   Fields:
     property: The property to project.
@@ -945,7 +1444,7 @@ class Projection(_messages.Message):
 
 
 class PropertyFilter(_messages.Message):
-  """A filter on a specific property.
+  r"""A filter on a specific property.
 
   Enums:
     OpValueValuesEnum: The operator to filter by.
@@ -957,7 +1456,7 @@ class PropertyFilter(_messages.Message):
   """
 
   class OpValueValuesEnum(_messages.Enum):
-    """The operator to filter by.
+    r"""The operator to filter by.
 
     Values:
       OPERATOR_UNSPECIFIED: Unspecified. This value must not be used.
@@ -982,7 +1481,7 @@ class PropertyFilter(_messages.Message):
 
 
 class PropertyOrder(_messages.Message):
-  """The desired order for a specific property.
+  r"""The desired order for a specific property.
 
   Enums:
     DirectionValueValuesEnum: The direction to order by. Defaults to
@@ -994,7 +1493,7 @@ class PropertyOrder(_messages.Message):
   """
 
   class DirectionValueValuesEnum(_messages.Enum):
-    """The direction to order by. Defaults to `ASCENDING`.
+    r"""The direction to order by. Defaults to `ASCENDING`.
 
     Values:
       DIRECTION_UNSPECIFIED: Unspecified. This value must not be used.
@@ -1010,7 +1509,7 @@ class PropertyOrder(_messages.Message):
 
 
 class PropertyReference(_messages.Message):
-  """A reference to a property relative to the kind expressions.
+  r"""A reference to a property relative to the kind expressions.
 
   Fields:
     name: The name of the property. If name includes "."s, it may be
@@ -1021,7 +1520,7 @@ class PropertyReference(_messages.Message):
 
 
 class Query(_messages.Message):
-  """A query for entities.
+  r"""A query for entities.
 
   Fields:
     distinctOn: The properties to make distinct. The query results will
@@ -1061,7 +1560,7 @@ class Query(_messages.Message):
 
 
 class QueryResultBatch(_messages.Message):
-  """A batch of results produced by a query.
+  r"""A batch of results produced by a query.
 
   Enums:
     EntityResultTypeValueValuesEnum: The result type for every entity in
@@ -1090,7 +1589,7 @@ class QueryResultBatch(_messages.Message):
   """
 
   class EntityResultTypeValueValuesEnum(_messages.Enum):
-    """The result type for every entity in `entity_results`.
+    r"""The result type for every entity in `entity_results`.
 
     Values:
       RESULT_TYPE_UNSPECIFIED: Unspecified. This value is never used.
@@ -1105,7 +1604,7 @@ class QueryResultBatch(_messages.Message):
     KEY_ONLY = 3
 
   class MoreResultsValueValuesEnum(_messages.Enum):
-    """The state of the query after the current batch.
+    r"""The state of the query after the current batch.
 
     Values:
       MORE_RESULTS_TYPE_UNSPECIFIED: Unspecified. This value is never used.
@@ -1131,8 +1630,12 @@ class QueryResultBatch(_messages.Message):
   snapshotVersion = _messages.IntegerField(7)
 
 
+class ReadOnly(_messages.Message):
+  r"""Options specific to read-only transactions."""
+
+
 class ReadOptions(_messages.Message):
-  """The options shared by read requests.
+  r"""The options shared by read requests.
 
   Enums:
     ReadConsistencyValueValuesEnum: The non-transactional read consistency to
@@ -1147,7 +1650,7 @@ class ReadOptions(_messages.Message):
   """
 
   class ReadConsistencyValueValuesEnum(_messages.Enum):
-    """The non-transactional read consistency to use. Cannot be set to
+    r"""The non-transactional read consistency to use. Cannot be set to
     `STRONG` for global queries.
 
     Values:
@@ -1163,11 +1666,40 @@ class ReadOptions(_messages.Message):
   transaction = _messages.BytesField(2)
 
 
-class RollbackRequest(_messages.Message):
-  """The request for Datastore.Rollback.
+class ReadWrite(_messages.Message):
+  r"""Options specific to read / write transactions.
 
   Fields:
-    transaction: The transaction identifier, returned by a call to
+    previousTransaction: The transaction identifier of the transaction being
+      retried.
+  """
+
+  previousTransaction = _messages.BytesField(1)
+
+
+class ReserveIdsRequest(_messages.Message):
+  r"""The request for Datastore.ReserveIds.
+
+  Fields:
+    databaseId: If not empty, the ID of the database against which to make the
+      request.
+    keys: Required. A list of keys with complete key paths whose numeric IDs
+      should not be auto-allocated.
+  """
+
+  databaseId = _messages.StringField(1)
+  keys = _messages.MessageField('Key', 2, repeated=True)
+
+
+class ReserveIdsResponse(_messages.Message):
+  r"""The response for Datastore.ReserveIds."""
+
+
+class RollbackRequest(_messages.Message):
+  r"""The request for Datastore.Rollback.
+
+  Fields:
+    transaction: Required. The transaction identifier, returned by a call to
       Datastore.BeginTransaction.
   """
 
@@ -1175,12 +1707,12 @@ class RollbackRequest(_messages.Message):
 
 
 class RollbackResponse(_messages.Message):
-  """The response for Datastore.Rollback.
+  r"""The response for Datastore.Rollback.
 (an empty message)."""
 
 
 class RunQueryRequest(_messages.Message):
-  """The request for Datastore.RunQuery.
+  r"""The request for Datastore.RunQuery.
 
   Fields:
     gqlQuery: The GQL query to run.
@@ -1198,7 +1730,7 @@ class RunQueryRequest(_messages.Message):
 
 
 class RunQueryResponse(_messages.Message):
-  """The response for Datastore.RunQuery.
+  r"""The response for Datastore.RunQuery.
 
   Fields:
     batch: A batch of query results (always present).
@@ -1210,7 +1742,7 @@ class RunQueryResponse(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -1220,14 +1752,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -1239,7 +1769,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -1251,7 +1781,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -1263,53 +1793,24 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). The error model is designed to be:
-  - Simple to use and understand for most users - Flexible enough to meet
-  unexpected needs  # Overview  The `Status` message contains three pieces of
-  data: error code, error message, and error details. The error code should be
-  an enum value of google.rpc.Code, but it may accept additional error codes
-  if needed.  The error message should be a developer-facing English message
-  that helps developers *understand* and *resolve* the error. If a localized
-  user-facing error message is needed, put the localized message in the error
-  details or localize it in the client. The optional error details may contain
-  arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` that can be used for common error
-  conditions.  # Language mapping  The `Status` message is the logical
-  representation of the error model, but it is not necessarily the actual wire
-  format. When the `Status` message is exposed in different client libraries
-  and different wire protocols, it can be mapped differently. For example, it
-  will likely be mapped to some exceptions in Java, but more likely mapped to
-  some error codes in C.  # Other uses  The error model and the `Status`
-  message can be used in a variety of environments, either with or without
-  APIs, to provide a consistent developer experience across different
-  environments.  Example uses of this error model include:  - Partial errors.
-  If a service needs to return partial errors to the client,     it may embed
-  the `Status` in the normal response to indicate the partial     errors.  -
-  Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting.  - Batch operations. If a
-  client uses batch request and batch response, the     `Status` message
-  should be used directly inside batch response, one for     each error sub-
-  response.  - Asynchronous operations. If an API call embeds asynchronous
-  operation     results in its response, the status of those operations should
-  be     represented directly using the `Status` message.  - Logging. If some
-  API errors are stored in logs, the message `Status` could     be used
-  directly after any stripping needed for security/privacy reasons.
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details.  You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
 
   Messages:
     DetailsValueListEntry: A DetailsValueListEntry object.
@@ -1325,7 +1826,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -1337,7 +1838,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -1354,8 +1855,22 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class TransactionOptions(_messages.Message):
+  r"""Options for beginning a new transaction.  Transactions can be created
+  explicitly with calls to Datastore.BeginTransaction or implicitly by setting
+  ReadOptions.new_transaction in read requests.
+
+  Fields:
+    readOnly: The transaction should only allow reads.
+    readWrite: The transaction should allow both reads and writes.
+  """
+
+  readOnly = _messages.MessageField('ReadOnly', 1)
+  readWrite = _messages.MessageField('ReadWrite', 2)
+
+
 class Value(_messages.Message):
-  """A message that can hold any of the supported value types and associated
+  r"""A message that can hold any of the supported value types and associated
   metadata.
 
   Enums:
@@ -1389,7 +1904,7 @@ class Value(_messages.Message):
   """
 
   class NullValueValueValuesEnum(_messages.Enum):
-    """A null value.
+    r"""A null value.
 
     Values:
       NULL_VALUE: Null value.

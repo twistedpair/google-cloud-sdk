@@ -24,7 +24,7 @@ class SourcerepoV1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new sourcerepo handle."""
     url = url or self.BASE_URL
     super(SourcerepoV1, self).__init__(
@@ -33,7 +33,8 @@ class SourcerepoV1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.projects_repos = self.ProjectsReposService(self)
     self.projects = self.ProjectsService(self)
 
@@ -48,7 +49,7 @@ class SourcerepoV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a repo in the given project with the given name.
+      r"""Creates a repo in the given project with the given name.
 
 If the named repository already exists, `CreateRepo` returns
 `ALREADY_EXISTS`.
@@ -78,7 +79,7 @@ If the named repository already exists, `CreateRepo` returns
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a repo.
+      r"""Deletes a repo.
 
       Args:
         request: (SourcerepoProjectsReposDeleteRequest) input message
@@ -105,7 +106,7 @@ If the named repository already exists, `CreateRepo` returns
     )
 
     def Get(self, request, global_params=None):
-      """Returns information about a repo.
+      r"""Returns information about a repo.
 
       Args:
         request: (SourcerepoProjectsReposGetRequest) input message
@@ -132,7 +133,7 @@ If the named repository already exists, `CreateRepo` returns
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource.
+      r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -152,7 +153,7 @@ set.
         method_id=u'sourcerepo.projects.repos.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'SourcerepoProjectsReposGetIamPolicyRequest',
@@ -161,7 +162,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Returns all repos belonging to a project. The sizes of the repos are.
+      r"""Returns all repos belonging to a project. The sizes of the repos are.
 not set by ListRepos.  To get the size of a repo, use GetRepo.
 
       Args:
@@ -188,8 +189,35 @@ not set by ListRepos.  To get the size of a repo, use GetRepo.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates information about a repo.
+
+      Args:
+        request: (SourcerepoProjectsReposPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Repo) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/repos/{reposId}',
+        http_method=u'PATCH',
+        method_id=u'sourcerepo.projects.repos.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field=u'updateRepoRequest',
+        request_type_name=u'SourcerepoProjectsReposPatchRequest',
+        response_type_name=u'Repo',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
+      r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
       Args:
@@ -216,8 +244,37 @@ existing policy.
         supports_download=False,
     )
 
+    def Sync(self, request, global_params=None):
+      r"""Synchronize a connected repo.
+
+The response contains SyncRepoMetadata in the metadata field.
+
+      Args:
+        request: (SourcerepoProjectsReposSyncRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Sync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Sync.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/repos/{reposId}:sync',
+        http_method=u'POST',
+        method_id=u'sourcerepo.projects.repos.sync',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:sync',
+        request_field=u'syncRepoRequest',
+        request_type_name=u'SourcerepoProjectsReposSyncRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -254,3 +311,57 @@ permissions, not a NOT_FOUND error.
       super(SourcerepoV1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def GetConfig(self, request, global_params=None):
+      r"""Returns the Cloud Source Repositories configuration of the project.
+
+      Args:
+        request: (SourcerepoProjectsGetConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProjectConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/config',
+        http_method=u'GET',
+        method_id=u'sourcerepo.projects.getConfig',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}/config',
+        request_field='',
+        request_type_name=u'SourcerepoProjectsGetConfigRequest',
+        response_type_name=u'ProjectConfig',
+        supports_download=False,
+    )
+
+    def UpdateConfig(self, request, global_params=None):
+      r"""Updates the Cloud Source Repositories configuration of the project.
+
+      Args:
+        request: (SourcerepoProjectsUpdateConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProjectConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/config',
+        http_method=u'PATCH',
+        method_id=u'sourcerepo.projects.updateConfig',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}/config',
+        request_field=u'updateProjectConfigRequest',
+        request_type_name=u'SourcerepoProjectsUpdateConfigRequest',
+        response_type_name=u'ProjectConfig',
+        supports_download=False,
+    )

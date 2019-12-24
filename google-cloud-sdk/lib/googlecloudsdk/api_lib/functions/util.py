@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,20 +15,35 @@
 
 """A library that is used to support Functions commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
+import argparse
 import functools
 import json
 import os
 import re
-import sys
 
 from apitools.base.py import exceptions as apitools_exceptions
-
-import enum
 from googlecloudsdk.api_lib.functions import exceptions
+from googlecloudsdk.api_lib.functions import operations
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import exceptions as exceptions_util
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions as base_exceptions
+from googlecloudsdk.command_lib.iam import iam_util
+from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import encoding
+
+import six.moves.http_client
+
+_DEPLOY_WAIT_NOTICE = 'Deploying function (may take a while - up to 2 minutes)'
 
 _ENTRY_POINT_NAME_RE = re.compile(
     r'^(?=.{1,128}$)[_a-zA-Z0-9]+(?:\.[_a-zA-Z0-9]+)*$')
@@ -37,7 +53,7 @@ _ENTRY_POINT_NAME_ERROR = (
     'characters long. It can neither begin nor end with a dot (.), '
     'nor contain two consecutive dots (..).')
 
-_FUNCTION_NAME_RE = re.compile(r'^[A-Za-z](?:[-_A-Za-z0-9]{0,46}[A-Za-z0-9])?$')
+_FUNCTION_NAME_RE = re.compile(r'^[A-Za-z](?:[-_A-Za-z0-9]{0,61}[A-Za-z0-9])?$')
 _FUNCTION_NAME_ERROR = (
     'Function name must contain only lower case Latin letters, digits and a '
     'hyphen (-). It must start with letter, must not end with a hyphen, '
@@ -49,116 +65,34 @@ _TOPIC_NAME_ERROR = (
     'the characters - + . _ ~ %. It must start with a letter and be from 3 to '
     '255 characters long.')
 
-_BUCKET_URI_RE = re.compile(
-    r'^(?:gs://)?[a-z\d][a-z\d\._-]{1,230}[a-z\d]/?$')
-_BUCKET_URI_ERROR = (
-    'Bucket must only contain lower case Latin letters, digits and '
-    'characters . _ -. It must start and end with a letter or digit '
-    'and be from 3 to 232 characters long. You may optionally prepend the '
-    'bucket name with gs:// and append / at the end.')
+_BUCKET_RESOURCE_URI_RE = re.compile(r'^projects/_/buckets/.{3,222}$')
 
 _API_NAME = 'cloudfunctions'
 _API_VERSION = 'v1'
 
 
-def GetApiClientInstance():
-  return apis.GetClientInstance(_API_NAME, _API_VERSION)
+def _GetApiVersion(track=calliope_base.ReleaseTrack.GA):  # pylint: disable=unused-argument
+  return _API_VERSION
 
 
-def GetApiMessagesModule():
-  return apis.GetMessagesModule(_API_NAME, _API_VERSION)
+def GetApiClientInstance(track=calliope_base.ReleaseTrack.GA):
+  return apis.GetClientInstance(_API_NAME, _GetApiVersion(track))
 
 
-@enum.unique
-class Resources(enum.Enum):
-
-  class Resource(object):
-
-    def __init__(self, name, collection_id):
-      self.name = name
-      self.collection_id = collection_id
-  TOPIC = Resource('topic', 'pubsub.projects.topics')
-  BUCKET = Resource('bucket', 'cloudfunctions.projects.buckets')
-  PROJECT = Resource('project', 'cloudresourcemanager.projects')
+def GetResourceManagerApiClientInstance():
+  return apis.GetClientInstance('cloudresourcemanager', 'v1')
 
 
-class TriggerProvider(object):
-  """Represents --trigger-provider flag value options."""
-
-  def __init__(self, label, events):
-    self.label = label
-    self.events = events
-    for event in self.events:
-      event.provider = self
-
-  @property
-  def default_event(self):
-    return self.events[0]
+def GetApiMessagesModule(track=calliope_base.ReleaseTrack.GA):
+  return apis.GetMessagesModule(_API_NAME, _GetApiVersion(track))
 
 
-class TriggerEvent(object):
-  """Represents --trigger-event flag value options."""
-
-  # Currently any and only project resource is optional
-  optional_resource_types = [Resources.PROJECT]
-
-  def __init__(self, label, resource_type):
-    self.label = label
-    self.resource_type = resource_type
-
-  @property
-  def event_is_optional(self):
-    return self.provider.default_event == self
-
-  # TODO(b/33097692) Let TriggerEvent know how to handle optional resources.
-  @property
-  def resource_is_optional(self):
-    return self.resource_type in TriggerEvent.optional_resource_types
-
-# Don't use those structures directly. Use registry object instead.
-# By convention, first event type is default.
-_BETA_PROVIDERS = [
-    TriggerProvider('cloud.pubsub', [
-        TriggerEvent('topic.publish', Resources.TOPIC),
-    ]),
-    TriggerProvider('cloud.storage', [
-        TriggerEvent('object.change', Resources.BUCKET),
-    ]),
-]
-
-_ALPHA_PROVIDERS = [
-    TriggerProvider('firebase.auth', [
-        TriggerEvent('user.create', Resources.PROJECT),
-        TriggerEvent('user.delete', Resources.PROJECT),
-    ]),
-    TriggerProvider('firebase.database', [
-        TriggerEvent('data.write', Resources.PROJECT),
-    ])
-]
-
-
-class _TriggerProviderRegistry(object):
-  """This class encapsulates all Event Trigger related functionality."""
-
-  def __init__(self, all_providers):
-    self.providers = all_providers
-
-  def ProvidersLabels(self):
-    return (p.label for p in self.providers)
-
-  def Provider(self, provider):
-    return next((p for p in self.providers if p.label == provider))
-
-  def EventsLabels(self, provider):
-    return (e.label for e in self.Provider(provider).events)
-
-  def Event(self, provider, event):
-    return next((e for e in self.Provider(provider).events if e.label == event))
-
-
-output_trigger_provider_registry = _TriggerProviderRegistry(_BETA_PROVIDERS)
-input_trigger_provider_registry = _TriggerProviderRegistry(
-    _BETA_PROVIDERS + _ALPHA_PROVIDERS)
+def GetFunctionRef(name):
+  return resources.REGISTRY.Parse(
+      name, params={
+          'projectsId': properties.VALUES.core.project.Get(required=True),
+          'locationsId': properties.VALUES.functions.region.Get()},
+      collection='cloudfunctions.projects.locations.functions')
 
 
 _ID_CHAR = '[a-zA-Z0-9_]'
@@ -197,26 +131,17 @@ def GetHttpErrorMessage(error):
       error_info = data['error']
       if 'message' in error_info:
         message = error_info['message']
-      violations = _GetViolationsFromError(error_info)
+      violations = _GetViolationsFromError(error)
       if violations:
         message += '\nProblems:\n' + violations
+      if status == 403:
+        permission_issues = _GetPermissionErrorDetails(error_info)
+        if permission_issues:
+          message += '\nPermission Details:\n' + permission_issues
   except (ValueError, TypeError):
     message = error.content
-  return u'ResponseError: status=[{0}], code=[{1}], message=[{2}]'.format(
+  return 'ResponseError: status=[{0}], code=[{1}], message=[{2}]'.format(
       status, code, encoding.Decode(message))
-
-
-def GetOperationError(error):
-  """Returns a human readable string representation from the operation.
-
-  Args:
-    error: A string representing the raw json of the operation error.
-
-  Returns:
-    A human readable string representation of the error.
-  """
-  return u'OperationError: code={0}, message={1}'.format(
-      error.code, encoding.Decode(error.message))
 
 
 def _ValidateArgumentByRegexOrRaise(argument, regex, error_message):
@@ -270,12 +195,18 @@ def ValidateAndStandarizeBucketUriOrRaise(bucket):
   Raises:
     ArgumentTypeError: If the name provided by user is not valid.
   """
-  bucket = _ValidateArgumentByRegexOrRaise(bucket, _BUCKET_URI_RE,
-                                           _BUCKET_URI_ERROR)
-  if not bucket.endswith('/'):
-    bucket += '/'
-  if not bucket.startswith('gs://'):
-    bucket = 'gs://' + bucket
+  if _BUCKET_RESOURCE_URI_RE.match(bucket):
+    bucket_ref = storage_util.BucketReference.FromUrl(bucket)
+  else:
+    try:
+      bucket_ref = storage_util.BucketReference.FromArgument(
+          bucket, require_prefix=False)
+    except argparse.ArgumentTypeError as e:
+      raise arg_parsers.ArgumentTypeError(
+          "Invalid value '{}': {}".format(bucket, e))
+
+  # strip any extrenuous '/' and append single '/'
+  bucket = bucket_ref.ToUrl().rstrip('/') + '/'
   return bucket
 
 
@@ -306,14 +237,10 @@ def ValidateDirectoryExistsOrRaiseFunctionError(directory):
   """
   if not os.path.exists(directory):
     raise exceptions.FunctionsError(
-        'argument --source: Provided directory does not exist. If '
-        'you intended to provide a path to Google Cloud Repository, you must '
-        'specify the --source-url argument')
+        'argument `--source`: Provided directory does not exist')
   if not os.path.isdir(directory):
     raise exceptions.FunctionsError(
-        'argument --source: Provided path does not point to a directory. If '
-        'you intended to provide a path to Google Cloud Repository, you must '
-        'specify the --source-url argument')
+        'argument `--source`: Provided path does not point to a directory')
   return directory
 
 
@@ -331,28 +258,43 @@ def ValidatePathOrRaise(path):
   return path
 
 
-def _GetViolationsFromError(error_info):
+def _GetViolationsFromError(error):
   """Looks for violations descriptions in error message.
+
+  Args:
+    error: HttpError containing error information.
+  Returns:
+    String of newline-separated violations descriptions.
+  """
+  error_payload = exceptions_util.HttpErrorPayload(error)
+  errors = []
+  errors.extend(
+      ['{}:\n{}'.format(k, v) for k, v in error_payload.violations.items()])
+  errors.extend([
+      '{}:\n{}'.format(k, v) for k, v in error_payload.field_violations.items()
+  ])
+  if errors:
+    return '\n'.join(errors) + '\n'
+  return ''
+
+
+def _GetPermissionErrorDetails(error_info):
+  """Looks for permission denied details in error message.
 
   Args:
     error_info: json containing error information.
   Returns:
-    List of violations descriptions.
+    string containing details on permission issue and suggestions to correct.
   """
-  result = ''
-  details = None
   try:
     if 'details' in error_info:
-      details = error_info['details']
-    for field in details:
-      if 'fieldViolations' in field:
-        violations = field['fieldViolations']
-        for violation in violations:
-          if 'description' in violation:
-            result += violation['description'] + '\n'
+      details = error_info['details'][0]
+      if 'detail' in details:
+        return details['detail']
+
   except (ValueError, TypeError):
     pass
-  return result
+  return None
 
 
 def CatchHTTPErrorRaiseHTTPException(func):
@@ -363,9 +305,8 @@ def CatchHTTPErrorRaiseHTTPException(func):
     try:
       return func(*args, **kwargs)
     except apitools_exceptions.HttpError as error:
-      msg = GetHttpErrorMessage(error)
-      unused_type, unused_value, traceback = sys.exc_info()
-      raise base_exceptions.HttpException, msg, traceback
+      core_exceptions.reraise(
+          base_exceptions.HttpException(GetHttpErrorMessage(error)))
 
   return CatchHTTPErrorRaiseHTTPExceptionFn
 
@@ -379,3 +320,138 @@ def FormatTimestamp(timestamp):
     Formatted timestamp string.
   """
   return re.sub(r'(\.\d{3})\d*Z$', r'\1', timestamp.replace('T', ' '))
+
+
+@CatchHTTPErrorRaiseHTTPException
+def GetFunction(function_name):
+  """Returns the Get method on function response, None if it doesn't exist."""
+  client = GetApiClientInstance()
+  messages = client.MESSAGES_MODULE
+  try:
+    # We got response for a get request so a function exists.
+    return client.projects_locations_functions.Get(
+        messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
+            name=function_name))
+  except apitools_exceptions.HttpError as error:
+    if error.status_code == six.moves.http_client.NOT_FOUND:
+      # The function has not been found.
+      return None
+    raise
+
+
+# TODO(b/139026575): Remove do_every_poll option
+@CatchHTTPErrorRaiseHTTPException
+def WaitForFunctionUpdateOperation(op, do_every_poll=None):
+  """Wait for the specied function update to complete.
+
+  Args:
+    op: Cloud operation to wait on.
+    do_every_poll: function, A function to execute every time we poll.
+  """
+  client = GetApiClientInstance()
+  operations.Wait(op, client.MESSAGES_MODULE, client, _DEPLOY_WAIT_NOTICE,
+                  do_every_poll=do_every_poll)
+
+
+@CatchHTTPErrorRaiseHTTPException
+def PatchFunction(function, fields_to_patch):
+  """Call the api to patch a function based on updated fields.
+
+  Args:
+    function: the function to patch
+    fields_to_patch: the fields to patch on the function
+
+  Returns:
+    The cloud operation for the Patch.
+  """
+  client = GetApiClientInstance()
+  messages = client.MESSAGES_MODULE
+  fields_to_patch_str = ','.join(sorted(fields_to_patch))
+  return client.projects_locations_functions.Patch(
+      messages.CloudfunctionsProjectsLocationsFunctionsPatchRequest(
+          cloudFunction=function,
+          name=function.name,
+          updateMask=fields_to_patch_str,
+      )
+  )
+
+
+@CatchHTTPErrorRaiseHTTPException
+def CreateFunction(function, location):
+  """Call the api to create a function.
+
+  Args:
+    function: the function to create
+    location: location for function
+
+  Returns:
+    Cloud operation for the create.
+  """
+  client = GetApiClientInstance()
+  messages = client.MESSAGES_MODULE
+  return client.projects_locations_functions.Create(
+      messages.CloudfunctionsProjectsLocationsFunctionsCreateRequest(
+          location=location, cloudFunction=function))
+
+
+@CatchHTTPErrorRaiseHTTPException
+def GetFunctionIamPolicy(function_resource_name):
+  client = GetApiClientInstance()
+  messages = client.MESSAGES_MODULE
+  return client.projects_locations_functions.GetIamPolicy(
+      messages.CloudfunctionsProjectsLocationsFunctionsGetIamPolicyRequest(
+          resource=function_resource_name))
+
+
+@CatchHTTPErrorRaiseHTTPException
+def AddFunctionIamPolicyBinding(function_resource_name,
+                                member='allUsers',
+                                role='roles/cloudfunctions.invoker'):
+  client = GetApiClientInstance()
+  messages = client.MESSAGES_MODULE
+  policy = GetFunctionIamPolicy(function_resource_name)
+  iam_util.AddBindingToIamPolicy(messages.Binding, policy, member, role)
+  return client.projects_locations_functions.SetIamPolicy(
+      messages.CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest(
+          resource=function_resource_name,
+          setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy)))
+
+
+@CatchHTTPErrorRaiseHTTPException
+def RemoveFunctionIamPolicyBindingIfFound(
+    function_resource_name,
+    member='allUsers',
+    role='roles/cloudfunctions.invoker'):
+  """Removes the specified policy binding if it is found."""
+  client = GetApiClientInstance()
+  messages = client.MESSAGES_MODULE
+  policy = GetFunctionIamPolicy(function_resource_name)
+  if iam_util.BindingInPolicy(policy, member, role):
+    iam_util.RemoveBindingFromIamPolicy(policy, member, role)
+    client.projects_locations_functions.SetIamPolicy(
+        messages.CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest(
+            resource=function_resource_name,
+            setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy)))
+    return True
+  else:
+    return False
+
+
+@CatchHTTPErrorRaiseHTTPException
+def CanAddFunctionIamPolicyBinding(project):
+  """Returns True iff the caller can add policy bindings for project."""
+  client = GetResourceManagerApiClientInstance()
+  messages = client.MESSAGES_MODULE
+  needed_permissions = [
+      'resourcemanager.projects.getIamPolicy',
+      'resourcemanager.projects.setIamPolicy']
+  iam_request = messages.CloudresourcemanagerProjectsTestIamPermissionsRequest(
+      resource=project,
+      testIamPermissionsRequest=messages.TestIamPermissionsRequest(
+          permissions=needed_permissions))
+  iam_response = client.projects.TestIamPermissions(iam_request)
+  can_add = True
+  for needed_permission in needed_permissions:
+    if needed_permission not in iam_response.permissions:
+      can_add = False
+  return can_add

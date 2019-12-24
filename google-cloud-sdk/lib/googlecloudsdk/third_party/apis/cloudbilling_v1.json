@@ -6,7 +6,7 @@
   "canonicalName": "Cloudbilling",
   "version": "v1",
   "revision": "0",
-  "title": "Google Cloud Billing API",
+  "title": "Cloud Billing API",
   "description": "Allows developers to manage billing for their Google Cloud Platform projects\n    programmatically.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -43,11 +43,6 @@
       ],
       "location": "query"
     },
-    "bearer_token": {
-      "type": "string",
-      "description": "OAuth bearer token.",
-      "location": "query"
-    },
     "callback": {
       "type": "string",
       "description": "JSONP",
@@ -66,12 +61,6 @@
     "oauth_token": {
       "type": "string",
       "description": "OAuth 2.0 token for the current user.",
-      "location": "query"
-    },
-    "pp": {
-      "type": "boolean",
-      "description": "Pretty-print response.",
-      "default": "true",
       "location": "query"
     },
     "prettyPrint": {
@@ -121,7 +110,7 @@
   "schemas": {
     "BillingAccount": {
       "id": "BillingAccount",
-      "description": "A billing account in [Google Cloud\nConsole](https:\/\/console.cloud.google.com\/). You can assign a billing account\nto one or more projects.",
+      "description": "A billing account in [GCP Console](https:\/\/console.cloud.google.com\/).\nYou can assign a billing account to one or more projects.",
       "type": "object",
       "properties": {
         "name": {
@@ -133,7 +122,11 @@
           "type": "boolean"
         },
         "displayName": {
-          "description": "The display name given to the billing account, such as `My Billing\nAccount`. This name is displayed in the Google Cloud Console.",
+          "description": "The display name given to the billing account, such as `My Billing\nAccount`. This name is displayed in the GCP Console.",
+          "type": "string"
+        },
+        "masterBillingAccount": {
+          "description": "If this account is a\n[subaccount](https:\/\/cloud.google.com\/billing\/docs\/concepts), then this\nwill be the resource name of the master billing account that it is being\nresold through.\nOtherwise this will be empty.",
           "type": "string"
         }
       }
@@ -176,7 +169,7 @@
     },
     "ProjectBillingInfo": {
       "id": "ProjectBillingInfo",
-      "description": "Encapsulation of billing information for a Cloud Console project. A project\nhas at most one associated billing account at a time (but a billing account\ncan be assigned to multiple projects).",
+      "description": "Encapsulation of billing information for a GCP Console project. A project\nhas at most one associated billing account at a time (but a billing account\ncan be assigned to multiple projects).",
       "type": "object",
       "properties": {
         "name": {
@@ -194,6 +187,174 @@
         "billingEnabled": {
           "description": "True if the project is associated with an open billing account, to which\nusage on the project is charged. False if the project is associated with a\nclosed billing account, or no billing account at all, and therefore cannot\nuse paid services. This field is read-only.",
           "type": "boolean"
+        }
+      }
+    },
+    "Policy": {
+      "id": "Policy",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access\ncontrols for Google Cloud resources.\n\n\nA `Policy` is a collection of `bindings`. A `binding` binds one or more\n`members` to a single `role`. Members can be user accounts, service accounts,\nGoogle groups, and domains (such as G Suite). A `role` is a named list of\npermissions; each `role` can be an IAM predefined role or a user-created\ncustom role.\n\nOptionally, a `binding` can specify a `condition`, which is a logical\nexpression that allows access to a resource only if the expression evaluates\nto `true`. A condition can add constraints based on attributes of the\nrequest, the resource, or both.\n\n**JSON example:**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/resourcemanager.organizationAdmin\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-project-id@appspot.gserviceaccount.com\"\n          ]\n        },\n        {\n          \"role\": \"roles\/resourcemanager.organizationViewer\",\n          \"members\": [\"user:eve@example.com\"],\n          \"condition\": {\n            \"title\": \"expirable access\",\n            \"description\": \"Does not grant access after Sep 2020\",\n            \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\",\n          }\n        }\n      ],\n      \"etag\": \"BwWWja0YfJA=\",\n      \"version\": 3\n    }\n\n**YAML example:**\n\n    bindings:\n    - members:\n      - user:mike@example.com\n      - group:admins@example.com\n      - domain:google.com\n      - serviceAccount:my-project-id@appspot.gserviceaccount.com\n      role: roles\/resourcemanager.organizationAdmin\n    - members:\n      - user:eve@example.com\n      role: roles\/resourcemanager.organizationViewer\n      condition:\n        title: expirable access\n        description: Does not grant access after Sep 2020\n        expression: request.time < timestamp('2020-10-01T00:00:00.000Z')\n    - etag: BwWWja0YfJA=\n    - version: 3\n\nFor a description of IAM and its features, see the\n[IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Specifies the format of the policy.\n\nValid values are `0`, `1`, and `3`. Requests that specify an invalid value\nare rejected.\n\nAny operation that affects conditional role bindings must specify version\n`3`. This requirement applies to the following operations:\n\n* Getting a policy that includes a conditional role binding\n* Adding a conditional role binding to a policy\n* Changing a conditional role binding in a policy\n* Removing any role binding, with or without a condition, from a policy\n  that includes conditions\n\n**Important:** If you use IAM Conditions, you must include the `etag` field\nwhenever you call `setIamPolicy`. If you omit this field, then IAM allows\nyou to overwrite a version `3` policy with a version `1` policy, and all of\nthe conditions in the version `3` policy are lost.\n\nIf a policy does not include any conditions, operations on that policy may\nspecify any valid version or leave the field unset.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "bindings": {
+          "description": "Associates a list of `members` to a `role`. Optionally, may specify a\n`condition` that determines how and when the `bindings` are applied. Each\nof the `bindings` must contain at least one member.",
+          "type": "array",
+          "items": {
+            "$ref": "Binding"
+          }
+        },
+        "auditConfigs": {
+          "description": "Specifies cloud audit logging configuration for this policy.",
+          "type": "array",
+          "items": {
+            "$ref": "AuditConfig"
+          }
+        },
+        "etag": {
+          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\n**Important:** If you use IAM Conditions, you must include the `etag` field\nwhenever you call `setIamPolicy`. If you omit this field, then IAM allows\nyou to overwrite a version `3` policy with a version `1` policy, and all of\nthe conditions in the version `3` policy are lost.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "Binding": {
+      "id": "Binding",
+      "description": "Associates `members` with a `role`.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
+          "type": "string"
+        },
+        "members": {
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a user that has been recently deleted. For\n   example, `alice@example.com?uid=123456789012345678901`. If the user is\n   recovered, this value reverts to `user:{emailid}` and the recovered user\n   retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus\n   unique identifier) representing a service account that has been recently\n   deleted. For example,\n   `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.\n   If the service account is undeleted, this value reverts to\n   `serviceAccount:{emailid}` and the undeleted service account retains the\n   role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a Google group that has been recently\n   deleted. For example, `admins@example.com?uid=123456789012345678901`. If\n   the group is recovered, this value reverts to `group:{emailid}` and the\n   recovered group retains the role in the binding.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "condition": {
+          "description": "The condition that is associated with this binding.\nNOTE: An unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
+          "$ref": "Expr"
+        }
+      }
+    },
+    "Expr": {
+      "id": "Expr",
+      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
+      "type": "object",
+      "properties": {
+        "expression": {
+          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
+          "type": "string"
+        },
+        "title": {
+          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
+          "type": "string"
+        },
+        "description": {
+          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
+          "type": "string"
+        },
+        "location": {
+          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
+          "type": "string"
+        }
+      }
+    },
+    "AuditConfig": {
+      "id": "AuditConfig",
+      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditLogConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:jose@example.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"sampleservice.googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:aliya@example.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts jose@example.com from DATA_READ logging, and\naliya@example.com from DATA_WRITE logging.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "Specifies a service that will be enabled for audit logging.\nFor example, `storage.googleapis.com`, `cloudsql.googleapis.com`.\n`allServices` is a special value that covers all services.",
+          "type": "string"
+        },
+        "auditLogConfigs": {
+          "description": "The configuration for logging of each type of permission.",
+          "type": "array",
+          "items": {
+            "$ref": "AuditLogConfig"
+          }
+        }
+      }
+    },
+    "AuditLogConfig": {
+      "id": "AuditLogConfig",
+      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:jose@example.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\njose@example.com from DATA_READ logging.",
+      "type": "object",
+      "properties": {
+        "logType": {
+          "description": "The log type that this config enables.",
+          "enumDescriptions": [
+            "Default case. Should never be this.",
+            "Admin reads. Example: CloudIAM getIamPolicy",
+            "Data writes. Example: CloudSQL Users create",
+            "Data reads. Example: CloudSQL Users list"
+          ],
+          "type": "string",
+          "enum": [
+            "LOG_TYPE_UNSPECIFIED",
+            "ADMIN_READ",
+            "DATA_WRITE",
+            "DATA_READ"
+          ]
+        },
+        "exemptedMembers": {
+          "description": "Specifies the identities that do not cause logging for this type of\npermission.\nFollows the same format of Binding.members.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SetIamPolicyRequest": {
+      "id": "SetIamPolicyRequest",
+      "description": "Request message for `SetIamPolicy` method.",
+      "type": "object",
+      "properties": {
+        "policy": {
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of\nthe policy is limited to a few 10s of KB. An empty policy is a\nvalid policy but certain Cloud Platform services (such as Projects)\nmight reject them.",
+          "$ref": "Policy"
+        },
+        "updateMask": {
+          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only\nthe fields in the mask will be modified. If no mask is provided, the\nfollowing default mask is used:\npaths: \"bindings, etag\"\nThis field is only used by Cloud IAM.",
+          "type": "string",
+          "format": "google-fieldmask"
+        }
+      }
+    },
+    "TestIamPermissionsRequest": {
+      "id": "TestIamPermissionsRequest",
+      "description": "Request message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "The set of permissions to check for the `resource`. Permissions with\nwildcards (such as '*' or 'storage.*') are not allowed. For more\ninformation see\n[IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TestIamPermissionsResponse": {
+      "id": "TestIamPermissionsResponse",
+      "description": "Response message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "A subset of `TestPermissionsRequest.permissions` that the caller is\nallowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -230,6 +391,10 @@
         },
         "displayName": {
           "description": "A human readable display name for this service.",
+          "type": "string"
+        },
+        "businessEntityName": {
+          "description": "The business under which the service is offered.\nEx. \"businessEntities\/GCP\", \"businessEntities\/Maps\"",
           "type": "string"
         }
       }
@@ -322,7 +487,7 @@
       "type": "object",
       "properties": {
         "effectiveTime": {
-          "description": "The timestamp from which this pricing was effective.",
+          "description": "The timestamp from which this pricing was effective within the requested\ntime range. This is guaranteed to be greater than or equal to the\nstart_time field in the request and less than the end_time field in the\nrequest. If a time range was not specified in the request this field will\nbe equivalent to a time within the last 12 hours, indicating the latest\npricing info.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -339,7 +504,7 @@
           "$ref": "AggregationInfo"
         },
         "currencyConversionRate": {
-          "description": "Conversion rate for currency conversion, from USD to the currency specified\nin the request. If the currency is not specified this defaults to 1.0.\nExample: USD * currency_conversion_rate = JPY",
+          "description": "Conversion rate used for currency conversion, from USD to the currency\nspecified in the request. This includes any surcharge collected for billing\nin non USD currency. If a currency is not specified in the request this\ndefaults to 1.0.\nExample: USD * currency_conversion_rate = JPY",
           "type": "number",
           "format": "double"
         }
@@ -428,7 +593,6 @@
       "type": "object",
       "properties": {
         "aggregationLevel": {
-
           "enumDescriptions": [
             "",
             "",
@@ -442,7 +606,6 @@
           ]
         },
         "aggregationInterval": {
-
           "enumDescriptions": [
             "",
             "",
@@ -471,7 +634,6 @@
           "path": "v1/{+name}",
           "flatPath": "v1/billingAccounts/{billingAccountsId}",
           "httpMethod": "GET",
-          "description": "Gets information about a billing account. The current authenticated user\nmust be an [owner of the billing\naccount](https:\/\/support.google.com\/cloud\/answer\/4430947).",
           "parameters": {
             "name": {
               "description": "The resource name of the billing account to retrieve. For example,\n`billingAccounts\/012345-567890-ABCDEF`.",
@@ -489,14 +651,14 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Gets information about a billing account. The current authenticated user\nmust be a [viewer of the billing\naccount](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access)."
         },
         "list": {
           "id": "cloudbilling.billingAccounts.list",
           "path": "v1/billingAccounts",
           "flatPath": "v1/billingAccounts",
           "httpMethod": "GET",
-          "description": "Lists the billing accounts that the current authenticated user\n[owns](https:\/\/support.google.com\/cloud\/answer\/4430947).",
           "parameters": {
             "pageSize": {
               "description": "Requested page size. The maximum page size is 100; this is also the\ndefault.",
@@ -508,6 +670,11 @@
               "description": "A token identifying a page of results to return. This should be a\n`next_page_token` value returned from a previous `ListBillingAccounts`\ncall. If unspecified, the first page of results is returned.",
               "location": "query",
               "type": "string"
+            },
+            "filter": {
+              "description": "Options for how to filter the returned billing accounts.\nCurrently this only supports filtering for\n[subaccounts](https:\/\/cloud.google.com\/billing\/docs\/concepts) under a\nsingle provided reseller billing account.\n(e.g. \"master_billing_account=billingAccounts\/012345-678901-ABCDEF\").\nBoolean algebra and other fields are not currently supported.",
+              "location": "query",
+              "type": "string"
             }
           },
           "parameterOrder": [
@@ -517,7 +684,149 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Lists the billing accounts that the current authenticated user has\npermission to\n[view](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access)."
+        },
+        "patch": {
+          "id": "cloudbilling.billingAccounts.patch",
+          "path": "v1/{+name}",
+          "flatPath": "v1/billingAccounts/{billingAccountsId}",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The name of the billing account resource to be updated.",
+              "location": "path",
+              "required": true,
+              "pattern": "^billingAccounts\/[^\/]+$",
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "The update mask applied to the resource.\nOnly \"display_name\" is currently supported.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "BillingAccount"
+          },
+          "response": {
+            "$ref": "BillingAccount"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Updates a billing account's fields.\nCurrently the only field that can be edited is `display_name`.\nThe current authenticated user must have the `billing.accounts.update`\nIAM permission, which is typically given to the\n[administrator](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access)\nof the billing account."
+        },
+        "create": {
+          "id": "cloudbilling.billingAccounts.create",
+          "path": "v1/billingAccounts",
+          "flatPath": "v1/billingAccounts",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "BillingAccount"
+          },
+          "response": {
+            "$ref": "BillingAccount"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Creates a billing account.\nThis method can only be used to create\n[billing subaccounts](https:\/\/cloud.google.com\/billing\/docs\/concepts)\nby GCP resellers.\nWhen creating a subaccount, the current authenticated user must have the\n`billing.accounts.update` IAM permission on the master account, which is\ntypically given to billing account\n[administrators](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access).\nThis method will return an error if the master account has not been\nprovisioned as a reseller account."
+        },
+        "getIamPolicy": {
+          "id": "cloudbilling.billingAccounts.getIamPolicy",
+          "path": "v1/{+resource}:getIamPolicy",
+          "flatPath": "v1/billingAccounts/{billingAccountsId}:getIamPolicy",
+          "httpMethod": "GET",
+          "parameters": {
+            "resource": {
+              "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+              "location": "path",
+              "required": true,
+              "pattern": "^billingAccounts\/[^\/]+$",
+              "type": "string"
+            },
+            "options.requestedPolicyVersion": {
+              "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "parameterOrder": [
+            "resource"
+          ],
+          "response": {
+            "$ref": "Policy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Gets the access control policy for a billing account.\nThe caller must have the `billing.accounts.getIamPolicy` permission on the\naccount, which is often given to billing account\n[viewers](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access)."
+        },
+        "setIamPolicy": {
+          "id": "cloudbilling.billingAccounts.setIamPolicy",
+          "path": "v1/{+resource}:setIamPolicy",
+          "flatPath": "v1/billingAccounts/{billingAccountsId}:setIamPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+            "resource": {
+              "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+              "location": "path",
+              "required": true,
+              "pattern": "^billingAccounts\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "resource"
+          ],
+          "request": {
+            "$ref": "SetIamPolicyRequest"
+          },
+          "response": {
+            "$ref": "Policy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Sets the access control policy for a billing account. Replaces any existing\npolicy.\nThe caller must have the `billing.accounts.setIamPolicy` permission on the\naccount, which is often given to billing account\n[administrators](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access)."
+        },
+        "testIamPermissions": {
+          "id": "cloudbilling.billingAccounts.testIamPermissions",
+          "path": "v1/{+resource}:testIamPermissions",
+          "flatPath": "v1/billingAccounts/{billingAccountsId}:testIamPermissions",
+          "httpMethod": "POST",
+          "parameters": {
+            "resource": {
+              "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+              "location": "path",
+              "required": true,
+              "pattern": "^billingAccounts\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "resource"
+          ],
+          "request": {
+            "$ref": "TestIamPermissionsRequest"
+          },
+          "response": {
+            "$ref": "TestIamPermissionsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Tests the access control policy for a billing account. This method takes\nthe resource and a set of permissions as input and returns the subset of\nthe input permissions that the caller is allowed for that resource."
         }
       }
       ,
@@ -529,7 +838,6 @@
               "path": "v1/{+name}/projects",
               "flatPath": "v1/billingAccounts/{billingAccountsId}/projects",
               "httpMethod": "GET",
-              "description": "Lists the projects associated with a billing account. The current\nauthenticated user must be an [owner of the billing\naccount](https:\/\/support.google.com\/cloud\/answer\/4430947).",
               "parameters": {
                 "name": {
                   "description": "The resource name of the billing account associated with the projects that\nyou want to list. For example, `billingAccounts\/012345-567890-ABCDEF`.",
@@ -558,7 +866,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists the projects associated with a billing account. The current\nauthenticated user must have the `billing.resourceAssociations.list` IAM\npermission, which is often given to billing account\n[viewers](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access)."
             }
           }
         }
@@ -571,7 +880,6 @@
           "path": "v1/{+name}/billingInfo",
           "flatPath": "v1/projects/{projectsId}/billingInfo",
           "httpMethod": "GET",
-          "description": "Gets the billing information for a project. The current authenticated user\nmust have [permission to view the\nproject](https:\/\/cloud.google.com\/docs\/permissions-overview#h.bgs0oxofvnoo\n).",
           "parameters": {
             "name": {
               "description": "The resource name of the project for which billing information is\nretrieved. For example, `projects\/tokyo-rain-123`.",
@@ -589,14 +897,14 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Gets the billing information for a project. The current authenticated user\nmust have [permission to view the\nproject](https:\/\/cloud.google.com\/docs\/permissions-overview#h.bgs0oxofvnoo\n)."
         },
         "updateBillingInfo": {
           "id": "cloudbilling.projects.updateBillingInfo",
           "path": "v1/{+name}/billingInfo",
           "flatPath": "v1/projects/{projectsId}/billingInfo",
           "httpMethod": "PUT",
-          "description": "Sets or updates the billing account associated with a project. You specify\nthe new billing account by setting the `billing_account_name` in the\n`ProjectBillingInfo` resource to the resource name of a billing account.\nAssociating a project with an open billing account enables billing on the\nproject and allows charges for resource usage. If the project already had a\nbilling account, this method changes the billing account used for resource\nusage charges.\n\n*Note:* Incurred charges that have not yet been reported in the transaction\nhistory of the Google Cloud Console may be billed to the new billing\naccount, even if the charge occurred before the new billing account was\nassigned to the project.\n\nThe current authenticated user must have ownership privileges for both the\n[project](https:\/\/cloud.google.com\/docs\/permissions-overview#h.bgs0oxofvnoo\n) and the [billing\naccount](https:\/\/support.google.com\/cloud\/answer\/4430947).\n\nYou can disable billing on the project by setting the\n`billing_account_name` field to empty. This action disassociates the\ncurrent billing account from the project. Any billable activity of your\nin-use services will stop, and your application could stop functioning as\nexpected. Any unbilled charges to date will be billed to the previously\nassociated account. The current authenticated user must be either an owner\nof the project or an owner of the billing account for the project.\n\nNote that associating a project with a *closed* billing account will have\nmuch the same effect as disabling billing on the project: any paid\nresources used by the project will be shut down. Thus, unless you wish to\ndisable billing, you should always call this method with the name of an\n*open* billing account.",
           "parameters": {
             "name": {
               "description": "The resource name of the project associated with the billing information\nthat you want to update. For example, `projects\/tokyo-rain-123`.",
@@ -617,7 +925,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Sets or updates the billing account associated with a project. You specify\nthe new billing account by setting the `billing_account_name` in the\n`ProjectBillingInfo` resource to the resource name of a billing account.\nAssociating a project with an open billing account enables billing on the\nproject and allows charges for resource usage. If the project already had a\nbilling account, this method changes the billing account used for resource\nusage charges.\n\n*Note:* Incurred charges that have not yet been reported in the transaction\nhistory of the GCP Console might be billed to the new billing\naccount, even if the charge occurred before the new billing account was\nassigned to the project.\n\nThe current authenticated user must have ownership privileges for both the\n[project](https:\/\/cloud.google.com\/docs\/permissions-overview#h.bgs0oxofvnoo\n) and the [billing\naccount](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access).\n\nYou can disable billing on the project by setting the\n`billing_account_name` field to empty. This action disassociates the\ncurrent billing account from the project. Any billable activity of your\nin-use services will stop, and your application could stop functioning as\nexpected. Any unbilled charges to date will be billed to the previously\nassociated account. The current authenticated user must be either an owner\nof the project or an owner of the billing account for the project.\n\nNote that associating a project with a *closed* billing account will have\nmuch the same effect as disabling billing on the project: any paid\nresources used by the project will be shut down. Thus, unless you wish to\ndisable billing, you should always call this method with the name of an\n*open* billing account."
         }
       }
     },
@@ -628,7 +937,6 @@
           "path": "v1/services",
           "flatPath": "v1/services",
           "httpMethod": "GET",
-          "description": "Lists all public cloud services.",
           "parameters": {
             "pageSize": {
               "description": "Requested page size. Defaults to 5000.",
@@ -646,7 +954,11 @@
           ],
           "response": {
             "$ref": "ListServicesResponse"
-          }
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Lists all public cloud services."
         }
       }
       ,
@@ -658,7 +970,6 @@
               "path": "v1/{+parent}/skus",
               "flatPath": "v1/services/{servicesId}/skus",
               "httpMethod": "GET",
-              "description": "Lists all publicly available SKUs for a given cloud service.",
               "parameters": {
                 "parent": {
                   "description": "The name of the service.\nExample: \"services\/DA34-426B-A397\"",
@@ -701,7 +1012,11 @@
               ],
               "response": {
                 "$ref": "ListSkusResponse"
-              }
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists all publicly available SKUs for a given cloud service."
             }
           }
         }

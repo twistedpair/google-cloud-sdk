@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +15,13 @@
 
 """A module for walking the Cloud SDK CLI tree."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
+import six
 
 
 class Walker(object):
@@ -65,7 +71,7 @@ class Walker(object):
 
     self._num_visited = 0
     self._progress_callback = (progress_callback or
-                               console_io.ProgressBar.DEFAULT_CALLBACK)
+                               console_io.DefaultProgressBarCallback)
 
   def _GetSubElement(self, top_element, path):
     parts = path.split('.')[1:]
@@ -125,14 +131,19 @@ class Walker(object):
       Returns:
         The return value of the outer Visit() call.
       """
+      if not node.is_group:
+        self._Visit(node, parent, is_group=False)
+        return parent
+
       parent = self._Visit(node, parent, is_group=True)
       commands_and_groups = []
+
       if node.commands:
-        for name, command in node.commands.iteritems():
+        for name, command in six.iteritems(node.commands):
           if _Include(command):
             commands_and_groups.append((name, command, False))
       if node.groups:
-        for name, command in node.groups.iteritems():
+        for name, command in six.iteritems(node.groups):
           if _Include(command, traverse=True):
             commands_and_groups.append((name, command, True))
       for _, command, is_group in sorted(commands_and_groups):
@@ -151,7 +162,7 @@ class Walker(object):
 
   def _Visit(self, node, parent, is_group):
     self._num_visited += 1
-    self._progress_callback(self._num_visited/self._num_nodes)
+    self._progress_callback(self._num_visited // self._num_nodes)
     return self.Visit(node, parent, is_group)
 
   def Visit(self, node, parent, is_group):
@@ -166,7 +177,7 @@ class Walker(object):
 
     Returns:
       A new parent value for the node subtree. This value is the parent arg
-      for the Vistit() calls for the children of this node.
+      for the Visit() calls for the children of this node.
     """
     pass
 

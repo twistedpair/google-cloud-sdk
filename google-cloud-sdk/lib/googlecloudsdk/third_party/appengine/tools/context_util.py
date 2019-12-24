@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,15 +18,9 @@ import json
 import logging
 import os
 import re
+import subprocess
 
-try:
-  # This code is also used in googlecloudsdk, which needs the Python
-  # 2.7-compatabile version of subprocess for CentOS support (which uses
-  # Python 2.6). Other environments (which support Python 2.7) can use the
-  # default version.
-  from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess  # pylint: disable=g-import-not-at-top
-except ImportError:
-  import subprocess  # pylint: disable=g-import-not-at-top
+from googlecloudsdk.third_party.appengine._internal import six_subset
 
 _REMOTE_URL_PATTERN = r'remote\.(.*)\.url'
 
@@ -48,6 +42,8 @@ _GIT_PENDING_CHANGE_PATTERN = (
 CAPTURE_CATEGORY = 'capture'
 REMOTE_REPO_CATEGORY = 'remote_repo'
 CONTEXT_FILENAME = 'source-context.json'
+
+# Keep this global name to protect against unexpected breakages.
 EXT_CONTEXT_FILENAME = 'source-contexts.json'
 
 
@@ -222,7 +218,7 @@ def CalculateExtendedSourceContexts(source_directory):
 
   # Now find any remote URLs that match a Google-hosted source context.
   source_contexts = []
-  for remote_name, remote_url in remote_urls.iteritems():
+  for remote_name, remote_url in remote_urls.items():
     source_context = _ParseSourceContext(
         remote_name, remote_url, source_revision)
     # Only add this to the list if it parsed correctly, and hasn't been seen.
@@ -294,9 +290,7 @@ def BestSourceContext(source_contexts):
 def GetSourceContextFilesCreator(output_dir, source_contexts, source_dir=None):
   """Returns a function to create source context files in the given directory.
 
-  The returned creator function will produce two files: source-context.json and
-  source-contexts.json. See CreateContextFiles below for further discussion on
-  the difference between these two files.
+  The returned creator function will produce one file: source-context.json
 
   Args:
     output_dir: (String) The directory to create the files (usually the yaml
@@ -310,10 +304,9 @@ def GetSourceContextFilesCreator(output_dir, source_contexts, source_dir=None):
         contexts when source_contexts is empty or None. If not specified,
         output_dir will be used instead.
   Returns:
-    callable() - A function that will create source-context.json and
-    source-contexts.json in the given directory. The creator function will
-    return a cleanup function which can be used to delete any files the
-    creator function creates.
+    callable() - A function that will create source-context.json file in the
+    given directory. The creator function will return a cleanup function which
+    can be used to delete any files the creator function creates.
 
     If there are no source_contexts associated with the directory, the creator
     function will not create any files (and the cleanup function it returns
@@ -325,8 +318,7 @@ def GetSourceContextFilesCreator(output_dir, source_contexts, source_dir=None):
   if not source_contexts:
     creators = []
   else:
-    creators = [_GetContextFileCreator(output_dir, source_contexts),
-                _GetExtContextFileCreator(output_dir, source_contexts)]
+    creators = [_GetContextFileCreator(output_dir, source_contexts)]
   def Generate():
     cleanups = [g() for g in creators]
     def Cleanup():
@@ -338,16 +330,9 @@ def GetSourceContextFilesCreator(output_dir, source_contexts, source_dir=None):
 
 def CreateContextFiles(output_dir, source_contexts, overwrite=False,
                        source_dir=None):
-  """Creates source context files in the given directory if possible.
+  """Creates source context file in the given directory if possible.
 
-  Currently, two files will be produced, source-context.json and
-  source-contexts.json. The old-style source-context.json file is deprecated,
-  but will need to be produced until all components are updated to use the new
-  file. This process may take a while because there are Flexible VMs which may
-  be slow to update the debug agent to one that supports the new format.
-
-  The new format supports communicating multiple source contexts with labels to
-  enable the UI to chose the best contexts for a given situation.
+  Currently, only source-context.json file will be produced.
 
   Args:
     output_dir: (String) The directory to create the files (usually the yaml
@@ -370,8 +355,7 @@ def CreateContextFiles(output_dir, source_contexts, overwrite=False,
       return []
   created = []
   for context_filename, context_object in [
-      (CONTEXT_FILENAME, BestSourceContext(source_contexts)),
-      (EXT_CONTEXT_FILENAME, source_contexts)]:
+      (CONTEXT_FILENAME, BestSourceContext(source_contexts))]:
     context_filename = os.path.join(output_dir, context_filename)
     try:
       if overwrite or not os.path.exists(context_filename):
@@ -394,7 +378,10 @@ def _CallGit(cwd, *args):
     The raw output of the command, or None if the command failed.
   """
   try:
-    return subprocess.check_output(['git'] + list(args), cwd=cwd)
+    output = subprocess.check_output(['git'] + list(args), cwd=cwd)
+    if six_subset.PY3:
+      output = output.decode('utf-8')
+    return output
   except (OSError, subprocess.CalledProcessError) as e:
     logging.debug('Could not call git with args %s: %s', args, e)
     return None
@@ -563,21 +550,6 @@ def _GetContextFileCreator(output_dir, contexts):
   """
   name = os.path.join(output_dir, CONTEXT_FILENAME)
   return _GetJsonFileCreator(name, BestSourceContext(contexts))
-
-
-def _GetExtContextFileCreator(output_dir, contexts):
-  """Creates a creator function for an extended source context file.
-
-  Args:
-    output_dir: (String) The name of the directory in which to generate the
-        file. The file will be named source-contexts.json.
-    contexts: ([dict]) A list of ExtendedSourceContext-compatible dicts for json
-        serialization.
-  Returns:
-    A creator function that will create the file.
-  """
-  name = os.path.join(output_dir, EXT_CONTEXT_FILENAME)
-  return _GetJsonFileCreator(name, contexts)
 
 
 def _GetSourceContexts(source_dir):

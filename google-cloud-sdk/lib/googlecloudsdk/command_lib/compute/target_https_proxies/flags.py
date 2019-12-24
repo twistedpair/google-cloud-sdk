@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +14,13 @@
 # limitations under the License.
 """Flags and helpers for the compute target-https-proxies commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util import completers
 
 DEFAULT_LIST_FORMAT = """\
     table(
@@ -33,11 +39,62 @@ class TargetHttpsProxiesCompleter(compute_completers.ListCommandCompleter):
         **kwargs)
 
 
-def TargetHttpsProxyArgument(required=True, plural=False):
+class GlobalTargetHttpsProxiesCompleter(
+    compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(GlobalTargetHttpsProxiesCompleter, self).__init__(
+        collection='compute.targetHttpsProxies',
+        list_command='compute target-https-proxies list --global --uri',
+        **kwargs)
+
+
+class RegionTargetHttpsProxiesCompleter(
+    compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RegionTargetHttpsProxiesCompleter, self).__init__(
+        collection='compute.regionTargetHttpsProxies',
+        list_command='compute target-https-proxies list --filter=region:* --uri',
+        **kwargs)
+
+
+class TargetHttpsProxiesCompleterAlpha(completers.MultiResourceCompleter):
+
+  def __init__(self, **kwargs):
+    super(TargetHttpsProxiesCompleterAlpha, self).__init__(
+        completers=[
+            GlobalTargetHttpsProxiesCompleter, RegionTargetHttpsProxiesCompleter
+        ],
+        **kwargs)
+
+
+def AddProxyBind(parser, default):
+  """Adds the proxy bind argument."""
+  parser.add_argument(
+      '--proxy-bind',
+      action='store_true',
+      default=default,
+      help="""\
+      This flag applies when the load_balancing_scheme of the associated
+      backend service is INTERNAL_SELF_MANAGED. When specified, the envoy binds
+      to the forwarding rule's IP address and port. By default, this flag is
+      off.
+      """)
+
+
+def TargetHttpsProxyArgument(required=True,
+                             plural=False,
+                             include_l7_internal_load_balancing=False):
   return compute_flags.ResourceArgument(
       resource_name='target HTTPS proxy',
-      completer=TargetHttpsProxiesCompleter,
+      completer=TargetHttpsProxiesCompleterAlpha
+      if include_l7_internal_load_balancing else TargetHttpsProxiesCompleter,
       plural=plural,
       custom_plural='target HTTPS proxies',
       required=required,
-      global_collection='compute.targetHttpsProxies')
+      global_collection='compute.targetHttpsProxies',
+      regional_collection='compute.regionTargetHttpsProxies'
+      if include_l7_internal_load_balancing else None,
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
+      if include_l7_internal_load_balancing else None)

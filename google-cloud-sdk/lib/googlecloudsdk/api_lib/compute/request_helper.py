@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2019 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Module for making API requests."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import copy
 import json
 
@@ -19,11 +25,14 @@ from googlecloudsdk.api_lib.compute import batch_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute import waiters
 from googlecloudsdk.core import log
+import six
+from six.moves import zip  # pylint: disable=redefined-builtin
 
 
 def _RequestsAreListRequests(requests):
-  list_requests = [method in ('List', 'AggregatedList')
-                   for _, method, _ in requests]
+  list_requests = [
+      method in ('List', 'AggregatedList') for _, method, _ in requests
+  ]
   if all(list_requests):
     return True
   elif not any(list_requests):
@@ -40,7 +49,7 @@ def _HandleJsonList(response, service, method, errors):
     response: str, The *List response in JSON
     service: The service which responded to *List request
     method: str, Method used to list resources. One of 'List' or
-    'AggregatedList'.
+      'AggregatedList'.
     errors: list, Errors from response will be appended to  this list.
 
   Returns:
@@ -63,7 +72,7 @@ def _HandleJsonList(response, service, method, errors):
   elif method == 'AggregatedList':
     items_field_name = service.GetMethodConfig(
         'AggregatedList').relative_path.split('/')[-1]
-    for scope_result in response['items'].itervalues():
+    for scope_result in six.itervalues(response['items']):
       # If the given scope is unreachable, record the warning
       # message in the errors list.
       warning = scope_result.get('warning', None)
@@ -106,15 +115,14 @@ def _ListCore(requests, http, batch_url, errors, response_handler):
   """Makes a series of list and/or aggregatedList batch requests.
 
   Args:
-    requests: A list of requests to make. Each element must be a 3-element
-      tuple where the first element is the service, the second element is
-      the method ('List' or 'AggregatedList'), and the third element
-      is a protocol buffer representing either a list or aggregatedList
-      request.
+    requests: A list of requests to make. Each element must be a 3-element tuple
+      where the first element is the service, the second element is the method
+      ('List' or 'AggregatedList'), and the third element is a protocol buffer
+      representing either a list or aggregatedList request.
     http: An httplib2.Http-like object.
     batch_url: The handler for making batch requests.
-    errors: A list for capturing errors. If any response contains an error,
-      it is added to this list.
+    errors: A list for capturing errors. If any response contains an error, it
+      is added to this list.
     response_handler: The function to extract information responses.
 
   Yields:
@@ -123,9 +131,7 @@ def _ListCore(requests, http, batch_url, errors, response_handler):
   """
   while requests:
     responses, request_errors = batch_helper.MakeRequests(
-        requests=requests,
-        http=http,
-        batch_url=batch_url)
+        requests=requests, http=http, batch_url=batch_url)
     errors.extend(request_errors)
 
     new_requests = []
@@ -153,15 +159,14 @@ def _List(requests, http, batch_url, errors):
   """Makes a series of list and/or aggregatedList batch requests.
 
   Args:
-    requests: A list of requests to make. Each element must be a 3-element
-      tuple where the first element is the service, the second element is
-      the method ('List' or 'AggregatedList'), and the third element
-      is a protocol buffer representing either a list or aggregatedList
-      request.
+    requests: A list of requests to make. Each element must be a 3-element tuple
+      where the first element is the service, the second element is the method
+      ('List' or 'AggregatedList'), and the third element is a protocol buffer
+      representing either a list or aggregatedList request.
     http: An httplib2.Http-like object.
     batch_url: The handler for making batch requests.
-    errors: A list for capturing errors. If any response contains an error,
-      it is added to this list.
+    errors: A list for capturing errors. If any response contains an error, it
+      is added to this list.
 
   Returns:
     Resources encapsulated as protocol buffers as they are received
@@ -181,15 +186,14 @@ def ListJson(requests, http, batch_url, errors):
   All requests must be sent to the same client - Compute.
 
   Args:
-    requests: A list of requests to make. Each element must be a 3-element
-      tuple where the first element is the service, the second element is
-      the method ('List' or 'AggregatedList'), and the third element
-      is a protocol buffer representing either a list or aggregatedList
-      request.
+    requests: A list of requests to make. Each element must be a 3-element tuple
+      where the first element is the service, the second element is the method
+      ('List' or 'AggregatedList'), and the third element is a protocol buffer
+      representing either a list or aggregatedList request.
     http: An httplib2.Http-like object.
     batch_url: The handler for making batch requests.
-    errors: A list for capturing errors. If any response contains an error,
-      it is added to this list.
+    errors: A list for capturing errors. If any response contains an error, it
+      is added to this list.
 
   Yields:
     Resources in dicts as they are received from the server.
@@ -201,7 +205,12 @@ def ListJson(requests, http, batch_url, errors):
       yield item
 
 
-def MakeRequests(requests, http, batch_url, errors, progress_tracker=None):
+def MakeRequests(requests,
+                 http,
+                 batch_url,
+                 errors,
+                 progress_tracker=None,
+                 followup_overrides=None):
   """Makes one or more requests to the API.
 
   Each request can be either a synchronous API call or an asynchronous
@@ -220,16 +229,18 @@ def MakeRequests(requests, http, batch_url, errors, progress_tracker=None):
   homogenous. Synchronous and asynchronous requests can be mixed.
 
   Args:
-    requests: A list of requests to make. Each element must be a 3-element
-      tuple where the first element is the service, the second element is
-      the string name of the method on the service, and the last element
-      is a protocol buffer representing the request.
+    requests: A list of requests to make. Each element must be a 3-element tuple
+      where the first element is the service, the second element is the string
+      name of the method on the service, and the last element is a protocol
+      buffer representing the request.
     http: An httplib2.Http-like object.
     batch_url: The handler for making batch requests.
-    errors: A list for capturing errors. If any response contains an error,
-      it is added to this list.
+    errors: A list for capturing errors. If any response contains an error, it
+      is added to this list.
     progress_tracker: progress tracker to be ticked while waiting for operations
-                      to finish.
+      to finish.
+    followup_overrides: A list of new resource names to GET once the operation
+      finishes. Generally used in renaming calls.
 
   Yields:
     A response for each request. For deletion requests, no corresponding
@@ -240,50 +251,52 @@ def MakeRequests(requests, http, batch_url, errors, progress_tracker=None):
         requests=requests, http=http, batch_url=batch_url, errors=errors):
       yield item
     return
-
-  # TODO(b/36057059): Delete the batch_helper module and move its logic
-  # here. To do this, we also have to edit the lister module to depend
-  # on this module instead of batch_helper.
   responses, new_errors = batch_helper.MakeRequests(
       requests=requests, http=http, batch_url=batch_url)
   errors.extend(new_errors)
 
   operation_service = None
   resource_service = None
-  project = None
 
   # Collects all operation objects in a list so they can be waited on
   # and yields all non-operation objects since non-operation responses
   # cannot be waited on.
   operations_data = []
 
-  for request, response in zip(requests, responses):
+  if not followup_overrides:
+    followup_overrides = [None for _ in requests]
+  for request, response, followup_override in zip(requests, responses,
+                                                  followup_overrides):
     if response is None:
       continue
 
     service, _, request_body = request
     if (isinstance(response, service.client.MESSAGES_MODULE.Operation) and
         service.__class__.__name__ not in (
-            'GlobalOperationsService',
-            'RegionOperationsService',
-            'ZoneOperationsService',
+            'GlobalOperationsService', 'RegionOperationsService',
+            'ZoneOperationsService', 'GlobalOrganizationOperationsService',
             'GlobalAccountsOperationsService')):
 
       resource_service = service
-      project = request_body.project
-
-      if response.kind == 'clouduseraccounts#operation':
-        operation_service = service.client.globalAccountsOperations
-      elif response.zone:
-        operation_service = service.client.zoneOperations
-      elif response.region:
-        operation_service = service.client.regionOperations
+      project = None
+      if hasattr(request_body, 'project'):
+        project = request_body.project
+        if response.zone:
+          operation_service = service.client.zoneOperations
+        elif response.region:
+          operation_service = service.client.regionOperations
+        else:
+          operation_service = service.client.globalOperations
       else:
-        operation_service = service.client.globalOperations
+        operation_service = service.client.globalOrganizationOperations
 
       operations_data.append(
-          waiters.OperationData(response, project, operation_service,
-                                resource_service))
+          waiters.OperationData(
+              response,
+              operation_service,
+              resource_service,
+              project=project,
+              followup_override=followup_override))
 
     else:
       yield response
@@ -300,5 +313,5 @@ def MakeRequests(requests, http, batch_url, errors, progress_tracker=None):
       yield response
 
     if warnings:
-      log.warn(utils.ConstructList('Some requests generated warnings:',
-                                   warnings))
+      log.warning(
+          utils.ConstructList('Some requests generated warnings:', warnings))

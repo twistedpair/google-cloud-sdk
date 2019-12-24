@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,16 +14,22 @@
 # limitations under the License.
 """Utilities for generating Cloud CDN Signed URLs."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import base64
 import hashlib
 import hmac
 import time
-import urlparse
 
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import http
+from googlecloudsdk.core.util import encoding
+import six.moves.urllib.parse
 
-_URL_SCHEME_MUST_BE_HTTPS_MESSAGE = ('The URL scheme must be HTTPS.')
+_URL_SCHEME_MUST_BE_HTTP_HTTPS_MESSAGE = (
+    'The URL scheme must be either HTTP or HTTPS.')
 _URL_MUST_NOT_HAVE_PARAM_MESSAGE = (
     'The URL must not have a \'{}\' query parameter')
 _URL_MUST_NOT_HAVE_FRAGMENT_MESSAGE = ('The URL must not have a fragment.')
@@ -74,14 +81,15 @@ def SignUrl(url, key_name, encoded_key_value, validity_seconds):
   """
   stripped_url = url.strip()
 
-  parsed_url = urlparse.urlsplit(stripped_url)
-  if parsed_url.scheme != 'https':
-    raise InvalidCdnSignedUrlError(_URL_SCHEME_MUST_BE_HTTPS_MESSAGE)
+  parsed_url = six.moves.urllib.parse.urlsplit(stripped_url)
+  if parsed_url.scheme != 'https' and parsed_url.scheme != 'http':
+    raise InvalidCdnSignedUrlError(_URL_SCHEME_MUST_BE_HTTP_HTTPS_MESSAGE)
 
   if parsed_url.fragment:
     raise InvalidCdnSignedUrlError(_URL_MUST_NOT_HAVE_FRAGMENT_MESSAGE)
 
-  query_params = urlparse.parse_qs(parsed_url.query, keep_blank_values=True)
+  query_params = six.moves.urllib.parse.parse_qs(
+      parsed_url.query, keep_blank_values=True)
 
   for param in _DISALLOWED_QUERY_PARAMETERS:
     if param in query_params:
@@ -100,9 +108,9 @@ def SignUrl(url, key_name, encoded_key_value, validity_seconds):
 
   # Append the signature as another query parameter.
   signature = _GetSignature(
-      base64.urlsafe_b64decode(encoded_key_value), url_to_sign)
+      base64.urlsafe_b64decode(encoded_key_value), url_to_sign.encode('utf-8'))
   return '{url}&Signature={signature}'.format(
-      url=url_to_sign, signature=signature)
+      url=url_to_sign, signature=encoding.Decode(signature))
 
 
 def ValidateSignedUrl(signed_url):

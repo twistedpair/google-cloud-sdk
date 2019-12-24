@@ -6,15 +6,15 @@
   "canonicalName": "Cloud OS Login",
   "version": "v1beta",
   "revision": "0",
-  "title": "Google Cloud OS Login API",
-  "description": "Manages OS login configuration for Google account users.",
+  "title": "Cloud OS Login API",
+  "description": "You can use OS Login to manage access to your VM instances using IAM roles. For more information, read [OS Login](\/compute\/docs\/oslogin\/).",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/compute/docs/oslogin/rest/",
+  "documentationLink": "https://cloud.google.com/compute/docs/oslogin/",
   "protocol": "rest",
   "rootUrl": "https://oslogin.googleapis.com/",
   "servicePath": "",
@@ -44,11 +44,6 @@
       ],
       "location": "query"
     },
-    "bearer_token": {
-      "type": "string",
-      "description": "OAuth bearer token.",
-      "location": "query"
-    },
     "callback": {
       "type": "string",
       "description": "JSONP",
@@ -67,12 +62,6 @@
     "oauth_token": {
       "type": "string",
       "description": "OAuth 2.0 token for the current user.",
-      "location": "query"
-    },
-    "pp": {
-      "type": "boolean",
-      "description": "Pretty-print response.",
-      "default": "true",
       "location": "query"
     },
     "prettyPrint": {
@@ -142,7 +131,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The primary email address that uniquely identifies the user.",
+          "description": "Required. A unique user ID.",
           "type": "string"
         },
         "posixAccounts": {
@@ -158,10 +147,6 @@
           "additionalProperties": {
             "$ref": "SshPublicKey"
           }
-        },
-        "suspended": {
-          "description": "Indicates if the user is suspended. A suspended user cannot log in but\ntheir profile information is retained.",
-          "type": "boolean"
         }
       }
     },
@@ -207,6 +192,24 @@
         "accountId": {
           "description": "Output only. A POSIX account identifier.",
           "type": "string"
+        },
+        "operatingSystemType": {
+          "description": "The operating system type where this account applies.",
+          "enumDescriptions": [
+            "The operating system type associated with the user account information is\nunspecified.",
+            "Linux user account information.",
+            "Windows user account information."
+          ],
+          "type": "string",
+          "enum": [
+            "OPERATING_SYSTEM_TYPE_UNSPECIFIED",
+            "LINUX",
+            "WINDOWS"
+          ]
+        },
+        "name": {
+          "description": "Output only. The canonical resource name.",
+          "type": "string"
         }
       }
     },
@@ -226,6 +229,10 @@
         },
         "fingerprint": {
           "description": "Output only. The SHA-256 fingerprint of the SSH public key.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Output only. The canonical resource name.",
           "type": "string"
         }
       }
@@ -250,13 +257,22 @@
           "path": "v1beta/{+name}/loginProfile",
           "flatPath": "v1beta/users/{usersId}/loginProfile",
           "httpMethod": "GET",
-          "description": "Retrieves the profile information used for logging in to a virtual machine\non Google Compute Engine.",
           "parameters": {
             "name": {
-              "description": "The unique ID for the user in format `users\/{user}`.",
+              "description": "Required. The unique ID for the user in format `users\/{user}`.",
               "location": "path",
               "required": true,
               "pattern": "^users\/[^\/]+$",
+              "type": "string"
+            },
+            "projectId": {
+              "description": "The project ID of the Google Cloud Platform project.",
+              "location": "query",
+              "type": "string"
+            },
+            "systemId": {
+              "description": "A system ID for filtering the results of the request.",
+              "location": "query",
               "type": "string"
             }
           },
@@ -271,14 +287,14 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only",
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
-          ]
+          ],
+          "description": "Retrieves the profile information used for logging in to a virtual machine\non Google Compute Engine."
         },
         "importSshPublicKey": {
           "id": "oslogin.users.importSshPublicKey",
           "path": "v1beta/{+parent}:importSshPublicKey",
           "flatPath": "v1beta/users/{usersId}:importSshPublicKey",
           "httpMethod": "POST",
-          "description": "Adds an SSH public key and returns the profile information. Default POSIX\naccount information is set when no username and UID exist as part of the\nlogin profile.",
           "parameters": {
             "parent": {
               "description": "The unique ID for the user in format `users\/{user}`.",
@@ -305,7 +321,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
-          ]
+          ],
+          "description": "Adds an SSH public key and returns the profile information. Default POSIX\naccount information is set when no username and UID exist as part of the\nlogin profile."
         }
       }
       ,
@@ -317,10 +334,9 @@
               "path": "v1beta/{+name}",
               "flatPath": "v1beta/users/{usersId}/projects/{projectsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a POSIX account.",
               "parameters": {
                 "name": {
-                  "description": "A reference to the POSIX account to update. POSIX accounts are identified\nby the project ID they are associated with. A reference to the POSIX\naccount is in format `users\/{user}\/projects\/{project}`.",
+                  "description": "Required. A reference to the POSIX account to update. POSIX accounts are identified\nby the project ID they are associated with. A reference to the POSIX\naccount is in format `users\/{user}\/projects\/{project}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^users\/[^\/]+\/projects\/[^\/]+$",
@@ -336,7 +352,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/compute"
-              ]
+              ],
+              "description": "Deletes a POSIX account."
             }
           }
         },
@@ -347,10 +364,9 @@
               "path": "v1beta/{+name}",
               "flatPath": "v1beta/users/{usersId}/sshPublicKeys/{sshPublicKeysId}",
               "httpMethod": "DELETE",
-              "description": "Deletes an SSH public key.",
               "parameters": {
                 "name": {
-                  "description": "The fingerprint of the public key to update. Public keys are identified by\ntheir SHA-256 fingerprint. The fingerprint of the public key is in format\n`users\/{user}\/sshPublicKeys\/{fingerprint}`.",
+                  "description": "Required. The fingerprint of the public key to update. Public keys are identified by\ntheir SHA-256 fingerprint. The fingerprint of the public key is in format\n`users\/{user}\/sshPublicKeys\/{fingerprint}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^users\/[^\/]+\/sshPublicKeys\/[^\/]+$",
@@ -366,17 +382,17 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/compute"
-              ]
+              ],
+              "description": "Deletes an SSH public key."
             },
             "get": {
               "id": "oslogin.users.sshPublicKeys.get",
               "path": "v1beta/{+name}",
               "flatPath": "v1beta/users/{usersId}/sshPublicKeys/{sshPublicKeysId}",
               "httpMethod": "GET",
-              "description": "Retrieves an SSH public key.",
               "parameters": {
                 "name": {
-                  "description": "The fingerprint of the public key to retrieve. Public keys are identified\nby their SHA-256 fingerprint. The fingerprint of the public key is in\nformat `users\/{user}\/sshPublicKeys\/{fingerprint}`.",
+                  "description": "Required. The fingerprint of the public key to retrieve. Public keys are identified\nby their SHA-256 fingerprint. The fingerprint of the public key is in\nformat `users\/{user}\/sshPublicKeys\/{fingerprint}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^users\/[^\/]+\/sshPublicKeys\/[^\/]+$",
@@ -392,17 +408,17 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/compute"
-              ]
+              ],
+              "description": "Retrieves an SSH public key."
             },
             "patch": {
               "id": "oslogin.users.sshPublicKeys.patch",
               "path": "v1beta/{+name}",
               "flatPath": "v1beta/users/{usersId}/sshPublicKeys/{sshPublicKeysId}",
               "httpMethod": "PATCH",
-              "description": "Updates an SSH public key and returns the profile information. This method\nsupports patch semantics.",
               "parameters": {
                 "name": {
-                  "description": "The fingerprint of the public key to update. Public keys are identified by\ntheir SHA-256 fingerprint. The fingerprint of the public key is in format\n`users\/{user}\/sshPublicKeys\/{fingerprint}`.",
+                  "description": "Required. The fingerprint of the public key to update. Public keys are identified by\ntheir SHA-256 fingerprint. The fingerprint of the public key is in format\n`users\/{user}\/sshPublicKeys\/{fingerprint}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^users\/[^\/]+\/sshPublicKeys\/[^\/]+$",
@@ -427,7 +443,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/compute"
-              ]
+              ],
+              "description": "Updates an SSH public key and returns the profile information. This method\nsupports patch semantics."
             }
           }
         }

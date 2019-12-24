@@ -24,7 +24,7 @@ class PubsubV1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new pubsub handle."""
     url = url or self.BASE_URL
     super(PubsubV1, self).__init__(
@@ -33,9 +33,11 @@ class PubsubV1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.projects_snapshots = self.ProjectsSnapshotsService(self)
     self.projects_subscriptions = self.ProjectsSubscriptionsService(self)
+    self.projects_topics_snapshots = self.ProjectsTopicsSnapshotsService(self)
     self.projects_topics_subscriptions = self.ProjectsTopicsSubscriptionsService(self)
     self.projects_topics = self.ProjectsTopicsService(self)
     self.projects = self.ProjectsService(self)
@@ -51,20 +53,24 @@ class PubsubV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a snapshot from the requested subscription.
-If the snapshot already exists, returns `ALREADY_EXISTS`.
+      r"""Creates a snapshot from the requested subscription. Snapshots are used in.
+<a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+operations, which allow
+you to manage message acknowledgments in bulk. That is, you can set the
+acknowledgment state of messages in an existing subscription to the state
+captured by a snapshot.
+<br><br>If the snapshot already exists, returns `ALREADY_EXISTS`.
 If the requested subscription doesn't exist, returns `NOT_FOUND`.
 If the backlog in the subscription is too old -- and the resulting snapshot
 would expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned.
-See also the `Snapshot.expire_time` field.
-
-If the name is not provided in the request, the server will assign a random
+See also the `Snapshot.expire_time` field. If the name is not provided in
+the request, the server will assign a random
 name for this snapshot on the same project as the subscription, conforming
 to the
 [resource name
-format](https://cloud.google.com/pubsub/docs/overview#names). The generated
-name is populated in the returned Snapshot object. Note that for REST API
-requests, you must specify a name in the request.
+format](https://cloud.google.com/pubsub/docs/admin#resource_names). The
+generated name is populated in the returned Snapshot object. Note that for
+REST API requests, you must specify a name in the request.
 
       Args:
         request: (PubsubProjectsSnapshotsCreateRequest) input message
@@ -91,7 +97,13 @@ requests, you must specify a name in the request.
     )
 
     def Delete(self, request, global_params=None):
-      """Removes an existing snapshot. All messages retained in the snapshot.
+      r"""Removes an existing snapshot. Snapshots are used in.
+<a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+operations, which allow
+you to manage message acknowledgments in bulk. That is, you can set the
+acknowledgment state of messages in an existing subscription to the state
+captured by a snapshot.<br><br>
+When the snapshot is deleted, all messages retained in the snapshot
 are immediately dropped. After a snapshot is deleted, a new one may be
 created with the same name, but the new one has no association with the old
 snapshot or its subscription, unless the same subscription is specified.
@@ -120,8 +132,39 @@ snapshot or its subscription, unless the same subscription is specified.
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Gets the configuration details of a snapshot. Snapshots are used in.
+<a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+operations, which allow you to manage message acknowledgments in bulk. That
+is, you can set the acknowledgment state of messages in an existing
+subscription to the state captured by a snapshot.
+
+      Args:
+        request: (PubsubProjectsSnapshotsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Snapshot) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/snapshots/{snapshotsId}',
+        http_method=u'GET',
+        method_id=u'pubsub.projects.snapshots.get',
+        ordered_params=[u'snapshot'],
+        path_params=[u'snapshot'],
+        query_params=[],
+        relative_path=u'v1/{+snapshot}',
+        request_field='',
+        request_type_name=u'PubsubProjectsSnapshotsGetRequest',
+        response_type_name=u'Snapshot',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource.
+      r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -141,7 +184,7 @@ set.
         method_id=u'pubsub.projects.snapshots.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'PubsubProjectsSnapshotsGetIamPolicyRequest',
@@ -150,7 +193,12 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Lists the existing snapshots.
+      r"""Lists the existing snapshots. Snapshots are used in.
+<a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+operations, which allow
+you to manage message acknowledgments in bulk. That is, you can set the
+acknowledgment state of messages in an existing subscription to the state
+captured by a snapshot.
 
       Args:
         request: (PubsubProjectsSnapshotsListRequest) input message
@@ -177,8 +225,12 @@ set.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an existing snapshot. Note that certain properties of a.
-snapshot are not modifiable.
+      r"""Updates an existing snapshot. Snapshots are used in.
+<a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+operations, which allow
+you to manage message acknowledgments in bulk. That is, you can set the
+acknowledgment state of messages in an existing subscription to the state
+captured by a snapshot.
 
       Args:
         request: (PubsubProjectsSnapshotsPatchRequest) input message
@@ -205,8 +257,10 @@ snapshot are not modifiable.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
+      r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
+
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
 
       Args:
         request: (PubsubProjectsSnapshotsSetIamPolicyRequest) input message
@@ -233,7 +287,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -276,7 +330,7 @@ may "fail open" without warning.
           }
 
     def Acknowledge(self, request, global_params=None):
-      """Acknowledges the messages associated with the `ack_ids` in the.
+      r"""Acknowledges the messages associated with the `ack_ids` in the.
 `AcknowledgeRequest`. The Pub/Sub system can remove the relevant messages
 from the subscription.
 
@@ -309,16 +363,19 @@ than once will not result in an error.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a subscription to a given topic.
+      r"""Creates a subscription to a given topic. See the.
+<a href="https://cloud.google.com/pubsub/docs/admin#resource_names">
+resource name rules</a>.
 If the subscription already exists, returns `ALREADY_EXISTS`.
 If the corresponding topic doesn't exist, returns `NOT_FOUND`.
 
 If the name is not provided in the request, the server will assign a random
 name for this subscription on the same project as the topic, conforming
 to the
-[resource name format](https://cloud.google.com/pubsub/docs/overview#names).
-The generated name is populated in the returned Subscription object.
-Note that for REST API requests, you must specify a name in the request.
+[resource name
+format](https://cloud.google.com/pubsub/docs/admin#resource_names). The
+generated name is populated in the returned Subscription object. Note that
+for REST API requests, you must specify a name in the request.
 
       Args:
         request: (Subscription) input message
@@ -345,7 +402,7 @@ Note that for REST API requests, you must specify a name in the request.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an existing subscription. All messages retained in the subscription.
+      r"""Deletes an existing subscription. All messages retained in the subscription.
 are immediately dropped. Calls to `Pull` after deletion will return
 `NOT_FOUND`. After a subscription is deleted, a new one may be created with
 the same name, but the new one has no association with the old
@@ -376,7 +433,7 @@ subscription or its topic unless the same topic is specified.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the configuration details of a subscription.
+      r"""Gets the configuration details of a subscription.
 
       Args:
         request: (PubsubProjectsSubscriptionsGetRequest) input message
@@ -403,7 +460,7 @@ subscription or its topic unless the same topic is specified.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource.
+      r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -423,7 +480,7 @@ set.
         method_id=u'pubsub.projects.subscriptions.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'PubsubProjectsSubscriptionsGetIamPolicyRequest',
@@ -432,7 +489,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Lists matching subscriptions.
+      r"""Lists matching subscriptions.
 
       Args:
         request: (PubsubProjectsSubscriptionsListRequest) input message
@@ -459,7 +516,7 @@ set.
     )
 
     def ModifyAckDeadline(self, request, global_params=None):
-      """Modifies the ack deadline for a specific message. This method is useful.
+      r"""Modifies the ack deadline for a specific message. This method is useful.
 to indicate that more time is needed to process a message by the
 subscriber, or to make the message available for redelivery if the
 processing was interrupted. Note that this does not modify the
@@ -490,7 +547,7 @@ subscription-level `ackDeadlineSeconds` used for subsequent messages.
     )
 
     def ModifyPushConfig(self, request, global_params=None):
-      """Modifies the `PushConfig` for a specified subscription.
+      r"""Modifies the `PushConfig` for a specified subscription.
 
 This may be used to change a push subscription to a pull one (signified by
 an empty `PushConfig`) or vice versa, or change the endpoint URL and other
@@ -522,7 +579,7 @@ continuously through the call regardless of changes to the `PushConfig`.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an existing subscription. Note that certain properties of a.
+      r"""Updates an existing subscription. Note that certain properties of a.
 subscription, such as its topic, are not modifiable.
 
       Args:
@@ -550,8 +607,7 @@ subscription, such as its topic, are not modifiable.
     )
 
     def Pull(self, request, global_params=None):
-      """Pulls messages from the server. Returns an empty list if there are no.
-messages available in the backlog. The server may return `UNAVAILABLE` if
+      r"""Pulls messages from the server. The server may return `UNAVAILABLE` if.
 there are too many concurrent pull requests pending for the given
 subscription.
 
@@ -580,8 +636,14 @@ subscription.
     )
 
     def Seek(self, request, global_params=None):
-      """Seeks an existing subscription to a point in time or to a given snapshot,.
-whichever is provided in the request.
+      r"""Seeks an existing subscription to a point in time or to a given snapshot,.
+whichever is provided in the request. Snapshots are used in
+<a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+operations, which allow
+you to manage message acknowledgments in bulk. That is, you can set the
+acknowledgment state of messages in an existing subscription to the state
+captured by a snapshot. Note that both the subscription and the snapshot
+must be on the same topic.
 
       Args:
         request: (PubsubProjectsSubscriptionsSeekRequest) input message
@@ -608,8 +670,10 @@ whichever is provided in the request.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
+      r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
+
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
 
       Args:
         request: (PubsubProjectsSubscriptionsSetIamPolicyRequest) input message
@@ -636,7 +700,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -668,6 +732,48 @@ may "fail open" without warning.
         supports_download=False,
     )
 
+  class ProjectsTopicsSnapshotsService(base_api.BaseApiService):
+    """Service class for the projects_topics_snapshots resource."""
+
+    _NAME = u'projects_topics_snapshots'
+
+    def __init__(self, client):
+      super(PubsubV1.ProjectsTopicsSnapshotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the names of the snapshots on this topic. Snapshots are used in.
+<a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+operations, which allow
+you to manage message acknowledgments in bulk. That is, you can set the
+acknowledgment state of messages in an existing subscription to the state
+captured by a snapshot.
+
+      Args:
+        request: (PubsubProjectsTopicsSnapshotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTopicSnapshotsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/topics/{topicsId}/snapshots',
+        http_method=u'GET',
+        method_id=u'pubsub.projects.topics.snapshots.list',
+        ordered_params=[u'topic'],
+        path_params=[u'topic'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+topic}/snapshots',
+        request_field='',
+        request_type_name=u'PubsubProjectsTopicsSnapshotsListRequest',
+        response_type_name=u'ListTopicSnapshotsResponse',
+        supports_download=False,
+    )
+
   class ProjectsTopicsSubscriptionsService(base_api.BaseApiService):
     """Service class for the projects_topics_subscriptions resource."""
 
@@ -679,7 +785,7 @@ may "fail open" without warning.
           }
 
     def List(self, request, global_params=None):
-      """Lists the name of the subscriptions for this topic.
+      r"""Lists the names of the subscriptions on this topic.
 
       Args:
         request: (PubsubProjectsTopicsSubscriptionsListRequest) input message
@@ -716,7 +822,9 @@ may "fail open" without warning.
           }
 
     def Create(self, request, global_params=None):
-      """Creates the given topic with the given name.
+      r"""Creates the given topic with the given name. See the.
+<a href="https://cloud.google.com/pubsub/docs/admin#resource_names">
+resource name rules</a>.
 
       Args:
         request: (Topic) input message
@@ -743,7 +851,7 @@ may "fail open" without warning.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the topic with the given name. Returns `NOT_FOUND` if the topic.
+      r"""Deletes the topic with the given name. Returns `NOT_FOUND` if the topic.
 does not exist. After a topic is deleted, a new topic may be created with
 the same name; this is an entirely new topic with none of the old
 configuration or subscriptions. Existing subscriptions to this topic are
@@ -774,7 +882,7 @@ not deleted, but their `topic` field is set to `_deleted-topic_`.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the configuration of a topic.
+      r"""Gets the configuration of a topic.
 
       Args:
         request: (PubsubProjectsTopicsGetRequest) input message
@@ -801,7 +909,7 @@ not deleted, but their `topic` field is set to `_deleted-topic_`.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource.
+      r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -821,7 +929,7 @@ set.
         method_id=u'pubsub.projects.topics.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
-        query_params=[],
+        query_params=[u'options_requestedPolicyVersion'],
         relative_path=u'v1/{+resource}:getIamPolicy',
         request_field='',
         request_type_name=u'PubsubProjectsTopicsGetIamPolicyRequest',
@@ -830,7 +938,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Lists matching topics.
+      r"""Lists matching topics.
 
       Args:
         request: (PubsubProjectsTopicsListRequest) input message
@@ -857,7 +965,7 @@ set.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an existing topic. Note that certain properties of a.
+      r"""Updates an existing topic. Note that certain properties of a.
 topic are not modifiable.
 
       Args:
@@ -885,9 +993,8 @@ topic are not modifiable.
     )
 
     def Publish(self, request, global_params=None):
-      """Adds one or more messages to the topic. Returns `NOT_FOUND` if the topic.
-does not exist. The message payload must not be empty; it must contain
- either a non-empty data field, or at least one attribute.
+      r"""Adds one or more messages to the topic. Returns `NOT_FOUND` if the topic.
+does not exist.
 
       Args:
         request: (PubsubProjectsTopicsPublishRequest) input message
@@ -914,8 +1021,10 @@ does not exist. The message payload must not be empty; it must contain
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
+      r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
+
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
 
       Args:
         request: (PubsubProjectsTopicsSetIamPolicyRequest) input message
@@ -942,7 +1051,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 

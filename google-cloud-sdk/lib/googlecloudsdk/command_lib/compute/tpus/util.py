@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,139 +13,106 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """CLI Utilities for cloud tpu commands."""
-from googlecloudsdk.api_lib.compute.tpus import tpu_utils as api_util
-from googlecloudsdk.api_lib.util import waiter
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import os
+from apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.api_lib.services import exceptions
+from googlecloudsdk.api_lib.services import peering
+from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.projects import util as projects_command_util
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
-TPU_NODE_COLLECTION = 'tpu.projects.locations.nodes'
-TPU_LOCATION_COLLECTION = 'tpu.projects.locations'
-TPU_OPERATION_COLLECTION = 'tpu.projects.locations.operations'
-# Note: the URI segment which contains the zone is at position -3
-LIST_FORMAT = """
-     table(
-            name.basename(),
-            name.segment(-3):label=ZONE,
-            acceleratorType.basename():label=ACCELERATOR_TYPE,
-            format('{0}:{1}',ipAddress,port):label=NETWORK_ENDPOINT,
-            network.basename():label=NETWORK,
-            cidrBlock:label=RANGE,
-            state:label=STATUS
-         )
-"""
+
+_PROJECT_LOOKUP_ERROR = ('Error determining VPC peering status '
+                         'for network [{}]: [{}]')
+_PEERING_VALIDATION_ERROR = ('Network [{}] is invalid for use '
+                             'with Service Networking')
 
 
-class TpuOperationsPoller(waiter.CloudOperationPoller):
-  """Poller for Cloud TPU operations API.
+class ServiceNetworkingException(core_exceptions.Error):
+  """Exception for creation failures involving Service Networking/Peering."""
 
-  This is necessary because the core operations library doesn't directly support
-  simple_uri.
+
+def GetMessagesModule(version='v1'):
+  return apis.GetMessagesModule('tpu', version)
+
+
+def StartRequestHook(ref, args, request):
+  """Declarative request hook for TPU Start command."""
+  del ref
+  del args
+  start_request = GetMessagesModule().StartNodeRequest()
+  request.startNodeRequest = start_request
+  return request
+
+
+def StopRequestHook(ref, args, request):
+  """Declarative request hook for TPU Stop command."""
+  del ref
+  del args
+  stop_request = GetMessagesModule().StopNodeRequest()
+  request.stopNodeRequest = stop_request
+  return request
+
+
+def _ParseProjectNumberFromNetwork(network, user_project):
+  """Retrieves the project field from the provided network value."""
+  try:
+    registry = resources.REGISTRY.Clone()
+    network_ref = registry.Parse(network,
+                                 collection='compute.networks')
+    project_identifier = network_ref.project
+  except resources.Error:
+    # If not a parseable resource string, then use user_project
+    project_identifier = user_project
+
+  return projects_command_util.GetProjectNumber(project_identifier)
+
+
+def CreateValidateVPCHook(ref, args, request):
+  """Validates that supplied network has been peered to a GoogleOrganization.
+
+     Uses the Service Networking API to check if the network specified via
+     --network flag has been peered to Google Organization. If it has, proceeds
+     with TPU create operation otherwise will raise ServiceNetworking exception.
+     Check is only valid if --use-service-networking has been specified
+     otherwise check will return immediately.
+
+  Args:
+    ref: Reference to the TPU Node resource to be created.
+    args: Argument namespace.
+    request: TPU Create requests message.
+
+  Returns:
+    request: Passes requests through if args pass validation
+
+  Raises:
+    ServiceNetworkingException: if network is not properly peered
   """
+  del ref
+  service_networking_enabled = args.use_service_networking
+  if service_networking_enabled:
+    project = args.project or properties.VALUES.core.project.Get(required=True)
+    try:
+      network_project_number = _ParseProjectNumberFromNetwork(args.network,
+                                                              project)
 
-  def __init__(self, client):
-    self.client = client
-    super(TpuOperationsPoller, self).__init__(
-        self.client.client.projects_locations_operations,
-        self.client.client.projects_locations_operations)
+      lookup_result = peering.ListConnections(
+          network_project_number, 'servicenetworking.googleapis.com',
+          os.path.basename(args.network))
+    except (exceptions.ListConnectionsPermissionDeniedException,
+            apitools_exceptions.HttpError) as e:
+      raise ServiceNetworkingException(
+          _PROJECT_LOOKUP_ERROR.format(args.network, project, e))
 
-  def Poll(self, operation_ref):
-    return self.client.GetOperation(operation_ref)
+    if not lookup_result:
+      raise ServiceNetworkingException(
+          _PEERING_VALIDATION_ERROR.format(args.network))
 
-  def GetResult(self, operation):
-    """Override."""
-    return operation
-
-
-def Describe(tpu_node, zone=None):
-  """Invoke TPU Get API."""
-  zone = zone or properties.VALUES.compute.zone.GetOrFail
-  tpu_api_client = api_util.TpusClient('v1alpha1')
-  node_ref = resources.REGISTRY.Parse(
-      tpu_node,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'locationsId': zone},
-      collection=TPU_NODE_COLLECTION)
-
-  return tpu_api_client.Get(node_ref)
-
-
-def Delete(tpu_node, zone=None):
-  """Invoke TPU Delete API."""
-  zone = zone or properties.VALUES.compute.zone.GetOrFail
-  tpu_api_client = api_util.TpusClient('v1alpha1')
-  node_ref = resources.REGISTRY.Parse(
-      tpu_node,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'locationsId': zone},
-      collection=TPU_NODE_COLLECTION)
-
-  return WaitForOperation(tpu_api_client.Delete(node_ref), zone)
-
-
-def Reset(tpu_node, zone):
-  """Invoke TPU Reset API."""
-  zone = zone or properties.VALUES.compute.zone.GetOrFail
-  tpu_api_client = api_util.TpusClient('v1alpha1')
-  node_ref = resources.REGISTRY.Parse(
-      tpu_node,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'locationsId': zone},
-      collection=TPU_NODE_COLLECTION)
-
-  return WaitForOperation(tpu_api_client.Reset(node_ref), zone)
-
-
-def List(page_size, limit, zone=None):
-  """Invoke TPU List API."""
-  zone = zone or properties.VALUES.compute.zone.GetOrFail()
-  tpu_api_client = api_util.TpusClient('v1alpha1')
-  location_ref = resources.REGISTRY.Parse(
-      zone,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'locationsId': zone},
-      collection=TPU_LOCATION_COLLECTION)
-
-  return tpu_api_client.List(location_ref, page_size, limit)
-
-
-def WaitForOperation(operation, zone):
-  """Wait for the specified tpu operation."""
-  wait_message = 'Waiting for [{0}] to finish'.format(operation.name)
-  tpu_api_client = api_util.TpusClient('v1alpha1')
-  poller = TpuOperationsPoller(tpu_api_client)
-  operation_ref = resources.REGISTRY.Parse(
-      operation.name,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'locationsId': zone},
-      collection=TPU_OPERATION_COLLECTION)
-  return waiter.WaitFor(poller, operation_ref, wait_message)
-
-
-def Create(name,
-           cidr_range,
-           description=None,
-           network='default',
-           accelerator_type=None,
-           version=None,
-           zone=None):
-  """Invoke TPU Create API and return created resource."""
-  tpu_api_client = api_util.TpusClient('v1alpha1')
-  zone = zone or properties.VALUES.compute.zone.GetOrFail()
-  node_msg = tpu_api_client.messages.Node(cidrBlock=cidr_range,
-                                          network=network,
-                                          acceleratorType=accelerator_type,
-                                          tensorflowVersion=version,
-                                          description=description)
-
-  parent_ref = resources.REGISTRY.Parse(
-      zone,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail},
-      collection=TPU_LOCATION_COLLECTION)
-  return WaitForOperation(tpu_api_client.Create(node_msg, parent_ref, name),
-                          zone)
+  return request

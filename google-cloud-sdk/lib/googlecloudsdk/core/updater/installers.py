@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,11 +15,14 @@
 
 """Implementations of installers for different component types."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import os
 import re
 import ssl
 import tarfile
-import urllib2
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
@@ -28,7 +32,11 @@ from googlecloudsdk.core import url_opener
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files as file_utils
+from googlecloudsdk.core.util import http_encoding
 from googlecloudsdk.core.util import retry
+
+import six
+from six.moves import urllib
 
 
 UPDATE_MANAGER_COMMAND_PATH = 'UPDATE_MANAGER'
@@ -48,7 +56,7 @@ class ComponentDownloadFailedError(Error):
   def __init__(self, component_id, e):
     super(ComponentDownloadFailedError, self).__init__(
         'The component [{component_id}] failed to download.\n\n'.format(
-            component_id=component_id) + str(e))
+            component_id=component_id) + six.text_type(e))
 
 
 class URLFetchError(Error):
@@ -60,7 +68,7 @@ class AuthenticationError(Error):
   """Exception for when the resource is protected by authentication."""
 
   def __init__(self, msg, e):
-    super(AuthenticationError, self).__init__(msg + '\n\n' + str(e))
+    super(AuthenticationError, self).__init__(msg + '\n\n' + six.text_type(e))
 
 
 class UnsupportedSourceError(Error):
@@ -205,18 +213,18 @@ class ComponentInstaller(object):
       os.remove(download_file_path)
 
     (download_callback, install_callback) = (
-        console_io.ProgressBar.SplitProgressBar(progress_callback, [1, 1]))
+        console_io.SplitProgressBar(progress_callback, [1, 1]))
 
     try:
       req = ComponentInstaller.MakeRequest(url, command_path)
       try:
-        total_size = float(req.info().getheader('Content-Length', '0'))
+        total_size = float(req.info().get('Content-length', '0'))
       # pylint: disable=broad-except, We never want progress bars to block an
       # update.
       except Exception:
         total_size = 0
 
-      with open(download_file_path, 'wb') as fp:
+      with file_utils.BinaryFileWriter(download_file_path) as fp:
         # This is the buffer size that shutil.copyfileobj uses.
         buf_size = 16*1024
         total_written = 0
@@ -232,12 +240,14 @@ class ComponentInstaller(object):
 
       download_callback(1)
 
-    except (urllib2.HTTPError, urllib2.URLError, ssl.SSLError) as e:
+    except (urllib.error.HTTPError,
+            urllib.error.URLError,
+            ssl.SSLError) as e:
       raise URLFetchError(e)
 
     with tarfile.open(name=download_file_path) as tar:
       members = tar.getmembers()
-      total_files = float(len(members))
+      total_files = len(members)
 
       files = []
       for num, member in enumerate(members, start=1):
@@ -270,8 +280,9 @@ class ComponentInstaller(object):
       urllib2.Request, The request.
     """
     headers = {
-        'Cache-Control': 'no-cache',
-        'User-Agent': http.MakeUserAgentString(command_path)
+        b'Cache-Control': b'no-cache',
+        b'User-Agent': http_encoding.Encode(
+            http.MakeUserAgentString(command_path))
     }
     timeout = TIMEOUT_IN_SEC
     if command_path == UPDATE_MANAGER_COMMAND_PATH:
@@ -281,9 +292,9 @@ class ComponentInstaller(object):
         url = url.replace(ComponentInstaller.GCS_BROWSER_DL_URL,
                           ComponentInstaller.GCS_API_DL_URL,
                           1)
-      req = urllib2.Request(url, headers=headers)
+      req = urllib.request.Request(url, headers=headers)
       return ComponentInstaller._RawRequest(req, timeout=timeout)
-    except urllib2.HTTPError as e:
+    except urllib.error.HTTPError as e:
       if e.code != 403 or not url.startswith(ComponentInstaller.GCS_API_DL_URL):
         raise e
       try:
@@ -297,9 +308,9 @@ class ComponentInstaller(object):
             'This component requires valid credentials to install.', e)
       try:
         # Retry the download using the credentials.
-        req = urllib2.Request(url, headers=headers)
+        req = urllib.request.Request(url, headers=headers)
         return ComponentInstaller._RawRequest(req, timeout=timeout)
-      except urllib2.HTTPError as e:
+      except urllib.error.HTTPError as e:
         if e.code != 403:
           raise e
         # If we fail again with a 403, that means we used the credentials, but
@@ -316,7 +327,7 @@ to choose another account.""".format(
   @staticmethod
   def _RawRequest(*args, **kwargs):
     def RetryIf(exc_type, exc_value, unused_traceback, unused_state):
-      return exc_type == urllib2.HTTPError and exc_value.code == 404
+      return exc_type == urllib.error.HTTPError and exc_value.code == 404
 
     def StatusUpdate(unused_result, unused_state):
       log.debug('Retrying request...')
@@ -330,5 +341,5 @@ to choose another account.""".format(
     except retry.RetryException as e:
       # last_result is (return value, sys.exc_info)
       if e.last_result[1]:
-        raise e.last_result[1][0], e.last_result[1][1], e.last_result[1][2]
+        exceptions.reraise(e.last_result[1][1], tb=e.last_result[1][2])
       raise

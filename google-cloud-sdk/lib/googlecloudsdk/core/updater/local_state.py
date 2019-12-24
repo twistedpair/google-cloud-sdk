@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +20,10 @@ provides functionality like extracting tar files into the installation and
 tracking when we check for updates.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import compileall
 import errno
 import logging
@@ -35,6 +40,8 @@ from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import snapshots
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
+
+import six
 
 
 class Error(exceptions.Error):
@@ -73,8 +80,8 @@ class PermissionsError(Error):
           operated on, but can't because of insufficient permissions.
     """
     super(PermissionsError, self).__init__(
-        u'{message}: [{path}]\n\nEnsure you have the permissions to access the '
-        u'file and that the file is not in use.'
+        '{message}: [{path}]\n\nEnsure you have the permissions to access the '
+        'file and that the file is not in use.'
         .format(message=message, path=path))
 
 
@@ -95,23 +102,22 @@ def _RaisesPermissionsError(func):
   def _TryFunc(*args, **kwargs):
     try:
       return func(*args, **kwargs)
-    except (OSError, IOError) as e:
-      if e.errno == errno.EACCES:
-        new_exc = PermissionsError(
-            message=e.strerror, path=os.path.abspath(e.filename))
-        # Maintain original stack trace.
-        raise new_exc, None, sys.exc_info()[2]
-      raise
     except shutil.Error as e:
       args = e.args[0][0]
       # unfortunately shutil.Error *only* has formatted strings to inspect.
       # Looking for this substring is looking for errno.EACCES, which has
       # a numeric value of 13.
       if args[2].startswith('[Errno 13]'):
-        new_exc = PermissionsError(
-            message=args[2], path=os.path.abspath(args[0]))
-        # Maintain original stack trace.
-        raise new_exc, None, sys.exc_info()[2]
+        exceptions.reraise(
+            PermissionsError(message=args[2],
+                             path=os.path.abspath(args[0])))
+      raise
+    except (OSError, IOError) as e:
+      if e.errno == errno.EACCES:
+        exceptions.reraise(
+            PermissionsError(
+                message=encoding.Decode(e.strerror),
+                path=encoding.Decode(os.path.abspath(e.filename))))
       raise
   return _TryFunc
 
@@ -190,7 +196,7 @@ class InstallationState(object):
       ValueError: If the given SDK root does not exist.
     """
     if not os.path.isdir(sdk_root):
-      raise ValueError(u'The given Cloud SDK root does not exist: [{0}]'
+      raise ValueError('The given Cloud SDK root does not exist: [{0}]'
                        .format(sdk_root))
 
     self.__sdk_root = encoding.Decode(sdk_root)
@@ -291,8 +297,7 @@ class InstallationState(object):
     """
     self._CreateStateDir()
     (rm_staging_cb, rm_backup_cb, rm_trash_cb, copy_cb) = (
-        console_io.ProgressBar.SplitProgressBar(progress_callback,
-                                                [1, 1, 1, 7]))
+        console_io.SplitProgressBar(progress_callback, [1, 1, 1, 7]))
 
     self._ClearStaging(progress_callback=rm_staging_cb)
     self.ClearBackup(progress_callback=rm_backup_cb)
@@ -303,7 +308,7 @@ class InstallationState(object):
       def __init__(self, progress_callback, total):
         self.count = 0
         self.progress_callback = progress_callback
-        self.total = float(total)
+        self.total = total
 
       # This function must match the signature that shutil expects for the
       # ignore function.
@@ -316,7 +321,7 @@ class InstallationState(object):
       # This takes a little time, so only do it if we are going to report
       # progress.
       dirs = set()
-      for _, manifest in self.InstalledComponents().iteritems():
+      for _, manifest in six.iteritems(self.InstalledComponents()):
         dirs.update(manifest.InstalledDirectories())
       # There is always the root directory itself and the .install directory.
       # In general, there could be in the SDK (if people just put stuff in there
@@ -540,7 +545,7 @@ class InstallationState(object):
     """
     manifest = InstallationManifest(self._state_directory, component_id)
     paths = manifest.InstalledPaths()
-    total_paths = float(len(paths))
+    total_paths = len(paths)
     root = self.__sdk_root
 
     dirs_to_remove = set()
@@ -599,14 +604,18 @@ class InstallationState(object):
     with file_utils.ChDir(self.sdk_root):
       to_compile = [
           os.path.join('bin', 'bootstrapping'),
+          os.path.join('data', 'cli'),
           'lib',
           'platform',
       ]
       for d in to_compile:
-        d = encoding.Decode(d)
         # Using rx to skip unused Python3 directory vendored with gsutil's copy
         # of httplib2.
-        compileall.compile_dir(d, rx=re.compile('python3'), quiet=True)
+        # Using 2 for quiet, in python 2.7 this value is used as a bool in the
+        # implementation and bool(2) is True. Starting in python 3.5 this
+        # parameter was changed to a multilevel value, where 1 hides files
+        # being processed and 2 suppresses output.
+        compileall.compile_dir(d, rx=re.compile('python3'), quiet=2)
 
 
 class InstallationManifest(object):
@@ -641,7 +650,7 @@ class InstallationManifest(object):
         of the install.
       files: list of str, The files that were created by the installation.
     """
-    with open(self.manifest_file, 'w') as fp:
+    with file_utils.FileWriter(self.manifest_file) as fp:
       for f in _NormalizeFileList(files):
         fp.write(f + '\n')
     snapshot.WriteToFile(self.snapshot_file, component_id=self.id)
@@ -686,7 +695,7 @@ class InstallationManifest(object):
     Returns:
       list of str, The files and directories installed by this component.
     """
-    with open(self.manifest_file) as f:
+    with file_utils.FileReader(self.manifest_file) as f:
       files = [line.rstrip() for line in f]
     return files
 
@@ -696,7 +705,7 @@ class InstallationManifest(object):
     Returns:
       set(str), The directories installed by this component.
     """
-    with open(self.manifest_file) as f:
+    with file_utils.FileReader(self.manifest_file) as f:
       dirs = set()
       for line in f:
         norm_file_path = os.path.dirname(line.rstrip())

@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +21,11 @@ Contains things like:
 
 That make interactive debugging with gcloud a dream.
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import code
 import pdb
 # `site` initializes the interactive mode (defines `exit`/`quit`, sets up
@@ -88,9 +94,10 @@ CONSOLES = {
 ################################################################################
 # pylint: disable=g-import-not-at-top
 # pylint: disable=g-bad-import-order
+from googlecloudsdk.core import log  # pylint: disable=unused-import
+from googlecloudsdk.core import properties  # pylint: disable=unused-import
 from googlecloudsdk.core.console import console_io  # pylint: disable=unused-import
 from googlecloudsdk.core.util import files  # pylint: disable=unused-import
-from googlecloudsdk.core import properties  # pylint: disable=unused-import
 # pylint: enable=g-import-not-at-top
 # pylint: enable=g-bad-import-order
 
@@ -118,7 +125,7 @@ def _PopulateApiNamesWithLoadMessage():
   """
   load_apis_message = (
       'Run `{0}()` to load all APIs, including this one.').format(
-          LoadApis.func_name)
+          LoadApis.__name__)
 
   class _LoadApisMessage(object):
 

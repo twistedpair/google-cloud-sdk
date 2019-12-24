@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 
 """Base class for Hive Job."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from apitools.base.py import encoding
 
@@ -77,10 +82,10 @@ class HiveBase(job_base.JobBase):
     if args.queries:
       hive_job.queryList = messages.QueryList(queries=args.queries)
     if args.params:
-      hive_job.scriptVariables = encoding.DictToMessage(
+      hive_job.scriptVariables = encoding.DictToAdditionalPropertyMessage(
           args.params, messages.HiveJob.ScriptVariablesValue)
     if args.properties:
-      hive_job.properties = encoding.DictToMessage(
+      hive_job.properties = encoding.DictToAdditionalPropertyMessage(
           args.properties, messages.HiveJob.PropertiesValue)
 
     job.hiveJob = hive_job

@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -42,17 +43,24 @@ naiive datetimes specify tzinfo=None in all calls that have a timezone kwarg.
 The datetime and/or dateutil modules should have covered all of this.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import datetime
 import re
 
 from dateutil import parser
 from dateutil import tz
 from dateutil.tz import _common as tz_common
+import enum
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import times_data
+
+import six
 
 try:
   from dateutil import tzwin  # pylint: disable=g-import-not-at-top, Windows
@@ -93,8 +101,15 @@ def _StrFtime(dt, fmt):
   """Convert strftime exceptions to Datetime Errors."""
   try:
     return dt.strftime(fmt)
-  except (AttributeError, OverflowError, TypeError, ValueError) as e:
-    raise DateTimeValueError(unicode(e))
+  # With dateutil 2.8, strftime() now raises a UnicodeError when it cannot
+  # decode the string as 'ascii' on Python 2.
+  except (TypeError, UnicodeError) as e:
+    if '%Z' not in fmt:
+      raise DateTimeValueError(six.text_type(e))
+    # Most likely a non-ascii tzname() in python2. Fall back to +-HH:MM.
+    return FormatDateTime(dt, fmt.replace('%Z', '%Ez'))
+  except (AttributeError, OverflowError, ValueError) as e:
+    raise DateTimeValueError(six.text_type(e))
 
 
 def _StrPtime(string, fmt):
@@ -102,9 +117,9 @@ def _StrPtime(string, fmt):
   try:
     return datetime.datetime.strptime(string, fmt)
   except (AttributeError, OverflowError, TypeError) as e:
-    raise DateTimeValueError(unicode(e))
+    raise DateTimeValueError(six.text_type(e))
   except ValueError as e:
-    raise DateTimeSyntaxError(unicode(e))
+    raise DateTimeSyntaxError(six.text_type(e))
 
 
 def FormatDuration(duration, parts=3, precision=3):
@@ -164,7 +179,7 @@ def FormatDurationForJson(duration):
   return num + 's'
 
 
-def ParseDuration(string, calendar=False):
+def ParseDuration(string, calendar=False, default_suffix=None):
   """Parses a duration string and returns a Duration object.
 
   Durations using only hours, miniutes, seconds and microseconds are exact.
@@ -184,6 +199,7 @@ def ParseDuration(string, calendar=False):
   Args:
     string: The ISO 8601 duration/period string to parse.
     calendar: Use duration units larger than hours if True.
+    default_suffix: Use this suffix if string is an unqualified int.
 
   Raises:
     DurationSyntaxError: Invalid duration syntax.
@@ -193,12 +209,18 @@ def ParseDuration(string, calendar=False):
     An iso_duration.Duration object for the given ISO 8601 duration/period
     string.
   """
+  if default_suffix:
+    try:
+      seconds = int(string)
+      string = '{}{}'.format(seconds, default_suffix)
+    except ValueError:
+      pass
   try:
     return iso_duration.Duration(calendar=calendar).Parse(string)
   except (AttributeError, OverflowError) as e:
-    raise DurationValueError(unicode(e))
+    raise DurationValueError(six.text_type(e))
   except ValueError as e:
-    raise DurationSyntaxError(unicode(e))
+    raise DurationSyntaxError(six.text_type(e))
 
 
 def GetDurationFromTimeDelta(delta, calendar=False):
@@ -315,12 +337,18 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
       # Round the fractional part to n digits.
       val = _StrFtime(dt, std_fmt)
       if n and n < len(val):
-        round_format = '{{0:0{n}.0f}}'.format(n=n)
-        rounded = round_format.format(float(val) / 10 ** (len(val) - n))
-        if len(rounded) == n:
-          val = rounded
-        else:
-          val = val[:n]
+        # Explicitly avoiding implementation dependent floating point rounding
+        # diffs.
+        v = int(val[:n])  # The rounded value.
+        f = int(val[n])  # The first digit after the rounded value.
+        if f >= 5:
+          # Round up.
+          v += 1
+        zero_fill_format = '{{0:0{n}d}}'.format(n=n)
+        val = zero_fill_format.format(v)
+        if len(val) > n:
+          # All 9's rounded up by 1 overflowed width. Keep the unrounded value.
+          val = zero_fill_format.format(v - 1)
     elif spec == 's':
       # datetime.strftime('%s') botches tz aware dt!
       val = GetTimeStampFromDateTime(dt)
@@ -424,6 +452,7 @@ def ParseDateTime(string, fmt=None, tzinfo=LOCAL):
   defaults = GetDateTimeDefaults(tzinfo=tzinfo)
   tzgetter = _TzInfoOrOffsetGetter()
 
+  exc = None
   try:
     dt = parser.parse(string, tzinfos=tzgetter.Get, default=defaults)
     if tzinfo and not tzgetter.timezone_was_specified:
@@ -432,9 +461,9 @@ def ParseDateTime(string, fmt=None, tzinfo=LOCAL):
       dt = dt.replace(tzinfo=tzinfo)
     return dt
   except OverflowError as e:
-    exc = DateTimeValueError
+    exc = exceptions.ExceptionContext(DateTimeValueError(six.text_type(e)))
   except (AttributeError, ValueError, TypeError) as e:
-    exc = DateTimeSyntaxError
+    exc = exceptions.ExceptionContext(DateTimeSyntaxError(six.text_type(e)))
     if not tzgetter.timezone_was_specified:
       # Good ole parser.parse() has a tzinfos kwarg that it sometimes ignores.
       # Compensate here when the string ends with a tz.
@@ -443,9 +472,11 @@ def ParseDateTime(string, fmt=None, tzinfo=LOCAL):
         try:
           dt = parser.parse(prefix, default=defaults)
         except OverflowError as e:
-          exc = DateTimeValueError
+          exc = exceptions.ExceptionContext(
+              DateTimeValueError(six.text_type(e)))
         except (AttributeError, ValueError, TypeError) as e:
-          exc = DateTimeSyntaxError
+          exc = exceptions.ExceptionContext(
+              DateTimeSyntaxError(six.text_type(e)))
         else:
           return dt.replace(tzinfo=explicit_tzinfo)
 
@@ -454,7 +485,7 @@ def ParseDateTime(string, fmt=None, tzinfo=LOCAL):
     return ParseDuration(string).GetRelativeDateTime(Now(tzinfo=tzinfo))
   except Error:
     # Not a duration - reraise the datetime parse error.
-    raise exc(unicode(e))
+    exc.Reraise()
 
 
 def GetDateTimeFromTimeStamp(timestamp, tzinfo=LOCAL):
@@ -473,8 +504,11 @@ def GetDateTimeFromTimeStamp(timestamp, tzinfo=LOCAL):
   """
   try:
     return datetime.datetime.fromtimestamp(timestamp, tzinfo)
-  except ValueError as e:
-    raise DateTimeValueError(unicode(e))
+  # From python 3.3, it raises OverflowError instead of ValueError if the
+  # timestamp is out of the range of values supported by C localtime().
+  # It raises OSError instead of ValueError on localtime() failure.
+  except (ValueError, OSError, OverflowError) as e:
+    raise DateTimeValueError(six.text_type(e))
 
 
 def GetTimeStampFromDateTime(dt, tzinfo=LOCAL):
@@ -490,7 +524,7 @@ def GetTimeStampFromDateTime(dt, tzinfo=LOCAL):
   if not dt.tzinfo and tzinfo:
     dt = dt.replace(tzinfo=tzinfo)
   delta = dt - datetime.datetime.fromtimestamp(0, UTC)
-  return iso_duration.GetTotalSecondsFromTimeDelta(delta)
+  return delta.total_seconds()
 
 
 def LocalizeDateTime(dt, tzinfo=LOCAL):
@@ -549,3 +583,41 @@ def TzOffset(offset, name=None):
     A tzinfo for offset seconds east of UTC.
   """
   return tz.tzoffset(name, offset * 60)  # tz.tzoffset needs seconds east of UTC
+
+
+class Weekday(enum.Enum):
+  """Represents a day of the week."""
+
+  MONDAY = 0
+  TUESDAY = 1
+  WEDNESDAY = 2
+  THURSDAY = 3
+  FRIDAY = 4
+  SATURDAY = 5
+  SUNDAY = 6
+
+  @classmethod
+  def Get(cls, day):
+    day = day.upper()
+    value = getattr(cls, day, None)
+    if not value:
+      raise KeyError('[{}] is not a valid Weekday'.format(day))
+    return value
+
+
+def GetWeekdayInTimezone(dt, weekday, tzinfo=LOCAL):
+  """Returns the Weekday for dt in the timezone specified by tzinfo.
+
+  Args:
+    dt: The datetime object that represents the time on weekday.
+    weekday: The day of the week specified as a Weekday enum.
+    tzinfo: The timezone in which to get the new day of the week in.
+
+  Returns:
+    A Weekday that corresponds to dt and weekday pair localized to the timezone
+    specified by dt.
+  """
+  localized_dt = LocalizeDateTime(dt, tzinfo)
+  localized_weekday_offset = dt.weekday() - localized_dt.weekday()
+  localized_weekday_index = (weekday.value - localized_weekday_offset) % 7
+  return Weekday(localized_weekday_index)

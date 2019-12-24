@@ -37,6 +37,8 @@ class FakeSubprocessModule(object):
 class CommandReferenceMapper(object):
   """Command to URL or man page reference mapper base class."""
 
+  __metaclass__ = abc.ABCMeta
+
   def __init__(self, cli, args):
     self.cli = cli
     self.args = args

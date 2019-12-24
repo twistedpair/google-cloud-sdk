@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 
 """Utilities for determining the current platform and architecture."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 import os
 import platform
@@ -42,18 +47,11 @@ class InvalidEnumValue(Error):
         .format(given, enum_type, ', '.join(options)))
 
 
-def GetHomePath():
-  return ExpandHomePath('~')
-
-
-def ExpandHomePath(path):
-  return os.path.expanduser(path)
-
-
 class OperatingSystem(object):
   """An enum representing the operating system you are running on."""
 
   class _OS(object):
+    """A single operating system."""
 
     # pylint: disable=redefined-builtin
     def __init__(self, id, name, file_name):
@@ -63,6 +61,39 @@ class OperatingSystem(object):
 
     def __str__(self):
       return self.id
+
+    def __eq__(self, other):
+      return (isinstance(other, type(self)) and
+              self.id == other.id and
+              self.name == other.name and
+              self.file_name == other.file_name)
+
+    def __hash__(self):
+      return hash(self.id) + hash(self.name) + hash(self.file_name)
+
+    def __ne__(self, other):
+      return not self == other
+
+    @classmethod
+    def _CmpHelper(cls, x, y):
+      """Just a helper equivalent to the cmp() function in Python 2."""
+      return (x > y) - (x < y)
+
+    def __lt__(self, other):
+      return self._CmpHelper(
+          (self.id, self.name, self.file_name),
+          (other.id, other.name, other.file_name)) < 0
+
+    def __gt__(self, other):
+      return self._CmpHelper(
+          (self.id, self.name, self.file_name),
+          (other.id, other.name, other.file_name)) > 0
+
+    def __le__(self, other):
+      return not self.__gt__(other)
+
+    def __ge__(self, other):
+      return not self.__lt__(other)
 
   WINDOWS = _OS('WINDOWS', 'Windows', 'windows')
   MACOSX = _OS('MACOSX', 'Mac OS X', 'darwin')
@@ -134,6 +165,7 @@ class Architecture(object):
   """An enum representing the system architecture you are running on."""
 
   class _ARCH(object):
+    """A single architecture."""
 
     # pylint: disable=redefined-builtin
     def __init__(self, id, name, file_name):
@@ -143,6 +175,39 @@ class Architecture(object):
 
     def __str__(self):
       return self.id
+
+    def __eq__(self, other):
+      return (isinstance(other, type(self)) and
+              self.id == other.id and
+              self.name == other.name and
+              self.file_name == other.file_name)
+
+    def __hash__(self):
+      return hash(self.id) + hash(self.name) + hash(self.file_name)
+
+    def __ne__(self, other):
+      return not self == other
+
+    @classmethod
+    def _CmpHelper(cls, x, y):
+      """Just a helper equivalent to the cmp() function in Python 2."""
+      return (x > y) - (x < y)
+
+    def __lt__(self, other):
+      return self._CmpHelper(
+          (self.id, self.name, self.file_name),
+          (other.id, other.name, other.file_name)) < 0
+
+    def __gt__(self, other):
+      return self._CmpHelper(
+          (self.id, self.name, self.file_name),
+          (other.id, other.name, other.file_name)) > 0
+
+    def __le__(self, other):
+      return not self.__gt__(other)
+
+    def __ge__(self, other):
+      return not self.__lt__(other)
 
   x86 = _ARCH('x86', 'x86', 'x86')
   x86_64 = _ARCH('x86_64', 'x86_64', 'x86_64')
@@ -321,8 +386,16 @@ class PythonVersion(object):
   """
 
   # See class docstring for descriptions of what these mean
-  MIN_REQUIRED_VERSION = (2, 6)
-  MIN_SUPPORTED_VERSION = (2, 7)
+  MIN_REQUIRED_PY2_VERSION = (2, 6)
+  MIN_SUPPORTED_PY2_VERSION = (2, 7)
+  MIN_REQUIRED_PY3_VERSION = (3, 4)
+  MIN_SUPPORTED_PY3_VERSION = (3, 5)
+  ENV_VAR_MESSAGE = """\
+
+If you have a compatible Python interpreter installed, you can use it by setting
+the CLOUDSDK_PYTHON environment variable to point to it.
+
+"""
 
   def __init__(self, version=None):
     if version:
@@ -332,74 +405,77 @@ class PythonVersion(object):
     else:
       self.version = None
 
-  def MinSupportedVersionString(self):
-    return '{0}.{1}.x'.format(PythonVersion.MIN_SUPPORTED_VERSION[0],
-                              PythonVersion.MIN_SUPPORTED_VERSION[1])
+  def SupportedVersionMessage(self):
+    return 'Please use Python version {0}.{1}.x or {2}.{3} and up.'.format(
+        PythonVersion.MIN_SUPPORTED_PY2_VERSION[0],
+        PythonVersion.MIN_SUPPORTED_PY2_VERSION[1],
+        PythonVersion.MIN_SUPPORTED_PY3_VERSION[0],
+        PythonVersion.MIN_SUPPORTED_PY3_VERSION[1])
 
-  def __PrintEnvVarMessage(self):
-    """Prints how to set CLOUDSDK_PYTHON."""
-    sys.stderr.write("""\
-
-If you have a compatible Python interpreter installed, you can use it by setting
-the CLOUDSDK_PYTHON environment variable to point to it.
-
-""")
-
-  def IsCompatible(self, print_errors=True):
+  def IsCompatible(self, raise_exception=False):
     """Ensure that the Python version we are using is compatible.
 
     This will print an error message if not compatible.
 
-    Compatible versions are 2.6 and 2.7. Although we don't guarantee support for
-    2.6 so we want to warn about it.
+    Compatible versions are 2.6 and 2.7 and > 3.4.
+    We don't guarantee support for 2.6 so we want to warn about it.
+    We don't guarantee support for 3.4 so we want to warn about it.
 
     Args:
-      print_errors: bool, if False disable the error messages about not being
-          compatible..
+      raise_exception: bool, True to raise an exception rather than printing
+        the error and exiting.
+
+    Raises:
+      Error: If not compatible and raise_exception is True.
 
     Returns:
       bool, True if the version is valid, False otherwise.
     """
     error = None
     if not self.version:
+      # We don't know the version, not a good sign.
       error = ('ERROR: Your current version of Python is not compatible with '
-               'the Google Cloud SDK. Please upgrade to Python {0}\n'
-               .format(self.MinSupportedVersionString()))
-    elif self.version[0] >= 3:
-      error = ('ERROR: Python 3 and later is not compatible with by the Google '
-               'Cloud SDK. Please use a Python {0} version.\n'
-               .format(self.MinSupportedVersionString()))
-    elif self.version < PythonVersion.MIN_REQUIRED_VERSION:
-      error = ('ERROR: Python {0}.{1} is not compatible with the Google Cloud '
-               'SDK. Please upgrade to Python {2}\n'
-               .format(self.version[0], self.version[1],
-                       self.MinSupportedVersionString()))
+               'the Google Cloud SDK. {0}\n'
+               .format(self.SupportedVersionMessage()))
+    else:
+      if self.version[0] < 3:
+        # Python 2 Mode
+        if self.version < PythonVersion.MIN_REQUIRED_PY2_VERSION:
+          error = ('ERROR: Python {0}.{1} is not compatible with the Google '
+                   'Cloud SDK. {2}\n'
+                   .format(self.version[0], self.version[1],
+                           self.SupportedVersionMessage()))
+      else:
+        # Python 3 Mode
+        if self.version < PythonVersion.MIN_REQUIRED_PY3_VERSION:
+          error = ('ERROR: Python {0}.{1} is not compatible with the Google '
+                   'Cloud SDK. {2}\n'
+                   .format(self.version[0], self.version[1],
+                           self.SupportedVersionMessage()))
 
     if error:
-      if print_errors:
-        sys.stderr.write(error)
-        self.__PrintEnvVarMessage()
+      if raise_exception:
+        raise Error(error)
+      sys.stderr.write(error)
+      sys.stderr.write(PythonVersion.ENV_VAR_MESSAGE)
       return False
 
     # Warn that 2.6 might not work.
-    if (self.version >= self.MIN_REQUIRED_VERSION and
-        self.version < self.MIN_SUPPORTED_VERSION and
-        print_errors):
+    if (self.version >= self.MIN_REQUIRED_PY2_VERSION and
+        self.version < self.MIN_SUPPORTED_PY2_VERSION):
       sys.stderr.write("""\
 WARNING:  Python 2.6.x is no longer officially supported by the Google Cloud SDK
-and may not function correctly.  Please upgrade to Python {0}
-""".format(self.MinSupportedVersionString()))
-      self.__PrintEnvVarMessage()
+and may not function correctly.  {0}
+{1}""".format(self.SupportedVersionMessage(),
+              PythonVersion.ENV_VAR_MESSAGE))
+
+    # Warn that 3.4 might not work. XXX this logic needs some work
+    if (self.version >= self.MIN_REQUIRED_PY3_VERSION and
+        self.version < self.MIN_SUPPORTED_PY3_VERSION):
+      sys.stderr.write("""\
+WARNING:  Python 3.4.x is no longer officially supported by the Google Cloud SDK
+and may not function correctly.  {0}
+{1}""".format(self.SupportedVersionMessage(),
+              PythonVersion.ENV_VAR_MESSAGE))
 
     return True
-
-  def IsSupported(self):
-    """Return whether this Python version is recommended.
-
-    Only version 2.7 is supported.
-
-    Returns:
-      bool, True if the Python version is recommended
-    """
-    return (self.IsCompatible(print_errors=False) and
-            self.version >= self.MIN_SUPPORTED_VERSION)

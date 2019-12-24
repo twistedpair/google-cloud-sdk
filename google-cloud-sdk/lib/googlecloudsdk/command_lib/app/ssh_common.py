@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +15,16 @@
 
 """Utilities for `app instances *` commands using SSH."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.api_lib.app import util
+from googlecloudsdk.api_lib.app import env
 from googlecloudsdk.api_lib.app import version_util
+from googlecloudsdk.api_lib.compute import base_classes as compute_base_classes
 from googlecloudsdk.command_lib.app import exceptions as command_exceptions
+from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.command_lib.util.ssh import ssh
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -61,11 +68,23 @@ class ConnectionDetails(object):
     return not self.__eq__(other)
 
   def __repr__(self):
-    return str('ConnectionDetails(**{})'.format(self.__dict__))
+    return 'ConnectionDetails(**{})'.format(self.__dict__)
+
+
+def _GetComputeProject(release_track):
+  holder = compute_base_classes.ComputeApiHolder(release_track)
+  client = holder.client
+
+  project_ref = projects_util.ParseProject(
+      properties.VALUES.core.project.GetOrFail())
+
+  return client.MakeRequests([(client.apitools_client.projects, 'Get',
+                               client.messages.ComputeProjectsGetRequest(
+                                   project=project_ref.projectId))])[0]
 
 
 def PopulatePublicKey(api_client, service_id, version_id, instance_id,
-                      public_key):
+                      public_key, release_track):
   """Enable debug mode on and send SSH keys to a flex instance.
 
   Common method for SSH-like commands, does the following:
@@ -80,6 +99,7 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
     version_id: str, The version ID.
     instance_id: str, The instance ID.
     public_key: ssh.Keys.PublicKey, Public key to send.
+    release_track: calliope.base.ReleaseTrack, The current release track.
 
   Raises:
     InvalidInstanceTypeError: The instance is not supported for SSH.
@@ -99,8 +119,8 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
     raise command_exceptions.MissingVersionError(
         '{}/{}'.format(service_id, version_id))
   version = version_util.Version.FromVersionResource(version, None)
-  if version.environment is not util.Environment.FLEX:
-    if version.environment is util.Environment.MANAGED_VMS:
+  if version.environment is not env.FLEX:
+    if version.environment is env.MANAGED_VMS:
       environment = 'Managed VMs'
       msg = 'Use `gcloud compute ssh` for Managed VMs instances.'
     else:
@@ -123,13 +143,17 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
     raise command_exceptions.MissingInstanceError(rel_name)
 
   if not instance.vmDebugEnabled:
-    log.warn(_ENABLE_DEBUG_WARNING)
+    log.warning(_ENABLE_DEBUG_WARNING)
     console_io.PromptContinue(cancel_on_no=True, throw_if_unattended=True)
   user = ssh.GetDefaultSshUsername()
+  project = _GetComputeProject(release_track)
+  user, use_oslogin = ssh.CheckForOsloginAndGetUser(
+      None, project, user, public_key.ToEntry(), None, release_track)
   remote = ssh.Remote(instance.vmIp, user=user)
-  ssh_key = '{user}:{key} {user}'.format(user=user, key=public_key.ToEntry())
-  log.status.Print('Sending public key to instance [{}].'.format(rel_name))
-  api_client.DebugInstance(res, ssh_key)
+  if not use_oslogin:
+    ssh_key = '{user}:{key} {user}'.format(user=user, key=public_key.ToEntry())
+    log.status.Print('Sending public key to instance [{}].'.format(rel_name))
+    api_client.DebugInstance(res, ssh_key)
   options = {
       'IdentitiesOnly': 'yes',  # No ssh-agent as of yet
       'UserKnownHostsFile': ssh.KnownHosts.DEFAULT_PATH,
@@ -137,4 +161,3 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
       'HostKeyAlias': _HOST_KEY_ALIAS.format(project=api_client.project,
                                              instance_id=instance_id)}
   return ConnectionDetails(remote, options)
-

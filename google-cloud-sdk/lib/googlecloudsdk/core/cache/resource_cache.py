@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -65,8 +66,11 @@ aggregate parameters for the List API, and the number of values each aggregate
 parameter can take on.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
-import itertools
 import os
 
 from googlecloudsdk.core import config
@@ -75,7 +79,10 @@ from googlecloudsdk.core import module_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.cache import exceptions
 from googlecloudsdk.core.cache import file_cache
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
+
+import six
 
 # Rollout hedge just in case a cache implementation causes problems.
 try:
@@ -83,7 +90,8 @@ try:
 except ImportError:
   sqlite_cache = None
 if (sqlite_cache and
-    'sql' in os.environ.get('CLOUDSDK_CACHE_IMPLEMENTATION', 'sqlite')):
+    'sql' in encoding.GetEncodedValue(
+        os.environ, 'CLOUDSDK_CACHE_IMPLEMENTATION', 'sqlite')):
   PERSISTENT_CACHE_IMPLEMENTATION = sqlite_cache
 else:
   PERSISTENT_CACHE_IMPLEMENTATION = file_cache
@@ -186,6 +194,7 @@ class BaseUpdater(object):
   """A base object for thin updater wrappers."""
 
 
+@six.add_metaclass(abc.ABCMeta)
 class Updater(BaseUpdater):
   """A resource cache table updater.
 
@@ -203,8 +212,6 @@ class Updater(BaseUpdater):
     timeout: The resource table timeout in seconds, 0 for no timeout (0 is easy
       to represent in a persistent cache tuple which holds strings and numbers).
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, cache=None, collection=None, columns=0, column=0,
                parameters=None, timeout=DEFAULT_TIMEOUT):
@@ -329,11 +336,17 @@ class Updater(BaseUpdater):
     template = list(row_template)
     if self.columns > len(template):
       template += [None] * (self.columns - len(template))
-    log.info('cache template=%s', template)
-    values = []
+    log.info(
+        'cache template=[%s]', ', '.join(["'{}'".format(t) for t in template]))
+    # Values keeps track of all valid permutations of values to select from
+    # cache tables. The nth item in each permutation corresponds to the nth
+    # parameter for which generate is True. The list of aggregations (which is
+    # a list of runtime parameters that are aggregators) must also be the same
+    # length as these permutations.
+    values = [[]]
     aggregations = []
     parameters = self._GetRuntimeParameters(parameter_info)
-    for parameter in parameters:
+    for i, parameter in enumerate(parameters):
       parameter.generate = False
       if parameter.value and template[parameter.column] in (None, '*'):
         template[parameter.column] = parameter.value
@@ -343,39 +356,92 @@ class Updater(BaseUpdater):
         if parameter.aggregator:
           aggregations.append(parameter)
           parameter.generate = True
-          values.append([parameter.value])
+          for v in values:
+            v.append(parameter.value)
       elif parameter.aggregator:
         aggregations.append(parameter)
         parameter.generate = True
+        log.info('cache parameter=%s column=%s value=%s aggregate=%s',
+                 parameter.name, parameter.column, parameter.value,
+                 parameter.aggregator)
         # Updater object instantiation is on demand so they don't have to be
         # instantiated at import time in the static CLI tree. It also makes it
         # easier to serialize in the static CLI tree JSON object.
         updater = parameter.updater_class(cache=self.cache)
-        # Instantiate the table to hold all possible values for this parameter.
-        # This table is a child of the collection table. It may itself be a
-        # resource object.
-        table = self.cache.Table(
-            updater.collection,
-            columns=updater.columns,
-            keys=updater.columns,
-            timeout=updater.timeout)
-        sub_template = [None] * table.columns
+        sub_template = [None] * updater.columns
         sub_template[updater.column] = template[parameter.column]
-        rows = updater.SelectTable(table, sub_template, parameter_info)
-        v = [row[updater.column] for row in rows]
-        log.info('cache parameter=%s column=%s values=%s aggregate=%s',
-                 parameter.name, parameter.column, v, parameter.aggregator)
-        values.append(v)
+        log.info('cache parameter=%s column=%s aggregate=%s',
+                 parameter.name, parameter.column, parameter.aggregator)
+        new_values = []
+        for perm, selected in updater.YieldSelectTableFromPermutations(
+            parameters[:i], values, sub_template, parameter_info):
+          updater.ExtendValues(new_values, perm, selected)
+        values = new_values
     if not values:
+      aggregation_values = [x.value for x in aggregations]
+      # Given that values is essentially a reduced crossproduct of all results
+      # from the parameter updaters, it collapses to [] if any intermediate
+      # update finds no results. We only want to keep going here if no
+      # aggregators needed to be updated in the first place.
+      if None in aggregation_values:
+        return []
+      table_name = '.'.join([self._GetTableName()] + aggregation_values)
       table = self.cache.Table(
-          '.'.join([self._GetTableName()] + [x.value for x in aggregations]),
+          table_name,
           columns=self.columns,
           keys=self.columns,
           timeout=self.timeout)
       return self.SelectTable(table, template, parameter_info, aggregations)
     rows = []
-    for perm in itertools.product(*values):
-      perm = list(perm)
+    for _, selected in self.YieldSelectTableFromPermutations(
+        parameters, values, template, parameter_info):
+      rows.extend(selected)
+    log.info('cache rows=%s' % rows)
+    return rows
+
+  def _GetParameterColumn(self, parameter_info, parameter_name):
+    """Get this updater's column number for a certain parameter."""
+    updater_parameters = self._GetRuntimeParameters(parameter_info)
+    for parameter in updater_parameters:
+      if parameter.name == parameter_name:
+        return parameter.column
+    return None
+
+  def ExtendValues(self, values, perm, selected):
+    """Add selected values to a template and extend the selected rows."""
+    vals = [row[self.column] for row in selected]
+    log.info('cache collection={} adding values={}'.format(
+        self.collection, vals))
+    v = [perm + [val] for val in vals]
+    values.extend(v)
+
+  def YieldSelectTableFromPermutations(self, parameters, values, template,
+                                       parameter_info):
+    """Selects completions from tables using multiple permutations of values.
+
+    For each vector in values, e.g. ['my-project', 'my-zone'], this method
+    selects rows matching the template from a leaf table corresponding to the
+    vector (e.g. 'my.collection.my-project.my-zone') and yields a 2-tuple
+    containing that vector and the selected rows.
+
+    Args:
+      parameters: [Parameter], the list of parameters up through the
+        current updater belonging to the parent. These will be used to iterate
+        through each permutation contained in values.
+      values: list(list()), a list of lists of valid values. Each item in values
+        corresponds to a single permutation of values for which item[n] is a
+        possible value for the nth generator in parent_parameters.
+      template: list(str), the template to use to select new values.
+      parameter_info: ParameterInfo, the object that is used to get runtime
+        values.
+
+    Yields:
+      (perm, list(list)): a 2-tuple where the first value is the permutation
+        currently being used to select values and the second value is the result
+        of selecting to match the permutation.
+    """
+    for perm in values:
+      temp_perm = [val for val in perm]
       table = self.cache.Table(
           '.'.join([self._GetTableName()] + perm),
           columns=self.columns,
@@ -384,14 +450,17 @@ class Updater(BaseUpdater):
       aggregations = []
       for parameter in parameters:
         if parameter.generate:
-          template[parameter.column] = perm.pop(0)
-          parameter.value = template[parameter.column]
+          # Find the matching parameter from current updater. If the parameter
+          # isn't found, the value is discarded.
+          column = self._GetParameterColumn(parameter_info, parameter.name)
+          if column is None:
+            continue
+          template[column] = temp_perm.pop(0)
+          parameter.value = template[column]
         if parameter.value:
           aggregations.append(parameter)
-      rows.extend(self.SelectTable(
-          table, template, parameter_info, aggregations))
-    log.info('cache rows=%s' % rows)
-    return rows
+      selected = self.SelectTable(table, template, parameter_info, aggregations)
+      yield perm, selected
 
   def GetTableForRow(self, row, parameter_info=None, create=True):
     """Returns the table for row.

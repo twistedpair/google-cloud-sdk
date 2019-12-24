@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """General formatting utils, App Engine specific formatters."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.logging import util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
+import six
 
 
 LOG_LEVELS = ['critical', 'error', 'warning', 'info', 'debug', 'any']
@@ -51,8 +58,11 @@ def GetFilters(project, log_sources, service=None, version=None, level='any'):
   if level != 'any':
     filters.append('severity>={0}'.format(level.upper()))
 
-  log_ids = ['appengine.googleapis.com/{0}'.format(log_type)
-             for log_type in sorted(log_sources)]
+  log_ids = []
+  for log_type in sorted(log_sources):
+    log_ids.append('appengine.googleapis.com/{0}'.format(log_type))
+    if log_type in ('stderr', 'stdout'):
+      log_ids.append(log_type)
   res = resources.REGISTRY.Parse(
       project, collection='appengine.projects').RelativeName()
 
@@ -86,9 +96,9 @@ def FormatAppEntry(entry):
   if entry.resource.type != 'gae_app':
     return None
   if entry.protoPayload:
-    text = str(entry.protoPayload)
+    text = six.text_type(entry.protoPayload)
   elif entry.jsonPayload:
-    text = str(entry.jsonPayload)
+    text = six.text_type(entry.jsonPayload)
   else:
     text = entry.textPayload
   service, version = _ExtractServiceAndVersion(entry)
@@ -216,11 +226,11 @@ class LogPrinter(object):
       time = times.FormatDateTime(times.ParseDateTime(entry.timestamp),
                                   self.api_time_format)
     except times.Error:
-      log.warn('Received timestamp [{0}] does not match expected'
-               ' format.'.format(entry.timestamp))
+      log.warning('Received timestamp [{0}] does not match expected'
+                  ' format.'.format(entry.timestamp))
       time = '????-??-?? ??:??:??'
 
-    out = u'{timestamp} {log_text}'.format(
+    out = '{timestamp} {log_text}'.format(
         timestamp=time,
         log_text=text)
     if self.max_length and len(out) > self.max_length:
@@ -263,11 +273,12 @@ class LogPrinter(object):
     return out
 
   def _FallbackFormatter(self, entry):
-    # TODO(b/36057358): Is there better serialization for messages than str()?
+    # TODO(b/36057358): Is there better serialization for messages than
+    # six.text_type()?
     if entry.protoPayload:
-      return str(entry.protoPayload)
+      return six.text_type(entry.protoPayload)
     elif entry.jsonPayload:
-      return str(entry.jsonPayload)
+      return six.text_type(entry.jsonPayload)
     else:
       return entry.textPayload
 

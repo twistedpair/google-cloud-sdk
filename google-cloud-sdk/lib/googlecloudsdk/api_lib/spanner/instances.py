@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +14,13 @@
 # limitations under the License.
 """Spanner instance API helper."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -49,13 +55,15 @@ def Create(instance, config, description, nodes):
   return client.projects_instances.Create(req)
 
 
-def SetPolicy(instance_ref, policy):
+def SetPolicy(instance_ref, policy, field_mask=None):
   """Saves the given policy on the instance, overwriting whatever exists."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
+  policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
   req = msgs.SpannerProjectsInstancesSetIamPolicyRequest(
       resource=instance_ref.RelativeName(),
-      setIamPolicyRequest=msgs.SetIamPolicyRequest(policy=policy))
+      setIamPolicyRequest=msgs.SetIamPolicyRequest(policy=policy,
+                                                   updateMask=field_mask))
   return client.projects_instances.SetIamPolicy(req)
 
 
@@ -64,7 +72,11 @@ def GetIamPolicy(instance_ref):
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
   req = msgs.SpannerProjectsInstancesGetIamPolicyRequest(
-      resource=instance_ref.RelativeName())
+      resource=instance_ref.RelativeName(),
+      getIamPolicyRequest=msgs.GetIamPolicyRequest(
+          options=msgs.GetPolicyOptions(
+              requestedPolicyVersion=
+              iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION)))
   return client.projects_instances.GetIamPolicy(req)
 
 

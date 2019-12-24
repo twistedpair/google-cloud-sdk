@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +15,13 @@
 
 """Set of utilities for dealing with archives."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import os
 import zipfile
+import six
 
 try:
   # pylint: disable=unused-import
@@ -56,7 +62,7 @@ def MakeZipFromDir(dest_zip_file, src_dir, predicate=None):
     predicate = lambda x: True
   zip_file = zipfile.ZipFile(dest_zip_file, 'w', _ZIP_COMPRESSION)
   try:
-    for root, _, filelist in os.walk(src_dir):
+    for root, _, filelist in os.walk(six.text_type(src_dir)):
       # In case this is empty directory.
       path = os.path.normpath(os.path.relpath(root, src_dir))
       if not predicate(path):

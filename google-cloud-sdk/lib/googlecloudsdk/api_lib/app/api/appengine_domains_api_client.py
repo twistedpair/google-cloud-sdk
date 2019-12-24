@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Functions for creating a client to talk to the App Engine Admin API."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base as base
@@ -28,11 +33,8 @@ DOMAINS_VERSION_MAP = {
 
 
 def GetApiClientForTrack(release_track):
-  api_version = DOMAINS_VERSION_MAP[release_track]
-  if release_track == calliope_base.ReleaseTrack.GA:
-    return AppengineDomainsApiClient.GetApiClient(api_version)
-  else:
-    return AppengineDomainsApiBetaClient.GetApiClient(api_version)
+  return AppengineDomainsApiClient.GetApiClient(
+      DOMAINS_VERSION_MAP[release_track])
 
 
 class AppengineDomainsApiClient(base.AppengineApiClientBase):
@@ -44,28 +46,6 @@ class AppengineDomainsApiClient(base.AppengineApiClientBase):
     self._registry = resources.REGISTRY.Clone()
     # pylint: disable=protected-access
     self._registry.RegisterApiByName('appengine', client._VERSION)
-
-  def CreateDomainMapping(self, domain, certificate_id):
-    """Creates a domain mapping for the given application.
-
-    Args:
-      domain: str, the custom domain string.
-      certificate_id: str, a certificate id for the new domain.
-
-    Returns:
-      The created DomainMapping object.
-    """
-    ssl = self.messages.SslSettings(certificateId=certificate_id)
-
-    domain_mapping = self.messages.DomainMapping(id=domain, sslSettings=ssl)
-
-    request = self.messages.AppengineAppsDomainMappingsCreateRequest(
-        parent=self._FormatApp(), domainMapping=domain_mapping)
-
-    operation = self.client.apps_domainMappings.Create(request)
-
-    return operations_util.WaitForOperation(self.client.apps_operations,
-                                            operation).response
 
   def DeleteDomainMapping(self, domain):
     """Deletes a domain mapping for the given application.
@@ -107,40 +87,6 @@ class AppengineDomainsApiClient(base.AppengineApiClientBase):
 
     return response.domainMappings
 
-  def UpdateDomainMapping(self, domain, certificate_id, no_certificate_id):
-    """Updates a domain mapping for the given application.
-
-    Args:
-      domain: str, the custom domain string.
-      certificate_id: str, a certificate id for the domain.
-      no_certificate_id: bool, remove the certificate id from the domain.
-
-    Returns:
-      The updated DomainMapping object.
-    """
-    mask_fields = []
-    if certificate_id or no_certificate_id:
-      mask_fields.append('sslSettings.certificateId')
-
-    ssl = self.messages.SslSettings(certificateId=certificate_id)
-
-    domain_mapping = self.messages.DomainMapping(id=domain, sslSettings=ssl)
-
-    if not mask_fields:
-      raise exceptions.MinimumArgumentException(
-          ['--[no-]certificate-id'],
-          'Please specify at least one attribute to the domain-mapping update.')
-
-    request = self.messages.AppengineAppsDomainMappingsPatchRequest(
-        name=self._FormatDomainMapping(domain),
-        domainMapping=domain_mapping,
-        updateMask=','.join(mask_fields))
-
-    operation = self.client.apps_domainMappings.Patch(request)
-
-    return operations_util.WaitForOperation(self.client.apps_operations,
-                                            operation).response
-
   def ListVerifiedDomains(self):
     """Lists all domains verified by the current user.
 
@@ -153,17 +99,6 @@ class AppengineDomainsApiClient(base.AppengineApiClientBase):
     response = self.client.apps_authorizedDomains.List(request)
 
     return response.domains
-
-  def _FormatDomainMapping(self, domain):
-    res = self._registry.Parse(
-        domain,
-        params={'appsId': self.project},
-        collection='appengine.apps.domainMappings')
-    return res.RelativeName()
-
-
-class AppengineDomainsApiBetaClient(AppengineDomainsApiClient):
-  """Client used by gcloud to communicate with the App Engine API."""
 
   def CreateDomainMapping(self, domain, certificate_id, management_type):
     """Creates a domain mapping for the given application.
@@ -233,3 +168,10 @@ class AppengineDomainsApiBetaClient(AppengineDomainsApiClient):
 
     return operations_util.WaitForOperation(self.client.apps_operations,
                                             operation).response
+
+  def _FormatDomainMapping(self, domain):
+    res = self._registry.Parse(
+        domain,
+        params={'appsId': self.project},
+        collection='appengine.apps.domainMappings')
+    return res.RelativeName()

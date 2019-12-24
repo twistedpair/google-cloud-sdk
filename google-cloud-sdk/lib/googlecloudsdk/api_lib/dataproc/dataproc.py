@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Common stateful utilities for the gcloud dataproc tool."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
@@ -28,17 +33,18 @@ class Dataproc(object):
 
   def __init__(self, release_track=base.ReleaseTrack.GA):
     super(Dataproc, self).__init__()
+    self.release_track = release_track
     if release_track == base.ReleaseTrack.GA:
-      self._api_version = 'v1'
+      self.api_version = 'v1'
     else:
-      self._api_version = 'v1beta2'
+      self.api_version = 'v1beta2'
     self._client = None
     self._resources = None
 
   @property
   def client(self):
     if self._client is None:
-      self._client = apis.GetClientInstance('dataproc', self._api_version)
+      self._client = apis.GetClientInstance('dataproc', self.api_version)
     return self._client
 
   @property
@@ -49,7 +55,7 @@ class Dataproc(object):
   def resources(self):
     if self._resources is None:
       self._resources = resources.REGISTRY.Clone()
-      self._resources.RegisterApiByName('dataproc', self._api_version)
+      self._resources.RegisterApiByName('dataproc', self.api_version)
     return self._resources
 
   @property

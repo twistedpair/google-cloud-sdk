@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,42 +14,17 @@
 # limitations under the License.
 """Utilities for Binary Authorization commands."""
 
-import base64
-import md5
-import urlparse
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
-from containerregistry.client import docker_name
-from googlecloudsdk.core import resources
+from containerregistry.client import docker_name  # pytype: disable=import-error
 from googlecloudsdk.core.exceptions import Error
+import six.moves.urllib.parse
 
 
 class BadImageUrlError(Error):
   """Raised when a container image URL cannot be parsed successfully."""
-
-
-def CreateProviderRefFromProjectRef(project_ref):
-  """Given a project ref, create a Container Analysis `providers` ref."""
-  provider_name = project_ref.Name()
-  return resources.REGISTRY.Create(
-      'containeranalysis.providers', providersId=provider_name)
-
-
-def ParseProviderNote(note_id, provider_ref):
-  """Create a provider Note ref, suitable for attaching an Occurrence to."""
-  provider_name = provider_ref.Name()
-  return resources.REGISTRY.Parse(
-      note_id, {'providersId': provider_name},
-      collection='containeranalysis.providers.notes')
-
-
-def NoteId(artifact_url, public_key, signature):
-  """Returns Note id determined by supplied arguments."""
-  digest = md5.new()
-  digest.update(artifact_url)
-  digest.update(public_key)
-  digest.update(signature)
-  artifact_url_md5 = base64.urlsafe_b64encode(digest.digest())
-  return 'signature_test_{}'.format(artifact_url_md5)
 
 
 def ReplaceImageUrlScheme(image_url, scheme):
@@ -63,7 +39,7 @@ def ReplaceImageUrlScheme(image_url, scheme):
     BadImageUrlError: `image_url` isn't valid.
   """
   scheme = scheme or ''
-  parsed_url = urlparse.urlparse(image_url)
+  parsed_url = six.moves.urllib.parse.urlparse(image_url)
 
   # If the URL has a scheme but not a netloc, then it must have looked like
   # 'scheme:///foo/bar', which is invalid for the purpose of attestation.
@@ -74,10 +50,10 @@ def ReplaceImageUrlScheme(image_url, scheme):
 
   # If there is neither a scheme nor a netloc, this means that an unqualified
   # URL was passed, like 'gcr.io/foo/bar'.  In this case we canonicalize the URL
-  # by prefixing '//', which will cause urlparse it to correctly pick up the
+  # by prefixing '//', which will cause urlparse to correctly pick up the
   # netloc.
   if not parsed_url.netloc:
-    parsed_url = urlparse.urlparse('//{}'.format(image_url))
+    parsed_url = six.moves.urllib.parse.urlparse('//{}'.format(image_url))
 
   # Finally, we replace the scheme and generate the URL.  If we were stripping
   # the scheme, the result will be prefixed with '//', which we strip off.  If

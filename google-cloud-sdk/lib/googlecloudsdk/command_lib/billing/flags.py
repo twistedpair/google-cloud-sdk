@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flag definitions for gcloud billing."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.resource_manager import completers as resource_manager_completers
@@ -71,7 +77,7 @@ def GetAccountIdArgument(positional=True, required=False):
       '`$ gcloud alpha billing accounts list`.')
   if positional:
     return base.Argument(
-        'id',
+        'account_id',
         metavar=metavar,
         completer=BillingAccountsCompleter,
         help=help_)

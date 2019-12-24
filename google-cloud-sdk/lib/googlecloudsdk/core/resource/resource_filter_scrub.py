@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +22,10 @@ To scrub filter_expression_string:
   scrubber = resource_filter_scrub.Backend()
   _, scrubbed_expression_string = scrubber.Rewrite(filter_expression_string)
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.core.resource import resource_expr_rewrite
 

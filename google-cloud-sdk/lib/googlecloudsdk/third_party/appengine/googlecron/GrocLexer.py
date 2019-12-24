@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -102,10 +102,10 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:228:11: ( ( DIGIT ':' '0' .. '5' DIGIT ) )
             # borg/borgcron/py/Groc.g:228:13: ( DIGIT ':' '0' .. '5' DIGIT )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:228:13: ( DIGIT ':' '0' .. '5' DIGIT )
             # borg/borgcron/py/Groc.g:228:15: DIGIT ':' '0' .. '5' DIGIT
-            pass 
+            pass
             self.mDIGIT()
             self.match(58)
             self.matchRange(48, 53)
@@ -136,10 +136,10 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:230:11: ( ( ( ( '0' DIGIT ) | ( '1' DIGIT ) | ( '2' '0' .. '3' ) ) ':' ( '0' .. '5' DIGIT ) ) )
             # borg/borgcron/py/Groc.g:230:13: ( ( ( '0' DIGIT ) | ( '1' DIGIT ) | ( '2' '0' .. '3' ) ) ':' ( '0' .. '5' DIGIT ) )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:230:13: ( ( ( '0' DIGIT ) | ( '1' DIGIT ) | ( '2' '0' .. '3' ) ) ':' ( '0' .. '5' DIGIT ) )
             # borg/borgcron/py/Groc.g:230:15: ( ( '0' DIGIT ) | ( '1' DIGIT ) | ( '2' '0' .. '3' ) ) ':' ( '0' .. '5' DIGIT )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:230:15: ( ( '0' DIGIT ) | ( '1' DIGIT ) | ( '2' '0' .. '3' ) )
             alt1 = 3
             LA1 = self.input.LA(1)
@@ -159,10 +159,10 @@ class GrocLexer(Lexer):
 
             if alt1 == 1:
                 # borg/borgcron/py/Groc.g:230:17: ( '0' DIGIT )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:230:17: ( '0' DIGIT )
                 # borg/borgcron/py/Groc.g:230:19: '0' DIGIT
-                pass 
+                pass
                 self.match(48)
                 self.mDIGIT()
 
@@ -172,10 +172,10 @@ class GrocLexer(Lexer):
 
             elif alt1 == 2:
                 # borg/borgcron/py/Groc.g:230:33: ( '1' DIGIT )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:230:33: ( '1' DIGIT )
                 # borg/borgcron/py/Groc.g:230:34: '1' DIGIT
-                pass 
+                pass
                 self.match(49)
                 self.mDIGIT()
 
@@ -185,10 +185,10 @@ class GrocLexer(Lexer):
 
             elif alt1 == 3:
                 # borg/borgcron/py/Groc.g:230:47: ( '2' '0' .. '3' )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:230:47: ( '2' '0' .. '3' )
                 # borg/borgcron/py/Groc.g:230:48: '2' '0' .. '3'
-                pass 
+                pass
                 self.match(50)
                 self.matchRange(48, 51)
 
@@ -200,14 +200,14 @@ class GrocLexer(Lexer):
             self.match(58)
             # borg/borgcron/py/Groc.g:232:15: ( '0' .. '5' DIGIT )
             # borg/borgcron/py/Groc.g:232:17: '0' .. '5' DIGIT
-            pass 
+            pass
             self.matchRange(48, 53)
             self.mDIGIT()
 
 
 
             if self._state.backtracking == 0:
-                _type = TIME; 
+                _type = TIME;
 
 
 
@@ -235,7 +235,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:234:14: ( 'synchronized' )
             # borg/borgcron/py/Groc.g:234:16: 'synchronized'
-            pass 
+            pass
             self.match("synchronized")
 
 
@@ -260,7 +260,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:237:11: ( ( '1st' | 'first' ) )
             # borg/borgcron/py/Groc.g:237:13: ( '1st' | 'first' )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:237:13: ( '1st' | 'first' )
             alt2 = 2
             LA2_0 = self.input.LA(1)
@@ -279,13 +279,13 @@ class GrocLexer(Lexer):
 
             if alt2 == 1:
                 # borg/borgcron/py/Groc.g:237:15: '1st'
-                pass 
+                pass
                 self.match("1st")
 
 
             elif alt2 == 2:
                 # borg/borgcron/py/Groc.g:237:23: 'first'
-                pass 
+                pass
                 self.match("first")
 
 
@@ -313,7 +313,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:238:11: ( ( '2nd' | 'second' ) )
             # borg/borgcron/py/Groc.g:238:13: ( '2nd' | 'second' )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:238:13: ( '2nd' | 'second' )
             alt3 = 2
             LA3_0 = self.input.LA(1)
@@ -332,13 +332,13 @@ class GrocLexer(Lexer):
 
             if alt3 == 1:
                 # borg/borgcron/py/Groc.g:238:15: '2nd'
-                pass 
+                pass
                 self.match("2nd")
 
 
             elif alt3 == 2:
                 # borg/borgcron/py/Groc.g:238:23: 'second'
-                pass 
+                pass
                 self.match("second")
 
 
@@ -366,7 +366,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:239:11: ( ( '3rd' | 'third' ) )
             # borg/borgcron/py/Groc.g:239:13: ( '3rd' | 'third' )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:239:13: ( '3rd' | 'third' )
             alt4 = 2
             LA4_0 = self.input.LA(1)
@@ -385,13 +385,13 @@ class GrocLexer(Lexer):
 
             if alt4 == 1:
                 # borg/borgcron/py/Groc.g:239:15: '3rd'
-                pass 
+                pass
                 self.match("3rd")
 
 
             elif alt4 == 2:
                 # borg/borgcron/py/Groc.g:239:23: 'third'
-                pass 
+                pass
                 self.match("third")
 
 
@@ -419,10 +419,10 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:240:11: ( ( '4th' ) )
             # borg/borgcron/py/Groc.g:240:13: ( '4th' )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:240:13: ( '4th' )
             # borg/borgcron/py/Groc.g:240:15: '4th'
-            pass 
+            pass
             self.match("4th")
 
 
@@ -450,10 +450,10 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:241:11: ( ( '5th' ) )
             # borg/borgcron/py/Groc.g:241:13: ( '5th' )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:241:13: ( '5th' )
             # borg/borgcron/py/Groc.g:241:15: '5th'
-            pass 
+            pass
             self.match("5th")
 
 
@@ -481,7 +481,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:248:11: ( ( ( 'fourth' ) | ( 'fifth' ) ) )
             # borg/borgcron/py/Groc.g:248:13: ( ( 'fourth' ) | ( 'fifth' ) )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:248:13: ( ( 'fourth' ) | ( 'fifth' ) )
             alt5 = 2
             LA5_0 = self.input.LA(1)
@@ -511,13 +511,13 @@ class GrocLexer(Lexer):
 
             if alt5 == 1:
                 # borg/borgcron/py/Groc.g:248:15: ( 'fourth' )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:248:15: ( 'fourth' )
                 # borg/borgcron/py/Groc.g:248:16: 'fourth'
-                pass 
+                pass
                 self.match("fourth")
                 if self._state.backtracking == 0:
-                    _type = FOURTH; 
+                    _type = FOURTH;
 
 
 
@@ -526,13 +526,13 @@ class GrocLexer(Lexer):
 
             elif alt5 == 2:
                 # borg/borgcron/py/Groc.g:249:15: ( 'fifth' )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:249:15: ( 'fifth' )
                 # borg/borgcron/py/Groc.g:249:16: 'fifth'
-                pass 
+                pass
                 self.match("fifth")
                 if self._state.backtracking == 0:
-                    _type = FIFTH; 
+                    _type = FIFTH;
 
 
 
@@ -563,7 +563,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:252:8: ( 'day' )
             # borg/borgcron/py/Groc.g:252:10: 'day'
-            pass 
+            pass
             self.match("day")
 
 
@@ -588,7 +588,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:254:11: ( 'mon' ( 'day' )? )
             # borg/borgcron/py/Groc.g:254:13: 'mon' ( 'day' )?
-            pass 
+            pass
             self.match("mon")
             # borg/borgcron/py/Groc.g:254:19: ( 'day' )?
             alt6 = 2
@@ -598,7 +598,7 @@ class GrocLexer(Lexer):
                 alt6 = 1
             if alt6 == 1:
                 # borg/borgcron/py/Groc.g:254:20: 'day'
-                pass 
+                pass
                 self.match("day")
 
 
@@ -626,7 +626,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:255:11: ( 'tue' ( 'sday' )? )
             # borg/borgcron/py/Groc.g:255:13: 'tue' ( 'sday' )?
-            pass 
+            pass
             self.match("tue")
             # borg/borgcron/py/Groc.g:255:19: ( 'sday' )?
             alt7 = 2
@@ -636,7 +636,7 @@ class GrocLexer(Lexer):
                 alt7 = 1
             if alt7 == 1:
                 # borg/borgcron/py/Groc.g:255:20: 'sday'
-                pass 
+                pass
                 self.match("sday")
 
 
@@ -664,7 +664,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:256:11: ( 'wed' ( 'nesday' )? )
             # borg/borgcron/py/Groc.g:256:13: 'wed' ( 'nesday' )?
-            pass 
+            pass
             self.match("wed")
             # borg/borgcron/py/Groc.g:256:19: ( 'nesday' )?
             alt8 = 2
@@ -674,7 +674,7 @@ class GrocLexer(Lexer):
                 alt8 = 1
             if alt8 == 1:
                 # borg/borgcron/py/Groc.g:256:20: 'nesday'
-                pass 
+                pass
                 self.match("nesday")
 
 
@@ -702,7 +702,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:257:11: ( 'thu' ( 'rsday' )? )
             # borg/borgcron/py/Groc.g:257:13: 'thu' ( 'rsday' )?
-            pass 
+            pass
             self.match("thu")
             # borg/borgcron/py/Groc.g:257:19: ( 'rsday' )?
             alt9 = 2
@@ -712,7 +712,7 @@ class GrocLexer(Lexer):
                 alt9 = 1
             if alt9 == 1:
                 # borg/borgcron/py/Groc.g:257:20: 'rsday'
-                pass 
+                pass
                 self.match("rsday")
 
 
@@ -740,7 +740,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:258:11: ( 'fri' ( 'day' )? )
             # borg/borgcron/py/Groc.g:258:13: 'fri' ( 'day' )?
-            pass 
+            pass
             self.match("fri")
             # borg/borgcron/py/Groc.g:258:19: ( 'day' )?
             alt10 = 2
@@ -750,7 +750,7 @@ class GrocLexer(Lexer):
                 alt10 = 1
             if alt10 == 1:
                 # borg/borgcron/py/Groc.g:258:20: 'day'
-                pass 
+                pass
                 self.match("day")
 
 
@@ -778,7 +778,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:259:11: ( 'sat' ( 'urday' )? )
             # borg/borgcron/py/Groc.g:259:13: 'sat' ( 'urday' )?
-            pass 
+            pass
             self.match("sat")
             # borg/borgcron/py/Groc.g:259:19: ( 'urday' )?
             alt11 = 2
@@ -788,7 +788,7 @@ class GrocLexer(Lexer):
                 alt11 = 1
             if alt11 == 1:
                 # borg/borgcron/py/Groc.g:259:20: 'urday'
-                pass 
+                pass
                 self.match("urday")
 
 
@@ -816,7 +816,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:260:11: ( 'sun' ( 'day' )? )
             # borg/borgcron/py/Groc.g:260:13: 'sun' ( 'day' )?
-            pass 
+            pass
             self.match("sun")
             # borg/borgcron/py/Groc.g:260:19: ( 'day' )?
             alt12 = 2
@@ -826,7 +826,7 @@ class GrocLexer(Lexer):
                 alt12 = 1
             if alt12 == 1:
                 # borg/borgcron/py/Groc.g:260:20: 'day'
-                pass 
+                pass
                 self.match("day")
 
 
@@ -854,7 +854,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:263:11: ( 'jan' ( 'uary' )? )
             # borg/borgcron/py/Groc.g:263:13: 'jan' ( 'uary' )?
-            pass 
+            pass
             self.match("jan")
             # borg/borgcron/py/Groc.g:263:19: ( 'uary' )?
             alt13 = 2
@@ -864,7 +864,7 @@ class GrocLexer(Lexer):
                 alt13 = 1
             if alt13 == 1:
                 # borg/borgcron/py/Groc.g:263:20: 'uary'
-                pass 
+                pass
                 self.match("uary")
 
 
@@ -892,7 +892,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:264:11: ( 'feb' ( 'ruary' )? )
             # borg/borgcron/py/Groc.g:264:13: 'feb' ( 'ruary' )?
-            pass 
+            pass
             self.match("feb")
             # borg/borgcron/py/Groc.g:264:19: ( 'ruary' )?
             alt14 = 2
@@ -902,7 +902,7 @@ class GrocLexer(Lexer):
                 alt14 = 1
             if alt14 == 1:
                 # borg/borgcron/py/Groc.g:264:20: 'ruary'
-                pass 
+                pass
                 self.match("ruary")
 
 
@@ -930,7 +930,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:265:11: ( 'mar' ( 'ch' )? )
             # borg/borgcron/py/Groc.g:265:13: 'mar' ( 'ch' )?
-            pass 
+            pass
             self.match("mar")
             # borg/borgcron/py/Groc.g:265:19: ( 'ch' )?
             alt15 = 2
@@ -940,7 +940,7 @@ class GrocLexer(Lexer):
                 alt15 = 1
             if alt15 == 1:
                 # borg/borgcron/py/Groc.g:265:20: 'ch'
-                pass 
+                pass
                 self.match("ch")
 
 
@@ -968,7 +968,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:266:11: ( 'apr' ( 'il' )? )
             # borg/borgcron/py/Groc.g:266:13: 'apr' ( 'il' )?
-            pass 
+            pass
             self.match("apr")
             # borg/borgcron/py/Groc.g:266:19: ( 'il' )?
             alt16 = 2
@@ -978,7 +978,7 @@ class GrocLexer(Lexer):
                 alt16 = 1
             if alt16 == 1:
                 # borg/borgcron/py/Groc.g:266:20: 'il'
-                pass 
+                pass
                 self.match("il")
 
 
@@ -1006,7 +1006,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:267:11: ( 'may' )
             # borg/borgcron/py/Groc.g:267:13: 'may'
-            pass 
+            pass
             self.match("may")
 
 
@@ -1031,7 +1031,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:268:11: ( 'jun' ( 'e' )? )
             # borg/borgcron/py/Groc.g:268:13: 'jun' ( 'e' )?
-            pass 
+            pass
             self.match("jun")
             # borg/borgcron/py/Groc.g:268:19: ( 'e' )?
             alt17 = 2
@@ -1041,7 +1041,7 @@ class GrocLexer(Lexer):
                 alt17 = 1
             if alt17 == 1:
                 # borg/borgcron/py/Groc.g:268:20: 'e'
-                pass 
+                pass
                 self.match(101)
 
 
@@ -1069,7 +1069,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:269:11: ( 'jul' ( 'y' )? )
             # borg/borgcron/py/Groc.g:269:13: 'jul' ( 'y' )?
-            pass 
+            pass
             self.match("jul")
             # borg/borgcron/py/Groc.g:269:19: ( 'y' )?
             alt18 = 2
@@ -1079,7 +1079,7 @@ class GrocLexer(Lexer):
                 alt18 = 1
             if alt18 == 1:
                 # borg/borgcron/py/Groc.g:269:20: 'y'
-                pass 
+                pass
                 self.match(121)
 
 
@@ -1107,7 +1107,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:270:11: ( 'aug' ( 'ust' )? )
             # borg/borgcron/py/Groc.g:270:13: 'aug' ( 'ust' )?
-            pass 
+            pass
             self.match("aug")
             # borg/borgcron/py/Groc.g:270:19: ( 'ust' )?
             alt19 = 2
@@ -1117,7 +1117,7 @@ class GrocLexer(Lexer):
                 alt19 = 1
             if alt19 == 1:
                 # borg/borgcron/py/Groc.g:270:20: 'ust'
-                pass 
+                pass
                 self.match("ust")
 
 
@@ -1145,7 +1145,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:271:11: ( 'sep' ( 'tember' )? )
             # borg/borgcron/py/Groc.g:271:13: 'sep' ( 'tember' )?
-            pass 
+            pass
             self.match("sep")
             # borg/borgcron/py/Groc.g:271:19: ( 'tember' )?
             alt20 = 2
@@ -1155,7 +1155,7 @@ class GrocLexer(Lexer):
                 alt20 = 1
             if alt20 == 1:
                 # borg/borgcron/py/Groc.g:271:20: 'tember'
-                pass 
+                pass
                 self.match("tember")
 
 
@@ -1183,7 +1183,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:272:11: ( 'oct' ( 'ober' )? )
             # borg/borgcron/py/Groc.g:272:13: 'oct' ( 'ober' )?
-            pass 
+            pass
             self.match("oct")
             # borg/borgcron/py/Groc.g:272:19: ( 'ober' )?
             alt21 = 2
@@ -1193,7 +1193,7 @@ class GrocLexer(Lexer):
                 alt21 = 1
             if alt21 == 1:
                 # borg/borgcron/py/Groc.g:272:20: 'ober'
-                pass 
+                pass
                 self.match("ober")
 
 
@@ -1221,7 +1221,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:273:11: ( 'nov' ( 'ember' )? )
             # borg/borgcron/py/Groc.g:273:13: 'nov' ( 'ember' )?
-            pass 
+            pass
             self.match("nov")
             # borg/borgcron/py/Groc.g:273:19: ( 'ember' )?
             alt22 = 2
@@ -1231,7 +1231,7 @@ class GrocLexer(Lexer):
                 alt22 = 1
             if alt22 == 1:
                 # borg/borgcron/py/Groc.g:273:20: 'ember'
-                pass 
+                pass
                 self.match("ember")
 
 
@@ -1259,7 +1259,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:274:11: ( 'dec' ( 'ember' )? )
             # borg/borgcron/py/Groc.g:274:13: 'dec' ( 'ember' )?
-            pass 
+            pass
             self.match("dec")
             # borg/borgcron/py/Groc.g:274:19: ( 'ember' )?
             alt23 = 2
@@ -1269,7 +1269,7 @@ class GrocLexer(Lexer):
                 alt23 = 1
             if alt23 == 1:
                 # borg/borgcron/py/Groc.g:274:20: 'ember'
-                pass 
+                pass
                 self.match("ember")
 
 
@@ -1297,10 +1297,10 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:276:11: ( ( 'month' ) )
             # borg/borgcron/py/Groc.g:276:13: ( 'month' )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:276:13: ( 'month' )
             # borg/borgcron/py/Groc.g:276:15: 'month'
-            pass 
+            pass
             self.match("month")
 
 
@@ -1328,10 +1328,10 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:277:11: ( ( 'quarter' ) )
             # borg/borgcron/py/Groc.g:277:13: ( 'quarter' )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:277:13: ( 'quarter' )
             # borg/borgcron/py/Groc.g:277:15: 'quarter'
-            pass 
+            pass
             self.match("quarter")
 
 
@@ -1359,10 +1359,10 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:278:11: ( ( 'every' ) )
             # borg/borgcron/py/Groc.g:278:13: ( 'every' )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:278:13: ( 'every' )
             # borg/borgcron/py/Groc.g:278:15: 'every'
-            pass 
+            pass
             self.match("every")
 
 
@@ -1390,10 +1390,10 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:280:11: ( ( 'hours' ) )
             # borg/borgcron/py/Groc.g:280:13: ( 'hours' )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:280:13: ( 'hours' )
             # borg/borgcron/py/Groc.g:280:15: 'hours'
-            pass 
+            pass
             self.match("hours")
 
 
@@ -1421,7 +1421,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:281:11: ( ( 'mins' | 'minutes' ) )
             # borg/borgcron/py/Groc.g:281:13: ( 'mins' | 'minutes' )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:281:13: ( 'mins' | 'minutes' )
             alt24 = 2
             LA24_0 = self.input.LA(1)
@@ -1473,13 +1473,13 @@ class GrocLexer(Lexer):
 
             if alt24 == 1:
                 # borg/borgcron/py/Groc.g:281:15: 'mins'
-                pass 
+                pass
                 self.match("mins")
 
 
             elif alt24 == 2:
                 # borg/borgcron/py/Groc.g:281:24: 'minutes'
-                pass 
+                pass
                 self.match("minutes")
 
 
@@ -1507,10 +1507,10 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:284:11: ( ( ',' ) )
             # borg/borgcron/py/Groc.g:284:13: ( ',' )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:284:13: ( ',' )
             # borg/borgcron/py/Groc.g:284:15: ','
-            pass 
+            pass
             self.match(44)
 
 
@@ -1538,10 +1538,10 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:285:11: ( ( 'of' ) )
             # borg/borgcron/py/Groc.g:285:13: ( 'of' )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:285:13: ( 'of' )
             # borg/borgcron/py/Groc.g:285:15: 'of'
-            pass 
+            pass
             self.match("of")
 
 
@@ -1569,10 +1569,10 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:286:11: ( ( 'from' ) )
             # borg/borgcron/py/Groc.g:286:13: ( 'from' )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:286:13: ( 'from' )
             # borg/borgcron/py/Groc.g:286:15: 'from'
-            pass 
+            pass
             self.match("from")
 
 
@@ -1600,10 +1600,10 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:287:11: ( ( 'to' ) )
             # borg/borgcron/py/Groc.g:287:13: ( 'to' )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:287:13: ( 'to' )
             # borg/borgcron/py/Groc.g:287:15: 'to'
-            pass 
+            pass
             self.match("to")
 
 
@@ -1631,7 +1631,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:288:11: ( ( ' ' | '\\t' | '\\n' | '\\r' ) )
             # borg/borgcron/py/Groc.g:288:13: ( ' ' | '\\t' | '\\n' | '\\r' )
-            pass 
+            pass
             if (9 <= self.input.LA(1) <= 10) or self.input.LA(1) == 13 or self.input.LA(1) == 32:
                 self.input.consume()
             else:
@@ -1643,7 +1643,7 @@ class GrocLexer(Lexer):
                 raise mse
 
             if self._state.backtracking == 0:
-                _channel=HIDDEN; 
+                _channel=HIDDEN;
 
 
 
@@ -1668,10 +1668,10 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:290:11: ( ( '0' .. '9' ) )
             # borg/borgcron/py/Groc.g:290:13: ( '0' .. '9' )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:290:13: ( '0' .. '9' )
             # borg/borgcron/py/Groc.g:290:15: '0' .. '9'
-            pass 
+            pass
             self.matchRange(48, 57)
 
 
@@ -1699,7 +1699,7 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:291:11: ( ( ( DIGIT DIGIT DIGIT DIGIT DIGIT )=> ( DIGIT DIGIT DIGIT DIGIT DIGIT ) | ( DIGIT DIGIT DIGIT DIGIT )=> ( DIGIT DIGIT DIGIT DIGIT ) | ( DIGIT DIGIT DIGIT ) | ( DIGIT DIGIT ) ) )
             # borg/borgcron/py/Groc.g:291:13: ( ( DIGIT DIGIT DIGIT DIGIT DIGIT )=> ( DIGIT DIGIT DIGIT DIGIT DIGIT ) | ( DIGIT DIGIT DIGIT DIGIT )=> ( DIGIT DIGIT DIGIT DIGIT ) | ( DIGIT DIGIT DIGIT ) | ( DIGIT DIGIT ) )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:291:13: ( ( DIGIT DIGIT DIGIT DIGIT DIGIT )=> ( DIGIT DIGIT DIGIT DIGIT DIGIT ) | ( DIGIT DIGIT DIGIT DIGIT )=> ( DIGIT DIGIT DIGIT DIGIT ) | ( DIGIT DIGIT DIGIT ) | ( DIGIT DIGIT ) )
             alt25 = 4
             LA25_0 = self.input.LA(1)
@@ -1742,10 +1742,10 @@ class GrocLexer(Lexer):
 
             if alt25 == 1:
                 # borg/borgcron/py/Groc.g:291:15: ( DIGIT DIGIT DIGIT DIGIT DIGIT )=> ( DIGIT DIGIT DIGIT DIGIT DIGIT )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:291:52: ( DIGIT DIGIT DIGIT DIGIT DIGIT )
                 # borg/borgcron/py/Groc.g:291:54: DIGIT DIGIT DIGIT DIGIT DIGIT
-                pass 
+                pass
                 self.mDIGIT()
                 self.mDIGIT()
                 self.mDIGIT()
@@ -1758,10 +1758,10 @@ class GrocLexer(Lexer):
 
             elif alt25 == 2:
                 # borg/borgcron/py/Groc.g:292:15: ( DIGIT DIGIT DIGIT DIGIT )=> ( DIGIT DIGIT DIGIT DIGIT )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:292:46: ( DIGIT DIGIT DIGIT DIGIT )
                 # borg/borgcron/py/Groc.g:292:48: DIGIT DIGIT DIGIT DIGIT
-                pass 
+                pass
                 self.mDIGIT()
                 self.mDIGIT()
                 self.mDIGIT()
@@ -1773,10 +1773,10 @@ class GrocLexer(Lexer):
 
             elif alt25 == 3:
                 # borg/borgcron/py/Groc.g:293:15: ( DIGIT DIGIT DIGIT )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:293:15: ( DIGIT DIGIT DIGIT )
                 # borg/borgcron/py/Groc.g:293:17: DIGIT DIGIT DIGIT
-                pass 
+                pass
                 self.mDIGIT()
                 self.mDIGIT()
                 self.mDIGIT()
@@ -1787,10 +1787,10 @@ class GrocLexer(Lexer):
 
             elif alt25 == 4:
                 # borg/borgcron/py/Groc.g:294:15: ( DIGIT DIGIT )
-                pass 
+                pass
                 # borg/borgcron/py/Groc.g:294:15: ( DIGIT DIGIT )
                 # borg/borgcron/py/Groc.g:294:17: DIGIT DIGIT
-                pass 
+                pass
                 self.mDIGIT()
                 self.mDIGIT()
 
@@ -1822,10 +1822,10 @@ class GrocLexer(Lexer):
 
             # borg/borgcron/py/Groc.g:299:15: ( ( . ) )
             # borg/borgcron/py/Groc.g:299:17: ( . )
-            pass 
+            pass
             # borg/borgcron/py/Groc.g:299:17: ( . )
             # borg/borgcron/py/Groc.g:299:19: .
-            pass 
+            pass
             self.matchAny()
 
 
@@ -1850,253 +1850,253 @@ class GrocLexer(Lexer):
         alt26 = self.dfa26.predict(self.input)
         if alt26 == 1:
             # borg/borgcron/py/Groc.g:1:10: TIME
-            pass 
+            pass
             self.mTIME()
 
 
         elif alt26 == 2:
             # borg/borgcron/py/Groc.g:1:15: TWO_DIGIT_HOUR_TIME
-            pass 
+            pass
             self.mTWO_DIGIT_HOUR_TIME()
 
 
         elif alt26 == 3:
             # borg/borgcron/py/Groc.g:1:35: SYNCHRONIZED
-            pass 
+            pass
             self.mSYNCHRONIZED()
 
 
         elif alt26 == 4:
             # borg/borgcron/py/Groc.g:1:48: FIRST
-            pass 
+            pass
             self.mFIRST()
 
 
         elif alt26 == 5:
             # borg/borgcron/py/Groc.g:1:54: SECOND
-            pass 
+            pass
             self.mSECOND()
 
 
         elif alt26 == 6:
             # borg/borgcron/py/Groc.g:1:61: THIRD
-            pass 
+            pass
             self.mTHIRD()
 
 
         elif alt26 == 7:
             # borg/borgcron/py/Groc.g:1:67: FOURTH
-            pass 
+            pass
             self.mFOURTH()
 
 
         elif alt26 == 8:
             # borg/borgcron/py/Groc.g:1:74: FIFTH
-            pass 
+            pass
             self.mFIFTH()
 
 
         elif alt26 == 9:
             # borg/borgcron/py/Groc.g:1:80: FOURTH_OR_FIFTH
-            pass 
+            pass
             self.mFOURTH_OR_FIFTH()
 
 
         elif alt26 == 10:
             # borg/borgcron/py/Groc.g:1:96: DAY
-            pass 
+            pass
             self.mDAY()
 
 
         elif alt26 == 11:
             # borg/borgcron/py/Groc.g:1:100: MONDAY
-            pass 
+            pass
             self.mMONDAY()
 
 
         elif alt26 == 12:
             # borg/borgcron/py/Groc.g:1:107: TUESDAY
-            pass 
+            pass
             self.mTUESDAY()
 
 
         elif alt26 == 13:
             # borg/borgcron/py/Groc.g:1:115: WEDNESDAY
-            pass 
+            pass
             self.mWEDNESDAY()
 
 
         elif alt26 == 14:
             # borg/borgcron/py/Groc.g:1:125: THURSDAY
-            pass 
+            pass
             self.mTHURSDAY()
 
 
         elif alt26 == 15:
             # borg/borgcron/py/Groc.g:1:134: FRIDAY
-            pass 
+            pass
             self.mFRIDAY()
 
 
         elif alt26 == 16:
             # borg/borgcron/py/Groc.g:1:141: SATURDAY
-            pass 
+            pass
             self.mSATURDAY()
 
 
         elif alt26 == 17:
             # borg/borgcron/py/Groc.g:1:150: SUNDAY
-            pass 
+            pass
             self.mSUNDAY()
 
 
         elif alt26 == 18:
             # borg/borgcron/py/Groc.g:1:157: JANUARY
-            pass 
+            pass
             self.mJANUARY()
 
 
         elif alt26 == 19:
             # borg/borgcron/py/Groc.g:1:165: FEBRUARY
-            pass 
+            pass
             self.mFEBRUARY()
 
 
         elif alt26 == 20:
             # borg/borgcron/py/Groc.g:1:174: MARCH
-            pass 
+            pass
             self.mMARCH()
 
 
         elif alt26 == 21:
             # borg/borgcron/py/Groc.g:1:180: APRIL
-            pass 
+            pass
             self.mAPRIL()
 
 
         elif alt26 == 22:
             # borg/borgcron/py/Groc.g:1:186: MAY
-            pass 
+            pass
             self.mMAY()
 
 
         elif alt26 == 23:
             # borg/borgcron/py/Groc.g:1:190: JUNE
-            pass 
+            pass
             self.mJUNE()
 
 
         elif alt26 == 24:
             # borg/borgcron/py/Groc.g:1:195: JULY
-            pass 
+            pass
             self.mJULY()
 
 
         elif alt26 == 25:
             # borg/borgcron/py/Groc.g:1:200: AUGUST
-            pass 
+            pass
             self.mAUGUST()
 
 
         elif alt26 == 26:
             # borg/borgcron/py/Groc.g:1:207: SEPTEMBER
-            pass 
+            pass
             self.mSEPTEMBER()
 
 
         elif alt26 == 27:
             # borg/borgcron/py/Groc.g:1:217: OCTOBER
-            pass 
+            pass
             self.mOCTOBER()
 
 
         elif alt26 == 28:
             # borg/borgcron/py/Groc.g:1:225: NOVEMBER
-            pass 
+            pass
             self.mNOVEMBER()
 
 
         elif alt26 == 29:
             # borg/borgcron/py/Groc.g:1:234: DECEMBER
-            pass 
+            pass
             self.mDECEMBER()
 
 
         elif alt26 == 30:
             # borg/borgcron/py/Groc.g:1:243: MONTH
-            pass 
+            pass
             self.mMONTH()
 
 
         elif alt26 == 31:
             # borg/borgcron/py/Groc.g:1:249: QUARTER
-            pass 
+            pass
             self.mQUARTER()
 
 
         elif alt26 == 32:
             # borg/borgcron/py/Groc.g:1:257: EVERY
-            pass 
+            pass
             self.mEVERY()
 
 
         elif alt26 == 33:
             # borg/borgcron/py/Groc.g:1:263: HOURS
-            pass 
+            pass
             self.mHOURS()
 
 
         elif alt26 == 34:
             # borg/borgcron/py/Groc.g:1:269: MINUTES
-            pass 
+            pass
             self.mMINUTES()
 
 
         elif alt26 == 35:
             # borg/borgcron/py/Groc.g:1:277: COMMA
-            pass 
+            pass
             self.mCOMMA()
 
 
         elif alt26 == 36:
             # borg/borgcron/py/Groc.g:1:283: OF
-            pass 
+            pass
             self.mOF()
 
 
         elif alt26 == 37:
             # borg/borgcron/py/Groc.g:1:286: FROM
-            pass 
+            pass
             self.mFROM()
 
 
         elif alt26 == 38:
             # borg/borgcron/py/Groc.g:1:291: TO
-            pass 
+            pass
             self.mTO()
 
 
         elif alt26 == 39:
             # borg/borgcron/py/Groc.g:1:294: WS
-            pass 
+            pass
             self.mWS()
 
 
         elif alt26 == 40:
             # borg/borgcron/py/Groc.g:1:297: DIGIT
-            pass 
+            pass
             self.mDIGIT()
 
 
         elif alt26 == 41:
             # borg/borgcron/py/Groc.g:1:303: DIGITS
-            pass 
+            pass
             self.mDIGITS()
 
 
         elif alt26 == 42:
             # borg/borgcron/py/Groc.g:1:310: UNKNOWN_TOKEN
-            pass 
+            pass
             self.mUNKNOWN_TOKEN()
 
 
@@ -2108,7 +2108,7 @@ class GrocLexer(Lexer):
     def synpred1_Groc_fragment(self, ):
         # borg/borgcron/py/Groc.g:291:15: ( DIGIT DIGIT DIGIT DIGIT DIGIT )
         # borg/borgcron/py/Groc.g:291:17: DIGIT DIGIT DIGIT DIGIT DIGIT
-        pass 
+        pass
         self.mDIGIT()
         self.mDIGIT()
         self.mDIGIT()
@@ -2124,7 +2124,7 @@ class GrocLexer(Lexer):
     def synpred2_Groc_fragment(self, ):
         # borg/borgcron/py/Groc.g:292:15: ( DIGIT DIGIT DIGIT DIGIT )
         # borg/borgcron/py/Groc.g:292:17: DIGIT DIGIT DIGIT DIGIT
-        pass 
+        pass
         self.mDIGIT()
         self.mDIGIT()
         self.mDIGIT()
@@ -2201,7 +2201,7 @@ class GrocLexer(Lexer):
         u"\1\0\113\uffff"
         )
 
-            
+
     DFA26_transition = [
         DFA.unpack(u"\11\27\2\26\2\27\1\26\22\27\1\26\13\27\1\25\3\27\1\1"
         u"\1\2\1\3\1\4\1\7\1\11\4\12\47\27\1\17\2\27\1\13\1\23\1\6\1\27\1"
@@ -2297,7 +2297,7 @@ class GrocLexer(Lexer):
 
             _s = s
 
-            if s == 0: 
+            if s == 0:
                 LA26_0 = input.LA(1)
 
                 s = -1
@@ -2378,7 +2378,7 @@ class GrocLexer(Lexer):
             nvae = NoViableAltException(self_.getDescription(), 26, _s, input)
             self_.error(nvae)
             raise nvae
- 
+
 
 
 

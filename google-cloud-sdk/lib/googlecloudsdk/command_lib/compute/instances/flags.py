@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,32 +13,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flags and helpers for the compute VM instances commands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import copy
 import functools
 
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import containers_utils
+from googlecloudsdk.api_lib.compute import csek_utils
 from googlecloudsdk.api_lib.compute import image_utils
 from googlecloudsdk.api_lib.compute import kms_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute.zones import service as zones_service
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
+from googlecloudsdk.command_lib.compute.kms import resource_args as kms_resource_args
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as core_resources
-import ipaddr
+import ipaddress
+import six
 
 ZONE_PROPERTY_EXPLANATION = """\
-If not specified, you may be prompted to select a zone. `gcloud` will attempt
-to identify the zone by searching for resources in your project. If the zone
-cannot be determined, you will then be prompted with all Google Cloud
-Platform zones.
+If not specified, the user may be prompted to select a zone. `gcloud` will
+attempt to identify the zone by searching for resources in the user's project.
+If the zone cannot be determined, the user will then be prompted with all Google
+Cloud Platform zones.
 
-To avoid prompting when this flag is omitted, you can set the
+To avoid prompting when this flag is omitted, the user can set the
 ``compute/zone'' property:
 
   $ gcloud config set compute/zone ZONE
@@ -105,6 +116,14 @@ INSTANCES_ARG_FOR_CREATE = compute_flags.ResourceArgument(
     zonal_collection='compute.instances',
     zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
     plural=True)
+
+INSTANCES_ARG_FOR_IMPORT = compute_flags.ResourceArgument(
+    resource_name='instance',
+    name='instance_name',
+    completer=compute_completers.InstancesCompleter,
+    zonal_collection='compute.instances',
+    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
+    plural=False)
 
 SSH_INSTANCE_RESOLVER = compute_flags.ResourceResolver.FromMap(
     'instance', {compute_scope.ScopeEnum.ZONE: 'compute.instances'})
@@ -201,7 +220,28 @@ def MakeSourceInstanceTemplateArg():
                   '`--source-instance-template` will be used instead.'))
 
 
-def AddImageArgs(parser):
+def AddMachineImageArg():
+  return compute_flags.ResourceArgument(
+      name='--source-machine-image',
+      resource_name='machine image',
+      completer=compute_completers.MachineImagesCompleter,
+      required=False,
+      global_collection='compute.machineImages',
+      short_help=('The name of the machine image that the instance will '
+                  'be created from.'))
+
+
+def AddSourceMachineImageEncryptionKey(parser):
+  parser.add_argument(
+      '--source-machine-image-csek-key-file',
+      metavar='FILE',
+      help="""\
+      Path to a Customer-Supplied Encryption Key (CSEK) key file, mapping resources to user managed keys which were used to encrypt the source machine-image.
+      See {csek_help} for more details.
+      """.format(csek_help=csek_utils.CSEK_HELP_URL))
+
+
+def AddImageArgs(parser, enable_snapshots=False):
   """Adds arguments related to images for instances and instance-templates."""
 
   def AddImageHelp():
@@ -219,24 +259,38 @@ def AddImageArgs(parser):
           device name and size, respectively.
           """
 
-  image_group = parser.add_mutually_exclusive_group()
+  image_parent_group = parser.add_group()
+  image_group = image_parent_group.add_mutually_exclusive_group()
   image_group.add_argument(
       '--image',
       help=AddImageHelp,
       metavar='IMAGE')
-  image_utils.AddImageProjectFlag(parser)
+  image_utils.AddImageProjectFlag(image_parent_group)
 
   image_group.add_argument(
       '--image-family',
       help="""\
-      The family of the image that the boot disk will be initialized
-      with. When a family is specified instead of an image, the latest
-      non-deprecated image associated with that family is used. It is best
-      practice to use `--image-family` when the latest version of an image is
-      needed.
+      The image family for the operating system that the boot disk will
+      be initialized with. Compute Engine offers multiple Linux
+      distributions, some of which are available as both regular and
+      Shielded VM images.  When a family is specified instead of an image,
+      the latest non-deprecated image associated with that family is
+      used. It is best practice to use `--image-family` when the latest
+      version of an image is needed.
 
       By default, ``{default_image_family}'' is assumed for this flag.
       """.format(default_image_family=constants.DEFAULT_IMAGE_FAMILY))
+  if enable_snapshots:
+    image_group.add_argument(
+        '--source-snapshot',
+        help="""\
+        The name of the source disk snapshot that the instance boot disk
+        will be created from. You can provide this as a full URL
+        to the snapshot or just the snapshot name. For example, the following
+        are valid values:
+          * https://compute.googleapis.com/compute/v1/projects/myproject/global/snapshots/snapshot
+          * snapshot
+        """)
 
 
 def AddCanIpForwardArgs(parser):
@@ -260,16 +314,35 @@ def AddLocalSsdArgs(parser):
       help="""\
       Attaches a local SSD to the instances.
 
-      This flag is currently in BETA and may change without notice.
-
       *device-name*::: Optional. A name that indicates the disk name
-      the guest operating system will see.  If omitted, a device name
+      the guest operating system will see. Can only be specified if
+      `interface` is `SCSI`. If omitted, a device name
       of the form ``local-ssd-N'' will be used.
 
       *interface*::: Optional. The kind of disk interface exposed to the VM
       for this SSD.  Valid values are ``SCSI'' and ``NVME''.  SCSI is
       the default and is supported by more guest operating systems.  NVME
       may provide higher performance.
+      """)
+
+
+def AddLocalNvdimmArgs(parser):
+  """Adds local NVDIMM argument for instances and instance-templates."""
+
+  parser.add_argument(
+      '--local-nvdimm',
+      type=arg_parsers.ArgDict(spec={
+          'size': arg_parsers.BinarySize(),
+      }),
+      action='append',
+      help="""\
+      Attaches a local NVDIMM to the instances.
+
+      *size*::: Optional. Size of the NVDIMM disk. The value must be a whole
+      number followed by a size unit of ``KB'' for kilobyte, ``MB'' for
+      megabyte, ``GB'' for gigabyte, or ``TB'' for terabyte. For example,
+      ``3TB'' will produce a 3 terabyte disk. Allowed values are: 3TB and 6TB
+      and the default is 3 TB.
       """)
 
 
@@ -290,7 +363,8 @@ def AddLocalSsdArgsWithSize(parser):
       This flag is currently in BETA and may change without notice.
 
       *device-name*::: Optional. A name that indicates the disk name
-      the guest operating system will see.  If omitted, a device name
+      the guest operating system will see. Can only be specified if `interface`
+      is `SCSI`. If omitted, a device name
       of the form ``local-ssd-N'' will be used.
 
       *interface*::: Optional. The kind of disk interface exposed to the VM
@@ -306,13 +380,35 @@ def AddLocalSsdArgsWithSize(parser):
       """)
 
 
-def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False):
+def _GetDiskDeviceNameHelp(container_mount_enabled=False):
+  """Helper to get documentation for "device-name" param of disk spec."""
+  if container_mount_enabled:
+    return (
+        'An optional name that indicates the disk name the guest operating '
+        'system will see. Must be the same as `name` if used with '
+        '`--container-mount-disk`. If omitted, a device name of the form '
+        '`persistent-disk-N` will be used. If omitted and used with '
+        '`--container-mount-disk` (where the `name` of the container mount '
+        'disk is the same as in this flag), a device name equal to disk `name` '
+        'will be used.')
+  else:
+    return (
+        'An optional name that indicates the disk name the guest operating '
+        'system will see. If omitted, a device name of the form '
+        '`persistent-disk-N` will be used.')
+
+
+def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False,
+                container_mount_enabled=False):
   """Adds arguments related to disks for instances and instance-templates."""
+
+  disk_device_name_help = _GetDiskDeviceNameHelp(
+      container_mount_enabled=container_mount_enabled)
 
   parser.add_argument(
       '--boot-disk-device-name',
       help="""\
-      The name the guest operating system will see for the boot disk as.  This
+      The name the guest operating system will see for the boot disk.  This
       option can only be specified if a new boot disk is being created (as
       opposed to mounting an existing persistent disk).
       """)
@@ -326,7 +422,8 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False):
       unit of ``KB'' for kilobyte, ``MB'' for megabyte, ``GB'' for gigabyte,
       or ``TB'' for terabyte. For example, ``10GB'' will produce a 10 gigabyte
       disk. The minimum size a boot disk can have is 10 GB. Disk size must be a
-      multiple of 1 GB.
+      multiple of 1 GB. Limit boot disk size to 2TB to account for MBR
+      partition table limitations.
       """)
 
   parser.add_argument(
@@ -345,66 +442,8 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False):
       help='Automatically delete boot disks when their instances are deleted.')
 
   if enable_kms:
-    parser.add_argument(
-        '--boot-disk-kms-key',
-        help="""\
-        Fully qualified Cloud KMS cryptokey name that will protect the
-        {resource}.
-
-        This can either be the fully qualified path or the name.
-
-        The fully qualified Cloud KMS cryptokey has the format:
-        ``projects/<project-id>/locations/<location>/keyRings/<ring-name>/
-        cryptoKeys/<key-name>''
-
-        If the value is not fully qualified then --boot-disk-kms-location,
-        --boot-disk-kms-keyring, and optionally --boot-disk-kms-project are
-        required.
-
-        See {kms_help} for more details.
-        """.format(resource='boot disk', kms_help=kms_utils.KMS_HELP_URL))
-
-    parser.add_argument(
-        '--boot-disk-kms-project',
-        help="""\
-        Project that contains the Cloud KMS cryptokey that will protect the
-        {resource}.
-
-        If the project is not specified then the project where the {resource} is
-        being created will be used.
-
-        If this flag is set then --boot-disk-key-location,
-        --boot-disk-kms-keyring, and --boot-disk-kms-key are required.
-
-        See {kms_help} for more details.
-        """.format(resource='boot disk', kms_help=kms_utils.KMS_HELP_URL))
-
-    parser.add_argument(
-        '--boot-disk-kms-location',
-        help="""\
-        Location of the Cloud KMS cryptokey to be used for protecting the
-        {resource}.
-
-        All Cloud KMS cryptokeys are reside in a 'location'.
-        To get a list of possible locations run 'gcloud kms locations list'.
-
-        If this flag is set then --boot-disk-kms-keyring and
-        --boot-disk-kms-key are required.
-
-        See {kms_help} for more details.
-        """.format(resource='boot disk', kms_help=kms_utils.KMS_HELP_URL))
-
-    parser.add_argument(
-        '--boot-disk-kms-keyring',
-        help="""\
-        The keyring which contains the Cloud KMS cryptokey that will protect the
-        {resource}.
-
-        If this flag is set then --boot-disk-kms-location and
-        --boot-disk-kms-key are required.
-
-        See {kms_help} for more details.
-        """.format(resource='boot disk', kms_help=kms_utils.KMS_HELP_URL))
+    kms_resource_args.AddKmsKeyResourceArg(
+        parser, 'disk', boot_disk_prefix=True)
 
   disk_arg_spec = {
       'name': str,
@@ -435,15 +474,13 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False):
       virtual machines will use the first partition of the disk for
       their root file systems. The default value for this is ``no''.
 
-      *device-name*::: An optional name that indicates the disk name
-      the guest operating system will see. If omitted, a device name
-      of the form ``persistent-disk-N'' will be used.
+      *device-name*::: {}
 
       *auto-delete*::: If ``yes'',  this persistent disk will be
       automatically deleted when the instance is deleted. However,
       if the disk is later detached from the instance, this option
-      won't apply. The default value for this is ``no''.
-      """
+      won't apply. The default value for this is ``yes''.
+      """.format(disk_device_name_help)
   if enable_regional_disks:
     disk_help += """
       *scope*::: Can be `zonal` or `regional`. If ``zonal'', the disk is
@@ -459,39 +496,57 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False):
       help=disk_help)
 
 
-def AddCreateDiskArgs(parser, enable_kms=False):
+def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
+                      container_mount_enabled=False, resource_policy=False,
+                      source_snapshot_csek=False,
+                      image_csek=False):
   """Adds create-disk argument for instances and instance-templates."""
+
+  disk_device_name_help = _GetDiskDeviceNameHelp(
+      container_mount_enabled=container_mount_enabled)
+  disk_name_extra_help = '' if not container_mount_enabled else (
+      ' Must specify this option if attaching the disk '
+      'to a container with `--container-mount-disk`.')
+  disk_mode_extra_help = '' if not container_mount_enabled else (
+      ' It is an error to create a disk in `ro` mode '
+      'if attaching it to a container with `--container-mount-disk`.')
 
   disk_help = """\
       Creates and attaches persistent disks to the instances.
 
       *name*::: Specifies the name of the disk. This option cannot be
-      specified if more than one instance is being created.
+      specified if more than one instance is being created.{}
+
+      *description*::: Optional textual description for the disk being created.
 
       *mode*::: Specifies the mode of the disk. Supported options
       are ``ro'' for read-only and ``rw'' for read-write. If
-      omitted, ``rw'' is used as a default.
+      omitted, ``rw'' is used as a default.{}
 
       *image*::: Specifies the name of the image that the disk will be
       initialized with. A new disk will be created based on the given
       image. To view a list of public images and projects, run
-      `$ gcloud compute images list`. If omitted image-family must be
-      specified to identify the image. It is best practice to use image when
-      a specific version of an image is needed.
+      `$ gcloud compute images list`. It is best practice to use image when
+      a specific version of an image is needed. If both image and image-family
+      flags are omitted a blank disk will be created.
 
-      *image-family*::: The family of the image that the disk will be
-      initialized with. When a family is specified instead of an image,
+      *image-family*::: The image family for the operating system that the boot
+      disk will be initialized with. Compute Engine offers multiple Linux
+      distributions, some of which are available as both regular and
+      Shielded VM images.  When a family is specified instead of an image,
       the latest non-deprecated image associated with that family is
-      used. It is best practice to use image-family when the latest version
-      of an image is needed.
+      used. It is best practice to use --image-family when the latest
+      version of an image is needed.
 
-      *image-project*::: The project that the image or image family
-      belongs to. It is best practice to define image-project.
+      *image-project*::: The Google Cloud project against which all image and
+      image family references will be resolved. It is best practice to define
+      image-project. A full list of available projects can be generated by
+      running `gcloud projects list`.
           * If specifying one of our public images, image-project must be
             provided.
           * If there are several of the same image-family value in multiple
-            projects, image-project must be specified to clarify the image to
-            be used.
+            projects, image-project must be specified to clarify the image to be
+            used.
           * If not specified and either image or image-family is provided, the
             current default project is used.
 
@@ -506,15 +561,14 @@ def AddCreateDiskArgs(parser, enable_kms=False):
       types, run $ gcloud compute disk-types list. The default disk type
       is ``pd-standard''.
 
-      *device-name*::: An optional name that indicates the disk name
-      the guest operating system will see. If omitted, a device name
-      of the form ``persistent-disk-N'' will be used.
+      *device-name*::: {}
 
       *auto-delete*::: If ``yes'',  this persistent disk will be
       automatically deleted when the instance is deleted. However,
       if the disk is later detached from the instance, this option
       won't apply. The default value for this is ``no''.
-      """
+      """.format(disk_name_extra_help, disk_mode_extra_help,
+                 disk_device_name_help)
   if enable_kms:
     disk_help += """
       *kms-key*::: Fully qualified Cloud KMS cryptokey name that will
@@ -549,11 +603,12 @@ def AddCreateDiskArgs(parser, enable_kms=False):
       """.format(resource='disk', kms_help=kms_utils.KMS_HELP_URL)
   spec = {
       'name': str,
+      'description': str,
       'mode': str,
       'image': str,
       'image-family': str,
       'image-project': str,
-      'size': arg_parsers.BinarySize(lower_bound='10GB'),
+      'size': arg_parsers.BinarySize(lower_bound='1GB'),
       'type': str,
       'device-name': str,
       'auto-delete': str,
@@ -563,6 +618,57 @@ def AddCreateDiskArgs(parser, enable_kms=False):
     spec['kms-project'] = str
     spec['kms-location'] = str
     spec['kms-keyring'] = str
+
+  if enable_snapshots:
+    disk_help += """
+      *source-snapshot*::: The source disk snapshot that will be used to
+      create the disk. You can provide this as a full URL
+      to the snapshot or just the snapshot name. For example, the following
+      are valid values:
+        * https://compute.googleapis.com/compute/v1/projects/myproject/global/snapshots/snapshot
+        * snapshot
+      """
+    spec['source-snapshot'] = str
+
+  if resource_policy:
+    disk_help += """
+      *disk-resource-policy*::: Resource policy that will be applied to created
+      disk. You can provide full or partial URL. For more details see
+        * https://cloud.google.com/sdk/gcloud/reference/beta/compute/resource-policies/
+        * https://cloud.google.com/compute/docs/disks/scheduled-snapshots
+      """
+    spec['disk-resource-policy'] = arg_parsers.ArgList(max_length=1)
+
+  if source_snapshot_csek:
+    disk_help += """
+      *source-snapshot-csek-required*::: The CSK protected source disk snapshot
+      that will be used to create the disk. This can be provided as a full URL
+      to the snapshot or just the snapshot name. For example, the following
+      are valid values:
+       * https://www.googleapis.com/compute/v1/projects/myproject/global/snapshots/snapshot
+       * snapshot
+      Must be specified with `source-snapshot-csek-key-file`.
+
+      *source-snapshot-csek-key-file::: Path to a Customer-Supplied Encryption
+      Key (CSEK) key file for the source snapshot. Must be specified with
+      `source-snapshot-csek-required`.
+      """
+    spec['source-snapshot-csek-key-file'] = str
+
+  if image_csek:
+    disk_help += """
+      *image-csek-required*::: Specifies the name of the CSK protected image
+      that the disk will be initialized with. A new disk will be created based
+      on the given image. To view a list of public images and projects, run
+      `$ gcloud compute images list`. It is best practice to use image when
+      a specific version of an image is needed. If both image and image-family
+      flags are omitted a blank disk will be created. Must be specified with
+      `image-csek-key-file`.
+
+      *image-csek-key-file::: Path to a Customer-Supplied Encryption Key (CSEK)
+      key file for the image. Must be specified with `image-csek-required`.
+    """
+    spec['image-csek-key-file'] = str
 
   parser.add_argument(
       '--create-disk',
@@ -574,31 +680,38 @@ def AddCreateDiskArgs(parser, enable_kms=False):
 
 def AddCustomMachineTypeArgs(parser):
   """Adds arguments related to custom machine types for instances."""
-  parser.add_argument(
+  custom_group = parser.add_group(
+      help='Custom machine type extensions.')
+  custom_group.add_argument(
       '--custom-cpu',
       type=int,
+      required=True,
       help="""\
       A whole number value indicating how many cores are desired in the custom
-      machine type. Both --custom-cpu and --custom-memory must be specified if
-      a custom machine type is desired, and the --machine-type flag must be
-      omitted.
+      machine type.
       """)
-  parser.add_argument(
+  custom_group.add_argument(
       '--custom-memory',
       type=arg_parsers.BinarySize(),
+      required=True,
       help="""\
       A whole number value indicating how much memory is desired in the custom
       machine type. A size unit should be provided (eg. 3072MB or 9GB) - if no
-      units are specified, GB is assumed. Both --custom-cpu and --custom-memory
-      must be specified if a custom machine type is desired, and the
-      --machine-type flag must be omitted.
+      units are specified, GB is assumed.
       """)
-  parser.add_argument(
+  custom_group.add_argument(
       '--custom-extensions',
       action='store_true',
-      help=('If provided, uses extended custom machine type. Both --custom-cpu'
-            ' and --custom-memory must be specified if --custom-extensions is'
-            ' provided.'))
+      help='Use the extended custom machine type.')
+  custom_group.add_argument(
+      '--custom-vm-type',
+      help="""
+      Specifies VM type. n1 - VMs with CPU platforms Skylake and older,
+      n2 - VMs with CPU platform Cascade Lake. n2 offers flexible sizing from
+      2 to 80 vCPUs, and 1 to 640GBs of memory.
+      It also features a number of performance enhancements including exposing
+      a more accurate NUMA topology to the guest OS. The default is `n1`.
+      """)
 
 
 def _GetAddress(compute_client, address_ref):
@@ -648,10 +761,11 @@ def ExpandAddressFlag(resources, compute_client, address, region):
 
   # Try interpreting the address as IPv4 or IPv6.
   try:
-    ipaddr.IPAddress(address)
+    # ipaddress only allows unicode input
+    ipaddress.ip_address(six.text_type(address))
     return address
   except ValueError:
-    # ipaddr could not resolve as an IPv4 or IPv6 address.
+    # ipaddress could not resolve as an IPv4 or IPv6 address.
     pass
 
   # Lookup the address.
@@ -671,12 +785,17 @@ def GetAddressRef(resources, address, region):
       })
 
 
-def ValidateDiskFlags(args, enable_kms=False):
+def ValidateDiskFlags(args, enable_kms=False, enable_snapshots=False,
+                      enable_source_snapshot_csek=False,
+                      enable_image_csek=False):
   """Validates the values of all disk-related flags."""
   ValidateDiskCommonFlags(args)
   ValidateDiskAccessModeFlags(args)
   ValidateDiskBootFlags(args, enable_kms=enable_kms)
-  ValidateCreateDiskFlags(args)
+  ValidateCreateDiskFlags(
+      args, enable_snapshots=enable_snapshots,
+      enable_source_snapshot_csek=enable_source_snapshot_csek,
+      enable_image_csek=enable_image_csek)
 
 
 def ValidateDiskCommonFlags(args):
@@ -783,7 +902,9 @@ def ValidateDiskBootFlags(args, enable_kms=False):
             'boot disk.')
 
 
-def ValidateCreateDiskFlags(args):
+def ValidateCreateDiskFlags(args, enable_snapshots=False,
+                            enable_source_snapshot_csek=False,
+                            enable_image_csek=False):
   """Validates the values of create-disk related flags."""
   require_csek_key_create = getattr(args, 'require_csek_key_create', None)
   csek_key_file = getattr(args, 'csek_key_file', None)
@@ -807,20 +928,50 @@ def ValidateCreateDiskFlags(args):
 
     image_value = disk.get('image')
     image_family_value = disk.get('image-family')
-    if image_value and image_family_value:
-      raise exceptions.ToolException(
-          'Cannot specify [image] and [image-family] for a [--create-disk].'
-          'The fields are mutually excusive.')
-    if not image_value and not image_family_value:
-      raise exceptions.ToolException(
-          'Either [image] or [image-family] must be specified for '
-          '[--create-disk].')
+    source_snapshot = disk.get('source-snapshot')
+    image_csek_file = disk.get('image_csek')
+    source_snapshot_csek_file = disk.get('source_snapshot_csek_file')
+
+    disk_source = set()
+    if image_value:
+      disk_source.add(image_value)
+    if image_family_value:
+      disk_source.add(image_family_value)
+    if source_snapshot:
+      disk_source.add(source_snapshot)
+    if image_csek_file:
+      disk_source.add(image_csek_file)
+    if source_snapshot_csek_file:
+      disk_source.add(source_snapshot_csek_file)
+
+    mutex_attributes = ['[image]', '[image-family]']
+    if enable_image_csek:
+      mutex_attributes.append('[image-csek-required]')
+    if enable_snapshots:
+      mutex_attributes.append('[source-snapshot]')
+    if enable_source_snapshot_csek:
+      mutex_attributes.append('[source-snapshot-csek-required]')
+    formatted_attributes = '{}, or {}'.format(', '.join(mutex_attributes[:-1]),
+                                              mutex_attributes[-1])
+    source_error_message = (
+        'Must specify exactly one of {} for a '
+        '[--create-disk]. These fields are mutually exclusive.'.format(
+            formatted_attributes))
+    if len(disk_source) > 1:
+      raise exceptions.ToolException(source_error_message)
+
+
+def ValidateImageFlags(args):
+  """Validates the image flags."""
+  if args.image_project and not (args.image or args.image_family):
+    raise exceptions.ToolException(
+        'Must specify either [--image] or [--image-family] when specifying '
+        '[--image-project] flag.')
 
 
 def AddAddressArgs(parser,
                    instances=True,
-                   multiple_network_interface_cards=True,
-                   support_network_tier=False):
+                   multiple_network_interface_cards=True):
   """Adds address arguments for instances and instance-templates."""
   addresses = parser.add_mutually_exclusive_group()
   addresses.add_argument(
@@ -848,26 +999,26 @@ def AddAddressArgs(parser,
       'no-address': None,
       'subnet': str,
   }
-  if instances:
-    multiple_network_interface_cards_spec['private-network-ip'] = str
 
-  if support_network_tier:
-    def ValidateNetworkTier(network_tier_input):
-      network_tier = network_tier_input.upper()
-      if network_tier in constants.NETWORK_TIER_CHOICES_FOR_INSTANCE:
-        return network_tier
-      else:
-        raise exceptions.InvalidArgumentException(
-            'argument network-tier: invalid value')
+  multiple_network_interface_cards_spec['private-network-ip'] = str
 
-    multiple_network_interface_cards_spec['network-tier'] = ValidateNetworkTier
+  def ValidateNetworkTier(network_tier_input):
+    network_tier = network_tier_input.upper()
+    if network_tier in constants.NETWORK_TIER_CHOICES_FOR_INSTANCE:
+      return network_tier
+    else:
+      raise exceptions.InvalidArgumentException(
+          '--network-interface', 'Invalid value for network-tier')
+
+  multiple_network_interface_cards_spec['network-tier'] = ValidateNetworkTier
 
   if multiple_network_interface_cards:
     multiple_network_interface_cards_spec['aliases'] = str
     network_interface_help = """\
-        Adds a network interface to the instance. Mutually exclusive with
-        --address, --network, --network-tier, --subnet, and --private-network-ip
-        flags.
+        Adds a network interface to the instance. Mutually exclusive with any
+        of these flags: *--address*, *--network*, *--network-tier*, *--subnet*,
+        *--private-network-ip*. This flag can be repeated to specify multiple
+        network interfaces.
 
         The following keys are allowed:
         *address*::: Assigns the given external address to the instance that is
@@ -883,14 +1034,13 @@ def AddAddressArgs(parser,
         Mutually exclusive with address. If neither key is present the
         instance will get an ephemeral IP.
         """
-    if support_network_tier:
-      network_interface_help += """
+    network_interface_help += """
         *network-tier*::: Specifies the network tier of the interface.
         ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`. The default
         value is `PREMIUM`.
         """
-    if instances:
-      network_interface_help += """
+
+    network_interface_help += """
         *private-network-ip*::: Assigns the given RFC1918 IP address to the
         interface.
         """
@@ -979,6 +1129,33 @@ def AddMinCpuPlatformArgs(parser, track, required=False):
       """.format(track.prefix + ' ' if track.prefix else ''))
 
 
+def AddMinNodeCpuArg(parser, is_update=False):
+  parser.add_argument(
+      '--min-node-cpu',
+      help="""\
+      Minimum number of virtual CPUs this instance will consume when running on
+      a sole-tenant node.
+      """)
+  if is_update:
+    parser.add_argument(
+        '--clear-min-node-cpu',
+        action='store_true',
+        help="""\
+        Removes the min-node-cpu field from the instance. If specified, the
+        instance min-node-cpu will be cleared. The instance will not be
+        overcommitted and utilize the full CPU count assigned.
+        """)
+
+
+def AddLocationHintArg(parser):
+  parser.add_argument(
+      '--location-hint',
+      hidden=True,
+      help="""\
+      Used by internal tools to control sub-zone location of the instance.
+      """)
+
+
 def AddPreemptibleVmArgs(parser):
   parser.add_argument(
       '--preemptible',
@@ -1022,7 +1199,8 @@ def AddPrivateNetworkIpArgs(parser):
       """)
 
 
-def AddServiceAccountAndScopeArgs(parser, instance_exists):
+def AddServiceAccountAndScopeArgs(parser, instance_exists,
+                                  extra_scopes_help=''):
   """Add args for configuring service account and scopes.
 
   This should replace AddScopeArgs (b/30802231).
@@ -1030,6 +1208,7 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists):
   Args:
     parser: ArgumentParser, parser to which flags will be added.
     instance_exists: bool, If instance already exists and we are modifying it.
+    extra_scopes_help: str, Extra help text for the scopes flag.
   """
   service_account_group = parser.add_mutually_exclusive_group()
   service_account_group.add_argument(
@@ -1042,9 +1221,10 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists):
   service_account_help = """\
   A service account is an identity attached to the instance. Its access tokens
   can be accessed through the instance metadata server and are used to
-  authenticate applications on the instance. The account can be either an email
-  address or an alias corresponding to a service account. You can explicitly
-  specify the Compute Engine default service account using the 'default' alias.
+  authenticate applications on the instance. The account can be set using an
+  email address corresponding to the required service account. You can
+  explicitly specify the Compute Engine default service account using the
+  'default' alias.
 
   If not provided, the instance will {0}.
   """.format(sa_exists if instance_exists else sa_not_exists)
@@ -1059,78 +1239,13 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists):
       else 'Create instance without scopes')
   scopes_exists = 'keep the scopes it currently has'
   scopes_not_exists = 'be assigned the default scopes, described below'
-  scopes_default_list = '- ' + '\n      - '.join(constants.DEFAULT_SCOPES)
   scopes_help = """\
-  If not provided, the instance will {0}.
+If not provided, the instance will {exists}. {extra}
 
-  SCOPE can be either the full URI of the scope or an alias. Available
-  aliases are:
-
-    default
-      Scopes assigned to instances by default:
-      {scopes_default_list}
-
-    bigquery
-      - https://www.googleapis.com/auth/bigquery
-
-    cloud-platform
-      - https://www.googleapis.com/auth/cloud-platform
-
-    compute-ro
-      - https://www.googleapis.com/auth/compute.readonly
-
-    compute-rw
-      - https://www.googleapis.com/auth/compute
-
-    datastore
-      - https://www.googleapis.com/auth/datastore
-
-    logging-write
-      - https://www.googleapis.com/auth/logging.write
-
-    monitoring
-      - https://www.googleapis.com/auth/monitoring
-
-    monitoring-write
-      - https://www.googleapis.com/auth/monitoring.write
-
-    service-control
-      - https://www.googleapis.com/auth/servicecontrol
-
-    service-management
-      - https://www.googleapis.com/auth/service.management.readonly
-
-    sql (DEPRECATED)
-      - https://www.googleapis.com/auth/sqlservice:
-
-    sql-admin
-      - https://www.googleapis.com/auth/sqlservice.admin
-
-    storage-full
-      - https://www.googleapis.com/auth/devstorage.full_control
-
-    storage-ro
-      - https://www.googleapis.com/auth/devstorage.read_only
-
-    storage-rw
-      - https://www.googleapis.com/auth/devstorage.read_write
-
-    taskqueue
-      - https://www.googleapis.com/auth/taskqueue
-
-    useraccounts-ro
-      - https://www.googleapis.com/auth/cloud.useraccounts.readonly
-
-    useraccounts-rw
-      - https://www.googleapis.com/auth/cloud.useraccounts
-
-    userinfo-email
-      - https://www.googleapis.com/auth/userinfo.email
-
-    {scope_deprecation_msg}
-    """.format(scopes_exists if instance_exists else scopes_not_exists,
-               scopes_default_list=scopes_default_list,
-               scope_deprecation_msg=constants.DEPRECATED_SCOPES_MESSAGES)
+{scopes_help}
+""".format(exists=scopes_exists if instance_exists else scopes_not_exists,
+           extra=extra_scopes_help,
+           scopes_help=constants.ScopesHelp())
   scopes_group.add_argument(
       '--scopes',
       type=arg_parsers.ArgList(),
@@ -1179,6 +1294,17 @@ def AddNetworkTierArgs(parser, instance=True, for_update=False):
       '--network-tier',
       type=lambda x: x.upper(),
       help=network_tier_help)
+
+
+def AddDisplayDeviceArg(parser, is_update=False):
+  """Adds public DNS arguments for instance or access configuration."""
+  display_help = 'Enable a display device for instances using a Windows image.'
+  if not is_update:
+    display_help += ' Disabled by default.'
+  parser.add_argument(
+      '--enable-display-device',
+      action=arg_parsers.StoreTrueFalseAction if is_update else 'store_true',
+      help=display_help)
 
 
 def AddPublicDnsArgs(parser, instance=True):
@@ -1287,7 +1413,7 @@ def ValidatePublicDnsFlags(args):
 
   network_interface = getattr(args, 'network_interface', None)
   public_dns = getattr(args, 'public_dns', None)
-  if public_dns is True:
+  if public_dns:
     if (network_interface is not None and
         network_interface != constants.DEFAULT_NETWORK_INTERFACE):
       raise exceptions.ToolException(
@@ -1301,7 +1427,7 @@ def ValidatePublicPtrFlags(args):
 
   network_interface = getattr(args, 'network_interface', None)
   public_ptr = getattr(args, 'public_ptr', None)
-  if public_ptr is True:
+  if public_ptr is True:  # pylint:disable=g-bool-id-comparison
     if (network_interface is not None and
         network_interface != constants.DEFAULT_NETWORK_INTERFACE):
       raise exceptions.ToolException(
@@ -1309,7 +1435,7 @@ def ValidatePublicPtrFlags(args):
           '\'{0}\' rather than \'{1}\'.'.format(
               constants.DEFAULT_NETWORK_INTERFACE, network_interface))
 
-  if args.public_ptr_domain is not None and args.no_public_ptr is True:
+  if args.public_ptr_domain is not None and args.no_public_ptr is True:  # pylint:disable=g-bool-id-comparison
     raise exceptions.ConflictingArgumentsException('--public-ptr-domain',
                                                    '--no-public-ptr')
 
@@ -1332,10 +1458,20 @@ def AddTagsArgs(parser):
       type=arg_parsers.ArgList(min_length=1),
       metavar='TAG',
       help="""\
-      Specifies a list of tags to apply to the instances for
-      identifying the instances to which network firewall rules will
-      apply. See gcloud_compute_firewall-rules_create(1) for more
-      details.
+      Specifies a list of tags to apply to the instance. These tags allow
+      network firewall rules and routes to be applied to specified VM instances.
+      See gcloud_compute_firewall-rules_create(1) for more details.
+
+      To read more about configuring network tags, read this guide:
+      https://cloud.google.com/vpc/docs/add-remove-network-tags
+
+      To list instances with their respective status and tags, run:
+
+        $ gcloud compute instances list --format='table(name,status,tags.list())'
+
+      To list instances tagged with a specific tag, `tag1`, run:
+
+        $ gcloud compute instances list --filter='tags:tag1'
       """)
 
 
@@ -1381,15 +1517,12 @@ def AddAcceleratorArgs(parser):
   """Adds Accelerator-related args."""
   # Attaches accelerators (e.g. GPUs) to the instances. e.g. --accelerator
   # type=nvidia-tesla-k80,count=4
-  # TODO(b/34676942): METAVAR should be synthesized or it should not be needed
-  # for ArgDict type of argument.
   parser.add_argument(
       '--accelerator',
       type=arg_parsers.ArgDict(spec={
           'type': str,
           'count': int,
       }),
-      metavar='type=TYPE,[count=COUNT]',
       help="""\
       Attaches accelerators (e.g. GPUs) to the instances.
 
@@ -1397,8 +1530,8 @@ def AddAcceleratorArgs(parser):
       of accelerator to attach to the instances. Use 'gcloud compute
       accelerator-types list' to learn about all available accelerator types.
 
-      *count*::: The number of pieces of the accelerator to attach to the
-      instances. The default value is 1.
+      *count*::: Number of accelerators to attach to each
+      instance. The default value is 1.
       """)
 
 
@@ -1446,10 +1579,10 @@ def AddKonletArgs(parser):
       Each argument must have a separate flag. Arguments are appended in the
       order of flags. Example:
 
-      Assuming the default entry point of your container (or an entry point
+      Assuming the default entry point of the container (or an entry point
       overridden with --container-command flag) is a Bourne shell-compatible
       executable, in order to execute 'ls -l' command in the container,
-      you could use:
+      the user could use:
 
       `--container-arg="-c" --container-arg="ls -l"`
 
@@ -1469,44 +1602,8 @@ def AddKonletArgs(parser):
       Default: `--no-container-privileged`.
       """)
 
-  def ParseMountVolumeMode(mode):
-    if not mode or mode == 'rw':
-      return containers_utils.MountVolumeMode.READ_WRITE
-    elif mode == 'ro':
-      return containers_utils.MountVolumeMode.READ_ONLY
-    else:
-      raise exceptions.InvalidArgumentException(
-          '--run-mount-volume', 'Mode can only be "ro" or "rw".')
-
-  parser.add_argument(
-      '--container-mount-host-path',
-      metavar='host-path=HOSTPATH,mount-path=MOUNTPATH[,mode=MODE]',
-      type=arg_parsers.ArgDict(spec={'host-path': str,
-                                     'mount-path': str,
-                                     'mode': ParseMountVolumeMode}),
-      action='append',
-      help="""\
-      Mounts a volume by using host-path.
-
-      *host-path*::: Path on host to mount from.
-
-      *mount-path*::: Path on container to mount to.
-
-      *mode*::: Volume mount mode: rw (read/write) or ro (read-only).
-
-      Default: rw.
-      """)
-
-  parser.add_argument(
-      '--container-mount-tmpfs',
-      metavar='mount-path=MOUNTPATH',
-      type=arg_parsers.ArgDict(spec={'mount-path': str}),
-      action='append',
-      help="""\
-      Mounts empty tmpfs into container at MOUNTPATH.
-
-      *mount-path*::: Path on container to mount to.
-      """)
+  _AddContainerMountHostPathFlag(parser)
+  _AddContainerMountTmpfsFlag(parser)
 
   parser.add_argument(
       '--container-env',
@@ -1561,7 +1658,7 @@ def AddKonletArgs(parser):
       choices=['never', 'on-failure', 'always'],
       default='always',
       metavar='POLICY',
-      type=str.lower,
+      type=lambda val: val.lower(),
       help="""\
       Specify whether to restart a container on exit.
       """)
@@ -1575,6 +1672,7 @@ def ValidateKonletArgs(args):
 
 
 def ValidateLocalSsdFlags(args):
+  """Validate local ssd flags."""
   for local_ssd in args.local_ssd or []:
     interface = local_ssd.get('interface')
     if interface and interface not in LOCAL_SSD_INTERFACES:
@@ -1592,10 +1690,10 @@ def ValidateLocalSsdFlags(args):
 
 
 def ValidateNicFlags(args):
-  """Valiadates flags specifying network interface cards.
+  """Validates flags specifying network interface cards.
 
   Args:
-    args: parsed comandline arguments.
+    args: parsed command line arguments.
   Raises:
     InvalidArgumentException: when it finds --network-interface that has both
                               address, and no-address keys.
@@ -1631,12 +1729,13 @@ def AddDiskScopeFlag(parser):
       '--disk-scope',
       choices={'zonal':
                'The disk specified in --disk is interpreted as a '
-               'zonal disk in the same zone as the instance',
+               'zonal disk in the same zone as the instance. '
+               'Ignored if a full URI is provided to the `--disk` flag.',
                'regional':
                'The disk specified in --disk is interpreted as a '
-               'regional disk in the same region as the instance'},
+               'regional disk in the same region as the instance. '
+               'Ignored if a full URI is provided to the `--disk` flag.'},
       help='The scope of the disk.',
-      hidden=True,
       default='zonal')
 
 
@@ -1683,42 +1782,622 @@ def AddDeletionProtectionFlag(parser, use_default_value=True):
         that no update needs to be done for deletion protection.
   """
   help_text = ('Enables deletion protection for the instance.')
-  if use_default_value:
-    help_text += ' Deletion protection is disabled by default.'
-  else:
-    help_text += (' To disable deletion protection, use '
-                  '`--no-deletion-protection`.')
+  action = ('store_true' if use_default_value else
+            arg_parsers.StoreTrueFalseAction)
   parser.add_argument(
       '--deletion-protection',
       help=help_text,
-      action='store_true',
-      default=False if use_default_value else None)
+      action=action)
 
 
-def AddShieldedVMConfigArgs(parser):
-  """Adds flags for shielded VM configuration.
+def AddShieldedInstanceConfigArgs(parser,
+                                  use_default_value=True,
+                                  for_update=False):
+  """Adds flags for shielded Instance configuration.
 
   Args:
     parser: ArgumentParser, parser to which flags will be added.
+    use_default_value: Bool, if True, flag will be given the default value
+      False, else None. Update uses None as an indicator that no update needs to
+      be done for deletion protection.
+    for_update: Bool, if True, flags are intended for an update operation.
+  """
+  if use_default_value:
+    default_action = 'store_true'
+    action_kwargs = {'default': None}
+  else:
+    default_action = arg_parsers.StoreTrueFalseAction
+    action_kwargs = {}
+
+  # --shielded-secure-boot
+  secure_boot_help = """\
+      The instance will boot with secure boot enabled.
+      """
+  if for_update:
+    secure_boot_help += """\
+      Changes to this setting (via the update command) will only take effect
+      after stopping and starting the instance.
+      """
+
+  parser.add_argument(
+      '--shielded-secure-boot',
+      help=secure_boot_help,
+      dest='shielded_vm_secure_boot',
+      action=default_action,
+      **action_kwargs)
+
+  # --shielded-vtpm
+  vtpm_help = """\
+      The instance will boot with the TPM (Trusted Platform Module) enabled.
+      A TPM is a hardware module that can be used for different security
+      operations such as remote attestation, encryption and sealing of keys.
+      """
+  if for_update:
+    vtpm_help += """\
+      Changes to this setting (via the update command) will only take effect
+      after stopping and starting the instance.
+      """
+
+  parser.add_argument(
+      '--shielded-vtpm',
+      dest='shielded_vm_vtpm',
+      help=vtpm_help,
+      action=default_action,
+      **action_kwargs)
+
+  # --shielded-integrity-monitoring
+  integrity_monitoring_help = """\
+      Enables monitoring and attestation of the boot integrity of the
+      instance. The attestation is performed against the integrity policy
+      baseline. This baseline is initially derived from the implicitly
+      trusted boot image when the instance is created. This baseline can be
+      updated by using `--shielded-vm-learn-integrity-policy`.
+      """
+  if for_update:
+    integrity_monitoring_help += """\
+      Changes to this setting (via the update command) will only take effect
+      after stopping and starting the instance.
+      """
+
+  parser.add_argument(
+      '--shielded-integrity-monitoring',
+      help=integrity_monitoring_help,
+      dest='shielded_vm_integrity_monitoring',
+      action=default_action,
+      **action_kwargs)
+
+
+def AddShieldedInstanceIntegrityPolicyArgs(parser):
+  """Adds flags for shielded instance integrity policy settings."""
+  help_text = """\
+  Causes the instance to re-learn the integrity policy baseline using
+  the current instance configuration. Use this flag after any planned
+  boot-specific changes in the instance configuration, like kernel
+  updates or kernel driver installation.
+  """
+  default_action = 'store_true'
+  parser.add_argument(
+      '--shielded-learn-integrity-policy',
+      dest='shielded_vm_learn_integrity_policy',
+      action=default_action,
+      default=None,
+      help=help_text)
+
+
+def AddConfidentialComputeArgs(parser):
+  """Adds flags for confidential compute for instance."""
+  help_text = """\
+  The instance will boot with confidential compute enabled. Confidential
+  Compute is based on Secure Encrypted Virtualization (SEV), an AMD
+  virtualization feature for running confidential instances.
   """
   parser.add_argument(
-      '--shielded-vm-secure-boot',
+      '--confidential-compute',
+      dest='confidential_compute',
       action='store_true',
-      default=None,  # Tri-valued: None => don't change the setting.
+      default=None,
+      help=help_text)
+
+
+def AddHostnameArg(parser):
+  """Adds flag for overriding hostname for instance."""
+  parser.add_argument(
+      '--hostname',
       help="""\
-      The instance will boot with secure boot enabled. Changes to this setting
-      (via the update command) will only take effect after stopping and starting
-      the instance.
+      Specify the hostname of the instance to be created. The specified
+      hostname must be RFC1035 compliant. If hostname is not specified, the
+      default hostname is [INSTANCE_NAME].c.[PROJECT_ID].internal when using
+      the global DNS, and [INSTANCE_NAME].[ZONE].c.[PROJECT_ID].internal
+      when using zonal DNS.
+      """)
+
+
+def AddReservationAffinityGroup(parser, group_text, affinity_text):
+  """Adds the argument group to handle reservation affinity configurations."""
+  group = parser.add_group(help=group_text)
+  group.add_argument(
+      '--reservation-affinity',
+      choices=['any', 'none', 'specific'],
+      default='any',
+      help=affinity_text)
+  group.add_argument(
+      '--reservation',
+      help="""
+The name of the reservation, required when `--reservation-affinity=specific`.
+""")
+
+
+def ValidateReservationAffinityGroup(args):
+  """Validates flags specifying reservation affinity."""
+  affinity = getattr(args, 'reservation_affinity', None)
+  if affinity == 'specific':
+    if not args.IsSpecified('reservation'):
+      raise exceptions.InvalidArgumentException(
+          '--reservation',
+          'The name the specific reservation must be specified.')
+
+
+def _GetContainerMountDescriptionAndNameDescription(for_update=False):
+  """Get description text for --container-mount-disk flag."""
+  if for_update:
+    description = ("""\
+Mounts a disk to the container by using mount-path or updates how the volume is
+mounted if the same mount path has already been declared. The disk must already
+be attached to the instance with a device-name that matches the disk name.
+Multiple flags are allowed.
+""")
+    name_description = ("""\
+Name of the disk. Can be omitted if exactly one additional disk is attached to
+the instance. The name of the single additional disk will be used by default.
+""")
+    return description, name_description
+  else:
+    description = ("""\
+Mounts a disk to the specified mount path in the container. Multiple '
+flags are allowed. Must be used with `--disk` or `--create-disk`.
+""")
+    name_description = ("""\
+Name of the disk. If exactly one additional disk is attached
+to the instance using `--disk` or `--create-disk`, specifying disk
+name here is optional. The name of the single additional disk will be
+used by default.
+""")
+    return description, name_description
+
+
+def ParseMountVolumeMode(argument_name, mode):
+  """Parser for mode option in ArgDict specs."""
+  if not mode or mode == 'rw':
+    return containers_utils.MountVolumeMode.READ_WRITE
+  elif mode == 'ro':
+    return containers_utils.MountVolumeMode.READ_ONLY
+  else:
+    raise exceptions.InvalidArgumentException(
+        argument_name, 'Mode can only be [ro] or [rw].')
+
+
+def AddContainerMountDiskFlag(parser, for_update=False):
+  """Add --container-mount-disk flag."""
+  description, name_description = (
+      _GetContainerMountDescriptionAndNameDescription(for_update=for_update))
+  help_text = ("""\
+{}
+
+*name*::: {}
+
+*mount-path*::: Path on container to mount to. Mount paths with spaces
+      and commas (and other special characters) are not supported by this
+      command.
+
+*partition*::: Optional. The partition of the disk to mount. Multiple
+partitions of a disk may be mounted.{}
+
+*mode*::: Volume mount mode: `rw` (read/write) or `ro` (read-only).
+Defaults to `rw`. Fails if the disk mode is `ro` and volume mount mode
+is `rw`.
+""".format(description, name_description,
+           '' if for_update else ' May not be used with --create-disk.'))
+
+  spec = {
+      'name': str,
+      'mount-path': str,
+      'partition': int,
+      'mode': functools.partial(ParseMountVolumeMode,
+                                '--container-mount-disk')}
+  parser.add_argument(
+      '--container-mount-disk',
+      type=arg_parsers.ArgDict(spec=spec, required_keys=['mount-path']),
+      help=help_text,
+      action='append')
+
+
+def _GetMatchingDiskFromMessages(holder, mount_disk_name, disk, client=None):
+  """Helper to match a mount disk's name to a disk message."""
+  if client is None:
+    client = apis.GetClientClass('compute', 'alpha')
+  if mount_disk_name is None and len(disk) == 1:
+    return {
+        'name': holder.resources.Parse(disk[0].source).Name(),
+        'device_name': disk[0].deviceName,
+        'ro': (disk[0].mode ==
+               client.MESSAGES_MODULE.AttachedDisk.ModeValueValuesEnum
+               .READ_WRITE)}, False
+  for disk_spec in disk:
+    disk_name = holder.resources.Parse(disk_spec.source).Name()
+    if disk_name == mount_disk_name:
+      return {
+          'name': disk_name,
+          'device_name': disk_spec.deviceName,
+          'ro': (disk_spec.mode ==
+                 client.MESSAGES_MODULE.AttachedDisk.ModeValueValuesEnum
+                 .READ_WRITE)}, False
+  return None, None
+
+
+def _GetMatchingDiskFromFlags(mount_disk_name, disk, create_disk):
+  """Helper to match a mount disk's name to a disk spec from a flag."""
+
+  def _GetMatchingDiskFromSpec(spec):
+    return {'name': spec.get('name'),
+            'device_name': spec.get('device-name'),
+            'ro': spec.get('mode') == 'ro'}
+
+  if mount_disk_name is None and len(disk + create_disk) == 1:
+    disk_spec = (disk + create_disk)[0]
+    return _GetMatchingDiskFromSpec(disk_spec), bool(create_disk)
+  for disk_spec in disk:
+    if disk_spec.get('name') == mount_disk_name:
+      return _GetMatchingDiskFromSpec(disk_spec), False
+  for disk_spec in create_disk:
+    if disk_spec.get('name') == mount_disk_name:
+      return _GetMatchingDiskFromSpec(disk_spec), True
+  return None, None
+
+
+def _CheckMode(name, mode_value, mount_disk, matching_disk, create):
+  """Make sure the correct mode is specified for container mount disk."""
+  partition = mount_disk.get('partition')
+  if (mode_value == containers_utils.MountVolumeMode.READ_WRITE and
+      matching_disk.get('ro')):
+    raise exceptions.InvalidArgumentException(
+        '--container-mount-disk',
+        'Value for [mode] in [--container-mount-disk] cannot be [rw] if the '
+        'disk is attached in [ro] mode: disk name [{}], partition [{}]'
+        .format(name, partition))
+  if matching_disk.get('ro') and create:
+    raise exceptions.InvalidArgumentException(
+        '--container-mount-disk',
+        'Cannot mount disk named [{}] to container: disk is created in [ro] '
+        'mode and thus cannot be formatted.'.format(
+            name))
+
+
+def GetValidatedContainerMountDisk(holder, container_mount_disk, disk,
+                                   create_disk, for_update=False, client=None):
+  """Validate --container-mount-disk value."""
+  disk = disk or []
+  create_disk = create_disk or []
+  if not container_mount_disk:
+    return
+  if not (disk or create_disk or for_update):
+    raise exceptions.InvalidArgumentException(
+        '--container-mount-disk',
+        'Must be used with `--disk` or `--create-disk`')
+
+  message = '' if for_update else ' using `--disk` or `--create-disk`.'
+  validated_disks = []
+  for mount_disk in container_mount_disk:
+    if for_update:
+      matching_disk, create = _GetMatchingDiskFromMessages(
+          holder, mount_disk.get('name'), disk, client=client)
+    else:
+      matching_disk, create = _GetMatchingDiskFromFlags(
+          mount_disk.get('name'), disk, create_disk)
+    if not mount_disk.get('name'):
+      if len(disk + create_disk) != 1:
+        raise exceptions.InvalidArgumentException(
+            '--container-mount-disk',
+            'Must specify the name of the disk to be mounted unless exactly '
+            'one disk is attached to the instance{}.'.format(message))
+      name = matching_disk.get('name')
+      if not name:
+        raise exceptions.InvalidArgumentException(
+            '--container-mount-disk',
+            'When attaching or creating a disk that is also being mounted to '
+            'a container, must specify the disk name.')
+    else:
+      name = mount_disk.get('name')
+      if not matching_disk:
+        raise exceptions.InvalidArgumentException(
+            '--container-mount-disk',
+            'Attempting to mount a disk that is not attached to the instance: '
+            'must attach a disk named [{}]{}'.format(name, message))
+    if (matching_disk and
+        matching_disk.get('device_name') and
+        matching_disk.get('device_name') != matching_disk.get('name')):
+      raise exceptions.InvalidArgumentException(
+          '--container-mount-disk',
+          'Container mount disk cannot be used with a device whose device-name '
+          'is different from its name. The disk with name [{}] has the '
+          'device-name [{}].'.format(matching_disk.get('name'),
+                                     matching_disk.get('device_name')))
+
+    mode_value = mount_disk.get('mode')
+    if matching_disk:
+      _CheckMode(name, mode_value, mount_disk, matching_disk, create)
+    if matching_disk and create and mount_disk.get('partition'):
+      raise exceptions.InvalidArgumentException(
+          '--container-mount-disk',
+          'Container mount disk cannot specify a partition when the disk '
+          'is created with --create-disk: disk name [{}], partition [{}]'
+          .format(name, mount_disk.get('partition')))
+    mount_disk = copy.deepcopy(mount_disk)
+    mount_disk['name'] = mount_disk.get('name') or name
+    validated_disks.append(mount_disk)
+  return validated_disks
+
+
+def NonEmptyString(parameter_name):
+  def Factory(string):
+    if not string:
+      raise exceptions.InvalidArgumentException(
+          parameter_name, 'Empty string is not allowed.')
+    return string
+  return Factory
+
+
+def _AddContainerEnvGroup(parser):
+  """Add flags to update the container environment."""
+
+  env_group = parser.add_argument_group()
+
+  env_group.add_argument(
+      '--container-env',
+      type=arg_parsers.ArgDict(),
+      action='append',
+      metavar='KEY=VALUE, ...',
+      help="""\
+      Update environment variables `KEY` with value `VALUE` passed to
+      container.
+      - Sets `KEY` to the specified value.
+      - Adds `KEY` = `VALUE`, if `KEY` is not yet declared.
+      - Only the last value of `KEY` is taken when `KEY` is repeated more
+      than once.
+
+      Values, declared with `--container-env` flag override those with the
+      same `KEY` from file, provided in `--container-env-file`.
+      """)
+
+  env_group.add_argument(
+      '--container-env-file',
+      help="""\
+      Update environment variables from a file.
+      Same update rules as for `--container-env` apply.
+      Values, declared with `--container-env` flag override those with the
+      same `KEY` from file.
+
+      File with environment variables declarations in format used by docker
+      (almost). This means:
+      - Lines are in format KEY=VALUE
+      - Values must contain equality signs.
+      - Variables without values are not supported (this is different from
+      docker format).
+      - If # is first non-whitespace character in a line the line is ignored
+      as a comment.
+      """)
+
+  env_group.add_argument(
+      '--remove-container-env',
+      type=arg_parsers.ArgList(),
+      action='append',
+      metavar='KEY',
+      help="""\
+      Removes environment variables `KEY` from container declaration Does
+      nothing, if a variable is not present.
+      """)
+
+
+def _AddContainerArgGroup(parser):
+  """Add flags to update the container arg."""
+
+  arg_group = parser.add_mutually_exclusive_group()
+
+  arg_group.add_argument(
+      '--container-arg',
+      action='append',
+      help="""\
+      Completely replaces the list of arguments with the new list.
+      Each argument must have a separate --container-arg flag.
+      Arguments are appended the new list in the order of flags.
+
+      Cannot be used in the same command with `--clear-container-arg`.
+      """)
+
+  arg_group.add_argument(
+      '--clear-container-args',
+      action='store_true',
+      default=None,
+      help="""\
+      Removes the list of arguments from container declaration.
+
+      Cannot be used in the same command with `--container-arg`.
+      """
+  )
+
+
+def _AddContainerCommandGroup(parser):
+  """Add flags to update the command in the container declaration."""
+  command_group = parser.add_mutually_exclusive_group()
+
+  command_group.add_argument(
+      '--container-command',
+      type=NonEmptyString('--container-command'),
+      help="""\
+      Sets command in the declaration to the specified value.
+      Empty string is not allowed.
+
+      Cannot be used in the same command with `--clear-container-command`.
+      """)
+
+  command_group.add_argument(
+      '--clear-container-command',
+      action='store_true',
+      default=None,
+      help="""\
+      Removes command from container declaration.
+
+      Cannot be used in the same command with `--container-command`.
+      """)
+
+
+def _AddContainerMountHostPathFlag(parser, for_update=False):
+  """Helper to add --container-mount-host-path flag."""
+  if for_update:
+    additional = """\
+
+      - Adds a volume, if `mount-path` is not yet declared.
+      - Replaces a volume, if `mount-path` is declared.
+      All parameters (`host-path`, `mount-path`, `mode`) are completely
+      replaced."""
+  else:
+    additional = ''
+  parser.add_argument(
+      '--container-mount-host-path',
+      metavar='host-path=HOSTPATH,mount-path=MOUNTPATH[,mode=MODE]',
+      type=arg_parsers.ArgDict(spec={'host-path': str,
+                                     'mount-path': str,
+                                     'mode': functools.partial(
+                                         ParseMountVolumeMode,
+                                         '--container-mount-host-path')}),
+      action='append',
+      help="""\
+      Mounts a volume by using host-path.{}
+
+      *host-path*::: Path on host to mount from.
+
+      *mount-path*::: Path on container to mount to. Mount paths with spaces
+      and commas (and other special characters) are not supported by this
+      command.
+
+      *mode*::: Volume mount mode: rw (read/write) or ro (read-only).
+
+      Default: rw.
+      """.format(additional))
+
+
+def _AddContainerMountTmpfsFlag(parser):
+  """Helper to add --container-mount-tmpfs flag."""
+  parser.add_argument(
+      '--container-mount-tmpfs',
+      metavar='mount-path=MOUNTPATH',
+      type=arg_parsers.ArgDict(spec={'mount-path': str}),
+      action='append',
+      help="""\
+      Mounts empty tmpfs into container at MOUNTPATH.
+
+      *mount-path*::: Path on container to mount to. Mount paths with spaces
+      and commas (and other special characters) are not supported by this
+      command.
+      """)
+
+
+def _AddContainerMountGroup(parser, container_mount_disk_enabled=False):
+  """Add flags to update what is mounted to the container."""
+
+  mount_group = parser.add_argument_group()
+
+  _AddContainerMountHostPathFlag(mount_group, for_update=True)
+  _AddContainerMountTmpfsFlag(mount_group)
+
+  if container_mount_disk_enabled:
+    AddContainerMountDiskFlag(parser, for_update=True)
+
+  mount_types = ['`host-path`', '`tmpfs`']
+  if container_mount_disk_enabled:
+    mount_types.append('`disk`')
+  mount_group.add_argument(
+      '--remove-container-mounts',
+      type=arg_parsers.ArgList(),
+      metavar='MOUNTPATH[,MOUNTPATH,...]',
+      help="""\
+      Removes volume mounts ({}) with
+      `mountPath: MOUNTPATH` from container declaration.
+
+      Does nothing, if a volume mount is not declared.
+      """.format(', '.join(mount_types))
+  )
+
+
+def _AddContainerArgs(parser):
+  """Add basic args for update-container."""
+
+  parser.add_argument(
+      '--container-image',
+      type=NonEmptyString('--container-image'),
+      help="""\
+      Sets container image in the declaration to the specified value.
+
+      Empty string is not allowed.
       """)
 
   parser.add_argument(
-      '--shielded-vm-vtpm',
+      '--container-privileged',
       action='store_true',
-      default=None,  # Tri-valued: None => don't change the setting.
+      default=None,
       help="""\
-      The instance will boot with the TPM (Trusted Platform Module) enabled.
-      Changes to this setting (via the update command) will only take effect
-      after stopping and starting the instance. A TPM is a hardware module that
-      can be used for different security operations such as remote attestation,
-      encryption and sealing of keys.
-    """)
+      Sets permission to run container to the specified value.
+      """)
+
+  parser.add_argument(
+      '--container-stdin',
+      action='store_true',
+      default=None,
+      help="""\
+      Sets configuration whether to keep container `STDIN` always open to the
+      specified value.
+      """)
+
+  parser.add_argument(
+      '--container-tty',
+      action='store_true',
+      default=None,
+      help="""\
+      Sets configuration whether to allocate a pseudo-TTY for the container
+      to the specified value.
+      """)
+
+  parser.add_argument(
+      '--container-restart-policy',
+      choices=['never', 'on-failure', 'always'],
+      metavar='POLICY',
+      type=lambda val: val.lower(),
+      help="""\
+      Sets container restart policy to the specified value.
+      """)
+
+
+def AddUpdateContainerArgs(parser, container_mount_disk_enabled=False):
+  INSTANCE_ARG.AddArgument(parser, operation_type='update')
+  _AddContainerCommandGroup(parser)
+  _AddContainerEnvGroup(parser)
+  _AddContainerArgGroup(parser)
+  _AddContainerMountGroup(
+      parser,
+      container_mount_disk_enabled=container_mount_disk_enabled)
+  _AddContainerArgs(parser)
+
+
+def AddPostKeyRevocationActionTypeArgs(parser):
+  """Helper to add --post-key-revocation-action-type flag."""
+  parser.add_argument(
+      '--post-key-revocation-action-type',
+      choices=['noop', 'shutdown'],
+      metavar='POLICY',
+      required=False,
+      hidden=True,
+      help="""\
+      The instance will be shut down when the KMS key of one of its disk is
+      revoked, if set to `SHUTDOWN`.
+
+      Default setting is `NOOP`.
+      """)

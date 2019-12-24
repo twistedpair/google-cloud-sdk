@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,19 +14,30 @@
 # limitations under the License.
 """Common functions and classes for dealing with managed instances groups."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import random
 import re
 import string
 import sys
 from apitools.base.py import list_pager
 
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
+from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.compute.managed_instance_groups import auto_healing_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_io
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 _ALLOWED_UTILIZATION_TARGET_TYPES = [
@@ -58,15 +70,26 @@ _NUM_RANDOM_CHARACTERS_IN_AS_NAME = 4
 CLOUD_PUB_SUB_VALID_RESOURCE_RE = r'^[A-Za-z][A-Za-z0-9-_.~+%]{2,}$'
 
 
-class ResourceNotFoundException(exceptions.ToolException):
+# TODO(b/110191362): resign from passing whole args to functions in this file
+
+
+class Error(exceptions.Error):
+  """Base exception for managed instance group exceptions."""
+
+
+class ResourceNotFoundException(Error):
   """The user tries to get/use/update resource which does not exist."""
 
 
-class ResourceAlreadyExistsException(exceptions.ToolException):
+class InvalidArgumentError(exceptions.Error):
+  """The user provides invalid arguments."""
+
+
+class ResourceAlreadyExistsException(Error):
   """The user tries to create resource which already exists."""
 
 
-class ResourceCannotBeResolvedException(exceptions.ToolException):
+class ResourceCannotBeResolvedException(Error):
   """The user uses invalid / partial name to resolve URI for the resource."""
 
 
@@ -76,7 +99,7 @@ def ArgsSupportQueueScaling(args):
 
 def AddAutoscalerArgs(
     parser, queue_scaling_enabled=False, autoscaling_file_enabled=False,
-    stackdriver_metrics_flags=False):
+    stackdriver_metrics_flags=False, mode_enabled=False, scale_down=False):
   """Adds commandline arguments to parser."""
   parser.add_argument(
       '--cool-down-period',
@@ -85,13 +108,14 @@ def AddAutoscalerArgs(
             'collecting information from a new instance. This prevents the '
             'autoscaler from collecting information when the instance is '
             'initializing, during which the collected usage would not be '
-            'reliable. The default is 60 seconds.'))
+            'reliable. The default is 60s. See $ gcloud topic datetimes '
+            'for information on duration formats.'))
   parser.add_argument('--description', help='Notes about Autoscaler.')
   parser.add_argument('--min-num-replicas',
-                      type=arg_parsers.BoundedInt(0, sys.maxint),
+                      type=arg_parsers.BoundedInt(0, sys.maxsize),
                       help='Minimum number of replicas Autoscaler will set.')
   parser.add_argument('--max-num-replicas',
-                      type=arg_parsers.BoundedInt(0, sys.maxint),
+                      type=arg_parsers.BoundedInt(0, sys.maxsize),
                       required=not autoscaling_file_enabled,
                       help='Maximum number of replicas Autoscaler will set.')
   parser.add_argument('--scale-based-on-cpu',
@@ -110,18 +134,19 @@ def AddAutoscalerArgs(
                       help='Autoscaler will aim to maintain the load balancing '
                       'utilization level (greater than 0.0).')
   custom_metric_utilization_help = """\
-      Adds a target metric value for the Autoscaler to use.
+Adds a target metric value for the Autoscaler to use.
 
-      *metric*::: Protocol-free URL of a Google Cloud Monitoring metric.
+*metric*::: Protocol-free URL of a Google Cloud Monitoring metric.
 
-      *utilization-target*::: Value of the metric Autoscaler will aim to
-      maintain (greater than 0.0).
+*utilization-target*::: Value of the metric Autoscaler will aim to
+  maintain (greater than 0.0).
 
-      *utilization-target-type*::: How target is expressed. Valid values: {0}.
-      """.format(', '.join(_ALLOWED_UTILIZATION_TARGET_TYPES))
+*utilization-target-type*::: How target is expressed. Valid values: {0}.
+""".format(', '.join(_ALLOWED_UTILIZATION_TARGET_TYPES))
   if stackdriver_metrics_flags:
-    custom_metric_utilization_help += (
-        '\nMutually exclusive with `--update-stackdriver-metric`.')
+    custom_metric_utilization_help += """
+Mutually exclusive with `--update-stackdriver-metric`.
+"""
   parser.add_argument(
       '--custom-metric-utilization',
       type=arg_parsers.ArgDict(
@@ -229,16 +254,80 @@ def AddAutoscalerArgs(
               '`-stackdriver-metric-utilization-target-type`, and '
               '`--custom-metric-utilization`.'))
 
+  if mode_enabled:
+    GetModeFlag().AddToParser(parser)
+
+  if scale_down:
+    AddScaleDownControlFlag(parser)
+
+
+def GetModeFlag():
+  # Can't use a ChoiceEnumMapper because we don't have access to the "messages"
+  # module for the right API version.
+  return base.ChoiceArgument(
+      '--mode',
+      {
+          'on': ('to permit autoscaling to scale up and down (default for '
+                 'new autoscalers).'),
+          'only-up': 'to permit autoscaling to scale only up and not down.',
+          'off': ('to turn off autoscaling, while keeping the new '
+                  'configuration.')
+      },
+      help_str="""\
+          Set the mode of an autoscaler for a managed instance group.
+
+          You can turn off or restrict MIG autoscaler activities (scaling up,
+          scaling down) without changing autoscaler configuration and then
+          having to restore it later. Autoscaler configuration persists while
+          the activities are turned off or restricted, and the activities pick
+          it up when they are turned on again or when the restrictions are
+          lifted.
+      """)
+
+
+def AddScaleDownControlFlag(parser):
+  parser.add_argument(
+      '--scale-down-control',
+      type=arg_parsers.ArgDict(
+          spec={
+              'max-scaled-down-replicas': str,
+              'max-scaled-down-replicas-percent': str,
+              'time-window': int,
+          },
+      ),
+      help="""\
+        Configuration that allows slower scale down so that even if Autoscaler
+        recommends an abrupt scale down of a managed instance group, it will be
+        throttled as specified by the parameters.
+
+        *max-scaled-down-replicas*::: Maximum allowed number of VMs that can be
+        deducted from the peak recommendation during the window. Possibly all
+        these VMs can be deleted at once so user service needs to be prepared
+        to lose that many VMs in one step. Mutually exclusive with
+        'max-scaled-down-replicas-percent'.
+
+        *max-scaled-down-replicas-percent*::: Maximum allowed percent of VMs
+        that can be deducted from the peak recommendation during the window.
+        Possibly all these VMs can be deleted at once so user service needs
+        to be prepared to lose that many VMs in one step. Mutually exclusive
+        with  'max-scaled-down-replicas'.
+
+        *time-window*::: How long back autoscaling should look when computing
+        recommendations to include directives regarding slower scale down.
+        Measured in seconds.
+        """
+  )
+
 
 def _ValidateCloudPubSubResource(pubsub_spec_dict, expected_resource_type):
   """Validate Cloud Pub/Sub resource spec format."""
   def RaiseInvalidArgument(message):
-    raise exceptions.InvalidArgumentException(
+    raise calliope_exceptions.InvalidArgumentException(
         '--queue-scaling-cloud-pub-sub:{0}'.format(expected_resource_type),
         message)
 
   if expected_resource_type not in pubsub_spec_dict:
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'Both topic and subscription are required for Cloud Pub/Sub '
         'queue scaling specification.')
   split_resource = pubsub_spec_dict[expected_resource_type].split('/')
@@ -271,14 +360,14 @@ def ValidateConflictsWithAutoscalingFile(args, conflicting_args):
             '--' + a.replace('_', '-')
             for a in conflicting_args
         ]
-        raise exceptions.ConflictingArgumentsException(
+        raise calliope_exceptions.ConflictingArgumentsException(
             *(['--autoscaling-file'] + conflicting_flags))
 
 
 def _ValidateCustomMetricUtilizationVsUpdateStackdriverMetric(args):
   if (args.IsSpecified('custom_metric_utilization') and
       args.IsSpecified('update_stackdriver_metric')):
-    raise exceptions.ConflictingArgumentsException(
+    raise calliope_exceptions.ConflictingArgumentsException(
         '--custom-metric-utilization', '--update-stackdriver-metric')
 
 
@@ -286,13 +375,13 @@ def _ValidateRemoveStackdriverMetricVsUpdateStackdriverMetric(args):
   if (args.IsSpecified('update_stackdriver_metric') and
       args.IsSpecified('remove_stackdriver_metric') and
       args.update_stackdriver_metric == args.remove_stackdriver_metric):
-    raise exceptions.InvalidArgumentException(
+    raise calliope_exceptions.InvalidArgumentException(
         '--update-stackdriver-metric',
         'You can not remove Stackdriver metric you are updating with '
         '[--update-stackdriver-metric] flag.')
 
 
-def _ValidateRequiringUpdateStackdriverMetric(args):
+def _ValidateRequiringUpdateStackdriverMetric(args):  # pylint:disable=missing-docstring
   if not args.IsSpecified('update_stackdriver_metric'):
     requiring_flags = [
         'stackdriver_metric_filter',
@@ -302,12 +391,12 @@ def _ValidateRequiringUpdateStackdriverMetric(args):
     ]
     for f in requiring_flags:
       if args.IsSpecified(f):
-        raise exceptions.RequiredArgumentException(
+        raise calliope_exceptions.RequiredArgumentException(
             '--' + f.replace('_', '-'),
             '[--update-stackdriver-metric] required to use this flag.')
 
 
-def _ValidateRequiredByUpdateStackdriverMetric(args):
+def _ValidateRequiredByUpdateStackdriverMetric(args):  # pylint:disable=missing-docstring
   if args.IsSpecified('update_stackdriver_metric'):
     one_of_required = [
         'stackdriver_metric_single_instance_assignment',
@@ -317,11 +406,11 @@ def _ValidateRequiredByUpdateStackdriverMetric(args):
           '[--{}]'.format(f.replace('_', '--')) for f in one_of_required]
       msg = ('You must provide one of {} with '
              '[--update-stackdriver-metric].'.format(', '.join(flags)))
-      raise exceptions.RequiredArgumentException(
+      raise calliope_exceptions.RequiredArgumentException(
           '--update-stackdriver-metric', msg)
 
 
-def _ValidateSingleInstanceAssignmentVsUtilizationTarget(args):
+def _ValidateSingleInstanceAssignmentVsUtilizationTarget(args):  # pylint:disable=missing-docstring
   if args.IsSpecified('stackdriver_metric_single_instance_assignment'):
     potential_conflicting = [
         'stackdriver_metric_utilization_target',
@@ -332,7 +421,7 @@ def _ValidateSingleInstanceAssignmentVsUtilizationTarget(args):
       assignment_flag = '--stackdriver-metric-single-instance-assignment'
       conflicting_flags = [
           '[--{}]'.format(f.replace('_', '-')) for f in conflicting]
-      raise exceptions.ConflictingArgumentsException(
+      raise calliope_exceptions.ConflictingArgumentsException(
           assignment_flag,
           'You cannot use any of {} with `{}`'.format(
               conflicting_flags, assignment_flag))
@@ -341,7 +430,7 @@ def _ValidateSingleInstanceAssignmentVsUtilizationTarget(args):
 def _ValidateUtilizationTargetHasType(args):
   if (args.IsSpecified('stackdriver_metric_utilization_target') and
       not args.IsSpecified('stackdriver_metric_utilization_target_type')):
-    raise exceptions.RequiredArgumentException(
+    raise calliope_exceptions.RequiredArgumentException(
         '--stackdriver-metric-utilization-target-type',
         'Required with [--stackdriver-metric-utilization-target].')
 
@@ -361,7 +450,7 @@ def ValidateGeneratedAutoscalerIsValid(args, autoscaler):
       not autoscaler.autoscalingPolicy.customMetricUtilizations and
       not autoscaler.autoscalingPolicy.cpuUtilization and
       not autoscaler.autoscalingPolicy.loadBalancingUtilization):
-    raise exceptions.InvalidArgumentException(
+    raise calliope_exceptions.InvalidArgumentException(
         '--remove-stackdriver-metric',
         'This would remove the only signal used for autoscaling. If you want '
         'to stop autoscaling the Managed Instance Group use `stop-autoscaling` '
@@ -372,17 +461,17 @@ def ValidateAutoscalerArgs(args):
   """Validates args."""
   if args.min_num_replicas and args.max_num_replicas:
     if args.min_num_replicas > args.max_num_replicas:
-      raise exceptions.InvalidArgumentException(
+      raise calliope_exceptions.InvalidArgumentException(
           '--max-num-replicas', 'can\'t be less than min num replicas.')
 
   if args.custom_metric_utilization:
     for custom_metric_utilization in args.custom_metric_utilization:
       for field in ('utilization-target', 'metric', 'utilization-target-type'):
         if field not in custom_metric_utilization:
-          raise exceptions.InvalidArgumentException(
+          raise calliope_exceptions.InvalidArgumentException(
               '--custom-metric-utilization', field + ' not present.')
       if custom_metric_utilization['utilization-target'] < 0:
-        raise exceptions.InvalidArgumentException(
+        raise calliope_exceptions.InvalidArgumentException(
             '--custom-metric-utilization utilization-target', 'less than 0.')
 
   if ArgsSupportQueueScaling(args):
@@ -399,7 +488,7 @@ def ValidateAutoscalerArgs(args):
       queue_target_found = True
 
     if queue_spec_found != queue_target_found:
-      raise exceptions.ToolException(
+      raise calliope_exceptions.ToolException(
           'Both queue specification and queue scaling target must be provided '
           'for queue-based autoscaling.')
 
@@ -481,7 +570,7 @@ def AutoscalersForLocations(zones, regions, client,
   # Explicit list() is required to unwind the generator and make sure errors
   # are detected at this level.
   requests = []
-  for project, zones in GroupByProject(zones).iteritems():
+  for project, zones in six.iteritems(GroupByProject(zones)):
     requests += lister.FormatListRequests(
         service=client.apitools_client.autoscalers,
         project=project,
@@ -491,7 +580,7 @@ def AutoscalersForLocations(zones, regions, client,
 
   if regions:
     if hasattr(client.apitools_client, 'regionAutoscalers'):
-      for project, regions in GroupByProject(regions).iteritems():
+      for project, regions in six.iteritems(GroupByProject(regions)):
         requests += lister.FormatListRequests(
             service=client.apitools_client.regionAutoscalers,
             project=project,
@@ -542,24 +631,28 @@ def AutoscalersForMigs(migs, autoscalers):
 
 
 def AutoscalerForMigByRef(client, resources, igm_ref):
-  """Returns autoscaler targetting given instance group manager.
+  """Returns autoscaler targeting given instance group manager.
 
   Args:
     client: a GCE client
     resources: a GCE resource registry
     igm_ref: reference to instance group manager
   Returns:
-    Autoscaler message with autoscaler targetting the IGM refferenced by
+    Autoscaler message with autoscaler targeting the IGM refferenced by
     igm_ref or None if there isn't one.
+  Raises:
+    ValueError: if instance group manager collection path is unknown
   """
   if igm_ref.Collection() == 'compute.instanceGroupManagers':
     scope_type = 'zone'
     location = CreateZoneRef(resources, igm_ref)
     zones, regions = [location], None
-  else:
+  elif igm_ref.Collection() == 'compute.regionInstanceGroupManagers':
     scope_type = 'region'
     location = CreateRegionRef(resources, igm_ref)
     zones, regions = None, [location]
+  else:
+    raise ValueError('Unknown reference type {0}'.format(igm_ref.Collection()))
 
   autoscalers = AutoscalersForLocations(
       regions=regions,
@@ -574,10 +667,10 @@ def AutoscalerForMigByRef(client, resources, igm_ref):
 
 
 def AutoscalerForMig(mig_name, autoscalers, location, scope_type):
-  """Finds Autoscaler targetting given IGM.
+  """Finds Autoscaler targeting given IGM.
 
   Args:
-    mig_name: Name of MIG targetted by Autoscaler.
+    mig_name: Name of MIG targeted by Autoscaler.
     autoscalers: A list of Autoscalers to search among.
     location: Target location reference.
     scope_type: Target scope type.
@@ -594,7 +687,7 @@ def AutoscalerForMig(mig_name, autoscalers, location, scope_type):
     if len(autoscalers) == 1:
       return autoscalers[0]
     else:
-      raise exceptions.ToolException(
+      raise calliope_exceptions.ToolException(
           'More than one Autoscaler with given target.')
   return None
 
@@ -724,7 +817,7 @@ def _UpdateCustomMetricUtilizationsFromStackoverflowFlags(
       target_type = None
 
     if args.stackdriver_metric_filter and "'" in args.stackdriver_metric_filter:
-      log.warn(
+      log.warning(
           "The provided filter contains a single quote character ('). While "
           "valid as a metric/resource label value, it's not a control "
           "character that is part of the filtering language; if you meant "
@@ -806,13 +899,72 @@ def _BuildQueueBasedScaling(args, messages):
   return messages.AutoscalingPolicyQueueBasedScaling(**queue_policy_dict)
 
 
-def _BuildAutoscalerPolicy(args, messages, original):
+def ParseModeString(mode, messages):
+  return messages.AutoscalingPolicy.ModeValueValuesEnum(
+      mode.upper().replace('-', '_'))
+
+
+def _BuildMode(args, messages, original):
+  if not args.mode:
+    return original.autoscalingPolicy.mode if original else None
+  return ParseModeString(args.mode, messages)
+
+
+def BuildScaleDown(args, messages):
+  """Builds AutoscalingPolicyScaleDownControl.
+
+  Args:
+    args: command line arguments.
+    messages: module containing message classes.
+  Returns:
+    AutoscalingPolicyScaleDownControl message object.
+
+  if args.IsSpecified('scale_down_control'):
+    replicas_arg = args.scale_down_control.get('max-scaled-down-replicas')
+
+    if replicas_arg.endswith('%'):
+      max_replicas = messages.FixedOrPercent(
+          percent=int(replicas_arg[:-1]))
+    else:
+      max_replicas = messages.FixedOrPercent(fixed=int(replicas_arg))
+
+    return messages.AutoscalingPolicyScaleDownControl(
+        maxScaledDownReplicas=max_replicas,
+        timeWindowSec=args.scale_down_control.get('time-window'))
+  Raises:
+    InvalidArgumentError:  if both max-scaled-down-replicas and
+      max-scaled-down-replicas-percent are specified.
+  """
+  if args.IsSpecified('scale_down_control'):
+    replicas_arg = args.scale_down_control.get('max-scaled-down-replicas')
+    replicas_arg_percent = args.scale_down_control.get(
+        'max-scaled-down-replicas-percent')
+    if replicas_arg and replicas_arg_percent:
+      raise InvalidArgumentError(
+          'max-scaled-down-replicas and max-scaled-down-replicas-percent'
+          'are mutually exclusive, you can\'t specify both')
+    elif replicas_arg_percent:
+      max_replicas = messages.FixedOrPercent(percent=int(replicas_arg_percent))
+    else:
+      max_replicas = messages.FixedOrPercent(fixed=int(replicas_arg))
+
+    return messages.AutoscalingPolicyScaleDownControl(
+        maxScaledDownReplicas=max_replicas,
+        timeWindowSec=args.scale_down_control.get('time-window'))
+
+
+def _BuildAutoscalerPolicy(args, messages, original, mode_enabled=False,
+                           scale_down=False):
   """Builds AutoscalingPolicy from args.
 
   Args:
     args: command line arguments.
     messages: module containing message classes.
     original: original autoscaler message.
+    mode_enabled: bool, whether to include the 'autoscalingPolicy.mode' field in
+      the message.
+    scale_down: bool, whether to include the
+    'autoscalingPolicy.scaleDownControl' field in the message
   Returns:
     AutoscalingPolicy message object.
   """
@@ -827,8 +979,13 @@ def _BuildAutoscalerPolicy(args, messages, original):
       'maxNumReplicas': args.max_num_replicas,
       'minNumReplicas': args.min_num_replicas,
   }
+  if mode_enabled:
+    policy_dict['mode'] = _BuildMode(args, messages, original)
+  if scale_down:
+    policy_dict['scaleDownControl'] = BuildScaleDown(args, messages)
+
   return messages.AutoscalingPolicy(
-      **dict((key, value) for key, value in policy_dict.iteritems()
+      **dict((key, value) for key, value in six.iteritems(policy_dict)
              if value is not None))  # Filter out None values.
 
 
@@ -842,14 +999,14 @@ def AdjustAutoscalerNameForCreation(autoscaler_resource, igm_ref):
 
   Args:
     autoscaler_resource: Autoscaler resource to be created.
-    igm_ref: reference to Instance Group Manager targetted by the Autoscaler.
+    igm_ref: reference to Instance Group Manager targeted by the Autoscaler.
   """
   if autoscaler_resource.name is None:
     autoscaler_resource.name = igm_ref.Name()
   trimmed_name = autoscaler_resource.name[
       0:(_MAX_AUTOSCALER_NAME_LENGTH - _NUM_RANDOM_CHARACTERS_IN_AS_NAME - 1)]
   random_characters = [
-      random.choice(string.lowercase + string.digits)
+      random.choice(string.ascii_lowercase + string.digits)
       for _ in range(_NUM_RANDOM_CHARACTERS_IN_AS_NAME)
   ]
   random_suffix = ''.join(random_characters)
@@ -857,10 +1014,13 @@ def AdjustAutoscalerNameForCreation(autoscaler_resource, igm_ref):
   autoscaler_resource.name = new_name
 
 
-def BuildAutoscaler(args, messages, igm_ref, name, original):
+def BuildAutoscaler(args, messages, igm_ref, name, original,
+                    mode_enabled=False, scale_down=False):
   """Builds autoscaler message protocol buffer."""
   autoscaler = messages.Autoscaler(
-      autoscalingPolicy=_BuildAutoscalerPolicy(args, messages, original),
+      autoscalingPolicy=_BuildAutoscalerPolicy(args, messages, original,
+                                               mode_enabled=mode_enabled,
+                                               scale_down=scale_down),
       description=args.description,
       name=name,
       target=igm_ref.SelfLink(),
@@ -880,6 +1040,40 @@ def CreateAutohealingPolicies(messages, health_check, initial_delay):
   return [policy]
 
 
+def ModifyAutohealingPolicies(current_policies, messages, args,
+                              health_check_url):
+  """Modifies existing autohealing policy from args."""
+  if args.clear_autohealing:
+    return [messages.InstanceGroupManagerAutoHealingPolicy()]
+  if not health_check_url and not args.initial_delay:
+    # No modifications of AutoHealingPolicies.
+    return None
+  current_policy = current_policies[0] if current_policies else None
+  policy = current_policy or messages.InstanceGroupManagerAutoHealingPolicy()
+  if health_check_url:
+    policy.healthCheck = health_check_url
+  if args.initial_delay:
+    policy.initialDelaySec = args.initial_delay
+  return [policy]
+
+
+def ValidateAutohealingPolicies(auto_healing_policies):
+  """Validates autohealing policies.
+
+  Args:
+    auto_healing_policies: list of AutoHealingPolicies to validate
+  """
+  if not auto_healing_policies:
+    return
+  # Only a single auto_healing_policy is allowed. Displaying warnings for any
+  # additional entries is unnecessary as an error will be returned.
+  policy = auto_healing_policies[0]
+  if not policy.healthCheck and policy.initialDelaySec:
+    message = ('WARNING: Health check should be provided when specifying '
+               'initial delay.')
+    console_io.PromptContinue(message=message, cancel_on_no=True)
+
+
 def _GetInstanceTemplatesSet(*versions_lists):
   versions_set = set()
   for versions_list in versions_lists:
@@ -887,19 +1081,19 @@ def _GetInstanceTemplatesSet(*versions_lists):
   return versions_set
 
 
-def ValidateVersions(igm_info, new_versions, force=False):
+def ValidateVersions(igm_info, new_versions, resources, force=False):
   """Validates whether versions provided by user are consistent.
 
   Args:
     igm_info: instance group manager resource.
     new_versions: list of new versions.
     force: if true, we allow any combination of instance templates, as long as
-    they are different. If false, only the following transitions are allowed:
-    X -> Y, X -> (X, Y), (X, Y) -> X, (X, Y) -> Y, (X, Y) -> (X, Y)
+    they are different. If false, only the following transitions are allowed: X
+      -> Y, X -> (X, Y), (X, Y) -> X, (X, Y) -> Y, (X, Y) -> (X, Y)
   """
-  if (len(new_versions) == 2
-      and new_versions[0].instanceTemplate == new_versions[1].instanceTemplate):
-    raise exceptions.ToolException(
+  if (len(new_versions) == 2 and
+      new_versions[0].instanceTemplate == new_versions[1].instanceTemplate):
+    raise calliope_exceptions.ToolException(
         'Provided instance templates must be different.')
   if force:
     return
@@ -908,18 +1102,27 @@ def ValidateVersions(igm_info, new_versions, force=False):
   # are allowed in gcloud (unless --force)
   # Equivalently, at most two versions in old and new versions set union
   if igm_info.versions:
-    igm_templates = [version.instanceTemplate for version in igm_info.versions]
+    igm_templates = [
+        resources.ParseURL(version.instanceTemplate).RelativeName()
+        for version in igm_info.versions
+    ]
   elif igm_info.instanceTemplate:
-    igm_templates = [igm_info.instanceTemplate]
+    igm_templates = [
+        resources.ParseURL(igm_info.instanceTemplate).RelativeName()
+    ]
   else:
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'Either versions or instance template must be specified for '
         'managed instance group.')
 
-  new_templates = [version.instanceTemplate for version in new_versions]
+  new_templates = [
+      resources.ParseURL(version.instanceTemplate).RelativeName()
+      for version in new_versions
+  ]
+
   version_count = len(_GetInstanceTemplatesSet(igm_templates, new_templates))
   if version_count > 2:
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'Update inconsistent with current state. '
         'The only allowed transitions between versions are: '
         'X -> Y, X -> (X, Y), (X, Y) -> X, (X, Y) -> Y, (X, Y) -> (X, Y). '
@@ -984,7 +1187,7 @@ def _ComputeInstanceGroupSize(items, client, resources):
   ]
 
   zonal_instance_groups = []
-  for project, zone_refs in GroupByProject(zone_refs).iteritems():
+  for project, zone_refs in six.iteritems(GroupByProject(zone_refs)):
     zonal_instance_groups.extend(
         lister.GetZonalResources(
             service=client.apitools_client.instanceGroups,
@@ -997,7 +1200,7 @@ def _ComputeInstanceGroupSize(items, client, resources):
 
   regional_instance_groups = []
   if getattr(client.apitools_client, 'regionInstanceGroups', None):
-    for project, region_refs in GroupByProject(region_refs).iteritems():
+    for project, region_refs in six.iteritems(GroupByProject(region_refs)):
       regional_instance_groups.extend(
           lister.GetRegionalResources(
               service=client.apitools_client.regionInstanceGroups,
@@ -1023,10 +1226,10 @@ def _ComputeInstanceGroupSize(items, client, resources):
     yield item
 
 
-def GetHealthCheckUri(resources, args, health_check_parser=None):
+def GetHealthCheckUri(resources, args):
   """Creates health check reference from args."""
   if args.health_check:
-    ref = health_check_parser.ResolveAsResource(args, resources)
+    ref = auto_healing_utils.HEALTH_CHECK_ARG.ResolveAsResource(args, resources)
     return ref.SelfLink()
   if args.http_health_check:
     return resources.Parse(
@@ -1082,6 +1285,101 @@ def CreateInstanceReferences(holder, igm_ref, instance_names):
 
 def GetDeviceNamesFromStatefulPolicy(stateful_policy):
   """Returns a list of device names from given StatefulPolicy message."""
-  if not stateful_policy or not stateful_policy.preservedResources:
+  if not stateful_policy or not stateful_policy.preservedState \
+      or not stateful_policy.preservedState.disks:
     return []
-  return [disk.deviceName for disk in stateful_policy.preservedResources.disks]
+  return [disk.key
+          for disk in stateful_policy.preservedState.disks.additionalProperties]
+
+
+def IsAutoscalerNew(autoscaler):
+  return getattr(autoscaler, 'name', None) is None
+
+
+def ApplyInstanceRedistributionTypeToUpdatePolicy(
+    client, instance_redistribution_type, update_policy):
+  if instance_redistribution_type:
+    if update_policy is None:
+      update_policy = client.messages.InstanceGroupManagerUpdatePolicy()
+    update_policy.instanceRedistributionType = (
+        client.messages.InstanceGroupManagerUpdatePolicy.
+        InstanceRedistributionTypeValueValuesEnum)(
+            instance_redistribution_type)
+  return update_policy
+
+
+def ListPerInstanceConfigs(client, igm_ref):
+  """Lists per-instance-configs for a given IGM."""
+  if not hasattr(client.messages,
+                 'ComputeInstanceGroupManagersListPerInstanceConfigsRequest'):
+    return []
+  if igm_ref.Collection() == 'compute.instanceGroupManagers':
+    service = client.apitools_client.instanceGroupManagers
+    request = (client.messages
+               .ComputeInstanceGroupManagersListPerInstanceConfigsRequest)(
+                   instanceGroupManager=igm_ref.Name(),
+                   project=igm_ref.project,
+                   zone=igm_ref.zone,
+               )
+  elif igm_ref.Collection() == 'compute.regionInstanceGroupManagers':
+    service = client.apitools_client.regionInstanceGroupManagers
+    request = (client.messages.
+               ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest)(
+                   instanceGroupManager=igm_ref.Name(),
+                   project=igm_ref.project,
+                   region=igm_ref.region,
+               )
+  else:
+    raise ValueError('Unknown reference type {0}'.format(igm_ref.Collection()))
+
+  errors = []
+  results = list(
+      request_helper.MakeRequests(
+          requests=[(service, 'ListPerInstanceConfigs', request)],
+          http=client.apitools_client.http,
+          batch_url=client.batch_url,
+          errors=errors))
+
+  if not results:
+    return []
+  return results[0].items
+
+
+def IsStateful(client, igm_info, igm_ref):
+  """For a given IGM, returns if it is stateful."""
+  # TODO(b/129752312): use igm.is_stateful field when launched
+  pics = ListPerInstanceConfigs(client, igm_ref)
+  has_policy = (
+      hasattr(igm_info, 'statefulPolicy') and
+      igm_info.statefulPolicy is not None)
+
+  return has_policy or pics
+
+
+def ValidateIgmReadyForStatefulness(igm_resource, client):
+  """Throws exception if IGM is in state not ready for adding statefulness."""
+  if not igm_resource.updatePolicy:
+    return
+
+  client_update_policy = client.messages.InstanceGroupManagerUpdatePolicy
+  type_is_proactive = (
+      igm_resource.updatePolicy.type == (
+          client_update_policy.TypeValueValuesEnum.PROACTIVE))
+  replacement_method_is_substitute = (
+      igm_resource.updatePolicy.replacementMethod == (
+          client_update_policy.ReplacementMethodValueValuesEnum.SUBSTITUTE))
+  instance_redistribution_type_is_proactive = (
+      igm_resource.updatePolicy.instanceRedistributionType == (
+          client_update_policy.InstanceRedistributionTypeValueValuesEnum
+          .PROACTIVE))
+
+  if type_is_proactive and replacement_method_is_substitute:
+    raise exceptions.Error(
+        'Stateful IGMs cannot use SUBSTITUTE replacement method. '
+        'Try `gcloud alpha compute instance-groups managed '
+        'rolling-update stop-proactive-update')
+  if instance_redistribution_type_is_proactive:
+    raise exceptions.Error(
+        'Stateful regional IGMs cannot use proactive instance redistribution. '
+        'Try `gcloud alpha compute instance-groups managed '
+        'update --instance-redistribution-type=NONE')

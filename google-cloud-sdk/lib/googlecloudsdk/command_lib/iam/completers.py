@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +15,15 @@
 
 """IAM completers."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.core import resources
 
 
+# TODO(b/117872514) Remove this class after declarative conversion.
 class IamRolesCompleter(completers.ListCommandCompleter):
   """An IAM role completer for a resource argument.
 
@@ -47,7 +53,10 @@ class IamRolesCompleter(completers.ListCommandCompleter):
     """Bypasses the cache and returns completions matching prefix."""
     command = self.GetListCommand(parameter_info)
     items = self.GetAllItems(command, parameter_info)
-    return [item for item in items or [] if item.startswith(prefix)]
+    return [
+        item for item in items or []
+        if item is not None and item.startswith(prefix)
+    ]
 
 
 class IamServiceAccountCompleter(completers.ListCommandCompleter):

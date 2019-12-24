@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,17 +14,21 @@
 # limitations under the License.
 """High-level client for interacting with the Cloud Build API."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import json
 import time
 
 from apitools.base.py import encoding
-import enum
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cloudbuild_logs
 from googlecloudsdk.api_lib.util import requests
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 _ERROR_FORMAT_STRING = ('Error Response:{status_code? [{?}]}'
@@ -31,7 +36,7 @@ _ERROR_FORMAT_STRING = ('Error Response:{status_code? [{?}]}'
                         '{details?\n\nDetails:\n{?}}')
 
 
-def _GetBuildProp(build_op, prop_key, required=False):
+def GetBuildProp(build_op, prop_key, required=False):
   """Extract the value of a build's prop_key from a build operation.
 
   Args:
@@ -76,60 +81,6 @@ def _GetStatusFromOp(op):
       if prop.key == 'status':
         return prop.value.string_value
   return 'UNKNOWN'
-
-
-class BuildArtifact(object):
-  """Represents a build of a flex container, either in-progress or completed.
-
-  A build artifact is either a build_id for an in-progress build, or the image
-  name for a completed container build. If a build_id is used in a depoloyment,
-  Flex serving infrastructure is brought up in parallel with the container
-  build. When an image name is used instead, flex serving infrastructure is
-  brought up in serial after the build has completed.
-  """
-
-  class BuildType(enum.Enum):
-    IMAGE = 1
-    BUILD_ID = 2
-
-  def __init__(self, build_type, identifier, build_op=None):
-    self.build_type = build_type
-    self.identifier = identifier
-    self.build_op = build_op
-
-  def IsImage(self):
-    return self.build_type == self.BuildType.IMAGE
-
-  def IsBuildId(self):
-    return self.build_type == self.BuildType.BUILD_ID
-
-  @classmethod
-  def MakeBuildIdArtifact(cls, build_id):
-    return cls(cls.BuildType.BUILD_ID, build_id)
-
-  @classmethod
-  def MakeImageArtifact(cls, image_name):
-    return cls(cls.BuildType.IMAGE, image_name)
-
-  @classmethod
-  def MakeBuildIdArtifactFromOp(cls, build_op):
-    build_id = _GetBuildProp(build_op, 'id', required=True)
-    return cls(cls.BuildType.BUILD_ID, build_id, build_op)
-
-  @classmethod
-  def MakeImageArtifactFromOp(cls, build_op):
-    """Create Image BuildArtifact from build operation."""
-    source = _GetBuildProp(build_op, 'source')
-    for prop in source.object_value.properties:
-      if prop.key == 'storageSource':
-        for storage_prop in prop.value.object_value.properties:
-          if storage_prop.key == 'object':
-            image_name = storage_prop.value.string_value
-
-    if image_name is None:
-      raise BuildFailedError('Could not determine image name')
-
-    return cls(cls.BuildType.IMAGE, image_name, build_op)
 
 
 class BuildFailedError(exceptions.Error):
@@ -200,9 +151,9 @@ class CloudBuildClient(object):
 
   def WaitAndStreamLogs(self, build_op):
     """Wait for a Cloud Build to finish, streaming logs if possible."""
-    build_id = _GetBuildProp(build_op, 'id', required=True)
-    logs_uri = _GetBuildProp(build_op, 'logUrl')
-    logs_bucket = _GetBuildProp(build_op, 'logsBucket')
+    build_id = GetBuildProp(build_op, 'id', required=True)
+    logs_uri = GetBuildProp(build_op, 'logUrl')
+    logs_bucket = GetBuildProp(build_op, 'logsBucket')
     log.status.Print(
         'Started cloud build [{build_id}].'.format(build_id=build_id))
     log_loc = 'in the Cloud Console.'
@@ -230,7 +181,7 @@ class CloudBuildClient(object):
 
     # Poll the logs one final time to ensure we have everything. We know this
     # final poll will get the full log contents because GCS is strongly
-    # consistent and Container Builder waits for logs to finish pushing before
+    # consistent and Cloud Build waits for logs to finish pushing before
     # marking the build complete.
     if log_tailer:
       log_tailer.Poll(is_last=True)
@@ -274,7 +225,7 @@ class CloudBuildClient(object):
     request_type = self.client.operations.GetRequestType('Get')
     request = request_type(name=operation.name)
 
-    for _ in xrange(self._MAX_RETRIES):
+    for _ in range(self._MAX_RETRIES):
       operation = self.client.operations.Get(request)
       if operation.done:
         log.debug('Operation [{0}] complete. Result: {1}'.format(

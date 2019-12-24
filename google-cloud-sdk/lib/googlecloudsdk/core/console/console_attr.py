@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*- #
 
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -87,14 +87,23 @@ Usage:
 """
 
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import os
 import sys
 import unicodedata
 
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr_os
+from googlecloudsdk.core.console.style import text
 from googlecloudsdk.core.util import encoding as encoding_util
 
+import six
 
+
+# TODO(b/123522546): Unify this logic with console.style.mappings
 class BoxLineCharacters(object):
   """Box/line drawing characters.
 
@@ -105,54 +114,98 @@ class BoxLineCharacters(object):
 
 class BoxLineCharactersUnicode(BoxLineCharacters):
   """unicode Box/line drawing characters (cp437 compatible unicode)."""
-  dl = u'┐'
-  dr = u'┌'
-  h = u'─'
-  hd = u'┬'
-  hu = u'┴'
-  ul = u'┘'
-  ur = u'└'
-  v = u'│'
-  vh = u'┼'
-  vl = u'┤'
-  vr = u'├'
-  d_dl = u'╗'
-  d_dr = u'╔'
-  d_h = u'═'
-  d_hd = u'╦'
-  d_hu = u'╩'
-  d_ul = u'╝'
-  d_ur = u'╚'
-  d_v = u'║'
-  d_vh = u'╬'
-  d_vl = u'╣'
-  d_vr = u'╠'
+  dl = '┐'
+  dr = '┌'
+  h = '─'
+  hd = '┬'
+  hu = '┴'
+  ul = '┘'
+  ur = '└'
+  v = '│'
+  vh = '┼'
+  vl = '┤'
+  vr = '├'
+  d_dl = '╗'
+  d_dr = '╔'
+  d_h = '═'
+  d_hd = '╦'
+  d_hu = '╩'
+  d_ul = '╝'
+  d_ur = '╚'
+  d_v = '║'
+  d_vh = '╬'
+  d_vl = '╣'
+  d_vr = '╠'
 
 
 class BoxLineCharactersAscii(BoxLineCharacters):
   """ASCII Box/line drawing characters."""
-  dl = u'+'
-  dr = u'+'
-  h = u'-'
-  hd = u'+'
-  hu = u'+'
-  ul = u'+'
-  ur = u'+'
-  v = u'|'
-  vh = u'+'
-  vl = u'+'
-  vr = u'+'
-  d_dl = u'#'
-  d_dr = u'#'
-  d_h = u'='
-  d_hd = u'#'
-  d_hu = u'#'
-  d_ul = u'#'
-  d_ur = u'#'
-  d_v = u'#'
-  d_vh = u'#'
-  d_vl = u'#'
-  d_vr = u'#'
+  dl = '+'
+  dr = '+'
+  h = '-'
+  hd = '+'
+  hu = '+'
+  ul = '+'
+  ur = '+'
+  v = '|'
+  vh = '+'
+  vl = '+'
+  vr = '+'
+  d_dl = '#'
+  d_dr = '#'
+  d_h = '='
+  d_hd = '#'
+  d_hu = '#'
+  d_ul = '#'
+  d_ur = '#'
+  d_v = '#'
+  d_vh = '#'
+  d_vl = '#'
+  d_vr = '#'
+
+
+class BoxLineCharactersScreenReader(BoxLineCharactersAscii):
+  dl = ' '
+  dr = ' '
+  hd = ' '
+  hu = ' '
+  ul = ' '
+  ur = ' '
+  vh = ' '
+  vl = ' '
+  vr = ' '
+
+
+class ProgressTrackerSymbols(object):
+  """Characters used by progress trackers."""
+
+
+class ProgressTrackerSymbolsUnicode(ProgressTrackerSymbols):
+  """Characters used by progress trackers."""
+
+  @property
+  def spin_marks(self):
+    return ['⠏', '⠛', '⠹', '⠼', '⠶', '⠧']
+
+  success = text.TypedText(['✓'], text_type=text.TextTypes.PT_SUCCESS)
+  failed = text.TypedText(['X'], text_type=text.TextTypes.PT_FAILURE)
+  interrupted = '-'
+  not_started = '.'
+  prefix_length = 2
+
+
+class ProgressTrackerSymbolsAscii(ProgressTrackerSymbols):
+  """Characters used by progress trackers."""
+
+  @property
+  def spin_marks(self):
+    return ['|', '/', '-', '\\',]
+
+  success = 'OK'
+  failed = 'X'
+  interrupted = '-'
+  not_started = '.'
+  prefix_length = 3
 
 
 class ConsoleAttr(object):
@@ -190,11 +243,11 @@ class ConsoleAttr(object):
       }
   _ANSI_COLOR_RESET = '39;0m'
 
-  _BULLETS_UNICODE = (u'▪', u'◆', u'▸', u'▫', u'◇', u'▹')
-  _BULLETS_WINDOWS = (u'■', u'≡', u'∞', u'Φ', u'·')  # cp437 compatible unicode
+  _BULLETS_UNICODE = ('▪', '◆', '▸', '▫', '◇', '▹')
+  _BULLETS_WINDOWS = ('■', '≡', '∞', 'Φ', '·')  # cp437 compatible unicode
   _BULLETS_ASCII = ('o', '*', '+', '-')
 
-  def __init__(self, encoding=None, out=None):
+  def __init__(self, encoding=None, suppress_output=False):
     """Constructor.
 
     Args:
@@ -202,32 +255,19 @@ class ConsoleAttr(object):
         ascii -- ASCII art. This is the default.
         utf8 -- UTF-8 unicode.
         win -- Windows code page 437.
-      out: The console output file stream, log.out if None.
+      suppress_output: True to create a ConsoleAttr that doesn't want to output
+        anything.
     """
-    if not out:
-      try:
-        from googlecloudsdk.core import log  # pylint: disable=g-import-not-at-top, avoid config import loop
-        out = log.out
-      except ImportError:
-        out = sys.stdout
-    self._out = out
     # Normalize the encoding name.
-    console_encoding = None
     if not encoding:
-      if hasattr(self._out, 'encoding') and self._out.encoding:
-        console_encoding = self._out.encoding.lower()
-        if 'utf-8' in console_encoding:
-          encoding = 'utf8'
-        elif 'cp437' in console_encoding:
-          encoding = 'cp437'
+      encoding = self._GetConsoleEncoding()
     elif encoding == 'win':
       encoding = 'cp437'
     self._encoding = encoding or 'ascii'
-    self._term = os.getenv('TERM', '').lower()
+    self._term = '' if suppress_output else os.getenv('TERM', '').lower()
 
     # ANSI "standard" attributes.
-    if self._encoding != 'ascii' and ('screen' in self._term or
-                                      'xterm' in self._term):
+    if self.SupportsAnsi():
       # Select Graphic Rendition paramaters from
       # http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
       # Italic '3' would be nice here but its not widely supported.
@@ -240,40 +280,68 @@ class ConsoleAttr(object):
       self._font_italic = ''
 
     # Encoded character attributes.
-    if self._encoding == 'utf8':
+    is_screen_reader = properties.VALUES.accessibility.screen_reader.GetBool()
+    if self._encoding == 'utf8' and not is_screen_reader:
       self._box_line_characters = BoxLineCharactersUnicode()
       self._bullets = self._BULLETS_UNICODE
-    elif self._encoding == 'cp437':
+      self._progress_tracker_symbols = ProgressTrackerSymbolsUnicode()
+    elif self._encoding == 'cp437' and not is_screen_reader:
       self._box_line_characters = BoxLineCharactersUnicode()
       self._bullets = self._BULLETS_WINDOWS
+      # Windows does not suport the unicode characters used for the spinner.
+      self._progress_tracker_symbols = ProgressTrackerSymbolsAscii()
     else:
       self._box_line_characters = BoxLineCharactersAscii()
+      if is_screen_reader:
+        self._box_line_characters = BoxLineCharactersScreenReader()
       self._bullets = self._BULLETS_ASCII
+      self._progress_tracker_symbols = ProgressTrackerSymbolsAscii()
 
     # OS specific attributes.
     self._get_raw_key = [console_attr_os.GetRawKeyFunction()]
-    self._term_size = console_attr_os.GetTermSize()
+    self._term_size = (
+        (0, 0) if suppress_output else console_attr_os.GetTermSize())
+
+    self._display_width_cache = {}
+
+  def _GetConsoleEncoding(self):
+    """Gets the encoding as declared by the stdout stream.
+
+    Returns:
+      str, The encoding name or None if it could not be determined.
+    """
+    console_encoding = getattr(sys.stdout, 'encoding', None)
+    if not console_encoding:
+      return None
+    console_encoding = console_encoding.lower()
+    if 'utf-8' in console_encoding:
+      return 'utf8'
+    elif 'cp437' in console_encoding:
+      return 'cp437'
+    return None
 
   def Colorize(self, string, color, justify=None):
-    """Writes string, optionally justified, with color to the console.
+    """Generates a colorized string, optionally justified.
 
     Args:
       string: The string to write.
-      color: The color name -- must b3 in _ANSI_COLOR.
+      color: The color name -- must be in _ANSI_COLOR.
       justify: The justification function, no justification if None. For
         example, justify=lambda s: s.center(10)
+
+    Returns:
+      str, The colorized string that can be printed to the console.
     """
     if justify:
       string = justify(string)
     if self._csi and color in self._ANSI_COLOR:
-      self._out.write('{csi}{color_code}{string}{csi}{reset_code}'.format(
+      return '{csi}{color_code}{string}{csi}{reset_code}'.format(
           csi=self._csi,
           color_code=self._ANSI_COLOR[color],
           reset_code=self._ANSI_COLOR_RESET,
-          string=string))
-      # TODO(b/35939231): Add elif self._encoding == 'cp437': code here.
-    else:
-      self._out.write(string)
+          string=string)
+    # TODO(b/35939231): Add elif self._encoding == 'cp437': code here.
+    return string
 
   def ConvertOutputToUnicode(self, buf):
     """Converts a console output string buf to unicode.
@@ -287,9 +355,9 @@ class ConsoleAttr(object):
     Returns:
       The console output string buf converted to unicode.
     """
-    if isinstance(buf, unicode):
+    if isinstance(buf, six.text_type):
       buf = buf.encode(self._encoding)
-    return unicode(buf, self._encoding, 'replace')
+    return six.text_type(buf, self._encoding, 'replace')
 
   def GetBoxLineCharacters(self):
     """Returns the box/line drawing characters object.
@@ -313,6 +381,14 @@ class ConsoleAttr(object):
       A tuple of bullet characters.
     """
     return self._bullets
+
+  def GetProgressTrackerSymbols(self):
+    """Returns the progress tracker characters object.
+
+    Returns:
+      A ProgressTrackerSymbols object for the console output device.
+    """
+    return self._progress_tracker_symbols
 
   def GetControlSequenceIndicator(self):
     """Returns the control sequence indicator string.
@@ -370,6 +446,16 @@ class ConsoleAttr(object):
       codes.append(self._font_italic)
     return '{csi}{codes}m'.format(csi=self._csi, codes=';'.join(codes))
 
+  def Emphasize(self, s, bold=True, italic=False):
+    """Returns a string emphasized."""
+    if self._csi:
+      s = s.replace(
+          self._csi + self._ANSI_COLOR_RESET,
+          self._csi + self._ANSI_COLOR_RESET + self.GetFontCode(bold, italic))
+    return ('{start}' + s + '{end}').format(
+        start=self.GetFontCode(bold, italic),
+        end=self.GetFontCode())
+
   def GetRawKey(self):
     """Reads one key press from stdin with no echo.
 
@@ -378,6 +464,14 @@ class ConsoleAttr(object):
       character.
     """
     return self._get_raw_key[0]()
+
+  def GetTermIdentifier(self):
+    """Returns the TERM envrionment variable for the console.
+
+    Returns:
+      str: A str that describes the console's text capabilities
+    """
+    return self._term
 
   def GetTermSize(self):
     """Returns the terminal (x, y) dimensions in characters.
@@ -396,9 +490,14 @@ class ConsoleAttr(object):
     Returns:
       The display width of buf, handling unicode and ANSI controls.
     """
-    if not isinstance(buf, basestring):
+    if not isinstance(buf, six.string_types):
       # Handle non-string objects like Colorizer().
       return len(buf)
+
+    cached = self._display_width_cache.get(buf, None)
+    if cached is not None:
+      return cached
+
     width = 0
     max_width = 0
     i = 0
@@ -415,6 +514,8 @@ class ConsoleAttr(object):
         width += GetCharacterDisplayWidth(buf[i])
         i += 1
     max_width = max(width, max_width)
+
+    self._display_width_cache[buf] = max_width
     return max_width
 
   def SplitIntoNormalAndControl(self, buf):
@@ -473,6 +574,10 @@ class ConsoleAttr(object):
       lines.append(chunk)
     return lines
 
+  def SupportsAnsi(self):
+    return (self._encoding != 'ascii' and
+            ('screen' in self._term or 'xterm' in self._term))
+
 
 class Colorizer(object):
   """Resource string colorizer.
@@ -499,13 +604,23 @@ class Colorizer(object):
     self._string = string
     self._justify = justify
 
-  def __cmp__(self, other):
-    string = str(other)
-    if self._string < string:
-      return -1
-    if self._string > string:
-      return 1
-    return 0
+  def __eq__(self, other):
+    return self._string == six.text_type(other)
+
+  def __ne__(self, other):
+    return not self == other
+
+  def __gt__(self, other):
+    return self._string > six.text_type(other)
+
+  def __lt__(self, other):
+    return self._string < six.text_type(other)
+
+  def __ge__(self, other):
+    return not self < other
+
+  def __le__(self, other):
+    return not self > other
 
   def __len__(self):
     return self._con.DisplayWidth(self._string)
@@ -513,16 +628,19 @@ class Colorizer(object):
   def __str__(self):
     return self._string
 
-  def Render(self, justify=None):
+  def Render(self, stream, justify=None):
     """Renders the string as self._color on the console.
 
     Args:
+      stream: The stream to render the string to. The stream given here *must*
+        have the same encoding as sys.stdout for this to work properly.
       justify: The justification function, self._justify if None.
     """
-    self._con.Colorize(self._string, self._color, justify or self._justify)
+    stream.write(
+        self._con.Colorize(self._string, self._color, justify or self._justify))
 
 
-def GetConsoleAttr(encoding=None, out=None, reset=False):
+def GetConsoleAttr(encoding=None, reset=False):
   """Gets the console attribute state.
 
   If this is the first call or reset is True or encoding is not None and does
@@ -538,7 +656,6 @@ def GetConsoleAttr(encoding=None, out=None, reset=False):
       ascii -- ASCII. This is the default.
       utf8 -- UTF-8 unicode.
       win -- Windows code page 437.
-    out: The console output file stream, ConsoleAttr default if None.
     reset: Force re-initialization if True.
 
   Returns:
@@ -550,10 +667,8 @@ def GetConsoleAttr(encoding=None, out=None, reset=False):
       reset = True
     elif encoding and encoding != attr.GetEncoding():
       reset = True
-    elif out and out != attr._out:  # pylint: disable=protected-access
-      reset = True
   if reset:
-    attr = ConsoleAttr(encoding=encoding, out=out)
+    attr = ConsoleAttr(encoding=encoding)
     ConsoleAttr._CONSOLE_ATTR_STATE = attr  # pylint: disable=protected-access
   return attr
 
@@ -587,7 +702,7 @@ def GetCharacterDisplayWidth(char):
   Returns:
     The monospaced terminal display width of char: either 0, 1, or 2.
   """
-  if not isinstance(char, unicode):
+  if not isinstance(char, six.text_type):
     # Non-unicode chars have width 1. Don't use this function on control chars.
     return 1
 
@@ -608,18 +723,19 @@ def GetCharacterDisplayWidth(char):
     return 1
 
 
-def EncodeForConsole(string, encoding=None, escape=True):
-  r"""Returns string encoded to prevent output codec exceptions.
+def SafeText(data, encoding=None, escape=True):
+  br"""Converts the data to a text string compatible with the given encoding.
 
-  This function can be used to massage output strings that may have been encoded
-  with an encoding incompatible with the standard output encoding. This happens
-  frequently in tests and error messages where the string is obtained from a
-  source of unknown encoding.
+  This works the same way as Decode() below except it guarantees that any
+  characters in the resulting text string can be re-encoded using the given
+  encoding (or GetConsoleAttr().GetEncoding() if None is given). This means
+  that the string will be safe to print to sys.stdout (for example) without
+  getting codec exceptions if the user's terminal doesn't support the encoding
+  used by the source of the text.
 
   Args:
-    string: A string or object that has str() and unicode() methods that may
-      contain an encoding incompatible with the standard output encoding.
-    encoding: The output encoding name. Defaults to
+    data: Any bytes, string, or object that has str() or unicode() methods.
+    encoding: The encoding name to ensure compatibility with. Defaults to
       GetConsoleAttr().GetEncoding().
     escape: Replace unencodable characters with a \uXXXX or \xXX equivalent if
       True. Otherwise replace unencodable characters with an appropriate unknown
@@ -627,69 +743,81 @@ def EncodeForConsole(string, encoding=None, escape=True):
       \uFFFE for unicode.
 
   Returns:
-    The string encoded to avoid output codec exceptions. In the worst case,
-    with escape=False, it will contain only ? characters.
+    A text string representation of the data, but modified to remove any
+    characters that would result in an encoding exception with the target
+    encoding. In the worst case, with escape=False, it will contain only ?
+    characters.
   """
-  try:
-    # No change needed if the string encodes to ASCII.
-    string.encode('ascii')
-    return string
-  except AttributeError:
-    # The string does not have a decode method.
-    try:
-      string = unicode(string)
-    except (TypeError, UnicodeError):
-      # The string cannot be converted to unicode -- default to str() which will
-      # catch objects with special __str__ methods.
-      string = str(string)
-  except UnicodeError:
-    # The string does not encode to ASCII.
-    pass
-
-  if not encoding:
-    encoding = GetConsoleAttr().GetEncoding()
+  if data is None:
+    return 'None'
+  encoding = encoding or GetConsoleAttr().GetEncoding()
+  string = encoding_util.Decode(data, encoding=encoding)
 
   try:
     # No change needed if the string encodes to the output encoding.
     string.encode(encoding)
     return string
   except UnicodeError:
-    # the string does not encode to the output encoding.
+    # The string does not encode to the output encoding. Encode it with error
+    # handling then convert it back into a text string (which will be
+    # guaranteed to only contain characters that can be encoded later.
+    return (string
+            .encode(encoding, 'backslashreplace' if escape else 'replace')
+            .decode(encoding))
+
+
+def EncodeToBytes(data):
+  r"""Encode data to bytes.
+
+  The primary use case is for base64/mime style 7-bit ascii encoding where the
+  encoder input must be bytes. "safe" means that the conversion always returns
+  bytes and will not raise codec exceptions.
+
+  If data is text then an 8-bit ascii encoding is attempted, then the console
+  encoding, and finally utf-8.
+
+  Args:
+    data: Any bytes, string, or object that has str() or unicode() methods.
+
+  Returns:
+    A bytes string representation of the data.
+  """
+  if data is None:
+    return b''
+  if isinstance(data, bytes):
+    # Already bytes - our work is done.
+    return data
+
+  # Coerce to text that will be converted to bytes.
+  s = six.text_type(data)
+
+  try:
+    # Assume the text can be directly converted to bytes (8-bit ascii).
+    return s.encode('iso-8859-1')
+  except UnicodeEncodeError:
     pass
 
   try:
-    # The string is encoded using the standard output encoding. Decoding here
-    # gets the string in a form that will print to the standard output.
-    return string.decode(encoding)
-  except (AttributeError, UnicodeError):
-    # Unknown encoding.
-    string = DecodeFromConsole(string, encoding=encoding)
+    # Try the output encoding.
+    return s.encode(GetConsoleAttr().GetEncoding())
+  except UnicodeEncodeError:
+    pass
 
-    try:
-      # No change needed if the string encodes to the output encoding.
-      string.encode(encoding)
-      return string
-    except UnicodeError:
-      # Give up and return a string with unknown characters replaced by ?
-      # (escape=False) or a C-style escape (escape=True).
-      return string.encode(encoding,
-                           'backslashreplace' if escape else 'replace')
+  # Punt to utf-8.
+  return s.encode('utf-8')
 
 
-def DecodeFromConsole(string, encoding=None):
-  """Returns string with non-ascii characters decoded.
+def Decode(data, encoding=None):
+  """Converts the given string, bytes, or object to a text string.
 
   Args:
-    string: A string or object that has str() and unicode() methods that may
-      contain an encoding incompatible with the standard output encoding.
-    encoding: The encoding to decode. Defaults to
+    data: Any bytes, string, or object that has str() or unicode() methods.
+    encoding: A suggesting encoding used to decode. If this encoding doesn't
+      work, other defaults are tried. Defaults to
       GetConsoleAttr().GetEncoding().
 
   Returns:
-    The string with non-ascii characters decoded. If the input string is
-    ascii then it is returned unchanged, otherwise the decoded unicode string
-    is returned.
+    A text string representation of the data.
   """
-  if not encoding:
-    encoding = GetConsoleAttr().GetEncoding()
-  return encoding_util.Decode(string, encoding=encoding)
+  encoding = encoding or GetConsoleAttr().GetEncoding()
+  return encoding_util.Decode(data, encoding=encoding)

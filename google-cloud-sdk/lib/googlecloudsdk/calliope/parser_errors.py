@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +18,12 @@
 Refer to the calliope.parser_extensions module for a detailed overview.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import argparse
+import six
 
 
 class ArgumentError(argparse.ArgumentError):
@@ -46,7 +52,7 @@ class ArgumentError(argparse.ArgumentError):
     self.extra_path_arg = extra_path_arg
     self.parser = parser
     self.error_extra_info = kwargs
-    super(ArgumentError, self).__init__(None, unicode(self))
+    super(ArgumentError, self).__init__(None, six.text_type(self))
 
   def __str__(self):
     keys = dict(**self.error_extra_info)
@@ -63,48 +69,13 @@ class ArgumentError(argparse.ArgumentError):
         message = self.error_format
         break
     if self.argument:
-      message = u'argument {argument}: {message}'.format(
+      message = 'argument {argument}: {message}'.format(
           argument=self.argument, message=message)
     return message
 
 
-class ModalGroupError(ArgumentError):
-  """Modal group conflict error."""
-
-  def __init__(self, conflict, **kwargs):
-    super(ModalGroupError, self).__init__(
-        '{conflict} must be specified.',
-        conflict=conflict,
-        **kwargs)
-
-
-class OptionalMutexError(ArgumentError):
-  """Optional mutex conflict error."""
-
-  def __init__(self, conflict, **kwargs):
-    super(OptionalMutexError, self).__init__(
-        'At most one of {conflict} may be specified.',
-        conflict=conflict,
-        **kwargs)
-
-
-class RequiredError(ArgumentError):
-  """Required error."""
-
-  def __init__(self, **kwargs):
-    super(RequiredError, self).__init__(
-        'Must be specified.',
-        **kwargs)
-
-
-class RequiredMutexError(ArgumentError):
-  """Required mutex conflict error."""
-
-  def __init__(self, conflict, **kwargs):
-    super(RequiredMutexError, self).__init__(
-        'Exactly one of {conflict} must be specified.',
-        conflict=conflict,
-        **kwargs)
+class OtherParsingError(ArgumentError):
+  """Some other parsing error that is not any of the above."""
 
 
 class TooFewArgumentsError(ArgumentError):
@@ -119,12 +90,51 @@ class UnrecognizedArgumentsError(ArgumentError):
   """User entered arguments that were not recognized by argparse."""
 
 
-class WrongTrackError(ArgumentError):
+class DetailedArgumentError(ArgumentError):
+  """A DetailedArgumentError is preferable to an ArgumentError."""
+
+
+class ModalGroupError(DetailedArgumentError):
+  """Modal group conflict error."""
+
+  def __init__(self, conflict, **kwargs):
+    super(ModalGroupError, self).__init__(
+        '{conflict} must be specified.',
+        conflict=conflict,
+        **kwargs)
+
+
+class OptionalMutexError(DetailedArgumentError):
+  """Optional mutex conflict error."""
+
+  def __init__(self, conflict, **kwargs):
+    super(OptionalMutexError, self).__init__(
+        'At most one of {conflict} may be specified.',
+        conflict=conflict,
+        **kwargs)
+
+
+class RequiredError(DetailedArgumentError):
+  """Required error."""
+
+  def __init__(self, **kwargs):
+    super(RequiredError, self).__init__(
+        'Must be specified.',
+        **kwargs)
+
+
+class RequiredMutexError(DetailedArgumentError):
+  """Required mutex conflict error."""
+
+  def __init__(self, conflict, **kwargs):
+    super(RequiredMutexError, self).__init__(
+        'Exactly one of {conflict} must be specified.',
+        conflict=conflict,
+        **kwargs)
+
+
+class WrongTrackError(DetailedArgumentError):
   """For parsed commands in a different track."""
-
-
-class OtherParsingError(ArgumentError):
-  """Some other parsing error that is not any of the above."""
 
 
 class ArgumentException(Exception):

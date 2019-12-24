@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,18 +13,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Convenience functions for dealing with metadata."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import copy
 
-from googlecloudsdk.api_lib.compute import file_utils
+from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.core import log
+from googlecloudsdk.core.util import files
+
+import six
+
+
+class InvalidSshKeyException(exceptions.Error):
+  """InvalidSshKeyException is for invalid ssh keys in metadata"""
 
 
 def _DictToMetadataMessage(message_classes, metadata_dict):
   """Converts a metadata dict to a Metadata message."""
   message = message_classes.Metadata()
   if metadata_dict:
-    for key, value in sorted(metadata_dict.iteritems()):
+    for key, value in sorted(six.iteritems(metadata_dict)):
       message.items.append(message_classes.Metadata.ItemsValueListEntry(
           key=key,
           value=value))
@@ -39,6 +54,95 @@ def _MetadataMessageToDict(metadata_message):
   return res
 
 
+def _ValidateSshKeys(metadata_dict):
+  """Validates the ssh-key entries in metadata.
+
+  The ssh-key entry in metadata should start with <username> and it cannot
+  be a private key
+  (i.e. <username>:ssh-rsa <key-blob> <username>@<example.com> or
+  <username>:ssh-rsa <key-blob>
+  google-ssh {"userName": <username>@<example.com>, "expireOn": <date>}
+  when the key can expire.)
+
+  Args:
+    metadata_dict: A dictionary object containing metadata.
+
+  Raises:
+    InvalidSshKeyException: If the <username> at the front is missing or private
+    key(s) are detected.
+  """
+
+  ssh_keys = metadata_dict.get(constants.SSH_KEYS_METADATA_KEY, '')
+  ssh_keys_legacy = metadata_dict.get(constants.SSH_KEYS_LEGACY_METADATA_KEY,
+                                      '')
+  ssh_keys_combined = '\n'.join((ssh_keys, ssh_keys_legacy))
+
+  if 'PRIVATE KEY' in ssh_keys_combined:
+    raise InvalidSshKeyException(
+        'Private key(s) are detected. Note that only public keys '
+        'should be added.')
+
+  keys = ssh_keys_combined.split('\n')
+  keys_missing_username = []
+  for key in keys:
+    if key and _SshKeyStartsWithKeyType(key):
+      keys_missing_username.append(key)
+
+  if keys_missing_username:
+    message = ('The following key(s) are missing the <username> at the front\n'
+               '{}\n\n'
+               'Format ssh keys following '
+               'https://cloud.google.com/compute/docs/'
+               'instances/adding-removing-ssh-keys')
+    message_content = message.format('\n'.join(keys_missing_username))
+    raise InvalidSshKeyException(message_content)
+
+
+def _SshKeyStartsWithKeyType(key):
+  """Checks if the key starts with any key type in constants.SSH_KEY_TYPES.
+
+  Args:
+    key: A ssh key in metadata.
+
+  Returns:
+    True if the key starts with any key type in constants.SSH_KEY_TYPES, returns
+    false otherwise.
+
+  """
+  key_starts_with_types = [
+      key.startswith(key_type) for key_type in constants.SSH_KEY_TYPES
+  ]
+  return any(key_starts_with_types)
+
+
+def ConstructMetadataDict(metadata=None, metadata_from_file=None):
+  """Returns the dict of metadata key:value pairs based on the given dicts.
+
+  Args:
+    metadata: A dict mapping metadata keys to metadata values or None.
+    metadata_from_file: A dict mapping metadata keys to file names containing
+      the keys' values or None.
+
+  Raises:
+    ToolException: If metadata and metadata_from_file contain duplicate
+      keys or if there is a problem reading the contents of a file in
+      metadata_from_file.
+
+  Returns:
+    A dict of metadata key:value pairs.
+  """
+  metadata = metadata or {}
+  metadata_from_file = metadata_from_file or {}
+
+  new_metadata_dict = copy.deepcopy(metadata)
+  for key, file_path in six.iteritems(metadata_from_file):
+    if key in new_metadata_dict:
+      raise calliope_exceptions.ToolException(
+          'Encountered duplicate metadata key [{0}].'.format(key))
+    new_metadata_dict[key] = files.ReadFileContents(file_path)
+  return new_metadata_dict
+
+
 def ConstructMetadataMessage(message_classes,
                              metadata=None,
                              metadata_from_file=None,
@@ -48,10 +152,10 @@ def ConstructMetadataMessage(message_classes,
   Args:
     message_classes: An object containing API message classes.
     metadata: A dict mapping metadata keys to metadata values or None.
-    metadata_from_file: A dict mapping metadata keys to file names
-      containing the keys' values or None.
-    existing_metadata: If not None, the given metadata values are
-      combined with this Metadata message.
+    metadata_from_file: A dict mapping metadata keys to file names containing
+      the keys' values or None.
+    existing_metadata: If not None, the given metadata values are combined with
+      this Metadata message.
 
   Raises:
     ToolException: If metadata and metadata_from_file contain duplicate
@@ -61,20 +165,15 @@ def ConstructMetadataMessage(message_classes,
   Returns:
     A Metadata protobuf.
   """
-  metadata = metadata or {}
-  metadata_from_file = metadata_from_file or {}
-
-  new_metadata_dict = copy.deepcopy(metadata)
-  for key, file_path in metadata_from_file.iteritems():
-    if key in new_metadata_dict:
-      raise exceptions.ToolException(
-          'Encountered duplicate metadata key [{0}].'.format(key))
-
-    new_metadata_dict[key] = file_utils.ReadFile(
-        file_path, 'metadata key [{0}]'.format(key))
+  new_metadata_dict = ConstructMetadataDict(metadata, metadata_from_file)
 
   existing_metadata_dict = _MetadataMessageToDict(existing_metadata)
   existing_metadata_dict.update(new_metadata_dict)
+  try:
+    _ValidateSshKeys(existing_metadata_dict)
+  except InvalidSshKeyException as e:
+    log.warning(e)
+
   new_metadata_message = _DictToMetadataMessage(message_classes,
                                                 existing_metadata_dict)
 

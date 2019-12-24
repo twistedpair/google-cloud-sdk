@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +15,11 @@
 
 """A shared library to validate 'gcloud test' CLI argument values."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import datetime
-import os
 import posixpath
 import random
 import re
@@ -27,6 +31,8 @@ from googlecloudsdk.api_lib.firebase.test import util as util
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core.util import files
+import six
 
 
 def ValidateArgFromFile(arg_internal_name, arg_value):
@@ -66,10 +72,12 @@ def ValidateArgFromFile(arg_internal_name, arg_value):
 
 
 # Constants shared between arg-file validation and CLI flag validation.
-POSITIVE_INT_PARSER = arg_parsers.BoundedInt(1, sys.maxint)
-NONNEGATIVE_INT_PARSER = arg_parsers.BoundedInt(0, sys.maxint)
+POSITIVE_INT_PARSER = arg_parsers.BoundedInt(1, sys.maxsize)
+NONNEGATIVE_INT_PARSER = arg_parsers.BoundedInt(0, sys.maxsize)
 TIMEOUT_PARSER = arg_parsers.Duration(lower_bound='1m', upper_bound='6h')
-ORIENTATION_LIST = ['portrait', 'landscape']
+TIMEOUT_PARSER_US = arg_parsers.Duration(
+    lower_bound='1m', upper_bound='6h', parsed_unit='us')
+ORIENTATION_LIST = ['portrait', 'landscape', 'default']
 
 
 def ValidateStringList(arg_internal_name, arg_value):
@@ -85,7 +93,8 @@ def ValidateStringList(arg_internal_name, arg_value):
   Raises:
     InvalidArgException: the argument's value is not valid.
   """
-  if isinstance(arg_value, basestring):  # convert single str to a str list
+  # convert single str to a str list
+  if isinstance(arg_value, six.string_types):
     return [arg_value]
   if isinstance(arg_value, int):  # convert single int to a str list
     return [str(arg_value)]
@@ -96,7 +105,7 @@ def ValidateStringList(arg_internal_name, arg_value):
 
 def _ValidateString(arg_internal_name, arg_value):
   """Validates an arg whose value should be a simple string."""
-  if isinstance(arg_value, basestring):
+  if isinstance(arg_value, six.string_types):
     return arg_value
   if isinstance(arg_value, int):  # convert int->str if str is really expected
     return str(arg_value)
@@ -115,19 +124,26 @@ def _ValidateBool(arg_internal_name, arg_value):
 def _ValidateDuration(arg_internal_name, arg_value):
   """Validates an argument which should have a Duration value."""
   try:
-    if isinstance(arg_value, basestring):
+    if isinstance(arg_value, six.string_types):
       return TIMEOUT_PARSER(arg_value)
     elif isinstance(arg_value, int):
       return TIMEOUT_PARSER(str(arg_value))
   except arg_parsers.ArgumentTypeError as e:
-    raise test_exceptions.InvalidArgException(arg_internal_name, e.message)
+    raise test_exceptions.InvalidArgException(arg_internal_name,
+                                              six.text_type(e))
   raise test_exceptions.InvalidArgException(arg_internal_name, arg_value)
 
 
-def _ValidateInteger(arg_internal_name, arg_value):
-  """Validates an argument which should have any integer value."""
-  if isinstance(arg_value, int):
-    return arg_value
+def _ValidateDurationUs(arg_internal_name, arg_value):
+  """Validates an argument which should have Duration value in microseconds."""
+  try:
+    if isinstance(arg_value, six.string_types):
+      return TIMEOUT_PARSER_US(arg_value)
+    elif isinstance(arg_value, int):
+      return TIMEOUT_PARSER_US(str(arg_value))
+  except arg_parsers.ArgumentTypeError as e:
+    raise test_exceptions.InvalidArgException(arg_internal_name,
+                                              six.text_type(e))
   raise test_exceptions.InvalidArgException(arg_internal_name, arg_value)
 
 
@@ -137,7 +153,8 @@ def _ValidatePositiveInteger(arg_internal_name, arg_value):
     if isinstance(arg_value, int):
       return POSITIVE_INT_PARSER(str(arg_value))
   except arg_parsers.ArgumentTypeError as e:
-    raise test_exceptions.InvalidArgException(arg_internal_name, e.message)
+    raise test_exceptions.InvalidArgException(arg_internal_name,
+                                              six.text_type(e))
   raise test_exceptions.InvalidArgException(arg_internal_name, arg_value)
 
 
@@ -147,7 +164,8 @@ def _ValidateNonNegativeInteger(arg_internal_name, arg_value):
     if isinstance(arg_value, int):
       return NONNEGATIVE_INT_PARSER(str(arg_value))
   except arg_parsers.ArgumentTypeError as e:
-    raise test_exceptions.InvalidArgException(arg_internal_name, e.message)
+    raise test_exceptions.InvalidArgException(arg_internal_name,
+                                              six.text_type(e))
   raise test_exceptions.InvalidArgException(arg_internal_name, arg_value)
 
 
@@ -172,7 +190,7 @@ def _ValidatePositiveIntList(arg_internal_name, arg_value):
 
 
 def _ValidateOrientationList(arg_internal_name, arg_value):
-  """Validates that 'orientations' only contains 'portrait' and 'landscape'."""
+  """Validates that 'orientations' only contains allowable values."""
   arg_value = ValidateStringList(arg_internal_name, arg_value)
   for orientation in arg_value:
     _ValidateOrientation(orientation)
@@ -193,6 +211,18 @@ def _ValidateObbFileList(arg_internal_name, arg_value):
   if len(arg_value) > 2:
     raise test_exceptions.InvalidArgException(
         arg_internal_name, 'At most two OBB files may be specified.')
+  return arg_value
+
+
+def _ValidateAdditionalApksList(arg_internal_name, arg_value):
+  """Validates that 'additional-apks' contains [1, 100] entries."""
+  arg_value = ValidateStringList(arg_internal_name, arg_value)
+  if len(arg_value) < 1:
+    raise test_exceptions.InvalidArgException(
+        arg_internal_name, 'At least 1 additional apk must be specified.')
+  if len(arg_value) > 100:
+    raise test_exceptions.InvalidArgException(
+        arg_internal_name, 'At most 100 additional apks may be specified.')
   return arg_value
 
 
@@ -230,21 +260,22 @@ def _ValidateListOfStringToStringDicts(arg_internal_name, arg_value):
 # Map of internal arg names to their appropriate validation functions.
 # Any arg not appearing in this map is assumed to be a simple string.
 _FILE_ARG_VALIDATORS = {
-    'async': _ValidateBool,
+    'additional_apks': _ValidateAdditionalApksList,
+    'async_': _ValidateBool,
     'auto_google_login': _ValidateBool,
+    'client_details': _ValidateKeyValueStringPairs,
     'device': _ValidateListOfStringToStringDicts,
     'device_ids': ValidateStringList,
     'directories_to_pull': ValidateStringList,
     'environment_variables': _ValidateKeyValueStringPairs,
-    'event_count': _ValidatePositiveInteger,
-    'event_delay': _ValidateNonNegativeInteger,
     'locales': ValidateStringList,
     'orientations': _ValidateOrientationList,
     'obb_files': _ValidateObbFileList,
-    'random_seed': _ValidateInteger,
-    'max_steps': _ValidateNonNegativeInteger,
-    'max_depth': _ValidatePositiveInteger,
+    'num_flaky_test_attempts': _ValidateNonNegativeInteger,
+    'num_uniform_shards': _ValidatePositiveInteger,
+    'test_targets_for_shard': ValidateStringList,
     'os_version_ids': ValidateStringList,
+    'other_files': _ValidateKeyValueStringPairs,
     'performance_metrics': _ValidateBool,
     'record_video': _ValidateBool,
     'robo_directives': _ValidateKeyValueStringPairs,
@@ -252,12 +283,17 @@ _FILE_ARG_VALIDATORS = {
     'scenario_numbers': _ValidatePositiveIntList,
     'test_targets': ValidateStringList,
     'timeout': _ValidateDuration,
+    'timeout_us': _ValidateDurationUs,
     'use_orchestrator': _ValidateBool,
 }
 
 
 def InternalArgNameFrom(arg_external_name):
   """Converts a user-visible arg name into its corresponding internal name."""
+  if arg_external_name == 'async':
+    # The async flag has a special destination in the argparse namespace since
+    # 'async' is a reserved keyword as of Python 3.7.
+    return 'async_'
   return arg_external_name.replace('-', '_')
 
 
@@ -320,7 +356,8 @@ def ValidateResultsBucket(args):
     bucket_ref = storage_util.BucketReference.FromArgument(args.results_bucket,
                                                            require_prefix=False)
   except Exception as err:
-    raise exceptions.InvalidArgumentException('results-bucket', str(err))
+    raise exceptions.InvalidArgumentException('results-bucket',
+                                              six.text_type(err))
   args.results_bucket = bucket_ref.bucket
 
 
@@ -358,12 +395,14 @@ def _GenerateUniqueGcsObjectName():
   Returns:
     A string with the unique GCS object name.
   """
-  return '{0}_{1}'.format(datetime.datetime.now().isoformat('_'),
-                          ''.join(random.sample(string.letters, 4)))
+  # In PY2, isoformat() argument 1 needs a char. But in PY3 it needs unicode.
+  return '{0}_{1}'.format(
+      datetime.datetime.now().isoformat(b'_' if six.PY2 else '_'), ''.join(
+          random.sample(string.ascii_letters, 4)))
 
 
 def ValidateOsVersions(args, catalog_mgr):
-  """Validate os-version-ids strings against the TestingEnvironmentCatalog.
+  """Validate os-version-ids strings against the TestEnvironmentCatalog.
 
   Also allow users to alternatively specify OS version strings (e.g. '5.1.x')
   but translate them here to their corresponding version IDs (e.g. '22').
@@ -373,7 +412,7 @@ def ValidateOsVersions(args, catalog_mgr):
     args: an argparse namespace. All the arguments that were provided to the
       command invocation (i.e. group and command arguments combined).
     catalog_mgr: an AndroidCatalogManager object for working with the Android
-      TestingEnvironmentCatalog.
+      TestEnvironmentCatalog.
   """
   if not args.os_version_ids:
     return
@@ -382,6 +421,12 @@ def ValidateOsVersions(args, catalog_mgr):
     version_id = catalog_mgr.ValidateDimensionAndValue('version', vers)
     validated_versions.add(version_id)
   args.os_version_ids = sorted(validated_versions)
+
+
+def ValidateXcodeVersion(args, catalog_mgr):
+  """Validates an Xcode version string against the TestEnvironmentCatalog."""
+  if args.xcode_version:
+    catalog_mgr.ValidateXcodeVersion(args.xcode_version)
 
 
 _OBB_FILE_REGEX = re.compile(
@@ -401,7 +446,7 @@ def NormalizeAndValidateObbFileNames(obb_files):
     obb_files[:] = [
         obb_file if not obb_file or
         obb_file.startswith(storage_util.GSUTIL_BUCKET_PREFIX) else
-        os.path.expanduser(obb_file) for obb_file in obb_files
+        files.ExpandHomeDir(obb_file) for obb_file in obb_files
     ]
   for obb_file in (obb_files or []):
     if not _OBB_FILE_REGEX.match(obb_file):
@@ -415,13 +460,13 @@ def ValidateRoboDirectivesList(args):
   """Validates key-value pairs for 'robo_directives' flag."""
   resource_names = set()
   duplicates = set()
-  for key, value in (args.robo_directives or {}).iteritems():
+  for key, value in six.iteritems((args.robo_directives or {})):
     (action_type, resource_name) = util.ParseRoboDirectiveKey(key)
-    if action_type == 'click' and value:
+    if action_type in ['click', 'ignore'] and value:
       raise test_exceptions.InvalidArgException(
           'robo_directives',
-          'Input value not allowed for click action: [{0}={1}]'.format(
-              key, value))
+          'Input value not allowed for click or ignore actions: [{0}={1}]'
+          .format(key, value))
 
     # Validate resource_name validity
     if not resource_name:
@@ -475,6 +520,30 @@ def NormalizeAndValidateDirectoriesToPullList(dirs):
     if not _DIRECTORIES_TO_PULL_PATH_REGEX.match(file_path):
       raise test_exceptions.InvalidArgException(
           'directories_to_pull', 'Invalid path [{0}]'.format(file_path))
+
+
+_PACKAGE_OR_CLASS_FOLLOWED_BY_COMMA = \
+  re.compile(r'.*,(|\s+)(package |class ).*')
+
+_ANY_SPACE_AFTER_COMMA = re.compile(r'.*,(\s+).*')
+
+
+def ValidateTestTargetsForShard(args):
+  """Validates --test-targets-for-shard uses proper delimiter."""
+  if not getattr(args, 'test_targets_for_shard', {}):
+    return
+  for test_target in args.test_targets_for_shard:
+    if _PACKAGE_OR_CLASS_FOLLOWED_BY_COMMA.match(test_target):
+      raise test_exceptions.InvalidArgException(
+          'test_targets_for_shard',
+          '[{0}] is not a valid test_targets_for_shard argument. Multiple '
+          '"package" and "class" specifications should be separated by '
+          'a semicolon instead of a comma.'.format(test_target))
+    if _ANY_SPACE_AFTER_COMMA.match(test_target):
+      raise test_exceptions.InvalidArgException(
+          'test_targets_for_shard',
+          '[{0}] is not a valid test_targets_for_shard argument. No white '
+          'space is allowed after a comma.'.format(test_target))
 
 
 def ValidateScenarioNumbers(args):

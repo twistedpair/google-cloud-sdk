@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +28,29 @@ class Collections(enum.Enum):
       'billingAccounts',
       'billingAccounts/{billingAccountsId}',
       {},
-      [u'billingAccountsId']
+      [u'billingAccountsId'],
+      True
+  )
+  BILLINGACCOUNTS_BUCKETS = (
+      'billingAccounts.buckets',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/buckets/{bucketsId}',
+      },
+      [u'name'],
+      True
+  )
+  BILLINGACCOUNTS_BUCKETS_VIEWS = (
+      'billingAccounts.buckets.views',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/buckets/{bucketsId}/views/'
+              '{viewsId}',
+      },
+      [u'name'],
+      True
   )
   BILLINGACCOUNTS_EXCLUSIONS = (
       'billingAccounts.exclusions',
@@ -36,7 +59,8 @@ class Collections(enum.Enum):
           '':
               'billingAccounts/{billingAccountsId}/exclusions/{exclusionsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   BILLINGACCOUNTS_SINKS = (
       'billingAccounts.sinks',
@@ -45,13 +69,25 @@ class Collections(enum.Enum):
           '':
               'billingAccounts/{billingAccountsId}/sinks/{sinksId}',
       },
-      [u'sinkName']
+      [u'sinkName'],
+      True
+  )
+  EXCLUSIONS = (
+      'exclusions',
+      '{+name}',
+      {
+          '':
+              '{v2Id}/{v2Id1}/exclusions/{exclusionsId}',
+      },
+      [u'name'],
+      True
   )
   FOLDERS = (
       'folders',
       'folders/{foldersId}',
       {},
-      [u'foldersId']
+      [u'foldersId'],
+      True
   )
   FOLDERS_EXCLUSIONS = (
       'folders.exclusions',
@@ -60,7 +96,37 @@ class Collections(enum.Enum):
           '':
               'folders/{foldersId}/exclusions/{exclusionsId}',
       },
-      [u'name']
+      [u'name'],
+      True
+  )
+  FOLDERS_LOCATIONS = (
+      'folders.locations',
+      'folders/{foldersId}/locations/{locationsId}',
+      {},
+      [u'foldersId', u'locationsId'],
+      True
+  )
+  FOLDERS_LOCATIONS_BUCKETS = (
+      'folders.locations.buckets',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/buckets/'
+              '{bucketsId}',
+      },
+      [u'name'],
+      True
+  )
+  FOLDERS_LOCATIONS_BUCKETS_VIEWS = (
+      'folders.locations.buckets.views',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/buckets/'
+              '{bucketsId}/views/{viewsId}',
+      },
+      [u'name'],
+      True
   )
   FOLDERS_SINKS = (
       'folders.sinks',
@@ -69,13 +135,43 @@ class Collections(enum.Enum):
           '':
               'folders/{foldersId}/sinks/{sinksId}',
       },
-      [u'sinkName']
+      [u'sinkName'],
+      True
+  )
+  LOCATIONS = (
+      'locations',
+      '{v2Id}/{v2Id1}/locations/{locationsId}',
+      {},
+      [u'v2Id', u'v2Id1', u'locationsId'],
+      True
+  )
+  LOCATIONS_BUCKETS = (
+      'locations.buckets',
+      '{+name}',
+      {
+          '':
+              '{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}',
+      },
+      [u'name'],
+      True
+  )
+  LOCATIONS_BUCKETS_VIEWS = (
+      'locations.buckets.views',
+      '{+name}',
+      {
+          '':
+              '{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/'
+              'views/{viewsId}',
+      },
+      [u'name'],
+      True
   )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',
       {},
-      [u'organizationsId']
+      [u'organizationsId'],
+      True
   )
   ORGANIZATIONS_EXCLUSIONS = (
       'organizations.exclusions',
@@ -84,7 +180,37 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/exclusions/{exclusionsId}',
       },
-      [u'name']
+      [u'name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS = (
+      'organizations.locations',
+      'organizations/{organizationsId}/locations/{locationsId}',
+      {},
+      [u'organizationsId', u'locationsId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_BUCKETS = (
+      'organizations.locations.buckets',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'buckets/{bucketsId}',
+      },
+      [u'name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_BUCKETS_VIEWS = (
+      'organizations.locations.buckets.views',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'buckets/{bucketsId}/views/{viewsId}',
+      },
+      [u'name'],
+      True
   )
   ORGANIZATIONS_SINKS = (
       'organizations.sinks',
@@ -93,13 +219,15 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/sinks/{sinksId}',
       },
-      [u'sinkName']
+      [u'sinkName'],
+      True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId']
+      [u'projectsId'],
+      True
   )
   PROJECTS_EXCLUSIONS = (
       'projects.exclusions',
@@ -108,7 +236,37 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/exclusions/{exclusionsId}',
       },
-      [u'name']
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      [u'projectsId', u'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_BUCKETS = (
+      'projects.locations.buckets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/buckets/'
+              '{bucketsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_BUCKETS_VIEWS = (
+      'projects.locations.buckets.views',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/buckets/'
+              '{bucketsId}/views/{viewsId}',
+      },
+      [u'name'],
+      True
   )
   PROJECTS_METRICS = (
       'projects.metrics',
@@ -117,7 +275,8 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/metrics/{metricsId}',
       },
-      [u'metricName']
+      [u'metricName'],
+      True
   )
   PROJECTS_SINKS = (
       'projects.sinks',
@@ -126,11 +285,24 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/sinks/{sinksId}',
       },
-      [u'sinkName']
+      [u'sinkName'],
+      True
+  )
+  SINKS = (
+      'sinks',
+      '{+sinkName}',
+      {
+          '':
+              '{v2Id}/{v2Id1}/sinks/{sinksId}',
+      },
+      [u'sinkName'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 
 """A class that creates resource projection specification."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 import copy
 import sys
@@ -191,14 +196,15 @@ class ProjectionSpec(object):
     if name in self.attributes:
       del self.attributes[name]
 
-  def AddAlias(self, name, key):
-    """Adds name as an alias for key to the projection.
+  def AddAlias(self, name, key, attribute):
+    """Adds name as an alias for key and attribute to the projection.
 
     Args:
       name: The short (no dots) alias name for key.
       key: The parsed key to add.
+      attribute: The attribute for key.
     """
-    self.aliases[name] = key
+    self.aliases[name] = (key, attribute)
 
   def AddKey(self, key, attribute):
     """Adds key and attribute to the projection.
@@ -349,7 +355,7 @@ class ProjectionSpec(object):
     for i, col in enumerate(self._columns):
       if col.attribute.order or col.attribute.reverse:
         ordering.append(
-            (col.attribute.order or sys.maxint, i, col.attribute.reverse))
+            (col.attribute.order or sys.maxsize, i, col.attribute.reverse))
     return [(i, reverse) for _, i, reverse in sorted(ordering)]
 
   def Print(self, out=sys.stdout):

@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Flags and helpers for the compute health-checks commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -24,12 +29,19 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-def HealthCheckArgument(
-    protocol_string, name=None, required=True, plural=False):
+def HealthCheckArgument(protocol_string,
+                        name=None,
+                        required=True,
+                        plural=False,
+                        include_l7_internal_load_balancing=False):
   return compute_flags.ResourceArgument(
       name=name,
       resource_name='{} health check'.format(protocol_string),
       completer=compute_completers.HealthChecksCompleter,
       plural=plural,
       required=required,
-      global_collection='compute.healthChecks')
+      global_collection='compute.healthChecks',
+      regional_collection='compute.regionHealthChecks'
+      if include_l7_internal_load_balancing else None,
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
+      if include_l7_internal_load_balancing else None)

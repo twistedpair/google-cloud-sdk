@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 
 """Utilities for app creation."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.core import exceptions
@@ -75,7 +80,7 @@ def CreateApp(api_client, project, region, suppress_warning=False):
   if not suppress_warning:
     log.status.Print('You are creating an app for project [{project}].'.format(
         project=project))
-    log.warn(APP_CREATE_WARNING)
+    log.warning(APP_CREATE_WARNING)
   try:
     api_client.CreateApp(region)
   except apitools_exceptions.HttpConflictError:
@@ -113,11 +118,11 @@ def CreateAppInteractively(api_client, project, regions=None, extra_warning=''):
     AppAlreadyExistsError if app already exists
   """
   log.status.Print('You are creating an app for project [{}].'.format(project))
-  log.warn(APP_CREATE_WARNING)
+  log.warning(APP_CREATE_WARNING)
 
-  regions = regions or sorted(set(api_client.ListRegions()))
+  regions = regions or sorted(set(api_client.ListRegions()), key=str)
   if extra_warning:
-    log.warn(extra_warning)
+    log.warning(extra_warning)
   idx = console_io.PromptChoice(
       regions,
       message=('Please choose the region where you want your App Engine '

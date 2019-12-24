@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +15,14 @@
 
 """Library for obtaining API clients and messages."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import re
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import http_wrapper
-from googlecloudsdk.api_lib.service_management import enable_api
+from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
@@ -144,17 +149,18 @@ def ResolveVersion(api_name, default_override=None):
 
 
 API_ENABLEMENT_REGEX = re.compile(
-    '(?:Access Not Configured. )?.*has not been used in project \\S+ before or '
-    'it is disabled. Enable it by visiting https://console.developers.google'
-    '.com/apis/api/([^/]+)/overview\\?project=(\\S+) then retry. If you '
-    'enabled this API recently, wait a few minutes for the action to propagate '
-    'to our systems and retry.')
+    '.*Enable it by visiting https://console.(?:cloud|developers).google.com'
+    '/apis/api/([^/]+)/overview\\?project=(\\S+) then retry. If you '
+    'enabled this API recently, wait a few minutes for the action to propagate'
+    ' to our systems and retry.\\w*')
 
 
 API_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE = 403  # retry status code
+# TODO(b/141556680): delete this special case when KMS throws 403.
+KMS_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE = 400  # retry status code
 
 
-def GetApiEnablementInfo(exc):
+def _GetApiEnablementInfo(exc):
   """This is a handler for apitools errors allowing more specific errors.
 
   While HttpException is great for generally parsing apitools exceptions,
@@ -179,45 +185,107 @@ def GetApiEnablementInfo(exc):
 _PROJECTS_NOT_TO_ENABLE = {'google.com:cloudsdktool'}
 
 
+# TODO(b/141556680): delete this function when KMS throws 403.
+def _GetApiEnablementInfoKMS(exc):
+  match = API_ENABLEMENT_REGEX.match(exc.payload.status_message)
+  if (exc.payload.status_code == KMS_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE
+      and match is not None):
+    return (match.group(2), match.group(1))
+  return (None, None)
+
+
 def ShouldAttemptProjectEnable(project):
   return project not in _PROJECTS_NOT_TO_ENABLE
 
 
-def _CheckResponse(response):
-  """Checks API error and if it's an enablement error, prompt to enable & retry.
+def GetApiEnablementInfo(exception):
+  """Returns the API Enablement info or None if prompting is not necessary.
 
   Args:
-    response: response that had an error.
+    exception (apitools_exceptions.HttpError): Exception if an error occurred.
+
+  Returns:
+    tuple[str]: The project, service token, exception tuple to be used for
+      prompting to enable the API.
 
   Raises:
-    apitools_exceptions.RequestError: error which should signal apitools to
-      retry.
-    api_Exceptions.HttpException: the parsed error.
+    api_exceptions.HttpException: If gcloud should not prompt to enable the API.
   """
-  # This will throw if there was a specific type of error. If not, then we can
-  # parse and deal with our own class of errors.
-  http_wrapper.CheckResponse(response)
-  if not properties.VALUES.core.should_prompt_to_enable_api.Get():
-    return
-  # Once we get here, we check if it was an API enablement error and if so,
-  # prompt the user to enable the API. If yes, we make that call and then
-  # raise a RequestError, which will prompt the caller to retry. If not, we
-  # raise the actual HTTP error.
-  response_as_error = apitools_exceptions.HttpError.FromResponse(response)
-  parsed_error = api_exceptions.HttpException(response_as_error)
-  (project, service_token) = GetApiEnablementInfo(parsed_error)
+  parsed_error = api_exceptions.HttpException(exception)
+  (project, service_token) = _GetApiEnablementInfo(parsed_error)
+# TODO(b/141556680): delete this when KMS throws 403.
+  if parsed_error.payload.api_name == 'cloudkms':
+    (project, service_token) = _GetApiEnablementInfoKMS(parsed_error)
   if (project is not None and ShouldAttemptProjectEnable(project)
       and service_token is not None):
-    if console_io.PromptContinue(
-        message=None,
-        prompt_string=('API [{}] not enabled on project [{}]. '
-                       'Would you like to enable and retry? ')
-        .format(service_token, project)):
-      enable_api.EnableServiceIfDisabled(project, service_token)
-      # An error here will invoke apitools retry logic
+    return (project, service_token, parsed_error)
+
+
+def PromptToEnableApi(project, service_token, exception,
+                      is_batch_request=False):
+  """Prompts to enable the API and throws if the answer is no.
+
+  Args:
+    project (str): The project that the API is not enabled on.
+    service_token (str): The service token of the API to prompt for.
+    exception (api_Exceptions.HttpException): Exception to throw if the prompt
+      is denied.
+    is_batch_request: If the request is a batch request. This determines how to
+      get apitools to retry the request.
+
+  Raises:
+    api_exceptions.HttpException: API not enabled error if the user chooses to
+      not enable the API.
+  """
+  if console_io.PromptContinue(
+      default=False,
+      prompt_string=('API [{}] not enabled on project [{}]. '
+                     'Would you like to enable and retry (this will take a '
+                     'few minutes)?')
+      .format(service_token, project)):
+    enable_api.EnableService(project, service_token)
+    # In the case of a batch request, as long as the error's retryable code
+    # (in this case 403) was set, after this runs it should retry. This
+    # error code should be consistent with apis.GetApiEnablementInfo
+    if not is_batch_request:
       raise apitools_exceptions.RequestError('Retry')
-    else:
-      raise parsed_error
+  else:
+    raise exception
+
+
+def CheckResponseForApiEnablement():
+  """Returns a callback for checking API errors."""
+  state = {'already_prompted_to_enable': False}
+
+  def _CheckResponseForApiEnablement(response):
+    """Checks API error and if it's an enablement error, prompt to enable & retry.
+
+    Args:
+      response: response that had an error.
+
+    Raises:
+      apitools_exceptions.RequestError: error which should signal apitools to
+        retry.
+      api_exceptions.HttpException: the parsed error.
+    """
+    # This will throw if there was a specific type of error. If not, then we can
+    # parse and deal with our own class of errors.
+    http_wrapper.CheckResponse(response)
+    if not properties.VALUES.core.should_prompt_to_enable_api.GetBool():
+      return
+    # Once we get here, we check if it was an API enablement error and if so,
+    # prompt the user to enable the API. If yes, we make that call and then
+    # raise a RequestError, which will prompt the caller to retry. If not, we
+    # raise the actual HTTP error.
+    response_as_error = apitools_exceptions.HttpError.FromResponse(response)
+    enablement_info = GetApiEnablementInfo(response_as_error)
+    if enablement_info:
+      if state['already_prompted_to_enable']:
+        raise apitools_exceptions.RequestError('Retry')
+      state['already_prompted_to_enable'] = True
+      PromptToEnableApi(*enablement_info)
+
+  return _CheckResponseForApiEnablement
 
 
 def GetClientClass(api_name, api_version):
@@ -234,25 +302,22 @@ def GetClientClass(api_name, api_version):
   return apis_internal._GetClientClass(api_name, api_version)
 
 
-def GetClientInstance(api_name, api_version, no_http=False,
-                      enable_resource_quota=True):
+def GetClientInstance(api_name, api_version, no_http=False):
   """Returns an instance of the API client specified in the args.
 
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
     no_http: bool, True to not create an http object for this client.
-    enable_resource_quota: bool, By default, we are going to tell APIs to use
-      the quota of the project being operated on. For some APIs we want to use
-      gcloud's quota, so you can explicitly disable that behavior by passing
-      False here.
 
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
   """
   # pylint:disable=protected-access
   return apis_internal._GetClientInstance(
-      api_name, api_version, no_http, _CheckResponse, enable_resource_quota)
+      api_name, api_version,
+      no_http=no_http,
+      check_response_func=CheckResponseForApiEnablement())
 
 
 def GetEffectiveApiEndpoint(api_name, api_version, client_class=None):

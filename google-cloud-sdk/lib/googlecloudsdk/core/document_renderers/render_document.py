@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,12 +27,19 @@ There is a Renderer derived class for each output style that writes the result
 on an output stream returns Rendere.Finish().
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import argparse
+import re
 import sys
 
+from googlecloudsdk.core import argv_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.document_renderers import devsite_renderer
 from googlecloudsdk.core.document_renderers import html_renderer
+from googlecloudsdk.core.document_renderers import linter_renderer
 from googlecloudsdk.core.document_renderers import man_renderer
 from googlecloudsdk.core.document_renderers import markdown_renderer
 from googlecloudsdk.core.document_renderers import renderer
@@ -43,7 +51,8 @@ STYLES = {
     'html': html_renderer.HTMLRenderer,
     'man': man_renderer.ManRenderer,
     'markdown': markdown_renderer.MarkdownRenderer,
-    'text': text_renderer.TextRenderer
+    'text': text_renderer.TextRenderer,
+    'linter': linter_renderer.LinterRenderer
 }
 
 
@@ -122,16 +131,19 @@ class MarkdownRenderer(object):
     _paragraph: True if the last line was ``+'' paragraph at current indent.
     _next_paragraph: The next line starts a new paragraph at same indentation.
     _renderer: The document_renderer.Renderer subclass.
+    command_metadata: Optional metadata of command.
   """
   _EMPHASIS = {'*': renderer.BOLD, '_': renderer.ITALIC, '`': renderer.CODE}
 
-  def __init__(self, style_renderer, fin=sys.stdin, notes=None):
+  def __init__(self, style_renderer, fin=sys.stdin, notes=None,
+               command_metadata=None):
     """Initializes the renderer.
 
     Args:
       style_renderer: The document_renderer.Renderer subclass.
       fin: The markdown input stream.
       notes: Optional sentences for the NOTES section.
+      command_metadata: Optional metadata of command.
     """
     self._renderer = style_renderer
     self._buf = ''
@@ -144,8 +156,10 @@ class MarkdownRenderer(object):
     self._example = 0
     self._next_example = 0
     self._paragraph = False
+    self._peek = None
     self._next_paragraph = False
     self._line = None
+    self.command_metadata = command_metadata
 
   def _AnchorStyle1(self, buf, i):
     """Checks for link:target[text] hyperlink anchor markdown.
@@ -241,8 +255,11 @@ class MarkdownRenderer(object):
       return 0, None, None
     return (target_end + 1, buf[target_beg:target_end], buf[text_beg:text_end])
 
-  def _Attributes(self):
+  def _Attributes(self, buf=None):
     """Converts inline markdown attributes in self._buf.
+
+    Args:
+      buf: Convert markdown from this string instead of self._buf.
 
     Returns:
       A string with markdown attributes converted to render properly.
@@ -250,9 +267,11 @@ class MarkdownRenderer(object):
     # String append used on ret below because of anchor text look behind.
     emphasis = '' if self._code_block_indent >= 0 or self._example else '*_`'
     ret = ''
-    if self._buf:
-      buf = self._renderer.Escape(self._buf)
+    if buf is None:
+      buf = self._buf
       self._buf = ''
+    if buf:
+      buf = self._renderer.Escape(buf)
       i = 0
       while i < len(buf):
         c = buf[i]
@@ -332,12 +351,20 @@ class MarkdownRenderer(object):
       self._renderer.Fill(self._Attributes())
 
   def _ReadLine(self):
-    """Reads and possibly preprocesses the next markdown line fron self._fin.
+    """Reads and possibly preprocesses the next markdown line from self._fin.
 
     Returns:
       The next markdown input line.
     """
+    if self._peek is not None:
+      line = self._peek
+      self._peek = None
+      return line
     return self._fin.readline()
+
+  def _PushBackLine(self, line):
+    """Pushes back one lookahead line. The next _ReadlLine will return line."""
+    self._peek = line
 
   def _ConvertMarkdownToMarkdown(self):
     """Generates markdown with additonal NOTES if requested."""
@@ -432,6 +459,8 @@ class MarkdownRenderer(object):
     self._Fill()
     self._buf = self._line[i + 1:end_index]
     heading = self._Attributes()
+    if i == 1 and heading.endswith('(1)'):
+      self._renderer.SetCommand(heading[:-3].lower().split('_'))
     self._renderer.Heading(i, heading)
     self._depth = 0
     if heading in ['NAME', 'SYNOPSIS']:
@@ -448,7 +477,7 @@ class MarkdownRenderer(object):
       self._notes = None
     return -1
 
-  def _ConvertTable(self, i):
+  def _ConvertOldTable(self, i):
     """Detects and converts a sequence of markdown table lines.
 
     This method will consume multiple input lines if the current line is a
@@ -469,21 +498,137 @@ class MarkdownRenderer(object):
     if (self._line[0] != '[' or self._line[-1] != ']' or
         'format="csv"' not in self._line):
       return i
-    self._renderer.Table(self._line)
-    delim = 2
+    line = self._ReadLine()
+    if not line:
+      return i
+    if not line.startswith('|===='):
+      self._PushBackLine(line)
+      return i
+
+    rows = []
     while True:
       self._buf = self._ReadLine()
       if not self._buf:
         break
       self._buf = self._buf.rstrip()
       if self._buf.startswith('|===='):
-        delim -= 1
-        if delim <= 0:
-          break
-      else:
-        self._renderer.Table(self._Attributes())
+        break
+      rows.append(self._Attributes().split(','))
     self._buf = ''
-    self._renderer.Table(None)
+
+    table = renderer.TableAttributes()
+    if len(rows) > 1:
+      for label in rows[0]:
+        table.AddColumn(label=label)
+      rows = rows[1:]
+    if table.columns and rows:
+      self._renderer.Table(table, rows)
+    return -1
+
+  def _ConvertTable(self, i):
+    """Detects and converts a sequence of markdown table lines.
+
+    Markdown attributes are not supported in headings or column data.
+
+    This method will consume multiple input lines if the current line is a
+    table heading or separator line. The table markdown sequence is:
+
+      heading line
+
+        heading-1 | ... | heading-n
+          OR for boxed table
+        | heading-1 | ... | heading-n |
+
+      separator line
+
+        --- | ... | ---
+          OR for boxed table
+        | --- | ... | --- |
+          WHERE
+        :---  align left
+        :---: align center
+        ---:  align right
+        ----* length >= fixed_width_length sets column fixed width
+
+      row data lines
+
+        col-1-data-item | ... | col-n-data-item
+          ...
+
+      blank line ends table
+
+    Args:
+      i: The current character index in self._line.
+
+    Returns:
+      -1 if the input lines are table markdown, i otherwise.
+    """
+    fixed_width_length = 8
+
+    if ' | ' not in self._line:
+      return self._ConvertOldTable(i)
+    if '---' in self._line:
+      head = False
+      line = self._line
+    else:
+      head = True
+      line = self._ReadLine()
+    if not line or '---' not in line:
+      if line is not self._line:
+        self._PushBackLine(line)
+      return self._ConvertOldTable(i)
+
+    # Parse the heading and separator lines.
+
+    box = False
+    if head:
+      heading = re.split(r' *\| *', self._line.strip())
+      if not heading[0] and not heading[-1]:
+        heading = heading[1:-1]
+        box = True
+    else:
+      heading = []
+    sep = re.split(r' *\| *', line.strip())
+    if not sep[0] and not sep[-1]:
+      sep = sep[1:-1]
+      box = True
+    if heading and len(heading) != len(sep):
+      if line is not self._line:
+        self._PushBackLine(line)
+      return self._ConvertOldTable(i)
+
+    # Committed to table markdown now.
+
+    table = renderer.TableAttributes(box=box)
+
+    # Determine the column attributes.
+
+    for index in range(len(sep)):
+      align = 'left'
+      s = sep[index]
+      if s.startswith(':'):
+        if s.endswith(':'):
+          align = 'center'
+      elif s.endswith(':'):
+        align = 'right'
+      label = heading[index] if index < len(heading) else None
+      width = len(s) if len(s) >= fixed_width_length else 0
+      table.AddColumn(align=align, label=label, width=width)
+
+    # Collect the column data by rows. Blank or + line terminates the data.
+
+    rows = []
+    while True:
+      line = self._ReadLine()
+      if line in (None, '', '\n', '+\n'):
+        self._PushBackLine(line)
+        break
+      row = re.split(r' *\| *', line.rstrip())
+      rows.append(row)
+
+    if rows:
+      self._renderer.Table(table, rows)
+    self._buf = ''
     return -1
 
   def _ConvertIndentation(self, i):
@@ -734,7 +879,7 @@ class MarkdownRenderer(object):
 
 
 def RenderDocument(style='text', fin=None, out=None, width=80, notes=None,
-                   title=None):
+                   title=None, command_metadata=None):
   """Renders markdown to a selected document style.
 
   Args:
@@ -744,6 +889,7 @@ def RenderDocument(style='text', fin=None, out=None, width=80, notes=None,
     width: The page width in characters.
     notes: Optional sentences inserted in the NOTES section.
     title: The document title.
+    command_metadata: Optional metadata of command, including available flags.
 
   Raises:
     DocumentStyleError: The markdown style was unknown.
@@ -751,8 +897,18 @@ def RenderDocument(style='text', fin=None, out=None, width=80, notes=None,
   if style not in STYLES:
     raise DocumentStyleError(style)
   style_renderer = STYLES[style](out=out or sys.stdout, title=title,
-                                 width=width)
-  MarkdownRenderer(style_renderer, fin=fin or sys.stdin, notes=notes).Run()
+                                 width=width, command_metadata=command_metadata)
+  MarkdownRenderer(style_renderer, fin=fin or sys.stdin, notes=notes,
+                   command_metadata=command_metadata).Run()
+
+
+class CommandMetaData(object):
+  """Object containing metadata of command to be passed into linter renderer."""
+
+  def __init__(self, flags=None, bool_flags=None, is_group=True):
+    self.flags = flags if flags else []
+    self.bool_flags = bool_flags if bool_flags else []
+    self.is_group = is_group
 
 
 def main(argv):
@@ -782,8 +938,9 @@ def main(argv):
 
   args = parser.parse_args(argv[1:])
 
-  RenderDocument(args.style, notes=args.notes, title=args.title)
+  RenderDocument(args.style, notes=args.notes, title=args.title,
+                 command_metadata=None)
 
 
 if __name__ == '__main__':
-  main(sys.argv)
+  main(argv_utils.GetDecodedArgv())

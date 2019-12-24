@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Common test matrix operations used by Firebase Test Lab commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import collections
 import datetime
 import time
@@ -26,6 +31,7 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+import six
 
 
 _DEFAULT_STATUS_INTERVAL_SECS = 6.0
@@ -265,7 +271,7 @@ class MatrixMonitor(object):
     """
     status = []
     timestamp = self._clock().strftime(_TIMESTAMP_FORMAT)
-    for state, count in state_counts.iteritems():
+    for state, count in six.iteritems(state_counts):
       if count > 0:
         status.append('{s}:{c}'.format(s=self._state_names[state], c=count))
     status.sort()
@@ -304,13 +310,16 @@ class MatrixMonitor(object):
 
 def _FormatInvalidDimension(environment):
   """Return a human-readable string representing an invalid matrix dimension."""
-  if hasattr(environment, 'androidDevice'):
+  if getattr(environment, 'androidDevice', None) is not None:
     device = environment.androidDevice
     return ('[OS-version {vers} on {model}]'
             .format(model=device.androidModelId, vers=device.androidVersionId))
-  else:
-    # Handle any new device environments here.
-    return '[unknown-environment]'
+  if getattr(environment, 'iosDevice', None) is not None:
+    device = environment.iosDevice
+    return ('[OS-version {vers} on {model}]'.format(
+        model=device.iosModelId, vers=device.iosVersionId))
+  # Handle any new device environments here.
+  return '[unknown-environment]'
 
 
 def ReformatDuration(duration):

@@ -24,7 +24,7 @@ class DiscoveryV1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new discovery handle."""
     url = url or self.BASE_URL
     super(DiscoveryV1, self).__init__(
@@ -33,7 +33,8 @@ class DiscoveryV1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.apis = self.ApisService(self)
 
   class ApisService(base_api.BaseApiService):
@@ -47,7 +48,7 @@ class DiscoveryV1(base_api.BaseApiClient):
           }
 
     def GetRest(self, request, global_params=None):
-      """Retrieve the description of a particular version of an api.
+      r"""Retrieve the description of a particular version of an api.
 
       Args:
         request: (DiscoveryApisGetRestRequest) input message
@@ -73,7 +74,7 @@ class DiscoveryV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Retrieve the list of APIs supported at this endpoint.
+      r"""Retrieve the list of APIs supported at this endpoint.
 
       Args:
         request: (DiscoveryApisListRequest) input message

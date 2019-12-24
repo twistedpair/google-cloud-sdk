@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 """Flags and helpers for the compute vpn-tunnels commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -20,7 +25,16 @@ DEFAULT_LIST_FORMAT = """\
     table(
       name,
       region.basename(),
-      targetVpnGateway.basename():label=GATEWAY,
+      vpn_tunnel_gateway().basename():label=GATEWAY,
+      peerIp:label=PEER_ADDRESS
+    )"""
+
+HA_VPN_LIST_FORMAT = """\
+    table(
+      name,
+      region.basename(),
+      vpn_tunnel_gateway().basename():label=GATEWAY,
+      vpn_gateway_interface:label=VPN_INTERFACE,
       peerIp:label=PEER_ADDRESS
     )"""
 

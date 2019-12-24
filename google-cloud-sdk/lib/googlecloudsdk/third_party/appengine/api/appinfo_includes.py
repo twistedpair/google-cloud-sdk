@@ -1,5 +1,4 @@
-#
-# Copyright 2010 Google Inc. All Rights Reserved.
+# Copyright 2010 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,6 +24,8 @@
 # - modify the apphosting/ext/builtins/BUILD file and include your new
 #   include.yaml file in the INCLUDE_YAML_FILES constant
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 
 import logging
@@ -81,11 +82,11 @@ def ParseAndReturnIncludePaths(appinfo_file, open_fn=open):
   # Reimplement appinfo.py handler checks after merge.
   if not appyaml.handlers:
     # Add a placeholder handler for VM runtime apps.
+    # TODO(b/65159665): Do not require this placeholder entry.
     if appyaml.IsVm():
       appyaml.handlers = [appinfo.URLMap(url='.*', script='PLACEHOLDER')]
     else:
-      raise appinfo_errors.MissingURLMapping(
-          'No URLMap entries found in application configuration')
+      appyaml.handlers = []
   if len(appyaml.handlers) > appinfo.MAX_URL_MAPS:
     raise appinfo_errors.TooManyURLMappings(
         'Found more than %d URLMap entries in application configuration' %
@@ -222,7 +223,7 @@ def _ResolveIncludes(included_from, app_include, basepath, runtime, state=None,
           logging.warning('Nothing to include in %s', inc_path)
     # No info printed on duplicate includes.
 
-  return state.aggregate_appinclude, state.includes.keys()
+  return state.aggregate_appinclude, list(state.includes.keys())
 
 
 def _ConvertBuiltinsToIncludes(included_from, app_include, state, runtime):

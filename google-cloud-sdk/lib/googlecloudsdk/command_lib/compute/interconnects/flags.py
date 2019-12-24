@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 """Flags and helpers for the compute interconnects commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import actions as calliope_actions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
@@ -20,17 +25,10 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 _INTERCONNECT_TYPE_CHOICES_GA = {
     'DEDICATED': 'Dedicated private interconnect.',
+    'PARTNER': 'Partner interconnect. Only available to approved partners.',
 }
 
-_INTERCONNECT_TYPE_CHOICES_BETA = {
-    'IT_PRIVATE':
-        'Dedicated private interconnect. (Warning: IT_PRIVATE is deprecated, '
-        'use DEDICATED instead.)',
-    'DEDICATED':
-        'Dedicated private interconnect.',
-}
-
-_INTERCONNECT_TYPE_CHOICES_ALPHA = {
+_INTERCONNECT_TYPE_CHOICES_BETA_AND_ALPHA = {
     'IT_PRIVATE':
         'Dedicated private interconnect. (Warning: IT_PRIVATE is deprecated, '
         'use DEDICATED instead.)',
@@ -41,8 +39,8 @@ _INTERCONNECT_TYPE_CHOICES_ALPHA = {
 }
 
 _LINK_TYPE_CHOICES = {
-    'LINK_TYPE_ETHERNET_10G_LR':
-        '10Gbps Ethernet, LR Optics.'
+    'LINK_TYPE_ETHERNET_10G_LR': '10Gbps Ethernet, LR Optics.',
+    'LINK_TYPE_ETHERNET_100G_LR': '100Gbps Ethernet, LR Optics.'
 }
 
 
@@ -129,13 +127,7 @@ def AddCreateGaArgs(parser):
 def AddCreateBetaArgs(parser):
   """Adds beta flags for create command to the argparse.ArgumentParser."""
   AddCreateCommonArgs(parser)
-  AddInterconnectTypeBeta(parser)
-
-
-def AddCreateAlphaArgs(parser):
-  """Adds alpha flags for create command to the argparse.ArgumentParser."""
-  AddCreateCommonArgs(parser)
-  AddInterconnectTypeAlpha(parser)
+  AddInterconnectTypeBetaAndAlpha(parser)
 
 
 def AddDescription(parser):
@@ -160,34 +152,15 @@ def _ShouldShowDeprecatedWarning(value):
   return value and value.upper() == 'IT_PRIVATE'
 
 
-def AddInterconnectTypeBeta(parser):
+def AddInterconnectTypeBetaAndAlpha(parser):
   """Adds interconnect-type flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--interconnect-type',
-      choices=_INTERCONNECT_TYPE_CHOICES_BETA,
+      choices=_INTERCONNECT_TYPE_CHOICES_BETA_AND_ALPHA,
       action=calliope_actions.DeprecationAction(
           'interconnect-type',
           removed=False,
-          show_message=_ShouldShowDeprecatedWarning,
-          warn=('IT_PRIVATE will be deprecated '
-                'for {flag_name}. '
-                'Please use DEDICATED instead.'),
-          error='Value IT_PRIVATE for {flag_name} has been removed. '
-                'Please use DEDICATED instead.'),
-      required=True,
-      help="""\
-      Type of the interconnect.
-      """)
-
-
-def AddInterconnectTypeAlpha(parser):
-  """Adds interconnect-type flag to the argparse.ArgumentParser."""
-  parser.add_argument(
-      '--interconnect-type',
-      choices=_INTERCONNECT_TYPE_CHOICES_ALPHA,
-      action=calliope_actions.DeprecationAction(
-          'interconnect-type',
-          removed=False,
+          show_add_help=False,
           show_message=_ShouldShowDeprecatedWarning,
           warn=('IT_PRIVATE will be deprecated '
                 'for {flag_name}. '
@@ -202,9 +175,10 @@ def AddInterconnectTypeAlpha(parser):
 
 def AddLinkType(parser):
   """Adds link-type flag to the argparse.ArgumentParser."""
+  link_types = _LINK_TYPE_CHOICES
   parser.add_argument(
       '--link-type',
-      choices=_LINK_TYPE_CHOICES,
+      choices=link_types,
       required=True,
       help="""\
       Type of the link for the interconnect.
@@ -222,7 +196,7 @@ def AddRequestedLinkCount(parser):
       """)
 
 
-def AddRequestedLinkCountForPatch(parser):
+def AddRequestedLinkCountForUpdate(parser):
   """Adds requestedLinkCount flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--requested-link-count',
@@ -269,7 +243,7 @@ def AddAdminEnabled(parser):
       """)
 
 
-def AddAdminEnabledForPatch(parser):
+def AddAdminEnabledForUpdate(parser):
   """Adds adminEnabled flag to the argparse.ArgumentParser."""
   admin_enabled_args = parser.add_mutually_exclusive_group()
   admin_enabled_args.add_argument(

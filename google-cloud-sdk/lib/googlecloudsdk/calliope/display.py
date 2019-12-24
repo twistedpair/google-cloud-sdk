@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,6 +30,10 @@ string tuple
 where only one of the three elements need be present.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import display_taps
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -42,6 +47,7 @@ from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.resource import resource_reference
 from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import peek_iterable
+import six
 
 
 class Error(exceptions.Error):
@@ -109,6 +115,7 @@ class Displayer(object):
           symbols=display_info.transforms,
           aliases=display_info.aliases)
       self._format = display_info.format
+      self._flatten = display_info.flatten
       self._filter = display_info.filter
     self._transform_uri = self._defaults.symbols.get(
         'uri', resource_transform.TransformUri)
@@ -124,6 +131,10 @@ class Displayer(object):
     Returns:
       The flag value or None if it is unknown or unset.
     """
+    if flag_name == 'async':
+      # The async flag has a special destination since 'async' is a reserved
+      # keyword as of Python 3.7.
+      return getattr(self._args, 'async_', None)
     return getattr(self._args, flag_name, None)
 
   def _AddUriCacheTap(self):
@@ -209,7 +220,7 @@ class Displayer(object):
         assert None < value
         return value
       except (AssertionError, TypeError):
-        return unicode(value)
+        return six.text_type(value)
 
     self._resources = sorted(
         self._resources,
@@ -267,7 +278,7 @@ class Displayer(object):
       # the flattened keys to the left.
       self._resources = peek_iterable.Tapper(self._resources, tap)
 
-    keys = self._GetFlag('flatten')
+    keys = self._GetFlatten()
     if not keys:
       return
     for key in keys:
@@ -341,9 +352,18 @@ class Displayer(object):
   def _GetFilter(self):
     flag_filter = self._GetFlag('filter')
     if flag_filter is None:
+      if self._filter:
+        log.info('Display filter: "%s"', six.text_type(self._filter))
       return self._filter
     else:
       return flag_filter
+
+  def _GetFlatten(self):
+    flag_flatten = self._GetFlag('flatten')
+    if flag_flatten is None:
+      return self._flatten
+    else:
+      return flag_flatten
 
   def GetFormat(self):
     """Determines the display format.
@@ -423,6 +443,21 @@ class Displayer(object):
         printer=self._printer,
         defaults=self._defaults)
 
+  def _AddDisplayTaps(self):
+    """Adds each of the standard display taps, if needed.
+
+       The taps must be included in this order in order to generate the correct
+       results. For example, limiting should not happen until after filtering is
+       complete, and pagination should only happen on the fully trimmed results.
+    """
+    self._AddUriCacheTap()
+    self._AddFlattenTap()
+    self._AddFilterTap()
+    self._AddSortByTap()
+    self._AddLimitTap()
+    self._AddPageTap()
+    self._AddUriReplaceTap()
+
   def Display(self):
     """The default display method."""
 
@@ -439,31 +474,12 @@ class Displayer(object):
     # Initialize the printer.
     self._InitPrinter()
 
-    # Add a URI cache update tap if needed.
-    self._AddUriCacheTap()
-
-    # Add a resource page tap if needed.
-    self._AddPageTap()
-
-    # Add a resource flatten tap if needed.
-    self._AddFlattenTap()
-
-    # Add a sort tap if needed.
-    self._AddSortByTap()
-
-    # Add a resource filter tap if needed.
-    self._AddFilterTap()
-
-    # Add a resource limit tap if needed.
-    self._AddLimitTap()
-
-    # Add the URI replace tap if needed.
-    self._AddUriReplaceTap()
+    self._AddDisplayTaps()
 
     resources_were_displayed = True
     if self._printer:
       # Most command output will end up here.
-      log.info('Display format "%s".', self._format)
+      log.info('Display format: "%s"', self._format)
       self._printer.Print(self._resources)
       resources_were_displayed = self._printer.ResourcesWerePrinted()
     elif hasattr(self._command, 'Display'):

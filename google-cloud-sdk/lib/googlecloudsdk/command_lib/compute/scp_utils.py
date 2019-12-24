@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +15,20 @@
 
 """Base class for commands copying files from and to virtual machines."""
 
-import sys
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from argcomplete.completers import FilesCompleter
 
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import flags
+from googlecloudsdk.command_lib.compute import iap_tunnel
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute import ssh_utils
 from googlecloudsdk.command_lib.compute.instances import flags as instance_flags
+from googlecloudsdk.command_lib.util.ssh import ip
 from googlecloudsdk.command_lib.util.ssh import ssh
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -62,28 +68,26 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
 
   def RunScp(self,
              compute_holder,
-             cua_holder,
              args,
              port=None,
              recursive=False,
              compress=False,
              extra_flags=None,
-             use_account_service=False,
-             release_track=None):
+             release_track=None,
+             ip_type=ip.IpTypeEnum.EXTERNAL):
     """SCP files between local and remote GCE instance.
 
     Run this method from subclasses' Run methods.
 
     Args:
       compute_holder: The ComputeApiHolder.
-      cua_holder: The ComputeUserAccountsApiHolder.
       args: argparse.Namespace, the args the command was invoked with.
-      port: str, int or None, Port number to use for SSH connection.
+      port: str or None, Port number to use for SSH connection.
       recursive: bool, Whether to use recursive copying using -R flag.
       compress: bool, Whether to use compression.
       extra_flags: [str] or None, extra flags to add to command invocation.
-      use_account_service: bool, Whether to use Cloud User Accounts API
       release_track: obj, The current release track.
+      ip_type: IpTypeEnum, Specify using internal ip or external ip address.
 
     Raises:
       ssh_utils.NetworkError: Network issue which likely is due to failure
@@ -115,16 +119,17 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
             compute_holder.client))[0]
     instance = self.GetInstance(compute_holder.client, instance_ref)
     project = self.GetProject(compute_holder.client, instance_ref.project)
+    expiration, expiration_micros = ssh_utils.GetSSHKeyExpirationFromArgs(args)
 
-    # Now replace the instance name with the actual IP/hostname
-    remote.host = ssh_utils.GetExternalIPAddress(instance)
     if not remote.user:
       remote.user = ssh.GetDefaultSshUsername(warn_on_account_user=True)
     if args.plain:
       use_oslogin = False
     else:
-      remote.user, use_oslogin = self.CheckForOsloginAndGetUser(
-          instance, project, remote.user, release_track)
+      public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
+      remote.user, use_oslogin = ssh.CheckForOsloginAndGetUser(
+          instance, project, remote.user, public_key, expiration_micros,
+          release_track)
 
     identity_file = None
     options = None
@@ -133,10 +138,21 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
       options = self.GetConfig(ssh_utils.HostKeyAlias(instance),
                                args.strict_host_key_checking)
 
+    iap_tunnel_args = iap_tunnel.SshTunnelArgs.FromArgs(
+        args, release_track, instance_ref,
+        ssh_utils.GetExternalInterface(instance, no_raise=True))
+
+    if iap_tunnel_args:
+      remote.host = ssh_utils.HostKeyAlias(instance)
+    elif ip_type is ip.IpTypeEnum.INTERNAL:
+      remote.host = ssh_utils.GetInternalIPAddress(instance)
+    else:
+      remote.host = ssh_utils.GetExternalIPAddress(instance)
+
     cmd = ssh.SCPCommand(
         srcs, dst, identity_file=identity_file, options=options,
         recursive=recursive, compress=compress, port=port,
-        extra_flags=extra_flags)
+        extra_flags=extra_flags, iap_tunnel_args=iap_tunnel_args)
 
     if args.dry_run:
       log.out.Print(' '.join(cmd.Build(self.env)))
@@ -147,24 +163,29 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
     else:
       keys_newly_added = self.EnsureSSHKeyExists(
           compute_holder.client,
-          cua_holder.client,
           remote.user,
           instance,
           project,
-          use_account_service=use_account_service)
+          expiration=expiration)
 
     if keys_newly_added:
-      poller = ssh.SSHPoller(
-          remote, identity_file=identity_file, options=options,
-          max_wait_ms=ssh_utils.SSH_KEY_PROPAGATION_TIMEOUT_SEC)
+      poller = ssh_utils.CreateSSHPoller(remote, identity_file, options,
+                                         iap_tunnel_args, port=port)
+
       log.status.Print('Waiting for SSH key to propagate.')
       # TODO(b/35355795): Don't force_connect
       try:
         poller.Poll(self.env, force_connect=True)
       except retry.WaitException:
         raise ssh_utils.NetworkError()
-    return_code = cmd.Run(self.env, force_connect=True)
-    if return_code:
-      # Can't raise an exception because we don't want any "ERROR" message
-      # printed; the output from `ssh` will be enough.
-      sys.exit(return_code)
+
+    if ip_type is ip.IpTypeEnum.INTERNAL:
+      # This will never happen when IAP Tunnel is enabled, because ip_type is
+      # always EXTERNAL when IAP Tunnel is enabled, even if the instance has no
+      # external IP. IAP Tunnel doesn't need verification because it uses
+      # unambiguous identifiers for the instance.
+      self.PreliminarilyVerifyInstance(instance.id, remote, identity_file,
+                                       options)
+
+    # Errors from the SCP command result in an ssh.CommandError being raised
+    cmd.Run(self.env, force_connect=True)

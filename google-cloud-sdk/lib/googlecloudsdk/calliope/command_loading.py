@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +15,22 @@
 
 """Helpers to load commands from the filesystem."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 import os
 import re
-import sys
 
 import googlecloudsdk
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import command_release_tracks
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import pkg_resources
-import yaml
+
+from ruamel import yaml
+import six
 
 
 class CommandLoadFailure(Exception):
@@ -33,7 +41,7 @@ class CommandLoadFailure(Exception):
     self.root_exception = root_exception
     super(CommandLoadFailure, self).__init__(
         'Problem loading {command}: {issue}.'.format(
-            command=command, issue=str(root_exception)))
+            command=command, issue=six.text_type(root_exception)))
 
 
 class LayoutException(Exception):
@@ -45,9 +53,8 @@ class ReleaseTrackNotImplementedException(Exception):
   """
 
 
-class YamlCommandTranslator(object):
+class YamlCommandTranslator(six.with_metaclass(abc.ABCMeta, object)):
   """An interface to implement when registering a custom command loader."""
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def Translate(self, path, command_data):
@@ -158,6 +165,28 @@ def LoadCommonType(impl_paths, path, release_track,
       impl_paths[0], release_track, implementations)()
 
 
+def Cache(func):
+  cached_results = {}
+  def ReturnCachedOrCallFunc(*args):
+    try:
+      return cached_results[args]
+    except KeyError:
+      result = func(*args)
+      cached_results[args] = result
+      return result
+  return ReturnCachedOrCallFunc
+
+
+@Cache
+def _SafeLoadYamlFile(path):
+  return yaml.safe_load(pkg_resources.GetResourceFromFile(path))
+
+
+@Cache
+def _CustomLoadYamlFile(path):
+  return CreateYamlLoader(path).load(pkg_resources.GetResourceFromFile(path))
+
+
 def _GetAllImplementations(impl_paths, path, construction_id, is_command,
                            yaml_command_translator):
   """Gets all the release track command implementations.
@@ -194,14 +223,14 @@ def _GetAllImplementations(impl_paths, path, construction_id, is_command,
         raise CommandLoadFailure(
             '.'.join(path),
             Exception('Command groups cannot be implemented in yaml'))
-      data = yaml.load(pkg_resources.GetData(impl_file),
-                       Loader=CreateYamlLoader(impl_file))
+      data = _CustomLoadYamlFile(impl_file)
       implementations.extend((_ImplementationsFromYaml(
           path, data, yaml_command_translator)))
     else:
       module = _GetModuleFromPath(impl_file, path, construction_id)
       implementations.extend(_ImplementationsFromModule(
-          module.__file__, module.__dict__.values(), is_command=is_command))
+          module.__file__, list(module.__dict__.values()),
+          is_command=is_command))
   return implementations
 
 
@@ -217,11 +246,13 @@ def CreateYamlLoader(impl_path):
   # TODO(b/64147277) Allow for importing from other places.
   common_file_path = os.path.join(os.path.dirname(impl_path), '__init__.yaml')
   common_data = None
-  if os.path.exists(common_file_path):
-    common_data = yaml.load(pkg_resources.GetData(common_file_path))
+  try:
+    common_data = _SafeLoadYamlFile(common_file_path)
+  except IOError:
+    pass
 
-  class Loader(yaml.Loader):
-    """A custom yaml loader.
+  class Constructor(yaml.Constructor):
+    """A custom yaml constructor.
 
     It adds 2 different import capabilities. Assuming __init__.yaml has the
     contents:
@@ -288,14 +319,11 @@ def CreateYamlLoader(impl_path):
     INCLUDE_REF_MACRO = '!REF'
     MERGE_REF_MACRO = '_REF_'
 
-    def __init__(self, stream):
-      super(Loader, self).__init__(stream)
-
     def construct_mapping(self, *args, **kwargs):
-      data = super(Loader, self).construct_mapping(*args, **kwargs)
-      data = self._ConstructMappingHelper(Loader.MERGE_COMMON_MACRO,
+      data = super(Constructor, self).construct_mapping(*args, **kwargs)
+      data = self._ConstructMappingHelper(Constructor.MERGE_COMMON_MACRO,
                                           self._GetCommonData, data)
-      return self._ConstructMappingHelper(Loader.MERGE_REF_MACRO,
+      return self._ConstructMappingHelper(Constructor.MERGE_REF_MACRO,
                                           self._GetRefData, data)
 
     def _ConstructMappingHelper(self, macro, source_func, data):
@@ -311,16 +339,16 @@ def CreateYamlLoader(impl_path):
       return modified_data
 
     def construct_sequence(self, *args, **kwargs):
-      data = super(Loader, self).construct_sequence(*args, **kwargs)
-      data = self._ConstructSequenceHelper(Loader.MERGE_COMMON_MACRO,
+      data = super(Constructor, self).construct_sequence(*args, **kwargs)
+      data = self._ConstructSequenceHelper(Constructor.MERGE_COMMON_MACRO,
                                            self._GetCommonData, data)
-      return self._ConstructSequenceHelper(Loader.MERGE_REF_MACRO,
+      return self._ConstructSequenceHelper(Constructor.MERGE_REF_MACRO,
                                            self._GetRefData, data)
 
     def _ConstructSequenceHelper(self, macro, source_func, data):
       new_list = []
       for i in data:
-        if isinstance(i, basestring) and i.startswith(macro):
+        if isinstance(i, six.string_types) and i.startswith(macro):
           attribute_path = i[len(macro):]
           for path in attribute_path.split(','):
             new_list.extend(source_func(path))
@@ -369,7 +397,7 @@ def CreateYamlLoader(impl_path):
       yaml_path = os.path.join(root, *parts[0].split('.'))
       yaml_path += '.yaml'
       try:
-        data = yaml.load(pkg_resources.GetData(yaml_path))
+        data = _SafeLoadYamlFile(yaml_path)
       except IOError as e:
         raise LayoutException(
             'Failed to load Yaml reference file [{}]: {}'.format(yaml_path, e))
@@ -387,9 +415,13 @@ def CreateYamlLoader(impl_path):
               .format(impl_path, location, attribute, attribute_path))
       return value
 
-  Loader.add_constructor(Loader.INCLUDE_COMMON_MACRO, Loader.IncludeCommon)
-  Loader.add_constructor(Loader.INCLUDE_REF_MACRO, Loader.IncludeRef)
-  return Loader
+  loader = yaml.YAML()
+  loader.Constructor = Constructor
+  loader.constructor.add_constructor(Constructor.INCLUDE_COMMON_MACRO,
+                                     Constructor.IncludeCommon)
+  loader.constructor.add_constructor(Constructor.INCLUDE_REF_MACRO,
+                                     Constructor.IncludeRef)
+  return loader
 
 
 def _GetModuleFromPath(impl_file, path, construction_id):
@@ -422,8 +454,7 @@ def _GetModuleFromPath(impl_file, path, construction_id):
   # because if any exceptions make it through for any single command or group
   # file, the whole CLI will not work. Instead, just log whatever it is.
   except Exception as e:
-    _, _, exc_traceback = sys.exc_info()
-    raise CommandLoadFailure('.'.join(path), e), None, exc_traceback
+    exceptions.reraise(CommandLoadFailure('.'.join(path), e))
 
 
 def _ImplementationsFromModule(mod_file, module_attributes, is_command):
@@ -450,11 +481,10 @@ def _ImplementationsFromModule(mod_file, module_attributes, is_command):
 
   # Collect all the registered groups and commands.
   for command_or_group in module_attributes:
-    if issubclass(type(command_or_group), type):
-      if issubclass(command_or_group, base.Command):
-        commands.append(command_or_group)
-      elif issubclass(command_or_group, base.Group):
-        groups.append(command_or_group)
+    if getattr(command_or_group, 'IS_COMMAND', False):
+      commands.append(command_or_group)
+    elif getattr(command_or_group, 'IS_COMMAND_GROUP', False):
+      groups.append(command_or_group)
 
   if is_command:
     if groups:
@@ -520,7 +550,7 @@ def _ImplementationsFromYaml(path, data, yaml_command_translator):
   implementations = [
       (lambda i=i: yaml_command_translator.Translate(path, i),
        {base.ReleaseTrack.FromId(t) for t in i.get('release_tracks', [])})
-      for i in data]
+      for i in command_release_tracks.SeparateDeclarativeCommandTracks(data)]
   return implementations
 
 
@@ -571,7 +601,7 @@ def _ExtractReleaseTrackImplementation(
     if duplicates:
       raise LayoutException(
           'Multiple definitions for release tracks [{0}] for element: [{1}]'
-          .format(', '.join([str(d) for d in duplicates]), impl_file))
+          .format(', '.join([six.text_type(d) for d in duplicates]), impl_file))
     implemented_release_tracks |= valid_tracks
 
   valid_commands_or_groups = [impl for impl, valid_tracks in implementations

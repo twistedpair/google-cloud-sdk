@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,11 +15,14 @@
 
 """Util for projects."""
 
-from apitools.base.py import exceptions
-from googlecloudsdk.api_lib.cloudresourcemanager import errors
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.api_lib.util import exceptions as api_exceptions
-from googlecloudsdk.core import log
+
+_API_NAME = 'cloudresourcemanager'
+DEFAULT_API_VERSION = 'v1'
 
 
 class DeletedResource(object):
@@ -28,18 +32,28 @@ class DeletedResource(object):
     self.projectId = project_id  # pylint: disable=invalid-name, This is a resource attribute name.
 
 
-def GetMessages():
-  """Import and return the appropriate projects messages module."""
-  return apis.GetMessagesModule('cloudresourcemanager', 'v1')
+def GetMessages(version=DEFAULT_API_VERSION):
+  """Import and return the appropriate projects messages module.
+
+  Args:
+    version: the API version
+
+  Returns:
+    Cloud Resource Manager message.
+  """
+  return apis.GetMessagesModule(_API_NAME, version)
 
 
-def GetClient():
+def GetClient(version=DEFAULT_API_VERSION):
   """Import and return the appropriate projects client.
+
+  Args:
+    version: the API version
 
   Returns:
     Cloud Resource Manager client for the appropriate release track.
   """
-  return apis.GetClientInstance('cloudresourcemanager', 'v1')
+  return apis.GetClientInstance(_API_NAME, version)
 
 
 def IsActive(project):
@@ -52,26 +66,3 @@ def IsActive(project):
   """
   lifecycle_enum = GetMessages().Project.LifecycleStateValueValuesEnum
   return project.lifecycleState == lifecycle_enum.ACTIVE
-
-
-def ConvertHttpError(error):
-  """Raises a more specific ProjectAccessError from an HttpError.
-
-  Args:
-    error: HttpError resulting from unsuccessful call to API.
-
-  Returns:
-    ProjectAccessError or original error
-
-  First line will parse project ID out of error url.
-  Example:
-   URL = .../v1/projects/BAD_ID:method?prettyPrint=True&alt=json
-   project_id = 'BAD_ID'
-  """
-  log.debug('HttpError in projects API call.', exc_info=True)
-  if isinstance(error, exceptions.HttpError):
-    project_id = error.url.split('/')[-1].split('?')[0].split(':')[0]
-    if error.status_code == 403 or error.status_code == 404:
-      return errors.ProjectAccessError(project_id)
-    return api_exceptions.HttpException(error, '{message}{details?\n{?}}')
-  return error

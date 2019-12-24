@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://clouddebugger.googleapis.com/v2/'
-DOCS_URL = 'http://cloud.google.com/debugger'
+DOCS_URL = 'https://cloud.google.com/debugger'
 
 
 class Collections(enum.Enum):
@@ -27,17 +28,21 @@ class Collections(enum.Enum):
       'debugger.debuggees',
       'debugger/debuggees/{debuggeeId}',
       {},
-      [u'debuggeeId']
+      [u'debuggeeId'],
+      True
   )
   DEBUGGER_DEBUGGEES_BREAKPOINTS = (
       'debugger.debuggees.breakpoints',
       'debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}',
       {},
-      [u'debuggeeId', u'breakpointId']
+      [u'debuggeeId', u'breakpointId'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

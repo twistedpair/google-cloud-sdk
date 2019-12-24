@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 """Contains utilities for holding and formatting install information.
 
 This is useful for the output of 'gcloud info', which in turn is extremely
@@ -19,12 +21,17 @@ useful for debugging issues related to weird installations, out-of-date
 installations, and so on.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import datetime
 import getpass
+import io
+import locale
 import os
 import platform as system_platform
 import re
-import StringIO
 import subprocess
 import sys
 import textwrap
@@ -39,6 +46,8 @@ from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import platforms
+
+import six
 
 
 class NoopAnonymizer(object):
@@ -59,9 +68,12 @@ class NoopAnonymizer(object):
   def ProcessPassword(self, password):
     return password
 
+  def ProcessURL(self, url):
+    return url
+
 
 class Anonymizer(object):
-  """Removed personal identifiable infor from paths, account and project."""
+  """Remove personally identifiable info from paths, account and project."""
 
   def __init__(self):
     cfg_paths = config.Paths()
@@ -70,7 +82,7 @@ class Anonymizer(object):
     self._replacements = [
         (re.escape(os.path.normpath(cfg_paths.global_config_dir)),
          '${CLOUDSDK_CONFIG}'),
-        (re.escape(platforms.GetHomePath()), '${HOME}'),
+        (re.escape(file_utils.GetHomeDir()), '${HOME}'),
         (re.escape(getpass.getuser()), '${USER}')
     ]
     if cfg_paths.sdk_root:
@@ -89,6 +101,14 @@ class Anonymizer(object):
       if num_matches:
         return norm_path
     return path
+
+  def ProcessURL(self, url):
+    """If url is a file URI, anonymize any pii in path."""
+
+    prefix = 'file://'
+    if not url or not url.startswith(prefix):
+      return url
+    return prefix + self.ProcessPath(url[len(prefix):])
 
   def ProcessAccount(self, account):
     """Anonymize account by leaving first and last letters."""
@@ -127,14 +147,14 @@ class InfoHolder(object):
     self.tools = ToolsInfo(anonymizer)
 
   def __str__(self):
-    out = StringIO.StringIO()
-    out.write(unicode(self.basic) + '\n')
-    out.write(unicode(self.installation) + '\n')
-    out.write(unicode(self.config) + '\n')
-    if unicode(self.env_proxy):
-      out.write(unicode(self.env_proxy) + '\n')
-    out.write(unicode(self.logs) + '\n')
-    out.write(unicode(self.tools) + '\n')
+    out = io.StringIO()
+    out.write(six.text_type(self.basic) + '\n')
+    out.write(six.text_type(self.installation) + '\n')
+    out.write(six.text_type(self.config) + '\n')
+    if six.text_type(self.env_proxy):
+      out.write(six.text_type(self.env_proxy) + '\n')
+    out.write(six.text_type(self.logs) + '\n')
+    out.write(six.text_type(self.tools) + '\n')
     return out.getvalue()
 
 
@@ -151,12 +171,14 @@ class BasicInfo(object):
         sys.executable and encoding.Decode(sys.executable))
     self.python_version = sys.version
     self.site_packages = 'site' in sys.modules
+    self.locale = self._GetDefaultLocale()
 
   def __str__(self):
-    return textwrap.dedent(u"""\
+    return textwrap.dedent("""\
         Google Cloud SDK [{version}]
 
         Platform: [{os}, {arch}] {uname}
+        Locale: {locale}
         Python Version: [{python_version}]
         Python Location: [{python_location}]
         Site Packages: [{site_packages}]
@@ -166,9 +188,28 @@ class BasicInfo(object):
                 if self.operating_system else 'unknown'),
             arch=self.architecture.name if self.architecture else 'unknown',
             uname=system_platform.uname(),
+            locale=self.locale,
             python_location=self.python_location,
             python_version=self.python_version.replace('\n', ' '),
             site_packages='Enabled' if self.site_packages else 'Disabled'))
+
+  def _GetDefaultLocale(self):
+    """Determines the locale from the program's environment.
+
+    Returns:
+      String: Default locale, with a fallback to locale environment variables.
+    """
+    env_vars = [
+        '%s:%s' % (var, os.environ.get(var))
+        for var in ['LC_ALL', 'LC_CTYPE', 'LANG', 'LANGUAGE']
+        if os.environ.get(var)
+    ]
+    fallback_locale = '; '.join(env_vars)
+
+    try:
+      return locale.getdefaultlocale()
+    except ValueError:
+      return fallback_locale
 
 
 class InstallationInfo(object):
@@ -178,10 +219,12 @@ class InstallationInfo(object):
     anonymizer = anonymizer or NoopAnonymizer()
     self.sdk_root = anonymizer.ProcessPath(config.Paths().sdk_root)
     self.release_channel = config.INSTALLATION_CONFIG.release_channel
-    self.repo_url = config.INSTALLATION_CONFIG.snapshot_url
+    self.repo_url = anonymizer.ProcessURL(
+        config.INSTALLATION_CONFIG.snapshot_url)
     repos = properties.VALUES.component_manager.additional_repositories.Get(
         validate=False)
-    self.additional_repos = repos.split(',') if repos else []
+    self.additional_repos = (
+        map(anonymizer.ProcessURL, repos.split(',')) if repos else [])
     # Keep it as array for structured output.
     path = encoding.GetEncodedValue(os.environ, 'PATH', '').split(os.pathsep)
     self.python_path = [anonymizer.ProcessPath(encoding.Decode(path_elem))
@@ -214,33 +257,33 @@ class InstallationInfo(object):
       self.kubectl = anonymizer.ProcessPath(self.kubectl[0])
 
   def __str__(self):
-    out = StringIO.StringIO()
-    out.write(u'Installation Root: [{0}]\n'.format(
+    out = io.StringIO()
+    out.write('Installation Root: [{0}]\n'.format(
         self.sdk_root if self.sdk_root else 'N/A'))
     if config.INSTALLATION_CONFIG.IsAlternateReleaseChannel():
-      out.write(u'Release Channel: [{0}]\n'.format(self.release_channel))
-      out.write(u'Repository URL: [{0}]\n'.format(self.repo_url))
+      out.write('Release Channel: [{0}]\n'.format(self.release_channel))
+      out.write('Repository URL: [{0}]\n'.format(self.repo_url))
     if self.additional_repos:
-      out.write(u'Additional Repositories:\n  {0}\n'.format(
+      out.write('Additional Repositories:\n  {0}\n'.format(
           '\n  '.join(self.additional_repos)))
 
     if self.components:
-      components = [u'{0}: [{1}]'.format(name, value) for name, value in
-                    self.components.iteritems()]
-      out.write(u'Installed Components:\n  {0}\n'.format(
-          u'\n  '.join(components)))
+      components = ['{0}: [{1}]'.format(name, value) for name, value in
+                    six.iteritems(self.components)]
+      out.write('Installed Components:\n  {0}\n'.format(
+          '\n  '.join(components)))
 
-    out.write(u'System PATH: [{0}]\n'.format(os.pathsep.join(self.path)))
-    out.write(u'Python PATH: [{0}]\n'.format(os.pathsep.join(self.python_path)))
-    out.write(u'Cloud SDK on PATH: [{0}]\n'.format(self.on_path))
-    out.write(u'Kubectl on PATH: [{0}]\n'.format(self.kubectl or False))
+    out.write('System PATH: [{0}]\n'.format(os.pathsep.join(self.path)))
+    out.write('Python PATH: [{0}]\n'.format(os.pathsep.join(self.python_path)))
+    out.write('Cloud SDK on PATH: [{0}]\n'.format(self.on_path))
+    out.write('Kubectl on PATH: [{0}]\n'.format(self.kubectl or False))
 
     if self.old_tool_paths:
-      out.write(u'\nWARNING: There are old versions of the Google Cloud '
-                u'Platform tools on your system PATH.\n  {0}\n'
+      out.write('\nWARNING: There are old versions of the Google Cloud '
+                'Platform tools on your system PATH.\n  {0}\n'
                 .format('\n  '.join(self.old_tool_paths)))
     if self.duplicate_tool_paths:
-      out.write(u'There are alternate versions of the following Google Cloud '
+      out.write('There are alternate versions of the following Google Cloud '
                 'Platform tools on your system PATH.\n  {0}\n'
                 .format('\n  '.join(self.duplicate_tool_paths)))
     return out.getvalue()
@@ -280,24 +323,24 @@ class ConfigInfo(object):
           self.properties['proxy']['password'])
 
   def __str__(self):
-    out = StringIO.StringIO()
-    out.write(u'Installation Properties: [{0}]\n'
+    out = io.StringIO()
+    out.write('Installation Properties: [{0}]\n'
               .format(self.paths['installation_properties_path']))
-    out.write(u'User Config Directory: [{0}]\n'
+    out.write('User Config Directory: [{0}]\n'
               .format(self.paths['global_config_dir']))
-    out.write(u'Active Configuration Name: [{0}]\n'
+    out.write('Active Configuration Name: [{0}]\n'
               .format(self.active_config_name))
-    out.write(u'Active Configuration Path: [{0}]\n\n'
+    out.write('Active Configuration Path: [{0}]\n\n'
               .format(self.paths['active_config_path']))
 
-    out.write(u'Account: [{0}]\n'.format(self.account))
-    out.write(u'Project: [{0}]\n\n'.format(self.project))
+    out.write('Account: [{0}]\n'.format(self.account))
+    out.write('Project: [{0}]\n\n'.format(self.project))
 
-    out.write(u'Current Properties:\n')
-    for section, props in self.properties.iteritems():
-      out.write(u'  [{section}]\n'.format(section=section))
-      for name, value in props.iteritems():
-        out.write(u'    {name}: [{value}]\n'.format(
+    out.write('Current Properties:\n')
+    for section, props in six.iteritems(self.properties):
+      out.write('  [{section}]\n'.format(section=section))
+      for name, value in six.iteritems(props):
+        out.write('    {name}: [{value}]\n'.format(
             name=name, value=value))
 
     return out.getvalue()
@@ -332,18 +375,21 @@ class ProxyInfoFromEnvironmentVars(object):
                 self.password]):
       return ''
 
-    out = StringIO.StringIO()
+    out = io.StringIO()
     out.write('Environmental Proxy Settings:\n')
     if self.type:
-      out.write(u'  type: [{0}]\n'.format(self.type))
+      out.write('  type: [{0}]\n'.format(self.type))
     if self.address:
-      out.write(u'  address: [{0}]\n'.format(self.address))
+      out.write('  address: [{0}]\n'.format(self.address))
     if self.port:
-      out.write(u'  port: [{0}]\n'.format(self.port))
+      out.write('  port: [{0}]\n'.format(self.port))
+    # In Python 3, httplib2 encodes the proxy username and password when
+    # initializing ProxyInfo, so we want to ensure they're decoded here before
+    # displaying them.
     if self.username:
-      out.write(u'  username: [{0}]\n'.format(self.username))
+      out.write('  username: [{0}]\n'.format(encoding.Decode(self.username)))
     if self.password:
-      out.write(u'  password: [{0}]\n'.format(self.password))
+      out.write('  password: [{0}]\n'.format(encoding.Decode(self.password)))
     return out.getvalue()
 
 
@@ -427,8 +473,8 @@ class LogData(object):
 
   def __str__(self):
     crash_detected = ' (crash detected)' if self.traceback else ''
-    return u'[{0}]: [{1}]{2}'.format(self.relative_path, self.command,
-                                     crash_detected)
+    return '[{0}]: [{1}]{2}'.format(
+        self.relative_path, self.command, crash_detected)
 
   @property
   def relative_path(self):
@@ -477,21 +523,20 @@ class LogData(object):
     Returns:
       LogData, representation of the log file
     """
-    with open(log_file) as log_fp:
-      contents = log_fp.read()
-      traceback = None
-      command = None
-      match = re.search(cls.COMMAND_REGEXP, contents)
-      if match:
-        # ex. gcloud.group.subgroup.command
-        dotted_cmd_string, = match.groups()
-        command = ' '.join(dotted_cmd_string.split('.'))
-      if cls.TRACEBACK_MARKER in contents:
-        traceback = (contents.split(cls.TRACEBACK_MARKER)[-1])
-        # Trim any log lines that follow the traceback
-        traceback = re.split(log.LOG_PREFIX_PATTERN, traceback)[0]
-        traceback = traceback.strip()
-      return cls(log_file, command, contents, traceback)
+    contents = file_utils.ReadFileContents(log_file)
+    traceback = None
+    command = None
+    match = re.search(cls.COMMAND_REGEXP, contents)
+    if match:
+      # ex. gcloud.group.subgroup.command
+      dotted_cmd_string, = match.groups()
+      command = ' '.join(dotted_cmd_string.split('.'))
+    if cls.TRACEBACK_MARKER in contents:
+      traceback = (contents.split(cls.TRACEBACK_MARKER)[-1])
+      # Trim any log lines that follow the traceback
+      traceback = re.split(log.LOG_PREFIX_PATTERN, traceback)[0]
+      traceback = traceback.strip()
+    return cls(log_file, command, contents, traceback)
 
 
 class LogsInfo(object):
@@ -510,7 +555,7 @@ class LogsInfo(object):
     self.logs_dir = anonymizer.ProcessPath(logs_dir)
 
   def __str__(self):
-    return textwrap.dedent(u"""\
+    return textwrap.dedent("""\
         Logs Directory: [{logs_dir}]
         Last Log File: [{log_file}]
         """.format(logs_dir=self.logs_dir, log_file=self.last_log))
@@ -519,8 +564,7 @@ class LogsInfo(object):
     last_log = LastLogFile(config.Paths().logs_dir)
     if not self.last_log:
       return ''
-    with open(last_log) as fp:
-      return fp.read()
+    return file_utils.ReadFileContents(last_log)
 
   def GetRecentRuns(self):
     """Return the most recent runs, as reported by info_holder.LogsInfo.
@@ -548,20 +592,21 @@ class ToolsInfo(object):
     return self._GetVersion(['ssh', '-V'])
 
   def _GetVersion(self, cmd):
+    """Return tools version."""
     try:
       proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                               stderr=subprocess.STDOUT)
     except OSError:
       return 'NOT AVAILABLE'
     stdoutdata, _ = proc.communicate()
-    data = filter(None, stdoutdata.split('\n'))
+    data = [f for f in stdoutdata.split(b'\n') if f]
     if len(data) != 1:
       return 'NOT AVAILABLE'
     else:
       return data[0]
 
   def __str__(self):
-    return textwrap.dedent(u"""\
+    return textwrap.dedent("""\
         git: [{git}]
         ssh: [{ssh}]
         """.format(git=self.git_version, ssh=self.ssh_version))

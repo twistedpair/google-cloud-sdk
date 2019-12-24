@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +18,10 @@ Sets docker up to authenticate with the Google Container Registry using the
 active gcloud credential.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import base64
 import json
 import os
@@ -29,9 +34,10 @@ from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.docker import client_lib
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.util import files
+import six
 
 
-_USERNAME = 'oauth2accesstoken'
+_USERNAME = 'gclouddockertoken'
 _EMAIL = 'not@val.id'
 _CREDENTIAL_STORE_KEY = 'credsStore'
 
@@ -210,15 +216,16 @@ def UpdateDockerCredentials(server, refresh=True):
       DockerLogin(server, _USERNAME, cred.access_token)
     except client_lib.DockerError as e:
       # Only catch docker-not-found error
-      if str(e) != client_lib.DOCKER_NOT_FOUND_ERROR:
+      if six.text_type(e) != client_lib.DOCKER_NOT_FOUND_ERROR:
         raise
 
       # Fall back to the previous manual .dockercfg manipulation
       # in order to support gcloud app's docker-binaryless use case.
       _UpdateDockerConfig(server, _USERNAME, cred.access_token)
-      log.warn("'docker' was not discovered on the path. Credentials have been "
-               'stored, but are not guaranteed to work with the Docker client '
-               ' if an external credential store is configured.')
+      log.warning(
+          "'docker' was not discovered on the path. Credentials have been "
+          'stored, but are not guaranteed to work with the Docker client '
+          ' if an external credential store is configured.')
   else:
     _UpdateDockerConfig(server, _USERNAME, cred.access_token)
 
@@ -235,7 +242,8 @@ def _UpdateDockerConfig(server, username, access_token):
     dockercfg_contents = {}
 
   # Add the entry for our server.
-  auth = base64.b64encode(username + ':' + access_token)
+  auth = username + ':' + access_token
+  auth = base64.b64encode(auth.encode('ascii')).decode('ascii')
 
   # Sanitize and normalize the server input.
   parsed_url = client_lib.GetNormalizedURL(server)

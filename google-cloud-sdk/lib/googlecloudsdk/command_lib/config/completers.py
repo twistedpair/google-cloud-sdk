@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,9 @@
 
 """Argcomplete completers for various config related things."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.core import module_util
@@ -48,7 +52,7 @@ def PropertiesCompleter(prefix, **unused_kwargs):
 
 def NamedConfigCompleter(prefix, **unused_kwargs):
   """An argcomplete completer for existing named configuration names."""
-  configs = named_configs.ConfigurationStore.AllConfigs().keys()
+  configs = list(named_configs.ConfigurationStore.AllConfigs().keys())
   return [c for c in configs if c.startswith(prefix)]
 
 

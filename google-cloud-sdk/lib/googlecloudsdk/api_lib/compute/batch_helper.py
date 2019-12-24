@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,16 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """"Helpers for making batch requests."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import json
 
 from apitools.base.py import batch
 from apitools.base.py import exceptions
 
-from googlecloudsdk.api_lib.service_management import enable_api
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.console import console_io
 
 # Upper bound on batch size
 # https://cloud.google.com/compute/docs/api/how-tos/batch
@@ -54,24 +57,20 @@ class BatchChecker(object):
       http_response: Deserialized http_wrapper.Response object.
       exception: apiclient.errors.HttpError object if an error occurred.
     """
+    # If there is no exception, then there is not an api enablement error.
+    # Also, if prompting to enable is disabled, then we let the batch module
+    # fail the batch request.
     if (exception is None
-        or not properties.VALUES.core.should_prompt_to_enable_api.Get()):
+        or not properties.VALUES.core.should_prompt_to_enable_api.GetBool()):
       return
-    parsed_error = api_exceptions.HttpException(exception)
-    project, service_token = apis.GetApiEnablementInfo(parsed_error)
-    if (project is None or not apis.ShouldAttemptProjectEnable(project)
-        or service_token is None):
+    enablement_info = apis.GetApiEnablementInfo(exception)
+    if not enablement_info:  # Exception was not an api enablement error.
       return
-    if service_token not in self.prompted_service_tokens:
+    project, service_token, exception = enablement_info
+    if service_token not in self.prompted_service_tokens:  # Only prompt once.
       self.prompted_service_tokens.add(service_token)
-      if console_io.PromptContinue(
-          prompt_string=('API [{}] not enabled on project [{}]. '
-                         'Would you like to enable and retry? ')
-          .format(service_token, project)):
-        enable_api.EnableServiceIfDisabled(project, service_token)
-        # In the case of a batch request, as long as the error's retryable code
-        # (in this case 403) was set, after this runs it should retry. This
-        # error code should be consistent with apis.GetApiEnablementInfo
+      apis.PromptToEnableApi(project, service_token, exception,
+                             is_batch_request=True)
 
 
 def MakeRequests(requests, http, batch_url=None):
@@ -87,7 +86,13 @@ def MakeRequests(requests, http, batch_url=None):
     A tuple where the first element is a list of all objects returned
     from the calls and the second is a list of error messages.
   """
-  retryable_codes = [apis.API_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE]
+  retryable_codes = []
+  if properties.VALUES.core.should_prompt_to_enable_api.GetBool():
+    # If the compute API is not enabled, then a 403 error is returned. We let
+    # the batch module handle retrying requests by adding 403 to the list of
+    # retryable codes for the batch request. If we should not prompt, then
+    # we keep retryable_codes empty, so the request fails.
+    retryable_codes.append(apis.API_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE)
   batch_request = batch.BatchApiRequest(batch_url=batch_url,
                                         retryable_codes=retryable_codes)
   for service, method, request in requests:

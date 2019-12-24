@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
-from __future__ import print_function
+from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.sql import export_util
 from googlecloudsdk.api_lib.sql import operations
@@ -26,19 +27,31 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
-def AddBaseExportFlags(parser):
+def AddBaseExportFlags(
+    parser,
+    gz_supported=True,
+    database_required=False,
+    database_help_text=flags.DEFAULT_DATABASE_LIST_EXPORT_HELP_TEXT):
+  """Adds the base export flags to the parser.
+
+  Args:
+    parser: The current argparse parser to add these flags to.
+    gz_supported: Boolean, specifies whether gz compression is supported.
+    database_required: Boolean, specifies whether the database flag is required.
+    database_help_text: String, specifies the help text for the database flag.
+  """
   base.ASYNC_FLAG.AddToParser(parser)
   flags.AddInstanceArgument(parser)
-  flags.AddUriArgument(
-      parser,
-      'The path to the file in Google Cloud Storage where the export '
-      'will be stored. The URI is in the form gs://bucketName/fileName. '
-      'If the file already exists, the operation fails. If the filename '
-      'ends with .gz, the contents are compressed.')
-  flags.AddDatabaseList(
-      parser,
-      'Database (for example, guestbook) from which the export is '
-      'made. If unspecified, all databases are exported.')
+
+  uri_help_text = ('The path to the file in Google Cloud Storage where the '
+                   'export will be stored. The URI is in the form '
+                   'gs://bucketName/fileName. If the file already exists, the '
+                   'operation fails.')
+  if gz_supported:
+    uri_help_text = uri_help_text + (' If the filename ends with .gz, the '
+                                     'contents are compressed.')
+  flags.AddUriArgument(parser, uri_help_text)
+  flags.AddDatabaseList(parser, database_help_text, database_required)
 
 
 def RunExportCommand(args, client, export_context):
@@ -47,7 +60,7 @@ def RunExportCommand(args, client, export_context):
   Args:
     args: argparse.Namespace, The arguments that this command was invoked with.
     client: SqlClient instance, with sql_client and sql_messages props, for use
-        in generating messages and making API calls.
+      in generating messages and making API calls.
     export_context: ExportContext; format-specific export metadata.
 
   Returns:
@@ -82,13 +95,13 @@ def RunExportCommand(args, client, export_context):
       operation=result_operation.name,
       project=instance_ref.project)
 
-  if args.async:
+  if args.async_:
     return sql_client.operations.Get(
         sql_messages.SqlOperationsGetRequest(
             project=operation_ref.project, operation=operation_ref.operation))
 
-  operations.OperationsV1Beta4.WaitForOperation(
-      sql_client, operation_ref, 'Exporting Cloud SQL instance')
+  operations.OperationsV1Beta4.WaitForOperation(sql_client, operation_ref,
+                                                'Exporting Cloud SQL instance')
 
   log.status.write('Exported [{instance}] to [{bucket}].\n'.format(
       instance=instance_ref, bucket=args.uri))
@@ -100,17 +113,17 @@ def RunSqlExportCommand(args, client):
   """Exports data from a Cloud SQL instance to a MySQL dump file.
 
   Args:
-    args: argparse.Namespace, The arguments that this command was invoked
-        with.
+    args: argparse.Namespace, The arguments that this command was invoked with.
     client: SqlClient instance, with sql_client and sql_messages props, for use
-        in generating messages and making API calls.
+      in generating messages and making API calls.
 
   Returns:
     A dict object representing the operations resource describing the export
     operation if the export was successful.
   """
-  sql_export_context = export_util.SqlExportContext(
-      client.sql_messages, args.uri, args.database, args.table)
+  sql_export_context = export_util.SqlExportContext(client.sql_messages,
+                                                    args.uri, args.database,
+                                                    args.table)
   return RunExportCommand(args, client, sql_export_context)
 
 
@@ -118,15 +131,32 @@ def RunCsvExportCommand(args, client):
   """Exports data from a Cloud SQL instance to a CSV file.
 
   Args:
-    args: argparse.Namespace, The arguments that this command was invoked
-        with.
+    args: argparse.Namespace, The arguments that this command was invoked with.
     client: SqlClient instance, with sql_client and sql_messages props, for use
-        in generating messages and making API calls.
+      in generating messages and making API calls.
 
   Returns:
     A dict object representing the operations resource describing the export
     operation if the export was successful.
   """
-  csv_export_context = export_util.CsvExportContext(
-      client.sql_messages, args.uri, args.database, args.query)
+  csv_export_context = export_util.CsvExportContext(client.sql_messages,
+                                                    args.uri, args.database,
+                                                    args.query)
   return RunExportCommand(args, client, csv_export_context)
+
+
+def RunBakExportCommand(args, client):
+  """Export data from a Cloud SQL instance to a SQL Server BAK file.
+
+  Args:
+    args: argparse.Namespace, The arguments that this command was invoked with.
+    client: SqlClient instance, with sql_client and sql_messages props, for use
+      in generating messages and making API calls.
+
+  Returns:
+    A dict object representing the operations resource describing the export
+    operation if the export was successful.
+  """
+  sql_export_context = export_util.BakExportContext(client.sql_messages,
+                                                    args.uri, args.database)
+  return RunExportCommand(args, client, sql_export_context)

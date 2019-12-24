@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 
 """Flags and helpers for the compute backend-buckets commands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import actions as calliope_actions
 from googlecloudsdk.calliope import arg_parsers
@@ -35,9 +40,12 @@ _SOURCE_SNAPSHOT_DETAILED_HELP = """\
 """
 _REPLACEMENT_DISK_DETAILED_HELP = """\
        Specifies a Compute Engine image as a replacement for the image
-       being phased out. Users of the deprecated image will be advised to switch
-       to this replacement. For example, *--replacement example-image* or
-       *--replacement projects/google/global/images/example-image*.
+       being phased out. Users of the deprecated image will be
+       advised to switch to this replacement. For example, *--replacement
+       example-image* or *--replacement
+       projects/google/global/images/example-image*.
+
+       This flag value is purely informational and is not validated in any way.
        """
 
 _SOURCE_DISK_ZONE_EXPLANATION = compute_flags.ZONE_PROPERTY_EXPLANATION
@@ -128,11 +136,12 @@ SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     required=False)
 
 SOURCE_IMAGE_ARG = compute_flags.ResourceArgument(
-    resource_name='imported image',
+    resource_name='source image',
     name='--source-image',
     completer=ImagesCompleter,
     global_collection='compute.images',
-    required=True)
+    short_help='An existing Compute Engine image from which to import.',
+    required=False)
 
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='snapshot',
@@ -143,13 +152,6 @@ SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     short_help='A source snapshot used to create an image.',
     detailed_help=_SOURCE_SNAPSHOT_DETAILED_HELP,
 )
-
-DESTINATION_IMAGE_ARG = compute_flags.ResourceArgument(
-    resource_name='translated image',
-    name='--destination-image',
-    completer=ImagesCompleter,
-    global_collection='compute.images',
-    required=True)
 
 
 def AddCommonArgs(parser):

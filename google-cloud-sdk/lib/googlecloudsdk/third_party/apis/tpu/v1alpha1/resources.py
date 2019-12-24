@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +28,8 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId']
+      [u'projectsId'],
+      True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
@@ -36,7 +38,19 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ACCELERATORTYPES = (
+      'projects.locations.acceleratorTypes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'acceleratorTypes/{acceleratorTypesId}',
+      },
+      [u'name'],
+      True
   )
   PROJECTS_LOCATIONS_NODES = (
       'projects.locations.nodes',
@@ -45,7 +59,8 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
@@ -55,11 +70,25 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_TENSORFLOWVERSIONS = (
+      'projects.locations.tensorflowVersions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'tensorflowVersions/{tensorflowVersionsId}',
+      },
+      [u'name'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

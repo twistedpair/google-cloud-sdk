@@ -13,10 +13,10 @@ package = 'clouderrorreporting'
 
 
 class ClouderrorreportingProjectsDeleteEventsRequest(_messages.Message):
-  """A ClouderrorreportingProjectsDeleteEventsRequest object.
+  r"""A ClouderrorreportingProjectsDeleteEventsRequest object.
 
   Fields:
-    projectName: [Required] The resource name of the Google Cloud Platform
+    projectName: Required. The resource name of the Google Cloud Platform
       project. Written as `projects/` plus the [Google Cloud Platform project
       ID](https://support.google.com/cloud/answer/6158840). Example: `projects
       /my-project-123`.
@@ -26,34 +26,34 @@ class ClouderrorreportingProjectsDeleteEventsRequest(_messages.Message):
 
 
 class ClouderrorreportingProjectsEventsListRequest(_messages.Message):
-  """A ClouderrorreportingProjectsEventsListRequest object.
+  r"""A ClouderrorreportingProjectsEventsListRequest object.
 
   Enums:
     TimeRangePeriodValueValuesEnum: Restricts the query to the specified time
       range.
 
   Fields:
-    groupId: [Required] The group for which events shall be returned.
-    pageSize: [Optional] The maximum number of results to return per response.
-    pageToken: [Optional] A `next_page_token` provided by a previous response.
-    projectName: [Required] The resource name of the Google Cloud Platform
+    groupId: Required. The group for which events shall be returned.
+    pageSize: Optional. The maximum number of results to return per response.
+    pageToken: Optional. A `next_page_token` provided by a previous response.
+    projectName: Required. The resource name of the Google Cloud Platform
       project. Written as `projects/` plus the [Google Cloud Platform project
       ID](https://support.google.com/cloud/answer/6158840). Example: `projects
       /my-project-123`.
-    serviceFilter_resourceType: [Optional] The exact value to match against
+    serviceFilter_resourceType: Optional. The exact value to match against
       [`ServiceContext.resource_type`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.resource_type).
-    serviceFilter_service: [Optional] The exact value to match against
+    serviceFilter_service: Optional. The exact value to match against
       [`ServiceContext.service`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.service).
-    serviceFilter_version: [Optional] The exact value to match against
+    serviceFilter_version: Optional. The exact value to match against
       [`ServiceContext.version`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.version).
     timeRange_period: Restricts the query to the specified time range.
   """
 
   class TimeRangePeriodValueValuesEnum(_messages.Enum):
-    """Restricts the query to the specified time range.
+    r"""Restricts the query to the specified time range.
 
     Values:
       PERIOD_UNSPECIFIED: <no description>
@@ -81,10 +81,10 @@ class ClouderrorreportingProjectsEventsListRequest(_messages.Message):
 
 
 class ClouderrorreportingProjectsEventsReportRequest(_messages.Message):
-  """A ClouderrorreportingProjectsEventsReportRequest object.
+  r"""A ClouderrorreportingProjectsEventsReportRequest object.
 
   Fields:
-    projectName: [Required] The resource name of the Google Cloud Platform
+    projectName: Required. The resource name of the Google Cloud Platform
       project. Written as `projects/` plus the [Google Cloud Platform project
       ID](https://support.google.com/cloud/answer/6158840). Example: `projects
       /my-project-123`.
@@ -97,49 +97,49 @@ class ClouderrorreportingProjectsEventsReportRequest(_messages.Message):
 
 
 class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
-  """A ClouderrorreportingProjectsGroupStatsListRequest object.
+  r"""A ClouderrorreportingProjectsGroupStatsListRequest object.
 
   Enums:
-    AlignmentValueValuesEnum: [Optional] The alignment of the timed counts to
+    AlignmentValueValuesEnum: Optional. The alignment of the timed counts to
       be returned. Default is `ALIGNMENT_EQUAL_AT_END`.
-    OrderValueValuesEnum: [Optional] The sort order in which the results are
+    OrderValueValuesEnum: Optional. The sort order in which the results are
       returned. Default is `COUNT_DESC`.
     TimeRangePeriodValueValuesEnum: Restricts the query to the specified time
       range.
 
   Fields:
-    alignment: [Optional] The alignment of the timed counts to be returned.
+    alignment: Optional. The alignment of the timed counts to be returned.
       Default is `ALIGNMENT_EQUAL_AT_END`.
-    alignmentTime: [Optional] Time where the timed counts shall be aligned if
+    alignmentTime: Optional. Time where the timed counts shall be aligned if
       rounded alignment is chosen. Default is 00:00 UTC.
-    groupId: [Optional] List all <code>ErrorGroupStats</code> with these IDs.
-    order: [Optional] The sort order in which the results are returned.
-      Default is `COUNT_DESC`.
-    pageSize: [Optional] The maximum number of results to return per response.
+    groupId: Optional. List all <code>ErrorGroupStats</code> with these IDs.
+    order: Optional. The sort order in which the results are returned. Default
+      is `COUNT_DESC`.
+    pageSize: Optional. The maximum number of results to return per response.
       Default is 20.
-    pageToken: [Optional] A `next_page_token` provided by a previous response.
+    pageToken: Optional. A `next_page_token` provided by a previous response.
       To view additional results, pass this token along with the identical
       query parameters as the first request.
-    projectName: [Required] The resource name of the Google Cloud Platform
+    projectName: Required. The resource name of the Google Cloud Platform
       project. Written as <code>projects/</code> plus the <a
       href="https://support.google.com/cloud/answer/6158840">Google Cloud
       Platform project ID</a>.  Example: <code>projects/my-project-123</code>.
-    serviceFilter_resourceType: [Optional] The exact value to match against
+    serviceFilter_resourceType: Optional. The exact value to match against
       [`ServiceContext.resource_type`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.resource_type).
-    serviceFilter_service: [Optional] The exact value to match against
+    serviceFilter_service: Optional. The exact value to match against
       [`ServiceContext.service`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.service).
-    serviceFilter_version: [Optional] The exact value to match against
+    serviceFilter_version: Optional. The exact value to match against
       [`ServiceContext.version`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.version).
     timeRange_period: Restricts the query to the specified time range.
-    timedCountDuration: [Optional] The preferred duration for a single
-      returned `TimedCount`. If not set, no timed counts are returned.
+    timedCountDuration: Optional. The preferred duration for a single returned
+      `TimedCount`. If not set, no timed counts are returned.
   """
 
   class AlignmentValueValuesEnum(_messages.Enum):
-    """[Optional] The alignment of the timed counts to be returned. Default is
+    r"""Optional. The alignment of the timed counts to be returned. Default is
     `ALIGNMENT_EQUAL_AT_END`.
 
     Values:
@@ -152,7 +152,7 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
     ALIGNMENT_EQUAL_AT_END = 2
 
   class OrderValueValuesEnum(_messages.Enum):
-    """[Optional] The sort order in which the results are returned. Default is
+    r"""Optional. The sort order in which the results are returned. Default is
     `COUNT_DESC`.
 
     Values:
@@ -169,7 +169,7 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
     AFFECTED_USERS_DESC = 4
 
   class TimeRangePeriodValueValuesEnum(_messages.Enum):
-    """Restricts the query to the specified time range.
+    r"""Restricts the query to the specified time range.
 
     Values:
       PERIOD_UNSPECIFIED: <no description>
@@ -201,10 +201,10 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
 
 
 class ClouderrorreportingProjectsGroupsGetRequest(_messages.Message):
-  """A ClouderrorreportingProjectsGroupsGetRequest object.
+  r"""A ClouderrorreportingProjectsGroupsGetRequest object.
 
   Fields:
-    groupName: [Required] The group resource name. Written as
+    groupName: Required. The group resource name. Written as
       <code>projects/<var>projectID</var>/groups/<var>group_name</var></code>.
       Call <a href="/error-
       reporting/reference/rest/v1beta1/projects.groupStats/list">
@@ -217,13 +217,13 @@ class ClouderrorreportingProjectsGroupsGetRequest(_messages.Message):
 
 
 class DeleteEventsResponse(_messages.Message):
-  """Response message for deleting error events."""
+  r"""Response message for deleting error events."""
 
 
 class ErrorContext(_messages.Message):
-  """A description of the context in which an error occurred. This data should
-  be provided by the application when reporting an error, unless the error
-  report has been generated automatically from Google App Engine logs.
+  r"""A description of the context in which an error occurred. This data
+  should be provided by the application when reporting an error, unless the
+  error report has been generated automatically from Google App Engine logs.
 
   Fields:
     httpRequest: The HTTP request which was processed when the error was
@@ -249,7 +249,7 @@ class ErrorContext(_messages.Message):
 
 
 class ErrorEvent(_messages.Message):
-  """An error event which is returned by the Error Reporting system.
+  r"""An error event which is returned by the Error Reporting system.
 
   Fields:
     context: Data about the context in which the error occurred.
@@ -267,7 +267,7 @@ class ErrorEvent(_messages.Message):
 
 
 class ErrorGroup(_messages.Message):
-  """Description of a group of similar error events.
+  r"""Description of a group of similar error events.
 
   Fields:
     groupId: Group IDs are unique for a given project. If the same kind of
@@ -284,7 +284,7 @@ class ErrorGroup(_messages.Message):
 
 
 class ErrorGroupStats(_messages.Message):
-  """Data extracted for a specific group based on certain filter criteria,
+  r"""Data extracted for a specific group based on certain filter criteria,
   such as a given time period and/or service filter.
 
   Fields:
@@ -334,7 +334,7 @@ class ErrorGroupStats(_messages.Message):
 
 
 class HttpRequestContext(_messages.Message):
-  """HTTP request data that is related to a reported error. This data should
+  r"""HTTP request data that is related to a reported error. This data should
   be provided by the application when reporting an error, unless the error
   report has been generated automatically from Google App Engine logs.
 
@@ -358,7 +358,7 @@ class HttpRequestContext(_messages.Message):
 
 
 class ListEventsResponse(_messages.Message):
-  """Contains a set of requested error events.
+  r"""Contains a set of requested error events.
 
   Fields:
     errorEvents: The error events which match the given request.
@@ -375,7 +375,7 @@ class ListEventsResponse(_messages.Message):
 
 
 class ListGroupStatsResponse(_messages.Message):
-  """Contains a set of requested error group stats.
+  r"""Contains a set of requested error group stats.
 
   Fields:
     errorGroupStats: The error group stats which match the given request.
@@ -394,22 +394,22 @@ class ListGroupStatsResponse(_messages.Message):
 
 
 class ReportErrorEventResponse(_messages.Message):
-  """Response for reporting an individual error event. Data may be added to
+  r"""Response for reporting an individual error event. Data may be added to
   this message in the future.
   """
 
 
 
 class ReportedErrorEvent(_messages.Message):
-  """An error event which is reported to the Error Reporting system.
+  r"""An error event which is reported to the Error Reporting system.
 
   Fields:
-    context: [Optional] A description of the context in which the error
+    context: Optional. A description of the context in which the error
       occurred.
-    eventTime: [Optional] Time when the event occurred. If not provided, the
+    eventTime: Optional. Time when the event occurred. If not provided, the
       time when the event was received by the Error Reporting system will be
       used.
-    message: [Required] The error message. If no `context.reportLocation` is
+    message: Required. The error message. If no `context.reportLocation` is
       provided, the message must contain a header (typically consisting of the
       exception type name and an error message) and an exception stack trace
       in one of the supported programming languages and formats. Supported
@@ -430,7 +430,7 @@ class ReportedErrorEvent(_messages.Message):
       [`(string)$exception`](http://php.net/manual/en/exception.tostring.php).
       * **Go**: Must be the return value of
       [`runtime.Stack()`](https://golang.org/pkg/runtime/debug/#Stack).
-    serviceContext: [Required] The service context in which this error has
+    serviceContext: Required. The service context in which this error has
       occurred.
   """
 
@@ -441,7 +441,7 @@ class ReportedErrorEvent(_messages.Message):
 
 
 class ServiceContext(_messages.Message):
-  """Describes a running service that sends errors. Its version changes over
+  r"""Describes a running service that sends errors. Its version changes over
   time and multiple versions can run in parallel.
 
   Fields:
@@ -467,7 +467,7 @@ class ServiceContext(_messages.Message):
 
 
 class SourceLocation(_messages.Message):
-  """Indicates a location in the source code of the service for which errors
+  r"""Indicates a location in the source code of the service for which errors
   are reported. `functionName` must be provided by the application when
   reporting an error, unless the error report contains a `message` with a
   supported exception stack trace. All fields are optional for the later case.
@@ -487,8 +487,8 @@ class SourceLocation(_messages.Message):
 
 
 class SourceReference(_messages.Message):
-  """A reference to a particular snapshot of the source tree used to build and
-  deploy an application.
+  r"""A reference to a particular snapshot of the source tree used to build
+  and deploy an application.
 
   Fields:
     repository: Optional. A URI string identifying the repository. Example:
@@ -502,7 +502,7 @@ class SourceReference(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -512,14 +512,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -531,7 +529,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -543,7 +541,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -555,21 +553,19 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class TimedCount(_messages.Message):
-  """The number of errors in a given time period. All numbers are approximate
+  r"""The number of errors in a given time period. All numbers are approximate
   since the error events are sampled before counting them.
 
   Fields:
@@ -584,7 +580,7 @@ class TimedCount(_messages.Message):
 
 
 class TrackingIssue(_messages.Message):
-  """Information related to tracking the progress on resolving the error.
+  r"""Information related to tracking the progress on resolving the error.
 
   Fields:
     url: A URL pointing to a related entry in an issue tracking system.

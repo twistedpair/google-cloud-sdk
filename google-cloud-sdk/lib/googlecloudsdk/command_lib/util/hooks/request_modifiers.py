@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +16,10 @@
 
 """Various functions to be used to modify a request before it is sent."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
@@ -24,3 +29,26 @@ def SetFieldFromArg(api_field, arg_name):
         req, api_field, arg_utils.GetFromNamespace(args, arg_name))
     return req
   return Process
+
+
+def SetFieldFromRelativeName(api_field):
+  def Process(ref, args, request):
+    del args  # Unused in Process
+    arg_utils.SetFieldInMessage(request, api_field, ref.RelativeName())
+    return request
+  return Process
+
+
+def SetFieldFromName(api_field):
+  def Process(ref, args, request):
+    del args  # Unused in Process
+    arg_utils.SetFieldInMessage(request, api_field, ref.Name())
+    return request
+  return Process
+
+
+def SetParentRequestHook(ref, args, request):
+  """Declarative request hook to add relative parent to issued requests."""
+  del args  # Unused
+  request.parent = ref.Parent().RelativeName()
+  return request

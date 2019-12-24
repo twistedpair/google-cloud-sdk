@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,9 +14,15 @@
 # limitations under the License.
 """Utility functions for create command."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 def ParseRegionDisksResources(resources, disks, replica_zones, project,
@@ -129,9 +136,10 @@ def _DeduceRegionInProject(resources, current_project, disk_resource,
       raise exceptions.InvalidArgumentException(
           '--zone',
           'Zone [{}] lives in different project than disk [{}].'.format(
-              str(zone.SelfLink()), str(disk_resource.SelfLink())))
+              six.text_type(zone.SelfLink()),
+              six.text_type(disk_resource.SelfLink())))
   # check if all zones live in the same region
-  for i in xrange(len(current_zones) - 1):
+  for i in range(len(current_zones) - 1):
     if (utils.ZoneNameToRegionName(current_zones[i].zone) !=
         utils.ZoneNameToRegionName(current_zones[i + 1].zone)):
       raise exceptions.InvalidArgumentException('--replica-zones', (

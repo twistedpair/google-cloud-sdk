@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://cloudbuild.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/container-builder/docs/'
+DOCS_URL = 'https://cloud.google.com/cloud-build/docs/'
 
 
 class Collections(enum.Enum):
@@ -30,29 +31,35 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS = (
       'projects',
       'projects/{projectId}',
       {},
-      [u'projectId']
+      [u'projectId'],
+      True
   )
   PROJECTS_BUILDS = (
       'projects.builds',
       'projects/{projectId}/builds/{id}',
       {},
-      [u'projectId', u'id']
+      [u'projectId', u'id'],
+      True
   )
   PROJECTS_TRIGGERS = (
       'projects.triggers',
       'projects/{projectId}/triggers/{triggerId}',
       {},
-      [u'projectId', u'triggerId']
+      [u'projectId', u'triggerId'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

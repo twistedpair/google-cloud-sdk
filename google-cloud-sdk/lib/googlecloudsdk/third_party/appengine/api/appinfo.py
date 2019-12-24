@@ -1,4 +1,4 @@
-# Copyright 2007 Google Inc. All Rights Reserved.
+# Copyright 2007 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ and load from configuration files.
 # Until we can delete this code, please check to see if your changes need
 # to be reflected in the java code. For questions, talk to clouser@ or
 
-
-
+from __future__ import absolute_import
 import logging
 import os
 import re
@@ -52,8 +51,13 @@ else:
   from googlecloudsdk.third_party.appengine.api import yaml_listener
   from googlecloudsdk.third_party.appengine.api import yaml_object
 
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.third_party.appengine.api import appinfo_errors
 from googlecloudsdk.third_party.appengine.api import backendinfo
+from googlecloudsdk.third_party.appengine._internal import six_subset
+
+import six
+
 
 # pylint: enable=g-import-not-at-top
 
@@ -156,14 +160,21 @@ _PENDING_LATENCY_REGEX = r'^(\d+((\.\d{1,3})?s|ms)|automatic)$'
 
 _IDLE_TIMEOUT_REGEX = r'^[\d]+(s|m)$'
 
+GCE_RESOURCE_PATH_REGEX = r'^[a-z\d-]+(/[a-z\d-]+)*$'
+
 GCE_RESOURCE_NAME_REGEX = r'^[a-z]([a-z\d-]{0,61}[a-z\d])?$'
+
+VPC_ACCESS_CONNECTOR_NAME_REGEX = r'^[a-z\d-]+(/[a-z\d-]+)*$'
 
 ALTERNATE_HOSTNAME_SEPARATOR = '-dot-'
 
 # Note(user): This must match api/app_config.py
 BUILTIN_NAME_PREFIX = 'ah-builtin'
 
-RUNTIME_RE_STRING = r'[a-z][a-z0-9\-]{0,29}'
+# Here we expect either normal runtimes (such as 'nodejs' or 'java') or
+# pinned runtime builders, which take the form of the path to a cloudbuild.yaml
+# manifest file in GCS (written as gs://bucket/path/to/build.yaml).
+RUNTIME_RE_STRING = r'((gs://[a-z0-9\-\._/]+)|([a-z][a-z0-9\-\.]{0,29}))'
 
 API_VERSION_RE_STRING = r'[\w.]{1,32}'
 ENV_RE_STRING = r'(1|2|standard|flex|flexible)'
@@ -234,6 +245,7 @@ MANUAL_SCALING = 'manual_scaling'
 BASIC_SCALING = 'basic_scaling'
 VM = 'vm'
 VM_SETTINGS = 'vm_settings'
+ZONES = 'zones'
 BETA_SETTINGS = 'beta_settings'
 VM_HEALTH_CHECK = 'vm_health_check'
 HEALTH_CHECK = 'health_check'
@@ -241,11 +253,14 @@ RESOURCES = 'resources'
 LIVENESS_CHECK = 'liveness_check'
 READINESS_CHECK = 'readiness_check'
 NETWORK = 'network'
+VPC_ACCESS_CONNECTOR = 'vpc_access_connector'
 VERSION = 'version'
 MAJOR_VERSION = 'major_version'
 MINOR_VERSION = 'minor_version'
 RUNTIME = 'runtime'
+RUNTIME_CHANNEL = 'runtime_channel'
 API_VERSION = 'api_version'
+MAIN = 'main'
 ENDPOINTS_API_SERVICE = 'endpoints_api_service'
 ENV = 'env'
 ENTRYPOINT = 'entrypoint'
@@ -290,7 +305,6 @@ MAXIMUM_CONCURRENT_REQUEST = 'max_concurrent_requests'
 # Attributes for Managed VMs (only) AutomaticScaling. These are very
 # different than Standard App Engine because scaling settings are
 # mapped to Cloud Autoscaler (as opposed to the clone scheduler). See
-# AutoscalingConfig in
 MIN_NUM_INSTANCES = 'min_num_instances'
 MAX_NUM_INSTANCES = 'max_num_instances'
 COOL_DOWN_PERIOD_SEC = 'cool_down_period_sec'
@@ -311,6 +325,14 @@ TARGET_DISK_READ_BYTES_PER_SEC = 'target_disk_read_bytes_per_sec'
 TARGET_DISK_READ_OPS_PER_SEC = 'target_disk_read_ops_per_sec'
 TARGET_REQUEST_COUNT_PER_SEC = 'target_request_count_per_sec'
 TARGET_CONCURRENT_REQUESTS = 'target_concurrent_requests'
+# Custom Metric autoscaling. These are supported for Flex only.
+CUSTOM_METRICS = 'custom_metrics'
+METRIC_NAME = 'metric_name'
+TARGET_TYPE = 'target_type'
+TARGET_TYPE_REGEX = r'^(GAUGE|DELTA_PER_SECOND|DELTA_PER_MINUTE)$'
+CUSTOM_METRIC_UTILIZATION = 'target_utilization'
+SINGLE_INSTANCE_ASSIGNMENT = 'single_instance_assignment'
+FILTER = 'filter'
 
 
 # Attributes for ManualScaling
@@ -330,6 +352,7 @@ CONFIG_ID = 'config_id'
 ROLLOUT_STRATEGY = 'rollout_strategy'
 ROLLOUT_STRATEGY_FIXED = 'fixed'
 ROLLOUT_STRATEGY_MANAGED = 'managed'
+TRACE_SAMPLING = 'trace_sampling'
 
 # Attributes for ErrorHandlers
 ERROR_CODE = 'error_code'
@@ -380,6 +403,9 @@ STANDARD_MIN_INSTANCES = 'min_instances'
 STANDARD_MAX_INSTANCES = 'max_instances'
 STANDARD_TARGET_CPU_UTILIZATION = 'target_cpu_utilization'
 STANDARD_TARGET_THROUGHPUT_UTILIZATION = 'target_throughput_utilization'
+
+# Attributes for `VpcAccessConnector`.
+VPC_ACCESS_CONNECTOR_NAME = 'name'
 
 
 class _VersionedLibrary(object):
@@ -476,6 +502,8 @@ _SUPPORTED_LIBRARIES = [
         'A full-featured web application framework for Python.',
         ['1.2', '1.3', '1.4', '1.5', '1.9', '1.11'],
         latest_version='1.4',
+        deprecated_versions=['1.2', '1.3', '1.5', '1.9'],
+        # TODO(b/78247136) Deprecate 1.4 and update latest_version to 1.11
         ),
     _VersionedLibrary(
         'enum',
@@ -535,7 +563,7 @@ _SUPPORTED_LIBRARIES = [
         'A Pythonic binding for the C libraries libxml2 and libxslt.',
         ['2.3', '2.3.5', '3.7.3'],
         latest_version='3.7.3',
-        experimental_versions=['2.3.5'],
+        deprecated_versions=['2.3', '2.3.5'],
         ),
     _VersionedLibrary(
         'markupsafe',
@@ -557,7 +585,7 @@ _SUPPORTED_LIBRARIES = [
         'A Python DB API v2.0 compatible interface to MySQL.',
         ['1.2.4b4', '1.2.4', '1.2.5'],
         latest_version='1.2.5',
-        experimental_versions=['1.2.4b4', '1.2.4', '1.2.5']
+        deprecated_versions=['1.2.4b4', '1.2.4'],
         ),
     _VersionedLibrary(
         'numpy',
@@ -575,7 +603,7 @@ _SUPPORTED_LIBRARIES = [
         ),
     _VersionedLibrary(
         'protorpc',
-        'https://code.google.com/p/google-protorpc/',
+        'https://github.com/google/protorpc',
         'A framework for implementing HTTP-based remote procedure call (RPC) '
         'services.',
         ['1.0'],
@@ -586,9 +614,10 @@ _SUPPORTED_LIBRARIES = [
         'pytz',
         'https://pypi.python.org/pypi/pytz?',
         'A library for cross-platform timezone calculations',
-        ['2016.4', '2017.2'],
-        latest_version='2017.2',
-        default_version='2017.2',
+        ['2016.4', '2017.2', '2017.3'],
+        latest_version='2017.3',
+        default_version='2017.3',
+        deprecated_versions=['2016.4', '2017.2'],
         ),
     _VersionedLibrary(
         'crcmod',
@@ -619,14 +648,16 @@ _SUPPORTED_LIBRARIES = [
         'A library of cryptography functions such as random number generation.',
         ['2.3', '2.6', '2.6.1'],
         latest_version='2.6',
+        deprecated_versions=['2.3'],
+        # TODO(b/78247136) Deprecate 2.6 and update latest_version to 2.6.1
         ),
     _VersionedLibrary(
         'setuptools',
         'http://pypi.python.org/pypi/setuptools',
         'A library that provides package and module discovery capabilities.',
         ['0.6c11', '36.6.0'],
-        latest_version='0.6c11',
-        hidden_versions=['36.6.0'],
+        latest_version='36.6.0',
+        deprecated_versions=['0.6c11'],
         ),
     _VersionedLibrary(
         'six',
@@ -641,6 +672,7 @@ _SUPPORTED_LIBRARIES = [
         'The SSL socket wrapper built-in module.',
         ['2.7', '2.7.11'],
         latest_version='2.7.11',
+        deprecated_versions=['2.7']
         ),
     _VersionedLibrary(
         'ujson',
@@ -655,8 +687,9 @@ _SUPPORTED_LIBRARIES = [
         'A lightweight Python web framework.',
         ['2.3', '2.5.1', '2.5.2'],
         latest_version='2.5.2',
+        # Keep default version at 2.3 because apps in production depend on it.
         default_version='2.3',
-        deprecated_versions=['2.3']
+        deprecated_versions=['2.5.1']
         ),
     _VersionedLibrary(
         'webob',
@@ -664,6 +697,7 @@ _SUPPORTED_LIBRARIES = [
         'A library that provides wrappers around the WSGI request environment.',
         ['1.1.1', '1.2.3'],
         latest_version='1.2.3',
+        # Keep default version at 1.1.1 because apps in production depend on it.
         default_version='1.1.1',
         ),
     _VersionedLibrary(
@@ -701,7 +735,7 @@ REQUIRED_LIBRARIES = {
     ('protobuf', 'latest'): [('six', 'latest')],
     ('grpcio', '1.0.0'): [('protobuf', '3.0.0'), ('enum', '0.9.23'),
                           ('futures', '3.0.5'), ('six', '1.9.0'),
-                          ('setuptools', '0.6c11')],
+                          ('setuptools', '36.6.0')],
     ('grpcio', 'latest'): [('protobuf', 'latest'), ('enum', 'latest'),
                            ('futures', 'latest'), ('six', 'latest'),
                            ('setuptools', 'latest')]
@@ -748,9 +782,10 @@ _MAX_URL_LENGTH = 2047
 # We allow certain headers to be larger than the normal limit of 8192 bytes.
 _MAX_HEADER_SIZE_FOR_EXEMPTED_HEADERS = 10240
 
-_CANNED_RUNTIMES = ('contrib-dart', 'dart', 'go', 'php', 'php55', 'php7',
+_CANNED_RUNTIMES = ('contrib-dart', 'dart', 'go', 'php', 'php55', 'php72',
                     'python', 'python27', 'python-compat', 'java', 'java7',
-                    'vm', 'custom', 'nodejs', 'ruby')
+                    'java8', 'vm', 'custom', 'nodejs', 'ruby', 'go111',
+                    'go112')
 _all_runtimes = _CANNED_RUNTIMES
 
 
@@ -763,6 +798,32 @@ def GetAllRuntimes():
     Tuple of strings.
   """
   return _all_runtimes
+
+
+def EnsureAsciiBytes(s, err):
+  """Ensure s contains only ASCII-safe characters; return it as bytes-type.
+
+  Arguments:
+    s: the string or bytes to check
+    err: the error to raise if not good.
+  Raises:
+    err if it's not ASCII-safe.
+  Returns:
+    s as a byte string
+  """
+  try:
+    return s.encode('ascii')
+  except UnicodeEncodeError:
+    raise err
+  except UnicodeDecodeError:
+    # Python 2 hilariously raises UnicodeDecodeError on trying to
+    # ascii-_en_code a byte string invalidly.
+    raise err
+  except AttributeError:
+    try:
+      return s.decode('ascii').encode('ascii')
+    except UnicodeDecodeError:
+      raise err
 
 
 class HandlerBase(validation.Validated):
@@ -857,15 +918,12 @@ class HttpHeadersDict(validation.ValidatedDict):
       original_name = name
 
       # Make sure only ASCII data is used.
-      if isinstance(name, unicode):
-        try:
-          name = name.encode('ascii')
-        except UnicodeEncodeError:
-          raise appinfo_errors.InvalidHttpHeaderName(
-              'HTTP header values must not contain non-ASCII data')
+      if isinstance(name, six_subset.string_types):
+        name = EnsureAsciiBytes(name, appinfo_errors.InvalidHttpHeaderName(
+            'HTTP header values must not contain non-ASCII data'))
 
       # HTTP headers are case-insensitive.
-      name = name.lower()
+      name = encoding.Decode(name.lower(),encoding='utf8')
 
       if not _HTTP_TOKEN_RE.match(name):
         raise appinfo_errors.InvalidHttpHeaderName(
@@ -922,12 +980,12 @@ class HttpHeadersDict(validation.ValidatedDict):
          https://www.ietf.org/rfc/rfc2616.txt
       """
       # Make sure only ASCII data is used.
-      if isinstance(value, unicode):
-        try:
-          value = value.encode('ascii')
-        except UnicodeEncodeError:
-          raise appinfo_errors.InvalidHttpHeaderValue(
-              'HTTP header values must not contain non-ASCII data')
+      if isinstance(value, six_subset.string_types):
+        value = EnsureAsciiBytes(value, appinfo_errors.InvalidHttpHeaderValue(
+            'HTTP header values must not contain non-ASCII data'))
+        b_value = value
+      else:
+        b_value = ('%s' % value).encode('ascii')
 
       # HTTP headers are case-insensitive.
       key = key.lower()
@@ -936,14 +994,14 @@ class HttpHeadersDict(validation.ValidatedDict):
       # could be stronger. e.g. `"foo` should not be considered valid, because
       # HTTP does not allow unclosed double quote marks in header values, per
       # RFC 2616 section 4.2.
-      printable = set(string.printable[:-5])
-      if not all(char in printable for char in str(value)):
+      printable = set(string.printable[:-5].encode('ascii'))
+      if not all(b in printable for b in b_value):
         raise appinfo_errors.InvalidHttpHeaderValue(
             'HTTP header field values must consist of printable characters.')
 
       HttpHeadersDict.ValueValidator.AssertHeaderNotTooLong(key, value)
 
-      return value
+      return six.ensure_text(value)
 
     @staticmethod
     def AssertHeaderNotTooLong(name, value):
@@ -1155,7 +1213,7 @@ class URLMap(HandlerBase):
       # Matched id attribute, break out of loop.
       mapping_type = HANDLER_API_ENDPOINT
     else:
-      for id_field in URLMap.ALLOWED_FIELDS.iterkeys():
+      for id_field in URLMap.ALLOWED_FIELDS:
         # Attributes always exist as defined by ATTRIBUTES.
         if getattr(self, id_field) is not None:
           # Matched id attribute, break out of loop.
@@ -1170,7 +1228,7 @@ class URLMap(HandlerBase):
 
     # Make sure that none of the set attributes on this handler
     # are not allowed for the discovered handler type.
-    for attribute in self.ATTRIBUTES.iterkeys():
+    for attribute in self.ATTRIBUTES:
       if (getattr(self, attribute) is not None and
           not (attribute in allowed_fields or
                attribute in URLMap.COMMON_FIELDS or
@@ -1583,8 +1641,40 @@ class CpuUtilization(validation.Validated):
       CPU_UTILIZATION_UTILIZATION: validation.Optional(
           validation.Range(1e-6, 1.0, float)),
       CPU_UTILIZATION_AGGREGATION_WINDOW_LENGTH_SEC: validation.Optional(
-          validation.Range(1, sys.maxint)),
+          validation.Range(1, sys.maxsize)),
   }
+
+
+class CustomMetric(validation.Validated):
+  """Class representing CustomMetrics in AppInfoExternal."""
+
+  ATTRIBUTES = {
+      METRIC_NAME: validation.Regex(_NON_WHITE_SPACE_REGEX),
+      TARGET_TYPE: validation.Regex(TARGET_TYPE_REGEX),
+      CUSTOM_METRIC_UTILIZATION: validation.Optional(validation.TYPE_FLOAT),
+      SINGLE_INSTANCE_ASSIGNMENT: validation.Optional(validation.TYPE_FLOAT),
+      FILTER: validation.Optional(validation.TYPE_STR),
+  }
+
+  def CheckInitialized(self):
+    """Determines if the CustomMetric is not valid.
+
+    Raises:
+      appinfo_errors.TooManyAutoscalingUtilizationTargetsError: If too many
+      scaling targets are set.
+      appinfo_errors.NotEnoughAutoscalingUtilizationTargetsError: If no scaling
+      targets are set.
+    """
+    super(CustomMetric, self).CheckInitialized()
+    if bool(self.target_utilization) and bool(self.single_instance_assignment):
+      raise appinfo_errors.TooManyAutoscalingUtilizationTargetsError(
+          ("There may be only one of '%s' or '%s'." % CUSTOM_METRIC_UTILIZATION,
+           SINGLE_INSTANCE_ASSIGNMENT))
+    elif not (bool(self.target_utilization) or
+              bool(self.single_instance_assignment)):
+      raise appinfo_errors.NotEnoughAutoscalingUtilizationTargetsError(
+          ("There must be one of '%s' or '%s'." % CUSTOM_METRIC_UTILIZATION,
+           SINGLE_INSTANCE_ASSIGNMENT))
 
 
 class EndpointsApiService(validation.Validated):
@@ -1598,6 +1688,8 @@ class EndpointsApiService(validation.Validated):
                                  ROLLOUT_STRATEGY_MANAGED)),
       CONFIG_ID:
           validation.Optional(_NON_WHITE_SPACE_REGEX),
+      TRACE_SAMPLING:
+          validation.Optional(validation.TYPE_BOOL),
   }
 
   def CheckInitialized(self):
@@ -1636,11 +1728,11 @@ class AutomaticScaling(validation.Validated):
           validation.Optional(_CONCURRENT_REQUESTS_REGEX),
       # Attributes for VM-based AutomaticScaling.
       MIN_NUM_INSTANCES:
-          validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxsize)),
       MAX_NUM_INSTANCES:
-          validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxsize)),
       COOL_DOWN_PERIOD_SEC:
-          validation.Optional(validation.Range(60, sys.maxint, int)),
+          validation.Optional(validation.Range(60, sys.maxsize, int)),
       CPU_UTILIZATION:
           validation.Optional(CpuUtilization),
       STANDARD_MAX_INSTANCES:
@@ -1652,25 +1744,26 @@ class AutomaticScaling(validation.Validated):
       STANDARD_TARGET_THROUGHPUT_UTILIZATION:
           validation.Optional(validation.TYPE_FLOAT),
       TARGET_NETWORK_SENT_BYTES_PER_SEC:
-          validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxsize)),
       TARGET_NETWORK_SENT_PACKETS_PER_SEC:
-          validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxsize)),
       TARGET_NETWORK_RECEIVED_BYTES_PER_SEC:
-          validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxsize)),
       TARGET_NETWORK_RECEIVED_PACKETS_PER_SEC:
-          validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxsize)),
       TARGET_DISK_WRITE_BYTES_PER_SEC:
-          validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxsize)),
       TARGET_DISK_WRITE_OPS_PER_SEC:
-          validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxsize)),
       TARGET_DISK_READ_BYTES_PER_SEC:
-          validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxsize)),
       TARGET_DISK_READ_OPS_PER_SEC:
-          validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxsize)),
       TARGET_REQUEST_COUNT_PER_SEC:
-          validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxsize)),
       TARGET_CONCURRENT_REQUESTS:
-          validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxsize)),
+      CUSTOM_METRICS: validation.Optional(validation.Repeated(CustomMetric)),
   }
 
 
@@ -1836,22 +1929,23 @@ class HealthCheck(validation.Validated):
   """Class representing the health check configuration."""
   ATTRIBUTES = {
       ENABLE_HEALTH_CHECK: validation.Optional(validation.TYPE_BOOL),
-      CHECK_INTERVAL_SEC: validation.Optional(validation.Range(0, sys.maxint)),
-      TIMEOUT_SEC: validation.Optional(validation.Range(0, sys.maxint)),
-      UNHEALTHY_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
-      HEALTHY_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
-      RESTART_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
+      CHECK_INTERVAL_SEC: validation.Optional(validation.Range(0, sys.maxsize)),
+      TIMEOUT_SEC: validation.Optional(validation.Range(0, sys.maxsize)),
+      UNHEALTHY_THRESHOLD: validation.Optional(
+          validation.Range(0, sys.maxsize)),
+      HEALTHY_THRESHOLD: validation.Optional(validation.Range(0, sys.maxsize)),
+      RESTART_THRESHOLD: validation.Optional(validation.Range(0, sys.maxsize)),
       HOST: validation.Optional(validation.TYPE_STR)}
 
 
 class LivenessCheck(validation.Validated):
   """Class representing the liveness check configuration."""
   ATTRIBUTES = {
-      CHECK_INTERVAL_SEC: validation.Optional(validation.Range(0, sys.maxint)),
-      TIMEOUT_SEC: validation.Optional(validation.Range(0, sys.maxint)),
-      FAILURE_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
-      SUCCESS_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
-      INITIAL_DELAY_SEC: validation.Optional(validation.Range(0, sys.maxint)),
+      CHECK_INTERVAL_SEC: validation.Optional(validation.Range(0, sys.maxsize)),
+      TIMEOUT_SEC: validation.Optional(validation.Range(0, sys.maxsize)),
+      FAILURE_THRESHOLD: validation.Optional(validation.Range(0, sys.maxsize)),
+      SUCCESS_THRESHOLD: validation.Optional(validation.Range(0, sys.maxsize)),
+      INITIAL_DELAY_SEC: validation.Optional(validation.Range(0, sys.maxsize)),
       PATH: validation.Optional(validation.TYPE_STR),
       HOST: validation.Optional(validation.TYPE_STR)}
 
@@ -1859,12 +1953,12 @@ class LivenessCheck(validation.Validated):
 class ReadinessCheck(validation.Validated):
   """Class representing the readiness check configuration."""
   ATTRIBUTES = {
-      CHECK_INTERVAL_SEC: validation.Optional(validation.Range(0, sys.maxint)),
-      TIMEOUT_SEC: validation.Optional(validation.Range(0, sys.maxint)),
+      CHECK_INTERVAL_SEC: validation.Optional(validation.Range(0, sys.maxsize)),
+      TIMEOUT_SEC: validation.Optional(validation.Range(0, sys.maxsize)),
       APP_START_TIMEOUT_SEC: validation.Optional(
-          validation.Range(0, sys.maxint)),
-      FAILURE_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
-      SUCCESS_THRESHOLD: validation.Optional(validation.Range(0, sys.maxint)),
+          validation.Range(0, sys.maxsize)),
+      FAILURE_THRESHOLD: validation.Optional(validation.Range(0, sys.maxsize)),
+      SUCCESS_THRESHOLD: validation.Optional(validation.Range(0, sys.maxsize)),
       PATH: validation.Optional(validation.TYPE_STR),
       HOST: validation.Optional(validation.TYPE_STR)}
 
@@ -1912,13 +2006,22 @@ class Network(validation.Validated):
           GCE_RESOURCE_NAME_REGEX)),
 
       NETWORK_NAME: validation.Optional(validation.Regex(
-          GCE_RESOURCE_NAME_REGEX)),
+          GCE_RESOURCE_PATH_REGEX)),
 
       SUBNETWORK_NAME: validation.Optional(validation.Regex(
           GCE_RESOURCE_NAME_REGEX)),
 
       SESSION_AFFINITY:
           validation.Optional(bool)
+  }
+
+
+class VpcAccessConnector(validation.Validated):
+  """Class representing the VPC Access connector configuration."""
+
+  ATTRIBUTES = {
+      VPC_ACCESS_CONNECTOR_NAME:
+          validation.Regex(VPC_ACCESS_CONNECTOR_NAME_REGEX),
   }
 
 
@@ -1984,7 +2087,18 @@ class AppInclude(validation.Validated):
 
     # We only want to mutate a param if at least one of the given
     # arguments has manual_scaling.instances set.
-    instances = max(_Instances(appinclude_one), _Instances(appinclude_two))
+    instances_one = _Instances(appinclude_one)
+    instances_two = _Instances(appinclude_two)
+
+    if instances_one is not None and instances_two is not None:
+      instances = max(instances_one, instances_two)
+    elif instances_one is not None:
+      instances = instances_one
+    elif instances_two is not None:
+      instances = instances_two
+    else:
+      instances = None
+
     if instances is not None:
       appinclude_one.manual_scaling = ManualScaling(instances=str(instances))
     return appinclude_one
@@ -2161,14 +2275,17 @@ class AppInfoExternal(validation.Validated):
       APPLICATION: validation.Optional(APPLICATION_RE_STRING),
       # An alias for `APPLICATION`.
       PROJECT: validation.Optional(APPLICATION_RE_STRING),
-      MODULE: validation.Optional(MODULE_ID_RE_STRING),
-      # `service` will replace `module` soon
-      SERVICE: validation.Optional(MODULE_ID_RE_STRING),
+      SERVICE: validation.Preferred(MODULE,
+                                    validation.Optional(MODULE_ID_RE_STRING)),
+      MODULE: validation.Deprecated(SERVICE,
+                                    validation.Optional(MODULE_ID_RE_STRING)),
       VERSION: validation.Optional(MODULE_VERSION_ID_RE_STRING),
       RUNTIME: validation.Optional(RUNTIME_RE_STRING),
+      RUNTIME_CHANNEL: validation.Optional(validation.Type(str)),
       # A new `api_version` requires a release of the `dev_appserver`, so it
       # is ok to hardcode the version names here.
       API_VERSION: validation.Optional(API_VERSION_RE_STRING),
+      MAIN: validation.Optional(_FILES_REGEX),
       # The App Engine environment to run this version in. (VM vs. non-VM, etc.)
       ENV: validation.Optional(ENV_RE_STRING),
       ENDPOINTS_API_SERVICE: validation.Optional(EndpointsApiService),
@@ -2193,6 +2310,8 @@ class AppInfoExternal(validation.Validated):
       LIVENESS_CHECK: validation.Optional(LivenessCheck),
       READINESS_CHECK: validation.Optional(ReadinessCheck),
       NETWORK: validation.Optional(Network),
+      VPC_ACCESS_CONNECTOR: validation.Optional(VpcAccessConnector),
+      ZONES: validation.Optional(validation.Repeated(validation.TYPE_STR)),
       BUILTINS: validation.Optional(validation.Repeated(BuiltinHandler)),
       INCLUDES: validation.Optional(validation.Type(list)),
       HANDLERS: validation.Optional(validation.Repeated(URLMap), default=[]),
@@ -2248,8 +2367,6 @@ class AppInfoExternal(validation.Validated):
           present.
       RuntimeDoesNotSupportLibraries: If the libraries clause is used for a
           runtime that does not support it, such as `python25`.
-      ModuleAndServiceDefined: If both `module` and `service` keywords are used.
-          Services were formerly known as modules.
     """
     super(AppInfoExternal, self).CheckInitialized()
     if self.runtime is None and not self.IsVm():
@@ -2259,10 +2376,6 @@ class AppInfoExternal(validation.Validated):
       # Default optional to custom (we don't do that in attributes just so
       # we know that it's been defaulted)
       self.runtime = 'custom'
-    if (not self.handlers and not self.builtins and not self.includes
-        and not self.IsVm()):
-      raise appinfo_errors.MissingURLMapping(
-          'No URLMap entries found in application configuration')
     if self.handlers and len(self.handlers) > MAX_URL_MAPS:
       raise appinfo_errors.TooManyURLMappings(
           'Found more than %d URLMap entries in application configuration' %
@@ -2566,17 +2679,6 @@ def LoadSingleAppInfo(app_info):
     appyaml.application = appyaml.project
     appyaml.project = None
 
-  # Allow `service: name` as an alias for `module: name`. If found, we change
-  # the `service` field to `None`.
-  # TODO (b/63629223) This is breaking gcloud presubmit after being imported
-  # to third_party code base.
-  if appyaml.service and appyaml.module:
-    raise appinfo_errors.ModuleAndServiceDefined(
-        'Cannot define both "module" and "service" in configuration')
-  elif appyaml.service:
-    appyaml.module = appyaml.service
-    appyaml.service = None
-
   appyaml.NormalizeVmSettings()
   return appyaml
 
@@ -2654,21 +2756,21 @@ def ParseExpiration(expiration):
 
 
 #####################################################################
-# These regexps must be the same as those in apphosting/client/app_config.cc
-# and java/com/google/appengine/tools/admin/AppVersionUpload.java
-# java/com/google/apphosting/admin/legacy/LegacyAppInfo.java,
-# apphosting/client/app_config_old.cc,
-# apphosting/api/app_config/app_config_server2.cc
+# These regexps must be the same as those in:
+#   - apphosting/api/app_config/request_validator.cc
+#   - java/com/google/appengine/tools/admin/AppVersionUpload.java
+#   - java/com/google/apphosting/admin/legacy/LegacyAppInfo.java
 
+# LINT.IfChange
 # Forbid `.`, `..`, and leading `-`, `_ah/` or `/`
 _file_path_negative_1_re = re.compile(r'\.\.|^\./|\.$|/\./|^-|^_ah/|^/')
 
 # Forbid `//` and trailing `/`
 _file_path_negative_2_re = re.compile(r'//|/$')
 
-# Forbid any use of space and newlines other than in the middle of a directory
-# or file name.
-_file_path_negative_3_re = re.compile(r'^ | $|/ | /|\n')
+# Forbid any use of space other than in the middle of a directory
+# or file name. Forbid line feeds and carriage returns.
+_file_path_negative_3_re = re.compile(r'^ | $|/ | /|\r|\n')
 
 
 # (erinjerison) Lint seems to think I'm specifying the word "character" as an
@@ -2705,3 +2807,4 @@ def ValidFilename(filename):
   if _file_path_negative_3_re.search(filename) is not None:
     return 'Any spaces must be in the middle of a filename: %s' % filename
   return ''
+# LINT.ThenChange(

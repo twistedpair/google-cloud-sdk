@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,11 +25,15 @@ terminal; when it exits, the file will be reread and returned with any edits
 that the user may have saved while in the EDITOR.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 import os
 import subprocess
 import tempfile
 
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
 
@@ -69,9 +74,7 @@ def OnlineEdit(text):
         problem.
   """
   fname = tempfile.NamedTemporaryFile(suffix='.txt').name
-
-  with open(fname, 'w') as f_out:
-    f_out.write(text)
+  files.WriteFileContents(fname, text)
 
   # Get the mod time, so we can check if anything was actually done.
   start_mtime = FileModifiedTime(fname)
@@ -100,5 +103,4 @@ def OnlineEdit(text):
   if start_mtime == end_mtime:
     raise NoSaveException('edit aborted by user')
 
-  with open(fname) as f_done:
-    return f_done.read()
+  return files.ReadFileContents(fname)

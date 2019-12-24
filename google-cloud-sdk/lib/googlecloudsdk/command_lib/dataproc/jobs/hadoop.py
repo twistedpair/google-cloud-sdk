@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,14 +15,16 @@
 
 """Base class for Hadoop Job."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import argparse
 
 from apitools.base.py import encoding
 
-from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.dataproc.jobs import base as job_base
-from googlecloudsdk.core import log
 
 
 class HadoopBase(job_base.JobBase):
@@ -42,7 +45,9 @@ class HadoopBase(job_base.JobBase):
         type=arg_parsers.ArgList(),
         metavar='FILE',
         default=[],
-        help='Comma separated list of files to be provided to the job.')
+        help='Comma separated list of file paths to be provided to the job. '
+             'A file path can either be a path to a local file or a path '
+             'to a file already in a Cloud Storage bucket.')
     parser.add_argument(
         '--archives',
         type=arg_parsers.ArgList(),
@@ -70,19 +75,6 @@ class HadoopBase(job_base.JobBase):
   @staticmethod
   def GetFilesByType(args):
     """Returns a dict of files by their type (jars, archives, etc.)."""
-    # TODO(b/36050338): Move arg manipulation elsewhere.
-    # TODO(b/36051982): Remove with GA flags 2017-04-01 (b/33298024).
-    if not args.main_class and not args.main_jar:
-      raise exceptions.ArgumentError('Must either specify --class or JAR.')
-    if args.main_class and args.main_jar:
-      log.warn(
-          'You must specify exactly one of --jar and --class. '
-          'This will be strictly enforced in April 2017. '
-          "Use 'gcloud beta dataproc jobs submit hadoop' to see new behavior.")
-      log.info('Passing main jar as an additional jar.')
-      args.jars.append(args.main_jar)
-      args.main_jar = None
-
     return {
         'main_jar': args.main_jar,
         'jars': args.jars,
@@ -102,7 +94,7 @@ class HadoopBase(job_base.JobBase):
         loggingConfig=logging_config)
 
     if args.properties:
-      hadoop_job.properties = encoding.DictToMessage(
+      hadoop_job.properties = encoding.DictToAdditionalPropertyMessage(
           args.properties, messages.HadoopJob.PropertiesValue)
 
     job.hadoopJob = hadoop_job

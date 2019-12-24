@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,23 +12,27 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Common utilities for the containers tool."""
-import os
-import StringIO
-import distutils.version as dist_version
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import io
+import os
 
 from googlecloudsdk.api_lib.container import kubeconfig as kconfig
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
 
+import six
 
 CLUSTERS_FORMAT = """
     table(
@@ -37,7 +42,7 @@ CLUSTERS_FORMAT = """
         endpoint:label=MASTER_IP,
         nodePools[0].config.machineType,
         currentNodeVersion:label=NODE_VERSION,
-        currentNodeCount:label=NUM_NODES,
+        firstof(currentNodeCount,initialNodeCount):label=NUM_NODES,
         status
     )
 """
@@ -67,13 +72,38 @@ NODEPOOLS_FORMAT = """
 HTTP_ERROR_FORMAT = (
     'ResponseError: code={status_code}, message={status_message}')
 
+WARN_AUTOUPGRADE_ENABLED_BY_DEFAULT = (
+    'Newly created clusters and node-pools will have node auto-upgrade enabled '
+    'by default. This can be disabled using the `--no-enable-autoupgrade` '
+    'flag.')
+
+WARN_NODE_VERSION_WITH_AUTOUPGRADE_ENABLED = (
+    'Node version is specified while node auto-upgrade is enabled. '
+    'Node-pools created at the specified version will be auto-upgraded '
+    'whenever auto-upgrade preconditions are met.')
+
+INVALIID_SURGE_UPGRADE_SETTINGS = (
+    '\'--max-surge-upgrade\' and \'--max-unavailable-upgrade\' must be used in '
+    'conjunction.')
+
+GKE_DEFAULT_POD_RANGE = 14
+GKE_DEFAULT_POD_RANGE_PER_NODE = 24
+GKE_ROUTE_BASED_SERVICE_RANGE = 20
+
+NC_KUBELET_CONFIG = 'kubeletConfig'
+NC_CPU_MANAGER_POLICY = 'cpuManagerPolicy'
+NC_CPU_CFS_QUOTA = 'cpuCFSQuota'
+NC_CPU_CFS_QUOTA_PERIOD = 'cpuCFSQuotaPeriod'
+NC_LINUX_CONFIG = 'linuxConfig'
+NC_SYSCTL = 'sysctl'
+
 
 class Error(core_exceptions.Error):
   """Class for errors raised by container commands."""
 
 
 def ConstructList(title, items):
-  buf = StringIO.StringIO()
+  buf = io.StringIO()
   resource_printer.Print(items, 'list[title="{0}"]'.format(title), out=buf)
   return buf.getvalue()
 
@@ -97,15 +127,39 @@ def _KubectlInstalledAsComponent():
 
 def CheckKubectlInstalled():
   """Verify that the kubectl component is installed or print a warning."""
-  if (not file_utils.FindExecutableOnPath(_KUBECTL_COMPONENT_NAME) and
-      not _KubectlInstalledAsComponent()):
-    log.warn(MISSING_KUBECTL_MSG)
+  executable = file_utils.FindExecutableOnPath(_KUBECTL_COMPONENT_NAME)
+  component = _KubectlInstalledAsComponent()
+  if not (executable or component):
+    log.warning(MISSING_KUBECTL_MSG)
+    return None
+
+  return executable if executable else component
+
+
+def GenerateClusterUrl(cluster_ref):
+  return ('https://console.cloud.google.com/kubernetes/'
+          'workload_/gcloud/{location}/{cluster}?project={project}').format(
+              location=cluster_ref.zone,
+              cluster=cluster_ref.clusterId,
+              project=cluster_ref.projectId)
+
+
+def _GetClusterEndpoint(cluster, use_internal_ip):
+  """Get the cluster endpoint suitable for writing to kubeconfig."""
+  if use_internal_ip:
+    if not cluster.privateClusterConfig:
+      raise NonPrivateClusterError(cluster)
+    if not cluster.privateClusterConfig.privateEndpoint:
+      raise MissingPrivateEndpointError(cluster)
+    return cluster.privateClusterConfig.privateEndpoint
+
+  if not cluster.endpoint:
+    raise MissingEndpointError(cluster)
+  return cluster.endpoint
 
 
 KUBECONFIG_USAGE_FMT = '''\
 kubeconfig entry generated for {cluster}.'''
-
-MIN_GCP_AUTH_PROVIDER_VERSION = '1.3.0'
 
 
 class MissingEndpointError(Error):
@@ -117,21 +171,28 @@ class MissingEndpointError(Error):
             cluster.name))
 
 
-ENABLE_SHARED_NETWORK_REQS_ERROR_MSG = """\
-Must specify --{0}.
+class NonPrivateClusterError(Error):
+  """Error for attempting to persist internal IP of a non-private cluster."""
 
-Enabling shared networks requires the following flags:
---enable-kubernetes-alpha, --subnetwork, --enable-ip-alias,
---cluster-secondary-range-name, and --services-secondary-range-name
-"""
+  def __init__(self, cluster):
+    super(NonPrivateClusterError, self).__init__(
+        'cluster {0} is not a private cluster.'.format(cluster.name))
 
 
-class MissingArgForSharedSubnetError(Error):
-  """Error for enabling shared subnets without the required parameters."""
+class MissingPrivateEndpointError(Error):
+  """Error for attempting to persist a cluster that has no internal IP."""
 
-  def __init__(self, opt):
-    super(MissingArgForSharedSubnetError, self).__init__(
-        ENABLE_SHARED_NETWORK_REQS_ERROR_MSG.format(opt))
+  def __init__(self, cluster):
+    super(MissingPrivateEndpointError, self).__init__(
+        'cluster {0} is missing private endpoint. Is it still '
+        'PROVISIONING?'.format(cluster.name))
+
+
+class NodeConfigError(Error):
+  """Error for attempting parse node config YAML/JSON file."""
+
+  def __init__(self, e):
+    super(NodeConfigError, self).__init__('Invalid node config: {0}'.format(e))
 
 
 class ClusterConfig(object):
@@ -150,19 +211,15 @@ class ClusterConfig(object):
     self.zone_id = kwargs['zone_id']
     self.project_id = kwargs['project_id']
     self.server = kwargs['server']
-    # auth options are basic (user,password), bearer token, auth-provider, or
-    # client certificate.
-    self.username = kwargs.get('username')
-    self.password = kwargs.get('password')
-    self.token = kwargs.get('token')
+    # auth options are auth-provider, or client certificate.
     self.auth_provider = kwargs.get('auth_provider')
     self.ca_data = kwargs.get('ca_data')
     self.client_cert_data = kwargs.get('client_cert_data')
     self.client_key_data = kwargs.get('client_key_data')
 
   def __str__(self):
-    return 'ClusterConfig{project:%s, cluster:%s, zone:%s, endpoint:%s}' % (
-        self.project_id, self.cluster_name, self.zone_id, self.endpoint)
+    return 'ClusterConfig{project:%s, cluster:%s, zone:%s}' % (
+        self.project_id, self.cluster_name, self.zone_id)
 
   def _Fullpath(self, filename):
     return os.path.abspath(os.path.join(self.config_dir, filename))
@@ -190,11 +247,8 @@ class ClusterConfig(object):
     return self.ca_data
 
   @staticmethod
-  def UseGCPAuthProvider(cluster):
-    return (cluster.currentMasterVersion and
-            dist_version.LooseVersion(cluster.currentMasterVersion) >=
-            dist_version.LooseVersion(MIN_GCP_AUTH_PROVIDER_VERSION) and
-            not properties.VALUES.container.use_client_certificate.GetBool())
+  def UseGCPAuthProvider():
+    return not properties.VALUES.container.use_client_certificate.GetBool()
 
   @staticmethod
   def GetConfigDir(cluster_name, zone_id, project_id):
@@ -214,9 +268,6 @@ class ClusterConfig(object):
     kubeconfig = kconfig.Kubeconfig.Default()
     cluster_kwargs = {}
     user_kwargs = {
-        'token': self.token,
-        'username': self.username,
-        'password': self.password,
         'auth_provider': self.auth_provider,
     }
     if self.has_ca_cert:
@@ -239,7 +290,7 @@ class ClusterConfig(object):
         cluster=self.cluster_name, context=context))
 
   @classmethod
-  def Persist(cls, cluster, project_id):
+  def Persist(cls, cluster, project_id, use_internal_ip=False):
     """Save config data for the given cluster.
 
     Persists config file and kubernetes auth file for the given cluster
@@ -249,19 +300,19 @@ class ClusterConfig(object):
     Args:
       cluster: valid Cluster message to persist config data for.
       project_id: project that owns this cluster.
+      use_internal_ip: whether to persist the internal IP of the endpoint.
     Returns:
       ClusterConfig of the persisted data.
     Raises:
       Error: if cluster has no endpoint (will be the case for first few
         seconds while cluster is PROVISIONING).
     """
-    if not cluster.endpoint:
-      raise MissingEndpointError(cluster)
+    endpoint = _GetClusterEndpoint(cluster, use_internal_ip)
     kwargs = {
         'cluster_name': cluster.name,
         'zone_id': cluster.zone,
         'project_id': project_id,
-        'server': 'https://' + cluster.endpoint,
+        'server': 'https://' + endpoint,
     }
     auth = cluster.masterAuth
     if auth and auth.clusterCaCertificate:
@@ -269,26 +320,14 @@ class ClusterConfig(object):
     else:
       # This should not happen unless the cluster is in an unusual error
       # state.
-      log.warn('Cluster is missing certificate authority data.')
+      log.warning('Cluster is missing certificate authority data.')
 
-    if cls.UseGCPAuthProvider(cluster):
+    if cls.UseGCPAuthProvider():
       kwargs['auth_provider'] = 'gcp'
     else:
       if auth.clientCertificate and auth.clientKey:
         kwargs['client_key_data'] = auth.clientKey
         kwargs['client_cert_data'] = auth.clientCertificate
-      # TODO(b/36051984): these are not needed if cluster has certs, though they
-      # are useful for testing, e.g. with curl. Consider removing if/when the
-      # apiserver no longer supports insecure (no certs) requests.
-      # TODO(b/36049791): use api_adapter instead of getattr, or remove
-      # bearerToken support
-      if getattr(auth, 'bearerToken', None):
-        kwargs['token'] = auth.bearerToken
-      else:
-        username = getattr(auth, 'user', None) or getattr(auth, 'username',
-                                                          None)
-        kwargs['username'] = username
-        kwargs['password'] = auth.password
 
     c_config = cls(**kwargs)
     c_config.GenKubeconfig()
@@ -340,15 +379,11 @@ class ClusterConfig(object):
       return None
 
     # Verify user data
-    username = user.get('username')
-    password = user.get('password')
-    token = user.get('token')
     auth_provider = user.get('auth-provider')
     cert_data = user.get('client-certificate-data')
     key_data = user.get('client-key-data')
     cert_auth = cert_data and key_data
-    basic_auth = username and password
-    has_valid_auth = auth_provider or cert_auth or token or basic_auth
+    has_valid_auth = auth_provider or cert_auth
     if not has_valid_auth:
       log.debug('missing auth info for user %s: %s', key, user)
       return None
@@ -358,9 +393,6 @@ class ClusterConfig(object):
         'zone_id': zone_id,
         'project_id': project_id,
         'server': server,
-        'username': username,
-        'password': password,
-        'token': token,
         'auth_provider': auth_provider,
         'ca_data': ca_data,
         'client_key_data': key_data,
@@ -378,3 +410,135 @@ class ClusterConfig(object):
     kubeconfig.Clear(cls.KubeContext(cluster_name, zone_id, project_id))
     kubeconfig.SaveToFile()
     log.debug('Purged cluster config from %s', config_dir)
+
+
+def CalculateMaxNodeNumberByPodRange(cluster_ipv4_cidr):
+  """Calculate the maximum number of nodes for route based clusters.
+
+  Args:
+    cluster_ipv4_cidr: The cluster IPv4 CIDR requested. If cluster_ipv4_cidr is
+      not specified, GKE_DEFAULT_POD_RANGE will be used.
+
+  Returns:
+    The maximum number of nodes the cluster can have.
+    The function returns -1 in case of error.
+  """
+
+  if cluster_ipv4_cidr is None:
+    pod_range = GKE_DEFAULT_POD_RANGE
+  else:
+    blocksize = cluster_ipv4_cidr.split('/')[-1]
+    if not blocksize.isdecimal():
+      return -1
+    pod_range = int(blocksize)
+    if pod_range < 0:
+      return -1
+  pod_range_ips = 2**(32 - pod_range) - 2**(32 - GKE_ROUTE_BASED_SERVICE_RANGE)
+  pod_range_ips_per_node = 2**(32 - GKE_DEFAULT_POD_RANGE_PER_NODE)
+  if pod_range_ips < pod_range_ips_per_node:
+    return -1
+  return int(pod_range_ips/pod_range_ips_per_node)
+
+
+def LoadNodeConfigFromYAML(node_config, content, messages):
+  """Load node configuration from YAML/JSON file.
+
+  Args:
+    node_config: The node config object to be populated.
+    content: The YAML/JSON string that contains node config options.
+    messages: The message module.
+
+  Raises:
+    Error: when there's any errors on parsing the YAML/JSON node config.
+  """
+
+  # This function reads the node config options from YAML/JSON file and sets
+  # them on a set of fields in alpha API only. The future plan is to migrate
+  # node config to go/crp-component-recording where the config validation will
+  # completely be done at server side. Therefore, we just do simple sanity
+  # checks instead of using a JSON schema to validate the node config file here.
+
+  try:
+    opts = yaml.load(content)
+  except yaml.YAMLParseError as e:
+    raise NodeConfigError('config is not valid YAML/JSON: {0}'.format(e))
+
+  _CheckNodeConfigFields('<root>', opts, {
+      NC_KUBELET_CONFIG: dict,
+      NC_LINUX_CONFIG: dict,
+  })
+
+  # Parse kubelet config options.
+  kubelet_config_opts = opts.get(NC_KUBELET_CONFIG)
+  if kubelet_config_opts:
+    _CheckNodeConfigFields(
+        NC_KUBELET_CONFIG, kubelet_config_opts, {
+            NC_CPU_MANAGER_POLICY: str,
+            NC_CPU_CFS_QUOTA: bool,
+            NC_CPU_CFS_QUOTA_PERIOD: str,
+        })
+    node_config.kubeletConfig = messages.NodeKubeletConfig()
+    node_config.kubeletConfig.cpuManagerPolicy = kubelet_config_opts.get(
+        NC_CPU_MANAGER_POLICY)
+    node_config.kubeletConfig.cpuCfsQuota = kubelet_config_opts.get(
+        NC_CPU_CFS_QUOTA)
+    node_config.kubeletConfig.cpuCfsQuotaPeriod = kubelet_config_opts.get(
+        NC_CPU_CFS_QUOTA_PERIOD)
+
+  # Parse Linux config options.
+  linux_config_opts = opts.get(NC_LINUX_CONFIG)
+  if linux_config_opts:
+    _CheckNodeConfigFields(NC_LINUX_CONFIG, linux_config_opts, {
+        NC_SYSCTL: dict,
+    })
+    node_config.linuxNodeConfig = messages.LinuxNodeConfig()
+    sysctl_opts = linux_config_opts.get(NC_SYSCTL)
+    if sysctl_opts:
+      node_config.linuxNodeConfig.sysctls = (
+          node_config.linuxNodeConfig.SysctlsValue())
+      for key, value in sorted(six.iteritems(sysctl_opts)):
+        _CheckNodeConfigValueType(key, value, str)
+        node_config.linuxNodeConfig.sysctls.additionalProperties.append(
+            node_config.linuxNodeConfig.sysctls.AdditionalProperty(
+                key=key, value=value))
+
+
+def _CheckNodeConfigFields(parent_name, parent, spec):
+  """Check whether the children of the config option are valid or not.
+
+  Args:
+    parent_name: The name of the config option to be checked.
+    parent: The config option to be checked.
+    spec: The spec defining the expected children and their value type.
+
+  Raises:
+    NodeConfigError: if there is any unknown fields or any of the fields doesn't
+    satisfy the spec.
+  """
+
+  _CheckNodeConfigValueType(parent_name, parent, dict)
+
+  unknown_fields = set(parent.keys()) - set(spec.keys())
+  if unknown_fields:
+    raise NodeConfigError('unknown fields: {0} in "{1}"'.format(
+        sorted(list(unknown_fields)), parent_name))
+
+  for field_name in parent:
+    _CheckNodeConfigValueType(field_name, parent[field_name], spec[field_name])
+
+
+def _CheckNodeConfigValueType(name, value, value_type):
+  """Check whether the config option has the expected value type.
+
+  Args:
+    name: The name of the config option to be checked.
+    value: The value of the config option to be checked.
+    value_type: The expected value type (e.g., str, bool, dict).
+
+  Raises:
+    NodeConfigError: if value is not of value_type.
+  """
+
+  if not isinstance(value, value_type):
+    raise NodeConfigError('value of "{0}" must be {1}'.format(
+        name, value_type.__name__))

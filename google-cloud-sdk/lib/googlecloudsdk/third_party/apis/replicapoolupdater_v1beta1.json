@@ -4,7 +4,7 @@
  "id": "replicapoolupdater:v1beta1",
  "name": "replicapoolupdater",
  "version": "v1beta1",
- "revision": "20171013",
+ "revision": "20181207",
  "title": "Google Compute Engine Instance Group Updater API",
  "description": "[Deprecated. Please use compute.instanceGroupManagers.update method. replicapoolupdater API will be disabled after December 30th, 2016] Updates groups of Compute Engine instances.",
  "ownerDomain": "google.com",
@@ -22,7 +22,7 @@
  "basePath": "/replicapoolupdater/v1beta1/projects/",
  "rootUrl": "https://www.googleapis.com/",
  "servicePath": "replicapoolupdater/v1beta1/projects/",
- "batchPath": "batch",
+ "batchPath": "batch/replicapoolupdater/v1beta1",
  "parameters": {
   "alt": {
    "type": "string",
@@ -59,12 +59,12 @@
   },
   "quotaUser": {
    "type": "string",
-   "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.",
+   "description": "An opaque string that represents a user for quota purposes. Must not exceed 40 characters.",
    "location": "query"
   },
   "userIp": {
    "type": "string",
-   "description": "IP address of the site where the request originates. Use this if you want to enforce per-user limits.",
+   "description": "Deprecated. Please use quotaUser instead.",
    "location": "query"
   }
  },

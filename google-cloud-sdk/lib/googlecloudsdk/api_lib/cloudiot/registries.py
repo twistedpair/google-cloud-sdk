@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,7 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Utilities Cloud IoT registries API."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
@@ -56,7 +63,7 @@ class RegistriesClient(object):
     return self.messages.HttpConfig.HttpEnabledStateValueValuesEnum
 
   def Create(self, parent_ref, registry_id, credentials=None,
-             event_pubsub_topic=None, state_pubsub_topic=None,
+             event_notification_configs=None, state_pubsub_topic=None,
              mqtt_enabled_state=None, http_enabled_state=None):
     """Creates a DeviceRegistry.
 
@@ -66,9 +73,8 @@ class RegistriesClient(object):
       registry_id: str, the name of the resource to create.
       credentials: List of RegistryCredentials or None, credentials for the
         DeviceRegistry.
-      event_pubsub_topic: an optional Resource reference to a
-        pubsub.projects.topics. The pubsub topic for event notifications on this
-        device registry.
+      event_notification_configs: List of EventNotificationConfigs or None,
+        configs for forwarding telemetry events for the Registry.
       state_pubsub_topic: an optional Resource reference to a
         pubsub.projects.topics. The pubsub topic for state notifications on this
         device registry.
@@ -80,13 +86,6 @@ class RegistriesClient(object):
     Returns:
       DeviceRegistry: the created registry.
     """
-    if event_pubsub_topic:
-      # This is a repeated field, only the first entry is used though.
-      event_notification_config = [self.messages.EventNotificationConfig(
-          pubsubTopicName=event_pubsub_topic.RelativeName())]
-    else:
-      event_notification_config = []
-
     if state_pubsub_topic:
       # This is a repeated field, only the first entry is used though.
       state_notification_config = self.messages.StateNotificationConfig(
@@ -111,7 +110,7 @@ class RegistriesClient(object):
         deviceRegistry=self.messages.DeviceRegistry(
             id=registry_id,
             credentials=credentials or [],
-            eventNotificationConfigs=event_notification_config,
+            eventNotificationConfigs=event_notification_configs or [],
             stateNotificationConfig=state_notification_config,
             mqttConfig=mqtt_config,
             httpConfig=http_config))
@@ -146,9 +145,14 @@ class RegistriesClient(object):
         self._service, list_req, batch_size=page_size, limit=limit,
         field='deviceRegistries', batch_size_attribute='pageSize')
 
-  def Patch(self, registry_ref, credentials=None,
-            event_pubsub_topic=None, state_pubsub_topic=None,
-            mqtt_enabled_state=None, http_enabled_state=None):
+  def Patch(self,
+            registry_ref,
+            credentials=None,
+            event_notification_configs=None,
+            state_pubsub_topic=None,
+            mqtt_enabled_state=None,
+            http_enabled_state=None,
+            log_level=None):
     """Updates a DeviceRegistry.
 
     Any fields not specified will not be updated; at least one field must be
@@ -159,9 +163,8 @@ class RegistriesClient(object):
         cloudiot.projects.locations.registries resource.
       credentials: List of RegistryCredentials or None, credentials for the
         DeviceRegistry.
-      event_pubsub_topic: an optional Resource reference to a
-        pubsub.projects.topics. The pubsub topic for event notifications on this
-        device registry.
+      event_notification_configs: List of EventNotificationConfigs or None,
+        configs for forwarding telemetry events for the Registry.
       state_pubsub_topic: an optional Resource reference to a
         pubsub.projects.topics. The pubsub topic for state notifications on this
         device registry.
@@ -169,6 +172,8 @@ class RegistriesClient(object):
         the registry.
       http_enabled_state: HttpConfigStateValuEnabledsEnum, the state of HTTP for
         the registry.
+      log_level: LogLevelValueValuesEnum, the default logging verbosity for the
+        devices in the registry.
 
     Returns:
       DeviceRegistry: the created registry.
@@ -177,11 +182,6 @@ class RegistriesClient(object):
       NoFieldsSpecifiedError: if no fields were specified.
     """
     registry = self.messages.DeviceRegistry()
-    if event_pubsub_topic:
-      event_notification_config = [self.messages.EventNotificationConfig(
-          pubsubTopicName=event_pubsub_topic.RelativeName())]
-    else:
-      event_notification_config = None
 
     if state_pubsub_topic:
       # This is a repeated field, only the first entry is used though.
@@ -203,26 +203,19 @@ class RegistriesClient(object):
       http_config = None
 
     device_registry_update_settings = [
-        _DeviceRegistryUpdateSetting(
-            'credentials',
-            'credentials',
-            credentials),
-        _DeviceRegistryUpdateSetting(
-            'eventNotificationConfigs',
-            'event_notification_configs',
-            event_notification_config),
+        _DeviceRegistryUpdateSetting('credentials', 'credentials', credentials),
+        _DeviceRegistryUpdateSetting('eventNotificationConfigs',
+                                     'event_notification_configs',
+                                     event_notification_configs),
         _DeviceRegistryUpdateSetting(
             'stateNotificationConfig',
             'state_notification_config.pubsub_topic_name',
             state_notification_config),
         _DeviceRegistryUpdateSetting(
-            'mqttConfig',
-            'mqtt_config.mqtt_enabled_state',
-            mqtt_config),
+            'mqttConfig', 'mqtt_config.mqtt_enabled_state', mqtt_config),
         _DeviceRegistryUpdateSetting(
-            'httpConfig',
-            'http_config.http_enabled_state',
-            http_config)
+            'httpConfig', 'http_config.http_enabled_state', http_config),
+        _DeviceRegistryUpdateSetting('logLevel', 'logLevel', log_level)
     ]
     update_mask = []
     for update_setting in device_registry_update_settings:

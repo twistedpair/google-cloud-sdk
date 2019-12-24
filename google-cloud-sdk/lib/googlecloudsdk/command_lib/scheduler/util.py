@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2019 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +13,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for "gcloud scheduler" commands."""
-import base64
 
-from apitools.base.py import extra_types
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.app import region_util
+from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.app import appengine_api_client as app_engine_api
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.command_lib.tasks import app
+from googlecloudsdk.calliope import base as calliope_base
+from googlecloudsdk.command_lib.app import create_util
+from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import encoding
+from googlecloudsdk.core.util import http_encoding
 
 
 _PUBSUB_MESSAGE_URL = 'type.googleapis.com/google.pubsub.v1.PubsubMessage'
@@ -29,13 +40,37 @@ def _GetPubsubMessages():
   return apis.GetMessagesModule('pubsub', apis.ResolveVersion('pubsub'))
 
 
+def _GetSchedulerClient():
+  return apis.GetClientInstance('cloudscheduler', 'v1')
+
+
 def _GetSchedulerMessages():
-  return apis.GetMessagesModule('cloudscheduler', 'v1beta1')
+  return apis.GetMessagesModule('cloudscheduler', 'v1')
+
+
+def ClearFlag(arg):
+  """Clear the value for a flag."""
+  del arg
+  return None
+
+
+def LogPauseSuccess(unused_response, unused_args):
+  """Log message if job was successfully paused."""
+  _LogSuccessMessage('paused')
+
+
+def LogResumeSuccess(unused_response, unused_args):
+  """Log message if job was successfully resumed."""
+  _LogSuccessMessage('resumed')
+
+
+def _LogSuccessMessage(action):
+  log.status.Print('Job has been {0}.'.format(action))
 
 
 def ModifyCreateJobRequest(job_ref, args, create_job_req):
-  """Change the job.name field to a RelativeName."""
-  del args  # Unused in _Foo
+  """Change the job.name field to a relative name."""
+  del args  # Unused in ModifyCreateJobRequest
   create_job_req.job.name = job_ref.RelativeName()
   return create_job_req
 
@@ -48,7 +83,7 @@ def ModifyCreatePubsubJobRequest(job_ref, args, create_job_req):
   insert it into the request.
 
   Args:
-    job_ref: Resource reference to the Job to create (unused)
+    job_ref: Resource reference to the job to be created (unused)
     args: argparse namespace with the parsed arguments from the command line. In
         particular, we expect args.message_body and args.attributes (optional)
         to be AdditionalProperty types.
@@ -59,49 +94,98 @@ def ModifyCreatePubsubJobRequest(job_ref, args, create_job_req):
     CloudschedulerProjectsLocationsJobsCreateRequest: the given request but with
         the job.pubsubTarget.pubsubMessage field populated.
   """
-
   ModifyCreateJobRequest(job_ref, args, create_job_req)
-  pubsub_message_type = create_job_req.job.pubsubTarget.PubsubMessageValue
-  props = [
-      pubsub_message_type.AdditionalProperty(
-          key='@type',
-          value=extra_types.JsonValue(string_value=_PUBSUB_MESSAGE_URL)),
-      args.message_body
-  ]
+  create_job_req.job.pubsubTarget.data = _EncodeMessageBody(
+      args.message_body or args.message_body_from_file)
   if args.attributes:
-    props.append(args.attributes)
-  create_job_req.job.pubsubTarget.pubsubMessage = pubsub_message_type(
-      additionalProperties=props)
+    create_job_req.job.pubsubTarget.attributes = args.attributes
   return create_job_req
 
 
-def ParseMessageBody(message_body):
-  """Parse "--message-body" flag as an argparse type.
+def SetRequestJobName(job_ref, unused_args, update_job_req):
+  """Change the job.name field to a relative name."""
+  update_job_req.job.name = job_ref.RelativeName()
+  return update_job_req
 
-  The flag is given as a string:
 
-      --message-body 'some data'
+def SetAppEngineRequestMessageBody(unused_job_ref, args, update_job_req):
+  """Modify the App Engine update request to populate the message body."""
+  if args.clear_message_body:
+    update_job_req.job.appEngineHttpTarget.body = None
+  elif args.message_body or args.message_body_from_file:
+    update_job_req.job.appEngineHttpTarget.body = _EncodeMessageBody(
+        args.message_body or args.message_body_from_file)
+  return update_job_req
 
-  Args:
-    message_body: str, the value of the --message-body flag.
 
-  Returns:
-    AdditionalProperty, a cloudscheduler additional property object with
-        'data' as a key, and a JSON object (with a base64-encoded string value)
-        as the value.
-  """
-  pubsub_messages = _GetPubsubMessages()
-  scheduler_messages = _GetSchedulerMessages()
+def SetAppEngineRequestUpdateHeaders(unused_job_ref, args, update_job_req):
+  """Modify the App Engine update request to update, remove or clear headers."""
+  headers = None
+  if args.clear_headers:
+    headers = {}
+  elif args.update_headers or args.remove_headers:
+    if args.update_headers:
+      headers = args.update_headers
+    if args.remove_headers:
+      for key in args.remove_headers:
+        headers[key] = None
 
-  # First, put into a PubsubMessage to make sure we've got the general format
-  # right.
-  pubsub_message = pubsub_messages.PubsubMessage(data=message_body)
+  if headers:
+    update_job_req.job.appEngineHttpTarget.headers = \
+        _GenerateAdditionalProperties(headers)
+  return update_job_req
 
-  pubsub_message_type = scheduler_messages.PubsubTarget.PubsubMessageValue
-  encoded_data = base64.urlsafe_b64encode(pubsub_message.data)
-  return pubsub_message_type.AdditionalProperty(
-      key='data',
-      value=extra_types.JsonValue(string_value=encoded_data))
+
+def SetHTTPRequestMessageBody(unused_job_ref, args, update_job_req):
+  """Modify the HTTP update request to populate the message body."""
+  if args.clear_message_body:
+    update_job_req.job.httpTarget.body = None
+  elif args.message_body or args.message_body_from_file:
+    update_job_req.job.httpTarget.body = _EncodeMessageBody(
+        args.message_body or args.message_body_from_file)
+  return update_job_req
+
+
+def SetHTTPRequestUpdateHeaders(unused_job_ref, args, update_job_req):
+  """Modify the HTTP update request to update, remove, or clear headers."""
+  headers = None
+  if args.clear_headers:
+    headers = {}
+  elif args.update_headers or args.remove_headers:
+    if args.update_headers:
+      headers = args.update_headers
+    if args.remove_headers:
+      for key in args.remove_headers:
+        headers[key] = None
+  if headers:
+    update_job_req.job.httpTarget.headers = _GenerateAdditionalProperties(
+        headers)
+  return update_job_req
+
+
+def SetPubsubRequestMessageBody(unused_job_ref, args, update_job_req):
+  """Modify the Pubsub update request to populate the message body."""
+  if args.message_body or args.message_body_from_file:
+    update_job_req.job.pubsubTarget.data = _EncodeMessageBody(
+        args.message_body or args.message_body_from_file)
+  return update_job_req
+
+
+def SetPubsubRequestUpdateAttributes(unused_job_ref, args, update_job_req):
+  """Modify the Pubsub update request to update, remove, or clear attributes."""
+  attributes = None
+  if args.clear_attributes:
+    attributes = {}
+  elif args.update_attributes or args.remove_attributes:
+    if args.update_attributes:
+      attributes = args.update_attributes
+    if args.remove_attributes:
+      for key in args.remove_attributes:
+        attributes[key] = None
+  if attributes:
+    update_job_req.job.pubsubTarget.attributes = _GenerateAdditionalProperties(
+        attributes)
+  return update_job_req
 
 
 def ParseAttributes(attributes):
@@ -115,71 +199,166 @@ def ParseAttributes(attributes):
     attributes: str, the value of the --attributes flag.
 
   Returns:
-    AdditionalProperty, a cloudscheduler additional property object with
-        'attributes' as a key, and a JSON object (with string values) as the
-        value.
+    dict, a dict with 'additionalProperties' as a key, and a list of dicts
+        containing key-value pairs as the value.
   """
   attributes = arg_parsers.ArgDict()(attributes)
-  pubsub_messages = _GetPubsubMessages()
-  scheduler_messages = _GetSchedulerMessages()
-
-  # First, put into a PubsubMessage to make sure we've got the general format
-  # right.
-  pubsub_props = []
-  attributes_class = pubsub_messages.PubsubMessage.AttributesValue
-  for key, value in sorted(attributes.items()):  # sort for unit tests
-    pubsub_props.append(attributes_class.AdditionalProperty(key=key,
-                                                            value=value))
-  pubsub_message = pubsub_messages.PubsubMessage(
-      attributes=attributes_class(additionalProperties=pubsub_props))
-
-  attribute_props = []
-  for prop in pubsub_message.attributes.additionalProperties:
-    attribute_props.append(
-        extra_types.JsonObject.Property(
-            key=prop.key,
-            value=extra_types.JsonValue(string_value=prop.value)
-        )
-    )
-  attributes_value = extra_types.JsonObject(properties=attribute_props)
-  pubsub_message_type = scheduler_messages.PubsubTarget.PubsubMessageValue
-  return pubsub_message_type.AdditionalProperty(
-      key='attributes',
-      value=extra_types.JsonValue(object_value=attributes_value))
+  return {
+      'additionalProperties':
+          [{'key': key, 'value': value}
+           for key, value in sorted(attributes.items())]
+  }
 
 
-def HeaderType(string):
-  """Returns ArgDict type for headers."""
-  header, value = string.split(':')
-  value = value.lstrip()
-  return {header: value}
+def UpdateAppEngineMaskHook(unused_ref, args, req):
+  """Constructs updateMask for patch requests of AppEngine targets.
+
+  Args:
+    unused_ref: A resource ref to the parsed Job resource
+    args: The parsed args namespace from CLI
+    req: Created Patch request for the API call.
+
+  Returns:
+    Modified request for the API call.
+  """
+  app_engine_fields = {
+      '--message-body': 'appEngineHttpTarget.body',
+      '--message-body-from-file': 'appEngineHttpTarget.body',
+      '--relative-url': 'appEngineHttpTarget.relativeUri',
+      '--version': 'appEngineHttpTarget.appEngineRouting.version',
+      '--service': 'appEngineHttpTarget.appEngineRouting.service',
+      '--clear-service': 'appEngineHttpTarget.appEngineRouting.service',
+      '--clear-relative-url': 'appEngineHttpTarget.relativeUri',
+      '--clear-headers': 'appEngineHttpTarget.headers',
+      '--remove-headers': 'appEngineHttpTarget.headers',
+      '--update-headers': 'appEngineHttpTarget.headers',
+  }
+  req.updateMask = _GenerateUpdateMask(args, app_engine_fields)
+  return req
 
 
-def HeaderProcessor(value):
-  """Convert dict into HeadersValue."""
-  scheduler_messages = _GetSchedulerMessages()
-  props = []
-  for key, value in sorted(value.items()):
-    props.append(
-        scheduler_messages.AppEngineHttpTarget.HeadersValue.AdditionalProperty(
-            key=key,
-            value=value))
-  return scheduler_messages.AppEngineHttpTarget.HeadersValue(
-      additionalProperties=props)
+def UpdateHTTPMaskHook(unused_ref, args, req):
+  """Constructs updateMask for patch requests of PubSub targets.
+
+  Args:
+    unused_ref: A resource ref to the parsed Job resource
+    args: The parsed args namespace from CLI
+    req: Created Patch request for the API call.
+
+  Returns:
+    Modified request for the API call.
+  """
+  http_fields = {
+      '--message-body': 'httpTarget.body',
+      '--message-body-from-file': 'httpTarget.body',
+      '--uri': 'httpTarget.uri',
+      '--http-method': 'httpTarget.httpMethod',
+      '--clear-headers': 'httpTarget.headers',
+      '--remove-headers': 'httpTarget.headers',
+      '--update-headers': 'httpTarget.headers',
+      '--oidc-service-account-email':
+          'httpTarget.oidcToken.serviceAccountEmail',
+      '--oidc-token-audience': 'httpTarget.oidcToken.audience',
+      '--oauth-service-account-email':
+          'httpTarget.oauthToken.serviceAccountEmail',
+      '--oauth-token-scope': 'httpTarget.oauthToken.scope',
+      '--clear-auth-token':
+          'httpTarget.oidcToken.serviceAccountEmail,'
+          'httpTarget.oidcToken.audience,'
+          'httpTarget.oauthToken.serviceAccountEmail,'
+          'httpTarget.oauthToken.scope',
+  }
+  req.updateMask = _GenerateUpdateMask(args, http_fields)
+  return req
 
 
-_MORE_REGIONS_AVAILABLE_WARNING = """\
-The regions listed here are only those in which the Cloud Scheduler API is
-available. To see full list of App Engine regions available,
-create an app using the following command:
+def UpdatePubSubMaskHook(unused_ref, args, req):
+  """Constructs updateMask for patch requests of PubSub targets.
 
-    $ gcloud app create
-"""
+  Args:
+    unused_ref: A resource ref to the parsed Job resource
+    args: The parsed args namespace from CLI
+    req: Created Patch request for the API call.
+
+  Returns:
+    Modified request for the API call.
+  """
+  pubsub_fields = {
+      '--message-body': 'pubsubTarget.data',
+      '--message-body-from-file': 'pubsubTarget.data',
+      '--topic': 'pubsubTarget.topicName',
+      '--clear-attributes': 'pubsubTarget.attributes',
+      '--remove-attributes': 'pubsubTarget.attributes',
+      '--update-attributes': 'pubsubTarget.attributes',
+  }
+  req.updateMask = _GenerateUpdateMask(args, pubsub_fields)
+  return req
 
 
-VALID_REGIONS = [
-    region_util.Region('us-central1', True, True),
-]
+def _GenerateUpdateMask(args, target_fields):
+  """Constructs updateMask for patch requests.
+
+  Args:
+    args: The parsed args namespace from CLI
+    target_fields: A Dictionary of field mappings specific to the target.
+
+  Returns:
+    String containing update mask for patch request.
+  """
+  arg_name_to_field = {
+      # Common flags
+      '--description': 'description',
+      '--schedule': 'schedule',
+      '--time-zone': 'timeZone',
+      '--clear-time-zone': 'timeZone',
+      '--attempt-deadline': 'attemptDeadline',
+      # Retry flags
+      '--max-retry-attempts': 'retryConfig.retryCount',
+      '--clear-max-retry-attempts': 'retryConfig.retryCount',
+      '--max-retry-duration': 'retryConfig.maxRetryDuration',
+      '--clear-max-retry-duration': 'retryConfig.maxRetryDuration',
+      '--min-backoff': 'retryConfig.minBackoffDuration',
+      '--clear-min-backoff': 'retryConfig.minBackoffDuration',
+      '--max-backoff': 'retryConfig.maxBackoffDuration',
+      '--clear-max-backoff': 'retryConfig.maxBackoffDuration',
+      '--max-doublings': 'retryConfig.maxDoublings',
+      '--clear-max-doublings': 'retryConfig.maxDoublings',
+  }
+  if target_fields:
+    arg_name_to_field.update(target_fields)
+
+  update_mask = []
+  for arg_name in args.GetSpecifiedArgNames():
+    if arg_name in arg_name_to_field:
+      update_mask.append(arg_name_to_field[arg_name])
+
+  return ','.join(sorted(list(set(update_mask))))
+
+
+def _EncodeMessageBody(message_body):
+  """HTTP encodes the given message body.
+
+  Args:
+    message_body: the message body to be encoded
+
+  Returns:
+    String containing HTTP encoded message body.
+  """
+  message_body_str = encoding.Decode(message_body, encoding='utf8')
+  return http_encoding.Encode(message_body_str)
+
+
+def _GenerateAdditionalProperties(values_dict):
+  """Format values_dict into additionalProperties-style dict."""
+  return {
+      'additionalProperties': [
+          {'key': key, 'value': value} for key, value
+          in sorted(values_dict.items())
+      ]}
+
+
+class RegionResolvingError(exceptions.Error):
+  """Error for when the app's region cannot be ultimately determined."""
 
 
 class AppLocationResolver(object):
@@ -195,6 +374,57 @@ class AppLocationResolver(object):
 
   def __call__(self):
     if self.location is None:
-      self.location = app.ResolveAppLocation(valid_regions=VALID_REGIONS,
-                                             product='Cloud Scheduler')
+      self.location = self._ResolveAppLocation()
     return self.location
+
+  def _ResolveAppLocation(self):
+    """Determines Cloud Scheduler location for the project or creates an app."""
+    project = properties.VALUES.core.project.GetOrFail()
+    location = self._GetLocation(project) or self._CreateApp(project)
+    if location is not None:
+      return location
+    raise RegionResolvingError(
+        'Could not determine the location for the project. Please try again.')
+
+  def _GetLocation(self, project):
+    """Gets the location from the Cloud Scheduler API."""
+    try:
+      client = _GetSchedulerClient()
+      messages = _GetSchedulerMessages()
+      request = messages.CloudschedulerProjectsLocationsListRequest(
+          name='projects/{}'.format(project))
+      locations = list(list_pager.YieldFromList(
+          client.projects_locations, request, batch_size=2, field='locations',
+          batch_size_attribute='pageSize'))
+
+      if len(locations) > 1:
+        # Projects currently can only use Cloud Scheduler in single region, so
+        # this should never happen for now, but that will change in the future.
+        raise RegionResolvingError('Multiple locations found for this project. '
+                                   'Please specify an exact location.')
+      if len(locations) == 1:
+        return locations[0].labels.additionalProperties[0].value
+      return None
+    except apitools_exceptions.HttpNotFoundError:
+      return None
+
+  def _CreateApp(self, project):
+    """Walks the user through creating an AppEngine app."""
+    if properties.VALUES.core.disable_prompts.Get():
+      log.warning('Cannot create new App Engine app in quiet mode')
+      return None
+    if console_io.PromptContinue(
+        message=('There is no App Engine app in project [{}].'.format(project)),
+        prompt_string=('Would you like to create one'),
+        throw_if_unattended=True):
+      try:
+        app_engine_api_client = app_engine_api.GetApiClientForTrack(
+            calliope_base.ReleaseTrack.GA)
+        create_util.CreateAppInteractively(app_engine_api_client, project)
+      except create_util.AppAlreadyExistsError:
+        raise create_util.AppAlreadyExistsError(
+            'App already exists in project [{}]. This may be due a race '
+            'condition. Please try again.'.format(project))
+      else:
+        return self._GetLocation(project)
+    return None

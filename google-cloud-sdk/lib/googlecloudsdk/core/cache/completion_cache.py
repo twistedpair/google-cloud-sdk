@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -43,11 +44,18 @@ This module is resource agnostic.  All resource specific information is
 encapsulated in resource specific Completer objects.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 
 from googlecloudsdk.core.cache import resource_cache
 
+import six
 
+
+@six.add_metaclass(abc.ABCMeta)
 class Completer(resource_cache.Updater):
   """A completion cache resource string completer.
 
@@ -57,8 +65,6 @@ class Completer(resource_cache.Updater):
   (2) Retrieve the current list of resources for the collection. See
       resource_cache.Updater for details.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def StringToRow(self, string):

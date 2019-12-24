@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,30 +12,38 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Functions for creating a client to talk to the App Engine Admin API."""
 
-import itertools
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import copy
 import json
 import operator
 
 from apitools.base.py import encoding
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.app import build as app_cloud_build
+from googlecloudsdk.api_lib.app import env
 from googlecloudsdk.api_lib.app import exceptions
 from googlecloudsdk.api_lib.app import instances_util
-from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.app import service_util
-from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base
-from googlecloudsdk.api_lib.cloudbuild import build as cloud_build
+from googlecloudsdk.api_lib.cloudbuild import logs as cloudbuild_logs
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import log
-from googlecloudsdk.core import metrics
+from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import convert_yaml
-
-import yaml
+import six
+from six.moves import filter  # pylint: disable=redefined-builtin
+from six.moves import map  # pylint: disable=redefined-builtin
 
 
 APPENGINE_VERSIONS_MAP = {
@@ -140,10 +149,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
                     manifest,
                     build,
                     extra_config_settings=None):
-    """Updates and deploys new app versions based on given config.
-
-    If the build operation has not yet completed, streams the Google Cloud
-    Builder logs as well.
+    """Updates and deploys new app versions.
 
     Args:
       service_name: str, The service to deploy.
@@ -153,12 +159,86 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       manifest: Dictionary mapping source files to Google Cloud Storage
         locations.
       build: BuildArtifact, a wrapper which contains either the build
-        ID for an in-progress parallel build, or the name of the container image
-        for a serial build.
+        ID for an in-progress parallel build, the name of the container image
+        for a serial build, or the options for creating a build elsewhere. Not
+        present during standard deploys.
       extra_config_settings: dict, client config settings to pass to the server
         as beta settings.
     Returns:
-      A Version resource representing the deployed version.
+      The Admin API Operation, unfinished.
+    """
+    operation = self._CreateVersion(service_name, version_id,
+                                    service_config, manifest, build,
+                                    extra_config_settings)
+
+    message = 'Updating service [{service}]'.format(service=service_name)
+    if service_config.env in [env.FLEX, env.MANAGED_VMS]:
+      message += ' (this may take several minutes)'
+
+    operation_metadata_type = self._ResolveMetadataType()
+    # This indicates that a server-side build should be created.
+    if build and build.IsBuildOptions():
+      if not operation_metadata_type:
+        log.warning('Unable to determine build from Operation metadata. '
+                    'Skipping log streaming')
+      else:
+        # Poll the operation until the build is present.
+        poller = operations_util.AppEngineOperationBuildPoller(
+            self.client.apps_operations, operation_metadata_type)
+        operation = operations_util.WaitForOperation(
+            self.client.apps_operations, operation, message=message,
+            poller=poller)
+        build_id = operations_util.GetBuildFromOperation(
+            operation, operation_metadata_type)
+        if build_id:
+          build = app_cloud_build.BuildArtifact.MakeBuildIdArtifact(build_id)
+    if build and build.IsBuildId():
+      build_ref = resources.REGISTRY.Parse(
+          build.identifier,
+          params={'projectId': properties.VALUES.core.project.GetOrFail},
+          collection='cloudbuild.projects.builds')
+      cloudbuild_logs.CloudBuildClient().Stream(build_ref, out=log.status)
+
+    done_poller = operations_util.AppEngineOperationPoller(
+        self.client.apps_operations, operation_metadata_type)
+    return operations_util.WaitForOperation(
+        self.client.apps_operations,
+        operation,
+        message=message,
+        poller=done_poller)
+
+  def _ResolveMetadataType(self):
+    """Attempts to resolve the expected type for the operation metadata."""
+    # pylint: disable=protected-access
+    # TODO(b/74075874): Update ApiVersion method to accurately reflect client.
+    metadata_type_name = 'OperationMetadata' + self.client._VERSION.title()
+    # pylint: enable=protected-access
+    return getattr(self.messages, metadata_type_name)
+
+  def _CreateVersion(self,
+                     service_name,
+                     version_id,
+                     service_config,
+                     manifest,
+                     build,
+                     extra_config_settings=None):
+    """Begins the updates and deployment of new app versions.
+
+    Args:
+      service_name: str, The service to deploy.
+      version_id: str, The version of the service to deploy.
+      service_config: AppInfoExternal, Service info parsed from a service yaml
+        file.
+      manifest: Dictionary mapping source files to Google Cloud Storage
+        locations.
+      build: BuildArtifact, a wrapper which contains either the build
+        ID for an in-progress parallel build, the name of the container image
+        for a serial build, or the options to pass to Appengine for a
+        server-side build.
+      extra_config_settings: dict, client config settings to pass to the server
+        as beta settings.
+    Returns:
+      The Admin API Operation, unfinished.
     """
     version_resource = self._CreateVersionResource(
         service_config, manifest, version_id, build, extra_config_settings)
@@ -166,26 +246,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         parent=self._GetServiceRelativeName(service_name=service_name),
         version=version_resource)
 
-    operation = self.client.apps_services_versions.Create(create_request)
-
-    # If build operation is still in progress, stream build logs and wait for
-    # completion before polling the service deployment operation for completion.
-    # Service deployment can never complete before the build has finished, as it
-    # is dependent on the built image.
-    if build and build.IsBuildId() and build.build_op:
-      cloud_build.CloudBuildClient().WaitAndStreamLogs(build.build_op)
-      metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE_ASYNC)
-
-    log.debug('Received operation: [{operation}]'.format(
-        operation=operation.name))
-
-    message = 'Updating service [{service}]'.format(service=service_name)
-    if util.Environment.IsFlexible(service_config.env):
-      message += ' (this may take several minutes)'
-
-    return operations_util.WaitForOperation(self.client.apps_operations,
-                                            operation,
-                                            message=message)
+    return self.client.apps_services_versions.Create(create_request)
 
   def GetServiceResource(self, service):
     """Describe the given service.
@@ -237,9 +298,12 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         migrateTraffic=migrate,
         updateMask='split')
 
+    message = 'Setting traffic split for service [{service}]'.format(
+        service=service_name)
     operation = self.client.apps_services.Patch(update_service_request)
     return operations_util.WaitForOperation(self.client.apps_operations,
-                                            operation)
+                                            operation,
+                                            message=message)
 
   def DeleteVersion(self, service_name, version_id):
     """Deletes the specified version of the given service.
@@ -292,20 +356,25 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       versions: list of version_util.Version
 
     Returns:
-      A generator of each instances_util.Instance for the given versions
+      A list of instances_util.Instance objects for the given versions
     """
-    iters = []
+    instances = []
     for version in versions:
       request = self.messages.AppengineAppsServicesVersionsInstancesListRequest(
           parent=self._FormatVersion(version.service, version.id))
-      iters.append(list_pager.YieldFromList(
-          self.client.apps_services_versions_instances,
-          request,
-          field='instances',
-          batch_size=100,  # Set batch size so tests can expect it.
-          batch_size_attribute='pageSize'))
-    return (instances_util.Instance.FromInstanceResource(i)
-            for i in itertools.chain.from_iterable(iters))
+      try:
+        for instance in list_pager.YieldFromList(
+            self.client.apps_services_versions_instances,
+            request,
+            field='instances',
+            batch_size=100,  # Set batch size so tests can expect it.
+            batch_size_attribute='pageSize'):
+          instances.append(
+              instances_util.Instance.FromInstanceResource(instance))
+      except apitools_exceptions.HttpNotFoundError:
+        # Drop versions that were presumed deleted since initial enumeration.
+        pass
+    return instances
 
   def GetAllInstances(self, service=None, version=None, version_filter=None):
     """Generator of all instances, optionally filtering by service or version.
@@ -324,10 +393,10 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         services, [service] if service else None)
 
     versions = self.ListVersions(services)
-    log.debug('Versions: {0}'.format(map(str, versions)))
+    log.debug('Versions: {0}'.format(list(map(str, versions))))
     versions = version_util.GetMatchingVersions(
         versions, [version] if version else None, service)
-    versions = filter(version_filter, versions)
+    versions = list(filter(version_filter, versions))
 
     return self.ListInstances(versions)
 
@@ -472,11 +541,18 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       # Get the versions.
       request = self.messages.AppengineAppsServicesVersionsListRequest(
           parent=self._GetServiceRelativeName(service.id))
-      for version in list_pager.YieldFromList(
-          self.client.apps_services_versions, request, field='versions',
-          batch_size=100, batch_size_attribute='pageSize'):
-        versions.append(
-            version_util.Version.FromVersionResource(version, service))
+      try:
+        for version in list_pager.YieldFromList(
+            self.client.apps_services_versions,
+            request,
+            field='versions',
+            batch_size=100,
+            batch_size_attribute='pageSize'):
+          versions.append(
+              version_util.Version.FromVersionResource(version, service))
+      except apitools_exceptions.HttpNotFoundError:
+        # Drop services that were presumed deleted since initial enumeration.
+        pass
 
     return versions
 
@@ -544,7 +620,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     return [operations_util.Operation(op) for op in operations]
 
   def _CreateVersionResource(self, service_config, manifest, version_id, build,
-                             extra_config_settings):
+                             extra_config_settings=None):
     """Constructs a Version resource for deployment.
 
     Args:
@@ -553,8 +629,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       manifest: Dictionary mapping source files to Google Cloud Storage
         locations.
       version_id: str, The version of the service.
-      build: BuildArtifact, The build ID or image path. Build ID only supported
-        in beta.
+      build: BuildArtifact, The build ID, image path, or build options.
       extra_config_settings: dict, client config settings to pass to the server
         as beta settings.
 
@@ -562,24 +637,22 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       A Version resource whose Deployment includes either a container pointing
         to a completed image, or a build pointing to an in-progress build.
     """
-    appinfo = service_config.parsed
+    config_dict = copy.deepcopy(service_config.parsed.ToDict())
 
-    # TODO(b/29453752): Remove when we want to stop supporting module
-    if appinfo.module:
-      appinfo.service = appinfo.module
-      appinfo.module = None
+    # We always want to set a value for entrypoint when sending the request
+    # to Zeus, even if one wasn't specified in the yaml file
+    if 'entrypoint' not in config_dict:
+      config_dict['entrypoint'] = ''
 
-    parsed_yaml = service_config.parsed.ToYAML()
-    config_dict = yaml.safe_load(parsed_yaml)
     try:
       # pylint: disable=protected-access
       schema_parser = convert_yaml.GetSchemaParser(self.client._VERSION)
       json_version_resource = schema_parser.ConvertValue(config_dict)
-    except ValueError, e:
+    except ValueError as e:
       raise exceptions.ConfigError(
           '[{f}] could not be converted to the App Engine configuration '
           'format for the following reason: {msg}'.format(
-              f=service_config.file, msg=e.message))
+              f=service_config.file, msg=six.text_type(e)))
     log.debug('Converted YAML to JSON: "{0}"'.format(
         json.dumps(json_version_resource, indent=2, sort_keys=True)))
 
@@ -595,8 +668,15 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         json_version_resource['deployment']['build'] = {
             'cloudBuildId': build.identifier
         }
+      elif build.IsBuildOptions():
+        json_version_resource['deployment']['cloudBuildOptions'] = (
+            build.identifier)
     version_resource = encoding.PyValueToMessage(self.messages.Version,
                                                  json_version_resource)
+    # For consistency in the tests:
+    if version_resource.envVariables:
+      version_resource.envVariables.additionalProperties.sort(
+          key=lambda x: x.key)
 
     # We need to pipe some settings to the server as beta settings.
     if extra_config_settings:
@@ -611,7 +691,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     if 'betaSettings' in json_version_resource:
       json_dict = json_version_resource.get('betaSettings')
       attributes = []
-      for key, value in sorted(json_dict.iteritems()):
+      for key, value in sorted(json_dict.items()):
         attributes.append(
             self.messages.Version.BetaSettingsValue.AdditionalProperty(
                 key=key, value=value))
@@ -629,3 +709,61 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     # Add an ID for the version which is to be created.
     version_resource.id = version_id
     return version_resource
+
+  def UpdateDispatchRules(self, dispatch_rules):
+    """Updates an application's dispatch rules.
+
+    Args:
+      dispatch_rules: [{'service': str, 'domain': str, 'path': str}], dispatch-
+          rules to set-and-replace.
+
+    Returns:
+      Long running operation.
+    """
+
+    # Create a configuration update request.
+    update_mask = 'dispatchRules,'
+
+    application_update = self.messages.Application()
+    application_update.dispatchRules = [self.messages.UrlDispatchRule(**r)
+                                        for r in dispatch_rules]
+    update_request = self.messages.AppengineAppsPatchRequest(
+        name=self._FormatApp(),
+        application=application_update,
+        updateMask=update_mask)
+
+    operation = self.client.apps.Patch(update_request)
+
+    log.debug('Received operation: [{operation}] with mask [{mask}]'.format(
+        operation=operation.name,
+        mask=update_mask))
+
+    return operations_util.WaitForOperation(self.client.apps_operations,
+                                            operation)
+
+  def UpdateDatabaseType(self, database_type):
+    """Updates an application's database_type.
+
+    Args:
+      database_type: New database type to switch to
+
+    Returns:
+      Long running operation.
+    """
+
+    # Create a configuration update request.
+    update_mask = 'databaseType'
+    application_update = self.messages.Application()
+    application_update.databaseType = database_type
+    update_request = self.messages.AppengineAppsPatchRequest(
+        name=self._FormatApp(),
+        application=application_update,
+        updateMask=update_mask)
+
+    operation = self.client.apps.Patch(update_request)
+
+    log.debug('Received operation: [{operation}] with mask [{mask}]'.format(
+        operation=operation.name, mask=update_mask))
+
+    return operations_util.WaitForOperation(self.client.apps_operations,
+                                            operation)

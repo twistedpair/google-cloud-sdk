@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,7 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """GCloud Command/Group/Flag Deprecation Utilities."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import base
 
@@ -19,12 +25,12 @@ _WARNING_MSG = 'This command is deprecated and will be removed in version {0}.'
 
 _REMOVED_MSG = 'This command has been removed as of version {0}.'
 
-_COMMAND_ALT_MSG = ' Please use {0} as an alternative.'
+_COMMAND_ALT_MSG = ' Use `{0}` instead.'
 
 
 def DeprecateCommandAtVersion(remove_version,
                               remove=False,
-                              alt_command=None):
+                              alt_command=None):  # pylint: disable=common_typos_disable
   """Decorator that marks a GCloud command as deprecated.
 
   Args:
@@ -32,7 +38,7 @@ def DeprecateCommandAtVersion(remove_version,
       marked as removed.
 
       remove: boolean, True if the command should be removed in underlying
-      base.Deprecate decorator, False it it should only print a warning
+      base.Deprecate decorator, False if it should only print a warning
 
       alt_command: string, optional alternative command to use in place of
       deprecated command

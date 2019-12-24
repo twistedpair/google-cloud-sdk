@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,32 +12,35 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Backend service."""
 
-import urlparse
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from apitools.base.py import batch
 from apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
-from googlecloudsdk.core import exceptions as core_exceptions
+
+from six.moves.urllib import parse
 
 # Upper bound on batch size
 # https://cloud.google.com/compute/docs/api/how-tos/batch
 _BATCH_SIZE_LIMIT = 1000
 
 
-class Error(core_exceptions.Error):
+class Error(exceptions.Error):
   """Errors raised by this module."""
 
 
 def _GetBatchUrl(endpoint_url, api_version):
   """Return a batch URL for the given endpoint URL."""
-  parsed_endpoint = urlparse.urlparse(endpoint_url)
-  return urlparse.urljoin(
+  parsed_endpoint = parse.urlparse(endpoint_url)
+  return parse.urljoin(
       '{0}://{1}'.format(parsed_endpoint.scheme, parsed_endpoint.netloc),
       'batch/compute/' + api_version)
 
@@ -46,15 +50,15 @@ class ClientAdapter(object):
   _API_NAME = 'compute'
 
   def __init__(self, api_default_version='v1', no_http=False, client=None):
-    self._api_version = core_apis.ResolveVersion(
-        self._API_NAME, api_default_version)
+    self._api_version = core_apis.ResolveVersion(self._API_NAME,
+                                                 api_default_version)
     self._client = client or core_apis.GetClientInstance(
         self._API_NAME, self._api_version, no_http=no_http)
 
     # Turn the endpoint into just the host.
-    # eg. https://www.googleapis.com/compute/v1 -> https://www.googleapis.com
-    endpoint_url = core_apis.GetEffectiveApiEndpoint(
-        self._API_NAME, self._api_version)
+    # eg. https://compute.googleapis.com/compute/v1 -> https://compute.googleapis.com
+    endpoint_url = core_apis.GetEffectiveApiEndpoint(self._API_NAME,
+                                                     self._api_version)
     self._batch_url = _GetBatchUrl(endpoint_url, self._api_version)
 
   @property
@@ -73,17 +77,21 @@ class ClientAdapter(object):
   def messages(self):
     return self._client.MESSAGES_MODULE
 
-  def MakeRequests(
-      self, requests, errors_to_collect=None, progress_tracker=None):
+  def MakeRequests(self,
+                   requests,
+                   errors_to_collect=None,
+                   progress_tracker=None,
+                   followup_overrides=None):
     """Sends given request in batch mode."""
     errors = errors_to_collect if errors_to_collect is not None else []
-    objects = list(request_helper.MakeRequests(
-        requests=requests,
-        http=self._client.http,
-        batch_url=self._batch_url,
-        errors=errors,
-        progress_tracker=progress_tracker,
-    ))
+    objects = list(
+        request_helper.MakeRequests(
+            requests=requests,
+            http=self._client.http,
+            batch_url=self._batch_url,
+            errors=errors,
+            progress_tracker=progress_tracker,
+            followup_overrides=followup_overrides))
     if errors_to_collect is None and errors:
       utils.RaiseToolException(
           errors, error_message='Could not fetch resource:')
@@ -93,12 +101,13 @@ class ClientAdapter(object):
     """Issues batch request for given set of requests.
 
     Args:
-      requests: list(tuple(service, method, payload)), where
-        service is apitools.base.py.base_api.BaseApiService,
-        method is str, method name, e.g. 'Get', 'CreateInstance',
-        payload is a subclass of apitools.base.protorpclite.messages.Message.
+      requests: list(tuple(service, method, payload)), where service is
+        apitools.base.py.base_api.BaseApiService, method is str, method name,
+        e.g. 'Get', 'CreateInstance', payload is a subclass of
+        apitools.base.protorpclite.messages.Message.
       errors_to_collect: list, output only, can be None, contains instances of
         api_exceptions.HttpException for each request with exception.
+
     Returns:
       list of responses, matching list of requests. Some responses can be
         errors.
@@ -107,8 +116,8 @@ class ClientAdapter(object):
     for service, method, request in requests:
       batch_request.Add(service, method, request)
 
-    payloads = batch_request.Execute(self._client.http,
-                                     max_batch_size=_BATCH_SIZE_LIMIT)
+    payloads = batch_request.Execute(
+        self._client.http, max_batch_size=_BATCH_SIZE_LIMIT)
 
     responses = []
     errors = errors_to_collect if errors_to_collect is not None else []

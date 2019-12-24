@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,17 +15,22 @@
 
 """gcloud CLI tree lister module."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import json
 import os
 
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.core import module_util
 from googlecloudsdk.core.util import files
+import six
 
 
 def _ParameterizePath(path):
   """Return path with $HOME prefix replaced by ~."""
-  home = os.path.expanduser('~') + os.path.sep
+  home = files.GetHomeDir() + os.path.sep
   if path.startswith(home):
     return '~' + os.path.sep + path[len(home):]
   return path
@@ -69,7 +75,7 @@ def ListAll(directory=None):
   for directory in directories:
     if not directory or not os.path.exists(directory):
       continue
-    for (dirpath, _, filenames) in os.walk(directory):
+    for (dirpath, _, filenames) in os.walk(six.text_type(directory)):
       for filename in sorted(filenames):  # For stability across runs.
         base, extension = os.path.splitext(filename)
         if base == '__init__' or '.' in base:
@@ -82,17 +88,16 @@ def ListAll(directory=None):
           try:
             module = module_util.ImportPath(path)
           except module_util.ImportModuleError as e:
-            error = unicode(e)
+            error = six.text_type(e)
           try:
             tree = module.TREE
           except AttributeError:
             tree = None
         elif extension == '.json':
-          with open(path, 'r') as f:
-            try:
-              tree = json.loads(f.read())
-            except Exception as e:  # pylint: disable=broad-except, record all errors
-              error = unicode(e)
+          try:
+            tree = json.loads(files.ReadFileContents(path))
+          except Exception as e:  # pylint: disable=broad-except, record all errors
+            error = six.text_type(e)
         if tree:
           version = tree.get(cli_tree.LOOKUP_VERSION, 'UNKNOWN')
           cli_version = tree.get(cli_tree.LOOKUP_CLI_VERSION, 'UNKNOWN')

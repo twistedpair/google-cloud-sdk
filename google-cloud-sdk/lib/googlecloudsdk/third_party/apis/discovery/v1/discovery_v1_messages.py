@@ -13,7 +13,7 @@ package = 'discovery'
 
 
 class DirectoryList(_messages.Message):
-  """A DirectoryList object.
+  r"""A DirectoryList object.
 
   Messages:
     ItemsValueListEntry: A ItemsValueListEntry object.
@@ -26,7 +26,7 @@ class DirectoryList(_messages.Message):
   """
 
   class ItemsValueListEntry(_messages.Message):
-    """A ItemsValueListEntry object.
+    r"""A ItemsValueListEntry object.
 
     Messages:
       IconsValue: Links to 16x16 and 32x32 icons representing the API.
@@ -47,7 +47,7 @@ class DirectoryList(_messages.Message):
     """
 
     class IconsValue(_messages.Message):
-      """Links to 16x16 and 32x32 icons representing the API.
+      r"""Links to 16x16 and 32x32 icons representing the API.
 
       Fields:
         x16: The url of the 16x16 icon.
@@ -76,7 +76,7 @@ class DirectoryList(_messages.Message):
 
 
 class DiscoveryApisGetRestRequest(_messages.Message):
-  """A DiscoveryApisGetRestRequest object.
+  r"""A DiscoveryApisGetRestRequest object.
 
   Fields:
     api: The name of the API.
@@ -88,7 +88,7 @@ class DiscoveryApisGetRestRequest(_messages.Message):
 
 
 class DiscoveryApisListRequest(_messages.Message):
-  """A DiscoveryApisListRequest object.
+  r"""A DiscoveryApisListRequest object.
 
   Enums:
     LabelValueValuesEnum: Only include APIs with a matching label, such as
@@ -102,7 +102,8 @@ class DiscoveryApisListRequest(_messages.Message):
   """
 
   class LabelValueValuesEnum(_messages.Enum):
-    """Only include APIs with a matching label, such as 'graduated' or 'labs'.
+    r"""Only include APIs with a matching label, such as 'graduated' or
+    'labs'.
 
     Values:
       deprecated: APIs that have been deprecated.
@@ -119,7 +120,7 @@ class DiscoveryApisListRequest(_messages.Message):
 
 
 class JsonSchema(_messages.Message):
-  """A JsonSchema object.
+  r"""A JsonSchema object.
 
   Messages:
     AnnotationsValue: Additional information about this property.
@@ -163,7 +164,7 @@ class JsonSchema(_messages.Message):
   """
 
   class AnnotationsValue(_messages.Message):
-    """Additional information about this property.
+    r"""Additional information about this property.
 
     Fields:
       required: A list of methods for which this property is required on
@@ -174,8 +175,8 @@ class JsonSchema(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """If this is a schema for an object, list the schema for each property of
-    this object.
+    r"""If this is a schema for an object, list the schema for each property
+    of this object.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.
@@ -186,7 +187,7 @@ class JsonSchema(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a PropertiesValue object.
+      r"""An additional property for a PropertiesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -220,7 +221,7 @@ class JsonSchema(_messages.Message):
 
 
 class RestDescription(_messages.Message):
-  """A RestDescription object.
+  r"""A RestDescription object.
 
   Messages:
     AuthValue: Authentication information.
@@ -261,7 +262,7 @@ class RestDescription(_messages.Message):
   """
 
   class AuthValue(_messages.Message):
-    """Authentication information.
+    r"""Authentication information.
 
     Messages:
       Oauth2Value: OAuth 2.0 authentication information.
@@ -271,7 +272,7 @@ class RestDescription(_messages.Message):
     """
 
     class Oauth2Value(_messages.Message):
-      """OAuth 2.0 authentication information.
+      r"""OAuth 2.0 authentication information.
 
       Messages:
         ScopesValue: Available OAuth 2.0 scopes.
@@ -282,7 +283,7 @@ class RestDescription(_messages.Message):
 
       @encoding.MapUnrecognizedFields('additionalProperties')
       class ScopesValue(_messages.Message):
-        """Available OAuth 2.0 scopes.
+        r"""Available OAuth 2.0 scopes.
 
         Messages:
           AdditionalProperty: An additional property for a ScopesValue object.
@@ -292,7 +293,7 @@ class RestDescription(_messages.Message):
         """
 
         class AdditionalProperty(_messages.Message):
-          """An additional property for a ScopesValue object.
+          r"""An additional property for a ScopesValue object.
 
           Messages:
             ValueValue: A ValueValue object.
@@ -303,7 +304,7 @@ class RestDescription(_messages.Message):
           """
 
           class ValueValue(_messages.Message):
-            """A ValueValue object.
+            r"""A ValueValue object.
 
             Fields:
               description: Description of scope.
@@ -321,7 +322,7 @@ class RestDescription(_messages.Message):
     oauth2 = _messages.MessageField('Oauth2Value', 1)
 
   class IconsValue(_messages.Message):
-    """Links to 16x16 and 32x32 icons representing the API.
+    r"""Links to 16x16 and 32x32 icons representing the API.
 
     Fields:
       x16: The url of the 16x16 icon.
@@ -333,7 +334,7 @@ class RestDescription(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MethodsValue(_messages.Message):
-    """API-level methods for this API.
+    r"""API-level methods for this API.
 
     Messages:
       AdditionalProperty: An additional property for a MethodsValue object.
@@ -343,7 +344,7 @@ class RestDescription(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MethodsValue object.
+      r"""An additional property for a MethodsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -357,7 +358,7 @@ class RestDescription(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
-    """Common parameters that apply across all apis.
+    r"""Common parameters that apply across all apis.
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -367,7 +368,7 @@ class RestDescription(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ParametersValue object.
+      r"""An additional property for a ParametersValue object.
 
       Fields:
         key: Name of the additional property.
@@ -381,7 +382,7 @@ class RestDescription(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourcesValue(_messages.Message):
-    """The resources in this API.
+    r"""The resources in this API.
 
     Messages:
       AdditionalProperty: An additional property for a ResourcesValue object.
@@ -392,7 +393,7 @@ class RestDescription(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResourcesValue object.
+      r"""An additional property for a ResourcesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -406,7 +407,7 @@ class RestDescription(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SchemasValue(_messages.Message):
-    """The schemas for this API.
+    r"""The schemas for this API.
 
     Messages:
       AdditionalProperty: An additional property for a SchemasValue object.
@@ -416,7 +417,7 @@ class RestDescription(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a SchemasValue object.
+      r"""An additional property for a SchemasValue object.
 
       Fields:
         key: Name of the additional property.
@@ -456,7 +457,7 @@ class RestDescription(_messages.Message):
 
 
 class RestMethod(_messages.Message):
-  """A RestMethod object.
+  r"""A RestMethod object.
 
   Messages:
     MediaUploadValue: Media upload parameters.
@@ -487,7 +488,7 @@ class RestMethod(_messages.Message):
   """
 
   class MediaUploadValue(_messages.Message):
-    """Media upload parameters.
+    r"""Media upload parameters.
 
     Messages:
       ProtocolsValue: Supported upload protocols.
@@ -499,7 +500,7 @@ class RestMethod(_messages.Message):
     """
 
     class ProtocolsValue(_messages.Message):
-      """Supported upload protocols.
+      r"""Supported upload protocols.
 
       Messages:
         ResumableValue: Supports the Resumable Media Upload protocol.
@@ -511,7 +512,7 @@ class RestMethod(_messages.Message):
       """
 
       class ResumableValue(_messages.Message):
-        """Supports the Resumable Media Upload protocol.
+        r"""Supports the Resumable Media Upload protocol.
 
         Fields:
           multipart: True if this endpoint supports uploading multipart media.
@@ -523,7 +524,7 @@ class RestMethod(_messages.Message):
         path = _messages.StringField(2)
 
       class SimpleValue(_messages.Message):
-        """Supports uploading as a single HTTP request.
+        r"""Supports uploading as a single HTTP request.
 
         Fields:
           multipart: True if this endpoint supports upload multipart media.
@@ -543,7 +544,7 @@ class RestMethod(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
-    """Details for all parameters in this method.
+    r"""Details for all parameters in this method.
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -553,7 +554,7 @@ class RestMethod(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ParametersValue object.
+      r"""An additional property for a ParametersValue object.
 
       Fields:
         key: Name of the additional property.
@@ -566,7 +567,7 @@ class RestMethod(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   class RequestValue(_messages.Message):
-    """The schema for the request.
+    r"""The schema for the request.
 
     Fields:
       _ref: Schema ID for the request schema.
@@ -575,7 +576,7 @@ class RestMethod(_messages.Message):
     _ref = _messages.StringField(1)
 
   class ResponseValue(_messages.Message):
-    """The schema for the response.
+    r"""The schema for the response.
 
     Fields:
       _ref: Schema ID for the response schema.
@@ -600,7 +601,7 @@ class RestMethod(_messages.Message):
 
 
 class RestResource(_messages.Message):
-  """A RestResource object.
+  r"""A RestResource object.
 
   Messages:
     MethodsValue: Methods on this resource.
@@ -613,7 +614,7 @@ class RestResource(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MethodsValue(_messages.Message):
-    """Methods on this resource.
+    r"""Methods on this resource.
 
     Messages:
       AdditionalProperty: An additional property for a MethodsValue object.
@@ -623,7 +624,7 @@ class RestResource(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MethodsValue object.
+      r"""An additional property for a MethodsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -637,7 +638,7 @@ class RestResource(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourcesValue(_messages.Message):
-    """Sub-resources on this resource.
+    r"""Sub-resources on this resource.
 
     Messages:
       AdditionalProperty: An additional property for a ResourcesValue object.
@@ -648,7 +649,7 @@ class RestResource(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResourcesValue object.
+      r"""An additional property for a ResourcesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -665,7 +666,7 @@ class RestResource(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     AltValueValuesEnum: Data format for the response.
@@ -688,7 +689,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for the response.
+    r"""Data format for the response.
 
     Values:
       json: Responses with Content-Type of application/json

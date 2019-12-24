@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Higher level functions to support updater operations at the CLI level."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import hashlib
 import os
 import shutil
@@ -21,12 +26,14 @@ import subprocess
 import sys
 import textwrap
 
+from googlecloudsdk.core import argv_utils
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
@@ -40,7 +47,8 @@ from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
 
-import yaml
+import six
+from six.moves import map  # pylint: disable=redefined-builtin
 
 # These are components that used to exist, but we removed.  In order to prevent
 # scripts and installers that use them from getting errors, we will just warn
@@ -324,7 +332,7 @@ class UpdateManager(object):
 
     cwd = None
     try:
-      cwd = encoding.Decode(os.path.realpath(os.getcwd()))
+      cwd = os.path.realpath(file_utils.GetCWD())
     except OSError:
       log.debug('Could not determine CWD, assuming detached directory not '
                 'under SDK root.')
@@ -340,9 +348,9 @@ class UpdateManager(object):
       return True
 
     raise InvalidCWDError(
-        u'Your current working directory is inside the Cloud SDK install root:'
-        u' {root}.  In order to perform this update, run the command from '
-        u'outside of this directory.'.format(root=self.__sdk_root))
+        'Your current working directory is inside the Cloud SDK install root:'
+        ' {root}.  In order to perform this update, run the command from '
+        'outside of this directory.'.format(root=self.__sdk_root))
 
   def _GetDontCancelMessage(self, disable_backup):
     """Get the message to print before udpates.
@@ -373,7 +381,7 @@ class UpdateManager(object):
                                 filename)
     # Check if file exists.
     if os.path.isfile(mapping_path):
-      return yaml.load(file_utils.GetFileContents(mapping_path))
+      return yaml.load_path(mapping_path)
 
   def _ComputeMappingMessage(self, command, commands_map, components_map,
                              components=None):
@@ -606,7 +614,7 @@ version [{1}].  To clear your fixed version setting, run:
     current_state = self._GetInstallState()
     versions = {}
     installed_components = current_state.InstalledComponents()
-    for component_id, component in installed_components.iteritems():
+    for component_id, component in six.iteritems(installed_components):
       component_def = component.ComponentDefinition()
       if component_def.is_configuration or component_def.is_hidden:
         continue
@@ -748,9 +756,9 @@ version [{1}].  To clear your fixed version setting, run:
         fpath = os.path.join(self.__sdk_root, name)
         if not os.path.exists(fpath):
           continue
-        with open(fpath, 'rb') as f:
-          md5 = hashlib.md5(f.read()).hexdigest()
-          md5dict[name] = md5
+
+        md5 = hashlib.md5(file_utils.ReadBinaryFileContents(fpath)).hexdigest()
+        md5dict[name] = md5
       except OSError:
         md5dict[name] = 0
         continue
@@ -890,7 +898,7 @@ version [{1}].  To clear your fixed version setting, run:
     if update_seed:
       update_seed = self._HandleInvalidUpdateSeeds(diff, version, update_seed)
     else:
-      update_seed = diff.current.components.keys()
+      update_seed = list(diff.current.components.keys())
 
     to_remove = diff.ToRemove(update_seed)
     to_install = diff.ToInstall(update_seed)
@@ -909,7 +917,7 @@ version [{1}].  To clear your fixed version setting, run:
     self._RestartIfUsingBundledPython(args=restart_args)
 
     if self.IsPythonBundled() and BUNDLED_PYTHON_COMPONENT in to_remove:
-      log.warn(BUNDLED_PYTHON_REMOVAL_WARNING)
+      log.warning(BUNDLED_PYTHON_REMOVAL_WARNING)
 
     # If explicitly listing components, you are probably installing and not
     # doing a full update, change the message to be more clear.
@@ -1000,10 +1008,11 @@ To revert your SDK to the previously installed version, you may run:
   $ gcloud components update --version {current}
 """.format(current=current_version), word_wrap=False)
 
-    if self.__warn and not os.environ.get('CLOUDSDK_REINSTALL_COMPONENTS'):
+    if (self.__warn and not
+        encoding.GetEncodedValue(os.environ, 'CLOUDSDK_REINSTALL_COMPONENTS')):
       bad_commands = self.FindAllOldToolsOnPath()
       if bad_commands:
-        log.warning(u"""\
+        log.warning("""\
   There are older versions of Google Cloud Platform tools on your system PATH.
   Please remove the following to avoid accidentally invoking these old tools:
 
@@ -1012,13 +1021,13 @@ To revert your SDK to the previously installed version, you may run:
   """.format('\n'.join(bad_commands)))
       duplicate_commands = self.FindAllDuplicateToolsOnPath()
       if duplicate_commands:
-        log.warning(u"""\
+        log.warning("""\
   There are alternate versions of the following Google Cloud Platform tools on
   your system PATH. Please double check your PATH:
 
   {0}
 
-  """.format('\n'.join(duplicate_commands)))
+  """.format('\n  '.join(duplicate_commands)))
 
     return True
 
@@ -1041,7 +1050,7 @@ To revert your SDK to the previously installed version, you may run:
     if not invalid_seeds:
       return update_seed
 
-    if os.environ.get('CLOUDSDK_REINSTALL_COMPONENTS'):
+    if encoding.GetEncodedValue(os.environ, 'CLOUDSDK_REINSTALL_COMPONENTS'):
       # We are doing a reinstall.  Ignore any components that no longer
       # exist.
       return set(update_seed) - invalid_seeds
@@ -1166,7 +1175,7 @@ To revert your SDK to the previously installed version, you may run:
           .format(components=', '.join(not_installed)))
 
     required_components = set(
-        c_id for c_id, component in snapshot.components.iteritems()
+        c_id for c_id, component in six.iteritems(snapshot.components)
         if c_id in id_set and component.is_required)
     if required_components:
       raise InvalidComponentError(
@@ -1192,7 +1201,7 @@ To revert your SDK to the previously installed version, you may run:
     self._RestartIfUsingBundledPython()
 
     if self.IsPythonBundled() and BUNDLED_PYTHON_COMPONENT in to_remove:
-      log.warn(BUNDLED_PYTHON_REMOVAL_WARNING)
+      log.warning(BUNDLED_PYTHON_REMOVAL_WARNING)
 
     message = self._GetDontCancelMessage(disable_backup)
     if not console_io.PromptContinue(message):
@@ -1242,7 +1251,7 @@ To revert your SDK to the previously installed version, you may run:
         BUNDLED_PYTHON_COMPONENT in
         install_state.BackupInstallationState().InstalledComponents())
     if self.IsPythonBundled() and not backup_has_bundled_python:
-      log.warn(BUNDLED_PYTHON_REMOVAL_WARNING)
+      log.warning(BUNDLED_PYTHON_REMOVAL_WARNING)
 
     if not console_io.PromptContinue(
         message='Your Cloud SDK installation will be restored to its previous '
@@ -1295,7 +1304,7 @@ To revert your SDK to the previously installed version, you may run:
     """
     self._CheckIfDisabledAndThrowError()
 
-    if os.environ.get('CLOUDSDK_REINSTALL_COMPONENTS'):
+    if encoding.GetEncodedValue(os.environ, 'CLOUDSDK_REINSTALL_COMPONENTS'):
       # We are already reinstalling but got here somehow.  Something is very
       # wrong and we want to avoid the infinite loop.
       self._RaiseReinstallationFailedError()
@@ -1338,9 +1347,9 @@ To revert your SDK to the previously installed version, you may run:
 
     # shell out to install script
     installed_component_ids = sorted(install_state.InstalledComponents().keys())
-    env = dict(os.environ)
-    env['CLOUDSDK_REINSTALL_COMPONENTS'] = ','.join(
-        installed_component_ids)
+    env = encoding.EncodeEnv(dict(os.environ))
+    encoding.SetEncodedValue(env, 'CLOUDSDK_REINSTALL_COMPONENTS',
+                             ','.join(installed_component_ids))
     installer_path = os.path.join(staging_state.sdk_root,
                                   'bin', 'bootstrapping', 'install.py')
     p = subprocess.Popen([sys.executable, '-S', installer_path], env=env)
@@ -1414,10 +1423,11 @@ prompt, or run:
            components=' '.join(missing_components)))
     except SystemExit:
       # This happens when updating using bundled Python.
-      self.__Write(log.status,
-                   'Installing component in a new window.\n\n'
-                   'Please re-run this command when installation is complete.\n'
-                   '    $ {0}'.format(' '.join(sys.argv)))
+      self.__Write(
+          log.status, 'Installing component in a new window.\n\n'
+          'Please re-run this command when installation is complete.\n'
+          '    $ {0}'.format(' '.join(['gcloud'] +
+                                      argv_utils.GetDecodedArgv()[1:])))
       raise
 
     # Restart the original command.
@@ -1544,16 +1554,16 @@ def RestartCommand(command=None, args=None, python=None, block=True):
       terminate before continuing.
   """
   command = command or config.GcloudPath()
-  command_args = args or sys.argv[1:]
+  command_args = args or argv_utils.GetDecodedArgv()[1:]
   args = execution_utils.ArgsForPythonTool(command, *command_args,
                                            python=python)
-  args = [console_attr.EncodeForConsole(a) for a in args]
+  args = [encoding.Encode(a) for a in args]
 
   short_command = os.path.basename(command)
   if short_command == 'gcloud.py':
     short_command = 'gcloud'
   log_args = ' '.join([
-      console_attr.EncodeForConsole(a) for a in command_args])
+      console_attr.SafeText(a) for a in command_args])
   log.status.Print('Restarting command:\n  $ {command} {args}\n'.format(
       command=short_command, args=log_args))
   log.debug('Restarting command: %s %s', command, args)
@@ -1573,6 +1583,6 @@ def RestartCommand(command=None, args=None, python=None, block=True):
         # end. Otherwise, the output is either lost (without `pause`) or comes
         # out asynchronously over the next commands (without the new window).
         def Quote(s):
-          return '"' + s + '"'
-        args = 'cmd.exe /c "{0} && pause"'.format(' '.join(map(Quote, args)))
+          return '"' + encoding.Decode(s) + '"'
+        args = 'cmd.exe /c "{0} & pause"'.format(' '.join(map(Quote, args)))
     subprocess.Popen(args, shell=True, **popen_args)

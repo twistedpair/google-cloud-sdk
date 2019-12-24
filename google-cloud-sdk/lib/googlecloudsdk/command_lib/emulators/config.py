@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +14,15 @@
 # limitations under the License.
 """Code related to proxy and emulator configuration."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import json
 from googlecloudsdk.command_lib.emulators import datastore_util
 from googlecloudsdk.command_lib.emulators import pubsub_util
 from googlecloudsdk.core.util import files
+import six
 
 
 # This is a list of all of the emulators currently supported, for use in
@@ -38,7 +44,8 @@ def WriteRoutesConfig(emulators, output_file):
     emulators: [str], emulators to route the traffic of
     output_file: str, file to write the configuration to
   """
-  routes = {name: emulator.prefixes for name, emulator in emulators.iteritems()}
+  routes = {name: emulator.prefixes
+            for name, emulator in six.iteritems(emulators)}
 
   files.WriteFileContents(output_file, json.dumps(routes, indent=2))
 

@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +15,31 @@
 
 """A collection of CLI walkers."""
 
-import cStringIO
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import io
 import os
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.calliope import markdown
 from googlecloudsdk.calliope import walker
 from googlecloudsdk.core.document_renderers import render_document
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import pkg_resources
+import six
+
+
+_HELP_HTML_DATA_FILES = [
+    'favicon.ico',
+    'index.html',
+    '_menu_.css',
+    '_menu_.js',
+    '_title_.html',
+]
 
 
 class DevSiteGenerator(walker.Walker):
@@ -42,19 +59,28 @@ class DevSiteGenerator(walker.Walker):
   _REFERENCE = '/sdk/gcloud/reference'  # TOC reference directory offset.
   _TOC = '_toc.yaml'
 
-  def __init__(self, cli, directory):
+  def __init__(self, cli, directory, hidden=False, progress_callback=None,
+               restrict=None):
     """Constructor.
 
     Args:
       cli: The Cloud SDK CLI object.
-      directory: The DevSite output directory path name.
+      directory: The devsite output directory path name.
+      hidden: Boolean indicating whether to consider the hidden CLI.
+      progress_callback: f(float), The function to call to update the progress
+        bar or None for no progress bar.
+      restrict: Restricts the walk to the command/group dotted paths in this
+        list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
+        restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
+        commands/groups.
+
     """
     super(DevSiteGenerator, self).__init__(cli)
     self._directory = directory
     files.MakeDir(self._directory)
     self._need_section_tag = []
     toc_path = os.path.join(self._directory, self._TOC)
-    self._toc_root = open(toc_path, 'w')
+    self._toc_root = files.FileWriter(toc_path)
     self._toc_root.write('toc:\n')
     self._toc_root.write('- title: "gcloud Reference"\n')
     self._toc_root.write('  path: %s\n' % self._REFERENCE)
@@ -87,7 +113,7 @@ class DevSiteGenerator(walker.Walker):
             self._toc_main.close()
           # Create a new main group toc.
           toc_path = os.path.join(directory, self._TOC)
-          toc = open(toc_path, 'w')
+          toc = files.FileWriter(toc_path)
           self._toc_main = toc
           toc.write('toc:\n')
           toc.write('- title: "%s"\n' % title)
@@ -116,18 +142,18 @@ class DevSiteGenerator(walker.Walker):
     command = node.GetPath()
     if is_group:
       directory = os.path.join(self._directory, *command[1:])
-      files.MakeDir(directory, mode=0755)
+      files.MakeDir(directory, mode=0o755)
     else:
       directory = os.path.join(self._directory, *command[1:-1])
 
     # Render the DevSite document.
     path = os.path.join(
         directory, 'index' if is_group else command[-1]) + '.html'
-    with open(path, 'w') as f:
+    with files.FileWriter(path) as f:
       md = markdown.Markdown(node)
       render_document.RenderDocument(style='devsite',
                                      title=' '.join(command),
-                                     fin=cStringIO.StringIO(md),
+                                     fin=io.StringIO(md),
                                      out=f)
     _UpdateTOC()
     return parent
@@ -146,18 +172,21 @@ class HelpTextGenerator(walker.Walker):
     _directory: The help text output directory.
   """
 
-  def __init__(self, cli, directory, progress_callback=None, restrict=None):
+  def __init__(self, cli, directory, hidden=False, progress_callback=None,
+               restrict=None):
     """Constructor.
 
     Args:
       cli: The Cloud SDK CLI object.
-      directory: The help text output directory path name.
+      directory: The Help Text output directory path name.
+      hidden: Boolean indicating whether to consider the hidden CLI.
       progress_callback: f(float), The function to call to update the progress
         bar or None for no progress bar.
       restrict: Restricts the walk to the command/group dotted paths in this
         list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
         restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
         commands/groups.
+
     """
     super(HelpTextGenerator, self).__init__(
         cli, progress_callback=progress_callback, restrict=restrict)
@@ -177,17 +206,18 @@ class HelpTextGenerator(walker.Walker):
     """
     # Set up the destination dir for this level.
     command = node.GetPath()
+
     if is_group:
       directory = os.path.join(self._directory, *command[1:])
-      files.MakeDir(directory, mode=0755)
     else:
       directory = os.path.join(self._directory, *command[1:-1])
 
+    files.MakeDir(directory, mode=0o755)
     # Render the help text document.
     path = os.path.join(directory, 'GROUP' if is_group else command[-1])
-    with open(path, 'w') as f:
+    with files.FileWriter(path) as f:
       md = markdown.Markdown(node)
-      render_document.RenderDocument(style='text', fin=cStringIO.StringIO(md),
+      render_document.RenderDocument(style='text', fin=io.StringIO(md),
                                      out=f)
     return parent
 
@@ -229,14 +259,20 @@ class DocumentGenerator(walker.Walker):
     Returns:
       The parent value, ignored here.
     """
+
+    if self._style == 'linter':
+      meta_data = actions.GetCommandMetaData(node)
+    else:
+      meta_data = None
     command = node.GetPath()
     path = os.path.join(self._directory, '_'.join(command)) + self._suffix
-    with open(path, 'w') as f:
+    with files.FileWriter(path) as f:
       md = markdown.Markdown(node)
       render_document.RenderDocument(style=self._style,
                                      title=' '.join(command),
-                                     fin=cStringIO.StringIO(md),
-                                     out=f)
+                                     fin=io.StringIO(md),
+                                     out=f,
+                                     command_metadata=meta_data)
     return parent
 
 
@@ -247,15 +283,97 @@ class HtmlGenerator(DocumentGenerator):
   HTML manpage files.
   """
 
-  def __init__(self, cli, directory):
+  def WriteHtmlMenu(self, command, out):
+    """Writes the command menu tree HTML on out.
+
+    Args:
+      command: dict, The tree (nested dict) of command/group names.
+      out: stream, The output stream.
+    """
+
+    def ConvertPathToIdentifier(path):
+      return '_'.join(path)
+
+    def WalkCommandTree(command, prefix):
+      """Visit each command and group in the CLI command tree.
+
+      Args:
+        command: dict, The tree (nested dict) of command/group names.
+        prefix: [str], The subcommand arg prefix.
+      """
+      level = len(prefix)
+      visibility = 'visible' if level <= 1 else 'hidden'
+      indent = level * 2 + 2
+      name = command.get('_name_')
+      args = prefix + [name]
+      out.write('{indent}<li class="{visibility}" id="{item}" '
+                'onclick="select(event, this.id)">{name}'.format(
+                    indent=' ' * indent, visibility=visibility, name=name,
+                    item=ConvertPathToIdentifier(args)))
+      commands = command.get('commands', []) + command.get('groups', [])
+      if commands:
+        out.write('<ul>\n')
+        for c in sorted(commands, key=lambda x: x['_name_']):
+          WalkCommandTree(c, args)
+        out.write('{indent}</ul>\n'.format(indent=' ' * (indent + 1)))
+        out.write('{indent}</li>\n'.format(indent=' ' * indent))
+      else:
+        out.write('</li>\n'.format(indent=' ' * (indent + 1)))
+
+    out.write("""\
+<html>
+<head>
+<meta name="description" content="man page tree navigation">
+<meta name="generator" content="gcloud meta generate-help-docs --html-dir=.">
+<title> man page tree navigation </title>
+<base href="." target="_blank">
+<link rel="stylesheet" type="text/css" href="_menu_.css">
+<script type="text/javascript" src="_menu_.js"></script>
+</head>
+<body>
+
+<div class="menu">
+ <ul>
+""")
+    WalkCommandTree(command, [])
+    out.write("""\
+ </ul>
+</div>
+
+</body>
+</html>
+""")
+
+  def _GenerateHtmlNav(self, directory, cli, hidden, restrict):
+    """Generates html nav files in directory."""
+    tree = CommandTreeGenerator(cli).Walk(hidden, restrict)
+    with files.FileWriter(os.path.join(directory, '_menu_.html')) as out:
+      self.WriteHtmlMenu(tree, out)
+    for file_name in _HELP_HTML_DATA_FILES:
+      file_contents = pkg_resources.GetResource(
+          'googlecloudsdk.api_lib.meta.help_html_data.', file_name)
+      files.WriteBinaryFileContents(os.path.join(directory, file_name),
+                                    file_contents)
+
+  def __init__(self, cli, directory, hidden=False, progress_callback=None,
+               restrict=None):
     """Constructor.
 
     Args:
       cli: The Cloud SDK CLI object.
       directory: The HTML output directory path name.
+      hidden: Boolean indicating whether to consider the hidden CLI.
+      progress_callback: f(float), The function to call to update the progress
+        bar or None for no progress bar.
+      restrict: Restricts the walk to the command/group dotted paths in this
+        list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
+        restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
+        commands/groups.
+
     """
     super(HtmlGenerator, self).__init__(
         cli, directory=directory, style='html', suffix='.html')
+    self._GenerateHtmlNav(directory, cli, hidden, restrict)
 
 
 class ManPageGenerator(DocumentGenerator):
@@ -267,18 +385,52 @@ class ManPageGenerator(DocumentGenerator):
 
   _SECTION_FORMAT = 'man{section}'
 
-  def __init__(self, cli, directory):
+  def __init__(self, cli, directory, hidden=False, progress_callback=None,
+               restrict=None):
     """Constructor.
 
     Args:
       cli: The Cloud SDK CLI object.
       directory: The manpage output directory path name.
+      hidden: Boolean indicating whether to consider the hidden CLI.
+      progress_callback: f(float), The function to call to update the progress
+        bar or None for no progress bar.
+      restrict: Restricts the walk to the command/group dotted paths in this
+        list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
+        restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
+        commands/groups.
+
     """
+
     # Currently all gcloud manpages are in section 1.
     section_subdir = self._SECTION_FORMAT.format(section=1)
     section_dir = os.path.join(directory, section_subdir)
     super(ManPageGenerator, self).__init__(
         cli, directory=section_dir, style='man', suffix='.1')
+
+
+class LinterGenerator(DocumentGenerator):
+  """Generates linter files with suffix .json in an output directory."""
+
+  def __init__(self, cli, directory, hidden=False, progress_callback=None,
+               restrict=None):
+    """Constructor.
+
+    Args:
+      cli: The Cloud SDK CLI object.
+      directory: The linter output directory path name.
+      hidden: Boolean indicating whether to consider the hidden CLI.
+      progress_callback: f(float), The function to call to update the progress
+        bar or None for no progress bar.
+      restrict: Restricts the walk to the command/group dotted paths in this
+        list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
+        restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
+        commands/groups.
+
+    """
+
+    super(LinterGenerator, self).__init__(
+        cli, directory=directory, style='linter', suffix='.json')
 
 
 class CommandTreeGenerator(walker.Walker):
@@ -292,15 +444,16 @@ class CommandTreeGenerator(walker.Walker):
     _global_flags: The set of global flags, only listed for the root command.
   """
 
-  def __init__(self, cli, with_flags=False, with_flag_values=False):
+  def __init__(self, cli, with_flags=False, with_flag_values=False, **kwargs):
     """Constructor.
 
     Args:
       cli: The Cloud SDK CLI object.
       with_flags: Include the non-global flags for each command/group if True.
       with_flag_values: Include flags and flag value choices or :type: if True.
+      **kwargs: Other keyword arguments to pass to Walker constructor.
     """
-    super(CommandTreeGenerator, self).__init__(cli)
+    super(CommandTreeGenerator, self).__init__(cli, **kwargs)
     self._with_flags = with_flags or with_flag_values
     self._with_flag_values = with_flag_values
     self._global_flags = set()
@@ -326,7 +479,7 @@ class CommandTreeGenerator(walker.Walker):
           if arg.choices:
             choices = sorted(arg.choices)
             if choices != ['false', 'true']:
-              value = ','.join([str(choice) for choice in choices])
+              value = ','.join([six.text_type(choice) for choice in choices])
           elif isinstance(arg.type, int):
             value = ':int:'
           elif isinstance(arg.type, float):
@@ -378,14 +531,6 @@ class GCloudTreeGenerator(walker.Walker):
 
   This implements the resource generator for gcloud meta list-gcloud.
   """
-
-  def __init__(self, cli):
-    """Constructor.
-
-    Args:
-      cli: The Cloud SDK CLI object.
-    """
-    super(GCloudTreeGenerator, self).__init__(cli)
 
   def Visit(self, node, parent, is_group):
     """Visits each node in the CLI command tree to construct the external rep.

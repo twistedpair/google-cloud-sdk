@@ -24,7 +24,7 @@ class SourceV1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new source handle."""
     url = url or self.BASE_URL
     super(SourceV1, self).__init__(
@@ -33,7 +33,8 @@ class SourceV1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.projects_repos_aliases_files = self.ProjectsReposAliasesFilesService(self)
     self.projects_repos_aliases = self.ProjectsReposAliasesService(self)
     self.projects_repos_files = self.ProjectsReposFilesService(self)
@@ -58,7 +59,7 @@ class SourceV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Read is given a SourceContext and path, and returns.
+      r"""Read is given a SourceContext and path, and returns.
 file or directory information about that path.
 
       Args:
@@ -96,7 +97,7 @@ file or directory information about that path.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new alias. It is an ALREADY_EXISTS error if an alias with that.
+      r"""Creates a new alias. It is an ALREADY_EXISTS error if an alias with that.
 name and kind already exists.
 
       Args:
@@ -123,7 +124,7 @@ name and kind already exists.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the alias with the given name and kind. Kind cannot be ANY.  If.
+      r"""Deletes the alias with the given name and kind. Kind cannot be ANY.  If.
 the alias does not exist, NOT_FOUND is returned.  If the request provides
 a revision ID and the alias does not refer to that revision, ABORTED is
 returned.
@@ -152,7 +153,7 @@ returned.
     )
 
     def Get(self, request, global_params=None):
-      """Returns information about an alias. Kind ANY returns a FIXED or.
+      r"""Returns information about an alias. Kind ANY returns a FIXED or.
 MOVABLE alias, in that order, and ignores all other kinds.
 
       Args:
@@ -179,7 +180,7 @@ MOVABLE alias, in that order, and ignores all other kinds.
     )
 
     def List(self, request, global_params=None):
-      """Returns a list of aliases of the given kind. Kind ANY returns all aliases.
+      r"""Returns a list of aliases of the given kind. Kind ANY returns all aliases.
 in the repo. The order in which the aliases are returned is undefined.
 
       Args:
@@ -206,7 +207,7 @@ in the repo. The order in which the aliases are returned is undefined.
     )
 
     def ListFiles(self, request, global_params=None):
-      """ListFiles returns a list of all files in a SourceContext. The.
+      r"""ListFiles returns a list of all files in a SourceContext. The.
 information about each file includes its path and its hash.
 The result is ordered by path. Pagination is supported.
 
@@ -234,7 +235,7 @@ The result is ordered by path. Pagination is supported.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the alias with the given name and kind. Kind cannot be ANY.  If.
+      r"""Updates the alias with the given name and kind. Kind cannot be ANY.  If.
 the alias does not exist, NOT_FOUND is returned. If the request provides
 an old revision ID and the alias does not refer to that revision, ABORTED
 is returned.
@@ -273,7 +274,7 @@ is returned.
           }
 
     def ReadFromWorkspaceOrAlias(self, request, global_params=None):
-      """ReadFromWorkspaceOrAlias performs a Read using either the most recent.
+      r"""ReadFromWorkspaceOrAlias performs a Read using either the most recent.
 snapshot of the given workspace, if the workspace exists, or the
 revision referred to by the given alias if the workspace does not exist.
 
@@ -312,7 +313,7 @@ revision referred to by the given alias if the workspace does not exist.
           }
 
     def Get(self, request, global_params=None):
-      """Read is given a SourceContext and path, and returns.
+      r"""Read is given a SourceContext and path, and returns.
 file or directory information about that path.
 
       Args:
@@ -350,7 +351,7 @@ file or directory information about that path.
           }
 
     def Get(self, request, global_params=None):
-      """Retrieves revision metadata for a single revision.
+      r"""Retrieves revision metadata for a single revision.
 
       Args:
         request: (SourceProjectsReposRevisionsGetRequest) input message
@@ -376,7 +377,7 @@ file or directory information about that path.
     )
 
     def GetBatchGet(self, request, global_params=None):
-      """Retrieves revision metadata for several revisions at once. It returns an.
+      r"""Retrieves revision metadata for several revisions at once. It returns an.
 error if any retrieval fails.
 
       Args:
@@ -403,7 +404,7 @@ error if any retrieval fails.
     )
 
     def List(self, request, global_params=None):
-      """Retrieves all revisions topologically between the starts and ends.
+      r"""Retrieves all revisions topologically between the starts and ends.
 Uses the commit date to break ties in the topology (e.g. when a revision
 has two parents).
 
@@ -431,7 +432,7 @@ has two parents).
     )
 
     def ListFiles(self, request, global_params=None):
-      """ListFiles returns a list of all files in a SourceContext. The.
+      r"""ListFiles returns a list of all files in a SourceContext. The.
 information about each file includes its path and its hash.
 The result is ordered by path. Pagination is supported.
 
@@ -469,7 +470,7 @@ The result is ordered by path. Pagination is supported.
           }
 
     def Get(self, request, global_params=None):
-      """Read is given a SourceContext and path, and returns.
+      r"""Read is given a SourceContext and path, and returns.
 file or directory information about that path.
 
       Args:
@@ -507,7 +508,7 @@ file or directory information about that path.
           }
 
     def Get(self, request, global_params=None):
-      """Read is given a SourceContext and path, and returns.
+      r"""Read is given a SourceContext and path, and returns.
 file or directory information about that path.
 
       Args:
@@ -545,7 +546,7 @@ file or directory information about that path.
           }
 
     def Get(self, request, global_params=None):
-      """Gets a workspace snapshot.
+      r"""Gets a workspace snapshot.
 
       Args:
         request: (SourceProjectsReposWorkspacesSnapshotsGetRequest) input message
@@ -571,7 +572,7 @@ file or directory information about that path.
     )
 
     def List(self, request, global_params=None):
-      """Lists all the snapshots made to a workspace, sorted from most recent to.
+      r"""Lists all the snapshots made to a workspace, sorted from most recent to.
 least recent.
 
       Args:
@@ -598,7 +599,7 @@ least recent.
     )
 
     def ListFiles(self, request, global_params=None):
-      """ListFiles returns a list of all files in a SourceContext. The.
+      r"""ListFiles returns a list of all files in a SourceContext. The.
 information about each file includes its path and its hash.
 The result is ordered by path. Pagination is supported.
 
@@ -636,7 +637,7 @@ The result is ordered by path. Pagination is supported.
           }
 
     def CommitWorkspace(self, request, global_params=None):
-      """Commits some or all of the modified files in a workspace. This creates a.
+      r"""Commits some or all of the modified files in a workspace. This creates a.
 new revision in the repo with the workspace's contents. Returns ABORTED if the workspace ID
 in the request contains a snapshot ID and it is not the same as the
 workspace's current snapshot ID or if the workspace is simultaneously
@@ -666,7 +667,7 @@ modified by another client.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a workspace.
+      r"""Creates a workspace.
 
       Args:
         request: (SourceProjectsReposWorkspacesCreateRequest) input message
@@ -692,7 +693,7 @@ modified by another client.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a workspace. Uncommitted changes are lost. If the workspace does.
+      r"""Deletes a workspace. Uncommitted changes are lost. If the workspace does.
 not exist, NOT_FOUND is returned. Returns ABORTED when the workspace is
 simultaneously modified by another client.
 
@@ -720,7 +721,7 @@ simultaneously modified by another client.
     )
 
     def Get(self, request, global_params=None):
-      """Returns workspace metadata.
+      r"""Returns workspace metadata.
 
       Args:
         request: (SourceProjectsReposWorkspacesGetRequest) input message
@@ -746,7 +747,7 @@ simultaneously modified by another client.
     )
 
     def List(self, request, global_params=None):
-      """Returns all workspaces belonging to a repo.
+      r"""Returns all workspaces belonging to a repo.
 
       Args:
         request: (SourceProjectsReposWorkspacesListRequest) input message
@@ -772,7 +773,7 @@ simultaneously modified by another client.
     )
 
     def ListFiles(self, request, global_params=None):
-      """ListFiles returns a list of all files in a SourceContext. The.
+      r"""ListFiles returns a list of all files in a SourceContext. The.
 information about each file includes its path and its hash.
 The result is ordered by path. Pagination is supported.
 
@@ -800,7 +801,7 @@ The result is ordered by path. Pagination is supported.
     )
 
     def ModifyWorkspace(self, request, global_params=None):
-      """Applies an ordered sequence of file modification actions to a workspace.
+      r"""Applies an ordered sequence of file modification actions to a workspace.
 Returns ABORTED if current_snapshot_id in the request does not refer to
 the most recent update to the workspace or if the workspace is
 simultaneously modified by another client.
@@ -829,7 +830,7 @@ simultaneously modified by another client.
     )
 
     def RefreshWorkspace(self, request, global_params=None):
-      """Brings a workspace up to date by merging in the changes made between its.
+      r"""Brings a workspace up to date by merging in the changes made between its.
 baseline and the revision to which its alias currently refers.
 FAILED_PRECONDITION is returned if the alias refers to a revision that is
 not a descendant of the workspace baseline, or if the workspace has no
@@ -866,7 +867,7 @@ markers.
     )
 
     def ResolveFiles(self, request, global_params=None):
-      """Marks files modified as part of a merge as having been resolved. Returns.
+      r"""Marks files modified as part of a merge as having been resolved. Returns.
 ABORTED when the workspace is simultaneously modified by another client.
 
       Args:
@@ -893,7 +894,7 @@ ABORTED when the workspace is simultaneously modified by another client.
     )
 
     def RevertRefresh(self, request, global_params=None):
-      """If a call to RefreshWorkspace results in conflicts, use RevertRefresh to.
+      r"""If a call to RefreshWorkspace results in conflicts, use RevertRefresh to.
 restore the workspace to the state it was in before the refresh.  Returns
 FAILED_PRECONDITION if not preceded by a call to RefreshWorkspace, or if
 there are no unresolved conflicts remaining. Returns ABORTED when the
@@ -933,7 +934,7 @@ workspace is simultaneously modified by another client.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a repo in the given project. The provided repo message should have.
+      r"""Creates a repo in the given project. The provided repo message should have.
 its name field set to the desired repo name. No other repo fields should
 be set. Omitting the name is the same as specifying "default"
 
@@ -970,7 +971,7 @@ create other repos with this API and access them at
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a repo.
+      r"""Deletes a repo.
 
       Args:
         request: (SourceProjectsReposDeleteRequest) input message
@@ -996,7 +997,7 @@ create other repos with this API and access them at
     )
 
     def Get(self, request, global_params=None):
-      """Returns information about a repo.
+      r"""Returns information about a repo.
 
       Args:
         request: (SourceProjectsReposGetRequest) input message
@@ -1022,7 +1023,7 @@ create other repos with this API and access them at
     )
 
     def List(self, request, global_params=None):
-      """Returns all repos belonging to a project, specified by its project ID. The.
+      r"""Returns all repos belonging to a project, specified by its project ID. The.
 response list is sorted by name with the default repo listed first.
 
       Args:
@@ -1049,7 +1050,7 @@ response list is sorted by name with the default repo listed first.
     )
 
     def Merge(self, request, global_params=None):
-      """Merges a revision into a movable alias, using a workspace associated with.
+      r"""Merges a revision into a movable alias, using a workspace associated with.
 that alias to store modified files. The workspace must not have any
 modified files. Note that Merge neither creates the workspace nor commits
 it; those actions must be done separately. Returns ABORTED when the
@@ -1079,7 +1080,7 @@ workspace is simultaneously modified by another client.
     )
 
     def Update(self, request, global_params=None):
-      """Updates an existing repo. The only things you can change about a repo are:.
+      r"""Updates an existing repo. The only things you can change about a repo are:.
   1) its repo_sync_config (and then only to add one that is not present);
   2) its last-updated time; and
   3) its name (deprecated and going away b/32283418).
@@ -1128,7 +1129,7 @@ workspace is simultaneously modified by another client.
           }
 
     def ListChangedFiles(self, request, global_params=None):
-      """ListChangedFiles computes the files that have changed between two revisions.
+      r"""ListChangedFiles computes the files that have changed between two revisions.
 or workspace snapshots in the same repo. It returns a list of
 ChangeFileInfos.
 

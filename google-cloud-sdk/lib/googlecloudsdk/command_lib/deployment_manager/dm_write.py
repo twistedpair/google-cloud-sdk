@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,17 +15,23 @@
 
 """Base functions for DM write commands."""
 
-import StringIO
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import io
 import time
 
 from googlecloudsdk.api_lib.deployment_manager import exceptions
+from googlecloudsdk.command_lib.deployment_manager import dm_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
+import six
 
 
-def Execute(client, messages, resources, request, async, call, logger):
+def Execute(client, messages, resources, request, is_async, call, logger):
   """Executes the request, managing asynchronous behavior.
 
   Args:
@@ -32,7 +39,7 @@ def Execute(client, messages, resources, request, async, call, logger):
     messages: The API message to use.
     resources: The API resource to use.
     request: The request to pass call.
-    async: False if this call should poll for the Operation's success.
+    is_async: False if this call should poll for the Operation's success.
     call: Function that calls the appropriate API.
     logger: The log function to use for the operation. Should take the request
         and a boolean arg for async.
@@ -46,7 +53,7 @@ def Execute(client, messages, resources, request, async, call, logger):
     ToolException: Call encountered an error.
   """
   response = call(request)
-  if not async:
+  if not is_async:
     operation_ref = resources.Parse(
         response.name,
         params={'project': properties.VALUES.core.project.GetOrFail},
@@ -55,8 +62,8 @@ def Execute(client, messages, resources, request, async, call, logger):
                      operation_ref.operation, response.operationType,
                      project=request.project)
 
-  logger(request, async)
-  if async:
+  logger(request, is_async)
+  if is_async:
     log.Print('Operation [{0}] running....'.format(response.name))
 
   return response
@@ -71,7 +78,7 @@ def GetOperationError(error):
   Returns:
     A ready-to-print string representation of the error.
   """
-  error_message = StringIO.StringIO()
+  error_message = io.StringIO()
   resource_printer.Print(error, 'yaml', out=error_message)
   return error_message.getvalue()
 
@@ -94,6 +101,9 @@ def WaitForOperation(client, messages, operation_name,
     project: The name of the project that this operation belongs to.
     timeout: Number of seconds to wait for. Defaults to 3 minutes.
 
+  Returns:
+    The operation when it is done.
+
   Raises:
       HttpException: A http error response was received while executing api
           request. Will be raised if the operation cannot be found.
@@ -115,9 +125,9 @@ def WaitForOperation(client, messages, operation_name,
         if operation.error:
           raise exceptions.OperationError(
               'Error in Operation [{0}]: {1}'.format(
-                  operation_name, GetOperationError(operation.error)))
+                  operation_name, dm_util.RenderMessageAsYaml(operation.error)))
         else:  # Operation succeeded
-          return
+          return operation
 
       ticks += tick_increment
       ticker.Tick()
@@ -126,4 +136,4 @@ def WaitForOperation(client, messages, operation_name,
     # Timeout exceeded
     raise exceptions.Error(
         'Wait for Operation [{0}] exceeded timeout [{1}].'.format(
-            operation_name, str(timeout)))
+            operation_name, six.text_type(timeout)))

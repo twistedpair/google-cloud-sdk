@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -64,11 +65,34 @@ aren't. Don't fiddle with the spacing in the list => string code without
 verifying against the actual compute implementation.
 """
 
-import re
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from apitools.base.protorpclite import messages
 from googlecloudsdk.core.resource import resource_expr_rewrite
 from googlecloudsdk.core.util import times
+
+import six
+
+
+def _EscapePattern(pattern):
+  """Escapes special regex characters and double quotes in the pattern.
+
+  This is basically identical to Python 3.7's implementation of re.escape(),
+  except that it also includes double quotes in the set of characters that need
+  escaping (needed for proper filter rewriting behavior).
+
+  Args:
+    pattern: A regex pattern.
+
+  Returns:
+    The pattern with double quotes and special regex characters escaped.
+  """
+  special_chars_map = {
+      i: '\\' + chr(i)
+      for i in six.iterbytes(b'"()[]{}?*+-|^$\\.&~# \t\n\r\v\f')}
+  return pattern.translate(special_chars_map)
 
 
 def ConvertEQPatternToFullMatch(pattern):
@@ -77,7 +101,7 @@ def ConvertEQPatternToFullMatch(pattern):
   This function converts pattern such that the compute filter expression
     subject eq ConvertEQPatternToFullMatch(pattern)
   matches (the entire subject matches) IFF
-    re.search(r'\b' + re.escape(pattern) + r'\b', subject)
+    re.search(r'\b' + _EscapePattern(pattern) + r'\b', subject)
   matches (pattern matches anywhere in subject).
 
   Args:
@@ -86,8 +110,7 @@ def ConvertEQPatternToFullMatch(pattern):
   Returns:
     The converted = pattern suitable for the compute eq filter match operator.
   """
-  # re.escape() also escapes " which is a good thing in this context.
-  return r'".*\b{pattern}\b.*"'.format(pattern=re.escape(pattern))
+  return r'".*\b{pattern}\b.*"'.format(pattern=_EscapePattern(pattern))
 
 
 def ConvertHASPatternToFullMatch(pattern):
@@ -96,8 +119,8 @@ def ConvertHASPatternToFullMatch(pattern):
   This function converts pattern such that the compute filter expression
     subject eq ConvertREPatternToFullMatch(pattern)
   matches (the entire subject matches) IFF
-    re.search(r'\b' + re.escape(pattern) + r'\b', subject)  # no trailing '*'
-    re.search(r'\b' + re.escape(pattern[:-1]), subject)     # trailing '*'
+    re.search(r'\b' + _EscapePattern(pattern) + r'\b', subject)  # no trailing *
+    re.search(r'\b' + _EscapePattern(pattern[:-1]), subject)     # trailing *
   matches (pattern matches anywhere in subject).
 
   Args:
@@ -113,9 +136,8 @@ def ConvertHASPatternToFullMatch(pattern):
     right = '.*'
   else:
     right = r'\b.*'
-  # re.escape() also escapes " which is a good thing in this context.
   return r'"{left}{pattern}{right}"'.format(
-      left=left, pattern=re.escape(pattern), right=right)
+      left=left, pattern=_EscapePattern(pattern), right=right)
 
 
 def ConvertREPatternToFullMatch(pattern, wordmatch=False):
@@ -193,7 +215,7 @@ def _GuessOperandType(operand):
     return bool
   if operand.replace('_', '').isupper():
     return messages.EnumField
-  return unicode
+  return six.text_type
 
 
 class Rewriter(resource_expr_rewrite.Backend):
@@ -235,6 +257,11 @@ class Rewriter(resource_expr_rewrite.Backend):
     Returns:
       A rewritten expression node or None if not supported server side.
     """
+    # TODO(b/77934881) compute API labels filter workaround
+    if key.split('.')[0] == 'labels':
+      # server side labels matching is currently problematic
+      return None
+
     if isinstance(operand, list):
       # foo:(bar,baz) needs OR
       return None
@@ -242,7 +269,7 @@ class Rewriter(resource_expr_rewrite.Backend):
     # Determine if the operand is matchable or a literal string.
     if not key_type:
       key_type = _GuessOperandType(operand)
-    matchable = key_type is unicode
+    matchable = key_type is six.text_type
 
     # Convert time stamps to ISO RFC 3339 normal form.
     if key.endswith('Timestamp') or key.endswith('_timestamp'):

@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +14,12 @@
 # limitations under the License.
 """Flags for OS Login subcommands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.core.util import files
 
 
 def AddKeyFlags(parser, action, additional_help=''):
@@ -42,16 +48,15 @@ def AddTtlFlag(parser, required=False):
       help="""\
           The amount of time before the SSH key expires. For example,
           specifying ``30m'' will set the expiration time on the SSH key for
-          30 minutes from the current time. Valid units for this flag are
-          ``s'' for seconds, ``m'' for minutes, ``h'' for hours, and ``d''
-          for days. A value of 0 will result in no expiration time.
+          30 minutes from the current time. A value of 0 will result in no
+          expiration time.
+          See $ gcloud topic datetimes for information on duration formats.
           """)
 
 
 def GetKeyFromArgs(args):
   if args.key_file:
-    with open(args.key_file, 'r') as k:
-      key = k.read()
+    key = files.ReadFileContents(args.key_file)
   else:
     key = args.key
 

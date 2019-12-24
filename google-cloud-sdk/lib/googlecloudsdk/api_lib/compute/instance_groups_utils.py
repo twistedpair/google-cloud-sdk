@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,36 +13,43 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Convenience functions and classes for dealing with instances groups."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from apitools.base.py import encoding
 import enum
 
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import properties
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 
 INSTANCE_GROUP_GET_NAMED_PORT_DETAILED_HELP = {
     'brief': 'Lists the named ports for an instance group resource',
-    'DESCRIPTION': """\
-        Named ports are key:value pairs metadata representing
-        the service name and the port that it's running on. Named ports
-        can be assigned to an instance group, which indicates that the service
-        is available on all instances in the group. This information is used
-        by the HTTP Load Balancing service.
+    'DESCRIPTION': """
+Named ports are key:value pairs metadata representing
+the service name and the port that it's running on. Named ports
+can be assigned to an instance group, which indicates that the service
+is available on all instances in the group. This information is used
+by the HTTP Load Balancing service.
 
-        *{command}* lists the named ports (name and port tuples)
-        for an instance group.
-        """,
-    'EXAMPLES': """\
-        For example, to list named ports for an instance group:
+*{command}* lists the named ports (name and port tuples)
+for an instance group.
+""",
+    'EXAMPLES': """
+For example, to list named ports for an instance group:
 
-          $ {command} example-instance-group --zone us-central1-a
+  $ {command} example-instance-group --zone=us-central1-a
 
-        The above example lists named ports assigned to an instance
-        group named 'example-instance-group' in the ``us-central1-a'' zone.
-        """,
+The above example lists named ports assigned to an instance
+group named 'example-instance-group' in the ``us-central1-a'' zone.
+""",
 }
 
 # max_langth limit of instances field in InstanceGroupManagers*InstancesRequest
@@ -67,7 +75,7 @@ def ValidateInstanceInZone(instances, zone):
   invalid_instances = [inst.SelfLink()
                        for inst in instances if inst.zone != zone]
   if any(invalid_instances):
-    raise exceptions.InvalidArgumentException(
+    raise calliope_exceptions.InvalidArgumentException(
         'instances', 'The zone of instance must match the instance group zone. '
         'Following instances has invalid zone: %s'
         % ', '.join(invalid_instances))
@@ -115,7 +123,7 @@ def OutputNamedPortsForGroup(group_ref, compute_client):
   return list(UnwrapResponse(results, 'namedPorts'))
 
 
-class FingerprintFetchException(core_exceptions.Error):
+class FingerprintFetchException(exceptions.Error):
   """Exception thrown when there is a problem with getting fingerprint."""
 
 
@@ -194,11 +202,11 @@ def ValidateAndParseNamedPortsArgs(messages, named_ports):
   ports = []
   for named_port in named_ports:
     if named_port.count(':') != 1:
-      raise exceptions.InvalidArgumentException(
+      raise calliope_exceptions.InvalidArgumentException(
           named_port, 'Named ports should follow NAME:PORT format.')
     host, port = named_port.split(':')
     if not port.isdigit():
-      raise exceptions.InvalidArgumentException(
+      raise calliope_exceptions.InvalidArgumentException(
           named_port, 'Named ports should follow NAME:PORT format.')
     ports.append(messages.NamedPort(name=host, port=int(port)))
   return ports
@@ -206,34 +214,34 @@ def ValidateAndParseNamedPortsArgs(messages, named_ports):
 
 SET_NAMED_PORTS_HELP = {
     'brief': 'Sets the list of named ports for an instance group',
-    'DESCRIPTION': """\
-        Named ports are key:value pairs metadata representing
-        the service name and the port that it's running on. Named ports
-        can be assigned to an instance group, which
-        indicates that the service is available on all instances in the
-        group. This information is used by the HTTP Load Balancing
-        service.
+    'DESCRIPTION': """
+Named ports are key:value pairs metadata representing
+the service name and the port that it's running on. Named ports
+can be assigned to an instance group, which
+indicates that the service is available on all instances in the
+group. This information is used by the HTTP Load Balancing
+service.
 
-        *{command}* sets the list of named ports for all instances
-        in an instance group.
+*{command}* sets the list of named ports for all instances
+in an instance group.
 
-        Note: Running this command will clear all existing named ports.
-        """,
-    'EXAMPLES': """\
-        For example, to apply the named ports to an entire instance group:
+Note: Running this command will clear all existing named ports.
+""",
+    'EXAMPLES': """
+For example, to apply the named ports to an entire instance group:
 
-          $ {command} example-instance-group --named-ports example-service:1111 --zone us-central1-a
+  $ {command} example-instance-group --named-ports=example-service:1111 --zone=us-central1-a
 
-        The above example will assign a name 'example-service' for port 1111
-        to the instance group called 'example-instance-group' in the
-        ``us-central1-a'' zone. The command removes any named ports that are
-        already set for this instance group.
+The above example will assign a name 'example-service' for port 1111
+to the instance group called 'example-instance-group' in the
+``us-central1-a'' zone. The command removes any named ports that are
+already set for this instance group.
 
-        To clear named ports from instance group provide empty named ports
-        list as parameter:
+To clear named ports from instance group provide empty named ports
+list as parameter:
 
-          $ {command} example-instance-group --named-ports "" --zone us-central1-a
-        """,
+  $ {command} example-instance-group --named-ports="" --zone=us-central1-a
+""",
 }
 
 
@@ -251,7 +259,7 @@ def CreateInstanceReferences(
           },
           collection='compute.instances'))
     return [instance_ref.SelfLink() for instance_ref in instance_refs]
-  else:
+  elif igm_ref.Collection() == 'compute.regionInstanceGroupManagers':
     service = compute_client.apitools_client.regionInstanceGroupManagers
     request = service.GetRequestType('ListManagedInstances')(
         instanceGroupManager=igm_ref.Name(),
@@ -263,6 +271,8 @@ def CreateInstanceReferences(
     return [instance_ref.instance for instance_ref in results
             if path_simplifier.Name(instance_ref.instance) in instance_names
             or instance_ref.instance in instance_names]
+  else:
+    raise ValueError('Unknown reference type {0}'.format(igm_ref.Collection()))
 
 
 def SplitInstancesInRequest(request,
@@ -298,7 +308,7 @@ def SplitInstancesInRequest(request,
   result = []
   all_instances = getattr(request, request_field).instances or []
   n = len(all_instances)
-  for i in xrange(0, n, max_length):
+  for i in range(0, n, max_length):
     request_part = encoding.CopyProtoMessage(request)
     field = getattr(request_part, request_field)
     field.instances = all_instances[i:i+max_length]
@@ -389,7 +399,7 @@ def ComputeInstanceGroupManagerMembership(
     project_to_zones[zone_ref.project].add(zone_ref.zone)
 
   zonal_instance_group_managers = []
-  for project, zones in project_to_zones.iteritems():
+  for project, zones in six.iteritems(project_to_zones):
     zonal_instance_group_managers.extend(lister.GetZonalResources(
         service=client.apitools_client.instanceGroupManagers,
         project=project,
@@ -409,7 +419,7 @@ def ComputeInstanceGroupManagerMembership(
       if region_ref.project not in project_to_regions:
         project_to_regions[region_ref.project] = set()
       project_to_regions[region_ref.project].add(region_ref.region)
-    for project, regions in project_to_regions.iteritems():
+    for project, regions in six.iteritems(project_to_regions):
       regional_instance_group_managers.extend(lister.GetRegionalResources(
           service=client.apitools_client.regionInstanceGroupManagers,
           project=project,

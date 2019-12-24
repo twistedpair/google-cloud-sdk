@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Fingerprinting code for the Go runtime."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import fnmatch
 import os
 import re
@@ -23,6 +28,9 @@ from gae_ext_runtime import ext_runtime
 
 from googlecloudsdk.api_lib.app.images import config as images_config
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import files
+import six
+
 
 NAME ='go'
 ALLOWED_RUNTIME_NAMES = ('go', 'custom')
@@ -151,7 +159,7 @@ def _GoFiles(path):
     ([str, ...]) List of full pathnames for all '*.go' files under 'path' dir.
   """
   go_files = []
-  for root, _, filenames in os.walk(path):
+  for root, _, filenames in os.walk(six.text_type(path)):
     for filename in fnmatch.filter(filenames, '*.go'):
       go_files.append(os.path.join(root, filename))
   return go_files
@@ -166,7 +174,7 @@ def _FindMain(filename):
   Returns:
     (bool) True if main is found in filename.
   """
-  with open(filename) as f:
+  with files.FileReader(filename) as f:
     found_package = False
     found_func = False
     for line in f:

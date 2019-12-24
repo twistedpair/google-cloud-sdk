@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,26 +15,54 @@
 
 """Helper methods for record-set transactions."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import os
 from dns import rdatatype
 from googlecloudsdk.api_lib.dns import import_util
 from googlecloudsdk.api_lib.dns import util
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
-import yaml
+from googlecloudsdk.core.util import files
 
 
 DEFAULT_PATH = 'transaction.yaml'
 
 
-class CorruptedTransactionFileError(core_exceptions.Error):
+class Error(exceptions.Error):
+  """Base exception for all transaction errors."""
+
+
+class TransactionFileAlreadyExists(Error):
+  """Transaction file already exists."""
+
+
+class UnableToAccessTransactionFile(Error):
+  """Unable to access transaction file."""
+
+
+class UnsupportedRecordType(Error):
+  """Unsupported record-set type."""
+
+
+class TransactionFileNotFound(Error):
+  """Transaction file not found."""
+
+
+class CorruptedTransactionFileError(Error):
 
   def __init__(self):
     super(CorruptedTransactionFileError, self).__init__(
         'Corrupted transaction file.\n\n'
         'Please abort and start a new transaction.')
+
+
+class RecordDoesNotExist(Error):
+  """Specified record-set does not exist."""
 
 
 def WriteToYamlFile(yaml_file, change):
@@ -84,8 +113,8 @@ def ChangeFromYamlFile(yaml_file, api_version='v1'):
   """
   messages = apis.GetMessagesModule('dns', api_version)
   try:
-    change_dict = yaml.safe_load(yaml_file) or {}
-  except yaml.error.YAMLError:
+    change_dict = yaml.load(yaml_file) or {}
+  except yaml.YAMLParseError:
     raise CorruptedTransactionFileError()
   if (change_dict.get('additions') is None or
       change_dict.get('deletions') is None):
@@ -106,7 +135,7 @@ def CreateRecordSetFromArgs(args, api_version='v1'):
     api_version: [str], the api version to use for creating the RecordSet.
 
   Raises:
-    ToolException: If given record-set type is not supported
+    UnsupportedRecordType: If given record-set type is not supported
 
   Returns:
     ResourceRecordSet, the record-set created from the given args.
@@ -114,8 +143,8 @@ def CreateRecordSetFromArgs(args, api_version='v1'):
   messages = apis.GetMessagesModule('dns', api_version)
   rd_type = rdatatype.from_text(args.type)
   if import_util.GetRdataTranslation(rd_type) is None:
-    raise exceptions.ToolException(
-        'unsupported record-set type [{0}]'.format(args.type))
+    raise UnsupportedRecordType(
+        'Unsupported record-set type [{0}]'.format(args.type))
 
   record_set = messages.ResourceRecordSet()
   # Need to assign kind to default value for useful equals comparisons.
@@ -134,17 +163,22 @@ class TransactionFile(object):
 
   def __init__(self, trans_file_path, mode='r'):
     if not os.path.isfile(trans_file_path):
-      raise exceptions.ToolException(
-          'transaction not found at [{0}]'.format(trans_file_path))
+      raise TransactionFileNotFound(
+          'Transaction not found at [{0}]'.format(trans_file_path))
 
     self.__trans_file_path = trans_file_path
 
     try:
-      self.__trans_file = open(trans_file_path, mode)
+      if mode == 'r':
+        self.__trans_file = files.FileReader(trans_file_path)
+      elif mode == 'w':
+        self.__trans_file = files.FileWriter(trans_file_path)
+      else:
+        raise ValueError('Unrecognized mode [{}]'.format(mode))
     except IOError as exp:
-      msg = 'unable to open transaction [{0}] because [{1}]'
+      msg = 'Unable to open transaction [{0}] because [{1}]'
       msg = msg.format(trans_file_path, exp)
-      raise exceptions.ToolException(msg)
+      raise UnableToAccessTransactionFile(msg)
 
   def __enter__(self):
     return self.__trans_file
@@ -152,7 +186,7 @@ class TransactionFile(object):
   def __exit__(self, typ, value, traceback):
     self.__trans_file.close()
 
-    if typ is IOError or typ is yaml.YAMLError:
-      msg = 'unable to read/write transaction [{0}] because [{1}]'
+    if typ is IOError or typ is yaml.Error:
+      msg = 'Unable to read/write transaction [{0}] because [{1}]'
       msg = msg.format(self.__trans_file_path, value)
-      raise exceptions.ToolException(msg)
+      raise UnableToAccessTransactionFile(msg)

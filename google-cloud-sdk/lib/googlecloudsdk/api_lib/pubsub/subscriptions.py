@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,15 +12,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Utilities for Cloud Pub/Sub Subscriptions API."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from apitools.base.py import list_pager
+
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import exceptions
 
 
 DEFAULT_MESSAGE_RETENTION_VALUE = 'default'
+NEVER_EXPIRATION_PERIOD_VALUE = 'never'
+CLEAR_DEAD_LETTER_VALUE = 'clear'
 
 
 class NoFieldsSpecifiedError(exceptions.Error):
@@ -80,9 +89,19 @@ class SubscriptionsClient(object):
 
     return self._service.Get(get_req)
 
-  def Create(self, subscription_ref, topic_ref, ack_deadline, push_config=None,
-             retain_acked_messages=None, message_retention_duration=None,
-             labels=None):
+  def Create(self,
+             subscription_ref,
+             topic_ref,
+             ack_deadline,
+             push_config=None,
+             retain_acked_messages=None,
+             message_retention_duration=None,
+             labels=None,
+             no_expiration=False,
+             expiration_period=None,
+             enable_message_ordering=None,
+             dead_letter_topic=None,
+             max_delivery_attempts=None):
     """Creates a Subscription.
 
     Args:
@@ -97,6 +116,13 @@ class SubscriptionsClient(object):
       retain_acked_messages (bool): Whether or not to retain acked messages.
       message_retention_duration (int): How long to retained unacked messages.
       labels (Subscriptions.LabelsValue): The labels for the request.
+      no_expiration (bool): Whether or not to set no expiration on subscription.
+      expiration_period (str): TTL on expiration_policy.
+      enable_message_ordering (bool): Whether or not to deliver messages with
+        the same ordering key in order.
+      dead_letter_topic (str): Topic for publishing dead messages.
+      max_delivery_attempts (int): Threshold of failed deliveries before sending
+        message to the dead letter topic.
     Returns:
       Subscription: the created subscription
     """
@@ -107,7 +133,12 @@ class SubscriptionsClient(object):
         pushConfig=push_config,
         retainAckedMessages=retain_acked_messages,
         labels=labels,
-        messageRetentionDuration=message_retention_duration)
+        messageRetentionDuration=message_retention_duration,
+        expirationPolicy=self._ExpirationPolicy(no_expiration,
+                                                expiration_period),
+        enableMessageOrdering=enable_message_ordering,
+        deadLetterPolicy=self._DeadLetterPolicy(dead_letter_topic,
+                                                max_delivery_attempts))
 
     return self._service.Create(subscription)
 
@@ -178,19 +209,22 @@ class SubscriptionsClient(object):
         subscription=subscription_ref.RelativeName())
     return self._service.ModifyPushConfig(mod_req)
 
-  def Pull(self, subscription_ref, max_messages):
+  def Pull(self, subscription_ref, max_messages, return_immediately=True):
     """Pulls one or more messages from a Subscription.
 
     Args:
       subscription_ref (Resource): Resource reference for subscription to be
         pulled from.
       max_messages (int): The maximum number of messages to retrieve.
+      return_immediately (bool): Whether or not to return immediately without
+        waiting for a new message for a bounded amount of time if there is
+        nothing to pull right now.
     Returns:
       PullResponse: proto containing the received messages.
     """
     pull_req = self.messages.PubsubProjectsSubscriptionsPullRequest(
         pullRequest=self.messages.PullRequest(
-            maxMessages=max_messages, returnImmediately=True),
+            maxMessages=max_messages, returnImmediately=return_immediately),
         subscription=subscription_ref.RelativeName())
     return self._service.Pull(pull_req)
 
@@ -212,13 +246,58 @@ class SubscriptionsClient(object):
         subscription=subscription_ref.RelativeName())
     return self._service.Seek(seek_req)
 
+  def _ExpirationPolicy(self, no_expiration, expiration_period):
+    """Build ExpirationPolicy message from argument values.
+
+    Args:
+      no_expiration (bool): Whether or not to set no expiration on subscription.
+      expiration_period (str): TTL on expiration_policy.
+    Returns:
+      ExpirationPolicy message or None.
+    """
+    if no_expiration:
+      return self.messages.ExpirationPolicy(ttl=None)
+    if expiration_period:
+      return self.messages.ExpirationPolicy(ttl=expiration_period)
+    return None
+
+  def _DeadLetterPolicy(self, dead_letter_topic, max_delivery_attempts):
+    """Builds DeadLetterPolicy message from argument values.
+
+    Args:
+      dead_letter_topic (str): Topic for publishing dead messages.
+      max_delivery_attempts (int): Threshold of failed deliveries before sending
+        message to the dead letter topic.
+
+    Returns:
+      DeadLetterPolicy message or None.
+    """
+    if dead_letter_topic:
+      return self.messages.DeadLetterPolicy(
+          deadLetterTopic=dead_letter_topic,
+          maxDeliveryAttempts=max_delivery_attempts)
+    return None
+
   def _HandleMessageRetentionUpdate(self, update_setting):
     if update_setting.value == DEFAULT_MESSAGE_RETENTION_VALUE:
       update_setting.value = None
 
-  def Patch(self, subscription_ref, ack_deadline=None, push_config=None,
-            retain_acked_messages=None, message_retention_duration=None,
-            labels=None):
+  def _HandleDeadLetterPolicyUpdate(self, update_setting):
+    if update_setting.value == CLEAR_DEAD_LETTER_VALUE:
+      update_setting.value = None
+
+  def Patch(self,
+            subscription_ref,
+            ack_deadline=None,
+            push_config=None,
+            retain_acked_messages=None,
+            message_retention_duration=None,
+            labels=None,
+            no_expiration=False,
+            expiration_period=None,
+            dead_letter_topic=None,
+            max_delivery_attempts=None,
+            clear_dead_letter_policy=False):
     """Updates a Subscription.
 
     Args:
@@ -231,27 +310,33 @@ class SubscriptionsClient(object):
       retain_acked_messages (bool): Whether or not to retain acked messages.
       message_retention_duration (str): How long to retained unacked messages.
       labels (LabelsValue): The Cloud labels for the subscription.
+      no_expiration (bool): Whether or not to set no expiration on subscription.
+      expiration_period (str): TTL on expiration_policy.
+      dead_letter_topic (str): Topic for publishing dead messages.
+      max_delivery_attempts (int): Threshold of failed deliveries before sending
+        message to the dead letter topic.
+      clear_dead_letter_policy (bool): If set, clear the dead letter policy from
+        the subscription.
     Returns:
       Subscription: The updated subscription.
     Raises:
       NoFieldsSpecifiedError: if no fields were specified.
     """
     update_settings = [
+        _SubscriptionUpdateSetting('ackDeadlineSeconds', ack_deadline),
+        _SubscriptionUpdateSetting('pushConfig', push_config),
+        _SubscriptionUpdateSetting('retainAckedMessages',
+                                   retain_acked_messages),
+        _SubscriptionUpdateSetting('messageRetentionDuration',
+                                   message_retention_duration),
+        _SubscriptionUpdateSetting('labels', labels),
         _SubscriptionUpdateSetting(
-            'ackDeadlineSeconds',
-            ack_deadline),
+            'expirationPolicy',
+            self._ExpirationPolicy(no_expiration, expiration_period)),
         _SubscriptionUpdateSetting(
-            'pushConfig',
-            push_config),
-        _SubscriptionUpdateSetting(
-            'retainAckedMessages',
-            retain_acked_messages),
-        _SubscriptionUpdateSetting(
-            'messageRetentionDuration',
-            message_retention_duration),
-        _SubscriptionUpdateSetting(
-            'labels',
-            labels),
+            'deadLetterPolicy',
+            CLEAR_DEAD_LETTER_VALUE if clear_dead_letter_policy else
+            self._DeadLetterPolicy(dead_letter_topic, max_delivery_attempts)),
     ]
     subscription = self.messages.Subscription(
         name=subscription_ref.RelativeName())
@@ -260,6 +345,8 @@ class SubscriptionsClient(object):
       if update_setting.value is not None:
         if update_setting.field_name == 'messageRetentionDuration':
           self._HandleMessageRetentionUpdate(update_setting)
+        if update_setting.field_name == 'deadLetterPolicy':
+          self._HandleDeadLetterPolicyUpdate(update_setting)
         setattr(subscription, update_setting.field_name, update_setting.value)
         update_mask.append(update_setting.field_name)
     if not update_mask:
@@ -335,4 +422,3 @@ class SubscriptionsClient(object):
     policy = self.GetIamPolicy(subscription_ref)
     iam_util.RemoveBindingFromIamPolicy(policy, member, role)
     return self.SetIamPolicy(subscription_ref, policy)
-

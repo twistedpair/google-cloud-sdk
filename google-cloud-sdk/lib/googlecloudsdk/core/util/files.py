@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +15,14 @@
 
 """Some general file utilities used that can be used by the Cloud SDK."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import contextlib
 import errno
 import hashlib
+import io
 import logging
 import os
 import shutil
@@ -24,11 +30,14 @@ import stat
 import sys
 import tempfile
 import time
-import traceback
 
-from googlecloudsdk.core.util import encoding
+from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.util import encoding as encoding_util
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import retry
+
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 
 NUM_RETRIES = 10
 
@@ -43,6 +52,11 @@ except NameError:
 
 class Error(Exception):
   """Base exception for the file_utils module."""
+  pass
+
+
+class MissingFileError(Error):
+  """Error for when a file does not exist."""
   pass
 
 
@@ -68,7 +82,7 @@ def CopyTree(src, dst):
   os.makedirs(dst)
   errors = []
   for name in os.listdir(src):
-    name = encoding.Decode(name)
+    name = encoding_util.Decode(name)
     srcname = os.path.join(src, name)
     dstname = os.path.join(dst, name)
     try:
@@ -82,12 +96,12 @@ def CopyTree(src, dst):
     except shutil.Error as err:
       errors.extend(err.args[0])
     except EnvironmentError as why:
-      errors.append((srcname, dstname, str(why)))
+      errors.append((srcname, dstname, six.text_type(why)))
   if errors:
     raise shutil.Error(errors)
 
 
-def MakeDir(path, mode=0777):
+def MakeDir(path, mode=0o777):
   """Creates the given directory and its parents and does not fail if it exists.
 
   Args:
@@ -103,26 +117,18 @@ def MakeDir(path, mode=0777):
   try:
     os.makedirs(path, mode=mode)
   except OSError as ex:
-    base_msg = u'Could not create directory [{0}]: '.format(path)
+    base_msg = 'Could not create directory [{0}]: '.format(path)
     if ex.errno == errno.EEXIST and os.path.isdir(path):
       pass
     elif ex.errno == errno.EEXIST and os.path.isfile(path):
-      raise Error(base_msg + u'A file exists at that location.\n\n')
+      raise Error(base_msg + 'A file exists at that location.\n\n')
     elif ex.errno == errno.EACCES:
       raise Error(
-          base_msg + u'Permission denied.\n\n' +
-          (u'Please verify that you have permissions to write to the parent '
-           u'directory.'))
+          base_msg + 'Permission denied.\n\n' +
+          ('Please verify that you have permissions to write to the parent '
+           'directory.'))
     else:
       raise
-
-
-def Open(path, *args, **kwargs):
-  """Opens a file (wrapper for open()), or '-' for stdin."""
-  if path == '-':
-    return contextlib.closing(sys.stdin)
-  else:
-    return open(path, *args, **kwargs)
 
 
 def _WaitForRetry(retries_left):
@@ -157,12 +163,13 @@ def _ShouldRetryOperation(func, exc_info):
   Returns:
     True if the error can be retried or false if we should just fail.
   """
-  if not (func == os.remove or func == os.rmdir):
+  # os.unlink is the same as os.remove
+  if not (func == os.remove or func == os.rmdir or func == os.unlink):
     return False
-  if not WindowsError or exc_info[0] != WindowsError:
+  if not WindowsError:
     return False
   e = exc_info[1]
-  return e.winerror in RETRY_ERROR_CODES
+  return getattr(e, 'winerror', None) in RETRY_ERROR_CODES
 
 
 def _RetryOperation(exc_info, func, args,
@@ -185,7 +192,7 @@ def _RetryOperation(exc_info, func, args,
   retries_left = NUM_RETRIES
   while retries_left > 0 and retry_test_function(func, exc_info):
     logging.debug(
-        u'Retrying file system operation: %s, %s, %s, retries_left=%s',
+        'Retrying file system operation: %s, %s, %s, retries_left=%s',
         func, args, exc_info, retries_left)
     retries_left -= 1
     try:
@@ -199,19 +206,23 @@ def _RetryOperation(exc_info, func, args,
 
 
 def _HandleRemoveError(func, failed_path, exc_info):
-  """A fucntion to pass as the onerror arg to rmdir for handling errors.
+  """A function to pass as the onerror arg to rmdir for handling errors.
 
   Args:
     func: function, The function that failed.
     failed_path: str, The path of the file the error occurred on.
     exc_info: sys.exc_info(), The current exception state.
   """
-  logging.debug(u'Handling file system error: %s, %s, %s',
+  logging.debug('Handling file system error: %s, %s, %s',
                 func, failed_path, exc_info)
 
   # Access denied on Windows. This happens when trying to delete a readonly
   # file. Change the permissions and retry the delete.
-  if exc_info[0] == WindowsError and exc_info[1].winerror == 5:
+  #
+  # In python 3.3+, WindowsError is an alias of OSError and exc_info[0] can be
+  # a subclass of OSError.
+  if (WindowsError and issubclass(exc_info[0], WindowsError) and
+      getattr(exc_info[1], 'winerror', None) == 5):
     os.chmod(failed_path, stat.S_IWUSR)
 
   # Don't remove the trailing comma in the passed arg tuple.  It indicates that
@@ -219,9 +230,7 @@ def _HandleRemoveError(func, failed_path, exc_info):
   # by *args.
   if not _RetryOperation(exc_info, func, (failed_path,), _ShouldRetryOperation):
     # Always raise the original error.
-    # raises is weird in that you can raise exc_info directly even though it's
-    # a tuple.
-    raise exc_info[0], exc_info[1], exc_info[2]
+    exceptions.reraise(exc_info[1], tb=exc_info[2])
 
 
 def RmTree(path):
@@ -237,11 +246,11 @@ def RmTree(path):
   # containing unicode characters. If the arg to shutil.rmtree() is not unicode
   # then any child unicode files will raise an exception. Coercing dir_path to
   # unicode makes shutil.rmtree() play nice with unicode.
-  path = unicode(path)
+  path = six.text_type(path)
   shutil.rmtree(path, onerror=_HandleRemoveError)
   retries_left = NUM_RETRIES
   while os.path.isdir(path) and retries_left > 0:
-    logging.debug(u'Waiting for directory to disappear: %s', path)
+    logging.debug('Waiting for directory to disappear: %s', path)
     retries_left -= 1
     _WaitForRetry(retries_left)
 
@@ -275,21 +284,21 @@ def MoveDir(src, dst):
     Error: If the src or dst directories are not valid.
   """
   if not os.path.isdir(src):
-    raise Error(u"Source path '{0}' must be a directory".format(src))
+    raise Error("Source path '{0}' must be a directory".format(src))
   if os.path.exists(dst):
-    raise Error(u"Destination path '{0}' already exists".format(dst))
+    raise Error("Destination path '{0}' already exists".format(dst))
   if _DestInSrc(src, dst):
-    raise Error(u"Cannot move a directory '{0}' into itself '{1}'."
+    raise Error("Cannot move a directory '{0}' into itself '{1}'."
                 .format(src, dst))
   try:
-    logging.debug(u'Attempting to move directory [%s] to [%s]', src, dst)
+    logging.debug('Attempting to move directory [%s] to [%s]', src, dst)
     try:
       os.rename(src, dst)
     except OSError:
       if not _RetryOperation(sys.exc_info(), os.rename, (src, dst)):
         raise
   except OSError as e:
-    logging.debug(u'Directory rename failed.  Falling back to copy. [%s]', e)
+    logging.debug('Directory rename failed.  Falling back to copy. [%s]', e)
     shutil.copytree(src, dst, symlinks=True)
     RmTree(src)
 
@@ -313,7 +322,7 @@ def FindDirectoryContaining(starting_dir_path, directory_entry_name):
     it.
   """
   prev_path = None
-  path = encoding.Decode(os.path.realpath(starting_dir_path))
+  path = encoding_util.Decode(os.path.realpath(starting_dir_path))
   while path != prev_path:
     search_dir = os.path.join(path, directory_entry_name)
     if os.path.isdir(search_dir):
@@ -329,7 +338,7 @@ def IsDirAncestorOf(ancestor_directory, path):
   Args:
     ancestor_directory: str, path to the directory that is the potential
       ancestor of path
-    path: str, path to the file/directory that is a potential descendent of
+    path: str, path to the file/directory that is a potential descendant of
       ancestor_directory
 
   Returns:
@@ -339,10 +348,11 @@ def IsDirAncestorOf(ancestor_directory, path):
     ValueError: if the given ancestor_directory is not, in fact, a directory.
   """
   if not os.path.isdir(ancestor_directory):
-    raise ValueError(u'[{0}] is not a directory.'.format(ancestor_directory))
+    raise ValueError('[{0}] is not a directory.'.format(ancestor_directory))
 
-  path = encoding.Decode(os.path.realpath(path))
-  ancestor_directory = encoding.Decode(os.path.realpath(ancestor_directory))
+  path = encoding_util.Decode(os.path.realpath(path))
+  ancestor_directory = encoding_util.Decode(
+      os.path.realpath(ancestor_directory))
 
   try:
     rel = os.path.relpath(path, ancestor_directory)
@@ -350,12 +360,12 @@ def IsDirAncestorOf(ancestor_directory, path):
     return False
 
   # rel can be just '..' if path is a child of ancestor_directory
-  return not rel.startswith(u'..' + os.path.sep) and rel != '..'
+  return not rel.startswith('..' + os.path.sep) and rel != '..'
 
 
 def _GetSystemPath():
   """Returns properly encoded system PATH variable string."""
-  return encoding.GetEncodedValue(os.environ, 'PATH')
+  return encoding_util.GetEncodedValue(os.environ, 'PATH')
 
 
 def SearchForExecutableOnPath(executable, path=None):
@@ -405,7 +415,7 @@ def _FindExecutableOnPath(executable, path, pathext):
     ValueError: invalid input.
   """
 
-  if isinstance(pathext, str):
+  if isinstance(pathext, six.string_types):
     raise ValueError('_FindExecutableOnPath(..., pathext=\'{0}\') failed '
                      'because pathext must be an iterable of strings, but got '
                      'a string.'.format(pathext))
@@ -429,7 +439,8 @@ def _PlatformExecutableExtensions(platform):
     return ('', '.sh')
 
 
-def FindExecutableOnPath(executable, path=None, pathext=None):
+def FindExecutableOnPath(executable, path=None, pathext=None,
+                         allow_extensions=False):
   """Searches for `executable` in the directories listed in `path` or $PATH.
 
   Executable must not contain a directory or an extension.
@@ -440,22 +451,25 @@ def FindExecutableOnPath(executable, path=None, pathext=None):
       then the system PATH is used.
     pathext: An iterable of file name extensions to use.  If None then
       platform specific extensions are used.
+    allow_extensions: A boolean flag indicating whether extensions in the
+      executable are allowed.
 
   Returns:
     The path of 'executable' (possibly with a platform-specific extension) if
     found and executable, None if not found.
 
   Raises:
-    ValueError: if executable has an extension or a path, or there's an
-    internal error.
+    ValueError: if executable has a path or an extension, and extensions are
+      not allowed, or if there's an internal error.
   """
-  if os.path.splitext(executable)[1]:
-    raise ValueError(u'FindExecutableOnPath({0},...) failed because first '
-                     u'argument must not have an extension.'.format(executable))
+
+  if not allow_extensions and os.path.splitext(executable)[1]:
+    raise ValueError('FindExecutableOnPath({0},...) failed because first '
+                     'argument must not have an extension.'.format(executable))
 
   if os.path.dirname(executable):
-    raise ValueError(u'FindExecutableOnPath({0},...) failed because first '
-                     u'argument must not have a path.'.format(executable))
+    raise ValueError('FindExecutableOnPath({0},...) failed because first '
+                     'argument must not have a path.'.format(executable))
 
   if path is None:
     effective_path = _GetSystemPath()
@@ -483,7 +497,7 @@ def HasWriteAccessInDir(directory):
   """
   if not os.path.isdir(directory):
     raise ValueError(
-        u'The given path [{path}] is not a directory.'.format(path=directory))
+        'The given path [{path}] is not a directory.'.format(path=directory))
   # Appending . tests search permissions, especially on windows, by forcing
   # 'directory' to be treated as a directory
   path = os.path.join(directory, '.')
@@ -499,12 +513,12 @@ def HasWriteAccessInDir(directory):
   # results in false positive writability tests.
 
   path = os.path.join(directory,
-                      u'.HasWriteAccessInDir{pid}'.format(pid=os.getpid()))
+                      '.HasWriteAccessInDir{pid}'.format(pid=os.getpid()))
   # while True: should work here, but we limit the retries just in case.
   for _ in range(10):
 
     try:
-      fd = os.open(path, os.O_RDWR | os.O_CREAT, 0666)
+      fd = os.open(path, os.O_RDWR | os.O_CREAT, 0o666)
       os.close(fd)
     except OSError as e:
       if e.errno == errno.EACCES:
@@ -512,7 +526,7 @@ def HasWriteAccessInDir(directory):
         return False
       if e.errno in [errno.ENOTDIR, errno.ENOENT]:
         # The directory has been removed or replaced by a file.
-        raise ValueError(u'The given path [{path}] is not a directory.'.format(
+        raise ValueError('The given path [{path}] is not a directory.'.format(
             path=directory))
       raise
 
@@ -533,6 +547,11 @@ def HasWriteAccessInDir(directory):
   return False
 
 
+def GetCWD():
+  """Returns os.getcwd() properly decoded."""
+  return encoding_util.Decode(os.getcwd())
+
+
 class TemporaryDirectory(object):
   """A class to easily create and dispose of temporary directories.
 
@@ -545,7 +564,7 @@ class TemporaryDirectory(object):
     self.__temp_dir = tempfile.mkdtemp()
     self._curdir = None
     if change_to:
-      self._curdir = os.getcwd()
+      self._curdir = GetCWD()
       os.chdir(self.__temp_dir)
 
   @property
@@ -559,17 +578,9 @@ class TemporaryDirectory(object):
     try:
       self.Close()
     except:  # pylint: disable=bare-except
-      if not prev_exc_type:
-        raise
-      message = (
-          u'Got exception {0}'
-          u'while another exception was active {1} [{2}]'
-          .format(
-              encoding.Decode(traceback.format_exc()),
-              prev_exc_type,
-              encoding.Decode(prev_exc_val)))
-      raise prev_exc_type, message, prev_exc_trace
-    # always return False so any exceptions will be re-raised
+      exceptions.RaiseWithContext(
+          prev_exc_type, prev_exc_val, prev_exc_trace, *sys.exc_info())
+    # Always return False so any previous exception will be re-raised.
     return False
 
   def Close(self):
@@ -591,15 +602,15 @@ class Checksum(object):
     self.__files = set()
 
   def AddContents(self, contents):
-    """Adds the given string contents to the checksum.
+    """Adds the given contents to the checksum.
 
     Args:
-      contents: str, The contents to add.
+      contents: str or bytes, The contents to add.
 
     Returns:
       self, For method chaining.
     """
-    self.__hash.update(contents)
+    self.__hash.update(six.ensure_binary(contents))
     return self
 
   def AddFileContents(self, file_path):
@@ -611,8 +622,11 @@ class Checksum(object):
     Returns:
       self, For method chaining.
     """
-    with open(file_path, 'rb') as fp:
-      for chunk in iter(lambda: fp.read(4096), ''):
+    with BinaryFileReader(file_path) as fp:
+      while True:
+        chunk = fp.read(4096)
+        if not chunk:
+          break
         self.__hash.update(chunk)
     return self
 
@@ -633,7 +647,7 @@ class Checksum(object):
     # containing unicode characters. If the arg to os.walk() is not unicode then
     # any child unicode files will raise an exception. Coercing dir_path to
     # unicode makes os.walk() play nice with unicode.
-    dir_path = unicode(dir_path)
+    dir_path = six.text_type(dir_path)
     for root, dirs, files in os.walk(dir_path):
       dirs.sort(key=os.path.normcase)
       files.sort(key=os.path.normcase)
@@ -701,33 +715,6 @@ class Checksum(object):
     return Checksum.FromSingleFile(input_path, algorithm=algorithm).HexDigest()
 
 
-def OpenForWritingPrivate(path, binary=False):
-  """Open a file for writing, with the right permissions for user-private files.
-
-  Args:
-    path: str, The full path to the file.
-    binary: bool, If true forces binary mode, this only affects Windows.
-
-  Returns:
-    A file context manager.
-  """
-
-  parent_dir_path, _ = os.path.split(path)
-  full_parent_dir_path = encoding.Decode(
-      os.path.realpath(os.path.expanduser(parent_dir_path)))
-  MakeDir(full_parent_dir_path, mode=0700)
-
-  flags = os.O_RDWR | os.O_CREAT | os.O_TRUNC
-  # Accommodate Windows; stolen from python2.6/tempfile.py.
-  if hasattr(os, 'O_NOINHERIT'):
-    flags |= os.O_NOINHERIT
-    if binary:
-      flags |= os.O_BINARY
-
-  fd = os.open(path, flags, 0600)
-  return os.fdopen(fd, 'w')
-
-
 class ChDir(object):
   """Do some things from a certain directory, and reset the directory afterward.
   """
@@ -736,7 +723,7 @@ class ChDir(object):
     self.__dir = directory
 
   def __enter__(self):
-    self.__original_dir = os.getcwd()
+    self.__original_dir = GetCWD()
     os.chdir(self.__dir)
     return self.__dir
 
@@ -796,8 +783,8 @@ class FileLock(object):
     if self._locked:
       return
     try:
-      self._file = open(self._path, 'w')
-    except IOError as e:
+      self._file = FileWriter(self._path)
+    except Error as e:
       raise FileLockLockingError(e)
 
     max_wait_ms = None
@@ -847,7 +834,7 @@ class FileLock(object):
     try:
       self.Unlock()
     except Error as e:
-      logging.debug(u'Encountered error unlocking file %s: %s', self._path, e)
+      logging.debug('Encountered error unlocking file %s: %s', self._path, e)
     # Have Python re-raise the exception which caused the context to exit, if
     # any.
     return False
@@ -906,7 +893,7 @@ def _FileInBinaryMode(file_obj):
   # this happens for unit tests which replace sys.stdin with StringIO.
   try:
     fd = file_obj.fileno()
-  except AttributeError:
+  except (AttributeError, io.UnsupportedOperation):
     yield
     return
 
@@ -924,55 +911,43 @@ def _FileInBinaryMode(file_obj):
     yield
 
 
-def GetFileContents(path, binary=False):
-  """Returns the contents of the specified file.
+def WriteStreamBytes(stream, contents):
+  """Write the given bytes to the stream.
 
   Args:
-    path: str, The path of the file to read.
-    binary: bool, True to open the file in binary mode.
+    stream: The raw stream to write to, usually sys.stdout or sys.stderr.
+    contents: A byte string to write to the stream.
+  """
+  if six.PY2:
+    with _FileInBinaryMode(stream):
+      stream.write(contents)
+      # Flush to force content to be written out with the correct mode.
+      stream.flush()
+  else:
+    # This is raw byte stream, but it doesn't exist on PY2.
+    stream.buffer.write(contents)
 
-  Raises:
-    Error: If the file cannot be read or is larger than max_bytes.
+
+def ReadStdinBytes():
+  """Reads raw bytes from sys.stdin without any encoding interpretation.
 
   Returns:
-    The contents of the file.
+    bytes, The byte string that was read.
   """
-  try:
-    with open(path, 'rb' if binary else 'r') as in_file:
-      return in_file.read()
-  except EnvironmentError as e:
-    # EnvironmentError is parent of IOError, OSError and WindowsError.
-    # Raised when file does not exist or can't be opened/read.
-    raise Error(u'Unable to read file [{0}]: {1}'.format(path, e))
-
-
-def GetFileOrStdinContents(path, binary=False):
-  """Returns the contents of the specified file or stdin if path is '-'.
-
-  Args:
-    path: str, The path of the file to read.
-    binary: bool, True to open the file in binary mode.
-
-  Raises:
-    Error: If the file cannot be read or is larger than max_bytes.
-
-  Returns:
-    The contents of the file.
-  """
-  if path == '-':
-    if binary:
-      with _FileInBinaryMode(sys.stdin):
-        return sys.stdin.read()
-    else:
+  if six.PY2:
+    with _FileInBinaryMode(sys.stdin):
       return sys.stdin.read()
-
-  return GetFileContents(path, binary=binary)
+  else:
+    # This is raw byte stream, but it doesn't exist on PY2.
+    return sys.stdin.buffer.read()
 
 
 def WriteFileAtomically(file_name, contents):
-  """Writes a text file to disk safely cross platform.
+  """Writes a file to disk safely cross platform.
 
-  Writes a text file to disk safely cross platform. Note that on Windows, there
+  Specified directories will be created if they don't exist.
+
+  Writes a file to disk safely cross platform. Note that on Windows, there
   is no good way to atomically write a file to disk.
 
   Args:
@@ -987,17 +962,26 @@ def WriteFileAtomically(file_name, contents):
     raise ValueError('Empty file_name [{}] or contents [{}].'.format(
         file_name, contents))
 
-  if not isinstance(contents, basestring):
+  if not isinstance(contents, six.string_types):
     raise TypeError('Invalid contents [{}].'.format(contents))
+
+  dirname = os.path.dirname(file_name)
+
+  # Create the directories, if they dont exist.
+  try:
+    os.makedirs(dirname)
+  except os.error:
+    # Deliberately ignore errors here. This usually means that the directory
+    # already exists. Other errors will surface from the write calls below.
+    pass
 
   if platforms.OperatingSystem.IsWindows():
     # On Windows, there is no good way to atomically write this file.
-    with OpenForWritingPrivate(file_name) as writer:
-      writer.write(contents)
+    WriteFileContents(file_name, contents, private=True)
   else:
     # This opens files with 0600, which are the correct permissions.
     with tempfile.NamedTemporaryFile(
-        dir=os.path.dirname(file_name), delete=False) as temp_file:
+        mode='w', dir=dirname, delete=False) as temp_file:
       temp_file.write(contents)
       # This was a user-submitted patch to fix a race condition that we couldn't
       # reproduce. It may be due to the file being renamed before the OS's
@@ -1007,71 +991,260 @@ def WriteFileAtomically(file_name, contents):
       os.rename(temp_file.name, file_name)
 
 
-def WriteFileContents(path, content, overwrite=True, binary=False,
-                      private=False):
-  """Writes content to the specified file.
-
-  Args:
-    path: str, The path of the file to write.
-    content: str, The content to write to the file.
-    overwrite: bool, Whether or not to overwrite the file if it exists.
-    binary: bool, True to open the file in binary mode.
-    private: bool, Whether to write the file in private mode.
-
-  Raises:
-    Error: If the file cannot be written.
-  """
-  try:
-    if not overwrite and os.path.exists(path):
-      raise Error(u'File [{0}] already exists and overwrite=False'.format(path))
-    if private:
-      with OpenForWritingPrivate(path, binary=binary) as writer:
-        writer.write(content)
-    else:
-      with open(path, 'wb' if binary else 'w') as out_file:
-        out_file.write(content)
-  except EnvironmentError as e:
-    # EnvironmentError is parent of IOError, OSError and WindowsError.
-    # Raised when file does not exist or can't be opened/read.
-    raise Error(u'Unable to write file [{0}]: {1}'.format(path, e))
-
-
-def WriteFileOrStdoutContents(path, content, overwrite=True, binary=False,
-                              private=False):
-  """Writes content to the specified file.
-
-  Args:
-    path: str, The path of the file to write.
-    content: str, The content to write to the file.
-    overwrite: bool, Whether or not to overwrite the file if it exists.
-    binary: bool, True to open the file in binary mode.
-    private: bool, Whether to write the file in private mode.
-
-  Raises:
-    Error: If the file cannot be written.
-  """
-  if path == '-':
-    if binary:
-      with _FileInBinaryMode(sys.stdout):
-        sys.stdout.write(content)
-        # Flush to force content to be written out with the correct mode.a
-        sys.stdout.flush()
-    else:
-      sys.stdout.write(content)
-    return
-
-  WriteFileContents(path, content, overwrite=overwrite, binary=binary,
-                    private=private)
-
-
 def GetTreeSizeBytes(path, predicate=None):
-  """Returns sum of sizes of not-ingnored files under given path, in bytes."""
+  """Returns sum of sizes of not-ignored files under given path, in bytes."""
   result = 0
   if predicate is None:
     predicate = lambda x: True
-  for directory in os.walk(path):
+  for directory in os.walk(six.text_type(path)):
     for file_name in directory[2]:
       file_path = os.path.join(directory[0], file_name)
       if predicate(file_path):
         result += os.path.getsize(file_path)
   return result
+
+
+def GetDirectoryTreeListing(path,
+                            include_dirs=False,
+                            file_predicate=None,
+                            dir_sort_func=None,
+                            file_sort_func=None):
+  """Yields a generator that list all the files in a directory tree.
+
+  Walks directory tree from path and yeilds all files that it finds. Will expand
+  paths relative to home dir e.g. those that start with '~'.
+
+  Args:
+    path: string, base of file tree to walk.
+    include_dirs: bool, if true will yield directory names in addition to files.
+    file_predicate: function, boolean function to determine which files should
+      be included in the output. Default is all files.
+    dir_sort_func: function, function that will determine order directories are
+      processed. Default is lexical ordering.
+    file_sort_func:  function, function that will determine order directories
+      are processed. Default is lexical ordering.
+  Yields:
+    Generator: yields all files and directory paths matching supplied criteria.
+  """
+  if not file_sort_func:
+    file_sort_func = sorted
+  if file_predicate is None:
+    file_predicate = lambda x: True
+  if dir_sort_func is None:
+    dir_sort_func = lambda x: x.sort()
+
+  for root, dirs, files in os.walk(ExpandHomeDir(six.text_type(path))):
+    dir_sort_func(dirs)
+    if include_dirs:
+      for dirname in dirs:
+        yield dirname
+    for file_name in file_sort_func(files):
+      file_path = os.path.join(root, file_name)
+      if file_predicate(file_path):
+        yield file_path
+
+
+def ReadFileContents(path):
+  """Reads the text contents from the given path.
+
+  Args:
+    path: str, The file path to read.
+
+  Raises:
+    Error: If the file cannot be read.
+
+  Returns:
+    str, The text string read from the file.
+  """
+  try:
+    with FileReader(path) as f:
+      return f.read()
+  except EnvironmentError as e:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise Error('Unable to read file [{0}]: {1}'.format(path, e))
+
+
+def ReadBinaryFileContents(path):
+  """Reads the binary contents from the given path.
+
+  Args:
+    path: str, The file path to read.
+
+  Raises:
+    Error: If the file cannot be read.
+
+  Returns:
+    bytes, The byte string read from the file.
+  """
+  try:
+    with BinaryFileReader(path) as f:
+      return f.read()
+  except EnvironmentError as e:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise Error('Unable to read file [{0}]: {1}'.format(path, e))
+
+
+def WriteFileContents(path, contents, overwrite=True, private=False):
+  """Writes the given text contents to a file at the given path.
+
+  Args:
+    path: str, The file path to write to.
+    contents: str, The text string to write.
+    overwrite: bool, False to error out if the file already exists.
+    private: bool, True to make the file have 0o600 permissions.
+
+  Raises:
+    Error: If the file cannot be written.
+  """
+  try:
+    _CheckOverwrite(path, overwrite)
+    with FileWriter(path, private=private) as f:
+      # This decode is here because a lot of libraries on Python 2 can return
+      # both text or bytes depending on if unicode is present. If you truly
+      # pass binary data to this, the decode will fail (as it should). If you
+      # pass an ascii string (that you got from json.dumps() for example), this
+      # will prevent it from crashing.
+      f.write(encoding_util.Decode(contents))
+  except EnvironmentError as e:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise Error('Unable to write file [{0}]: {1}'.format(path, e))
+
+
+def WriteBinaryFileContents(path, contents, overwrite=True, private=False):
+  """Writes the given binary contents to a file at the given path.
+
+  Args:
+    path: str, The file path to write to.
+    contents: str, The byte string to write.
+    overwrite: bool, False to error out if the file already exists.
+    private: bool, True to make the file have 0o600 permissions.
+
+  Raises:
+    Error: If the file cannot be written.
+  """
+  try:
+    _CheckOverwrite(path, overwrite)
+    with BinaryFileWriter(path, private=private) as f:
+      f.write(contents)
+  except EnvironmentError as e:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise Error('Unable to write file [{0}]: {1}'.format(path, e))
+
+
+def _CheckOverwrite(path, overwrite):
+  if not overwrite and os.path.exists(path):
+    raise Error(
+        'File [{0}] already exists and cannot be overwritten'.format(path))
+
+
+def FileReader(path):
+  """Opens the given file for text read for use in a 'with' statement.
+
+  Args:
+    path: str, The file path to read from.
+
+  Returns:
+    A file-like object opened for read in text mode.
+  """
+  return _FileOpener(path, 'rt', 'read', encoding='utf8')
+
+
+def BinaryFileReader(path):
+  """Opens the given file for binary read for use in a 'with' statement.
+
+  Args:
+    path: str, The file path to read from.
+
+  Returns:
+    A file-like object opened for read in binary mode.
+  """
+  return _FileOpener(encoding_util.Encode(path, encoding='utf-8'), 'rb', 'read')
+
+
+def FileWriter(path, private=False, append=False):
+  """Opens the given file for text write for use in a 'with' statement.
+
+  Args:
+    path: str, The file path to write to.
+    private: bool, True to create or update the file permission to be 0o600.
+    append: bool, True to append to an existing file.
+
+  Returns:
+    A file-like object opened for write in text mode.
+  """
+  mode = 'at' if append else 'wt'
+  return _FileOpener(path, mode, 'write', encoding='utf8', private=private)
+
+
+def BinaryFileWriter(path, private=False):
+  """Opens the given file for binary write for use in a 'with' statement.
+
+  Args:
+    path: str, The file path to write to.
+    private: bool, True to create or update the file permission to be 0o600.
+
+  Returns:
+    A file-like object opened for write in binary mode.
+  """
+  return _FileOpener(path, 'wb', 'write', private=private)
+
+
+def _FileOpener(path, mode, verb, encoding=None, private=False):
+  """Opens a file in various modes and does error handling."""
+  if private:
+    PrivatizeFile(path)
+  try:
+    return io.open(path, mode, encoding=encoding)
+  except EnvironmentError as e:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    exc_type = Error
+    if isinstance(e, IOError) and e.errno == errno.ENOENT:
+      exc_type = MissingFileError
+    raise exc_type('Unable to {0} file [{1}]: {2}'.format(verb, path, e))
+
+
+def GetHomeDir():
+  """Returns the current user HOME directory path."""
+  return ExpandHomeDir('~')
+
+
+def ExpandHomeDir(path):
+  """Returns path with leading ~<SEP> or ~<USER><SEP> expanded."""
+  return encoding_util.Decode(os.path.expanduser(path))
+
+
+def PrivatizeFile(path):
+  """Makes an existing file private or creates a new, empty private file.
+
+  In theory it would be better to return the open file descriptor so that it
+  could be used directly. The issue that we would need to pass an encoding to
+  os.fdopen() and on Python 2. This is not supported. Instead we just create
+  the empty file and then we will just open it normally later to do the write.
+
+  Args:
+    path: str, The path of the file to create or privatize.
+  """
+  try:
+    if os.path.exists(path):
+      os.chmod(path, 0o600)
+    else:
+      parent_dir_path, _ = os.path.split(path)
+      full_parent_dir_path = os.path.realpath(ExpandHomeDir(parent_dir_path))
+      MakeDir(full_parent_dir_path, mode=0o700)
+
+      flags = os.O_RDWR | os.O_CREAT | os.O_TRUNC
+      # Accommodate Windows; stolen from python2.6/tempfile.py.
+      if hasattr(os, 'O_NOINHERIT'):
+        flags |= os.O_NOINHERIT
+
+      fd = os.open(path, flags, 0o600)
+      os.close(fd)
+  except EnvironmentError as e:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise Error('Unable to create private file [{0}]: {1}'.format(path, e))

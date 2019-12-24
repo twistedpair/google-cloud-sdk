@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,17 +32,21 @@ class Collections(enum.Enum):
               'productSearch/catalogs/{catalogsId}/referenceImages/'
               '{referenceImagesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PRODUCTSEARCH_CATALOGS = (
       'productSearch.catalogs',
       'productSearch/catalogs/{catalogsId}',
       {},
-      [u'catalogsId']
+      [u'catalogsId'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

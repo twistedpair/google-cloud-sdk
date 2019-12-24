@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 """Support functions for the handling of named configurations."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import errno
 import os
 import re
@@ -21,6 +26,7 @@ import threading
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.configurations import properties_file
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 
 # The special configuration named NONE contains no properties
@@ -47,7 +53,7 @@ class NamedConfigFileAccessError(NamedConfigError):
 
   def __init__(self, message, exc):
     super(NamedConfigFileAccessError, self).__init__('{0}.\n  {1}'.format(
-        message, getattr(exc, 'strerror', exc.message)))
+        message, getattr(exc, 'strerror', exc)))
 
 
 class InvalidConfigName(NamedConfigError):
@@ -163,7 +169,7 @@ class ConfigurationStore(object):
     Returns:
       Configuration, the currently active configuration.
     """
-    return _ActiveConfig(force_create=True)
+    return ActiveConfig(force_create=True)
 
   @staticmethod
   def AllConfigs(include_none_config=False):
@@ -232,9 +238,8 @@ class ConfigurationStore(object):
 
     try:
       file_utils.MakeDir(paths.named_config_directory)
-      with open(file_path, 'w'):
-        pass
-    except (OSError, IOError, file_utils.Error) as e:
+      file_utils.WriteFileContents(file_path, '')
+    except file_utils.Error as e:
       raise NamedConfigFileAccessError(
           'Failed to create configuration [{0}].  Ensure you have the correct '
           'permissions on [{1}]'.format(config_name,
@@ -304,13 +309,13 @@ class ConfigurationStore(object):
           .format(config_name))
 
     try:
-      with open(paths.named_config_activator_path, 'w') as f:
-        f.write(config_name)
-    except (OSError, IOError) as e:
+      file_utils.WriteFileContents(
+          paths.named_config_activator_path, config_name)
+    except file_utils.Error as e:
       raise NamedConfigFileAccessError(
           'Failed to activate configuration [{0}].  Ensure you have the '
-          'correct permissions on [{1}]'.format(config_name,
-                                                paths.named_config_directory),
+          'correct permissions on [{1}]'.format(
+              config_name, paths.named_config_activator_path),
           e)
 
     ActivePropertiesFile.Invalidate(mark_changed=True)
@@ -388,7 +393,7 @@ class ActivePropertiesFile(object):
     try:
       if not ActivePropertiesFile._PROPERTIES:
         ActivePropertiesFile._PROPERTIES = properties_file.PropertiesFile(
-            [config.Paths().installation_properties_path, _ActiveConfig(
+            [config.Paths().installation_properties_path, ActiveConfig(
                 force_create=False).file_path])
     finally:
       ActivePropertiesFile._LOCK.release()
@@ -405,11 +410,10 @@ class ActivePropertiesFile(object):
     """
     ActivePropertiesFile._PROPERTIES = None
     if mark_changed:
-      with open(config.Paths().config_sentinel_file, 'w'):
-        pass
+      file_utils.WriteFileContents(config.Paths().config_sentinel_file, '')
 
 
-def _ActiveConfig(force_create):
+def ActiveConfig(force_create):
   """Gets the currently active configuration.
 
   There must always be an active configuration.  If there isn't this means
@@ -464,7 +468,8 @@ def _ActiveConfigNameFromEnv():
   Returns:
     str, The name of the active configuration or None.
   """
-  return os.environ.get(config.CLOUDSDK_ACTIVE_CONFIG_NAME, None)
+  return encoding.GetEncodedValue(
+      os.environ, config.CLOUDSDK_ACTIVE_CONFIG_NAME, None)
 
 
 def _ActiveConfigNameFromFile():
@@ -477,26 +482,25 @@ def _ActiveConfigNameFromFile():
   is_invalid = False
 
   try:
-    with open(path, 'r') as f:
-      config_name = f.read()
-      # If the file is empty, treat it like the file does not exist.
-      if config_name:
-        if _IsValidConfigName(config_name, allow_reserved=True):
-          return config_name
-        else:
-          # Somehow the file got corrupt, just remove it and it will get
-          # recreated correctly.
-          is_invalid = True
-  except (OSError, IOError) as exc:
-    if exc.errno != errno.ENOENT:
-      raise NamedConfigFileAccessError(
-          'Active configuration name could not be read from: [{0}]. Ensure you '
-          'have sufficient read permissions on required active configuration '
-          'in [{1}]'
-          .format(path, config.Paths().named_config_directory), exc)
+    config_name = file_utils.ReadFileContents(path)
+    # If the file is empty, treat it like the file does not exist.
+    if config_name:
+      if _IsValidConfigName(config_name, allow_reserved=True):
+        return config_name
+      else:
+        # Somehow the file got corrupt, just remove it and it will get
+        # recreated correctly.
+        is_invalid = True
+  except file_utils.MissingFileError:
+    pass
+  except file_utils.Error as exc:
+    raise NamedConfigFileAccessError(
+        'Active configuration name could not be read from: [{0}]. Ensure you '
+        'have sufficient read permissions on required active configuration '
+        'in [{1}]'
+        .format(path, config.Paths().named_config_directory), exc)
 
   if is_invalid:
-    # Need to do this outside the `with open()` because that fails on Windows.
     os.remove(path)
   # The active named config pointer file is missing, return None
   return None
@@ -583,11 +587,10 @@ def _CreateDefaultConfig(force_create):
       if legacy_properties or force_create:
         file_utils.MakeDir(paths.named_config_directory)
         target_file = _FileForConfig(DEFAULT_CONFIG_NAME, paths)
-        with open(target_file, 'w') as f:
-          f.write(legacy_properties)
-        with open(paths.named_config_activator_path, 'w') as f:
-          f.write(DEFAULT_CONFIG_NAME)
-  except (OSError, IOError, file_utils.Error) as e:
+        file_utils.WriteFileContents(target_file, legacy_properties)
+        file_utils.WriteFileContents(paths.named_config_activator_path,
+                                     DEFAULT_CONFIG_NAME)
+  except file_utils.Error as e:
     raise NamedConfigFileAccessError(
         'Failed to create the default configuration. Ensure your have the '
         'correct permissions on: [{0}]'.format(paths.named_config_directory), e)
@@ -617,16 +620,13 @@ def _GetAndDeprecateLegacyProperties(paths):
   contents = ''
 
   if os.path.exists(paths.user_properties_path):
-    with open(paths.user_properties_path, 'r+') as f:
-      contents = f.read()
-      if contents.startswith(_LEGACY_DEPRECATION_MESSAGE):
-        # We have already migrated these properties, the user must have
-        # deleted all their configurations.  Don't migrate again.
-        contents = ''
-      else:
-        f.truncate(0)
-        f.seek(0)
-        f.write(_LEGACY_DEPRECATION_MESSAGE)
-        f.write(contents)
+    contents = file_utils.ReadFileContents(paths.user_properties_path)
+    if contents.startswith(_LEGACY_DEPRECATION_MESSAGE):
+      # We have already migrated these properties, the user must have
+      # deleted all their configurations.  Don't migrate again.
+      contents = ''
+    else:
+      file_utils.WriteFileContents(paths.user_properties_path,
+                                   _LEGACY_DEPRECATION_MESSAGE + contents)
 
   return contents

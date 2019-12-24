@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,37 +28,44 @@ class Collections(enum.Enum):
       'deployments',
       'projects/{project}/global/deployments/{deployment}',
       {},
-      [u'project', u'deployment']
+      [u'project', u'deployment'],
+      True
   )
   MANIFESTS = (
       'manifests',
       'projects/{project}/global/deployments/{deployment}/manifests/'
       '{manifest}',
       {},
-      [u'project', u'deployment', u'manifest']
+      [u'project', u'deployment', u'manifest'],
+      True
   )
   OPERATIONS = (
       'operations',
       'projects/{project}/global/operations/{operation}',
       {},
-      [u'project', u'operation']
+      [u'project', u'operation'],
+      True
   )
   PROJECTS = (
       'projects',
       'projects/{project}',
       {},
-      [u'project']
+      [u'project'],
+      True
   )
   RESOURCES = (
       'resources',
       'projects/{project}/global/deployments/{deployment}/resources/'
       '{resource}',
       {},
-      [u'project', u'deployment', u'resource']
+      [u'project', u'deployment', u'resource'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

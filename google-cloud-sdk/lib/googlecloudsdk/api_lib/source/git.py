@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Wrapper to manipulate GCP git repository."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import errno
 import os
 import re
@@ -23,8 +28,11 @@ import textwrap
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 import uritemplate
 
 
@@ -33,6 +41,7 @@ import uritemplate
 _ORIGIN_URL_RE = re.compile(r'remote origin\n.*Fetch URL: (?P<url>.+)\n', re.M)
 # This is the minimum version of git required to use credential helpers.
 _HELPER_MIN = (2, 0, 1)
+_WINDOWS_HELPER_MIN = (2, 15, 0)
 
 _TRAILING_SPACES = re.compile(r'(^|^.*[^\\ ]|^.*\\ ) *$')
 
@@ -69,9 +78,6 @@ class GitVersionException(Error):
 class InvalidGitException(Error):
   """Exceptions for when git version is empty or invalid."""
 
-  def __init__(self, message):
-    super(InvalidGitException, self).__init__(message)
-
 
 class GcloudIsNotInPath(Error):
   """Exception for when the gcloud cannot be found."""
@@ -94,25 +100,24 @@ def CheckGitVersion(version_lower_bound=None):
     NoGitException: if `git` was not found.
   """
   try:
-    output = subprocess.check_output(['git', 'version'])
-    if not output:
+    cur_version = encoding.Decode(subprocess.check_output(['git', 'version']))
+    if not cur_version:
       raise InvalidGitException('The git version string is empty.')
-    if not output.startswith('git version '):
+    if not cur_version.startswith('git version '):
       raise InvalidGitException(('The git version string must start with '
                                  'git version .'))
-    match = re.search(r'(\d+)\.(\d+)\.(\d+)', output)
+    match = re.search(r'(\d+)\.(\d+)\.(\d+)', cur_version)
     if not match:
       raise InvalidGitException('The git version string must contain a '
                                 'version number.')
 
-    cur_version = match.group(1, 2, 3)
-    current_version = tuple([int(item) for item in cur_version])
+    current_version = tuple([int(item) for item in match.group(1, 2, 3)])
     if version_lower_bound and current_version < version_lower_bound:
-      min_version = '.'.join(str(i) for i in version_lower_bound)
+      min_version = '.'.join(six.text_type(i) for i in version_lower_bound)
       raise GitVersionException(
-          ('Your git version {cur_version} is older than the minimum version '
-           '{min_version}. Please install a newer version of git.'),
-          output, min_version)
+          'Your git version {cur_version} is older than the minimum version '
+          '{min_version}. Please install a newer version of git.',
+          cur_version=cur_version, min_version=min_version)
   except OSError as e:
     if e.errno == errno.ENOENT:
       raise NoGitException()
@@ -178,7 +183,7 @@ def _GetGcloudScript(full_path=False):
         'Please make sure the Cloud SDK bin folder is in PATH.')
   if full_path:
     if not re.match(r'[-a-zA-Z0-9_/]+$', gcloud):
-      log.warn(
+      log.warning(
           textwrap.dedent("""\
           You specified the option to use the full gcloud path in the git
           credential.helper, but the path contains non alphanumberic characters
@@ -188,58 +193,10 @@ def _GetGcloudScript(full_path=False):
     return gcloud_name + gcloud_ext
 
 
-def _NormalizeToUnixPath(path, strip=True):
-  """Returns a path with '/' for the directory separator.
-
-  The regular expressions used in .gitignore processing use '/' as the directory
-  separator, but many APIs will convert '/' to '\' on Windows. This method can
-  be used to ensure consistent name formation on any platform. (To date, '/'
-  and '\' are the only directory separators in commond use). We can't just use
-  normpath, because '\' has special meaning in regular expressions.
-
-  Note that there is a potential corner case here when a Unix file name contains
-  a backslash. The worst case effect here is that such a file might not be
-  ignored when it should.
-
-  Args:
-    path: The path to normalize.
-    strip: If True, also strip any trailing '/' characters.
-  Returns:
-    The normalized path.
-  """
-  path = path.replace(os.sep, '/')
-  if strip and path != '/':
-    return path.rstrip('/')
-  else:
-    return path
-
-
-def _HasSystemCredHelper():
-  """Determine whether there is a system-wide credential helper set.
-
-  Returns:
-    True if a non-cloud system credential helper is set.
-
-  Raises:
-    NoGitException: if `git` was not found.
-  """
-  try:
-    stdout = subprocess.check_output(
-        ['git', 'config', '--system', '--list'], stderr=subprocess.STDOUT)
-    return (re.search(r'^credential.helper=.', stdout, re.MULTILINE) and
-            not re.search(r'^credential.helper=!gcloud', stdout, re.MULTILINE))
-  except OSError as e:
-    if e.errno == errno.ENOENT:
-      raise NoGitException()
-    return False
-  except subprocess.CalledProcessError:
-    return False
-
-
-def _GetCredHelperCommand(uri, full_path=False):
+def _GetCredHelperCommand(uri, full_path=False, min_version=_HELPER_MIN):
   """Returns the gcloud credential helper command for a remote repository.
 
-  The command will be of the form '!gcloud auth-git-helper --account=EMAIL
+  The command will be of the form '!gcloud auth git-helper --account=EMAIL
   --ignore-unknown $@`. See https://git-scm.com/docs/git-config. If the
   installed version of git or the remote repository does not support
   the gcloud credential helper, then returns None.
@@ -247,6 +204,8 @@ def _GetCredHelperCommand(uri, full_path=False):
   Args:
     uri: str, The uri of the remote repository.
     full_path: bool, If true, use the full path to gcloud.
+    min_version: minimum git version; if found git is earlier than this, warn
+        and return None
 
   Returns:
     str, The credential helper command if it is available.
@@ -255,12 +214,13 @@ def _GetCredHelperCommand(uri, full_path=False):
   extra = properties.VALUES.core.credentialed_hosted_repo_domains.Get()
   if extra:
     credentialed_hosts.extend(extra.split(','))
-  if any(uri.startswith('https://' + host) for host in credentialed_hosts):
+  if any(
+      uri.startswith('https://' + host + '/') for host in credentialed_hosts):
     try:
-      CheckGitVersion(_HELPER_MIN)
+      CheckGitVersion(min_version)
     except GitVersionException as e:
-      helper_min = '.'.join(str(i) for i in _HELPER_MIN)
-      log.warn(
+      helper_min_str = '.'.join(six.text_type(i) for i in min_version)
+      log.warning(
           textwrap.dedent("""\
           You are using a Google-hosted repository with a
           {current} which is older than {min_version}. If you upgrade
@@ -268,13 +228,8 @@ def _GetCredHelperCommand(uri, full_path=False):
           this repository. Otherwise, to authenticate, use your Google
           account and the password found by running the following command.
            $ gcloud auth print-access-token""".format(
-               current=e.cur_version, min_version=helper_min)))
+               current=e.cur_version, min_version=helper_min_str)))
       return None
-    if _HasSystemCredHelper():
-      log.warn(
-          textwrap.dedent("""\
-          If your system's credential.helper requests a password, choose
-          cancel."""))
     # Use git alias "!shell command" syntax so we can configure
     # the helper with options. Also git-credential is not
     # prefixed when it starts with "!".
@@ -282,234 +237,6 @@ def _GetCredHelperCommand(uri, full_path=False):
         _GetGcloudScript(full_path),
         properties.VALUES.core.account.Get(required=True))
   return None
-
-
-class GitIgnoreHandler(object):
-  """Processes .gitignore rules.
-
-  This class handles .gitignore files over a directory hierarchy, applying
-  rules recursively. It is intended to be a full implementation of the rules
-  described at https://git-scm.com/docs/gitignore, though it is much less
-  restrictive about re-inclusion of files (at the cost of requiring a scan
-  of fully-excluded directories).
-
-  It does not handle the core.excludesFile setting in the user's .gitconfig.
-  """
-
-  def __init__(self):
-    self._ignore_rules = {}
-    self. _ProcessIgnoreFile(os.path.expanduser('~/.config/git/ignore'), '/')
-
-  def AddIgnoreRules(self, path, rules):
-    """Adds rules for ignoring files under the given path.
-
-    Args:
-      path: The path where the rules apply.
-      rules: A list of (RegEx, Bool) pairs indicating that files matching the
-        RegEx should (or should not) be ignored. (A True value indicates files
-        matching the pattern should be ignored). The patterns will be compared
-        to full path names, and should specify '/' as the directory specifier,
-        regardless of platform.
-    """
-    self._ignore_rules[_NormalizeToUnixPath(path)] = rules
-
-  def ProcessGitIgnore(self, path):
-    """Processes the .gitignore file (if any) in the given path.
-
-      Updates the internal path->rules mapping based on the .gitignore file.
-
-    Args:
-      path: The path to a directory which may contain a .gitignore file.
-    """
-    self._ProcessIgnoreFile(os.path.join(path, '.git/info/exclude'), path)
-    self._ProcessIgnoreFile(os.path.join(path, '.gitignore'), path)
-
-  def ShouldIgnoreFile(self, path):
-    """Test if a file should be ignored based on the given patterns.
-
-    Compares the path to each pattern in ignore_patterns, in order. If it
-    matches a pattern whose Bool is True, the file should be excluded unless it
-    also matches a later pattern which has a bool of False. Similarly, if a name
-    matches a pattern with a Bool that is False, it should be included
-    unless it also matches a later pattern which has a bool of True.
-
-    Args:
-      path: The file name to test.
-    Returns:
-      True if the file should be ignored, False otherwise.
-    """
-    # Normalize separators, but leave any trailing '/' to allow explicit
-    # directory matches.
-    path = _NormalizeToUnixPath(path, strip=False)
-    rules = self._GetRules(path)
-    ret = False
-    for pattern, should_ignore in rules:
-      if pattern.match(path):
-        log.debug('{0}: matches {1} => ignore=={2}'.format(
-            path, pattern.pattern, should_ignore))
-        ret = should_ignore
-    return ret
-
-  def GetFiles(self, root):
-    """Yields all files in the given directory tree which should not be ignored.
-
-    Args:
-      root: The directory to walk
-    Yields:
-      [path] The full path to every file under the given root directory which
-        should not be ignored.
-    """
-    for base, _, file_list in os.walk(root):
-      self.ProcessGitIgnore(base)
-      for f in file_list:
-        # Exclude file_list based on the .gitignore rules.
-        filename = os.path.join(base, f)
-        if not self.ShouldIgnoreFile(filename):
-          yield filename
-
-  def _ProcessIgnoreFile(self, git_ignore_file, target_dir):
-    """Processes a .gitignore file.
-
-      Updates the internal path->rules mapping based on the .gitignore file.
-
-    Args:
-      git_ignore_file: The path to a directory a .gitignore file which may not
-        exist.
-      target_dir: The directory where the rules in the gitignore file apply.
-    """
-    if not os.path.exists(git_ignore_file):
-      return
-    path = _NormalizeToUnixPath(target_dir)
-    log.debug('Processing {0}'.format(git_ignore_file))
-    ret = []
-    with open(git_ignore_file, 'r') as f:
-      for line in f:
-        pattern, should_ignore = self._ParseLine(line, path)
-        if pattern:
-          ret.append((pattern, should_ignore))
-    if path in self._ignore_rules:
-      self._ignore_rules[path].extend(ret)
-    else:
-      self._ignore_rules[path] = ret
-
-  def _GetRules(self, path):
-    """Returns the set of rules that apply to a given path.
-
-    Searches all parent paths for rules, returning the concatenation of all the
-    rules.
-
-    Args:
-      path: The path to check.
-
-    Returns:
-      A list of (RegEx, Bool) pairs indicating file name patterns to include/
-      exclude.
-    """
-    # Build an array of the parent directories of the given path, from root
-    # down. On Windows, drive letters will be handled as if they were
-    # directories under root.
-    dirs = ['/']
-    pos = str.find(path, '/')
-    if pos == 0:
-      pos = str.find(path, '/', 1)
-    while pos != -1:
-      dirs.append(path[0:pos])
-      pos = str.find(path, '/', pos+1)
-    dirs.append(path)
-    rules = []
-    for d in dirs:
-      if d in self._ignore_rules:
-        log.debug('{0}: Applying rules for {1}'.format(path, d))
-        rules.extend(self._ignore_rules[d])
-    return rules
-
-  def _ParseLine(self, line, basedir):
-    """Process a line from a .gitignore file.
-
-    Args:
-      line: A line from a .gitignore file.
-      basedir: The directory containing the .gitignore file.
-    Returns:
-      (Regex, Bool)
-      A regular expression corresponding to the line and a flag indicating
-      whether matching files should be excluded (True) or included (False).
-      Regex will be None if the line contains no filename pattern.
-    """
-    # Skip comments (which must be at the start of the line)
-    if line[0] == '#':
-      return (None, True)
-    line = line.strip('\n')
-    # Strip trailing spaces not preceded by '\'
-    line = _TRAILING_SPACES.sub(r'\g<1>', line)
-    # Skip blank lines
-    if not line:
-      return (None, True)
-    # Special handling for leading '!' or **
-    pos = 0
-    should_ignore = True
-    if line[0] == '!':
-      pos += 1
-      should_ignore = False
-
-    # Patterns containing "/" apply only under the base directory, while
-    # other patterns apply in any directory.
-    if '/' in line:
-      pattern = re.escape(basedir) + '/'
-    else:
-      pattern = '.*/'
-
-    # Convert the rest of the line to a python regex. We can't just use
-    # fnmatch.translate, because it doesn't handle globs, **, or escape
-    # characters the way we want.
-    while pos < len(line):
-      part, advance = self._ParseElement(line, pos)
-      pattern += part
-      pos += advance
-    pattern += '$'
-    log.debug(
-        'Ignore "{0}" => r\'{1}\': {2}'.format(line, pattern, should_ignore))
-    return re.compile(pattern), should_ignore
-
-  def _ParseElement(self, line, pos):
-    """Parses a single element of an ignore line.
-
-    An element may be a character, a wildcard, or a brace expression.
-
-    Args:
-      line: The line being parsed.
-      pos: The position to start parsing.
-    Returns:
-      (RegEx, int)
-      The regular expression equivalent to the element and the number of
-      characters consumed from the line.
-    """
-    current = line[pos]
-    advance = 1
-    if current == '*':
-      if line[pos:pos+2] == '**':
-        if line[pos:pos+3] == '**/':
-          # Match any number of directories, followed by '/'
-          advance = 3
-          current = r'(.*/)?'
-        else:
-          # Match the entire directory tree, recursively.
-          advance = 2
-          current = r'.*'
-      else:
-        # Match a single file or directory name
-        current = r'[^/]*'
-    elif current == '?':
-      # Match a single character in a file or directory name.
-      current = '[^/]'
-    elif current == '\\':
-      # Copy escaped characters into the output.
-      current = line[pos:pos+2]
-      advance = 2
-    # Note that although .gitignore claims to use shell-style globs, it does
-    # not use shell-style quoting, and does not handle braces. A double quote
-    # matches a literal double quote, brace matches literal brace, quotes do
-    # not suppress * globbing, etc.
-    return current, advance
 
 
 class Git(object):
@@ -571,9 +298,17 @@ class Git(object):
     try:
       # If this is a Google-hosted repo, clone with the cred helper.
       cmd = ['git', 'clone', self._uri, abs_repository_path]
-      cred_helper_command = _GetCredHelperCommand(self._uri, full_path)
+      min_git = _HELPER_MIN
+      if (platforms.OperatingSystem.Current() ==
+          platforms.OperatingSystem.WINDOWS):
+        min_git = _WINDOWS_HELPER_MIN
+      cred_helper_command = _GetCredHelperCommand(
+          self._uri, full_path=full_path, min_version=min_git)
       if cred_helper_command:
-        cmd += ['--config', 'credential.helper=' + cred_helper_command]
+        cmd += [
+            '--config', 'credential.helper=', '--config',
+            'credential.helper=' + cred_helper_command
+        ]
       self._RunCommand(cmd, dry_run)
     except subprocess.CalledProcessError as e:
       raise CannotFetchRepositoryException(e)
@@ -599,8 +334,27 @@ class Git(object):
           appear as 'd/file1' in the repository.
       dry_run: bool, If true do not run but print commands instead.
       full_path: bool, If true use the full path to gcloud.
+
+    Raises:
+      CannotPushToRepositoryException: If the operation fails in any way.
     """
-    CheckGitVersion()
+    # Git treats relative paths strangely with the --work-tree flag.
+    # git add --work-tree=a a/b will try to look for a/a/b.
+    # To avoid the lookup, always convert to absolute paths.
+    paths = [os.path.abspath(p) for p in paths]
+
+    # Check for git files and don't allow upload if they are included.
+    for path in paths:
+      for segment in path.split(os.sep):
+        if segment in ('.git', '.gitignore'):
+          message = ("Can't upload the file tree. "
+                     'Uploading a directory containing a git repository as a '
+                     'subdirectory is not supported. '
+                     'Please either upload from the top level git repository '
+                     'or any of its subdirectories. '
+                     'Unsupported git file detected: %s' % path)
+          raise CannotPushToRepositoryException(message)
+
     with files.TemporaryDirectory() as temp_dir:
       def RunGitCommand(*args):
         git_dir = '--git-dir=' + os.path.join(temp_dir, '.git')
@@ -618,7 +372,8 @@ class Git(object):
       RunGitCommand('commit', '-m', 'source capture uploaded from gcloud')
 
       # Add remote and force push
-      cred_helper_command = _GetCredHelperCommand(self._uri, full_path)
+      cred_helper_command = _GetCredHelperCommand(
+          self._uri, full_path=full_path)
       if cred_helper_command:
         RunGitCommand('config', 'credential.helper', cred_helper_command)
       try:

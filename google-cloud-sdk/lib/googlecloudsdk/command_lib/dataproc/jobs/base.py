@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +15,13 @@
 
 """Utilities for building the dataproc clusters CLI."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
+import collections
 import os
-import urlparse
 
 from apitools.base.py import encoding
 
@@ -25,11 +30,12 @@ from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 
+import six
+import six.moves.urllib.parse
 
-class JobBase(object):
+
+class JobBase(six.with_metaclass(abc.ABCMeta, object)):
   """Base class for Jobs."""
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, *args, **kwargs):
     super(JobBase, self).__init__(*args, **kwargs)
@@ -40,7 +46,7 @@ class JobBase(object):
   def _GetStagedFile(self, file_str):
     """Validate file URI and register it for uploading if it is local."""
     drive, _ = os.path.splitdrive(file_str)
-    uri = urlparse.urlsplit(file_str, allow_fragments=False)
+    uri = six.moves.urllib.parse.urlsplit(file_str, allow_fragments=False)
     # Determine the file is local to this machine if no scheme besides a drive
     # is passed. file:// URIs are interpreted as living on VMs.
     is_local = drive or not uri.scheme
@@ -53,16 +59,16 @@ class JobBase(object):
       raise files.Error('File Not Found: [{0}].'.format(file_str))
     basename = os.path.basename(file_str)
     self.files_to_stage.append(file_str)
-    staged_file = urlparse.urljoin(self._staging_dir, basename)
+    staged_file = six.moves.urllib.parse.urljoin(self._staging_dir, basename)
     return staged_file
 
   def ValidateAndStageFiles(self):
     """Validate file URIs and upload them if they are local."""
-    for file_type, file_or_files in self.files_by_type.iteritems():
+    for file_type, file_or_files in six.iteritems(self.files_by_type):
       # TODO(b/36049793): Validate file suffixes.
       if not file_or_files:
         continue
-      elif isinstance(file_or_files, str):
+      elif isinstance(file_or_files, six.string_types):
         self.files_by_type[file_type] = self._GetStagedFile(file_or_files)
       else:
         staged_files = [self._GetStagedFile(f) for f in file_or_files]
@@ -93,9 +99,13 @@ class JobBase(object):
     if not driver_logging:
       return None
 
+    value_enum = (messages.LoggingConfig.DriverLogLevelsValue.
+                  AdditionalProperty.ValueValueValuesEnum)
+    config = collections.OrderedDict(
+        [(key, value_enum(value)) for key, value in driver_logging.items()])
     return messages.LoggingConfig(
-        driverLogLevels=encoding.DictToMessage(
-            driver_logging,
+        driverLogLevels=encoding.DictToAdditionalPropertyMessage(
+            config,
             messages.LoggingConfig.DriverLogLevelsValue))
 
   def PopulateFilesByType(self, args):

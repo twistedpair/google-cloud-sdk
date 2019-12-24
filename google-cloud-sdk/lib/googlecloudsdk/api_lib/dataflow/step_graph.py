@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +15,12 @@
 """Code to transform the (cleaned-up) description of a dataflow into Graphviz.
 """
 
-from googlecloudsdk.calliope import exceptions
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+from googlecloudsdk.api_lib.dataflow import exceptions
+import six
 
 
 class _Cluster(object):
@@ -112,7 +118,7 @@ class _Cluster(object):
     Returns:
       Sorted list of pairs for the children in this cluster.
     """
-    return sorted(self.__children.iteritems())
+    return sorted(six.iteritems(self.__children))
 
 
 def _SplitStep(user_name):
@@ -182,10 +188,11 @@ def _EscapeGraphvizId(name):
     The `name', with double-quotes escaped, and quotes around it.
 
   Raises:
-    ToolException: If the name is incompatible with Graphviz ID escaping.
+    exceptions.UnsupportedNameException: If the name is incompatible with
+      Graphviz ID escaping.
   """
   if name.endswith('\\'):
-    raise exceptions.ToolException(
+    raise exceptions.UnsupportedNameException(
         'Unsupported name for Graphviz ID escaping: {0!r}'.format(name))
   return '"{0}"'.format(name.replace('"', '\\"'))
 

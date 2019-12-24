@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,19 +17,19 @@ Example invocation:
   convert_yaml.py app.yaml > app.json
 """
 
+from __future__ import absolute_import
+
 import argparse
 import json
 import sys
 
-import yaml
+import ruamel.yaml as yaml
 
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import yaml_schema_v1
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import yaml_schema_v1beta
 
 
 API_VERSION_SCHEMAS = {
-    'v1beta4': yaml_schema_v1beta,
-    'v1beta5': yaml_schema_v1beta,
     'v1beta': yaml_schema_v1beta,
     'v1alpha': yaml_schema_v1beta,
     'v1': yaml_schema_v1,

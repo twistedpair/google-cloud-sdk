@@ -1,5 +1,5 @@
 #
-# Copyright 2006 Google Inc.
+# Copyright 2006 Google LLC.
 # All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,10 +32,6 @@ class Error(Exception):
 
 class EmptyConfigurationFile(Error):
   """Tried to load empty configuration file"""
-
-
-class ModuleAndServiceDefined(Error):
-  """Configuration has both 'module' and 'service' instead of just one."""
 
 
 class MultipleConfigurationFile(Error):
@@ -177,6 +173,14 @@ class TooManyHttpHeaders(Error):
 
 class TooManyScalingSettingsError(Error):
   """Raised when more than one scaling settings section is present."""
+
+
+class TooManyAutoscalingUtilizationTargetsError(Error):
+  """Raised when too many custom metric autoscaling targets are present."""
+
+
+class NotEnoughAutoscalingUtilizationTargetsError(Error):
+  """Raised when not enough custom metric autoscaling targets are present."""
 
 
 class MissingRuntimeError(Error):

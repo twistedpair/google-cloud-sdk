@@ -24,7 +24,7 @@ class BioV1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new bio handle."""
     url = url or self.BASE_URL
     super(BioV1, self).__init__(
@@ -33,9 +33,9 @@ class BioV1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.projects_operations = self.ProjectsOperationsService(self)
-    self.projects_pipelines = self.ProjectsPipelinesService(self)
     self.projects = self.ProjectsService(self)
 
   class ProjectsOperationsService(base_api.BaseApiService):
@@ -49,7 +49,7 @@ class BioV1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      """Starts asynchronous cancellation on a long-running operation.  The server.
+      r"""Starts asynchronous cancellation on a long-running operation.  The server.
 makes a best effort to cancel the operation, but success is not
 guaranteed.  If the server doesn't support this method, it returns
 `google.rpc.Code.UNIMPLEMENTED`.  Clients can use
@@ -85,7 +85,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -114,7 +114,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the.
+      r"""Lists operations that match the specified filter in the request. If the.
 server doesn't support this method, it returns `UNIMPLEMENTED`.
 
 NOTE: the `name` binding allows API services to override the binding
@@ -146,42 +146,6 @@ is the parent resource, without the operations collection id.
         request_field='',
         request_type_name=u'BioProjectsOperationsListRequest',
         response_type_name=u'ListOperationsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsPipelinesService(base_api.BaseApiService):
-    """Service class for the projects_pipelines resource."""
-
-    _NAME = u'projects_pipelines'
-
-    def __init__(self, client):
-      super(BioV1.ProjectsPipelinesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def RunDeepVariantV1alpha(self, request, global_params=None):
-      """Run a DeepVariant pipeline.
-
-      Args:
-        request: (BioProjectsPipelinesRunDeepVariantV1alphaRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('RunDeepVariantV1alpha')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    RunDeepVariantV1alpha.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'bio.projects.pipelines.runDeepVariantV1alpha',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[],
-        relative_path=u'v1/projects/{projectId}/pipelines:runDeepVariantV1alpha',
-        request_field=u'runDeepVariantV1alphaRequest',
-        request_type_name=u'BioProjectsPipelinesRunDeepVariantV1alphaRequest',
-        response_type_name=u'Operation',
         supports_download=False,
     )
 

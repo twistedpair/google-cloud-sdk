@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +15,15 @@
 
 """gcloud search-help command resources."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.command_lib.search_help import lookup
 from googlecloudsdk.command_lib.search_help import search_util
+
+from six.moves import zip
 
 
 def RunSearch(terms, cli):
@@ -104,9 +111,10 @@ class Searcher(object):
     """
     if command[lookup.RELEASE] == lookup.GA:
       locations = [search_util.LocateTerm(command, term) for term in self.terms]
-      terms_to_locations = dict(zip(self.terms, locations))
+      results = dict(zip(self.terms, locations))
       # Return command only if at least one term is outside its ancestry path.
       if all(locations) and set(locations) != {lookup.PATH}:
-        new_command = search_util.ProcessResult(command, terms_to_locations)
+        new_command = search_util.ProcessResult(command, results)
         return new_command
+
 

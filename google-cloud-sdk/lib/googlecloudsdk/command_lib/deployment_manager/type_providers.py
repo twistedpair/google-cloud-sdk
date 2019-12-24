@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +15,12 @@
 
 """type-provider command basics."""
 
-from googlecloudsdk.api_lib.deployment_manager import exceptions
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import files
-import yaml
+from googlecloudsdk.core import yaml
 
 
 def AddTypeProviderNameFlag(parser):
@@ -149,14 +152,7 @@ def AddOptions(messages, options_file, type_provider):
   if not options_file:
     return type_provider
 
-  file_contents = files.GetFileContents(options_file)
-  yaml_content = None
-  try:
-    yaml_content = yaml.safe_load(file_contents)
-  except yaml.YAMLError as exc:
-    raise exceptions.ConfigError(
-        'Could not load yaml file {0}: {1}'.format(options_file, exc))
-
+  yaml_content = yaml.load_path(options_file)
   if yaml_content:
     if 'collectionOverrides' in yaml_content:
       type_provider.collectionOverrides = []

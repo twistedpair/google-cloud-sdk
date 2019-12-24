@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,9 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for ml-engine operations commands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.console import console_io
 
 
 def Cancel(operations_client, operation):
@@ -23,17 +28,6 @@ def Cancel(operations_client, operation):
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection='ml.projects.operations')
   return operations_client.Cancel(operation_ref)
-
-
-def Delete(operations_client, operation):
-  operation_ref = resources.REGISTRY.Parse(
-      operation,
-      params={'projectsId': properties.VALUES.core.project.GetOrFail},
-      collection='ml.projects.operations')
-  console_io.PromptContinue(
-      'This will delete operation [{}]...'.format(operation_ref.operationsId),
-      cancel_on_no=True)
-  return operations_client.Delete(operation_ref)
 
 
 def Describe(operations_client, operation):

@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for local ml-engine operations."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import json
 import os
 import subprocess
@@ -22,6 +28,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
 
@@ -44,7 +51,8 @@ class InvalidReturnValueError(core_exceptions.Error):
   pass
 
 
-def RunPredict(model_dir, json_instances=None, text_instances=None):
+def RunPredict(model_dir, json_instances=None, text_instances=None,
+               framework='tensorflow', signature_name=None):
   """Run ML Engine local prediction."""
   instances = predict_utilities.ReadInstancesFromArgs(json_instances,
                                                       text_instances)
@@ -58,10 +66,19 @@ def RunPredict(model_dir, json_instances=None, text_instances=None):
   # could be used to point to non-standard install locations of CUDA and CUDNN.
   # If not inherited, the child process could fail to initialize Tensorflow.
   env = os.environ.copy()
-  env['CLOUDSDK_ROOT'] = sdk_root
+  encoding.SetEncodedValue(env, 'CLOUDSDK_ROOT', sdk_root)
   # We want to use whatever the user's Python was, before the Cloud SDK started
   # changing the PATH. That's where Tensorflow is installed.
   python_executables = files.SearchForExecutableOnPath('python')
+  # Need to ensure that ml_sdk is in PYTHONPATH for the import in
+  # local_predict to succeed.
+
+  orig_py_path = encoding.GetEncodedValue(env, 'PYTHONPATH') or ''
+  if orig_py_path:
+    orig_py_path = ':' + orig_py_path
+  encoding.SetEncodedValue(
+      env, 'PYTHONPATH',
+      os.path.join(sdk_root, 'lib', 'third_party', 'ml_sdk') + orig_py_path)
   if not python_executables:
     # This doesn't have to be actionable because things are probably beyond help
     # at this point.
@@ -71,16 +88,20 @@ def RunPredict(model_dir, json_instances=None, text_instances=None):
   # Use python found on PATH or local_python override if set
   python_executable = (properties.VALUES.ml_engine.local_python.Get() or
                        python_executables[0])
+  predict_args = ['--model-dir', model_dir, '--framework', framework]
+  if signature_name:
+    predict_args += ['--signature-name', signature_name]
   # Start local prediction in a subprocess.
+  args = [encoding.Encode(a) for a in
+          ([python_executable, local_predict.__file__] + predict_args)]
   proc = subprocess.Popen(
-      [python_executable, local_predict.__file__,
-       '--model-dir', model_dir],
+      args,
       stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
       env=env)
 
   # Pass the instances to the process that actually runs local prediction.
   for instance in instances:
-    proc.stdin.write(json.dumps(instance) + '\n')
+    proc.stdin.write((json.dumps(instance) + '\n').encode('utf-8'))
   proc.stdin.flush()
 
   # Get the results for the local prediction.
@@ -88,10 +109,10 @@ def RunPredict(model_dir, json_instances=None, text_instances=None):
   if proc.returncode != 0:
     raise LocalPredictRuntimeError(err)
   if err:
-    log.warn(err)
+    log.warning(err)
 
   try:
-    return json.loads(output)
+    return json.loads(encoding.Decode(output))
   except ValueError:
     raise InvalidReturnValueError('The output for prediction is not '
                                   'in JSON format: ' + output)

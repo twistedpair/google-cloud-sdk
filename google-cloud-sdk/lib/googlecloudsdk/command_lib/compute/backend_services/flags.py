@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,11 +15,15 @@
 
 """Flags and helpers for the compute backend-services commands."""
 
-import argparse
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.util import completers
 
 
@@ -85,6 +90,20 @@ MULTISCOPE_INSTANCE_GROUP_ARG = compute_flags.ResourceArgument(
     region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
+NETWORK_ENDPOINT_GROUP_ARG = compute_flags.ResourceArgument(
+    name='--network-endpoint-group',
+    resource_name='network endpoint group',
+    zonal_collection='compute.networkEndpointGroups',
+    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+
+
+GLOBAL_NETWORK_ENDPOINT_GROUP_ARG = compute_flags.ResourceArgument(
+    name='--network-endpoint-group',
+    resource_name='network endpoint group',
+    zonal_collection='compute.networkEndpointGroups',
+    global_collection='compute.globalNetworkEndpointGroups',
+    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+
 GLOBAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     name='backend_service_name',
     resource_name='backend service',
@@ -117,16 +136,33 @@ GLOBAL_REGIONAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     global_collection='compute.backendServices')
 
 
-def BackendServiceArgumentForUrlMap(required=True):
+NETWORK_ARG = compute_flags.ResourceArgument(
+    name='--network',
+    required=False,
+    resource_name='network',
+    global_collection='compute.networks',
+    short_help='Network that this backend service applies to.',
+    detailed_help="""\
+        Network that this backend service applies to. It can only be set if
+        the load-balancing-scheme is INTERNAL.
+        """)
+
+
+def BackendServiceArgumentForUrlMap(required=True,
+                                    include_l7_internal_load_balancing=False):
   return compute_flags.ResourceArgument(
       resource_name='backend service',
       name='--default-service',
       required=required,
       completer=BackendServicesCompleter,
       global_collection='compute.backendServices',
+      regional_collection='compute.regionBackendServices'
+      if include_l7_internal_load_balancing else None,
       short_help=(
           'A backend service that will be used for requests for which this '
-          'URL map has no mappings.'))
+          'URL map has no mappings.'),
+      region_explanation=('If not specified it will be set to the '
+                          'region of the URL map.'))
 
 
 def BackendServiceArgumentForUrlMapPathMatcher(required=True):
@@ -169,13 +205,21 @@ def BackendServiceArgumentForTargetTcpProxy(required=True):
         """)
 
 
-def AddLoadBalancingScheme(parser):
+def AddLoadBalancingScheme(parser, include_l7_ilb=False):
   parser.add_argument(
       '--load-balancing-scheme',
-      choices=['INTERNAL', 'EXTERNAL'],
-      type=lambda x: x.upper(),
+      choices=['INTERNAL', 'EXTERNAL', 'INTERNAL_SELF_MANAGED'] +
+      (['INTERNAL_MANAGED'] if include_l7_ilb else []),
+      type=lambda x: x.replace('-', '_').upper(),
       default='EXTERNAL',
-      help='Specifies if this is internal or external load balancer.')
+      help="""\
+      Specifies the load balancer type. Choose EXTERNAL for load balancers
+      that receive traffic from external clients. Choose INTERNAL for
+      Internal TCP/UDP Load Balancing. Choose INTERNAL_MANAGED for
+      Internal HTTP(S) Load Balancing. Choose INTERNAL_SELF_MANAGED for
+      Traffic Director. For more information, refer to this guide:
+      https://cloud.google.com/load-balancing/docs/choosing-load-balancer
+      """)
 
 
 def AddConnectionDrainingTimeout(parser):
@@ -189,8 +233,7 @@ def AddConnectionDrainingTimeout(parser):
       accepted. Set timeout to zero to disable connection draining. Enable
       feature by specifying a timeout of up to one hour.
       If the flag is omitted API default value (0s) will be used.
-      Valid units for this flag are `s` for seconds, `m` for minutes, and
-      `h` for hours.
+      See $ gcloud topic datetimes for information on duration formats.
       """)
 
 
@@ -219,15 +262,15 @@ def AddCustomRequestHeaders(parser, remove_all_flag=False, default=None):
         """)
 
 
-def AddEnableCdn(parser, default):
+def AddEnableCdn(parser):
   parser.add_argument(
       '--enable-cdn',
-      action='store_true',
-      default=default,
+      action=arg_parsers.StoreTrueFalseAction,
       help="""\
-      Enable Cloud CDN for the backend service. Cloud CDN can cache HTTP
-      responses from a backend service at the edge of the network, close to
-      users. Cloud CDN is disabled by default.
+      Enable or disable Cloud CDN for the backend service. Only available for
+      backend services with --load-balancing-scheme=EXTERNAL that use a
+      --protocol of HTTP, HTTPS, or HTTP2. Cloud CDN caches HTTP responses at
+      the edge of Google's network. Cloud CDN is disabled by default.
       """)
 
 
@@ -313,7 +356,7 @@ def AddCacheKeyQueryStringList(parser):
       """)
 
 
-def HealthCheckArgument(required=False):
+def HealthCheckArgument(required=False, support_regional_health_check=False):
   return compute_flags.ResourceArgument(
       resource_name='health check',
       name='--health-checks',
@@ -321,11 +364,16 @@ def HealthCheckArgument(required=False):
       plural=True,
       required=required,
       global_collection='compute.healthChecks',
+      regional_collection='compute.regionHealthChecks'
+      if support_regional_health_check else None,
       short_help="""\
       Specifies a list of health check objects for checking the health of
-      the backend service. Health checks need not be for the same protocol
-      as that of the backend service.
-      """)
+      the backend service. Currently at most one health check can be specified.
+      Health checks need not be for the same protocol as that of the backend
+      service.
+      """,
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
+      if support_regional_health_check else None)
 
 
 def HttpHealthCheckArgument(required=False):
@@ -337,8 +385,14 @@ def HttpHealthCheckArgument(required=False):
       required=required,
       global_collection='compute.httpHealthChecks',
       short_help="""\
-      Specifies a list of HTTP health check objects for checking the health
-      of the backend service.
+      Specifies a list of legacy HTTP health check objects for checking the
+      health of the backend service.
+
+      Legacy health checks are not recommended for backend services. It is
+      possible to use a legacy health check on a backend service for a HTTP(S)
+      load balancer if that backend service uses instance groups. For more
+      information, refer to this guide:
+      https://cloud.google.com/load-balancing/docs/health-check-concepts#lb_guide
       """)
 
 
@@ -351,8 +405,14 @@ def HttpsHealthCheckArgument(required=False):
       required=required,
       global_collection='compute.httpsHealthChecks',
       short_help="""\
-      Specifies a list of HTTPS health check objects for checking the health
-      of the backend service.
+      Specifies a list of legacy HTTPS health check objects for checking the
+      health of the backend service.
+
+      Legacy health checks are not recommended for backend services. It is
+      possible to use a legacy health check on a backend service for a HTTP(S)
+      load balancer if that backend service uses instance groups. For more
+      information, refer to this guide:
+      https://cloud.google.com/load-balancing/docs/health-check-concepts#lb_guide
       """)
 
 
@@ -378,7 +438,9 @@ def GetHealthCheckUris(args, resource_resolver, resource_parser):
     else:
       health_check_refs.extend(
           resource_resolver.HEALTH_CHECK_ARG.ResolveAsResource(
-              args, resource_parser))
+              args,
+              resource_parser,
+              default_scope=compute_scope.ScopeEnum.GLOBAL))
 
   return [health_check_ref.SelfLink() for health_check_ref in health_check_refs]
 
@@ -395,60 +457,92 @@ def AddIap(parser, help=None):  # pylint: disable=redefined-builtin
       help=help or 'Specifies a list of settings for IAP service.')
 
 
-def AddSessionAffinity(parser, internal_lb=False, target_pools=False,
-                       hidden=False):
+def AddSessionAffinity(parser, target_pools=False, hidden=False):
   """Adds session affinity flag to the argparse."""
   choices = {
       'CLIENT_IP': (
           "Route requests to instances based on the hash of the client's IP "
           'address.'),
-      'GENERATED_COOKIE': (
-          'Route requests to instances based on the contents of the "GCLB" '
-          'cookie set by the load balancer.'),
       'NONE': 'Session affinity is disabled.',
+      'CLIENT_IP_PROTO': (
+          'Connections from the same client IP with the same IP '
+          'protocol will go to the same VM in the pool while that VM remains'
+          ' healthy.'),
   }
-  if internal_lb or target_pools:
+
+  if not target_pools:
     choices.update({
+        'GENERATED_COOKIE': (
+            '(Applicable if `--load-balancing-scheme` is '
+            '`INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, or `EXTERNAL`) '
+            ' If the `--load-balancing-scheme` is `EXTERNAL`, routes '
+            ' requests to backend VMs or endpoints in a NEG, based on the '
+            ' contents of the `GCLB` cookie set by the load balancer. Only '
+            ' applicable when `--protocol` is HTTP, HTTPS, or HTTP2. If the '
+            ' `--load-balancing-scheme` is `INTERNAL_MANAGED` or '
+            ' `INTERNAL_SELF_MANAGED`, routes requests to backend VMs or '
+            ' endpoints in a NEG, based on the contents of the `GCILB` cookie '
+            ' set by the proxy. (If no cookie is present, the proxy '
+            ' chooses a backend VM or endpoint and sends a `Set-Cookie` '
+            ' response for future requests.) If the `--load-balancing-scheme` '
+            ' is `INTERNAL_SELF_MANAGED`, routes requests to backend VMs or '
+            ' endpoints in a NEG, based on the contents of a cookie set by '
+            ' Traffic Director.'),
         'CLIENT_IP_PROTO': (
-            'Connections from the same client IP with the same IP protocol will'
-            'go to the same VM in the pool while that VM remains healthy. This '
-            'option cannot be used for HTTP(s) load balancing.'),
-    })
-  if internal_lb:
-    choices.update({
+            '(Applicable if `--load-balancing-scheme` is `INTERNAL`) '
+            'Connections from the same client IP with the same IP '
+            'protocol will go to the same backend VM while that VM remains'
+            ' healthy.'),
         'CLIENT_IP_PORT_PROTO': (
+            '(Applicable if `--load-balancing-scheme` is `INTERNAL`) '
             'Connections from the same client IP with the same IP protocol and '
-            'port will go to the same VM in the backend while that VM remains '
-            'healthy. This option cannot be used for HTTP(S) load balancing.'),
+            'port will go to the same backend VM while that VM remains '
+            'healthy.'),
+        'HTTP_COOKIE': (
+            '(Applicable if `--load-balancing-scheme` is `INTERNAL_MANAGED`'
+            ' or `INTERNAL_SELF_MANAGED`) Route requests to backend VMs or '
+            ' endpoints in a NEG, based on an HTTP cookie named in the '
+            ' `HTTP_COOKIE` flag (with the optional `--affinity-cookie-ttl` '
+            ' flag). If the client has not provided the cookie, '
+            ' the proxy generates the cookie and returns it to the client in a '
+            ' `Set-Cookie` header. This session affinity is only valid if the '
+            ' load balancing locality policy is either `RING_HASH` or `MAGLEV` '
+            ' and the backend service\'s consistent hash specifies the HTTP '
+            ' cookie.'),
+        'HEADER_FIELD': (
+            '(Applicable if `--load-balancing-scheme` is `INTERNAL_MANAGED`'
+            ' or `INTERNAL_SELF_MANAGED`) Route requests to backend VMs or '
+            ' endpoints in a NEG based on the value of the HTTP header named '
+            ' in the `--custom-request-header` flag. This session '
+            ' affinity is only valid if the load balancing locality policy '
+            ' is either RING_HASH or MAGLEV and the backend service\'s '
+            ' consistent hash specifies the name of the HTTP header.'),
     })
-  if hidden:
-    help_str = argparse.SUPPRESS
-  else:
-    help_str = 'The type of session affinity to use for this backend service.'
+  help_str = 'The type of TCP session affinity to use. Not supported for UDP.'
   parser.add_argument(
       '--session-affinity',
       choices=choices,
       # Tri-valued, None => don't include property.
       default='NONE' if target_pools else None,
       type=lambda x: x.upper(),
+      hidden=hidden,
       help=help_str)
 
 
 def AddAffinityCookieTtl(parser, hidden=False):
   """Adds affinity cookie Ttl flag to the argparse."""
-  if hidden:
-    affinity_cookie_ttl_help = argparse.SUPPRESS
-  else:
-    affinity_cookie_ttl_help = """\
-        If session-affinity is set to "generated_cookie", this flag sets
-        the TTL, in seconds, of the resulting cookie.  A setting of 0
-        indicates that the cookie should be transient.
-        """
+  affinity_cookie_ttl_help = """\
+      If session-affinity is set to "generated_cookie", this flag sets
+      the TTL, in seconds, of the resulting cookie.  A setting of 0
+      indicates that the cookie should be transient.
+      See $ gcloud topic datetimes for information on duration formats.
+      """
   parser.add_argument(
       '--affinity-cookie-ttl',
       type=arg_parsers.Duration(),
       default=None,  # Tri-valued, None => don't include property.
-      help=affinity_cookie_ttl_help
+      help=affinity_cookie_ttl_help,
+      hidden=hidden,
   )
 
 
@@ -464,29 +558,32 @@ def AddTimeout(parser, default='30s'):
       default=default,
       type=arg_parsers.Duration(),
       help="""\
-      The amount of time to wait for a backend to return a full response for the
-      request and for the load balancer to proxy the response to the client
-      before considering the request failed.
+      Applicable to all load balancers except internal TCP/UDP load
+      balancers. For internal TCP/UDP load balancers
+      (``load-balancing-scheme'' INTERNAL), ``timeout'' is ignored.
 
-      For example, specifying `10s` gives instances 10 seconds to respond to
-      requests. The load balancer will retry GET requests once if the backend
-      closes the connection or times out before sending response headers to the
-      proxy. If the backend produces any response headers, the load balancer
-      does not retry. If the backend does not reply at all, the load balancer
-      returns a `502 Bad Gateway` error to the client. Valid units for this flag
-      are `s` for seconds, `m` for minutes, and `h` for hours.
+      If the ``protocol'' is HTTP, HTTPS, or HTTP2, ``timeout'' is a
+      request/response timeout for HTTP(S) traffic, meaning the amount
+      of time that the load balancer waits for a backend to return a
+      full response to a request. If WebSockets traffic is supported, the
+      ``timeout'' parameter sets the maximum amount of time that a
+      WebSocket can be open (idle or not).
+
+      For example, for HTTP, HTTPS, or HTTP2 traffic, specifying a ``timeout''
+      of 10s means that backends have 10 seconds to respond to the load
+      balancer's requests. The load balancer retries the HTTP GET request one
+      time if the backend closes the connection or times out before sending
+      response headers to the load balancer. If the backend sends response
+      headers or if the request sent to the backend is not an HTTP GET request,
+      the load balancer does not retry. If the backend does not reply at all,
+      the load balancer returns a 502 Bad Gateway error to the client.
+
+      If the ``protocol'' is SSL or TCP, ``timeout'' is an idle timeout.
       """)
 
 
 def AddPortName(parser):
-  """Add port and port-name flags."""
-  # TODO(b/36051036): Remove port once port_name is in use. b/16486110
-  parser.add_argument(
-      '--port',
-      type=int,
-      help=('The TCP port to use when connecting to the backend. '
-            '--port is being deprecated in favor of --port-name.'))
-
+  """Add port-name flag."""
   parser.add_argument(
       '--port-name',
       help="""\
@@ -500,62 +597,25 @@ def AddPortName(parser):
       this flag, your instance groups must have a service named ``http''
       configured. See also
       `gcloud compute instance-groups set-named-ports --help`.
+      The ``port-name'' parameter cannot be set if the
+      load-balancing-scheme is INTERNAL.
       """)
 
 
 def AddProtocol(parser, default='HTTP'):
   parser.add_argument(
       '--protocol',
-      choices=['HTTP', 'HTTPS', 'SSL', 'TCP', 'UDP'],
       default=default,
       type=lambda x: x.upper(),
-      help='The protocol for incoming requests.')
-
-
-def AddCdnSignedUrlKeyName(parser, required=True):
-  """Adds the Cloud CDN Signed URL key name argument to the argparse."""
-  parser.add_argument(
-      '--key-name',
-      required=required,
-      help='Name of the Cloud CDN Signed URL key.')
-
-
-def AddCdnSignedUrlKeyFile(parser, required=True):
-  """Adds the Cloud CDN Signed URL key file argument to the argparse."""
-  parser.add_argument(
-      '--key-file',
-      required=required,
-      metavar='LOCAL_FILE_PATH',
       help="""\
-      The file containing the base64 encoded 128-bit secret key for Cloud CDN
-      Signed URL. It is vital that the key is strongly random. One way to
-      generate such a key is with the following command:
+      Protocol for incoming requests.
 
-          head -c 16 /dev/random | base64 | tr +/ -_ > [KEY_FILE_NAME]
+      If the load-balancing-scheme is `INTERNAL`, the protocol must be one of:
+      `TCP`, `UDP`.
 
+      If the load-balancing-scheme is `EXTERNAL`, the protocol must be one of:
+      `HTTP`, `HTTPS`, `HTTP2`, `SSL`, `TCP`.
       """)
-
-
-def AddSignedUrlCacheMaxAge(
-    parser, unspecified_help=' If unspecified, the default value is 3600s.'):
-  """Adds the Cloud CDN Signed URL cache max age argument to the argparse."""
-  parser.add_argument(
-      '--signed-url-cache-max-age',
-      type=arg_parsers.Duration(),
-      help="""\
-      The amount of time up to which the response to a signed URL request
-      will be cached in the CDN. After this time period, the Signed URL will
-      be revalidated before being served. Cloud CDN will internally act as
-      though all responses from this backend had a
-      `Cache-Control: public, max-age=[TTL]` header, regardless of any
-      existing Cache-Control header. The actual headers served in responses
-      will not be altered.{}
-
-      For example, specifying `12h` will cause the responses to signed URL
-      requests to be cached in the CDN up to 12 hours. Valid units for this flag
-      are `s` for seconds, `m` for minutes, `h` for hours, and `d` for
-      days.
-      """.format(unspecified_help))
 
 
 def AddConnectionDrainOnFailover(parser, default):
@@ -597,3 +657,49 @@ def AddFailoverRatio(parser):
       number, traffic arriving at the load-balanced IP will be directed to the
       failover backend(s). Not compatible with the --global flag.
       """)
+
+
+def AddEnableLogging(parser, default):
+  """Adds the enable logging argument to the argparse."""
+  parser.add_argument(
+      '--enable-logging',
+      action='store_true',
+      default=default,
+      help="""\
+      The logging options for the load balancer traffic served by this backend
+      service. If logging is enabled, logs will be exported to Stackdriver.
+      Enabled by default.
+      """)
+
+
+def AddLoggingSampleRate(parser):
+  """Adds the logging sample rate argument to the argparse."""
+  parser.add_argument(
+      '--logging-sample-rate',
+      type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
+      help="""\
+      This field can only be specified if logging is enabled for the backend
+      service. The value of the field must be a float in the range [0, 1]. This
+      configures the sampling rate of requests to the load balancer where 1.0
+      means all logged requests are reported and 0.0 means no logged requests
+      are reported. The default value is 1.0.
+      """)
+
+
+def AddInstanceGroupAndNetworkEndpointGroupArgs(parser,
+                                                verb,
+                                                support_global_neg=False):
+  """Adds instance group and network endpoint group args to the argparse."""
+  backend_group = parser.add_group(required=True, mutex=True)
+  instance_group = backend_group.add_group('Instance Group')
+  neg_group = backend_group.add_group('Network Endpoint Group')
+  MULTISCOPE_INSTANCE_GROUP_ARG.AddArgument(
+      instance_group, operation_type='{} the backend service'.format(verb))
+  neg_group_arg = (GLOBAL_NETWORK_ENDPOINT_GROUP_ARG if support_global_neg
+                   else NETWORK_ENDPOINT_GROUP_ARG)
+  neg_group_arg.AddArgument(
+      neg_group, operation_type='{} the backend service'.format(verb))
+
+
+def AddNetwork(parser):
+  NETWORK_ARG.AddArgument(parser)

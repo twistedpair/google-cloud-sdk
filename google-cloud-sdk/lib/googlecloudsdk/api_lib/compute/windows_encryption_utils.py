@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +14,14 @@
 # limitations under the License.
 """Utilities for encryption functions on Windows."""
 # TODO(b/36051032) Create unittests for this module (which only run on Windows).
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import base64
 import ctypes
-from ctypes import windll
-from ctypes import wintypes
+from ctypes import windll  # pylint: disable=g-importing-member
+from ctypes import wintypes  # pylint: disable=g-importing-member
 
 advapi32 = windll.advapi32
 
@@ -28,7 +33,7 @@ RSA_KEY_LENGTH = 2048
 # API, however, so these shouldn't need to ever change (unless we change
 # the implementation).
 PROV_RSA_FULL = 1
-MS_ENHANCED_PROV_W = u'Microsoft Enhanced Cryptographic Provider v1.0'
+MS_ENHANCED_PROV_W = 'Microsoft Enhanced Cryptographic Provider v1.0'
 MS_ENHANCED_PROV = MS_ENHANCED_PROV_W
 CRYPT_VERIFYCONTEXT = 0xF0000000
 ALG_CLASS_KEY_EXCHANGE = 40960
@@ -216,4 +221,3 @@ class WinCrypt(object):
     b64_exp = base64.b64encode(exponent)
 
     return (b64_mod, b64_exp)
-

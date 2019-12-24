@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,10 +17,17 @@
 
 Functions for parsing app.yaml files and installing the required components.
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import argparse
 import os
 
 from googlecloudsdk.core import log
-import yaml
+from googlecloudsdk.core import yaml
+import six
 
 # Runtime ID to component mapping. python27-libs is a special token indicating
 # that the real runtime id is python27, and that a libraries section has been
@@ -38,6 +46,15 @@ _WARNING_RUNTIMES = {
 }
 
 _YAML_FILE_EXTENSIONS = ('.yaml', '.yml')
+
+
+_TRUE_VALUES = ['true', 'yes', '1']
+
+
+_FALSE_VALUES = ['false', 'no', '0']
+
+
+_UPSTREAM_DEV_APPSERVER_FLAGS = ['--support_datastore_emulator']
 
 
 class MultipleAppYamlError(Exception):
@@ -79,23 +96,23 @@ def GetRuntimes(args):
           yaml_candidate = fullname
 
     if yaml_candidate:
-      with open(yaml_candidate) as f:
-        try:
-          info = yaml.safe_load(f)
-          # safe_load can return arbitrary objects, we need a dict.
-          if not isinstance(info, dict):
-            continue
-          # Grab the runtime from the yaml, if it exists.
-          if 'runtime' in info:
-            runtime = info.get('runtime')
-            if type(runtime) == str:
-              if runtime == 'python27' and info.get('libraries'):
-                runtimes.add('python27-libs')
-              runtimes.add(runtime)
-              if runtime in _WARNING_RUNTIMES:
-                log.warn(_WARNING_RUNTIMES[runtime])
-        except yaml.YAMLError:
-          continue
+      try:
+        info = yaml.load_path(yaml_candidate)
+      except yaml.Error:
+        continue
+
+      # safe_load can return arbitrary objects, we need a dict.
+      if not isinstance(info, dict):
+        continue
+      # Grab the runtime from the yaml, if it exists.
+      if 'runtime' in info:
+        runtime = info.get('runtime')
+        if type(runtime) == str:
+          if runtime == 'python27' and info.get('libraries'):
+            runtimes.add('python27-libs')
+          runtimes.add(runtime)
+          if runtime in _WARNING_RUNTIMES:
+            log.warning(_WARNING_RUNTIMES[runtime])
     elif os.path.isfile(os.path.join(arg, 'WEB-INF', 'appengine-web.xml')):
       # For unstanged Java App Engine apps, which may not have any yaml files.
       runtimes.add('java')
@@ -113,7 +130,56 @@ def GetComponents(runtimes):
   # Always install python.
   components = ['app-engine-python']
   for requested_runtime in runtimes:
-    for component_runtime, component in _RUNTIME_COMPONENTS.iteritems():
+    for component_runtime, component in six.iteritems(_RUNTIME_COMPONENTS):
       if component_runtime in requested_runtime:
         components.append(component)
   return components
+
+
+def _ParseBoolean(value):
+  """This is upstream logic from dev_appserver for parsing boolean arguments.
+
+  Args:
+    value: value assigned to a flag.
+
+  Returns:
+    A boolean parsed from value.
+
+  Raises:
+    ValueError: value.lower() is not in _TRUE_VALUES + _FALSE_VALUES.
+  """
+  if isinstance(value, bool):
+    return value
+  if value:
+    value = value.lower()
+    if value in _TRUE_VALUES:
+      return True
+    if value in _FALSE_VALUES:
+      return False
+    repr_value = (repr(value) for value in  _TRUE_VALUES + _FALSE_VALUES)
+    raise ValueError('%r unrecognized boolean; known booleans are %s.' %
+                     (value, ', '.join(repr_value)))
+  return True
+
+
+def ParseDevAppserverFlags(args):
+  """Parse flags from app engine dev_appserver.py.
+
+  Only the subset of args are parsed here. These args are listed in
+  _UPSTREAM_DEV_APPSERVER_FLAGS.
+
+  Args:
+    args: A list of arguments (typically sys.argv).
+
+  Returns:
+    options: An argparse.Namespace containing the command line arguments.
+  """
+  upstream_args = [
+      arg for arg in args if
+      any(arg.startswith(upstream_arg) for upstream_arg
+          in _UPSTREAM_DEV_APPSERVER_FLAGS)]
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+      '--support_datastore_emulator', dest='support_datastore_emulator',
+      type=_ParseBoolean, const=True, nargs='?', default=False)
+  return parser.parse_args(upstream_args)

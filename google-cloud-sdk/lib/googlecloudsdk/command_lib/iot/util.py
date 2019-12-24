@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,14 +12,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """General utilties for Cloud IoT commands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.cloudiot import devices
 from googlecloudsdk.api_lib.cloudiot import registries
 from googlecloudsdk.command_lib.iot import flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import http_encoding
 from googlecloudsdk.core.util import times
+
+import six
 
 
 LOCATIONS_COLLECTION = 'cloudiot.projects.locations'
@@ -26,7 +39,6 @@ REGISTRIES_COLLECTION = 'cloudiot.projects.locations.registries'
 DEVICES_COLLECTION = 'cloudiot.projects.locations.registries.devices'
 DEVICE_CONFIGS_COLLECTION = 'cloudiot.projects.locations.registries.devices.configVersions'
 _PROJECT = lambda: properties.VALUES.core.project.Get(required=True)
-
 
 # Maximum number of public key credentials for a device.
 MAX_PUBLIC_KEY_NUM = 3
@@ -42,6 +54,16 @@ MAX_METADATA_VALUE_SIZE = 1024 * 32
 
 # Maximum size of metadata keys and values (256 KB).
 MAX_METADATA_SIZE = 1024 * 256
+
+# Mapping of apitools request message fields to  their json parameters
+# TODO (b/124063772): Remove this mapping fix once apitools base fix is applied
+# pylint: disable=line-too-long, for readability.
+_CUSTOM_JSON_FIELD_MAPPINGS = {
+    'gatewayListOptions_gatewayType': 'gatewayListOptions.gatewayType',
+    'gatewayListOptions_associationsGatewayId': 'gatewayListOptions.associationsGatewayId',
+    'gatewayListOptions_associationsDeviceId': 'gatewayListOptions.associationsDeviceId',
+}
+# pylint: enable=line-too-long
 
 
 class InvalidPublicKeySpecificationError(exceptions.Error):
@@ -61,6 +83,10 @@ class BadCredentialIndexError(exceptions.Error):
         '{num_credentials} credentials. (Indexes are zero-based.))'.format(
             index=index, name=name, num_credentials=len(credentials),
             resource=resource))
+
+
+class InvalidAuthMethodError(exceptions.Error):
+  """Indicates that auth method was provided for non-gateway device."""
 
 
 class BadDeviceError(exceptions.Error):
@@ -101,26 +127,16 @@ def ParseEnableHttpConfig(enable_http_config, client=None):
     return http_config_enum.HTTP_DISABLED
 
 
-def ParseDeviceBlocked(blocked, enable_device):
-  """Returns the correct enabled state enum based on args."""
-  if enable_device is None and blocked is None:
+def ParseLogLevel(log_level, enum_class):
+  if log_level is None:
     return None
-  elif enable_device is None or blocked is None:
-    # In this case there are no default arguments so we should use or.
-    return blocked is True or enable_device is False
-  else:
-    # By default blocked is false, so any blocked=True value should override
-    # the default.
-    return not enable_device or blocked
+  return arg_utils.ChoiceToEnum(log_level, enum_class)
 
 
 def AddBlockedToRequest(ref, args, req):
   """Python hook for yaml commands to process the blocked flag."""
   del ref
-  args_blocked = False if args.blocked is None else args.blocked
-  args_enabled = True if args.enable_device is None else args.enable_device
-  blocked = ParseDeviceBlocked(args_blocked, args_enabled)
-  req.device.blocked = blocked
+  req.device.blocked = args.blocked
   return req
 
 
@@ -142,6 +158,7 @@ def _ValidatePublicKeyDict(public_key):
 
 
 def _ConvertStringToFormatEnum(type_, messages):
+  """Convert string values to Enum object type."""
   if (type_ == flags.KeyTypes.RS256.choice_name or
       type_ == flags.KeyTypes.RSA_X509_PEM.choice_name):
     return messages.PublicKeyCredential.FormatValueValuesEnum.RSA_X509_PEM
@@ -161,9 +178,8 @@ def _ReadKeyFileFromPath(path):
   if not path:
     raise ValueError('path is required')
   try:
-    with open(path, 'r') as f:
-      return f.read()
-  except (IOError, OSError) as err:
+    return files.ReadFileContents(path)
+  except files.Error as err:
     raise InvalidKeyFileError('Could not read key file [{}]:\n\n{}'.format(
         path, err))
 
@@ -318,11 +334,9 @@ def ReadConfigData(args):
   if args.IsSpecified('config_data') and args.IsSpecified('config_file'):
     raise ValueError('Both --config-data and --config-file given.')
   if args.IsSpecified('config_data'):
-    return args.config_data
+    return http_encoding.Encode(args.config_data)
   elif args.IsSpecified('config_file'):
-    # Note: use 'rb' for Windows
-    with open(args.config_file, 'rb') as f:
-      return f.read()
+    return files.ReadBinaryFileContents(args.config_file)
   else:
     raise ValueError('Neither --config-data nor --config-file given.')
 
@@ -343,9 +357,8 @@ def _ReadMetadataValueFromFile(path):
   if not path:
     raise ValueError('path is required')
   try:
-    with open(path, 'r') as f:
-      return f.read()
-  except (IOError, OSError) as err:
+    return files.ReadFileContents(path)
+  except files.Error as err:
     raise InvalidMetadataError('Could not read value file [{}]:\n\n{}'.format(
         path, err))
 
@@ -379,7 +392,7 @@ def ParseMetadata(metadata, metadata_from_file, messages=None):
   total_size = 0
   messages = messages or devices.GetMessagesModule()
   additional_properties = []
-  for key, value in metadata.iteritems():
+  for key, value in six.iteritems(metadata):
     total_size += len(key) + len(value)
     additional_properties.append(
         _ValidateAndCreateAdditionalProperty(messages, key, value))
@@ -402,3 +415,121 @@ def AddMetadataToRequest(ref, args, req):
   metadata = ParseMetadata(args.metadata, args.metadata_from_file)
   req.device.metadata = metadata
   return req
+
+
+def ParseEventNotificationConfig(event_notification_configs, messages=None):
+  """Creates a list of EventNotificationConfigs from args."""
+  messages = messages or registries.GetMessagesModule()
+  if event_notification_configs:
+    configs = []
+    for config in event_notification_configs:
+      topic_ref = ParsePubsubTopic(config['topic'])
+      configs.append(messages.EventNotificationConfig(
+          pubsubTopicName=topic_ref.RelativeName(),
+          subfolderMatches=config.get('subfolder', None)))
+    return configs
+  return None
+
+
+def AddEventNotificationConfigsToRequest(ref, args, req):
+  """Python hook for yaml commands to process event config flags."""
+  del ref
+  configs = ParseEventNotificationConfig(args.event_notification_configs)
+  req.deviceRegistry.eventNotificationConfigs = configs or []
+  return req
+
+
+def AddCreateGatewayArgsToRequest(ref, args, req):
+  """Python hook for yaml create command to process gateway flags."""
+  del ref
+  gateway = args.device_type
+  auth_method = args.auth_method
+
+  # Don't set gateway config if no flags provided
+  if not (gateway or auth_method):
+    return req
+
+  messages = devices.GetMessagesModule()
+  req.device.gatewayConfig = messages.GatewayConfig()
+  if auth_method:
+    if not gateway or gateway == 'non-gateway':
+      raise InvalidAuthMethodError(
+          'auth_method can only be set on gateway devices.')
+    auth_enum = flags.GATEWAY_AUTH_METHOD_ENUM_MAPPER.GetEnumForChoice(
+        auth_method)
+    req.device.gatewayConfig.gatewayAuthMethod = auth_enum
+
+  if gateway:
+    gateway_enum = flags.CREATE_GATEWAY_ENUM_MAPPER.GetEnumForChoice(gateway)
+    req.device.gatewayConfig.gatewayType = gateway_enum
+
+  return req
+
+
+def AddBindArgsToRequest(ref, args, req):
+  """Python hook for yaml gateways bind command to process resource_args."""
+  del ref
+  messages = devices.GetMessagesModule()
+  gateway_ref = args.CONCEPTS.gateway.Parse()
+  device_ref = args.CONCEPTS.device.Parse()
+  registry_ref = gateway_ref.Parent()
+
+  bind_request = messages.BindDeviceToGatewayRequest(
+      deviceId=device_ref.Name(), gatewayId=gateway_ref.Name())
+  req.bindDeviceToGatewayRequest = bind_request
+  req.parent = registry_ref.RelativeName()
+
+  return req
+
+
+def AddUnBindArgsToRequest(ref, args, req):
+  """Python hook for yaml gateways unbind command to process resource_args."""
+  del ref
+  messages = devices.GetMessagesModule()
+  gateway_ref = args.CONCEPTS.gateway.Parse()
+  device_ref = args.CONCEPTS.device.Parse()
+  registry_ref = gateway_ref.Parent()
+
+  unbind_request = messages.UnbindDeviceFromGatewayRequest(
+      deviceId=device_ref.Name(), gatewayId=gateway_ref.Name())
+  req.unbindDeviceFromGatewayRequest = unbind_request
+  req.parent = registry_ref.RelativeName()
+
+  return req
+
+
+# TODO(b/124063772): Workaround for apitools issues with nested GET request
+# message fields.
+def RegistriesDevicesListRequestHook(ref, args, req):
+  """Add Api field query string mappings to list requests."""
+  del ref
+  del args
+  msg = devices.GetMessagesModule()
+  updated_requests_type = (
+      msg.CloudiotProjectsLocationsRegistriesDevicesListRequest)
+  for req_field, mapped_param in _CUSTOM_JSON_FIELD_MAPPINGS.items():
+    encoding.AddCustomJsonFieldMapping(updated_requests_type,
+                                       req_field,
+                                       mapped_param)
+  return req
+
+
+# Argument Processors
+def GetCommandFromFileProcessor(path):
+  """Builds a binary data for a SendCommandToDeviceRequest message from a path.
+
+  Args:
+    path: the path arg given to the command.
+
+  Raises:
+    ValueError: if the path does not exist or can not be read.
+
+  Returns:
+    binary data to be set on a message.
+  """
+  try:
+    return files.ReadBinaryFileContents(path)
+
+  except Exception as e:
+    raise ValueError('Command File [{}] can not be opened: {}'.format(path, e))
+

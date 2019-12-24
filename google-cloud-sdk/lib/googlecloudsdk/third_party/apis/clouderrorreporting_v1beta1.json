@@ -43,11 +43,6 @@
       ],
       "location": "query"
     },
-    "bearer_token": {
-      "type": "string",
-      "description": "OAuth bearer token.",
-      "location": "query"
-    },
     "callback": {
       "type": "string",
       "description": "JSONP",
@@ -66,12 +61,6 @@
     "oauth_token": {
       "type": "string",
       "description": "OAuth 2.0 token for the current user.",
-      "location": "query"
-    },
-    "pp": {
-      "type": "boolean",
-      "description": "Pretty-print response.",
-      "default": "true",
       "location": "query"
     },
     "prettyPrint": {
@@ -423,20 +412,20 @@
       "type": "object",
       "properties": {
         "eventTime": {
-          "description": "[Optional] Time when the event occurred.\nIf not provided, the time when the event was received by the\nError Reporting system will be used.",
+          "description": "Optional. Time when the event occurred.\nIf not provided, the time when the event was received by the\nError Reporting system will be used.",
           "type": "string",
           "format": "google-datetime"
         },
         "serviceContext": {
-          "description": "[Required] The service context in which this error has occurred.",
+          "description": "Required. The service context in which this error has occurred.",
           "$ref": "ServiceContext"
         },
         "message": {
-          "description": "[Required] The error message.\nIf no `context.reportLocation` is provided, the message must contain a\nheader (typically consisting of the exception type name and an error\nmessage) and an exception stack trace in one of the supported programming\nlanguages and formats.\nSupported languages are Java, Python, JavaScript, Ruby, C#, PHP, and Go.\nSupported stack trace formats are:\n\n* **Java**: Must be the return value of [`Throwable.printStackTrace()`](https:\/\/docs.oracle.com\/javase\/7\/docs\/api\/java\/lang\/Throwable.html#printStackTrace%28%29).\n* **Python**: Must be the return value of [`traceback.format_exc()`](https:\/\/docs.python.org\/2\/library\/traceback.html#traceback.format_exc).\n* **JavaScript**: Must be the value of [`error.stack`](https:\/\/github.com\/v8\/v8\/wiki\/Stack-Trace-API)\nas returned by V8.\n* **Ruby**: Must contain frames returned by [`Exception.backtrace`](https:\/\/ruby-doc.org\/core-2.2.0\/Exception.html#method-i-backtrace).\n* **C#**: Must be the return value of [`Exception.ToString()`](https:\/\/msdn.microsoft.com\/en-us\/library\/system.exception.tostring.aspx).\n* **PHP**: Must start with `PHP (Notice|Parse error|Fatal error|Warning)`\nand contain the result of [`(string)$exception`](http:\/\/php.net\/manual\/en\/exception.tostring.php).\n* **Go**: Must be the return value of [`runtime.Stack()`](https:\/\/golang.org\/pkg\/runtime\/debug\/#Stack).",
+          "description": "Required. The error message.\nIf no `context.reportLocation` is provided, the message must contain a\nheader (typically consisting of the exception type name and an error\nmessage) and an exception stack trace in one of the supported programming\nlanguages and formats.\nSupported languages are Java, Python, JavaScript, Ruby, C#, PHP, and Go.\nSupported stack trace formats are:\n\n* **Java**: Must be the return value of\n[`Throwable.printStackTrace()`](https:\/\/docs.oracle.com\/javase\/7\/docs\/api\/java\/lang\/Throwable.html#printStackTrace%28%29).\n* **Python**: Must be the return value of\n[`traceback.format_exc()`](https:\/\/docs.python.org\/2\/library\/traceback.html#traceback.format_exc).\n* **JavaScript**: Must be the value of\n[`error.stack`](https:\/\/github.com\/v8\/v8\/wiki\/Stack-Trace-API) as returned\nby V8.\n* **Ruby**: Must contain frames returned by\n[`Exception.backtrace`](https:\/\/ruby-doc.org\/core-2.2.0\/Exception.html#method-i-backtrace).\n* **C#**: Must be the return value of\n[`Exception.ToString()`](https:\/\/msdn.microsoft.com\/en-us\/library\/system.exception.tostring.aspx).\n* **PHP**: Must start with `PHP (Notice|Parse error|Fatal error|Warning)`\nand contain the result of\n[`(string)$exception`](http:\/\/php.net\/manual\/en\/exception.tostring.php).\n* **Go**: Must be the return value of\n[`runtime.Stack()`](https:\/\/golang.org\/pkg\/runtime\/debug\/#Stack).",
           "type": "string"
         },
         "context": {
-          "description": "[Optional] A description of the context in which the error occurred.",
+          "description": "Optional. A description of the context in which the error occurred.",
           "$ref": "ErrorContext"
         }
       }
@@ -457,10 +446,9 @@
           "path": "v1beta1/{+projectName}/events",
           "flatPath": "v1beta1/projects/{projectsId}/events",
           "httpMethod": "DELETE",
-          "description": "Deletes all error events of a given project.",
           "parameters": {
             "projectName": {
-              "description": "[Required] The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
+              "description": "Required. The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
               "location": "path",
               "required": true,
               "pattern": "^projects\/[^\/]+$",
@@ -475,7 +463,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Deletes all error events of a given project."
         }
       }
       ,
@@ -487,10 +476,9 @@
               "path": "v1beta1/{+groupName}",
               "flatPath": "v1beta1/projects/{projectsId}/groups/{groupsId}",
               "httpMethod": "GET",
-              "description": "Get the specified group.",
               "parameters": {
                 "groupName": {
-                  "description": "[Required] The group resource name. Written as\n<code>projects\/<var>projectID<\/var>\/groups\/<var>group_name<\/var><\/code>.\nCall\n<a href=\"\/error-reporting\/reference\/rest\/v1beta1\/projects.groupStats\/list\">\n<code>groupStats.list<\/code><\/a> to return a list of groups belonging to\nthis project.\n\nExample: <code>projects\/my-project-123\/groups\/my-group<\/code>",
+                  "description": "Required. The group resource name. Written as\n<code>projects\/<var>projectID<\/var>\/groups\/<var>group_name<\/var><\/code>.\nCall\n<a href=\"\/error-reporting\/reference\/rest\/v1beta1\/projects.groupStats\/list\">\n<code>groupStats.list<\/code><\/a> to return a list of groups belonging to\nthis project.\n\nExample: <code>projects\/my-project-123\/groups\/my-group<\/code>",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/groups\/[^\/]+$",
@@ -505,14 +493,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Get the specified group."
             },
             "update": {
               "id": "clouderrorreporting.projects.groups.update",
               "path": "v1beta1/{+name}",
               "flatPath": "v1beta1/projects/{projectsId}/groups/{groupsId}",
               "httpMethod": "PUT",
-              "description": "Replace the data for the specified group.\nFails if the group does not exist.",
               "parameters": {
                 "name": {
                   "description": "The group resource name.\nExample: <code>projects\/my-project-123\/groups\/my-groupid<\/code>",
@@ -533,7 +521,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Replace the data for the specified group.\nFails if the group does not exist."
             }
           }
         },
@@ -544,33 +533,32 @@
               "path": "v1beta1/{+projectName}/groupStats",
               "flatPath": "v1beta1/projects/{projectsId}/groupStats",
               "httpMethod": "GET",
-              "description": "Lists the specified groups.",
               "parameters": {
                 "projectName": {
-                  "description": "[Required] The resource name of the Google Cloud Platform project. Written\nas <code>projects\/<\/code> plus the\n<a href=\"https:\/\/support.google.com\/cloud\/answer\/6158840\">Google Cloud\nPlatform project ID<\/a>.\n\nExample: <code>projects\/my-project-123<\/code>.",
+                  "description": "Required. The resource name of the Google Cloud Platform project. Written\nas <code>projects\/<\/code> plus the\n<a href=\"https:\/\/support.google.com\/cloud\/answer\/6158840\">Google Cloud\nPlatform project ID<\/a>.\n\nExample: <code>projects\/my-project-123<\/code>.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "groupId": {
-                  "description": "[Optional] List all <code>ErrorGroupStats<\/code> with these IDs.",
+                  "description": "Optional. List all <code>ErrorGroupStats<\/code> with these IDs.",
                   "location": "query",
                   "repeated": true,
                   "type": "string"
                 },
                 "serviceFilter.service": {
-                  "description": "[Optional] The exact value to match against\n[`ServiceContext.service`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.service).",
+                  "description": "Optional. The exact value to match against\n[`ServiceContext.service`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.service).",
                   "location": "query",
                   "type": "string"
                 },
                 "serviceFilter.version": {
-                  "description": "[Optional] The exact value to match against\n[`ServiceContext.version`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.version).",
+                  "description": "Optional. The exact value to match against\n[`ServiceContext.version`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.version).",
                   "location": "query",
                   "type": "string"
                 },
                 "serviceFilter.resourceType": {
-                  "description": "[Optional] The exact value to match against\n[`ServiceContext.resource_type`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.resource_type).",
+                  "description": "Optional. The exact value to match against\n[`ServiceContext.resource_type`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.resource_type).",
                   "location": "query",
                   "type": "string"
                 },
@@ -588,13 +576,13 @@
                   ]
                 },
                 "timedCountDuration": {
-                  "description": "[Optional] The preferred duration for a single returned `TimedCount`.\nIf not set, no timed counts are returned.",
+                  "description": "Optional. The preferred duration for a single returned `TimedCount`.\nIf not set, no timed counts are returned.",
                   "location": "query",
                   "type": "string",
                   "format": "google-duration"
                 },
                 "alignment": {
-                  "description": "[Optional] The alignment of the timed counts to be returned.\nDefault is `ALIGNMENT_EQUAL_AT_END`.",
+                  "description": "Optional. The alignment of the timed counts to be returned.\nDefault is `ALIGNMENT_EQUAL_AT_END`.",
                   "location": "query",
                   "type": "string",
                   "enum": [
@@ -604,13 +592,13 @@
                   ]
                 },
                 "alignmentTime": {
-                  "description": "[Optional] Time where the timed counts shall be aligned if rounded\nalignment is chosen. Default is 00:00 UTC.",
+                  "description": "Optional. Time where the timed counts shall be aligned if rounded\nalignment is chosen. Default is 00:00 UTC.",
                   "location": "query",
                   "type": "string",
                   "format": "google-datetime"
                 },
                 "order": {
-                  "description": "[Optional] The sort order in which the results are returned.\nDefault is `COUNT_DESC`.",
+                  "description": "Optional. The sort order in which the results are returned.\nDefault is `COUNT_DESC`.",
                   "location": "query",
                   "type": "string",
                   "enum": [
@@ -622,13 +610,13 @@
                   ]
                 },
                 "pageSize": {
-                  "description": "[Optional] The maximum number of results to return per response.\nDefault is 20.",
+                  "description": "Optional. The maximum number of results to return per response.\nDefault is 20.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "[Optional] A `next_page_token` provided by a previous response. To view\nadditional results, pass this token along with the identical query\nparameters as the first request.",
+                  "description": "Optional. A `next_page_token` provided by a previous response. To view\nadditional results, pass this token along with the identical query\nparameters as the first request.",
                   "location": "query",
                   "type": "string"
                 }
@@ -641,7 +629,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists the specified groups."
             }
           }
         },
@@ -652,32 +641,31 @@
               "path": "v1beta1/{+projectName}/events",
               "flatPath": "v1beta1/projects/{projectsId}/events",
               "httpMethod": "GET",
-              "description": "Lists the specified events.",
               "parameters": {
                 "projectName": {
-                  "description": "[Required] The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
+                  "description": "Required. The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "groupId": {
-                  "description": "[Required] The group for which events shall be returned.",
+                  "description": "Required. The group for which events shall be returned.",
                   "location": "query",
                   "type": "string"
                 },
                 "serviceFilter.service": {
-                  "description": "[Optional] The exact value to match against\n[`ServiceContext.service`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.service).",
+                  "description": "Optional. The exact value to match against\n[`ServiceContext.service`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.service).",
                   "location": "query",
                   "type": "string"
                 },
                 "serviceFilter.version": {
-                  "description": "[Optional] The exact value to match against\n[`ServiceContext.version`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.version).",
+                  "description": "Optional. The exact value to match against\n[`ServiceContext.version`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.version).",
                   "location": "query",
                   "type": "string"
                 },
                 "serviceFilter.resourceType": {
-                  "description": "[Optional] The exact value to match against\n[`ServiceContext.resource_type`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.resource_type).",
+                  "description": "Optional. The exact value to match against\n[`ServiceContext.resource_type`](\/error-reporting\/reference\/rest\/v1beta1\/ServiceContext#FIELDS.resource_type).",
                   "location": "query",
                   "type": "string"
                 },
@@ -695,13 +683,13 @@
                   ]
                 },
                 "pageSize": {
-                  "description": "[Optional] The maximum number of results to return per response.",
+                  "description": "Optional. The maximum number of results to return per response.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "[Optional] A `next_page_token` provided by a previous response.",
+                  "description": "Optional. A `next_page_token` provided by a previous response.",
                   "location": "query",
                   "type": "string"
                 }
@@ -714,17 +702,17 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists the specified events."
             },
             "report": {
               "id": "clouderrorreporting.projects.events.report",
               "path": "v1beta1/{+projectName}/events:report",
               "flatPath": "v1beta1/projects/{projectsId}/events:report",
               "httpMethod": "POST",
-              "description": "Report an individual error event.\n\nThis endpoint accepts <strong>either<\/strong> an OAuth token,\n<strong>or<\/strong> an\n<a href=\"https:\/\/support.google.com\/cloud\/answer\/6158862\">API key<\/a>\nfor authentication. To use an API key, append it to the URL as the value of\na `key` parameter. For example:\n<pre>POST https:\/\/clouderrorreporting.googleapis.com\/v1beta1\/projects\/example-project\/events:report?key=123ABC456<\/pre>",
               "parameters": {
                 "projectName": {
-                  "description": "[Required] The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project ID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
+                  "description": "Required. The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840). Example:\n`projects\/my-project-123`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -742,7 +730,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Report an individual error event.\n\nThis endpoint accepts **either** an OAuth token,\n**or** an [API key](https:\/\/support.google.com\/cloud\/answer\/6158862)\nfor authentication. To use an API key, append it to the URL as the value of\na `key` parameter. For example:\n\n`POST\nhttps:\/\/clouderrorreporting.googleapis.com\/v1beta1\/projects\/example-project\/events:report?key=123ABC456`"
             }
           }
         }

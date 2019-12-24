@@ -24,7 +24,7 @@ class CloudresourcesearchV1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new cloudresourcesearch handle."""
     url = url or self.BASE_URL
     super(CloudresourcesearchV1, self).__init__(
@@ -33,7 +33,8 @@ class CloudresourcesearchV1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.resources = self.ResourcesService(self)
 
   class ResourcesService(base_api.BaseApiService):
@@ -47,7 +48,7 @@ class CloudresourcesearchV1(base_api.BaseApiClient):
           }
 
     def Search(self, request, global_params=None):
-      """Lists accessible Google Cloud Platform resources that match a query. A.
+      r"""Lists accessible Google Cloud Platform resources that match a query. A.
 resource is accessible to the caller if the caller has permission
 to perform a GET operation on the resource.
 

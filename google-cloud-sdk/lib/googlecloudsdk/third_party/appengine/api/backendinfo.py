@@ -1,5 +1,5 @@
 #
-# Copyright 2010 Google Inc. All Rights Reserved.
+# Copyright 2010 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ A library for working with BackendInfoExternal records, describing backends
 configured for an application. Supports loading the records from backend.yaml.
 """
 
+from __future__ import absolute_import
 
 
 # WARNING: This file is externally viewable by our users.  All comments from
@@ -26,8 +27,6 @@ configured for an application. Supports loading the records from backend.yaml.
 # this source file, please place them in comments only.
 
 import os
-import yaml
-from yaml import representer
 
 if os.environ.get('APPENGINE_RUNTIME') == 'python27':
   from google.appengine.api import validation
@@ -65,28 +64,10 @@ VALID_OPTIONS = frozenset([PUBLIC, DYNAMIC, FAILFAST])
 # Read-only.
 STATE = 'state'
 
+
 class BadConfig(Exception):
   """An invalid configuration was provided."""
 
-class ListWithoutSort(list):
-  def sort(self):
-    pass
-
-class SortedDict(dict):
-  def __init__(self, keys, data):
-    super(SortedDict, self).__init__()
-    self.keys = keys
-    self.update(data)
-
-  def items(self):
-    result = ListWithoutSort()
-    for key in self.keys:
-      if type(self.get(key)) != type(None):
-        result.append((key, self.get(key)))
-    return result
-
-representer.SafeRepresenter.add_representer(
-    SortedDict, representer.SafeRepresenter.represent_dict)
 
 class BackendEntry(validation.Validated):
   """A backend entry describes a single backend."""
@@ -133,14 +114,14 @@ class BackendEntry(validation.Validated):
     """Returns a sorted dictionary representing the backend entry."""
     self.ParseOptions().WriteOptions()
     result = super(BackendEntry, self).ToDict()
-    return SortedDict([NAME,
-                       CLASS,
-                       INSTANCES,
-                       START,
-                       OPTIONS,
-                       MAX_CONCURRENT_REQUESTS,
-                       STATE],
-                      result)
+    return validation.SortedDict([NAME,
+                                  CLASS,
+                                  INSTANCES,
+                                  START,
+                                  OPTIONS,
+                                  MAX_CONCURRENT_REQUESTS,
+                                  STATE],
+                                 result)
 
   def ParseOptions(self):
     """Parses the 'options' field and sets appropriate fields."""

@@ -24,7 +24,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new replicapoolupdater handle."""
     url = url or self.BASE_URL
     super(ReplicapoolupdaterV1beta1, self).__init__(
@@ -33,7 +33,8 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.rollingUpdates = self.RollingUpdatesService(self)
     self.rollout = self.RolloutService(self)
     self.zoneOperations = self.ZoneOperationsService(self)
@@ -49,7 +50,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      """Cancels an update. The update must be PAUSED before it can be cancelled. This has no effect if the update is already CANCELLED.
+      r"""Cancels an update. The update must be PAUSED before it can be cancelled. This has no effect if the update is already CANCELLED.
 
       Args:
         request: (ReplicapoolupdaterRollingUpdatesCancelRequest) input message
@@ -75,7 +76,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns information about an update.
+      r"""Returns information about an update.
 
       Args:
         request: (ReplicapoolupdaterRollingUpdatesGetRequest) input message
@@ -101,7 +102,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      """Inserts and starts a new update.
+      r"""Inserts and starts a new update.
 
       Args:
         request: (ReplicapoolupdaterRollingUpdatesInsertRequest) input message
@@ -127,7 +128,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists recent updates for a given managed instance group, in reverse chronological order and paginated format.
+      r"""Lists recent updates for a given managed instance group, in reverse chronological order and paginated format.
 
       Args:
         request: (ReplicapoolupdaterRollingUpdatesListRequest) input message
@@ -153,7 +154,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def ListInstanceUpdates(self, request, global_params=None):
-      """Lists the current status for each instance within a given update.
+      r"""Lists the current status for each instance within a given update.
 
       Args:
         request: (ReplicapoolupdaterRollingUpdatesListInstanceUpdatesRequest) input message
@@ -179,7 +180,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def Pause(self, request, global_params=None):
-      """Pauses the update in state from ROLLING_FORWARD or ROLLING_BACK. Has no effect if invoked when the state of the update is PAUSED.
+      r"""Pauses the update in state from ROLLING_FORWARD or ROLLING_BACK. Has no effect if invoked when the state of the update is PAUSED.
 
       Args:
         request: (ReplicapoolupdaterRollingUpdatesPauseRequest) input message
@@ -205,7 +206,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def Resume(self, request, global_params=None):
-      """Continues an update in PAUSED state. Has no effect if invoked when the state of the update is ROLLED_OUT.
+      r"""Continues an update in PAUSED state. Has no effect if invoked when the state of the update is ROLLED_OUT.
 
       Args:
         request: (ReplicapoolupdaterRollingUpdatesResumeRequest) input message
@@ -231,7 +232,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def Rollback(self, request, global_params=None):
-      """Rolls back the update in state from ROLLING_FORWARD or PAUSED. Has no effect if invoked when the state of the update is ROLLED_BACK.
+      r"""Rolls back the update in state from ROLLING_FORWARD or PAUSED. Has no effect if invoked when the state of the update is ROLLED_BACK.
 
       Args:
         request: (ReplicapoolupdaterRollingUpdatesRollbackRequest) input message
@@ -267,7 +268,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
           }
 
     def Abandon(self, request, global_params=None):
-      """Abandon a rollout, leaving the IGM in the state it is already configured. This allows you to apply a new rollout to the IGM.
+      r"""Abandon a rollout, leaving the IGM in the state it is already configured. This allows you to apply a new rollout to the IGM.
 
       Args:
         request: (ReplicapoolupdaterRolloutAbandonRequest) input message
@@ -293,7 +294,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def Commit(self, request, global_params=None):
-      """Commits a rollout, so that it is final and can not be rolled back.
+      r"""Commits a rollout, so that it is final and can not be rolled back.
 
       Args:
         request: (ReplicapoolupdaterRolloutCommitRequest) input message
@@ -319,7 +320,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Get the details of a rollout.
+      r"""Get the details of a rollout.
 
       Args:
         request: (ReplicapoolupdaterRolloutGetRequest) input message
@@ -345,7 +346,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      """Inserts and starts a new rollout.
+      r"""Inserts and starts a new rollout.
 
       Args:
         request: (ReplicapoolupdaterRolloutInsertRequest) input message
@@ -371,7 +372,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Resume a rollout. This lets the rollout continue updating instances after a pause.
+      r"""Resume a rollout. This lets the rollout continue updating instances after a pause.
 
       Args:
         request: (ReplicapoolupdaterRolloutListRequest) input message
@@ -397,7 +398,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def Pause(self, request, global_params=None):
-      """Pause the application of a rollout. This stops the update, and the instances managed by the instance group manager do not change their instance templates.
+      r"""Pause the application of a rollout. This stops the update, and the instances managed by the instance group manager do not change their instance templates.
 
       Args:
         request: (ReplicapoolupdaterRolloutPauseRequest) input message
@@ -423,7 +424,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def Rampup(self, request, global_params=None):
-      """Change the amount of instances within an IGM that should be updated to the new instance template.
+      r"""Change the amount of instances within an IGM that should be updated to the new instance template.
 
       Args:
         request: (ReplicapoolupdaterRolloutRampupRequest) input message
@@ -449,7 +450,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def Resume(self, request, global_params=None):
-      """Resume a rollout. This lets the rollout continue updating instances after a pause.
+      r"""Resume a rollout. This lets the rollout continue updating instances after a pause.
 
       Args:
         request: (ReplicapoolupdaterRolloutResumeRequest) input message
@@ -475,7 +476,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def Rollback(self, request, global_params=None):
-      """Rollback a rollout, cancelling the update and changing all instances with the updated version to have the instanceTemplateToRollback template.
+      r"""Rollback a rollout, cancelling the update and changing all instances with the updated version to have the instanceTemplateToRollback template.
 
       Args:
         request: (ReplicapoolupdaterRolloutRollbackRequest) input message
@@ -511,7 +512,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Retrieves the specified zone-specific operation resource.
+      r"""Retrieves the specified zone-specific operation resource.
 
       Args:
         request: (ReplicapoolupdaterZoneOperationsGetRequest) input message
@@ -537,7 +538,7 @@ class ReplicapoolupdaterV1beta1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Retrieves the list of Operation resources contained within the specified zone.
+      r"""Retrieves the list of Operation resources contained within the specified zone.
 
       Args:
         request: (ReplicapoolupdaterZoneOperationsListRequest) input message

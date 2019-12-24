@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,20 +15,32 @@
 
 """Generate usage text for displaying to the user."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import argparse
+import collections
 import copy
 import difflib
+import io
 import re
-import StringIO
 import sys
 import textwrap
+
+
+import enum
+
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import parser_arguments
+import six
 
 LINE_WIDTH = 80
 HELP_INDENT = 25
+# Used to offset hanging indentation of arg choices in markdown.
+_CHOICE_OFFSET = 3
 
 
 class HelpInfo(object):
@@ -51,12 +64,6 @@ class TextChoiceSuggester(object):
   """Utility to suggest mistyped commands.
 
   """
-  _SYNONYM_SETS = [
-      set(['create', 'add']),
-      set(['delete', 'remove']),
-      set(['describe', 'get']),
-      set(['patch', 'update']),
-  ]
 
   def __init__(self, choices=None):
     # A mapping of 'thing typed' to the suggestion that should be offered.
@@ -93,17 +100,6 @@ class TextChoiceSuggester(object):
       if alias not in self._choices:
         self._choices[alias] = suggestion
 
-  def AddSynonyms(self):
-    """Activate the set of synonyms for this suggester."""
-    for s_set in TextChoiceSuggester._SYNONYM_SETS:
-      valid_choices = set(self._choices.keys()) & s_set
-      for choice in valid_choices:
-        # Add all synonyms in the set as aliases for each real choice that is
-        # valid.  This will never clobber the original choice that is there.
-        # If none of the synonyms are valid choices, this will not add any
-        # aliases for this synonym set.
-        self.AddAliases(s_set, choice)
-
   def GetSuggestion(self, arg):
     """Find the item that is closest to what was attempted.
 
@@ -116,11 +112,10 @@ class TextChoiceSuggester(object):
     if not self._choices:
       return None
 
-    match = difflib.get_close_matches(arg.lower(),
-                                      [unicode(c) for c in self._choices],
-                                      1)
+    match = difflib.get_close_matches(
+        arg.lower(), [six.text_type(c) for c in self._choices], 1)
     if match:
-      choice = [c for c in self._choices if unicode(c) == match[0]][0]
+      choice = [c for c in self._choices if six.text_type(c) == match[0]][0]
       return self._choices[choice]
     return self._choices[match[0]] if match else None
 
@@ -144,13 +139,13 @@ def GetPositionalUsage(arg, markdown=False):
   if markdown:
     var = _ApplyMarkdownItalic(var)
   if arg.nargs == '+':
-    return u'{var} [{var} ...]'.format(var=var)
+    return '{var} [{var} ...]'.format(var=var)
   elif arg.nargs == '*':
-    return u'[{var} ...]'.format(var=var)
+    return '[{var} ...]'.format(var=var)
   elif arg.nargs == argparse.REMAINDER:
-    return u'[-- {var} ...]'.format(var=var)
+    return '[-- {var} ...]'.format(var=var)
   elif arg.nargs == '?':
-    return u'[{var}]'.format(var=var)
+    return '[{var}]'.format(var=var)
   else:
     return var
 
@@ -185,7 +180,19 @@ def _QuoteValue(value):
   return quoted
 
 
-def GetFlagUsage(arg, brief=False, markdown=False, inverted=False, value=True):
+def _FilterFlagNames(names):
+  """Mockable flag name list filter."""
+  return names
+
+
+class InvertedValue(enum.Enum):
+  NORMAL = 0
+  INVERTED = 1
+  BOTH = 2
+
+
+def GetFlagUsage(arg, brief=False, markdown=False,
+                 inverted=InvertedValue.NORMAL, value=True):
   """Returns the usage string for a flag arg.
 
   Args:
@@ -193,16 +200,20 @@ def GetFlagUsage(arg, brief=False, markdown=False, inverted=False, value=True):
     brief: bool, If true, only display one version of a flag that has
         multiple versions, and do not display the default value.
     markdown: bool, If true add markdowns.
-    inverted: bool, If true display the --no-* inverted name.
+    inverted: InvertedValue, If INVERTED display the --no-* inverted name. If
+        NORMAL display the normal name. If BOTH, display both.
     value: bool, If true display flag name=value for non-Boolean flags.
 
   Returns:
     str, The string representation for printing.
   """
-  if inverted:
+  if inverted is InvertedValue.BOTH:
+    names = [x.replace('--', '--[no-]', 1) for x in sorted(arg.option_strings)]
+  elif inverted is InvertedValue.INVERTED:
     names = [x.replace('--', '--no-', 1) for x in sorted(arg.option_strings)]
   else:
     names = sorted(arg.option_strings)
+  names = _FilterFlagNames(names)
   metavar = arg.metavar or arg.dest.upper()
   if not value or brief:
     try:
@@ -212,7 +223,7 @@ def GetFlagUsage(arg, brief=False, markdown=False, inverted=False, value=True):
     if not value or arg.nargs == 0:
       return long_string
     flag_metavar = _GetFlagMetavar(arg, metavar, name=long_string)
-    return u'{flag}{metavar}'.format(
+    return '{flag}{metavar}'.format(
         flag=long_string,
         metavar=flag_metavar)
   if arg.nargs == 0:
@@ -226,7 +237,7 @@ def GetFlagUsage(arg, brief=False, markdown=False, inverted=False, value=True):
     for name in names:
       flag_metavar = _GetFlagMetavar(arg, metavar, name=name, markdown=markdown)
       usage_list.append(
-          u'{bb}{flag}{be}{flag_metavar}'.format(
+          '{bb}{flag}{be}{flag_metavar}'.format(
               bb=base.MARKDOWN_BOLD if markdown else '',
               flag=name,
               be=base.MARKDOWN_BOLD if markdown else '',
@@ -237,11 +248,11 @@ def GetFlagUsage(arg, brief=False, markdown=False, inverted=False, value=True):
       if isinstance(arg.default, list):
         default = ','.join(arg.default)
       elif isinstance(arg.default, dict):
-        default = ','.join([u'{0}={1}'.format(k, v)
-                            for k, v in sorted(arg.default.iteritems())])
+        default = ','.join(['{0}={1}'.format(k, v)
+                            for k, v in sorted(six.iteritems(arg.default))])
       else:
         default = arg.default
-      usage += u'; default={0}'.format(_QuoteValue(default))
+      usage += '; default={0}'.format(_QuoteValue(default))
   return usage
 
 
@@ -250,10 +261,12 @@ def _GetInvertedFlagName(flag):
   return flag.option_strings[0].replace('--', '--no-', 1)
 
 
-def GetArgDetails(arg):
+def GetArgDetails(arg, depth=0):
   """Returns the help message with autogenerated details for arg."""
-  help_message = arg.help() if callable(arg.help) else arg.help
-  help_message = textwrap.dedent(help_message) if help_message else ''
+  help_text = getattr(arg, 'hidden_help', arg.help)
+  if callable(help_text):
+    help_text = help_text()
+  help_message = textwrap.dedent(help_text) if help_text else ''
   if arg.is_hidden:
     return help_message
   if arg.is_group or arg.is_positional:
@@ -269,7 +282,7 @@ def GetArgDetails(arg):
   if hasattr(arg, 'store_property'):
     prop, _, _ = arg.store_property
     # Don't add help if there's already explicit help.
-    if str(prop) not in help_message:
+    if six.text_type(prop) not in help_message:
       extra_help.append('Overrides the default *{0}* property value'
                         ' for this command invocation.'.format(prop))
       # '?' in Boolean flag check to cover legacy choices={'true', 'false'}
@@ -278,27 +291,6 @@ def GetArgDetails(arg):
       if prop.default and arg.nargs in (0, '?'):
         extra_help.append('Use *{}* to disable.'.format(
             _GetInvertedFlagName(arg)))
-  elif choices:
-    metavar = arg.metavar or arg.dest.upper()
-    choices = getattr(arg, 'choices_help', choices)
-    if len(choices) > 1:
-      one_of = 'one of'
-    else:
-      # TBD I guess?
-      one_of = '(currently only one value is supported)'
-    if isinstance(choices, dict):
-      extra_help.append(
-          u'_{metavar}_ must be {one_of}:\n\n{choices}\n\n'.format(
-              metavar=metavar,
-              one_of=one_of,
-              choices='\n'.join(
-                  [u'*{name}*::: {desc}'.format(name=name, desc=desc)
-                   for name, desc in sorted(choices.iteritems())])))
-    else:
-      extra_help.append(u'_{metavar}_ must be {one_of}: {choices}.'.format(
-          metavar=metavar,
-          one_of=one_of,
-          choices=', '.join([u'*{0}*'.format(x) for x in choices])))
   elif arg.is_group or arg.is_positional or arg.nargs:
     # Not a Boolean flag.
     pass
@@ -306,6 +298,40 @@ def GetArgDetails(arg):
     extra_help.append(
         'Enabled by default, use *{0}* to disable.'.format(
             _GetInvertedFlagName(arg)))
+  elif isinstance(arg, arg_parsers.StoreTrueFalseAction):
+    # This would be a "tri-valued" (True, False, None) command.
+    extra_help.append(
+        'Use *{0}* to enable and *{1}* to disable.'.format(
+            arg.option_strings[0], _GetInvertedFlagName(arg)))
+  if choices:
+    metavar = arg.metavar or arg.dest.upper()
+    if metavar != ' ':
+      choices = getattr(arg, 'choices_help', choices)
+      if len(choices) > 1:
+        one_of = 'one of'
+      else:
+        # TBD I guess?
+        one_of = '(currently only one value is supported)'
+      if isinstance(choices, dict):
+        choices_iteritems = six.iteritems(choices)
+        if not isinstance(choices, collections.OrderedDict):
+          choices_iteritems = sorted(choices_iteritems)
+        choices = [
+            '*{name}*{depth} {desc}'.format(
+                name=name, desc=desc, depth=':' * (depth + _CHOICE_OFFSET))
+            for name, desc in choices_iteritems]
+        # Append marker to indicate end of list.
+        choices.append(':' * (depth + _CHOICE_OFFSET))
+        extra_help.append(
+            '_{metavar}_ must be {one_of}:\n\n{choices}\n\n'.format(
+                metavar=metavar,
+                one_of=one_of,
+                choices='\n'.join(choices)))
+      else:
+        extra_help.append('_{metavar}_ must be {one_of}: {choices}.'.format(
+            metavar=metavar,
+            one_of=one_of,
+            choices=', '.join(['*{0}*'.format(x) for x in choices])))
 
   if extra_help:
     help_message = help_message.rstrip()
@@ -406,7 +432,7 @@ def _MarkOptional(usage):
   # If the leading bracket matches the trailing bracket its already marked.
   if re.match(r'^\[[^][]*(\[[^][]*\])*[^][]*\]$', usage):
     return usage
-  return u'[{}]'.format(usage)
+  return '[{}]'.format(usage)
 
 
 def GetArgUsage(arg, brief=False, definition=False, markdown=False,
@@ -445,7 +471,13 @@ def GetArgUsage(arg, brief=False, definition=False, markdown=False,
     if arg.is_positional:
       usage = GetPositionalUsage(arg, markdown=markdown)
     else:
-      inverted = not definition and getattr(arg, 'inverted_synopsis', False)
+      if isinstance(arg, arg_parsers.StoreTrueFalseAction):
+        inverted = InvertedValue.BOTH
+      else:
+        if not definition and getattr(arg, 'inverted_synopsis', False):
+          inverted = InvertedValue.INVERTED
+        else:
+          inverted = InvertedValue.NORMAL
       usage = GetFlagUsage(arg, brief=brief, markdown=markdown,
                            inverted=inverted, value=value)
     if usage and top and not arg.is_required:
@@ -463,7 +495,7 @@ def GetArgUsage(arg, brief=False, definition=False, markdown=False,
   else:
     include_remainder_usage = False
   for a in sorted(arg.arguments, key=GetArgSortKey):
-    if (a.is_hidden or a.help == argparse.SUPPRESS) and not hidden:
+    if a.is_hidden and not hidden:
       continue
     if a.is_group:
       singleton = GetSingleton(a)
@@ -486,7 +518,8 @@ def GetArgUsage(arg, brief=False, definition=False, markdown=False,
           usage = _MarkOptional(usage)
         if usage not in optional_usage:
           optional_usage.append(usage)
-  all_usage = []
+  positional_usage = []
+  all_other_usage = []
   nesting = 0
   optional_positionals = False
   if positional_args:
@@ -501,26 +534,29 @@ def GetArgUsage(arg, brief=False, definition=False, markdown=False,
         usage = _MarkOptional(usage)
         if usage != usage_orig:
           nesting += 1
-      all_usage.append(usage)
+      positional_usage.append(usage)
     if nesting:
-      all_usage[-1] = u'{}{}'.format(all_usage[-1], ']' * nesting)
+      positional_usage[-1] = '{}{}'.format(positional_usage[-1], ']' * nesting)
   if required_usage:
-    all_usage.append(sep.join(required_usage))
+    all_other_usage.append(sep.join(required_usage))
   if optional_usage:
     if optional:
       if not top and (positional_args and not optional_positionals
                       or required_usage):
-        all_usage.append(':')
-      all_usage.append(sep.join(optional_usage))
+        all_other_usage.append(':')
+      all_other_usage.append(sep.join(optional_usage))
     elif brief and top:
-      all_usage.append('[optional flags]')
+      all_other_usage.append('[optional flags]')
   if brief:
-    all_usage = sorted(all_usage, key=_GetArgUsageSortKey)
+    all_usage = positional_usage + sorted(all_other_usage,
+                                          key=_GetArgUsageSortKey)
+  else:
+    all_usage = positional_usage + all_other_usage
   if remainder_usage and include_remainder_usage:
     all_usage.append(' '.join(remainder_usage))
   usage = ' '.join(all_usage)
   if arg.is_required:
-    return u'({})'.format(usage)
+    return '({})'.format(usage)
   if not top and len(all_usage) > 1:
     usage = _MarkOptional(usage)
   return usage
@@ -540,23 +576,26 @@ def GetFlags(arg, optional=False):
   if optional:
     flags.add('--help')
 
-  def _GetFlagsHelper(arg):
+  def _GetFlagsHelper(arg, level=0, required=True):
     """GetFlags() helper that adds to flags."""
     if arg.is_hidden:
       return
     if arg.is_group:
+      if level and required:
+        # level==0 is always required
+        required = arg.is_required
       for arg in arg.arguments:
-        _GetFlagsHelper(arg)
+        _GetFlagsHelper(arg, level=level + 1, required=required)
     else:
       show_inverted = getattr(arg, 'show_inverted', None)
       if show_inverted:
         arg = show_inverted
+      # A singleton optional flag in a required group is technically required
+      # but is treated as optional here. We shouldn't see this in practice.
       if (arg.option_strings and
           not arg.is_positional and
           not arg.is_global and
-          (not optional or (
-              not getattr(arg, 'is_required', False) and
-              not getattr(arg, 'required', False)))):
+          (not optional or not required or not arg.is_required)):
         flags.add(sorted(arg.option_strings)[0])
 
   _GetFlagsHelper(arg)
@@ -609,7 +648,7 @@ def GetArgSections(arguments, is_root):
         categories[category] = []
       categories[category].append(arg)
       continue
-    if arg.is_global and not arg.is_hidden and not is_root:
+    if arg.is_global and not is_root:
       for a in arg.arguments if arg.is_group else [arg]:
         if a.option_strings and not a.is_hidden:
           flag = a.option_strings[0]
@@ -657,7 +696,7 @@ def GetArgSections(arguments, is_root):
     del categories[category]
 
   # Add the remaining categories in sorted order.
-  for category, args in sorted(categories.iteritems()):
+  for category, args in sorted(six.iteritems(categories)):
     sections.append(Section(_GetArgHeading(category),
                             parser_arguments.Argument(arguments=args)))
 
@@ -721,7 +760,7 @@ def GetUsage(command, argument_interceptor):
   topic = len(command.GetPath()) >= 2 and command.GetPath()[1] == 'topic'
   command_id = 'topic' if topic else 'command'
 
-  buf = StringIO.StringIO()
+  buf = io.StringIO()
 
   buf.write('Usage: ')
 
@@ -734,10 +773,10 @@ def GetUsage(command, argument_interceptor):
   group_helps = command.GetSubGroupHelps()
   command_helps = command.GetSubCommandHelps()
 
-  groups = sorted([name for (name, help_info) in group_helps.iteritems()
-                   if command.IsHidden() or not help_info.is_hidden])
-  commands = sorted([name for (name, help_info) in command_helps.iteritems()
-                     if command.IsHidden() or not help_info.is_hidden])
+  groups = sorted(name for (name, help_info) in six.iteritems(group_helps)
+                  if command.IsHidden() or not help_info.is_hidden)
+  commands = sorted(name for (name, help_info) in six.iteritems(command_helps)
+                    if command.IsHidden() or not help_info.is_hidden)
 
   all_subtypes = []
   if groups:
@@ -752,7 +791,7 @@ def GetUsage(command, argument_interceptor):
 
   usage_msg = ' '.join(usage_parts)
 
-  non_option = u'{command} '.format(command=command_path)
+  non_option = '{command} '.format(command=command_path)
 
   buf.write(non_option + usage_msg + '\n')
 
@@ -766,12 +805,137 @@ def GetUsage(command, argument_interceptor):
     WrapWithPrefix('optional flags may be', ' | '.join(optional_flags),
                    HELP_INDENT, LINE_WIDTH, spacing='  ', writer=buf)
 
-  buf.write(u"""
-For detailed information on this command and its flags, run:
-  {command_path} --help
-""".format(command_path=' '.join(command.GetPath())))
+  buf.write('\n' + GetHelpHint(command))
 
   return buf.getvalue()
+
+
+def GetCategoricalUsage(command, categories):
+  """Constructs an alternative Usage markdown string organized into categories.
+
+  The string is formatted as a series of tables; first, there's a table for
+  each category of subgroups, next, there's a table for each category of
+  subcommands. Each table element is printed under the category defined in the
+  surface definition of the command or group with a short summary describing its
+  functionality. In either set of tables (groups or commands), if there are no
+  categories to display, there will be only be one table listing elements
+  lexicographically. If both the sets of tables (groups and commands) have no
+  categories to display, then an empty string is returned.
+
+  Args:
+    command: calliope._CommandCommon, The command object that we're helping.
+    categories: A dictionary mapping category name to the set of elements
+      belonging to that category.
+
+  Returns:
+    str, The command usage markdown string organized into categories.
+  """
+
+  command_key = 'command'
+  command_group_key = 'command_group'
+
+  def _WriteTypeUsageTextToBuffer(buf, categories, key_name):
+    """Writes the markdown string to the buffer passed by reference."""
+    single_category_is_other = False
+    if len(categories[key_name]
+          ) == 1 and base.UNCATEGORIZED_CATEGORY in categories[key_name]:
+      single_category_is_other = True
+    buf.write('\n\n')
+    buf.write('# Available {type}s for {group}:\n'.format(
+        type=' '.join(key_name.split('_')), group=' '.join(command.GetPath())))
+    for category, elements in sorted(six.iteritems(categories[key_name])):
+      if not single_category_is_other:
+        buf.write('\n### {category}\n\n'.format(category=category))
+      buf.write('---------------------- | ---\n')
+      for element in sorted(elements, key=lambda e: e.name):
+        short_help = None
+        if element.name == 'alpha':
+          short_help = element.short_help[10:]
+        elif element.name == 'beta':
+          short_help = element.short_help[9:]
+        else:
+          short_help = element.short_help
+        buf.write('{name} | {description}\n'.format(
+            name=element.name.replace('_', '-'), description=short_help))
+
+  def _ShouldCategorize(categories):
+    """Ensures the categorization has real categories and is not just all Uncategorized."""
+    if not categories[command_key].keys(
+    ) and not categories[command_group_key].keys():
+      return False
+    if set(
+        list(categories[command_key].keys()) +
+        list(categories[command_group_key].keys())) == set(
+            [base.UNCATEGORIZED_CATEGORY]):
+      return False
+    return True
+
+  if not _ShouldCategorize(categories):
+    return ''
+
+  buf = io.StringIO()
+  if command_group_key in categories:
+    _WriteTypeUsageTextToBuffer(buf, categories, command_group_key)
+  if command_key in categories:
+    _WriteTypeUsageTextToBuffer(buf, categories, command_key)
+  return buf.getvalue()
+
+
+def _WriteUncategorizedTable(command, elements, element_type, writer):
+  """Helper method to GetUncategorizedUsage().
+
+  The elements are written to a markdown table with a special heading. Element
+  names are printed in the first column, and help snippet text is printed in the
+  second. No categorization is performed.
+
+  Args:
+    command: calliope._CommandCommon, The command object that we're helping.
+    elements: an iterable over backend.CommandCommon, The sub-elements that
+      we're printing to the table.
+    element_type: str, The type of elements we are dealing with. Usually
+      'groups' or 'commands'.
+    writer: file-like, Receiver of the written output.
+  """
+  writer.write('# Available {element_type} for {group}:\n'.format(
+      element_type=element_type, group=' '.join(command.GetPath())))
+  writer.write('---------------------- | ---\n')
+  for element in sorted(elements, key=lambda e: e.name):
+    if element.IsHidden():
+      continue
+    writer.write('{name} | {description}\n'.format(
+        name=element.name.replace('_', '-'), description=element.short_help))
+
+
+def GetUncategorizedUsage(command):
+  """Constructs a Usage markdown string for uncategorized command groups.
+
+  The string is formatted as two tables, one for the subgroups and one for the
+  subcommands. Each sub-element is printed in its corresponding table together
+  with a short summary describing its functionality.
+
+  Args:
+    command: calliope._CommandCommon, the command object that we're helping.
+
+  Returns:
+    str, The command Usage markdown string as described above.
+  """
+  buf = io.StringIO()
+  if command.groups:
+    _WriteUncategorizedTable(command, command.groups.values(), 'groups', buf)
+
+  if command.commands:
+    buf.write('\n')
+    _WriteUncategorizedTable(
+        command, command.commands.values(), 'commands', buf)
+
+  return buf.getvalue()
+
+
+def GetHelpHint(command):
+  return """\
+For detailed information on this command and its flags, run:
+  {command_path} --help
+""".format(command_path=' '.join(command.GetPath()))
 
 
 def ExtractHelpStrings(docstring):

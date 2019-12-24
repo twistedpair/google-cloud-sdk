@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 # limitations under the License.
 """Definition for conversion between legacy YAML and the API JSON formats."""
 
+from __future__ import absolute_import
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import converters as c
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import schema as s
 
@@ -74,8 +75,12 @@ SCHEMA = s.Message(
     default_expiration=s.Value(converter=c.ExpirationToDuration),
     endpoints_api_service=s.Message(
         name=s.Value(),
+        rollout_strategy=s.Value(
+            converter=c.ConvertEndpointsRolloutStrategyToEnum),
         config_id=s.Value(),
+        trace_sampling=s.Value('disable_trace_sampling', converter=c.Not),
     ),
+    entrypoint=s.Value(converter=c.ConvertEntrypoint),
     env=s.Value(),
     env_variables=s.Map(),
     error_handlers=s.RepeatedField(element=s.Message(
@@ -138,6 +143,7 @@ SCHEMA = s.Message(
     libraries=s.RepeatedField(element=s.Message(
         version=s.Value(converter=c.ToJsonString),
         name=s.Value(converter=c.ToJsonString))),
+    main=s.Value('runtime_main_executable_path', converter=c.ToJsonString),
     manual_scaling=s.Message(
         instances=s.Value(converter=c.StringToInt())),
     network=s.Message(
@@ -145,7 +151,10 @@ SCHEMA = s.Message(
         name=s.Value(converter=c.ToJsonString),
         subnetwork_name=s.Value(converter=c.ToJsonString),
         forwarded_ports=s.RepeatedField(element=s.Value(converter=
-                                                        c.ToJsonString))),
+                                                        c.ToJsonString)),
+        session_affinity=s.Value()
+    ),
+    zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)),
     nobuild_files=s.Value('nobuild_files_regex', converter=c.ToJsonString),
     resources=s.Message(
         memory_gb=s.Value(),
@@ -161,4 +170,5 @@ SCHEMA = s.Message(
     threadsafe=s.Value(),
     version=s.Value('id', converter=c.ToJsonString),
     vm=s.Value(),
-    vm_settings=s.Map('beta_settings'))
+    vm_settings=s.Map('beta_settings'),
+    vpc_access_connector=s.Message(name=s.Value(converter=c.ToJsonString)))

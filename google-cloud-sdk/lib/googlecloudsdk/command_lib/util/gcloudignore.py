@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,17 +26,24 @@ A typical use would be:
     print 'uploading {}'.format(f)
     # actually do the upload, too
 """
-import collections
-import fnmatch
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import os
-import re
 
 import enum
 
+from googlecloudsdk.command_lib.util import glob
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
+import six
+from six.moves import map  # pylint: disable=redefined-builtin
 
 IGNORE_FILE_NAME = '.gcloudignore'
 GIT_FILES = ['.git', '.gitignore']
@@ -60,11 +68,7 @@ _ENDS_IN_ODD_NUMBER_SLASHES_RE = r'(?<!\\)\\(\\\\)*$'
 
 
 class InternalParserError(Exception):
-  """An internal error in gcloudignore parsing."""
-
-
-class InvalidLineError(InternalParserError):
-  """Error indicating that a line of the ignore file was invalid."""
+  """An internal error in ignore file parsing."""
 
 
 class BadFileError(InternalParserError):
@@ -75,8 +79,12 @@ class BadIncludedFileError(exceptions.Error):
   """Error indicating that a provided file was invalid."""
 
 
+class SymlinkLoopError(exceptions.Error):
+  """Error indicating that there is a symlink loop."""
+
+
 class Match(enum.Enum):
-  """Indicates whether a ignore pattern matches or explicitly includes a path.
+  """Indicates whether an ignore pattern matches or explicitly includes a path.
 
   INCLUDE: path matches, and is included
   IGNORE: path matches, and is ignored
@@ -86,91 +94,6 @@ class Match(enum.Enum):
   INCLUDE = 1
   IGNORE = 2
   NO_MATCH = 3
-
-
-def _HandleSpaces(line):
-  """Handles spaces in a line.
-
-  In particular, deals with trailing spaces (which are stripped unless
-  escaped) and escaped spaces throughout the line (which are unescaped).
-
-  Args:
-    line: str, the line
-
-  Returns:
-    str, the line with spaces handled
-  """
-  def _Rstrip(line):
-    """Strips unescaped trailing spaces."""
-    # First, make the string into "tokens": a backslash followed by any
-    # character is one token; any other character is a token on its own.
-    tokens = []
-    i = 0
-    while i < len(line):
-      curr = line[i]
-      if curr == '\\':
-        if i + 1 >= len(line):
-          tokens.append(curr)
-          break  # Pass through trailing backslash
-        tokens.append(curr + line[i+1])
-        i += 2
-      else:
-        tokens.append(curr)
-        i += 1
-
-    # Then, strip the trailing space tokens.
-    res = []
-    only_seen_spaces = True
-    for curr in reversed(tokens):
-      if only_seen_spaces and curr == ' ':
-        continue
-      only_seen_spaces = False
-      res.append(curr)
-
-    return ''.join(reversed(res))
-
-  def _UnescapeSpaces(line):
-    """Unescapes all spaces in a line."""
-    return line.replace('\\ ', ' ')
-
-  return _UnescapeSpaces(_Rstrip(line))
-
-
-def _Unescape(line):
-  r"""Unescapes a line.
-
-  The escape character is '\'. An escaped backslash turns into one backslash;
-  any other escaped character is ignored.
-
-  Args:
-    line: str, the line to unescape
-
-  Returns:
-    str, the unescaped line
-
-  """
-  return re.sub(r'\\([^\\])', r'\1', line).replace('\\\\', '\\')
-
-
-def _GetPathPrefixes(path):
-  """Returns all prefixes for the given path, inclusive.
-
-  That is, for 'foo/bar/baz', returns ['', 'foo', 'foo/bar' 'foo/bar/baz'].
-
-  Args:
-    path: str, the path for which to get prefixes.
-
-  Returns:
-    list of str, the prefixes.
-  """
-  path_prefixes = [path]
-  path_reminder = True
-  # Apparently which one is empty when operating on top-level directory depends
-  # on your configuration.
-  while path and path_reminder:
-    path, path_reminder = os.path.split(path)
-    path_prefixes.insert(0, path)
-  return path_prefixes
 
 
 class Pattern(object):
@@ -189,70 +112,9 @@ class Pattern(object):
     self.negated = negated
     self.must_be_dir = must_be_dir
 
-  def _MatchesHelper(self, pattern_parts, path):
-    """Determines whether the given pattern matches the given path.
-
-    Args:
-      pattern_parts: list of str, the list of pattern parts that must all match
-        the path.
-      path: str, the path to match.
-
-    Returns:
-      bool, whether the patch matches the pattern_parts (Matches() will convert
-        this into a Match value).
-    """
-    # This method works right-to-left. It checks that the right-most pattern
-    # part matches the right-most path part, and that the remaining pattern
-    # matches the remaining path.
-    if not pattern_parts:
-      # We've reached the end of the pattern! Success.
-      return True
-    if path is None:
-      # Distinguish between '*' and '/*'. The former should match '' (the root
-      # directory) but the latter should not.
-      return False
-
-    pattern_part = pattern_parts[-1]
-    remaining_pattern = pattern_parts[:-1]
-    if path:  # normpath turns '' into '.', which confuses fnmatch later
-      path = os.path.normpath(path)
-    remaining_path, path_part = os.path.split(path)
-    if not path_part:
-      # See note above.
-      remaining_path = None
-
-    if pattern_part == '**':
-      # If the path would match the remaining pattern_parts after skipping 0-all
-      # of the trailing path parts, the whole pattern matches.
-      #
-      # That is, if we have `<pattern>/**` as a pattern and `foo/bar` as our
-      # path, if any of ``, `foo`, and `foo/bar` match `<pattern>`, we return
-      # true.
-      path_prefixes = _GetPathPrefixes(path)
-      # '**' patterns only match against the full path (essentially, they have
-      # an implicit '/' at the front of the pattern). An empty string at the
-      # beginning of remaining_pattern simulates this.
-      #
-      # pylint: disable=g-explicit-bool-comparison
-      # In this case, it's much clearer to show what we're checking for.
-      if not (remaining_pattern and remaining_pattern[0] == ''):
-        remaining_pattern.insert(0, '')
-      # pylint: enable=g-explicit-bool-comparison
-      return any(self._MatchesHelper(remaining_pattern, prefix) for prefix
-                 in path_prefixes)
-
-    if not fnmatch.fnmatch(path_part, pattern_part):
-      # If the current pattern part doesn't match the current path part, the
-      # whole pattern can't match the whole path. Give up!
-      return False
-
-    return self._MatchesHelper(remaining_pattern, remaining_path)
-
   def Matches(self, path, is_dir=False):
     """Returns a Match for this pattern and the given path."""
-    if self.must_be_dir and not is_dir:
-      return Match.NO_MATCH
-    if self._MatchesHelper(self.pattern.split('/'), path):
+    if self.pattern.Matches(path, is_dir=is_dir):
       return Match.INCLUDE if self.negated else Match.IGNORE
     else:
       return Match.NO_MATCH
@@ -274,25 +136,13 @@ class Pattern(object):
         invalid consecutive stars).
     """
     if line.startswith('#'):
-      raise InvalidLineError('Line [{}] begins with `#`.'.format(line))
+      raise glob.InvalidLineError('Line [{}] begins with `#`.'.format(line))
     if line.startswith('!'):
       line = line[1:]
       negated = True
     else:
       negated = False
-    if line.endswith('/'):
-      line = line[:-1]
-      must_be_dir = True
-    else:
-      must_be_dir = False
-    line = _HandleSpaces(line)
-    if re.search(_ENDS_IN_ODD_NUMBER_SLASHES_RE, line):
-      raise InvalidLineError(
-          'Line [{}] ends in an odd number of [\\]s.'.format(line))
-    line = _Unescape(line)
-    if not line:
-      raise InvalidLineError('Line [{}] is blank.'.format(line))
-    return cls(line, negated=negated, must_be_dir=must_be_dir)
+    return cls(glob.Glob.FromString(line), negated=negated)
 
 
 class FileChooser(object):
@@ -315,7 +165,7 @@ class FileChooser(object):
     """Returns whether the given file/directory should be included.
 
     This is determined according to the rules at
-    https://git-scm.com/docs/gitignore.
+    https://git-scm.com/docs/gitignore except that symlinks are followed.
 
     In particular:
     - the method goes through pattern-by-pattern in-order
@@ -325,30 +175,46 @@ class FileChooser(object):
 
     Args:
       path: str, the path (relative to the root upload directory) to test.
-      is_dir: bool, whether the path is a directory (not a file or symlink).
+      is_dir: bool, whether the path is a directory (or symlink to a directory).
 
     Returns:
       bool, whether the file should be uploaded
     """
-    path_prefixes = _GetPathPrefixes(path)
-    path_prefix_map = collections.OrderedDict(
-        [(prefix, Match.NO_MATCH) for prefix in path_prefixes])
-    for pattern in self.patterns:
-      parent_match = Match.NO_MATCH
-      for path_prefix in path_prefix_map:
-        if parent_match is not Match.NO_MATCH:
-          match = parent_match
-        else:
-          # All prefixes except the path itself are directories.
-          is_prefix_dir = path_prefix != path or is_dir
-          match = pattern.Matches(path_prefix, is_dir=is_prefix_dir)
+    path_prefixes = glob.GetPathPrefixes(path)[1:]  # root dir can't be matched
+    for path_prefix in path_prefixes:
+      prefix_match = Match.NO_MATCH
+      for pattern in self.patterns:
+        is_prefix_dir = path_prefix != path or is_dir
+        match = pattern.Matches(path_prefix, is_dir=is_prefix_dir)
         if match is not Match.NO_MATCH:
-          path_prefix_map[path_prefix] = match
-        parent_match = match
-        if path_prefix_map[path_prefix] is Match.IGNORE:
-          parent_match = Match.IGNORE
+          prefix_match = match
+      if prefix_match is Match.IGNORE:
+        log.debug('Skipping file [{}]'.format(path))
+        return False
+    return True
 
-    return path_prefix_map[path] is not Match.IGNORE
+  def _RaiseOnSymlinkLoop(self, full_path):
+    """Raise SymlinkLoopError if the given path is a symlink loop."""
+    if not os.path.islink(encoding.Encode(full_path, encoding='utf-8')):
+      return
+
+    # Does it refer to itself somehow?
+    p = os.readlink(full_path)
+    targets = set()
+    while os.path.islink(p):
+      if p in targets:
+        raise SymlinkLoopError(
+            'The symlink [{}] refers to itself.'.format(full_path))
+      targets.add(p)
+      p = os.readlink(p)
+    # Does it refer to its containing directory?
+    p = os.path.dirname(full_path)
+    while p and os.path.basename(p):
+      if os.path.samefile(p, full_path):
+        raise SymlinkLoopError(
+            'The symlink [{}] refers to its own containing directory.'.format(
+                full_path))
+      p = os.path.dirname(p)
 
   def GetIncludedFiles(self, upload_directory, include_dirs=True):
     """Yields the files in the given directory that this FileChooser includes.
@@ -359,26 +225,34 @@ class FileChooser(object):
 
     Yields:
       str, the files and directories that should be uploaded.
+    Raises:
+      SymlinkLoopError: if there is a symlink referring to its own containing
+      dir or itself.
     """
-    for dirpath, dirnames, filenames in os.walk(upload_directory):
+    for dirpath, orig_dirnames, filenames in os.walk(
+        six.ensure_str(upload_directory), followlinks=True):
+      dirpath = encoding.Decode(dirpath)
+      dirnames = [encoding.Decode(dirname) for dirname in orig_dirnames]
+      filenames = [encoding.Decode(filename) for filename in filenames]
       if dirpath == upload_directory:
         relpath = ''
       else:
         relpath = os.path.relpath(dirpath, upload_directory)
       for filename in filenames:
         file_relpath = os.path.join(relpath, filename)
+        self._RaiseOnSymlinkLoop(os.path.join(dirpath, filename))
         if self.IsIncluded(file_relpath):
           yield file_relpath
-      for dirname in dirnames[:]:  # make a copy since we modify the original
+      for dirname in dirnames:  # make a copy since we modify the original
         file_relpath = os.path.join(relpath, dirname)
-        # Don't treat symlinks as directories, even though os.walk does.
-        is_dir = not os.path.islink(os.path.join(dirpath, dirname))
-        if self.IsIncluded(file_relpath, is_dir=is_dir):
+        full_path = os.path.join(dirpath, dirname)
+        if self.IsIncluded(file_relpath, is_dir=True):
+          self._RaiseOnSymlinkLoop(full_path)
           if include_dirs:
             yield file_relpath
         else:
           # Don't bother recursing into skipped directories
-          dirnames.remove(dirname)
+          orig_dirnames.remove(dirname)
 
   @classmethod
   def FromString(cls, text, recurse=0, dirname=None):
@@ -407,11 +281,10 @@ class FileChooser(object):
         if line[1:].lstrip().startswith(cls._INCLUDE_DIRECTIVE):
           patterns.extend(cls._GetIncludedPatterns(line, dirname, recurse))
         continue  # lines beginning with '#' are comments
-      line_with_spaces_gone = _HandleSpaces(line)
-      if (not line_with_spaces_gone or
-          re.search(_ENDS_IN_ODD_NUMBER_SLASHES_RE, line_with_spaces_gone)):
-        continue  # blank line or trailing / both get ignored
-      patterns.append(Pattern.FromString(line))
+      try:
+        patterns.append(Pattern.FromString(line))
+      except glob.InvalidLineError:
+        pass  # Ignore invalid lines
     return cls(patterns)
 
   @classmethod
@@ -449,7 +322,7 @@ class FileChooser(object):
     try:
       return cls.FromFile(included_path, recurse - 1).patterns
     except BadFileError as err:
-      raise BadIncludedFileError(err.message)
+      raise BadIncludedFileError(six.text_type(err))
 
   @classmethod
   def FromFile(cls, ignore_file_path, recurse=1):
@@ -471,9 +344,8 @@ class FileChooser(object):
       FileChooser.
     """
     try:
-      with open(ignore_file_path, 'rb') as f:
-        text = f.read()
-    except IOError as err:
+      text = files.ReadFileContents(ignore_file_path)
+    except files.Error as err:
       raise BadFileError(
           'Could not read ignore file [{}]: {}'.format(ignore_file_path, err))
     return cls.FromString(text, dirname=os.path.dirname(ignore_file_path),
@@ -489,24 +361,33 @@ def _GitFilesExist(directory):
   return AnyFileOrDirExists(directory, GIT_FILES)
 
 
-def _GetIgnoreFileContents(default_ignore_file, directory):
+def _GetIgnoreFileContents(default_ignore_file,
+                           directory,
+                           include_gitignore=True):
   ignore_file_contents = default_ignore_file
-  if os.path.exists(os.path.join(directory, '.gitignore')):
+  if include_gitignore and os.path.exists(
+      os.path.join(directory, '.gitignore')):
     ignore_file_contents += '#!include:.gitignore\n'
   return ignore_file_contents
 
 
 def GetFileChooserForDir(
     directory, default_ignore_file=DEFAULT_IGNORE_FILE, write_on_disk=True,
-    gcloud_ignore_creation_predicate=_GitFilesExist):
+    gcloud_ignore_creation_predicate=_GitFilesExist, include_gitignore=True,
+    ignore_file=None):
   """Gets the FileChooser object for the given directory.
 
   In order of preference:
-  - Uses .gcloudignore file in the top-level directory
-  - Generates Git-centric .gcloudignore file if Git files are found but no
-    .gcloudignore exists. (If the directory is not writable, the file chooser
-    corresponding to the ignore file that would have been generated is used).
-  - If neither is found the returned FileChooser will choose all files.
+  - If ignore_file is not none, use it to skip files.
+    If the specified file does not exist, raise error.
+  - Use .gcloudignore file in the top-level directory.
+  - Evaluates creation predicate to determine whether to generate .gcloudignore.
+    include_gitignore determines whether the generated .gcloudignore will
+    include the user's .gitignore if one exists. If the directory is not
+    writable, the file chooser corresponding to the ignore file that would have
+    been generated is used.
+  - If the creation predicate evaluates to false, returned FileChooser
+    will choose all files.
 
   Args:
     directory: str, the path of the top-level directory to upload
@@ -518,6 +399,10 @@ def GetFileChooserForDir(
       directory that would contain the .gcloudignore file. By default
       .gcloudignore file will be created if and only if the directory contains
       .gitignore file or .git directory.
+    include_gitignore: bool, whether the generated gcloudignore should include
+      the user's .gitignore if present.
+    ignore_file: custom ignore_file name.
+              Override .gcloudignore file to customize files to be skipped.
 
   Raises:
     BadIncludedFileError: if a file being included does not exist or is not in
@@ -527,15 +412,30 @@ def GetFileChooserForDir(
     FileChooser: the FileChooser for the directory. If there is no .gcloudignore
     file and it can't be created the returned FileChooser will choose all files.
   """
-  gcloudignore_path = os.path.join(directory, IGNORE_FILE_NAME)
+
+  if ignore_file:
+    gcloudignore_path = os.path.join(directory, ignore_file)
+  else:
+    if not properties.VALUES.gcloudignore.enabled.GetBool():
+      log.info('Not using a .gcloudignore file since gcloudignore is globally '
+               'disabled.')
+      return FileChooser([])
+    gcloudignore_path = os.path.join(directory, IGNORE_FILE_NAME)
   try:
-    return FileChooser.FromFile(gcloudignore_path)
+    chooser = FileChooser.FromFile(gcloudignore_path)
   except BadFileError:
     pass
+  else:
+    log.info('Using ignore file at [{}].'.format(gcloudignore_path))
+    return chooser
   if not gcloud_ignore_creation_predicate(directory):
+    log.info('Not using ignore file.')
     return FileChooser([])
 
-  ignore_contents = _GetIgnoreFileContents(default_ignore_file, directory)
+  ignore_contents = _GetIgnoreFileContents(default_ignore_file, directory,
+                                           include_gitignore)
+  log.info('Using default gcloudignore file:\n{0}\n{1}\n{0}'.format(
+      '--------------------------------------------------', ignore_contents))
   if write_on_disk:
     try:
       files.WriteFileContents(gcloudignore_path, ignore_contents,

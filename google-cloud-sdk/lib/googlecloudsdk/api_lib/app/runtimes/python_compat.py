@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Fingerprinting code for the Python runtime."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import os
 import textwrap
 
@@ -21,6 +26,7 @@ from gae_ext_runtime import ext_runtime
 
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import files
 
 NAME = 'Python Compat'
 ALLOWED_RUNTIME_NAMES = ('python27', 'python-compat')
@@ -94,9 +100,9 @@ class PythonConfigurator(ext_runtime.Configurator):
       if not os.path.exists(app_yaml):
         notify('Writing [app.yaml] to [%s].' % self.root)
         runtime = 'custom' if self.params.custom else self.runtime
-        with open(app_yaml, 'w') as f:
-          f.write(PYTHON_APP_YAML.format(runtime=runtime))
-        log.warn(APP_YAML_WARNING)
+        files.WriteFileContents(app_yaml,
+                                PYTHON_APP_YAML.format(runtime=runtime))
+        log.warning(APP_YAML_WARNING)
         return True
     return False
 

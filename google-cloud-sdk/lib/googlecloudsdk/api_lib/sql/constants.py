@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,30 +13,52 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Defines tool-wide constants."""
+
 from __future__ import absolute_import
 from __future__ import division
-from __future__ import print_function
+from __future__ import unicode_literals
 
 # Defaults for instance creation.
 DEFAULT_MACHINE_TYPE = 'db-n1-standard-1'
 
 # Determining what executables, flags, and defaults to use for sql connect.
-DB_EXE = {'MYSQL': 'mysql', 'POSTGRES': 'psql'}
+DB_EXE = {'MYSQL': 'mysql', 'POSTGRES': 'psql', 'SQLSERVER': 'mssql-cli'}
 
 EXE_FLAGS = {
     'mysql': {
         'user': '-u',
         'password': '-p',
-        'hostname': '-h'
+        'hostname': '-h',
+        'port': '-P'
     },
     'psql': {
         'user': '-U',
         'password': '-W',
-        'hostname': '-h'
+        'hostname': '-h',
+        'port': '-p',
+        'database': '-d'
+    },
+    'mssql-cli': {
+        'user': '-U',
+        'hostname': '-S',
+        'database': '-d'
     }
 }
 
-DEFAULT_SQL_USER = {'mysql': 'root', 'psql': 'postgres'}
+DEFAULT_SQL_USER = {
+    'mysql': 'root',
+    'psql': 'postgres',
+    'mssql-cli': 'sqlserver'
+}
 
 # Size conversions.
 BYTES_TO_GB = 1 << 30
+
+# Cloud SQL Proxy constants.
+
+# Generally unassigned port number for the proxy to bind to.
+DEFAULT_PROXY_PORT_NUMBER = 9470
+
+PROXY_ADDRESS_IN_USE_ERROR = 'bind: address already in use'
+
+PROXY_READY_FOR_CONNECTIONS_MSG = 'Ready for new connections'

@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,7 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Utilities for Cloud Pub/Sub Topics API."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
@@ -55,23 +62,35 @@ class TopicsClient(object):
     self.messages = messages or GetMessagesModule(client)
     self._service = self.client.projects_topics
 
-  def Create(self, topic_ref, labels=None):
+  def Create(self,
+             topic_ref,
+             labels=None,
+             kms_key=None,
+             message_storage_policy_allowed_regions=None):
     """Creates a Topic.
 
     Args:
       topic_ref (Resource): Resource reference to the Topic to create.
       labels (LabelsValue): Labels for the topic to create.
+      kms_key (str): Full resource name of kms_key to set on Topic or None.
+      message_storage_policy_allowed_regions (list[str]): List of Cloud regions
+        in which messages are allowed to be stored at rest.
     Returns:
       Topic: The created topic.
     """
     topic = self.messages.Topic(name=topic_ref.RelativeName(), labels=labels)
+    if kms_key:
+      topic.kmsKeyName = kms_key
+    if message_storage_policy_allowed_regions:
+      topic.messageStoragePolicy = self.messages.MessageStoragePolicy(
+          allowedPersistenceRegions=message_storage_policy_allowed_regions)
     return self._service.Create(topic)
 
   def Get(self, topic_ref):
     """Gets a Topic.
 
     Args:
-      topic_ref (Resource): Resource reference to the Topic to delete.
+      topic_ref (Resource): Resource reference to the Topic to get.
     Returns:
       Topic: The topic.
     """
@@ -110,6 +129,26 @@ class TopicsClient(object):
         self._service, list_req, batch_size=page_size,
         field='topics', batch_size_attribute='pageSize')
 
+  def ListSnapshots(self, topic_ref, page_size=100):
+    """Lists Snapshots for a given topic.
+
+    Args:
+      topic_ref (Resource): Resource reference to Topic to list
+        snapshots from.
+      page_size (int): the number of entries in each batch (affects requests
+        made, but not the yielded results).
+    Returns:
+      A generator of Snapshots for the Topic.
+    """
+    list_req = self.messages.PubsubProjectsTopicsSnapshotsListRequest(
+        topic=topic_ref.RelativeName(),
+        pageSize=page_size
+    )
+    list_snaps_service = self.client.projects_topics_snapshots
+    return list_pager.YieldFromList(
+        list_snaps_service, list_req, batch_size=page_size,
+        field='snapshots', batch_size_attribute='pageSize')
+
   def ListSubscriptions(self, topic_ref, page_size=100):
     """Lists Subscriptions for a given topic.
 
@@ -130,14 +169,19 @@ class TopicsClient(object):
         list_subs_service, list_req, batch_size=page_size,
         field='subscriptions', batch_size_attribute='pageSize')
 
-  def Publish(self, topic_ref, message_body=None, attributes=None):
+  def Publish(self,
+              topic_ref,
+              message_body=None,
+              attributes=None,
+              ordering_key=None):
     """Publishes a message to the given topic.
 
     Args:
       topic_ref (Resource): Resource reference to Topic to publish to.
-      message_body (str): Message to send.
+      message_body (bytes): Message to send.
       attributes (list[AdditionalProperty]): List of attributes to attach to
         the message.
+      ordering_key (string): The ordering key to associate with this message.
     Returns:
       PublishResponse: Response message with message ids from the API.
     Raises:
@@ -153,7 +197,8 @@ class TopicsClient(object):
     message = self.messages.PubsubMessage(
         data=message_body,
         attributes=self.messages.PubsubMessage.AttributesValue(
-            additionalProperties=attributes))
+            additionalProperties=attributes),
+        orderingKey=ordering_key)
     publish_req = self.messages.PubsubProjectsTopicsPublishRequest(
         publishRequest=self.messages.PublishRequest(messages=[message]),
         topic=topic_ref.RelativeName())
@@ -228,27 +273,55 @@ class TopicsClient(object):
     iam_util.RemoveBindingFromIamPolicy(policy, member, role)
     return self.SetIamPolicy(topic_ref, policy)
 
-  def Patch(self, topic_ref, labels=None):
+  def Patch(self,
+            topic_ref,
+            labels=None,
+            kms_key_name=None,
+            recompute_message_storage_policy=False,
+            message_storage_policy_allowed_regions=None):
     """Updates a Topic.
 
     Args:
       topic_ref (Resource): Resource reference for the topic to be updated.
       labels (LabelsValue): The Cloud labels for the topic.
+      kms_key_name (str): The full resource name of the Cloud KMS key to
+        associate with the topic, or None.
+      recompute_message_storage_policy (bool): True to have the API recalculate
+        the message storage policy.
+      message_storage_policy_allowed_regions (list[str]): List of Cloud regions
+        in which messages are allowed to be stored at rest.
     Returns:
       Topic: The updated topic.
     Raises:
       NoFieldsSpecifiedError: if no fields were specified.
+      PatchConflictingArgumentsError: if conflicting arguments were provided
     """
-    update_settings = [_TopicUpdateSetting('labels', labels)]
-    topic = self.messages.Topic(
-        name=topic_ref.RelativeName())
+    update_settings = []
+    if labels:
+      update_settings.append(_TopicUpdateSetting('labels', labels))
+
+    if kms_key_name:
+      update_settings.append(_TopicUpdateSetting('kmsKeyName', kms_key_name))
+
+    if recompute_message_storage_policy:
+      update_settings.append(_TopicUpdateSetting('messageStoragePolicy', None))
+    elif message_storage_policy_allowed_regions:
+      update_settings.append(
+          _TopicUpdateSetting(
+              'messageStoragePolicy',
+              self.messages.MessageStoragePolicy(
+                  allowedPersistenceRegions=message_storage_policy_allowed_regions
+              )))
+
+    topic = self.messages.Topic(name=topic_ref.RelativeName())
+
     update_mask = []
     for update_setting in update_settings:
-      if update_setting.value is not None:
-        setattr(topic, update_setting.field_name, update_setting.value)
-        update_mask.append(update_setting.field_name)
+      setattr(topic, update_setting.field_name, update_setting.value)
+      update_mask.append(update_setting.field_name)
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
+
     patch_req = self.messages.PubsubProjectsTopicsPatchRequest(
         updateTopicRequest=self.messages.UpdateTopicRequest(
             topic=topic,

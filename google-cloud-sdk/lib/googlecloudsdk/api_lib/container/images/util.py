@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,9 +14,11 @@
 # limitations under the License.
 """Utilities for the container images commands."""
 
-from contextlib import contextmanager
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
-import httplib
+from contextlib import contextmanager
 
 from containerregistry.client import docker_creds
 from containerregistry.client import docker_name
@@ -38,6 +41,9 @@ from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.docker import docker
 from googlecloudsdk.core.util import times
+import six
+from six.moves import map
+import six.moves.http_client
 
 
 class UtilError(exceptions.Error):
@@ -79,9 +85,8 @@ def ValidateRepositoryPath(repository_path):
         'Image names must not be fully-qualified. Remove the tag or digest '
         'and try again.')
   if repository_path.endswith('/'):
-    raise InvalidImageNameError(
-        'Image name cannot end with \'/\'. '
-        'Remove the trailing \'/\' and try again.')
+    raise InvalidImageNameError('Image name cannot end with \'/\'. '
+                                'Remove the trailing \'/\' and try again.')
 
   try:
     if repository_path in constants.MIRROR_REGISTRIES:
@@ -93,7 +98,7 @@ def ValidateRepositoryPath(repository_path):
     return repository
   except docker_name.BadNameException as e:
     # Reraise with the proper base class so the message gets shown.
-    raise InvalidImageNameError(e.message)
+    raise InvalidImageNameError(six.text_type(e))
 
 
 class CredentialProvider(docker_creds.Basic):
@@ -138,11 +143,12 @@ def RecoverProjectId(repository):
 
 
 def _UnqualifiedResourceUrl(repo):
-  return 'https://{repo}@'.format(repo=str(repo))
+  return 'https://{repo}@'.format(repo=six.text_type(repo))
 
 
 def _ResourceUrl(repo, digest):
-  return 'https://{repo}@{digest}'.format(repo=str(repo), digest=digest)
+  return 'https://{repo}@{digest}'.format(
+      repo=six.text_type(repo), digest=digest)
 
 
 def _FullyqualifiedDigest(digest):
@@ -156,9 +162,11 @@ def _MakeSummaryRequest(project_id, url_filter):
   project_ref = resources.REGISTRY.Parse(
       project_id, collection='cloudresourcemanager.projects')
 
-  req = messages.ContaineranalysisProjectsGetVulnzsummaryRequest(
-      parent=project_ref.RelativeName(), filter=url_filter)
-  return client.projects.GetVulnzsummary(req)
+  req = (
+      messages.
+      ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest(
+          parent=project_ref.RelativeName(), filter=url_filter))
+  return client.projects_occurrences.GetVulnerabilitySummary(req)
 
 
 def FetchOccurrencesForResource(digest, occurrence_filter=None):
@@ -178,10 +186,10 @@ def FetchDeploymentsForImage(image, occurrence_filter=None):
       arg_filter=occurrence_filter,
       depl_filter=depl_filter,
   )
-  occurrences = list(containeranalysis_util.MakeOccurrenceRequest(
-      project_id, occ_filter))
+  occurrences = list(
+      containeranalysis_util.MakeOccurrenceRequest(project_id, occ_filter))
   deployments = []
-  image_string = str(image)
+  image_string = six.text_type(image)
   for occ in occurrences:
     if not occ.deployment:
       continue
@@ -190,7 +198,8 @@ def FetchDeploymentsForImage(image, occurrence_filter=None):
   return deployments
 
 
-def TransformContainerAnalysisData(image_name, occurrence_filter=None,
+def TransformContainerAnalysisData(image_name,
+                                   occurrence_filter=None,
                                    deployments=False):
   """Transforms the occurrence data from Container Analysis API."""
   analysis_obj = container_analysis_data_util.ContainerAndAnalysisData(
@@ -240,9 +249,11 @@ def FetchOccurrences(repository, occurrence_filter=None, resource_urls=None):
   return occurrences_by_resources
 
 
-def TransformManifests(
-    manifests, repository, show_occurrences=False, occurrence_filter=None,
-    resource_urls=None):
+def TransformManifests(manifests,
+                       repository,
+                       show_occurrences=False,
+                       occurrence_filter=None,
+                       resource_urls=None):
   """Transforms the manifests returned from the server."""
   if not manifests:
     return []
@@ -251,15 +262,18 @@ def TransformManifests(
   occurrences = {}
   if show_occurrences:
     occurrences = FetchOccurrences(
-        repository, occurrence_filter=occurrence_filter,
+        repository,
+        occurrence_filter=occurrence_filter,
         resource_urls=resource_urls)
 
   # Attach each occurrence to the resource to which it applies.
   results = []
-  for k, v in manifests.iteritems():
-    result = {'digest': k,
-              'tags': v.get('tag', []),
-              'timestamp': _TimeCreatedToDateTime(v.get('timeCreatedMs'))}
+  for k, v in six.iteritems(manifests):
+    result = {
+        'digest': k,
+        'tags': v.get('tag', []),
+        'timestamp': _TimeCreatedToDateTime(v.get('timeCreatedMs'))
+    }
 
     # Partition the (non-PACKAGE_VULNERABILITY) occurrences into different
     # columns by kind.
@@ -298,9 +312,9 @@ def GetTagNamesForDigest(digest, http_obj):
   """
   repository_path = digest.registry + '/' + digest.repository
   repository = ValidateRepositoryPath(repository_path)
-  with v2_2_image.FromRegistry(basic_creds=CredentialProvider(),
-                               name=repository,
-                               transport=http_obj) as image:
+  with v2_2_image.FromRegistry(
+      basic_creds=CredentialProvider(), name=repository,
+      transport=http_obj) as image:
     if digest.digest not in image.manifests():
       return []
     manifest_value = image.manifests().get(digest.digest, {})
@@ -322,7 +336,11 @@ def GetDockerTagsForDigest(digest, http_obj):
   tags = []
   tag_names = GetTagNamesForDigest(digest, http_obj)
   for tag_name in tag_names:  # iterate over digest tags
-    tags.append(docker_name.Tag(str(repository) + ':' + tag_name))
+    try:
+      tag = docker_name.Tag(six.text_type(repository) + ':' + tag_name)
+    except docker_name.BadNameException as e:
+      raise InvalidImageNameError(six.text_type(e))
+    tags.append(tag)
   return tags
 
 
@@ -371,7 +389,12 @@ def GetDockerImageFromTagOrDigest(image_name):
         raise InvalidImageNameError(
             '[{0}] could not be resolved to a full digest.'.format(image_name))
       image_name = resolved
-  return ValidateImagePathAndReturn(docker_name.Digest(image_name))
+  try:
+    return ValidateImagePathAndReturn(docker_name.Digest(image_name))
+  except docker_name.BadNameException:
+    raise InvalidImageNameError(
+        '[{0}] digest must be of the form "sha256:<digest>".'.format(
+            image_name))
 
 
 def GetDigestFromName(image_name):
@@ -402,7 +425,9 @@ def GetDigestFromName(image_name):
 
   def ResolveV22Tag(tag):
     with v2_2_image.FromRegistry(
-        basic_creds=CredentialProvider(), name=tag, transport=http.Http(),
+        basic_creds=CredentialProvider(),
+        name=tag,
+        transport=http.Http(),
         accepted_mimes=v2_2_docker_http.SUPPORTED_MANIFEST_MIMES) as v2_2_img:
       if v2_2_img.exists():
         return v2_2_img.digest()
@@ -419,11 +444,13 @@ def GetDigestFromName(image_name):
   # Resolve as manifest list, then v2.2, then v2.1 because for compatibility:
   # - manifest lists can be rewritten to v2.2 "default" images.
   # - v2.2 manifests can be rewritten to v2.1 manifests.
-  sha256 = (ResolveManifestListTag(tag_or_digest) or
-            ResolveV22Tag(tag_or_digest) or
-            ResolveV2Tag(tag_or_digest))
+  sha256 = (
+      ResolveManifestListTag(tag_or_digest) or ResolveV22Tag(tag_or_digest) or
+      ResolveV2Tag(tag_or_digest))
   if not sha256:
-    raise InvalidImageNameError('[{0}] is not a valid name.'.format(image_name))
+    raise InvalidImageNameError(
+        '[{0}] is not a valid name. Expected tag in the form "base:tag" or '
+        '"tag" or digest in the form "sha256:<digest>"'.format(image_name))
 
   return docker_name.Digest('{registry}/{repository}@{sha256}'.format(
       registry=tag_or_digest.registry,
@@ -445,17 +472,17 @@ def GetDockerDigestFromPrefix(digest):
   """
   repository_path, prefix = digest.split('@', 1)
   repository = ValidateRepositoryPath(repository_path)
-  with v2_2_image.FromRegistry(basic_creds=CredentialProvider(),
-                               name=repository,
-                               transport=http.Http()) as image:
+  with v2_2_image.FromRegistry(
+      basic_creds=CredentialProvider(), name=repository,
+      transport=http.Http()) as image:
     matches = [d for d in image.manifests() if d.startswith(prefix)]
 
     if len(matches) == 1:
       return repository_path + '@' + matches.pop()
     elif len(matches) > 1:
       raise InvalidImageNameError(
-          '{0} is not a unique digest prefix. Options are {1}.]'
-          .format(prefix, ', '.join(map(str, matches))))
+          '{0} is not a unique digest prefix. Options are {1}.]'.format(
+              prefix, ', '.join(map(str, matches))))
     return digest
 
 
@@ -465,13 +492,15 @@ def WrapExpectedDockerlessErrors(optional_image_name=None):
     yield
   except (v2_docker_http.V2DiagnosticException,
           v2_2_docker_http.V2DiagnosticException) as err:
-    if err.status in [httplib.UNAUTHORIZED, httplib.FORBIDDEN]:
+    if err.status in [
+        six.moves.http_client.UNAUTHORIZED, six.moves.http_client.FORBIDDEN
+    ]:
       raise UserRecoverableV2Error('Access denied: {}'.format(
-          optional_image_name or str(err)))
-    elif err.status == httplib.NOT_FOUND:
+          optional_image_name or six.text_type(err)))
+    elif err.status == six.moves.http_client.NOT_FOUND:
       raise UserRecoverableV2Error('Not found: {}'.format(
-          optional_image_name or str(err)))
+          optional_image_name or six.text_type(err)))
     raise
   except (v2_docker_http.TokenRefreshException,
           v2_2_docker_http.TokenRefreshException) as err:
-    raise TokenRefreshError(str(err))
+    raise TokenRefreshError(six.text_type(err))

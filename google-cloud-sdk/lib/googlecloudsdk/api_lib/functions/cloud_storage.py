@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,15 +15,13 @@
 
 """Utilities for interacting with Google Cloud Storage."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core.util import platforms
-
-
-def BuildRemoteDestination(bucket, path):
-  return '{0}{1}'.format(bucket, path)
 
 
 def _GetGsutilPath():

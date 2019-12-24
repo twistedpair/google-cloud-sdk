@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +15,13 @@
 
 """Utilities to manage credentials."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 import base64
 import json
-import os
 
 import enum
 
@@ -25,10 +29,12 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import devshell as c_devshell
+from googlecloudsdk.core.util import files
+
 from oauth2client import client
 from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
-from oauth2client.contrib import multistore_file
+import six
 import sqlite3
 
 
@@ -41,9 +47,9 @@ class UnknownCredentialsType(Error):
   pass
 
 
+@six.add_metaclass(abc.ABCMeta)
 class CredentialStore(object):
   """Abstract definition of credential store."""
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def GetAccounts(self):
@@ -154,7 +160,17 @@ class AccessTokenCache(object):
         '(account_id TEXT PRIMARY KEY, '
         'access_token TEXT, '
         'token_expiry TIMESTAMP, '
-        'rapt_token TEXT)'.format(_ACCESS_TOKEN_TABLE))
+        'rapt_token TEXT, '
+        'id_token TEXT)'.format(_ACCESS_TOKEN_TABLE))
+
+    # Older versions of the access_tokens database may not have the id_token
+    # column, so we will add it if we can't access it.
+    try:
+      self._Execute(
+          'SELECT id_token FROM "{}" LIMIT 1'.format(_ACCESS_TOKEN_TABLE))
+    except sqlite3.OperationalError:
+      self._Execute('ALTER TABLE "{}" ADD COLUMN id_token TEXT'.format(
+          _ACCESS_TOKEN_TABLE))
 
   def _Execute(self, *args):
     with self._cursor as cur:
@@ -163,21 +179,28 @@ class AccessTokenCache(object):
   def Load(self, account_id):
     with self._cursor as cur:
       return cur.Execute(
-          'SELECT access_token, token_expiry, rapt_token '
+          'SELECT access_token, token_expiry, rapt_token, id_token '
           'FROM "{}" WHERE account_id = ?'
           .format(_ACCESS_TOKEN_TABLE), (account_id,)).fetchone()
 
-  def Store(self, account_id, access_token, token_expiry, rapt_token):
-    self._Execute(
-        'REPLACE INTO "{}" '
-        '(account_id, access_token, token_expiry, rapt_token) VALUES (?,?,?,?)'
-        .format(_ACCESS_TOKEN_TABLE),
-        (account_id, access_token, token_expiry, rapt_token))
+  def Store(self, account_id, access_token, token_expiry, rapt_token, id_token):
+    try:
+      self._Execute(
+          'REPLACE INTO "{}" '
+          '(account_id, access_token, token_expiry, rapt_token, id_token) '
+          'VALUES (?,?,?,?,?)'
+          .format(_ACCESS_TOKEN_TABLE),
+          (account_id, access_token, token_expiry, rapt_token, id_token))
+    except sqlite3.OperationalError as e:
+      log.warning('Could not store access token in cache: {}'.format(str(e)))
 
   def Remove(self, account_id):
-    self._Execute(
-        'DELETE FROM "{}" WHERE account_id = ?'
-        .format(_ACCESS_TOKEN_TABLE), (account_id,))
+    try:
+      self._Execute(
+          'DELETE FROM "{}" WHERE account_id = ?'
+          .format(_ACCESS_TOKEN_TABLE), (account_id,))
+    except sqlite3.OperationalError as e:
+      log.warning('Could not delete access token from cache: {}'.format(str(e)))
 
 
 class AccessTokenStore(client.Storage):
@@ -187,6 +210,9 @@ class AccessTokenStore(client.Storage):
   credential serialization format and get captured as part of that.
   By extending client.Storage this class pretends to serialize credentials, but
   only serializes access token.
+
+  When fetching the more recent credentials from the cache, this does not return
+  token_response, as it is now out of date.
   """
 
   def __init__(self, access_token_cache, account_id, credentials):
@@ -206,19 +232,27 @@ class AccessTokenStore(client.Storage):
   def locked_get(self):
     token_data = self._access_token_cache.Load(self._account_id)
     if token_data:
-      access_token, token_expiry, rapt_token = token_data
+      access_token, token_expiry, rapt_token, id_token = token_data
       self._credentials.access_token = access_token
       self._credentials.token_expiry = token_expiry
       if rapt_token is not None:
         self._credentials.rapt_token = rapt_token
+      self._credentials.id_tokenb64 = id_token
+      self._credentials.token_response = None
     return self._credentials
 
   def locked_put(self, credentials):
+    if getattr(self._credentials, 'token_response'):
+      id_token = self._credentials.token_response.get('id_token', None)
+    else:
+      id_token = None
+
     self._access_token_cache.Store(
         self._account_id,
         self._credentials.access_token,
         self._credentials.token_expiry,
-        getattr(self._credentials, 'rapt_token', None))
+        getattr(self._credentials, 'rapt_token', None),
+        id_token)
 
   def locked_delete(self):
     self._access_token_cache.Remove(self._account_id)
@@ -242,7 +276,7 @@ def MaybeAttachAccessTokenCacheStore(credentials,
     return credentials
   account_id = getattr(credentials, 'service_account_email', None)
   if not account_id:
-    account_id = str(hash(credentials.refresh_token))
+    account_id = six.text_type(hash(credentials.refresh_token))
 
   access_token_cache = AccessTokenCache(
       access_token_file or config.Paths().access_token_db_path)
@@ -295,74 +329,7 @@ def GetCredentialStore(store_file=None, access_token_file=None):
   Returns:
     CredentialStore object.
   """
-
-  # TODO(b/69059614): remove migration logic and all of oauth2client multistore.
-  _MigrateMultistore2Sqlite()
   return _GetSqliteStore(store_file, access_token_file)
-
-
-class Oauth2ClientCredentialStore(CredentialStore):
-  """Implementation of credential sotore over oauth2client.multistore_file."""
-
-  def __init__(self, store_file):
-    self._store_file = store_file
-
-  def GetAccounts(self):
-    """Overrides."""
-    all_keys = multistore_file.get_all_credential_keys(
-        filename=self._store_file)
-
-    return {self._StorageKey2AccountId(key) for key in all_keys}
-
-  def Load(self, account_id):
-    credential_store = self._GetStorageByAccountId(account_id)
-    return credential_store.get()
-
-  def Store(self, account_id, credentials):
-    credential_store = self._GetStorageByAccountId(account_id)
-    credential_store.put(credentials)
-    credentials.set_store(credential_store)
-
-  def Remove(self, account_id):
-    credential_store = self._GetStorageByAccountId(account_id)
-    credential_store.delete()
-
-  def _GetStorageByAccountId(self, account_id):
-    storage_key = self._AcctountId2StorageKey(account_id)
-    return multistore_file.get_credential_storage_custom_key(
-        filename=self._store_file, key_dict=storage_key)
-
-  def _AcctountId2StorageKey(self, account_id):
-    """Converts account id into storage key."""
-    all_storage_keys = multistore_file.get_all_credential_keys(
-        filename=self._store_file)
-    matching_keys = [k for k in all_storage_keys if k['account'] == account_id]
-    if not matching_keys:
-      return {'type': 'google-cloud-sdk', 'account': account_id}
-
-    # We do not expect any other type keys in the credential store. Just in case
-    # somehow they occur:
-    #  1. prefer key with no type
-    #  2. use google-cloud-sdk type
-    #  3. use any other
-    # Also log all cases where type was present but was not google-cloud-sdk.
-    right_key = matching_keys[0]
-    for key in matching_keys:
-      if 'type' in key:
-        if key['type'] == 'google-cloud-sdk' and 'type' in right_key:
-          right_key = key
-        else:
-          log.file_only_logger.warn(
-              'Credential store has unknown type [{0}] key for account [{1}]'
-              .format(key['type'], key['account']))
-      else:
-        right_key = key
-    if 'type' in right_key:
-      right_key['type'] = 'google-cloud-sdk'
-    return right_key
-
-  def _StorageKey2AccountId(self, storage_key):
-    return storage_key['account']
 
 
 class CredentialType(enum.Enum):
@@ -433,7 +400,11 @@ def ToJson(credentials):
     creds_dict = {
         'client_email': credentials._service_account_email,
         'type': creds_type.key,
-        'private_key': base64.b64encode(credentials._private_key_pkcs12),
+        # The base64 only deals with bytes. The encoded value is bytes but is
+        # known to be a safe ascii string. To serialize it, convert it to a
+        # text object.
+        'private_key': (base64.b64encode(credentials._private_key_pkcs12)
+                        .decode('ascii')),
         'password': credentials._private_key_password
     }
   else:
@@ -443,7 +414,7 @@ def ToJson(credentials):
 
 
 def FromJson(json_value):
-  """Returns Oauth2client credentials from library independend json format."""
+  """Returns Oauth2client credentials from library independent json format."""
   json_key = json.loads(json_value)
   cred_type = CredentialType.FromTypeKey(json_key['type'])
   if cred_type == CredentialType.SERVICE_ACCOUNT:
@@ -480,23 +451,14 @@ def FromJson(json_value):
 
 
 def _GetSqliteStore(sqlite_credential_file=None, sqlite_access_token_file=None):
-  credential_store = SqliteCredentialStore(
-      sqlite_credential_file or config.Paths().credentials_db_path)
-  access_token_cache = AccessTokenCache(
-      sqlite_access_token_file or config.Paths().access_token_db_path)
+  """Get a sqlite-based Credential Store."""
+  sqlite_credential_file = (sqlite_credential_file or
+                            config.Paths().credentials_db_path)
+  files.PrivatizeFile(sqlite_credential_file)
+  credential_store = SqliteCredentialStore(sqlite_credential_file)
+
+  sqlite_access_token_file = (sqlite_access_token_file or
+                              config.Paths().access_token_db_path)
+  files.PrivatizeFile(sqlite_access_token_file)
+  access_token_cache = AccessTokenCache(sqlite_access_token_file)
   return CredentialStoreWithCache(credential_store, access_token_cache)
-
-
-def _MigrateMultistore2Sqlite():
-  multistore_file_path = config.Paths().credentials_path
-  if os.path.isfile(multistore_file_path):
-    multistore = Oauth2ClientCredentialStore(multistore_file_path)
-    credential_db_file = config.Paths().credentials_db_path
-    sqlite_store = _GetSqliteStore(credential_db_file)
-
-    for account_id in multistore.GetAccounts():
-      credential = multistore.Load(account_id)
-      sqlite_store.Store(account_id, credential)
-
-    os.remove(multistore_file_path)
-

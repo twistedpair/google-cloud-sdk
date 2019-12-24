@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,10 +16,14 @@
 """Helper methods for configuring deployment manager command flags."""
 
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 LIST_PREVIEWED_RESOURCES_FORMAT = """
     table(
       name,
-      type,
+      type:wrap,
       update.state.yesno(no="COMPLETED"),
       update.error.errors.group(code),
       update.intent
@@ -28,7 +33,7 @@ LIST_PREVIEWED_RESOURCES_FORMAT = """
 LIST_RESOURCES_FORMAT = """
     table(
       name,
-      type,
+      type:wrap,
       update.state.yesno(no="COMPLETED"),
       update.error.errors.group(code),
       runtimePolicies.list(undefined="N/A", separator=", ")
@@ -44,7 +49,7 @@ DEPLOYMENT_AND_RESOURCES_AND_OUTPUTS_FORMAT = """
       operation.error, operation.warnings, update)',
       resources:format='table(
         name:label=NAME,
-        type:label=TYPE,
+        type:wrap:label=TYPE,
         update.state.yesno(no="COMPLETED"),
         update.error.errors.group(code),
         runtimePolicies.list(undefined="N/A", separator=", "))',
@@ -63,7 +68,7 @@ PREVIEWED_DEPLOYMENT_AND_RESOURCES_AND_OUTPUTS_FORMAT = """
       operation.error, operation.warnings, update)',
       resources:format='table(
         name:label=NAME,
-        type:label=TYPE,
+        type:wrap:label=TYPE,
         update.state.yesno(no="COMPLETED"),
         update.intent)',
       outputs:format='table(
@@ -76,7 +81,7 @@ RESOURCES_AND_OUTPUTS_FORMAT = """
     table(
       resources:format='table(
         name,
-        type,
+        type:wrap,
         update.state.yesno(no="COMPLETED"),
         update.error.errors.group(code),
         update.intent.if(preview),

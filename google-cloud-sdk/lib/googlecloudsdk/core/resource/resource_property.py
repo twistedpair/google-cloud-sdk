@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +15,15 @@
 
 """Resource property Get."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import json
 import re
+
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 _SNAKE_RE = re.compile(
@@ -109,7 +117,7 @@ def GetMatchingIndex(index, func):
   """Returns index converted to a case that satisfies func."""
   if func(index):
     return index
-  if not isinstance(index, basestring):
+  if not isinstance(index, six.string_types):
     return None
   for convert in [ConvertToCamelCase, ConvertToSnakeCase]:
     name = convert(index)
@@ -123,7 +131,7 @@ def GetMatchingIndexValue(index, func):
   value = func(index)
   if value:
     return value
-  if not isinstance(index, basestring):
+  if not isinstance(index, six.string_types):
     return None
   for convert in [ConvertToCamelCase, ConvertToSnakeCase]:
     value = func(convert(index))
@@ -161,21 +169,21 @@ def GetMessageFieldType(resource_key, message):
   """
   actual_key = []
   for name in resource_key:
-    if not isinstance(name, basestring):
+    if not isinstance(name, six.string_types):
       # Ignore indices and slices.
       continue
     for convert in (lambda x: x, ConvertToCamelCase, ConvertToSnakeCase):
       actual_name = convert(name)
       try:
         message = message.field_by_name(actual_name).type
-      except KeyError:
+      except (AttributeError, KeyError):
         pass
       else:
         break
     else:
-      raise
+      raise KeyError('Field {} not in message.'.format(name))
     actual_key.append(actual_name)
-  if message == (int, long):
+  if message == six.integer_types:
     # A distinction we don't need, especially since python 3 only has "int".
     # Also, dealing with a type tuple is a pain for callers.
     message = int
@@ -207,10 +215,10 @@ def LookupField(resource_key, fields):
     The actual_key match of resource_key in fields or None if no match.
   """
   for convert in (lambda x: x, ConvertToCamelCase, ConvertToSnakeCase):
-    actual_key = [convert(name) if isinstance(name, basestring) else name
+    actual_key = [convert(name) if isinstance(name, six.string_types) else name
                   for name in resource_key]
     lookup_key = '.'.join([name for name in actual_key
-                           if isinstance(name, basestring)])
+                           if isinstance(name, six.string_types)])
     if lookup_key in fields:
       return actual_key
   return None
@@ -261,7 +269,7 @@ def Get(resource_obj, resource_key, default=None):
       # None is different than an empty dict or list.
       return default
 
-    if hasattr(resource, 'iteritems'):
+    if hasattr(resource, 'items'):
       # dict-like
       if index is None:
         if key:
@@ -291,14 +299,16 @@ def Get(resource_obj, resource_key, default=None):
 
       return default
 
-    if isinstance(index, basestring):
+    if isinstance(index, six.string_types):
       # class-like?
       name = GetMatchingIndex(index, lambda x: hasattr(resource, x))
       if name:
-        resource = getattr(resource, name, default)
-        continue
+        r = getattr(resource, name, default)
+        if not callable(r):
+          resource = r
+          continue
 
-    if hasattr(resource, '__iter__') or isinstance(resource, basestring):
+    if hasattr(resource, '__iter__') or isinstance(resource, six.string_types):
       # list-like
       if index is None:
         if key:
@@ -308,8 +318,8 @@ def Get(resource_obj, resource_key, default=None):
         # explicit trailing slice: *.[]
         return resource
 
-      if not isinstance(index, (int, long)):
-        if isinstance(index, basestring) and isinstance(resource, list):
+      if not isinstance(index, six.integer_types):
+        if isinstance(index, six.string_types) and isinstance(resource, list):
           if len(resource) and isinstance(resource[0], dict):
             if key:
               # See the _GetMetaDict docstring for the proto meta dict layout.
@@ -339,12 +349,13 @@ def Get(resource_obj, resource_key, default=None):
             # of dicts. See
             # resource_property_test.PropertyGetTest.testGetLastDictSlice for
             # an example.
-            return filter(None, [d.get(index) for d in resource]) or default
+            return ([f for f in [d.get(index) for d in resource] if f]
+                    or default)
 
         # Index mismatch.
         return default
 
-      if index in xrange(-len(resource), len(resource)):
+      if index in range(-len(resource), len(resource)):
         resource = resource[index]
         continue
 
@@ -380,7 +391,7 @@ def EvaluateGlobalRestriction(resource, restriction, pattern):
   """
   if not resource:
     return False
-  if isinstance(resource, basestring):
+  if isinstance(resource, six.string_types):
     try:
       return bool(pattern.search(resource))
     except TypeError:
@@ -391,7 +402,7 @@ def EvaluateGlobalRestriction(resource, restriction, pattern):
     except TypeError:
       pass
   try:
-    for key, value in resource.iteritems():
+    for key, value in six.iteritems(resource):
       if not key.startswith('_') and EvaluateGlobalRestriction(
           value, restriction, pattern):
         return True
@@ -404,7 +415,7 @@ def EvaluateGlobalRestriction(resource, restriction, pattern):
     except TypeError:
       pass
   try:
-    for key, value in resource.__dict__.iteritems():
+    for key, value in six.iteritems(resource.__dict__):
       if not key.startswith('_') and EvaluateGlobalRestriction(
           value, restriction, pattern):
         return True
@@ -423,4 +434,5 @@ def IsListLike(resource):
     True if resource is a list-like iterable object.
   """
   return (isinstance(resource, list) or
-          hasattr(resource, '__iter__') and hasattr(resource, 'next'))
+          (hasattr(resource, '__iter__') and
+           (hasattr(resource, 'next') or hasattr(resource, '__next__'))))

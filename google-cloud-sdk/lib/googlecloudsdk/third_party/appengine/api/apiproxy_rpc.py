@@ -1,5 +1,5 @@
 #
-# Copyright 2008 Google Inc. All Rights Reserved.
+# Copyright 2008 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,9 +22,12 @@
 # this source file, please use comments.
 
 
+from __future__ import absolute_import
 
 
 import sys
+
+from googlecloudsdk.third_party.appengine._internal import six_subset
 
 
 class RPC(object):
@@ -80,7 +83,7 @@ class RPC(object):
       raise AssertionError('Cannot clone a call already in progress')
 
     clone = self.__class__()
-    for k, v in self.__dict__.iteritems():
+    for k, v in self.__dict__.items():
       setattr(clone, k, v)
     return clone
 
@@ -124,7 +127,8 @@ class RPC(object):
       Exception of the API call or the callback, if any.
     """
     if self.exception and self._traceback:
-      raise self.exception.__class__, self.exception, self._traceback
+      six_subset.reraise(self.exception.__class__, self.exception,
+                         self._traceback)
     elif self.exception:
       raise self.exception
 

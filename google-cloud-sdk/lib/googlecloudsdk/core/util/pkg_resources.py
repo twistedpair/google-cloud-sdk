@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,12 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Utilities for accessing local pakage resources."""
+"""Utilities for accessing local package resources."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 import imp
 import os
 import pkgutil
 import sys
+
+from googlecloudsdk.core.util import files
+
+import six
 
 
 def _GetPackageName(module_name):
@@ -29,8 +38,32 @@ def _GetPackageName(module_name):
 
 
 def GetResource(module_name, resource_name):
-  """Get a resource as a string for given resource in same package."""
+  """Get a resource as a byte string for given resource in same package."""
   return pkgutil.get_data(_GetPackageName(module_name), resource_name)
+
+
+def GetResourceFromFile(path):
+  """Gets the given resource as a byte string.
+
+  This is similar to GetResource(), but uses file paths instead of module names.
+
+  Args:
+    path: str, filesystem like path to a file/resource.
+
+  Returns:
+    The contents of the resource as a byte string.
+
+  Raises:
+    IOError: if resource is not found under given path.
+  """
+  if os.path.isfile(path):
+    return files.ReadBinaryFileContents(path)
+
+  importer = pkgutil.get_importer(os.path.dirname(path))
+  if hasattr(importer, 'get_data'):
+    return importer.get_data(path)
+
+  raise IOError('File not found {0}'.format(path))
 
 
 def IsImportable(name, path):
@@ -147,12 +180,18 @@ def _LoadModule(importer, module_path, module_name, name_to_give):
     module.__file__ = module_path + '.pyc'
 
   # Define package if it does not exists.
-  imp.load_module('.'.join(package_path_parts), None,
-                  os.path.join(_GetPathRoot(module_path), *package_path_parts),
-                  ('', '', imp.PKG_DIRECTORY))
+  if six.PY2:
+    # This code does not affect the official installations of the cloud sdk.
+    # This function does not work on python 3, but removing this call will
+    # generate runtime warnings when running gcloud as a zip archive. So we keep
+    # this call in python 2 so it can continue to work as intended.
+    imp.load_module('.'.join(package_path_parts), None,
+                    os.path.join(_GetPathRoot(module_path),
+                                 *package_path_parts),
+                    ('', '', imp.PKG_DIRECTORY))
 
   # pylint: disable=exec-used
-  exec code in module.__dict__
+  exec(code, module.__dict__)
   sys.modules[name_to_give] = module
   return module
 
@@ -297,29 +336,3 @@ def ListPackageResources(path):
     return _IterPrefixFiles(importer._par._filename_list, prefix, 0)
 
   return []
-
-
-def GetData(path):
-  """Returns given resource as a string.
-
-  This is similar to pkgutil.get_data, but uses file paths instead
-  of module names.
-
-  Args:
-    path: filesystem like path to a file/resource.
-
-  Returns:
-    contents of the resource as a string.
-
-  Raises:
-    IOError: if resource is not found under given path.
-  """
-  if os.path.isfile(path):
-    with open(path, 'r') as f:
-      return f.read()
-
-  importer = pkgutil.get_importer(os.path.dirname(path))
-  if hasattr(importer, 'get_data'):
-    return importer.get_data(path)
-
-  raise IOError('File not found {0}'.format(path))

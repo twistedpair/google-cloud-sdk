@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,14 +14,22 @@
 # limitations under the License.
 """Utilities for reading instances for prediction."""
 
-import codecs
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import io
 import json
 
-
+from googlecloudsdk.api_lib.ml_engine import models
+from googlecloudsdk.api_lib.ml_engine import versions_api
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.util import files
+from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import encoding
+
+import six
 
 
 class InvalidInstancesFileError(core_exceptions.Error):
@@ -46,14 +55,15 @@ def ReadInstances(input_file, data_format, limit=None):
   instances = []
 
   for line_num, line in enumerate(input_file):
-    line = codecs.decode(line, 'utf-8-sig')  # Handle UTF8-BOM
+    if isinstance(line, six.binary_type):
+      line = encoding.Decode(line, encoding='utf-8-sig')  # Handle UTF8-BOM
     line_content = line.rstrip('\r\n')
     if not line_content:
       raise InvalidInstancesFileError('Empty line is not allowed in the '
                                       'instances file.')
     if limit and line_num >= limit:
       raise InvalidInstancesFileError(
-          'Online prediction can process no more than ' + str(limit) +
+          'Online prediction can process no more than ' + six.text_type(limit) +
           ' instances per file. Please use batch prediction instead.')
     if data_format == 'json':
       try:
@@ -66,7 +76,8 @@ def ReadInstances(input_file, data_format, limit=None):
       instances.append(line_content)
 
   if not instances:
-    raise InvalidInstancesFileError('No valid instance was found.')
+    raise InvalidInstancesFileError(
+        'No valid instance was found in input file.')
 
   return instances
 
@@ -104,7 +115,8 @@ def ReadInstancesFromArgs(json_instances, text_instances, limit=None):
     data_format = 'text'
     input_file = text_instances
 
-  with files.Open(input_file) as f:
+  data = console_io.ReadFromFileOrStdin(input_file, binary=True)
+  with io.BytesIO(data) as f:
     return ReadInstances(f, data_format, limit=limit)
 
 
@@ -144,3 +156,23 @@ def GetDefaultFormat(predictions):
 
   else:
     return 'table[no-heading](predictions)'
+
+
+def GetRuntimeVersion(model=None, version=None):
+  if version:
+    version_ref = ParseModelOrVersionRef(model, version)
+    version_data = versions_api.VersionsClient().Get(version_ref)
+  else:
+    version_data = models.ModelsClient().Get(model).defaultVersion
+  return version_data.framework, version_data.runtimeVersion
+
+
+def CheckRuntimeVersion(model=None, version=None):
+  """Check if runtime-version is more than 1.8."""
+  framework, runtime_version = GetRuntimeVersion(model, version)
+  if framework == 'TENSORFLOW':
+    release, version = map(int, (runtime_version.split('.')))
+    return (release == 1 and version >= 8) or (release > 1)
+  else:
+    return False
+

@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Interconnect Attachment."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 
 class InterconnectAttachment(object):
@@ -28,12 +33,26 @@ class InterconnectAttachment(object):
       'bps-2g': 'BPS_2G',
       'bps-5g': 'BPS_5G',
       'bps-10g': 'BPS_10G',
+      'bps-20g': 'BPS_20G',
+      'bps-50g': 'BPS_50G',
+      '50m': 'BPS_50M',
+      '100m': 'BPS_100M',
+      '200m': 'BPS_200M',
+      '300m': 'BPS_300M',
+      '400m': 'BPS_400M',
+      '500m': 'BPS_500M',
+      '1g': 'BPS_1G',
+      '2g': 'BPS_2G',
+      '5g': 'BPS_5G',
+      '10g': 'BPS_10G',
+      '20g': 'BPS_20G',
+      '50g': 'BPS_50G',
   }
 
   _EDGE_AVAILABILITY_DOMAIN_CONVERSION = {
-      'availability-domain-1': 'ZONE_1',
-      'availability-domain-2': 'ZONE_2',
-      'any': 'ZONE_ANY'
+      'availability-domain-1': 'AVAILABILITY_DOMAIN_1',
+      'availability-domain-2': 'AVAILABILITY_DOMAIN_2',
+      'any': 'AVAILABILITY_DOMAIN_ANY'
   }
 
   def __init__(self, ref, compute_client=None):
@@ -59,50 +78,86 @@ class InterconnectAttachment(object):
                     interconnect=interconnect.SelfLink(),
                     router=router.SelfLink())))
 
-  def _MakeCreateRequestTupleAlpha(
-      self, description, interconnect, router, attachment_type,
-      availability_zone, admin_enabled, bandwidth, pairing_key, vlan_tag_802_1q,
-      candidate_subnets, partner_metadata, partner_asn):
+  def _MakeCreateRequestTupleAlpha(self, description, interconnect, router,
+                                   attachment_type, edge_availability_domain,
+                                   admin_enabled, bandwidth, pairing_key,
+                                   vlan_tag_802_1q, candidate_subnets,
+                                   partner_metadata, partner_asn, validate_only,
+                                   mtu):
+    """Make an interconnect attachment insert request."""
     interconnect_self_link = None
     if interconnect:
       interconnect_self_link = interconnect.SelfLink()
     router_self_link = None
     if router:
       router_self_link = router.SelfLink()
+    attachment = self._messages.InterconnectAttachment(
+        name=self.ref.Name(),
+        description=description,
+        interconnect=interconnect_self_link,
+        router=router_self_link,
+        type=attachment_type,
+        edgeAvailabilityDomain=edge_availability_domain,
+        adminEnabled=admin_enabled,
+        bandwidth=bandwidth,
+        pairingKey=pairing_key,
+        vlanTag8021q=vlan_tag_802_1q,
+        candidateSubnets=candidate_subnets,
+        partnerMetadata=partner_metadata,
+        partnerAsn=partner_asn)
+    if mtu:
+      attachment.mtu = mtu
+    if validate_only is not None:
+      return (self._client.interconnectAttachments, 'Insert',
+              self._messages.ComputeInterconnectAttachmentsInsertRequest(
+                  project=self.ref.project,
+                  region=self.ref.region,
+                  validateOnly=validate_only,
+                  interconnectAttachment=attachment))
     return (self._client.interconnectAttachments, 'Insert',
             self._messages.ComputeInterconnectAttachmentsInsertRequest(
                 project=self.ref.project,
                 region=self.ref.region,
-                interconnectAttachment=self._messages.InterconnectAttachment(
-                    name=self.ref.Name(),
-                    description=description,
-                    interconnect=interconnect_self_link,
-                    router=router_self_link,
-                    type=attachment_type,
-                    availabilityZone=availability_zone,
-                    adminEnabled=admin_enabled,
-                    bandwidth=bandwidth,
-                    pairingKey=pairing_key,
-                    vlanTag8021q=vlan_tag_802_1q,
-                    candidateSubnets=candidate_subnets,
-                    partnerMetadata=partner_metadata,
-                    partnerAsn=partner_asn)))
+                interconnectAttachment=attachment))
 
-  def _MakePatchRequestTupleAlpha(
-      self, description, admin_enabled, bandwidth, partner_metadata, labels,
-      label_fingerprint):
+  def _MakePatchRequestTupleAlpha(self,
+                                  description,
+                                  admin_enabled,
+                                  bandwidth,
+                                  partner_metadata,
+                                  labels,
+                                  label_fingerprint,
+                                  mtu):
+    """Make an interconnect attachment patch request."""
+    interconnect_attachment = self._messages.InterconnectAttachment(
+        name=self.ref.Name(),
+        description=description,
+        adminEnabled=admin_enabled,
+        labels=labels,
+        labelFingerprint=label_fingerprint,
+        bandwidth=bandwidth,
+        partnerMetadata=partner_metadata)
+    if mtu:
+      interconnect_attachment.mtu = mtu
     return (self._client.interconnectAttachments, 'Patch',
             self._messages.ComputeInterconnectAttachmentsPatchRequest(
                 project=self.ref.project,
                 region=self.ref.region,
                 interconnectAttachment=self.ref.Name(),
-                interconnectAttachmentResource=self._messages.
-                InterconnectAttachment(
+                interconnectAttachmentResource=interconnect_attachment))
+
+  def _MakePatchRequestTupleGa(self, description, admin_enabled, bandwidth,
+                               partner_metadata):
+    return (self._client.interconnectAttachments, 'Patch',
+            self._messages.ComputeInterconnectAttachmentsPatchRequest(
+                project=self.ref.project,
+                region=self.ref.region,
+                interconnectAttachment=self.ref.Name(),
+                interconnectAttachmentResource=self._messages
+                .InterconnectAttachment(
                     name=self.ref.Name(),
                     description=description,
                     adminEnabled=admin_enabled,
-                    labels=labels,
-                    labelFingerprint=label_fingerprint,
                     bandwidth=bandwidth,
                     partnerMetadata=partner_metadata)))
 
@@ -147,13 +202,16 @@ class InterconnectAttachment(object):
                   partner_interconnect=None,
                   partner_portal_url=None,
                   partner_asn=None,
-                  only_generate_request=False):
+                  mtu=None,
+                  only_generate_request=False,
+                  validate_only=None):
     """Create an interconnectAttachment."""
     if edge_availability_domain:
       edge_availability_domain = (
-          self._messages.InterconnectAttachment.AvailabilityZoneValueValuesEnum(
-              self.
-              _EDGE_AVAILABILITY_DOMAIN_CONVERSION[edge_availability_domain]))
+          self._messages.InterconnectAttachment
+          .EdgeAvailabilityDomainValueValuesEnum(
+              self
+              ._EDGE_AVAILABILITY_DOMAIN_CONVERSION[edge_availability_domain]))
     if bandwidth:
       bandwidth = (
           self._messages.InterconnectAttachment.BandwidthValueValuesEnum(
@@ -176,23 +234,25 @@ class InterconnectAttachment(object):
         self._MakeCreateRequestTupleAlpha(
             description, interconnect, router, attachment_type,
             edge_availability_domain, admin_enabled, bandwidth, pairing_key,
-            vlan_tag_802_1q, candidate_subnets, partner_metadata, partner_asn)
+            vlan_tag_802_1q, candidate_subnets, partner_metadata, partner_asn,
+            validate_only, mtu)
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)
       return resources[0]
     return requests
 
-  def PatchAlpha(self,
-                 description='',
-                 admin_enabled=None,
-                 bandwidth=None,
-                 partner_name=None,
-                 partner_interconnect=None,
-                 partner_portal_url=None,
-                 labels=None,
-                 label_fingerprint=None,
-                 only_generate_request=False):
+  def PatchAlphaAndBeta(self,
+                        description='',
+                        admin_enabled=None,
+                        bandwidth=None,
+                        partner_name=None,
+                        partner_interconnect=None,
+                        partner_portal_url=None,
+                        labels=None,
+                        label_fingerprint=None,
+                        only_generate_request=False,
+                        mtu=None):
     """Patch an interconnectAttachment."""
     if bandwidth:
       bandwidth = (
@@ -207,9 +267,39 @@ class InterconnectAttachment(object):
     else:
       partner_metadata = None
     requests = [
-        self._MakePatchRequestTupleAlpha(
-            description, admin_enabled, bandwidth, partner_metadata, labels,
-            label_fingerprint)
+        self._MakePatchRequestTupleAlpha(description, admin_enabled, bandwidth,
+                                         partner_metadata, labels,
+                                         label_fingerprint, mtu)
+    ]
+    if not only_generate_request:
+      resources = self._compute_client.MakeRequests(requests)
+      return resources[0]
+    return requests
+
+  def PatchGa(self,
+              description='',
+              admin_enabled=None,
+              bandwidth=None,
+              partner_name=None,
+              partner_interconnect=None,
+              partner_portal_url=None,
+              only_generate_request=False):
+    """Patch an interconnectAttachment."""
+    if bandwidth:
+      bandwidth = (
+          self._messages.InterconnectAttachment.BandwidthValueValuesEnum(
+              self._BANDWIDTH_CONVERSION[bandwidth]))
+    if (partner_interconnect is not None or partner_name is not None or
+        partner_portal_url is not None):
+      partner_metadata = self._messages.InterconnectAttachmentPartnerMetadata(
+          interconnectName=partner_interconnect,
+          partnerName=partner_name,
+          portalUrl=partner_portal_url)
+    else:
+      partner_metadata = None
+    requests = [
+        self._MakePatchRequestTupleGa(description, admin_enabled, bandwidth,
+                                      partner_metadata)
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)

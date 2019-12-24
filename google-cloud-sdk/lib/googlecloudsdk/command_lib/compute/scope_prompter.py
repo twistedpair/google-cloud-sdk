@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 
 """Console Prompter for compute scopes."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 import operator
 
@@ -105,7 +110,7 @@ def _PromptSuggestedScopeChoice(resource_name, underspecified_names, scope_enum,
 def _FormatScopeValueChoices(scope_value_choices):
   """Formats scope value choices for prompting and adds deprecation states."""
   choice_names, choice_mapping = [], []
-  for scope in sorted(scope_value_choices.keys(),
+  for scope in sorted(list(scope_value_choices.keys()),
                       key=operator.attrgetter('flag_name')):
     for choice_resource in sorted(scope_value_choices[scope],
                                   key=operator.attrgetter('name')):

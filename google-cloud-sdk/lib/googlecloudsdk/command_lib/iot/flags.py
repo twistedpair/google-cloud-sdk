@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,12 +12,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Shared flags for Cloud IoT commands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import enum
 
-from googlecloudsdk.calliope import actions
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.util.apis import arg_utils
+
+from six.moves import map  # pylint: disable=redefined-builtin
 
 
 def GetIdFlag(noun, action, metavar=None):
@@ -62,26 +72,41 @@ def AddDeviceRegistrySettingsFlagsToParser(parser, defaults=True):
       required=False,
       help=('A Google Cloud Pub/Sub topic name for state notifications.')
   ).AddToParser(parser)
-  pubsub_args = parser.add_mutually_exclusive_group()
-  # TODO(b/64597199): Remove this flag when usage is low.
-  base.Argument(
-      '--pubsub-topic',
+
+  for f in _GetEventNotificationConfigFlags():
+    f.AddToParser(parser)
+
+
+def _GetEventNotificationConfigFlags():
+  """Returns a list of flags for specfiying Event Notification Configs."""
+  event_notification_spec = {
+      'topic': str,
+      'subfolder': str
+  }
+  event_config = base.Argument(
+      '--event-notification-config',
+      dest='event_notification_configs',
+      action='append',
       required=False,
-      action=actions.DeprecationAction('--pubsub-topic',
-                                       warn=('Flag {flag_name} is deprecated. '
-                                             'Use --event-pubsub-topic '
-                                             'instead.')),
-      hidden=True,
-      help=('A Google Cloud Pub/Sub topic name for event notifications')
-  ).AddToParser(pubsub_args)
-  base.Argument(
-      '--event-pubsub-topic',
-      required=False,
-      help=('A Google Cloud Pub/Sub topic name for event notifications')
-  ).AddToParser(pubsub_args)
+      type=arg_parsers.ArgDict(spec=event_notification_spec,
+                               required_keys=['topic']),
+      help="""\
+The configuration for notification of telemetry events received
+from the device. This flag can be specified multiple times to add multiple
+configs to the device registry. Configs are added to the registry in the order
+the flags are specified. Only one config with an empty subfolder field is
+allowed and must be specified last.
+
+*topic*::::A Google Cloud Pub/Sub topic name for event notifications
+
+*subfolder*::::If the subfolder name matches this string exactly, this
+configuration will be used to publish telemetry events. If empty all strings
+are matched.""")
+  return [event_config]
 
 
 def AddDeviceRegistryCredentialFlagsToParser(parser, credentials_surface=True):
+  """Add device credential flags to arg parser."""
   help_text = ('Path to a file containing an X.509v3 certificate '
                '([RFC5280](https://www.ietf.org/rfc/rfc5280.txt)), encoded in '
                'base64, and wrapped by `-----BEGIN CERTIFICATE-----` and '
@@ -123,42 +148,26 @@ def _GetDeviceFlags(default_for_blocked_flags=True):
   """Generates the flags for device commands."""
   flags = []
   blocked_state_help_text = (
-      'If {0}, connections from this device will fail.\n\n'
+      'If blocked, connections from this device will fail.\n\n'
       'Can be used to temporarily prevent the device from '
       'connecting if, for example, the sensor is generating bad '
       'data and needs maintenance.\n\n')
-  enable_device_format_args = ('disabled',)
-  blocked_format_args = ('blocked',)
+
   if not default_for_blocked_flags:
     blocked_state_help_text += (
         '+\n\n'  # '+' here preserves markdown indentation.
-        'Use `--{1}` to enable connections and `--{2}` to disable.')
-    enable_device_format_args += ('enable-device', 'no-enable-device')
-    blocked_format_args += ('no-blocked', 'blocked')
+        'Use `--no-blocked` to enable connections and `--blocked` to disable.')
   else:
     blocked_state_help_text += (
         '+\n\n'
         'Connections to device is not blocked by default.')
 
-  blocked_state_args = base.ArgumentGroup(mutex=True)
-  # Defaults are set to None because with nested groups, help text isn't being
-  # generated correctly.
-  blocked_state_args.AddArgument(base.Argument(
-      '--enable-device',
-      default=None,
-      action=actions.DeprecationAction('--[no-]enable-device',
-                                       warn=('Flag {flag_name} is deprecated. '
-                                             'Use --[no-]blocked instead.'),
-                                       action='store_true'),
-      help=blocked_state_help_text.format(*enable_device_format_args)
-  ))
-  blocked_state_args.AddArgument(base.Argument(
+  blocked_default = False if default_for_blocked_flags else None
+  flags.append(base.Argument(
       '--blocked',
-      default=None,
+      default=blocked_default,
       action='store_true',
-      help=blocked_state_help_text.format(*blocked_format_args)
-  ))
-  flags.append(blocked_state_args)
+      help=blocked_state_help_text))
 
   metadata_key_validator = arg_parsers.RegexpValidator(
       r'[a-zA-Z0-9-_]{1,127}',
@@ -189,6 +198,24 @@ maximum number of key-value pairs is 500.
             'file specified by path.')
   ))
   return flags
+
+
+def AddLogLevelFlagToParser(parser):
+  choices = {
+      'none': 'Disables logging.',
+      'info': 'Informational events will be logged, such as connections and '
+              'disconnections. Also includes error events.',
+      'error': 'Error events will be logged.',
+      'debug': 'All events will be logged'
+  }
+  return base.ChoiceArgument(
+      '--log-level',
+      choices=choices,
+      help_str="""\
+      The default logging verbosity for activity from devices in this
+        registry. The verbosity level can be overridden by setting a specific
+        device's log level.
+      """).AddToParser(parser)
 
 
 class KeyTypes(enum.Enum):
@@ -226,8 +253,8 @@ _VALID_KEY_TYPES = {
         curve is defined in [OpenSSL](https://www.openssl.org/) as
         the `prime256v1` curve.""",
     KeyTypes.ES256_X509_PEM.choice_name: """\
-        (As ES256_PEM, but wrapped in an X.509v3 certificate
-        ([RFC5280]( https://www.ietf.org/rfc/rfc5280.txt)),
+        As ES256_PEM, but wrapped in an X.509v3 certificate
+        ([RFC5280](https://www.ietf.org/rfc/rfc5280.txt)),
         encoded in base64, and wrapped by
         `-----BEGIN CERTIFICATE-----` and
         `-----END CERTIFICATE-----`.""",
@@ -270,8 +297,9 @@ def _GetDeviceCredentialFlags(combine_flags=True, only_modifiable=False):
     ])
   flags.append(
       base.Argument('--expiration-time', type=arg_parsers.Datetime.Parse,
-                    help=('The expiration time for the key in ISO 8601 '
-                          '(ex. `2017-01-01T00:00Z`) format.')))
+                    help=('The expiration time for the key. See '
+                          '$ gcloud topic datetimes for information on '
+                          'time formats.')))
   if not combine_flags:
     return flags
 
@@ -327,6 +355,13 @@ def _GetCreateFlags():
   return _GetDeviceFlags() + _GetDeviceCredentialFlags()
 
 
+def _GetCreateFlagsForGateways():
+  """Generates all the flags for the create command."""
+  return (_GetDeviceFlags() + _GetDeviceCredentialFlags() +
+          [CREATE_GATEWAY_ENUM_MAPPER.choice_arg,
+           GATEWAY_AUTH_METHOD_ENUM_MAPPER.choice_arg])
+
+
 def AddDeviceConfigFlagsToParser(parser):
   """Add flags for the `configs update` command."""
   base.Argument(
@@ -350,3 +385,51 @@ def AddDeviceConfigFlagsToParser(parser):
             'that contain special characters (in the context of your shell), '
             'use the `--config-file` flag instead.')
   ).AddToParser(data_group)
+
+
+def _GetGatewayEnum(parent='list_request'):
+  """Get GatewayTypeValueEnum from the specified parent message."""
+  messages = apis.GetMessagesModule('cloudiot', 'v1')
+  if parent == 'list_request':
+    request = (messages.CloudiotProjectsLocationsRegistriesDevicesListRequest)
+  else:
+    request = (messages.GatewayConfig)
+  return request.GatewayTypeValueValuesEnum
+
+
+def _GetAuthMethodEnum():
+  """Get GatewayAuthMethodValueValuesEnum from api messages."""
+  messages = apis.GetMessagesModule('cloudiot', 'v1')
+  return messages.GatewayConfig.GatewayAuthMethodValueValuesEnum
+
+GATEWAY_AUTH_METHOD_ENUM_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--auth-method',
+    _GetAuthMethodEnum(),
+    custom_mappings={
+        'ASSOCIATION_ONLY': ('association-only',
+                             ('The device is authenticated through the '
+                              'gateway association only. Device credentials '
+                              'are ignored if provided.')),
+        'DEVICE_AUTH_TOKEN_ONLY': ('device-auth-token-only',
+                                   ('The device is authenticated through its '
+                                    'own credentials. Gateway association '
+                                    'is not checked.')),
+        'ASSOCIATION_AND_DEVICE_AUTH_TOKEN': (
+            'association-and-device-auth-token',
+            ('The device is authenticated through both device '
+             'credentials and gateway association.'))
+    },
+    required=False,
+    help_str=('The authorization/authentication method used by devices in '
+              'relation to the gateway. This property is set only on gateways. '
+              'If left unspecified, devices will not be able to access '
+              'the gateway.'))
+
+
+CREATE_GATEWAY_ENUM_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--device-type',
+    _GetGatewayEnum(parent='create_request'),
+    required=False,
+    include_filter=lambda x: x != 'GATEWAY_TYPE_UNSPECIFIED',
+    help_str=('Whether this device is a gateway. If unspecified, '
+              'non-gateway is assumed. '))

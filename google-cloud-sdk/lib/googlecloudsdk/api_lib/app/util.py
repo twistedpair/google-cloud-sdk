@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,20 +15,22 @@
 
 """Utility functions for gcloud app."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import datetime
 import os
 import posixpath
 import sys
 import time
-import urllib2
-
-import enum
-
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.appengine.api import client_deployinfo
+import six
+from six.moves import urllib
 
 
 class Error(exceptions.Error):
@@ -114,7 +117,8 @@ def GenerateVersionId(datetime_getter=datetime.datetime.now):
   Returns:
     A version string based.
   """
-  return datetime_getter().isoformat().lower().translate(None, ':-')[:15]
+  return datetime_getter().isoformat().lower().replace('-', '').replace(
+      ':', '')[:15]
 
 
 def ConvertToPosixPath(path):
@@ -155,7 +159,6 @@ def FileIterator(base, skip_files):
     Paths of files found, relative to base.
   """
   dirs = ['']
-  contains_skipped_modules = False
 
   while dirs:
     current_dir = dirs.pop()
@@ -167,24 +170,14 @@ def FileIterator(base, skip_files):
       if os.path.isfile(fullname):
         if ShouldSkip(skip_files, name):
           log.info('Ignoring file [%s]: File matches ignore regex.', name)
-          contains_skipped_modules = True
         else:
           yield name
       elif os.path.isdir(fullname):
         if ShouldSkip(skip_files, name):
           log.info('Ignoring directory [%s]: Directory matches ignore regex.',
                    name)
-          contains_skipped_modules = True
         else:
           dirs.append(name)
-
-  if contains_skipped_modules:
-    log.status.Print(
-        'Some files were skipped. Pass `--verbosity=info` to see which ones.')
-    log_path = log.GetLogFilePath()
-    if log_path:
-      log.status.Print(('You may also view the gcloud log file, found at\n'
-                        '[{0}].').format(log_path))
 
 
 def RetryWithBackoff(func, retry_notify_func,
@@ -286,35 +279,10 @@ def GetUserAgent():
   product_tokens.append(platforms.Platform.Current().UserAgentFragment())
 
   # Python version
-  python_version = '.'.join(str(i) for i in sys.version_info)
+  python_version = '.'.join(six.text_type(i) for i in sys.version_info)
   product_tokens.append('Python/%s' % python_version)
 
   return ' '.join(product_tokens)
-
-
-class Environment(enum.Enum):
-  """Enum for different application environments.
-
-  STANDARD corresponds to App Engine Standard applications.
-  FLEX corresponds to any App Engine `env: flex` applications.
-  MANAGED_VMS corresponds to `vm: true` applications.
-  """
-
-  STANDARD = 1
-  MANAGED_VMS = 2
-  FLEX = 3
-
-  @classmethod
-  def IsFlexible(cls, env):
-    return env in [cls.FLEX, cls.MANAGED_VMS]
-
-
-def IsFlex(env):
-  return env in ['2', 'flex', 'flexible']
-
-
-def IsStandard(env):
-  return env in [None, '1', 'standard']
 
 
 class ClientDeployLoggingContext(object):
@@ -402,7 +370,7 @@ class ClientDeployLoggingContext(object):
           success=success,
           sdk_version=config.CLOUD_SDK_VERSION)
       self.Send('/api/logclientdeploy', info.ToYAML())
-    except BaseException, e:
+    except BaseException as e:  # pylint: disable=broad-except
       log.debug('Exception logging deploy info continuing - {0}'.format(e))
 
 
@@ -425,15 +393,10 @@ class RPCServer(object):
       response = self._server.Send(*args, **kwargs)
       log.debug('Got response: %s', response)
       return response
-    except urllib2.HTTPError as e:
-      (_, _, exc_traceback) = sys.exc_info()
-      # The 3 element form takes (type, instance, traceback).  If the first
-      # element is an instance, it is used as the type and instance and the
-      # second element must be None.  This preserves the original traceback.
-
+    except urllib.error.HTTPError as e:
       # This is the message body, if included in e
       if hasattr(e, 'read'):
         body = e.read()
       else:
         body = ''
-      raise RPCError(e, body=body), None, exc_traceback
+      exceptions.reraise(RPCError(e, body=body))

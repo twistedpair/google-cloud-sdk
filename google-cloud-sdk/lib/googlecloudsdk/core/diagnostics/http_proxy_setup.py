@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,11 +15,17 @@
 
 """A module for changing Cloud SDK proxy settings interactively."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_proxy_types
+
 import httplib2
 
 
@@ -156,8 +163,13 @@ def _DisplayGcloudProxyInfo(proxy_info, from_gcloud):
   log.status.Print('    type = {0}'.format(proxy_type_name))
   log.status.Print('    host = {0}'.format(proxy_info.proxy_host))
   log.status.Print('    port = {0}'.format(proxy_info.proxy_port))
-  log.status.Print('    username = {0}'.format(proxy_info.proxy_user))
-  log.status.Print('    password = {0}'.format(proxy_info.proxy_pass))
+  # In Python 3, httplib2 encodes the proxy username and password when
+  # initializing ProxyInfo, so we want to ensure they're decoded here before
+  # displaying them.
+  log.status.Print('    username = {0}'.format(
+      encoding.Decode(proxy_info.proxy_user)))
+  log.status.Print('    password = {0}'.format(
+      encoding.Decode(proxy_info.proxy_pass)))
   log.status.Print()
 
 

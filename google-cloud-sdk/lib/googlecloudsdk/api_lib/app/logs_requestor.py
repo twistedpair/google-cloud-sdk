@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +20,10 @@ Ideally gcloud would use the logging API for this information but that is not
 yet available.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import calendar
 import datetime
 import re
@@ -27,6 +32,9 @@ import time
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import files
+
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 class Error(exceptions.Error):
@@ -89,7 +97,7 @@ class LogsRequester(object):
     end_date = end_date if (end_date and end_date < now) else now
     valid_dates = (None, end_date)
     sentinel = FindSentinel(output_file)
-    self._DownloadLogs(valid_dates, sentinel, output_file, 'a')
+    self._DownloadLogs(valid_dates, sentinel, output_file, append=True)
 
   def DownloadLogs(self, num_days, end_date, output_file):
     """Download the requested logs.
@@ -114,9 +122,9 @@ class LogsRequester(object):
         end_date - datetime.timedelta(num_days - 1) if num_days else None,
         end_date)
     sentinel = None
-    self._DownloadLogs(valid_dates, sentinel, output_file, 'w')
+    self._DownloadLogs(valid_dates, sentinel, output_file, append=False)
 
-  def _DownloadLogs(self, valid_dates, sentinel, output_file, mode):
+  def _DownloadLogs(self, valid_dates, sentinel, output_file, append):
     """Common utility method for both normal and append modes."""
     # A temporary file is used because the API for requesting logs
     # gives us the newest logs first.  We write them in this order to
@@ -136,8 +144,8 @@ class LogsRequester(object):
         of = log.out
       else:
         try:
-          of = open(output_file, mode)
-        except IOError as e:
+          of = files.FileWriter(output_file, append=append)
+        except files.Error as e:
           raise CannotOpenFileError(output_file, e)
       try:
         line_count = CopyReversedLines(tf, of)
@@ -251,7 +259,7 @@ def CopyReversedLines(instream, outstream, blocksize=2 ** 16):
   instream.seek(0, 2)  # To EOF
   last_block = instream.tell() // blocksize
   spillover = ''
-  for iblock in xrange(last_block + 1, -1, -1):
+  for iblock in range(last_block + 1, -1, -1):
     instream.seek(iblock * blocksize)
     data = instream.read(blocksize)
     lines = data.splitlines(True)
@@ -355,8 +363,8 @@ def FindSentinel(filename, blocksize=2 ** 16):
     the last 'blocksize' bytes of the file.
   """
   try:
-    fp = open(filename, 'rb')
-  except IOError as err:
+    fp = files.BinaryFileReader(filename)
+  except files.Error as err:
     log.warning('Append mode disabled: can\'t read [%r]: %s', filename, err)
     return None
   try:

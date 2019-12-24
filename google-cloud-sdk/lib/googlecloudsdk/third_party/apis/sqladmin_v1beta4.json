@@ -5,9 +5,9 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20171013",
- "title": "Cloud SQL Administration API",
- "description": "Creates and configures Cloud SQL instances, which provide fully-managed MySQL databases.",
+ "revision": "20191206",
+ "title": "Cloud SQL Admin API",
+ "description": "Creates and manages Cloud SQL instances, which provide fully managed MySQL or PostgreSQL databases.",
  "ownerDomain": "google.com",
  "ownerName": "Google",
  "icons": {
@@ -20,7 +20,7 @@
  "basePath": "/sql/v1beta4/",
  "rootUrl": "https://www.googleapis.com/",
  "servicePath": "sql/v1beta4/",
- "batchPath": "batch",
+ "batchPath": "batch/sqladmin/v1beta4",
  "parameters": {
   "alt": {
    "type": "string",
@@ -57,12 +57,12 @@
   },
   "quotaUser": {
    "type": "string",
-   "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.",
+   "description": "An opaque string that represents a user for quota purposes. Must not exceed 40 characters.",
    "location": "query"
   },
   "userIp": {
    "type": "string",
-   "description": "IP address of the site where the request originates. Use this if you want to enforce per-user limits.",
+   "description": "Deprecated. Please use quotaUser instead.",
    "location": "query"
   }
  },
@@ -104,6 +104,21 @@
     }
    }
   },
+  "ApiWarning": {
+   "id": "ApiWarning",
+   "type": "object",
+   "description": "An Admin API warning message.",
+   "properties": {
+    "code": {
+     "type": "string",
+     "description": "Code to uniquely identify the warning type."
+    },
+    "message": {
+     "type": "string",
+     "description": "The warning message."
+    }
+   }
+  },
   "BackupConfiguration": {
    "id": "BackupConfiguration",
    "type": "object",
@@ -122,6 +137,14 @@
      "description": "This is always sql#backupConfiguration.",
      "default": "sql#backupConfiguration"
     },
+    "location": {
+     "type": "string",
+     "description": "The location of the backup."
+    },
+    "replicationLogArchivingEnabled": {
+     "type": "boolean",
+     "description": "Reserved for future use."
+    },
     "startTime": {
      "type": "string",
      "description": "Start time for the daily backup configuration in UTC timezone in the 24 hour format - HH:MM."
@@ -131,11 +154,19 @@
   "BackupRun": {
    "id": "BackupRun",
    "type": "object",
-   "description": "A database instance backup run resource.",
+   "description": "A BackupRun resource.",
    "properties": {
     "description": {
      "type": "string",
      "description": "The description of this run, only applicable to on-demand backups."
+    },
+    "diskEncryptionConfiguration": {
+     "$ref": "DiskEncryptionConfiguration",
+     "description": "Disk encryption configuration specific to a backup. Applies only to Second Generation instances."
+    },
+    "diskEncryptionStatus": {
+     "$ref": "DiskEncryptionStatus",
+     "description": "Disk encryption status specific to a backup. Applies only to Second Generation instances."
     },
     "endTime": {
      "type": "string",
@@ -153,7 +184,7 @@
     },
     "id": {
      "type": "string",
-     "description": "A unique identifier for this backup run. Note that this is unique only within the scope of a particular Cloud SQL instance.",
+     "description": "The identifier for this backup run. Unique only for a specific Cloud SQL instance.",
      "format": "int64"
     },
     "instance": {
@@ -164,6 +195,10 @@
      "type": "string",
      "description": "This is always sql#backupRun.",
      "default": "sql#backupRun"
+    },
+    "location": {
+     "type": "string",
+     "description": "The location of the backup."
     },
     "selfLink": {
      "type": "string",
@@ -240,7 +275,7 @@
    "properties": {
     "binLogCoordinates": {
      "$ref": "BinLogCoordinates",
-     "description": "Binary log coordinates, if specified, indentify the the position up to which the source instance should be cloned. If not specified, the source instance is cloned up to the most recent binary log coordintes."
+     "description": "Binary log coordinates, if specified, identify the position up to which the source instance should be cloned. If not specified, the source instance is cloned up to the most recent binary log coordinates."
     },
     "destinationInstanceName": {
      "type": "string",
@@ -250,13 +285,18 @@
      "type": "string",
      "description": "This is always sql#cloneContext.",
      "default": "sql#cloneContext"
+    },
+    "pitrTimestampMs": {
+     "type": "string",
+     "description": "Reserved for future use.",
+     "format": "int64"
     }
    }
   },
   "Database": {
    "id": "Database",
    "type": "object",
-   "description": "A database resource inside a Cloud SQL instance.",
+   "description": "Represents a SQL database on the Cloud SQL instance.",
    "properties": {
     "charset": {
      "type": "string",
@@ -268,7 +308,7 @@
     },
     "etag": {
      "type": "string",
-     "description": "HTTP 1.1 Entity tag for the resource."
+     "description": "This field is deprecated and will be removed from a future version of the API."
     },
     "instance": {
      "type": "string",
@@ -311,11 +351,11 @@
   "DatabaseFlags": {
    "id": "DatabaseFlags",
    "type": "object",
-   "description": "MySQL flags for Cloud SQL instances.",
+   "description": "Database flags for Cloud SQL instances.",
    "properties": {
     "name": {
      "type": "string",
-     "description": "The name of the flag. These flags are passed at instance startup, so include both MySQL server options and MySQL system variables. Flags should be specified with underscores, not hyphens. For more information, see Configuring MySQL Flags in the Google Cloud SQL documentation, as well as the official MySQL documentation for server options and system variables."
+     "description": "The name of the flag. These flags are passed at instance startup, so include both server options and system variables for MySQL. Flags should be specified with underscores, not hyphens. For more information, see Configuring Database Flags in the Cloud SQL documentation."
     },
     "value": {
      "type": "string",
@@ -330,7 +370,7 @@
    "properties": {
     "backendType": {
      "type": "string",
-     "description": "FIRST_GEN: Basic Cloud SQL instance that runs in a Google-managed container.\nSECOND_GEN: A newer Cloud SQL backend that runs in a Compute Engine VM.\nEXTERNAL: A MySQL server that is not managed by Google."
+     "description": "FIRST_GEN: First Generation instance. MySQL only.\nSECOND_GEN: Second Generation instance or PostgreSQL instance.\nEXTERNAL: A database server that is not managed by Google.\nThis property is read-only; use the tier property in the settings object to determine the database type and Second or First Generation."
     },
     "connectionName": {
      "type": "string",
@@ -338,16 +378,24 @@
     },
     "currentDiskSize": {
      "type": "string",
-     "description": "The current disk usage of the instance in bytes. This property has been deprecated. Users should use the \"cloudsql.googleapis.com/database/disk/bytes_used\" metric in Cloud Monitoring API instead. Please see https://groups.google.com/d/msg/google-cloud-sql-announce/I_7-F9EBhT0/BtvFtdFeAgAJ for details.",
+     "description": "The current disk usage of the instance in bytes. This property has been deprecated. Users should use the \"cloudsql.googleapis.com/database/disk/bytes_used\" metric in Cloud Monitoring API instead. Please see this announcement for details.",
      "format": "int64"
     },
     "databaseVersion": {
      "type": "string",
-     "description": "The database engine type and version. The databaseVersion field can not be changed after instance creation. MySQL Second Generation instances: MYSQL_5_7 (default) or MYSQL_5_6. PostgreSQL instances: POSTGRES_9_6 MySQL First Generation instances: MYSQL_5_6 (default) or MYSQL_5_5"
+     "description": "The database engine type and version. The databaseVersion field can not be changed after instance creation. MySQL Second Generation instances: MYSQL_5_7 (default) or MYSQL_5_6. PostgreSQL instances: POSTGRES_9_6 (default), POSTGRES_11 or POSTGRES_12 Beta. MySQL First Generation instances: MYSQL_5_6 (default) or MYSQL_5_5"
+    },
+    "diskEncryptionConfiguration": {
+     "$ref": "DiskEncryptionConfiguration",
+     "description": "Disk encryption configuration specific to an instance. Applies only to Second Generation instances."
+    },
+    "diskEncryptionStatus": {
+     "$ref": "DiskEncryptionStatus",
+     "description": "Disk encryption status specific to an instance. Applies only to Second Generation instances."
     },
     "etag": {
      "type": "string",
-     "description": "HTTP 1.1 Entity tag for the resource."
+     "description": "This field is deprecated and will be removed from a future version of the API. Use the settings.settingsVersion field instead."
     },
     "failoverReplica": {
      "type": "object",
@@ -365,7 +413,7 @@
     },
     "gceZone": {
      "type": "string",
-     "description": "The GCE zone that the instance is serving from. In case when the instance is failed over to standby zone, this value may be different with what user specified in the settings."
+     "description": "The Compute Engine zone that the instance is currently serving from. This value could be different from the zone that was specified when the instance was created if the instance has failed over to its secondary zone."
     },
     "instanceType": {
      "type": "string",
@@ -419,7 +467,7 @@
     },
     "replicaConfiguration": {
      "$ref": "ReplicaConfiguration",
-     "description": "Configuration specific to read-replicas replicating from on-premises masters."
+     "description": "Configuration specific to failover replicas and read replicas."
     },
     "replicaNames": {
      "type": "array",
@@ -427,6 +475,10 @@
      "items": {
       "type": "string"
      }
+    },
+    "rootPassword": {
+     "type": "string",
+     "description": "Initial root password. Use only on creation."
     },
     "selfLink": {
      "type": "string",
@@ -515,6 +567,10 @@
     "replicaConfiguration": {
      "$ref": "DemoteMasterConfiguration",
      "description": "Configuration specific to read-replicas replicating from the on-premises master."
+    },
+    "verifyGtidConsistency": {
+     "type": "boolean",
+     "description": "Verify GTID consistency for demote operation. Default value: True. Second Generation instances only. Setting this flag to false enables you to bypass GTID consistency check between on-premises master and Cloud SQL instance during the demotion operation but also exposes you to the risk of future replication failures. Change the value only if you know the reason for the GTID divergence and are confident that doing so will not cause any replication issues."
     }
    }
   },
@@ -550,6 +606,38 @@
     }
    }
   },
+  "DiskEncryptionConfiguration": {
+   "id": "DiskEncryptionConfiguration",
+   "type": "object",
+   "description": "Disk encryption configuration.",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "This is always sql#diskEncryptionConfiguration.",
+     "default": "sql#diskEncryptionConfiguration"
+    },
+    "kmsKeyName": {
+     "type": "string",
+     "description": "KMS key resource name"
+    }
+   }
+  },
+  "DiskEncryptionStatus": {
+   "id": "DiskEncryptionStatus",
+   "type": "object",
+   "description": "Disk encryption status.",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "This is always sql#diskEncryptionStatus.",
+     "default": "sql#diskEncryptionStatus"
+    },
+    "kmsKeyVersionName": {
+     "type": "string",
+     "description": "KMS key version used to encrypt the Cloud SQL instance disk"
+    }
+   }
+  },
   "ExportContext": {
    "id": "ExportContext",
    "type": "object",
@@ -567,7 +655,7 @@
     },
     "databases": {
      "type": "array",
-     "description": "Databases (for example, guestbook) from which the export is made. If fileType is SQL and no database is specified, all databases are exported. If fileType is CSV, you can optionally specify at most one database to export. If csvExportOptions.selectQuery also specifies the database, this field will be ignored.",
+     "description": "Databases to be exported.\nMySQL instances: If fileType is SQL and no database is specified, all databases are exported, except for the mysql system database. If fileType is CSV, you can specify one database, either by using this property or by using the csvExportOptions.selectQuery property, which takes precedence over this property.\nPostgreSQL instances: Specify exactly one database to be exported. If fileType is CSV, this database must match the database used in the csvExportOptions.selectQuery property.",
      "items": {
       "type": "string"
      }
@@ -585,13 +673,24 @@
      "type": "object",
      "description": "Options for exporting data as SQL statements.",
      "properties": {
+      "mysqlExportOptions": {
+       "type": "object",
+       "description": "Options for exporting from MySQL.",
+       "properties": {
+        "masterData": {
+         "type": "integer",
+         "description": "Option to include SQL statement required to set up replication. If set to 1, the dump file includes a CHANGE MASTER TO statement with the binary log coordinates. If set to 2, the CHANGE MASTER TO statement is written as a SQL comment, and has no effect. All other values are ignored.",
+         "format": "int32"
+        }
+       }
+      },
       "schemaOnly": {
        "type": "boolean",
        "description": "Export only schemas."
       },
       "tables": {
        "type": "array",
-       "description": "Tables to export, or that were exported, from the specified database. If you specify tables, specify one and only one database.",
+       "description": "Tables to export, or that were exported, from the specified database. If you specify tables, specify one and only one database. For PostgreSQL instances, you can specify only one table.",
        "items": {
         "type": "string"
        }
@@ -600,7 +699,7 @@
     },
     "uri": {
      "type": "string",
-     "description": "The path to the file in Google Cloud Storage where the export will be stored. The URI is in the form gs://bucketName/fileName. If the file already exists, the operation fails. If fileType is SQL and the filename ends with .gz, the contents are compressed."
+     "description": "The path to the file in Google Cloud Storage where the export will be stored. The URI is in the form gs://bucketName/fileName. If the file already exists, the requests succeeds, but the operation fails. If fileType is SQL and the filename ends with .gz, the contents are compressed."
     }
    }
   },
@@ -624,7 +723,7 @@
   "Flag": {
    "id": "Flag",
    "type": "object",
-   "description": "A Google Cloud SQL service flag resource.",
+   "description": "A flag resource.",
    "properties": {
     "allowedStringValues": {
      "type": "array",
@@ -639,6 +738,10 @@
      "items": {
       "type": "string"
      }
+    },
+    "inBeta": {
+     "type": "boolean",
+     "description": "True if the flag is only released in Beta."
     },
     "kind": {
      "type": "string",
@@ -693,6 +796,29 @@
    "type": "object",
    "description": "Database instance import context.",
    "properties": {
+    "bakImportOptions": {
+     "type": "object",
+     "description": "Import parameters specific to SQL Server .BAK files",
+     "properties": {
+      "encryptionOptions": {
+       "type": "object",
+       "properties": {
+        "certPath": {
+         "type": "string",
+         "description": "Path to the Certificate (.cer) in Cloud Storage, in the form gs://bucketName/fileName. The instance must have write permissions to the bucket and read access to the file."
+        },
+        "pvkPassword": {
+         "type": "string",
+         "description": "Password that encrypts the private key"
+        },
+        "pvkPath": {
+         "type": "string",
+         "description": "Path to the Certificate Private Key (.pvk) in Cloud Storage, in the form gs://bucketName/fileName. The instance must have write permissions to the bucket and read access to the file."
+        }
+       }
+      }
+     }
+    },
     "csvImportOptions": {
      "type": "object",
      "description": "Options for importing data as CSV.",
@@ -712,7 +838,7 @@
     },
     "database": {
      "type": "string",
-     "description": "The database (for example, guestbook) to which the import is made. If fileType is SQL and no database is specified, it is assumed that the database is specified in the file to be imported. If fileType is CSV, it must be specified."
+     "description": "The target database for the import. If fileType is SQL, this field is required only if the import file does not specify a database, and is overridden by any database specification in the import file. If fileType is CSV, one database must be specified."
     },
     "fileType": {
      "type": "string",
@@ -720,7 +846,7 @@
     },
     "importUser": {
      "type": "string",
-     "description": "The PostgreSQL user for this import operation. Defaults to cloudsqlsuperuser. Used only for PostgreSQL instances."
+     "description": "The PostgreSQL user for this import operation. PostgreSQL instances only."
     },
     "kind": {
      "type": "string",
@@ -729,7 +855,7 @@
     },
     "uri": {
      "type": "string",
-     "description": "A path to the file in Google Cloud Storage from which the import is made. The URI is in the form gs://bucketName/fileName. Compressed gzip files (.gz) are supported when fileType is SQL."
+     "description": "Path to the import file in Cloud Storage, in the form gs://bucketName/fileName. Compressed gzip files (.gz) are supported when fileType is SQL. The instance must have write permissions to the bucket and read access to the file."
     }
    }
   },
@@ -808,6 +934,35 @@
     "nextPageToken": {
      "type": "string",
      "description": "The continuation token, used to page through large result sets. Provide this value in a subsequent request to return the next page of results."
+    },
+    "warnings": {
+     "type": "array",
+     "description": "List of warnings that ocurred while handling the request.",
+     "items": {
+      "$ref": "ApiWarning"
+     }
+    }
+   }
+  },
+  "InstancesListServerCasResponse": {
+   "id": "InstancesListServerCasResponse",
+   "type": "object",
+   "description": "Instances ListServerCas response.",
+   "properties": {
+    "activeVersion": {
+     "type": "string"
+    },
+    "certs": {
+     "type": "array",
+     "description": "List of server CA certificates for the instance.",
+     "items": {
+      "$ref": "SslCert"
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "This is always sql#instancesListServerCas.",
+     "default": "sql#instancesListServerCas"
     }
    }
   },
@@ -819,6 +974,17 @@
     "restoreBackupContext": {
      "$ref": "RestoreBackupContext",
      "description": "Parameters required to perform the restore backup operation."
+    }
+   }
+  },
+  "InstancesRotateServerCaRequest": {
+   "id": "InstancesRotateServerCaRequest",
+   "type": "object",
+   "description": "Rotate Server CA request.",
+   "properties": {
+    "rotateServerCaContext": {
+     "$ref": "RotateServerCaContext",
+     "description": "Contains details about the rotate server CA operation."
     }
    }
   },
@@ -849,6 +1015,10 @@
      "type": "boolean",
      "description": "Whether the instance should be assigned an IP address or not."
     },
+    "privateNetwork": {
+     "type": "string",
+     "description": "The resource link for the VPC network from which the Cloud SQL instance is accessible for private IP. For example, /projects/myProject/global/networks/default. This setting can be updated, but it cannot be removed after it is set."
+    },
     "requireSsl": {
      "type": "boolean",
      "description": "Whether SSL connections over IP should be enforced or not."
@@ -871,7 +1041,7 @@
     },
     "type": {
      "type": "string",
-     "description": "The type of this IP address. A PRIMARY address is an address that can accept incoming connections. An OUTGOING address is the source address of connections originating from the instance, if supported."
+     "description": "The type of this IP address. A PRIMARY address is a public address that can accept incoming connections. A PRIVATE address is a private address that can accept incoming connections. An OUTGOING address is the source address of connections originating from the instance, if supported."
     }
    }
   },
@@ -891,14 +1061,14 @@
     },
     "zone": {
      "type": "string",
-     "description": "The preferred Compute Engine zone (e.g. us-centra1-a, us-central1-b, etc.)."
+     "description": "The preferred Compute Engine zone (e.g. us-central1-a, us-central1-b, etc.)."
     }
    }
   },
   "MaintenanceWindow": {
    "id": "MaintenanceWindow",
    "type": "object",
-   "description": "Maintenance window. This specifies when a v2 Cloud SQL instance should preferably be restarted for system maintenance puruposes.",
+   "description": "Maintenance window. This specifies when a v2 Cloud SQL instance should preferably be restarted for system maintenance purposes.",
    "properties": {
     "day": {
      "type": "integer",
@@ -916,7 +1086,8 @@
      "default": "sql#maintenanceWindow"
     },
     "updateTrack": {
-     "type": "string"
+     "type": "string",
+     "description": "Maintenance timing setting: canary (Earlier) or stable (Later).\n Learn more."
     }
    }
   },
@@ -993,7 +1164,7 @@
   "Operation": {
    "id": "Operation",
    "type": "object",
-   "description": "An Operations resource contains information about database instance operations such as create, delete, and restart. Operations resources are created in response to operations that were initiated; you never create them directly.",
+   "description": "An Operation resource. For successful operations that return an Operation resource, only the fields relevant to the operation are populated in the resource.",
    "properties": {
     "endTime": {
      "type": "string",
@@ -1165,6 +1336,26 @@
      "type": "string",
      "description": "This is always sql#restoreBackupContext.",
      "default": "sql#restoreBackupContext"
+    },
+    "project": {
+     "type": "string",
+     "description": "The full project ID of the source instance."
+    }
+   }
+  },
+  "RotateServerCaContext": {
+   "id": "RotateServerCaContext",
+   "type": "object",
+   "description": "Instance rotate server CA context.",
+   "properties": {
+    "kind": {
+     "type": "string",
+     "description": "This is always sql#rotateServerCaContext.",
+     "default": "sql#rotateServerCaContext"
+    },
+    "nextVersion": {
+     "type": "string",
+     "description": "The fingerprint of the next version to be rotated to. If left unspecified, will be rotated to the most recently added server CA version."
     }
    }
   },
@@ -1175,18 +1366,18 @@
    "properties": {
     "activationPolicy": {
      "type": "string",
-     "description": "The activation policy specifies when the instance is activated; it is applicable only when the instance state is RUNNABLE. The activation policy cannot be updated together with other settings for Second Generation instances. Valid values:\nALWAYS: The instance is on; it is not deactivated by inactivity.\nNEVER: The instance is off; it is not activated, even if a connection request arrives.\nON_DEMAND: The instance responds to incoming requests, and turns itself off when not in use. Instances with PER_USE pricing turn off after 15 minutes of inactivity. Instances with PER_PACKAGE pricing turn off after 12 hours of inactivity."
+     "description": "The activation policy specifies when the instance is activated; it is applicable only when the instance state is RUNNABLE. Valid values:\nALWAYS: The instance is on, and remains so even in the absence of connection requests.\nNEVER: The instance is off; it is not activated, even if a connection request arrives.\nON_DEMAND: First Generation instances only. The instance responds to incoming requests, and turns itself off when not in use. Instances with PER_USE pricing turn off after 15 minutes of inactivity. Instances with PER_PACKAGE pricing turn off after 12 hours of inactivity."
     },
     "authorizedGaeApplications": {
      "type": "array",
-     "description": "The App Engine app IDs that can access this instance. This property is only applicable to First Generation instances.",
+     "description": "The App Engine app IDs that can access this instance. First Generation instances only.",
      "items": {
       "type": "string"
      }
     },
     "availabilityType": {
      "type": "string",
-     "description": "Reserved for future use."
+     "description": "Availability type (PostgreSQL instances only). Potential values:\nZONAL: The instance serves data from only one zone. Outages in that zone affect data accessibility.\nREGIONAL: The instance can serve data from more than one zone in a region (it is highly available).\nFor more information, see Overview of the High Availability Configuration."
     },
     "backupConfiguration": {
      "$ref": "BackupConfiguration",
@@ -1198,12 +1389,12 @@
     },
     "dataDiskSizeGb": {
      "type": "string",
-     "description": "The size of data disk, in GB. The data disk size minimum is 10GB. Applies only to Second Generation instances.",
+     "description": "The size of data disk, in GB. The data disk size minimum is 10GB. Not used for First Generation instances.",
      "format": "int64"
     },
     "dataDiskType": {
      "type": "string",
-     "description": "The type of data disk. Only supported for Second Generation instances. The default type is PD_SSD. Applies only to Second Generation instances."
+     "description": "The type of data disk: PD_SSD (default) or PD_HDD. Not used for First Generation instances."
     },
     "databaseFlags": {
      "type": "array",
@@ -1227,11 +1418,11 @@
     },
     "locationPreference": {
      "$ref": "LocationPreference",
-     "description": "The location preference settings. This allows the instance to be located as near as possible to either an App Engine app or GCE zone for better performance. App Engine co-location is only applicable to First Generation instances."
+     "description": "The location preference settings. This allows the instance to be located as near as possible to either an App Engine app or Compute Engine zone for better performance. App Engine co-location is only applicable to First Generation instances."
     },
     "maintenanceWindow": {
      "$ref": "MaintenanceWindow",
-     "description": "The maintenance window for this instance. This specifies when the instance may be restarted for maintenance purposes. Applies only to Second Generation instances."
+     "description": "The maintenance window for this instance. This specifies when the instance can be restarted for maintenance purposes. Not used for First Generation instances."
     },
     "pricingPlan": {
      "type": "string",
@@ -1253,16 +1444,16 @@
     },
     "storageAutoResize": {
      "type": "boolean",
-     "description": "Configuration to increase storage size automatically. The default value is true. Applies only to Second Generation instances."
+     "description": "Configuration to increase storage size automatically. The default value is true. Not used for First Generation instances."
     },
     "storageAutoResizeLimit": {
      "type": "string",
-     "description": "The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit. Applies only to Second Generation instances.",
+     "description": "The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit. Not used for First Generation instances.",
      "format": "int64"
     },
     "tier": {
      "type": "string",
-     "description": "The tier of service for this instance, for example D1, D2. For more information, see pricing.",
+     "description": "The tier (or machine type) for this instance, for example db-n1-standard-1 (MySQL instances) or db-custom-1-3840 (PostgreSQL instances). For MySQL instances, this property determines whether the instance is First or Second Generation. For more information, see Instance Settings.",
      "annotations": {
       "required": [
        "sql.instances.insert",
@@ -1359,7 +1550,7 @@
    "properties": {
     "commonName": {
      "type": "string",
-     "description": "User supplied name. Must be a distinct name from the other certificates for this instance. New certificates will not be usable until the instance is restarted."
+     "description": "User supplied name. Must be a distinct name from the other certificates for this instance."
     }
    }
   },
@@ -1370,7 +1561,7 @@
    "properties": {
     "clientCert": {
      "$ref": "SslCertDetail",
-     "description": "The new client certificate and private key. The new certificate will not work until the instance is restarted for First Generation instances."
+     "description": "The new client certificate and private key. For First Generation instances, the new certificate does not take effect until the instance is restarted."
     },
     "kind": {
      "type": "string",
@@ -1435,7 +1626,7 @@
     },
     "tier": {
      "type": "string",
-     "description": "An identifier for the service tier, for example D1, D2 etc. For related information, see Pricing."
+     "description": "An identifier for the machine type, for example, db-n1-standard-1. For related information, see Pricing."
     }
    }
   },
@@ -1481,7 +1672,7 @@
    "properties": {
     "etag": {
      "type": "string",
-     "description": "HTTP 1.1 Entity tag for the resource."
+     "description": "This field is deprecated and will be removed from a future version of the API."
     },
     "host": {
      "type": "string",
@@ -1498,7 +1689,7 @@
     },
     "name": {
      "type": "string",
-     "description": "The name of the user in the Cloud SQL instance. Can be omitted for update since it is already specified on the URL."
+     "description": "The name of the user in the Cloud SQL instance. Can be omitted for update since it is already specified in the URL."
     },
     "password": {
      "type": "string",
@@ -1653,7 +1844,7 @@
      "id": "sql.backupRuns.list",
      "path": "projects/{project}/instances/{instance}/backupRuns",
      "httpMethod": "GET",
-     "description": "Lists all backup runs associated with a given instance and configuration in the reverse chronological order of the enqueued time.",
+     "description": "Lists all backup runs associated with a given instance and configuration in the reverse chronological order of the backup initiation time.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -1819,7 +2010,7 @@
       },
       "project": {
        "type": "string",
-       "description": "Project ID of the project for which to list Cloud SQL instances.",
+       "description": "Project ID of the project that contains the instance.",
        "required": true,
        "location": "path"
       }
@@ -1926,11 +2117,11 @@
      "id": "sql.flags.list",
      "path": "flags",
      "httpMethod": "GET",
-     "description": "List all available database flags for Google Cloud SQL instances.",
+     "description": "List all available database flags for Cloud SQL instances.",
      "parameters": {
       "databaseVersion": {
        "type": "string",
-       "description": "Database version for flag retrieval. Flags are specific to the database version.",
+       "description": "Database type and version you want to retrieve flags for. By default, this method returns flags for all database types and versions.",
        "location": "query"
       }
      },
@@ -1946,11 +2137,42 @@
   },
   "instances": {
    "methods": {
+    "addServerCa": {
+     "id": "sql.instances.addServerCa",
+     "path": "projects/{project}/instances/{instance}/addServerCa",
+     "httpMethod": "POST",
+     "description": "Add a new trusted Certificate Authority (CA) version for the specified instance. Required to prepare for a certificate rotation. If a CA version was previously added but never used in a certificate rotation, this operation replaces that version. There cannot be more than one CA version waiting to be rotated in.",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "Cloud SQL instance ID. This does not include the project ID.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID of the project that contains the instance.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "instance"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/sqlservice.admin"
+     ]
+    },
     "clone": {
      "id": "sql.instances.clone",
      "path": "projects/{project}/instances/{instance}/clone",
      "httpMethod": "POST",
-     "description": "Creates a Cloud SQL instance as a clone of the source instance. The API is not ready for Second Generation instances yet.",
+     "description": "Creates a Cloud SQL instance as a clone of the source instance.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -2015,7 +2237,7 @@
      "id": "sql.instances.demoteMaster",
      "path": "projects/{project}/instances/{instance}/demoteMaster",
      "httpMethod": "POST",
-     "description": "Demotes the standalone instance to be a read replica Cloud SQL instance of an on-premises master.",
+     "description": "Demotes the stand-alone instance to be a Cloud SQL read replica for an external database server.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -2049,7 +2271,7 @@
      "id": "sql.instances.export",
      "path": "projects/{project}/instances/{instance}/export",
      "httpMethod": "POST",
-     "description": "Exports data from a Cloud SQL instance to a Google Cloud Storage bucket as a MySQL dump file.",
+     "description": "Exports data from a Cloud SQL instance to a Cloud Storage bucket as a SQL dump or CSV file.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -2147,7 +2369,7 @@
      "id": "sql.instances.import",
      "path": "projects/{project}/instances/{instance}/import",
      "httpMethod": "POST",
-     "description": "Imports data into a Cloud SQL instance from a MySQL dump file in Google Cloud Storage.",
+     "description": "Imports data into a Cloud SQL instance from a SQL dump or CSV file in Cloud Storage.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -2243,6 +2465,37 @@
       "https://www.googleapis.com/auth/sqlservice.admin"
      ]
     },
+    "listServerCas": {
+     "id": "sql.instances.listServerCas",
+     "path": "projects/{project}/instances/{instance}/listServerCas",
+     "httpMethod": "GET",
+     "description": "Lists all of the trusted Certificate Authorities (CAs) for the specified instance. There can be up to three CAs listed: the CA that was used to sign the certificate that is currently in use, a CA that has been added but not yet used to sign a certificate, and a CA used to sign a certificate that has previously rotated out.",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "Cloud SQL instance ID. This does not include the project ID.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID of the project that contains the instance.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "instance"
+     ],
+     "response": {
+      "$ref": "InstancesListServerCasResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/sqlservice.admin"
+     ]
+    },
     "patch": {
      "id": "sql.instances.patch",
      "path": "projects/{project}/instances/{instance}",
@@ -2312,7 +2565,7 @@
      "id": "sql.instances.resetSslConfig",
      "path": "projects/{project}/instances/{instance}/resetSslConfig",
      "httpMethod": "POST",
-     "description": "Deletes all client certificates and generates a new server SSL certificate for the instance. The changes will not take effect until the instance is restarted. Existing instances without a server certificate will need to call this once to set a server certificate.",
+     "description": "Deletes all client certificates and generates a new server SSL certificate for the instance.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -2395,6 +2648,40 @@
      ],
      "request": {
       "$ref": "InstancesRestoreBackupRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/sqlservice.admin"
+     ]
+    },
+    "rotateServerCa": {
+     "id": "sql.instances.rotateServerCa",
+     "path": "projects/{project}/instances/{instance}/rotateServerCa",
+     "httpMethod": "POST",
+     "description": "Rotates the server certificate to one signed by the Certificate Authority (CA) version previously added with the addServerCA method.",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "Cloud SQL instance ID. This does not include the project ID.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID of the project that contains the instance.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "instance"
+     ],
+     "request": {
+      "$ref": "InstancesRotateServerCaRequest"
      },
      "response": {
       "$ref": "Operation"
@@ -2523,7 +2810,6 @@
       "project",
       "instance"
      ],
-     "etagRequired": true,
      "request": {
       "$ref": "DatabaseInstance"
      },
@@ -2654,7 +2940,7 @@
      "id": "sql.sslCerts.delete",
      "path": "projects/{project}/instances/{instance}/sslCerts/{sha1Fingerprint}",
      "httpMethod": "DELETE",
-     "description": "Deletes the SSL certificate. The change will not take effect until the instance is restarted.",
+     "description": "Deletes the SSL certificate. For First Generation instances, the certificate remains valid until the instance is restarted.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -2664,7 +2950,7 @@
       },
       "project": {
        "type": "string",
-       "description": "Project ID of the project that contains the instance to be deleted.",
+       "description": "Project ID of the project that contains the instance.",
        "required": true,
        "location": "path"
       },
@@ -2740,7 +3026,7 @@
       },
       "project": {
        "type": "string",
-       "description": "Project ID of the project to which the newly created Cloud SQL instances should belong.",
+       "description": "Project ID of the project that contains the instance.",
        "required": true,
        "location": "path"
       }
@@ -2774,7 +3060,7 @@
       },
       "project": {
        "type": "string",
-       "description": "Project ID of the project for which to list Cloud SQL instances.",
+       "description": "Project ID of the project that contains the instance.",
        "required": true,
        "location": "path"
       }
@@ -2799,7 +3085,7 @@
      "id": "sql.tiers.list",
      "path": "projects/{project}/tiers",
      "httpMethod": "GET",
-     "description": "Lists all available service tiers for Google Cloud SQL, for example D1, D2. For related information, see Pricing.",
+     "description": "Lists all available machine types (tiers) for Cloud SQL, for example, db-n1-standard-1. For related information, see Pricing.",
      "parameters": {
       "project": {
        "type": "string",
@@ -2941,8 +3227,7 @@
      "parameters": {
       "host": {
        "type": "string",
-       "description": "Host of the user in the instance.",
-       "required": true,
+       "description": "Host of the user in the instance. For a MySQL instance, it's required; For a PostgreSQL instance, it's optional.",
        "location": "query"
       },
       "instance": {
@@ -2967,7 +3252,6 @@
      "parameterOrder": [
       "project",
       "instance",
-      "host",
       "name"
      ],
      "request": {

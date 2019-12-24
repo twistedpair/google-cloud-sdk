@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +15,18 @@
 
 """Cloud SDK markdown document HTML renderer."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import re
+
 from googlecloudsdk.core.document_renderers import devsite_scripts
 from googlecloudsdk.core.document_renderers import html_renderer
 
 
 class DevSiteRenderer(html_renderer.HTMLRenderer):
   """Renders markdown to DevSiteHTML."""
-
-  def __init__(self, *args, **kwargs):
-    super(DevSiteRenderer, self).__init__(*args, **kwargs)
 
   def _Title(self):
     """Renders an HTML document title."""
@@ -103,7 +107,7 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
     Returns:
       The rendered link anchor and text.
     """
-    if target != 'gcloud' and (
+    if target != self.command[0] and (
         '/' not in target or ':' in target or '#' in target or
         target.startswith('www.') or target.endswith('/..')):
       return '<a href="{target}">{text}</a>'.format(target=target,
@@ -116,3 +120,17 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
     return '<a href="/sdk/{head}/{tail}">{text}</a>'.format(
         head=target_parts[0], tail='/'.join(['reference'] + target_parts[1:]),
         text=text or target)
+
+  def LinkGlobalFlags(self, line):
+    """Add global flags links to line if any.
+
+    Args:
+      line: The text line.
+
+    Returns:
+      line with annoted global flag links.
+    """
+    return re.sub(
+        r'(--[-a-z]+)',
+        r'<a href="/sdk/{}/reference/#\1">\1</a>'.format(self.command[0]),
+        line)

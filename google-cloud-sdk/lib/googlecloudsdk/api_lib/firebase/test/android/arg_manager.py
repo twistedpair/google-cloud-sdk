@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """A shared library for processing and validating Android test arguments."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.firebase.test import arg_file
 from googlecloudsdk.api_lib.firebase.test import arg_util
@@ -34,26 +39,20 @@ def TypedArgRules():
       'instrumentation': {
           'required': ['test'],
           'optional': [
-              'test_package', 'test_runner_class', 'test_targets',
-              'use_orchestrator'
+              'num_uniform_shards', 'test_targets_for_shard', 'test_package',
+              'test_runner_class', 'test_targets', 'use_orchestrator'
           ],
           'defaults': {}
       },
       'robo': {
           'required': [],
-          'optional': [
-              'app_initial_activity', 'max_depth', 'max_steps',
-              'robo_directives'
-          ],
-          'defaults': {
-              'max_depth': 50,
-              'max_steps': -1,  # interpreted as 'no limit'
-          },
+          'optional': ['robo_directives', 'robo_script'],
+          'defaults': {}
       },
       'game-loop': {
           'required': [],
           'optional': ['scenario_numbers', 'scenario_labels'],
-          'defaults': {},
+          'defaults': {}
       },
   }
 
@@ -71,18 +70,22 @@ def SharedArgRules():
   return {
       'required': ['type', 'app'],
       'optional': [
+          'additional_apks',
           'app_package',
-          'async',
+          'async_',
           'auto_google_login',
+          'client_details',
           'device',
           'device_ids',
           'directories_to_pull',
           'environment_variables',
           'locales',
           'network_profile',
+          'num_flaky_test_attempts',
           'obb_files',
           'orientations',
           'os_version_ids',
+          'other_files',
           'performance_metrics',
           'record_video',
           'results_bucket',
@@ -91,8 +94,9 @@ def SharedArgRules():
           'timeout',
       ],
       'defaults': {
-          'async': False,
+          'async_': False,
           'auto_google_login': True,
+          'num_flaky_test_attempts': 0,
           'performance_metrics': True,
           'record_video': True,
           'timeout': 900,  # 15 minutes
@@ -167,6 +171,7 @@ class AndroidArgsManager(object):
     arg_validate.NormalizeAndValidateObbFileNames(args.obb_files)
     arg_validate.ValidateRoboDirectivesList(args)
     arg_validate.ValidateEnvironmentVariablesList(args)
+    arg_validate.ValidateTestTargetsForShard(args)
     arg_validate.NormalizeAndValidateDirectoriesToPullList(
         args.directories_to_pull)
     arg_validate.ValidateScenarioNumbers(args)
@@ -187,7 +192,7 @@ class AndroidArgsManager(object):
     """
     if not args.type:
       args.type = 'instrumentation' if args.test else 'robo'
-    if not self._typed_arg_rules.has_key(args.type):
+    if args.type not in self._typed_arg_rules:
       raise exceptions.InvalidArgumentException(
           'type', "'{0}' is not a valid test type.".format(args.type))
     return args.type

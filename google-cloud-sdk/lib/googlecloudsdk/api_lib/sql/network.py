@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +14,13 @@
 # limitations under the License.
 """Common utility functions for network operations."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.core.util import times
-import ipaddr
+import ipaddress
+import six
 
 IP_VERSION_4 = 4
 IP_VERSION_6 = 6
@@ -32,7 +38,8 @@ def GetIpVersion(ip_address):
     otherwise.
   """
   try:
-    version = ipaddr.IPAddress(ip_address).version
+    # ipaddress only allows unicode input
+    version = ipaddress.ip_address(six.text_type(ip_address)).version
     if version not in (IP_VERSION_4, IP_VERSION_6):
       raise ValueError('Reported IP version not recognized.')
     return version

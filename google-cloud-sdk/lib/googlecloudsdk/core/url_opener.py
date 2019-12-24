@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,14 +15,19 @@
 
 """Helper function to open a url using a proxy using httlib2 connections."""
 
-import urllib2
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import properties
+
 import httplib2
+from six.moves import urllib
 
 
-class HttplibConnectionHandler(urllib2.HTTPHandler, urllib2.HTTPSHandler):
+class HttplibConnectionHandler(urllib.request.HTTPHandler,
+                               urllib.request.HTTPSHandler):
   """urllib2 Handler Class to use httplib2 connections.
 
   This handler makes urllib2 use httplib2.HTTPSConnectionWithTimeout. The
@@ -39,7 +45,7 @@ class HttplibConnectionHandler(urllib2.HTTPHandler, urllib2.HTTPSHandler):
       if callable(proxy_info):
         proxy_info = proxy_info('http')
       return httplib2.HTTPConnectionWithTimeout(
-          host.encode('idna'),
+          host.encode('idna').decode(),
           proxy_info=proxy_info,
           **kwargs)
     return self.do_open(build, req)
@@ -51,13 +57,14 @@ class HttplibConnectionHandler(urllib2.HTTPHandler, urllib2.HTTPSHandler):
         proxy_info = proxy_info('https')
       ca_certs = properties.VALUES.core.custom_ca_certs_file.Get()
       return httplib2.HTTPSConnectionWithTimeout(
-          host.encode('idna'),
+          host.encode('idna').decode(),
           proxy_info=proxy_info,
           ca_certs=ca_certs,
           **kwargs)
     return self.do_open(build, req)
 
 
+# TODO(b/120992538) Use urllib3 when PROXY/USE_URLLIB3_VIA_SHIM
 def urlopen(req, data=None, timeout=60):
   """Helper function that mimics urllib2.urlopen, but adds proxy information."""
 
@@ -68,6 +75,6 @@ def urlopen(req, data=None, timeout=60):
   # We do the proxy detection in http_proxy.GetHttpProxyInfo and pass it to
   # httplib2.HTTPSConnectionWithTimeout via proxy info object.
   # httplib2.HTTPSConnectionWithTimeout takes care of handling proxies.
-  opener = urllib2.build_opener(urllib2.ProxyHandler({}),
-                                HttplibConnectionHandler())
+  opener = urllib.request.build_opener(urllib.request.ProxyHandler({}),
+                                       HttplibConnectionHandler())
   return opener.open(req, data, timeout)

@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,10 +19,16 @@ Used by persistent cache implementations that maintain a metadata table to keep
 track of cache tables.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 
 from googlecloudsdk.core.cache import exceptions
 from googlecloudsdk.core.cache import persistent_cache_base
+
+import six
 
 
 class Metadata(object):
@@ -61,21 +68,24 @@ class Metadata(object):
     return (name, columns, keys, timeout, modified, restricted, version)
 
 
+@six.add_metaclass(abc.ABCMeta)
 class CacheUsingMetadataTable(persistent_cache_base.Cache):
   """A persistent cache metadata table implementation layer.
 
   Attributes:
     _metadata: A table containing a row for each table.
     _table_class: The cache Table class.
+    _restricted: The set of restricted table names.
+    _tables: The map of open table objects.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, table, name, create=True, timeout=0, version=None):
     super(CacheUsingMetadataTable, self).__init__(
         name, create=create, timeout=timeout, version=version)
     self._metadata = None
     self._table_class = table
+    self._restricted = None
+    self._tables = None
 
   @abc.abstractmethod
   def Delete(self):

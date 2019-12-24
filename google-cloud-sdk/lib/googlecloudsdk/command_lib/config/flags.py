@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Flags and helpers for the config related commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import properties
 
@@ -23,9 +28,9 @@ INSTALLATION_FLAG = base.Argument(
     required=False,
     action='store_true',
     help="""\
-        Typically properties are updated only in the currently active
-        configuration, but when `--installation` is given the property is
-        updated for the entire gcloud installation."""
+        If set, the property is updated for the entire Cloud SDK installation.
+        Otherwise, by default, the property is updated only in the currently
+        active configuration."""
     )
 
 

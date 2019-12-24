@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +18,10 @@
 See the persistent_cache module for a detailed description.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import errno
 import fnmatch
 import json
@@ -26,6 +31,9 @@ from googlecloudsdk.core.cache import exceptions
 from googlecloudsdk.core.cache import metadata_table
 from googlecloudsdk.core.cache import persistent_cache_base
 from googlecloudsdk.core.util import files
+
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 class _Table(persistent_cache_base.Table):
@@ -51,14 +59,14 @@ class _Table(persistent_cache_base.Table):
       self._cache._restricted.add(name)  # pylint: disable=protected-access
     self.deleted = False
     try:
-      with open(os.path.join(self._cache.name,
-                             self.EncodeName(name)), 'r') as f:
-        contents = f.read()
-    except IOError as e:
-      if e.errno != errno.ENOENT:
-        raise
+      contents = files.ReadFileContents(
+          os.path.join(self._cache.name, self.EncodeName(name)))
+    except files.MissingFileError:
       contents = None
       self.changed = True
+    except files.Error:
+      raise
+
     if contents:
       self._rows = [tuple(r) for r in json.loads(contents)]
     else:
@@ -101,8 +109,7 @@ class _Table(persistent_cache_base.Table):
                 modified=self.modified,
                 restricted=self.restricted,
                 version=self._cache.version)])
-        with open(path, 'w') as f:
-          f.write(json.dumps(self._rows))
+        files.WriteFileContents(path, json.dumps(self._rows))
 
   def _RowEqual(self, a, b):
     """Returns True if rows a and b have the same key."""
@@ -113,8 +120,8 @@ class _Table(persistent_cache_base.Table):
     if row_template:
       for i in range(len(row_template)):
         if row_template[i] is not None:
-          if (isinstance(row_template[i], basestring) and
-              isinstance(row[i], basestring)):
+          if (isinstance(row_template[i], six.string_types) and
+              isinstance(row[i], six.string_types)):
             if not fnmatch.fnmatch(row[i], row_template[i]):
               return False
           elif row_template[i] != row[i]:
@@ -180,13 +187,13 @@ class Cache(metadata_table.CacheUsingMetadataTable):
     timeout: The default table timeout.
     version: A caller defined version string that must match the version string
       stored when the persistent object was created.
-    _lock: The cache lock object. None if no files have been comitted yet.
+    _lock: The cache lock object. None if no files have been committed yet.
     _lock_path: The cache lock meta file.
     _metadata: The metadata restricted _Table.
     _persistent: True if the persistent object has been committed at least once.
     _restricted: The set of restricted table names.
     _start: The cache instance start time.
-    _tables: The list of open table objects.
+    _tables: The map of open table objects.
   """
 
   def __init__(self, name, create=True, timeout=None, version=None):
@@ -229,7 +236,7 @@ class Cache(metadata_table.CacheUsingMetadataTable):
   def Commit(self):
     """Commits all operations up to this point."""
     if not self._lock:
-      os.mkdir(self.name, 0700)
+      os.mkdir(self.name, 0o700)
       self._persistent = True
       self._lock = files.FileLock(self._lock_path, timeout_secs=2)
       self._lock.Lock()
@@ -240,7 +247,7 @@ class Cache(metadata_table.CacheUsingMetadataTable):
       self._metadata._Commit()  # pylint: disable=protected-access
 
   def Close(self, commit=True):
-    """Closes the cache, optionally comitting any changes.
+    """Closes the cache, optionally committing any changes.
 
     Args:
       commit: Commits any changes before closing if True.

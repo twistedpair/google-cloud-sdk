@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,13 +15,18 @@
 
 """This module holds exceptions raised by commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.app import deploy_command_util
 from googlecloudsdk.api_lib.app import yaml_parsing
-from googlecloudsdk.api_lib.service_management import enable_api
+from googlecloudsdk.api_lib.services import enable_api
+from googlecloudsdk.api_lib.services import exceptions as s_exceptions
 from googlecloudsdk.core import log
 
 
-DEPLOY_SERVICE_MESSAGE_TEMPLATE = u"""\
+DEPLOY_SERVICE_MESSAGE_TEMPLATE = """\
 descriptor:      [{descriptor}]
 source:          [{source}]
 target project:  [{project}]
@@ -30,7 +36,7 @@ target url:      [{url}]
 
 """
 
-DEPLOY_CONFIG_MESSAGE_TEMPLATE = u"""\
+DEPLOY_CONFIG_MESSAGE_TEMPLATE = """\
 descriptor:      [{descriptor}]
 type:            [{type}]
 target project:  [{project}]
@@ -38,26 +44,26 @@ target project:  [{project}]
 """
 
 CONFIG_TYPES = {
-    yaml_parsing.ConfigYamlInfo.INDEX: 'datastore indexes',
-    yaml_parsing.ConfigYamlInfo.CRON: 'cron jobs',
-    yaml_parsing.ConfigYamlInfo.QUEUE: 'task queues',
-    yaml_parsing.ConfigYamlInfo.DISPATCH: 'routing rules',
-    yaml_parsing.ConfigYamlInfo.DOS: 'DoS blacklist',
+    'index': 'datastore indexes',
+    'cron': 'cron jobs',
+    'queue': 'task queues',
+    'dispatch': 'routing rules',
+    'dos': 'DoS blacklist',
 }
 
-PROMOTE_MESSAGE_TEMPLATE = u"""\
+PROMOTE_MESSAGE_TEMPLATE = """\
      (add --promote if you also want to make this service available from
      [{default_url}])
 """
 
-RUNTIME_MISMATCH_MSG = (u"You've generated a Dockerfile that may be customized "
-                        u'for your application.  To use this Dockerfile, '
-                        u'the runtime field in [{0}] must be set to custom.')
+RUNTIME_MISMATCH_MSG = ("You've generated a Dockerfile that may be customized "
+                        'for your application.  To use this Dockerfile, '
+                        'the runtime field in [{0}] must be set to custom.')
 
-QUEUE_TASKS_WARNING = u"""\
+QUEUE_TASKS_WARNING = """\
 Caution: You are updating queue configuration. This will override any changes
 performed using 'gcloud tasks'. More details at
-https://cloud.google.com/cloud-tasks/docs/queue-yaml
+https://cloud.google.com/tasks/docs/queue-yaml
 """
 
 
@@ -87,8 +93,7 @@ def DisplayProposedDeployment(app, project, services, configs, version,
       raise TypeError('If services are deployed, must provide `app` parameter.')
     log.status.Print('Services to deploy:\n')
     for service in services:
-      use_ssl = deploy_command_util.UseSsl(
-          service.service_info.parsed.handlers)
+      use_ssl = deploy_command_util.UseSsl(service.service_info)
       url = deploy_command_util.GetAppHostname(
           app=app, service=service.service_id,
           version=None if promote else version, use_ssl=use_ssl)
@@ -121,6 +126,15 @@ def DisplayProposedConfigDeployments(project, configs):
     log.status.Print(DEPLOY_CONFIG_MESSAGE_TEMPLATE.format(
         project=project, type=CONFIG_TYPES[c.config], descriptor=c.file))
 
-    if (c.name == yaml_parsing.ConfigYamlInfo.QUEUE and
-        enable_api.IsServiceEnabled(project, 'cloudtasks.googleapis.com')):
-      log.warn(QUEUE_TASKS_WARNING)
+    if c.name == yaml_parsing.ConfigYamlInfo.QUEUE:
+      # If useful, this logic can be broken out and moved to enable_api.py,
+      # under IsServiceMaybeEnabled(...) or similar.
+      try:
+        api_maybe_enabled = enable_api.IsServiceEnabled(
+            project, 'cloudtasks.googleapis.com')
+      except s_exceptions.ListServicesPermissionDeniedException:
+        api_maybe_enabled = True  # We can't know, so presume it is enabled
+      if api_maybe_enabled:
+        # Display this warning with a false positive rate for when the Service
+        # Manangement API is not enabled or accessible.
+        log.warning(QUEUE_TASKS_WARNING)

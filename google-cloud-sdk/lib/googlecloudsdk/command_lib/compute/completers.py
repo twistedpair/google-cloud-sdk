@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 
 """Compute resource completers for the core.cache.completion_cache module."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 import os
 
@@ -177,6 +182,34 @@ class HealthChecksCompleter(ListCommandCompleter):
         **kwargs)
 
 
+class HealthChecksCompleterAlpha(completers.MultiResourceCompleter):
+
+  def __init__(self, **kwargs):
+    super(HealthChecksCompleterAlpha, self).__init__(
+        completers=[GlobalHealthChecksCompleter, RegionHealthChecksCompleter],
+        **kwargs)
+
+
+class GlobalHealthChecksCompleter(ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(GlobalHealthChecksCompleter, self).__init__(
+        collection='compute.healthChecks',
+        api_version='alpha',
+        list_command='alpha compute health-checks list --global --uri',
+        **kwargs)
+
+
+class RegionHealthChecksCompleter(ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RegionHealthChecksCompleter, self).__init__(
+        collection='compute.regionHealthChecks',
+        api_version='alpha',
+        list_command='alpha compute health-checks list --filter=region:* --uri',
+        **kwargs)
+
+
 class SearchHealthChecksCompleter(completers.ResourceSearchCompleter):
 
   def __init__(self, **kwargs):
@@ -259,6 +292,25 @@ class SearchInstanceTemplatesCompleter(completers.ResourceSearchCompleter):
   def __init__(self, **kwargs):
     super(SearchInstanceTemplatesCompleter, self).__init__(
         collection='compute.instanceTemplates',
+        **kwargs)
+
+
+class MachineImagesCompleter(ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(MachineImagesCompleter, self).__init__(
+        collection='compute.machineImages',
+        list_command='beta compute machine-images list --uri',
+        api_version='beta',
+        **kwargs)
+
+
+class SearchMachineImagesCompleter(completers.ResourceSearchCompleter):
+
+  def __init__(self, **kwargs):
+    super(SearchMachineImagesCompleter, self).__init__(
+        collection='compute.machineImages',
+        api_version='alpha',
         **kwargs)
 
 

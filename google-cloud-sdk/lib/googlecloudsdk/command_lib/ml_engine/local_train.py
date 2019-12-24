@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for running training jobs locally."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import atexit
 import json
 import os
@@ -20,7 +26,9 @@ import subprocess
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
+from six.moves import range
 
 
 def MakeProcess(module_name,
@@ -73,12 +81,13 @@ def MakeProcess(module_name,
   env = os.environ.copy()
   # the tf_config environment variable is used to pass the tensorflow
   # configuration options to the training module. the module specific
-  # arguments are passed as comand line arguments.
+  # arguments are passed as command line arguments.
   env['TF_CONFIG'] = json.dumps(config)
   if task_type == 'master':
     return execution_utils.Exec(
         cmd, env=env, no_exit=True, cwd=package_root, **extra_popen_args)
   else:
+    env = encoding.EncodeEnv(env)
     task = subprocess.Popen(
         cmd,
         env=env,
@@ -109,7 +118,7 @@ def RunDistributed(module_name,
   Returns:
     int. the retval of 'master' subprocess
   """
-  ports = range(start_port, start_port + num_ps + num_workers + 1)
+  ports = list(range(start_port, start_port + num_ps + num_workers + 1))
   cluster = {
       'master': ['localhost:{port}'.format(port=ports[0])],
       'ps': ['localhost:{port}'.format(port=p)

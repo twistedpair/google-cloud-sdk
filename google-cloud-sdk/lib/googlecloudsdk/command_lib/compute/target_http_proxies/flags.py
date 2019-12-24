@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +14,13 @@
 # limitations under the License.
 """Flags and helpers for the compute target-http-proxies commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util import completers
 
 DEFAULT_LIST_FORMAT = """\
     table(
@@ -23,13 +29,46 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-class TargetHttpProxiesCompleter(compute_completers.ListCommandCompleter):
+class GlobalTargetHttpProxiesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(GlobalTargetHttpProxiesCompleter, self).__init__(
+        collection='compute.targetHttpProxies',
+        list_command='compute target-http-proxies list --global --uri',
+        **kwargs)
+
+
+class RegionTargetHttpProxiesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RegionTargetHttpProxiesCompleter, self).__init__(
+        collection='compute.regionTargetHttpProxies',
+        list_command='compute target-http-proxies list --filter=region:* --uri',
+        **kwargs)
+
+
+class TargetHttpProxiesCompleter(completers.MultiResourceCompleter):
 
   def __init__(self, **kwargs):
     super(TargetHttpProxiesCompleter, self).__init__(
-        collection='compute.targetHttpProxies',
-        list_command='compute target-http-proxies list --uri',
+        completers=[
+            GlobalTargetHttpProxiesCompleter, RegionTargetHttpProxiesCompleter
+        ],
         **kwargs)
+
+
+def AddProxyBind(parser, default):
+  """Adds the proxy bind argument."""
+  parser.add_argument(
+      '--proxy-bind',
+      action='store_true',
+      default=default,
+      help="""\
+      This flag applies when the load_balancing_scheme of the associated
+      backend service is INTERNAL_SELF_MANAGED. When specified, the envoy binds
+      to the forwarding rule's IP address and port. By default,
+      this flag is off.
+      """)
 
 
 def TargetHttpProxyArgument(required=True, plural=False):
@@ -39,4 +78,6 @@ def TargetHttpProxyArgument(required=True, plural=False):
       plural=plural,
       custom_plural='target HTTP proxies',
       required=required,
-      global_collection='compute.targetHttpProxies')
+      global_collection='compute.targetHttpProxies',
+      regional_collection='compute.regionTargetHttpProxies',
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)

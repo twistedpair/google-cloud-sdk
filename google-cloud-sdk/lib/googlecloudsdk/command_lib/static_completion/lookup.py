@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +15,15 @@
 
 """Methods for looking up completions from the static CLI tree."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import os
 import shlex
+import sys
 
-from googlecloudsdk.calliope import cli_tree
+import six
 
 
 LINE_ENV_VAR = 'COMP_LINE'
@@ -26,18 +32,14 @@ IFS_ENV_VAR = '_ARGCOMPLETE_IFS'
 IFS_ENV_DEFAULT = '\013'
 COMPLETIONS_OUTPUT_FD = 8
 
-FLAG_BOOLEAN, FLAG_CANNOT_BE_COMPLETED, FLAG_DYNAMIC = range(3)
-
-LOOKUP_CHOICES = 'choices'
-LOOKUP_COMMANDS = 'commands'
-LOOKUP_COMPLETER = 'completer'
-LOOKUP_FLAGS = 'flags'
-LOOKUP_IS_HIDDEN = 'hidden'
-LOOKUP_NARGS = 'nargs'
-LOOKUP_POSITIONALS = 'positionals'
-LOOKUP_TYPE = 'type'
-
 FLAG_PREFIX = '--'
+
+FLAG_BOOLEAN = 'bool'
+FLAG_DYNAMIC = 'dynamic'
+FLAG_VALUE = 'value'
+
+LOOKUP_COMMANDS = 'commands'
+LOOKUP_FLAGS = 'flags'
 
 _EMPTY_STRING = ''
 _VALUE_SEP = '='
@@ -81,18 +83,6 @@ def _GetCmdWordQueue(cmd_line):
   return cmd_words
 
 
-def _GetFlagMode(flag):
-  """Returns the FLAG_* mode or choices list for flag."""
-  choices = flag.get(LOOKUP_CHOICES, None)
-  if choices:
-    return choices
-  if flag.get(LOOKUP_COMPLETER, None):
-    return FLAG_DYNAMIC
-  if flag.get(LOOKUP_TYPE, None) == 'bool':
-    return FLAG_BOOLEAN
-  return FLAG_CANNOT_BE_COMPLETED
-
-
 def _FindCompletions(root, cmd_line):
   """Try to perform a completion based on the static CLI tree.
 
@@ -115,8 +105,6 @@ def _FindCompletions(root, cmd_line):
   completions = []
   flag_mode = FLAG_BOOLEAN
   while words:
-    if node.get(LOOKUP_IS_HIDDEN, False):
-      return []
     word = words.pop()
 
     if word.startswith(FLAG_PREFIX):
@@ -128,19 +116,18 @@ def _FindCompletions(root, cmd_line):
         word, flag_value = word.split(_VALUE_SEP, 1)
         words.append(flag_value)
     else:
-      child_nodes = node.get(LOOKUP_COMMANDS, {})
       is_flag_word = False
+      child_nodes = node.get(LOOKUP_COMMANDS, {})
 
     # Consume word
     if words:
       if word in child_nodes:
         if is_flag_word:
-          flag = child_nodes[word]
-          flag_mode = _GetFlagMode(flag)
+          flag_mode = child_nodes[word]
         else:
           flag_mode = FLAG_BOOLEAN
           node = child_nodes[word]  # Progress to next command node
-      elif flag_mode:
+      elif flag_mode != FLAG_BOOLEAN:
         flag_mode = FLAG_BOOLEAN
         continue  # Just consume if we are expecting a flag value
       else:
@@ -151,25 +138,57 @@ def _FindCompletions(root, cmd_line):
       if flag_mode == FLAG_DYNAMIC:
         raise CannotHandleCompletionError(
             'Dynamic completions are not handled by this module')
-      elif flag_mode == FLAG_CANNOT_BE_COMPLETED:
+      elif flag_mode == FLAG_VALUE:
         return []  # Cannot complete, so nothing to do
-      elif flag_mode:  # Must be list of choices
+      elif flag_mode != FLAG_BOOLEAN:  # Must be list of choices
         for value in flag_mode:
           if value.startswith(word):
             completions.append(value)
-      elif not child_nodes and node.get(LOOKUP_POSITIONALS, None):
+      elif not child_nodes:
         raise CannotHandleCompletionError(
             'Positional completions are not handled by this module')
       else:  # Command/flag completion
-        for child, value in child_nodes.iteritems():
+        for child, value in six.iteritems(child_nodes):
           if not child.startswith(word):
             continue
-          if value.get(LOOKUP_IS_HIDDEN, False):
-            continue
-          if is_flag_word and _GetFlagMode(value) != FLAG_BOOLEAN:
+          if is_flag_word and value != FLAG_BOOLEAN:
             child += _VALUE_SEP
           completions.append(child)
   return sorted(completions)
+
+
+def _GetInstallationRootDir():
+  """Returns the SDK installation root dir."""
+  # Intentionally ignoring config path abstraction imports.
+  return os.path.sep.join(__file__.split(os.path.sep)[:-5])
+
+
+def _GetCompletionCliTreeDir():
+  """Returns the SDK static completion CLI tree dir."""
+  # Intentionally ignoring config path abstraction imports.
+  return os.path.join(_GetInstallationRootDir(), 'data', 'cli')
+
+
+def CompletionCliTreePath(directory=None):
+  """Returns the SDK static completion CLI tree path."""
+  # Intentionally ignoring config path abstraction imports.
+  return os.path.join(
+      directory or _GetCompletionCliTreeDir(), 'gcloud_completions.py')
+
+
+def LoadCompletionCliTree():
+  """Loads and returns the static completion CLI tree."""
+  try:
+    sys_path = sys.path[:]
+    sys.path.append(_GetCompletionCliTreeDir())
+    import gcloud_completions  # pylint: disable=g-import-not-at-top
+    tree = gcloud_completions.STATIC_COMPLETION_CLI_TREE
+  except ImportError:
+    raise CannotHandleCompletionError(
+        'Cannot find static completion CLI tree module.')
+  finally:
+    sys.path = sys_path
+  return tree
 
 
 def _OpenCompletionsOutputStream():
@@ -177,18 +196,25 @@ def _OpenCompletionsOutputStream():
   return os.fdopen(COMPLETIONS_OUTPUT_FD, 'wb')
 
 
+def _GetCompletions():
+  """Returns the static completions, None if there are none."""
+  root = LoadCompletionCliTree()
+  cmd_line = _GetCmdLineFromEnv()
+  return _FindCompletions(root, cmd_line)
+
+
 def Complete():
   """Attempts completions and writes them to the completion stream."""
-  root = cli_tree.Load()
-  cmd_line = _GetCmdLineFromEnv()
-
-  completions = _FindCompletions(root, cmd_line)
+  completions = _GetCompletions()
   if completions:
     # The bash/zsh completion scripts set IFS_ENV_VAR to one character.
     ifs = os.environ.get(IFS_ENV_VAR, IFS_ENV_DEFAULT)
     # Write completions to stream
+    f = None
     try:
       f = _OpenCompletionsOutputStream()
-      f.write(ifs.join(completions))
+      # the other side also uses the console encoding
+      f.write(ifs.join(completions).encode())
     finally:
-      f.close()
+      if f:
+        f.close()

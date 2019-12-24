@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Resource display info for the Calliope display module."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.core.cache import cache_update_ops
 
@@ -27,19 +32,21 @@ class DisplayInfo(object):
     (2) handle it in AddLowerDisplayInfo()
 
   Attributes:
-    _cache_updater: A resource_cache.Updater class that will be instantiated
+    cache_updater: A resource_cache.Updater class that will be instantiated
       and called to update the cache to reflect the resources returned by the
       calling command.
-    _filter: The default filter string. args.filter takes precedence.
-    _format: The default format string. args.format takes precedence.
-    _transforms: The filter/format transforms symbol dict.
-    _aliases: The resource name alias dict.
+    filter: The default filter string. args.filter takes precedence.
+    flatten: The default flatten string. args.flatten takes precedence.
+    format: The default format string. args.format takes precedence.
+    transforms: The filter/format transforms symbol dict.
+    aliases: The resource name alias dict.
   """
 
   def __init__(self):
     self._cache_updater = None
     self._filter = None
     self._format = None
+    self._flatten = None
     self._transforms = {}
     self._aliases = {}
 
@@ -59,6 +66,8 @@ class DisplayInfo(object):
       self._filter = display_info.filter
     if not self._format:
       self._format = display_info.format
+    if not self._flatten:
+      self._flatten = display_info.flatten
     if display_info.transforms:
       transforms = dict(display_info.transforms)
       transforms.update(self.transforms)
@@ -76,6 +85,15 @@ class DisplayInfo(object):
     """
     if format:
       self._format = format
+
+  def AddFlatten(self, flatten):
+    """Adds a flatten to the display info, newer info takes precedence.
+
+    Args:
+      flatten: The default flatten string. args.flatten takes precedence.
+    """
+    if flatten:
+      self._flatten = flatten
 
   def AddFilter(self, filter):
     """Adds a filter to the display info, newer info takes precedence.
@@ -103,7 +121,10 @@ class DisplayInfo(object):
         resource object.
     """
     def _TransformUri(resource, undefined=None):
-      return uri_func(resource) or undefined
+      try:
+        return uri_func(resource) or undefined
+      except (AttributeError, TypeError):
+        return undefined
 
     self.AddTransforms({'uri': _TransformUri})
 
@@ -111,7 +132,9 @@ class DisplayInfo(object):
     """Adds aliases to the display info, newer values takes precedence.
 
     Args:
-      aliases: The resource name alias dict.
+      aliases: {str: parsed_key} The resource name alias dict that maps short
+        names to parsed keys. The parsed key for 'abc.xyz' is ['abc', 'xyz'].
+        See the resource_lex.Lexer.Key() docstring for parsed key details.
     """
     if aliases:
       self._aliases.update(aliases)
@@ -136,6 +159,10 @@ class DisplayInfo(object):
   @property
   def format(self):
     return self._format
+
+  @property
+  def flatten(self):
+    return self._flatten
 
   @property
   def filter(self):

@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """A class for parsing a resource projection expression."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import copy
 import re
 
@@ -22,6 +27,8 @@ from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_transform
+
+import six
 
 
 class Parser(object):
@@ -50,7 +57,8 @@ class Parser(object):
     _snake_re: Compiled re for converting key names to angry snake case.
   """
 
-  _BOOLEAN_ATTRIBUTES = ['optional', 'reverse', 'wrap']
+  _BOOLEAN_ATTRIBUTES = ['optional', 'reverse']
+  _OPTIONAL_BOOLEAN_ATTRIBUTES = ['wrap']
 
   def __init__(self, defaults=None, symbols=None, aliases=None, compiler=None):
     """Constructor.
@@ -97,6 +105,8 @@ class Parser(object):
       skip_reorder: Don't reorder this attribute in the next _Reorder().
       subformat: Sub-format string.
       transform: obj = func(obj,...) function applied during projection.
+      width: Fixed column width.
+      wrap: Column can be wrapped if True.
     """
 
     def __init__(self, flag):
@@ -110,6 +120,7 @@ class Parser(object):
       self.skip_reorder = False
       self.subformat = None
       self.transform = None
+      self.width = None
       self.wrap = None
 
     def __str__(self):
@@ -122,28 +133,32 @@ class Parser(object):
         option.append('reverse')
       if self.subformat:
         option.append('subformat')
-      if self.wrap:
-        option.append('wrap')
       if option:
         options = ', [{0}]'.format('|'.join(option))
       else:
         options = ''
-      return (
-          '({flag}, {order}, {label}, {align}, {active},'
-          ' {transform}{options})'.format(
-              flag=self.flag,
-              order=('UNORDERED' if self.order is None else str(self.order)),
-              label=repr(self.label),
-              align=self.align,
-              active=self.transform.active if self.transform else None,
-              transform=self.transform,
-              options=options))
+      return ('({flag}, {order}, {label}, {align}, {active}, {wrap},'
+              ' {transform}{options})'.format(
+                  flag=self.flag,
+                  order=('UNORDERED'
+                         if self.order is None else six.text_type(self.order)),
+                  label=(self.label if self.label is None else "'" +
+                         self.label + "'"),
+                  align=self.align,
+                  active=self.transform.active if self.transform else None,
+                  wrap=self.wrap,
+                  transform=self.transform,
+                  options=options))
 
   def _AngrySnakeCase(self, key):
     """Returns an ANGRY_SNAKE_CASE string representation of a parsed key.
 
+    For key input [A, B, C] the headings [C, C_B, C_B_A] are generated. The
+    first heading not in self._snake_headings is added to self._snake_headings
+    and returned.
+
     Args:
-        key: A parsed resource key.
+        key: A parsed resource key and/or list of strings.
 
     Returns:
       The ANGRY_SNAKE_CASE string representation of key, adding components
@@ -154,7 +169,7 @@ class Parser(object):
       self._snake_re = re.compile('((?<=[a-z0-9])[A-Z]+|(?!^)[A-Z](?=[a-z]))')
     label = ''
     for index in reversed(key):
-      if isinstance(index, basestring):
+      if isinstance(index, six.string_types):
         key_snake = self._snake_re.sub(r'_\1', index).upper()
         if label:
           label = key_snake + '_' + label
@@ -187,11 +202,12 @@ class Parser(object):
 
     # Add or update the terminal node.
     tree = projection.tree
-    # self.key == [] => . or a function on the entire object.
     name = key[-1] if key else ''
     name_in_tree = name in tree
+    # key == [] => . or a function on the entire object.
     if name_in_tree:
       # Already added.
+      attribute = tree[name].attribute
       if (not self.__key_attributes_only and
           any([col for col in self._projection.Columns() if col.key == key])):
         # A duplicate column. A projection can only have one attribute object
@@ -200,13 +216,11 @@ class Parser(object):
         # duplicate keys (e.g., table columns with the same key but different
         # transforms). The attribute copy, with attribute_add merged in, is
         # added to the projection columns but not the projection tree.
-        attribute = copy.copy(tree[name].attribute)
-      else:
-        attribute = tree[name].attribute
+        attribute = copy.copy(attribute)
       if not self.__key_attributes_only or not attribute.order:
         # Only an attributes_only attribute with explicit :sort=N can be hidden.
         attribute.hidden = False
-    elif isinstance(name, (int, long)) and None in tree:
+    elif isinstance(name, six.integer_types) and None in tree:
       # New projection for explicit name using slice defaults.
       tree[name] = copy.deepcopy(tree[None])
       attribute = tree[name].attribute
@@ -242,11 +256,15 @@ class Parser(object):
       attribute.transform = attribute_add.transform
     if attribute_add.subformat:
       attribute.subformat = attribute_add.subformat
+    if attribute_add.width is not None:
+      attribute.width = attribute_add.width
+    elif attribute.width is None:
+      attribute.width = False
     if attribute_add.wrap is not None:
       attribute.wrap = attribute_add.wrap
     elif attribute.wrap is None:
       attribute.wrap = False
-    self._projection.AddAlias(attribute.label, key)
+    self._projection.AddAlias(attribute.label, key, attribute)
 
     if not self.__key_attributes_only or attribute.hidden:
       # This key is in the projection.
@@ -315,7 +333,7 @@ class Parser(object):
           # A Boolean attribute with a non-Boolean value.
           raise resource_exceptions.ExpressionSyntaxError(
               'value not expected [{0}].'.format(self._lex.Annotate(here)))
-      elif boolean_value:
+      elif boolean_value and name not in self._OPTIONAL_BOOLEAN_ATTRIBUTES:
         # A non-Boolean attribute without a value or a no- prefix.
         raise resource_exceptions.ExpressionSyntaxError(
             'value expected [{0}].'.format(self._lex.Annotate(here)))
@@ -323,7 +341,7 @@ class Parser(object):
         if not value:
           raise resource_exceptions.ExpressionSyntaxError(
               'Cannot unset alias [{0}].'.format(self._lex.Annotate(here)))
-        self._projection.AddAlias(value, key)
+        self._projection.AddAlias(value, key, attribute)
       elif name == 'align':
         if value not in resource_projection_spec.ALIGNMENTS:
           raise resource_exceptions.ExpressionSyntaxError(
@@ -339,6 +357,8 @@ class Parser(object):
         attribute.reverse = value
       elif name == 'sort':
         attribute.order = value
+      elif name == 'width':
+        attribute.width = value
       elif name == 'wrap':
         attribute.wrap = value
       else:
@@ -350,23 +370,26 @@ class Parser(object):
   def _ParseKey(self):
     """Parses a key and optional attributes from the expression.
 
+    The parsed key is appended to the ordered list of keys via _AddKey().
     Transform functions and key attributes are also handled here.
 
     Raises:
       ExpressionSyntaxError: The expression has a syntax error.
-
-    Returns:
-      The parsed key.
     """
-    key = self._lex.Key()
-    attribute = self._Attribute(self._projection.PROJECT)
+    key, attribute = self._lex.KeyWithAttribute()
     if self._lex.IsCharacter('(', eoi_ok=True):
-      func_name = key.pop()
-      attribute.transform = self._lex.Transform(func_name,
-                                                self._projection.active)
-      func_name = attribute.transform.name
+      add_transform = self._lex.Transform(key.pop(), self._projection.active)
     else:
-      func_name = None
+      add_transform = None
+    if attribute:
+      attribute = copy.copy(attribute)
+    else:
+      attribute = self._Attribute(self._projection.PROJECT)
+    if not attribute.transform:
+      attribute.transform = add_transform
+    elif add_transform:
+      # Compose the alias attribute.transform with add_transforms.
+      attribute.transform._transforms.extend(add_transform._transforms)  # pylint: disable=protected-access
     self._lex.SkipSpace()
     if self._lex.IsCharacter(':'):
       self._ParseKeyAttributes(key, attribute)
@@ -381,11 +404,14 @@ class Parser(object):
       defaults = resource_projection_spec.ProjectionSpec(
           symbols={resource_projection_spec.GLOBAL_RESTRICTION_NAME:
                    EvalGlobalRestriction})
-      if not resource_filter.Compile(attribute.transform.conditional,
-                                     defaults=defaults).Evaluate(conditionals):
+      if not resource_filter.Compile(
+          attribute.transform.conditional,
+          defaults=defaults).Evaluate(conditionals):
         return
-    if func_name and attribute.label is None and not key:
-      attribute.label = self._AngrySnakeCase([func_name])
+    if attribute.label is None and not key and attribute.transform:
+      attribute.label = self._AngrySnakeCase(
+          [attribute.transform.name] +
+          attribute.transform._transforms[0].args)  # pylint: disable=protected-access
     self._AddKey(key, attribute)
 
   def _ParseKeys(self):
@@ -487,7 +513,8 @@ class Parser(object):
     return self._projection
 
 
-def Parse(expression, defaults=None, symbols=None, aliases=None, compiler=None):
+def Parse(expression='', defaults=None, symbols=None, aliases=None,
+          compiler=None):
   """Parses a resource projector expression.
 
   Args:

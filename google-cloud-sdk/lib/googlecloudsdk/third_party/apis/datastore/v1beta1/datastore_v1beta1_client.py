@@ -24,7 +24,7 @@ class DatastoreV1beta1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new datastore handle."""
     url = url or self.BASE_URL
     super(DatastoreV1beta1, self).__init__(
@@ -33,7 +33,8 @@ class DatastoreV1beta1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.projects = self.ProjectsService(self)
 
   class ProjectsService(base_api.BaseApiService):
@@ -47,11 +48,11 @@ class DatastoreV1beta1(base_api.BaseApiClient):
           }
 
     def Export(self, request, global_params=None):
-      """Exports a copy of all or a subset of entities from Google Cloud Datastore.
+      r"""Exports a copy of all or a subset of entities from Google Cloud Datastore.
 to another storage system, such as Google Cloud Storage. Recent updates to
 entities may not be reflected in the export. The export occurs in the
 background and its progress can be monitored and managed via the
-Operation resource that is created.  The output of an export may only be
+Operation resource that is created. The output of an export may only be
 used once the associated operation is done. If an export operation is
 cancelled before completion it may leave partial data behind in Google
 Cloud Storage.
@@ -80,10 +81,10 @@ Cloud Storage.
     )
 
     def Import(self, request, global_params=None):
-      """Imports entities into Google Cloud Datastore. Existing entities with the.
+      r"""Imports entities into Google Cloud Datastore. Existing entities with the.
 same key are overwritten. The import occurs in the background and its
 progress can be monitored and managed via the Operation resource that is
-created.  If an ImportEntities operation is cancelled, it is possible
+created. If an ImportEntities operation is cancelled, it is possible
 that a subset of the data has already been imported to Cloud Datastore.
 
       Args:

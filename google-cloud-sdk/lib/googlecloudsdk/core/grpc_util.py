@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,11 +15,21 @@
 
 """A module to get an unauthenticated gRPC stub."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.core import http
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import store as cred_store
 
-import grpc
+import six
+
+if six.PY2:
+  # TODO(b/78118402): gRPC support on Python 3.
+  # This doesn't work on py3 and nothing that calls it will work. We skip the
+  # import here just so tests can load and be skipped without crashing.
+  import grpc  # pylint: disable=g-import-not-at-top
 
 
 class _MetadataPlugin(object):

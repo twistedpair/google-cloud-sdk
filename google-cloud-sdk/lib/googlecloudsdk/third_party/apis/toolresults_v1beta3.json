@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20171013",
+ "revision": "20191206",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -20,7 +20,7 @@
  "basePath": "/toolresults/v1beta3/projects/",
  "rootUrl": "https://www.googleapis.com/",
  "servicePath": "toolresults/v1beta3/projects/",
- "batchPath": "batch",
+ "batchPath": "batch/toolresults/v1beta3",
  "parameters": {
   "alt": {
    "type": "string",
@@ -57,12 +57,12 @@
   },
   "quotaUser": {
    "type": "string",
-   "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.",
+   "description": "An opaque string that represents a user for quota purposes. Must not exceed 40 characters.",
    "location": "query"
   },
   "userIp": {
    "type": "string",
-   "description": "IP address of the site where the request originates. Use this if you want to enforce per-user limits.",
+   "description": "Deprecated. Please use quotaUser instead.",
    "location": "query"
   }
  },
@@ -123,7 +123,7 @@
     },
     "useOrchestrator": {
      "type": "boolean",
-     "description": "The flag indicates whether Android Test Orchestrator will be used to run test or not. Test orchestrator is used if either: - orchestrator_option field is USE_ORCHESTRATOR, and test runner is compatible with orchestrator. Or - orchestrator_option field is unspecified or ORCHESTRATOR_OPTION_UNSPECIFIED, and test runner is compatible with orchestrator."
+     "description": "The flag indicates whether Android Test Orchestrator will be used to run test or not."
     }
    }
   },
@@ -165,7 +165,7 @@
    "properties": {
     "androidAppInfo": {
      "$ref": "AndroidAppInfo",
-     "description": "Infomation about the application under test."
+     "description": "Information about the application under test."
     },
     "androidInstrumentationTest": {
      "$ref": "AndroidInstrumentationTest",
@@ -189,7 +189,7 @@
    "properties": {
     "typeUrl": {
      "type": "string",
-     "description": "A URL/resource name whose content describes the type of the serialized protocol buffer message.\n\nFor URLs which use the scheme `http`, `https`, or no scheme, the following restrictions and interpretations apply:\n\n* If no scheme is provided, `https` is assumed. * The last segment of the URL's path must represent the fully qualified name of the type (as in `path/google.protobuf.Duration`). The name should be in a canonical form (e.g., leading \".\" is not accepted). * An HTTP GET on the URL must yield a [google.protobuf.Type][] value in binary format, or produce an error. * Applications are allowed to cache lookup results based on the URL, or have them precompiled into a binary to avoid any lookup. Therefore, binary compatibility needs to be preserved on changes to types. (Use versioned type names to manage breaking changes.)\n\nSchemes other than `http`, `https` (or the empty scheme) might be used with implementation specific semantics."
+     "description": "A URL/resource name that uniquely identifies the type of the serialized protocol buffer message. This string must contain at least one \"/\" character. The last segment of the URL's path must represent the fully qualified name of the type (as in `path/google.protobuf.Duration`). The name should be in a canonical form (e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they expect it to use in the context of Any. However, for URLs which use the scheme `http`, `https`, or no scheme, one can optionally set up a type server that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed. * An HTTP GET on the URL must yield a [google.protobuf.Type][] value in binary format, or produce an error. * Applications are allowed to cache lookup results based on the URL, or have them precompiled into a binary to avoid any lookup. Therefore, binary compatibility needs to be preserved on changes to types. (Use versioned type names to manage breaking changes.)\n\nNote: this functionality is not currently available in the official protobuf release, and it is not used for type URLs beginning with type.googleapis.com.\n\nSchemes other than `http`, `https` (or the empty scheme) might be used with implementation specific semantics."
     },
     "value": {
      "type": "string",
@@ -342,7 +342,7 @@
   "Duration": {
    "id": "Duration",
    "type": "object",
-   "description": "A Duration represents a signed, fixed-length span of time represented as a count of seconds and fractions of seconds at nanosecond resolution. It is independent of any calendar and concepts like \"day\" or \"month\". It is related to Timestamp in that the difference between two Timestamp values is a Duration and it can be added or subtracted from a Timestamp. Range is approximately +-10,000 years.\n\n# Examples\n\nExample 1: Compute Duration from two Timestamps in pseudo code.\n\nTimestamp start = ...; Timestamp end = ...; Duration duration = ...;\n\nduration.seconds = end.seconds - start.seconds; duration.nanos = end.nanos - start.nanos;\n\nif (duration.seconds  0) { duration.seconds += 1; duration.nanos -= 1000000000; } else if (durations.seconds \u003e 0 && duration.nanos \u003c 0) { duration.seconds -= 1; duration.nanos += 1000000000; }\n\nExample 2: Compute Timestamp from Timestamp + Duration in pseudo code.\n\nTimestamp start = ...; Duration duration = ...; Timestamp end = ...;\n\nend.seconds = start.seconds + duration.seconds; end.nanos = start.nanos + duration.nanos;\n\nif (end.nanos = 1000000000) { end.seconds += 1; end.nanos -= 1000000000; }\n\nExample 3: Compute Duration from datetime.timedelta in Python.\n\ntd = datetime.timedelta(days=3, minutes=10) duration = Duration() duration.FromTimedelta(td)\n\n# JSON Mapping\n\nIn JSON format, the Duration type is encoded as a string rather than an object, where the string ends in the suffix \"s\" (indicating seconds) and is preceded by the number of seconds, with nanoseconds expressed as fractional seconds. For example, 3 seconds with 0 nanoseconds should be encoded in JSON format as \"3s\", while 3 seconds and 1 nanosecond should be expressed in JSON format as \"3.000000001s\", and 3 seconds and 1 microsecond should be expressed in JSON format as \"3.000001s\".",
+   "description": "A Duration represents a signed, fixed-length span of time represented as a count of seconds and fractions of seconds at nanosecond resolution. It is independent of any calendar and concepts like \"day\" or \"month\". It is related to Timestamp in that the difference between two Timestamp values is a Duration and it can be added or subtracted from a Timestamp. Range is approximately +-10,000 years.\n\n# Examples\n\nExample 1: Compute Duration from two Timestamps in pseudo code.\n\nTimestamp start = ...; Timestamp end = ...; Duration duration = ...;\n\nduration.seconds = end.seconds - start.seconds; duration.nanos = end.nanos - start.nanos;\n\nif (duration.seconds  0) { duration.seconds += 1; duration.nanos -= 1000000000; } else if (duration.seconds \u003e 0 && duration.nanos \u003c 0) { duration.seconds -= 1; duration.nanos += 1000000000; }\n\nExample 2: Compute Timestamp from Timestamp + Duration in pseudo code.\n\nTimestamp start = ...; Duration duration = ...; Timestamp end = ...;\n\nend.seconds = start.seconds + duration.seconds; end.nanos = start.nanos + duration.nanos;\n\nif (end.nanos = 1000000000) { end.seconds += 1; end.nanos -= 1000000000; }\n\nExample 3: Compute Duration from datetime.timedelta in Python.\n\ntd = datetime.timedelta(days=3, minutes=10) duration = Duration() duration.FromTimedelta(td)\n\n# JSON Mapping\n\nIn JSON format, the Duration type is encoded as a string rather than an object, where the string ends in the suffix \"s\" (indicating seconds) and is preceded by the number of seconds, with nanoseconds expressed as fractional seconds. For example, 3 seconds with 0 nanoseconds should be encoded in JSON format as \"3s\", while 3 seconds and 1 nanosecond should be expressed in JSON format as \"3.000000001s\", and 3 seconds and 1 microsecond should be expressed in JSON format as \"3.000001s\".",
    "externalTypeName": "google.protobuf.Duration",
    "properties": {
     "nanos": {
@@ -354,6 +354,77 @@
      "type": "string",
      "description": "Signed seconds of the span of time. Must be from -315,576,000,000 to +315,576,000,000 inclusive. Note: these bounds are computed from: 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years",
      "format": "int64"
+    }
+   }
+  },
+  "Environment": {
+   "id": "Environment",
+   "type": "object",
+   "description": "An Environment represents the set of test runs (Steps) from the parent Execution that are configured with the same set of dimensions (Model, Version, Locale, and Orientation). Multiple such runs occur particularly because of features like sharding (splitting up a test suite to run in parallel across devices) and reruns (running a test multiple times to check for different outcomes).",
+   "externalTypeName": "google.devtools.toolresults.v1.Environment",
+   "properties": {
+    "completionTime": {
+     "$ref": "Timestamp",
+     "description": "Output only. The time when the Environment status was set to complete.\n\nThis value will be set automatically when state transitions to COMPLETE."
+    },
+    "creationTime": {
+     "$ref": "Timestamp",
+     "description": "Output only. The time when the Environment was created."
+    },
+    "dimensionValue": {
+     "type": "array",
+     "description": "Dimension values describing the environment. Dimension values always consist of \"Model\", \"Version\", \"Locale\", and \"Orientation\".\n\n- In response: always set - In create request: always set - In update request: never set",
+     "items": {
+      "$ref": "EnvironmentDimensionValueEntry"
+     }
+    },
+    "displayName": {
+     "type": "string",
+     "description": "A short human-readable name to display in the UI. Maximum of 100 characters. For example: Nexus 5, API 27."
+    },
+    "environmentId": {
+     "type": "string",
+     "description": "Output only. An Environment id."
+    },
+    "environmentResult": {
+     "$ref": "MergedResult",
+     "description": "Merged result of the environment."
+    },
+    "executionId": {
+     "type": "string",
+     "description": "Output only. An Execution id."
+    },
+    "historyId": {
+     "type": "string",
+     "description": "Output only. A History id."
+    },
+    "projectId": {
+     "type": "string",
+     "description": "Output only. A Project id."
+    },
+    "resultsStorage": {
+     "$ref": "ResultsStorage",
+     "description": "The location where output files are stored in the user bucket."
+    },
+    "shardSummaries": {
+     "type": "array",
+     "description": "Output only. Summaries of shards.\n\nOnly one shard will present unless sharding feature is enabled in TestExecutionService.",
+     "items": {
+      "$ref": "ShardSummary"
+     }
+    }
+   }
+  },
+  "EnvironmentDimensionValueEntry": {
+   "id": "EnvironmentDimensionValueEntry",
+   "type": "object",
+   "externalTypeName": "google.devtools.toolresults.v1.Environment.DimensionValueEntry",
+   "properties": {
+    "key": {
+     "type": "string"
+    },
+    "value": {
+     "type": "string"
     }
    }
   },
@@ -408,6 +479,7 @@
   "FailureDetail": {
    "id": "FailureDetail",
    "type": "object",
+   "description": "Details for an outcome with a FAILURE outcome summary.",
    "externalTypeName": "google.devtools.toolresults.v1.FailureDetail",
    "properties": {
     "crashed": {
@@ -547,7 +619,7 @@
     },
     "name": {
      "type": "string",
-     "description": "A name to uniquely identify a history within a project. Maximum of 100 characters.\n\n- In response always set - In create request: always set"
+     "description": "A name to uniquely identify a history within a project. Maximum of 200 characters.\n\n- In response always set - In create request: always set"
     }
    }
   },
@@ -578,15 +650,90 @@
   "InconclusiveDetail": {
    "id": "InconclusiveDetail",
    "type": "object",
+   "description": "Details for an outcome with an INCONCLUSIVE outcome summary.",
    "externalTypeName": "google.devtools.toolresults.v1.InconclusiveDetail",
    "properties": {
     "abortedByUser": {
      "type": "boolean",
      "description": "If the end user aborted the test execution before a pass or fail could be determined. For example, the user pressed ctrl-c which sent a kill signal to the test runner while the test was running."
     },
+    "hasErrorLogs": {
+     "type": "boolean",
+     "description": "If results are being provided to the user in certain cases of infrastructure failures"
+    },
     "infrastructureFailure": {
      "type": "boolean",
      "description": "If the test runner could not determine success or failure because the test depends on a component other than the system under test which failed.\n\nFor example, a mobile test requires provisioning a device where the test executes, and that provisioning can fail."
+    }
+   }
+  },
+  "IndividualOutcome": {
+   "id": "IndividualOutcome",
+   "type": "object",
+   "description": "Step Id and outcome of each individual step that was run as a group with other steps with the same configuration.",
+   "externalTypeName": "google.devtools.toolresults.v1.IndividualOutcome",
+   "properties": {
+    "multistepNumber": {
+     "type": "integer",
+     "description": "Unique int given to each step. Ranges from 0(inclusive) to total number of steps(exclusive). The primary step is 0.",
+     "format": "int32"
+    },
+    "outcomeSummary": {
+     "type": "string",
+     "enum": [
+      "failure",
+      "flaky",
+      "inconclusive",
+      "skipped",
+      "success",
+      "unset"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "runDuration": {
+     "$ref": "Duration",
+     "description": "How long it took for this step to run."
+    },
+    "stepId": {
+     "type": "string"
+    }
+   }
+  },
+  "ListEnvironmentsResponse": {
+   "id": "ListEnvironmentsResponse",
+   "type": "object",
+   "description": "Response message for EnvironmentService.ListEnvironments.",
+   "externalTypeName": "google.devtools.toolresults.v1.ListEnvironmentsResponse",
+   "properties": {
+    "environments": {
+     "type": "array",
+     "description": "Environments.\n\nAlways set.",
+     "items": {
+      "$ref": "Environment"
+     }
+    },
+    "executionId": {
+     "type": "string",
+     "description": "A Execution id\n\nAlways set."
+    },
+    "historyId": {
+     "type": "string",
+     "description": "A History id.\n\nAlways set."
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "A continuation token to resume the query at the next item.\n\nWill only be set if there are more Environments to fetch."
+    },
+    "projectId": {
+     "type": "string",
+     "description": "A Project id.\n\nAlways set."
     }
    }
   },
@@ -665,7 +812,7 @@
    "properties": {
     "clusters": {
      "type": "array",
-     "description": "The set of clustres associated with an execution Always set",
+     "description": "The set of clusters associated with an execution Always set",
      "items": {
       "$ref": "ScreenshotCluster"
      }
@@ -710,6 +857,24 @@
     }
    }
   },
+  "ListTestCasesResponse": {
+   "id": "ListTestCasesResponse",
+   "type": "object",
+   "description": "Response message for StepService.ListTestCases.",
+   "externalTypeName": "google.devtools.toolresults.v1.ListTestCasesResponse",
+   "properties": {
+    "nextPageToken": {
+     "type": "string"
+    },
+    "testCases": {
+     "type": "array",
+     "description": "List of test cases.",
+     "items": {
+      "$ref": "TestCase"
+     }
+    }
+   }
+  },
   "MemoryInfo": {
    "id": "MemoryInfo",
    "type": "object",
@@ -724,6 +889,62 @@
      "type": "string",
      "description": "Total memory available on the device in KiB",
      "format": "int64"
+    }
+   }
+  },
+  "MergedResult": {
+   "id": "MergedResult",
+   "type": "object",
+   "description": "Merged test result for environment.\n\nIf the environment has only one step (no reruns or shards), then the merged result is the same as the step result. If the environment has multiple shards and/or reruns, then the results of shards and reruns that belong to the same environment are merged into one environment result.",
+   "externalTypeName": "google.devtools.toolresults.v1.MergedResult",
+   "properties": {
+    "outcome": {
+     "$ref": "Outcome",
+     "description": "Outcome of the resource"
+    },
+    "state": {
+     "type": "string",
+     "description": "State of the resource",
+     "enum": [
+      "complete",
+      "inProgress",
+      "pending",
+      "unknownState"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "testSuiteOverviews": {
+     "type": "array",
+     "description": "The combined and rolled-up result of each test suite that was run as part of this environment.\n\nCombining: When the test cases from a suite are run in different steps (sharding), the results are added back together in one overview. (e.g., if shard1 has 2 failures and shard2 has 1 failure than the overview failure_count = 3).\n\nRollup: When test cases from the same suite are run multiple times (flaky), the results are combined (e.g., if testcase1.run1 fails, testcase1.run2 passes, and both testcase2.run1 and testcase2.run2 fail then the overview flaky_count = 1 and failure_count = 1).",
+     "items": {
+      "$ref": "TestSuiteOverview"
+     }
+    }
+   }
+  },
+  "MultiStep": {
+   "id": "MultiStep",
+   "type": "object",
+   "description": "Details when multiple steps are run with the same configuration as a group.",
+   "externalTypeName": "google.devtools.toolresults.v1.MultiStep",
+   "properties": {
+    "multistepNumber": {
+     "type": "integer",
+     "description": "Unique int given to each step. Ranges from 0(inclusive) to total number of steps(exclusive). The primary step is 0.",
+     "format": "int32"
+    },
+    "primaryStep": {
+     "$ref": "PrimaryStep",
+     "description": "Present if it is a primary (original) step."
+    },
+    "primaryStepId": {
+     "type": "string",
+     "description": "Step Id of the primary (original) step, which might be this step."
     }
    }
   },
@@ -754,12 +975,14 @@
      "description": "The simplest way to interpret a result.\n\nRequired",
      "enum": [
       "failure",
+      "flaky",
       "inconclusive",
       "skipped",
       "success",
       "unset"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -849,7 +1072,7 @@
    "properties": {
     "sampleTime": {
      "$ref": "Timestamp",
-     "description": "Timestamp of collection"
+     "description": "Timestamp of collection."
     },
     "value": {
      "type": "number",
@@ -890,6 +1113,41 @@
     }
    }
   },
+  "PrimaryStep": {
+   "id": "PrimaryStep",
+   "type": "object",
+   "description": "Stores rollup test status of multiple steps that were run as a group and outcome of each individual step.",
+   "externalTypeName": "google.devtools.toolresults.v1.PrimaryStep",
+   "properties": {
+    "individualOutcome": {
+     "type": "array",
+     "description": "Step Id and outcome of each individual step.",
+     "items": {
+      "$ref": "IndividualOutcome"
+     }
+    },
+    "rollUp": {
+     "type": "string",
+     "description": "Rollup test status of multiple steps that were run with the same configuration as a group.",
+     "enum": [
+      "failure",
+      "flaky",
+      "inconclusive",
+      "skipped",
+      "success",
+      "unset"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
   "ProjectSettings": {
    "id": "ProjectSettings",
    "type": "object",
@@ -918,6 +1176,22 @@
      "items": {
       "$ref": "FileReference"
      }
+    }
+   }
+  },
+  "ResultsStorage": {
+   "id": "ResultsStorage",
+   "type": "object",
+   "description": "The storage for test results.",
+   "externalTypeName": "google.devtools.toolresults.v1.ResultsStorage",
+   "properties": {
+    "resultsStoragePath": {
+     "$ref": "FileReference",
+     "description": "The root directory for test results."
+    },
+    "xunitXmlFile": {
+     "$ref": "FileReference",
+     "description": "The path to the Xunit XML file."
     }
    }
   },
@@ -970,9 +1244,22 @@
     }
    }
   },
+  "ShardSummary": {
+   "id": "ShardSummary",
+   "type": "object",
+   "description": "Result summary for a shard in an environment.",
+   "externalTypeName": "google.devtools.toolresults.v1.ShardSummary",
+   "properties": {
+    "shardResult": {
+     "$ref": "MergedResult",
+     "description": "Merged result of the shard."
+    }
+   }
+  },
   "SkippedDetail": {
    "id": "SkippedDetail",
    "type": "object",
+   "description": "Details for an outcome with a SKIPPED outcome summary.",
    "externalTypeName": "google.devtools.toolresults.v1.SkippedDetail",
    "properties": {
     "incompatibleAppVersion": {
@@ -1007,24 +1294,16 @@
    "description": "A stacktrace.",
    "externalTypeName": "google.devtools.toolresults.v1.StackTrace",
    "properties": {
-    "clusterId": {
-     "type": "string",
-     "description": "Exception cluster ID"
-    },
     "exception": {
      "type": "string",
      "description": "The stack trace message.\n\nRequired"
-    },
-    "reportId": {
-     "type": "string",
-     "description": "Exception report ID"
     }
    }
   },
   "Status": {
    "id": "Status",
    "type": "object",
-   "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users - Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message, and error details. The error code should be an enum value of [google.rpc.Code][], but it may accept additional error codes if needed. The error message should be a developer-facing English message that helps developers *understand* and *resolve* the error. If a localized user-facing error message is needed, put the localized message in the error details or localize it in the client. The optional error details may contain arbitrary information about the error. There is a predefined set of error detail types in the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it is not necessarily the actual wire format. When the `Status` message is exposed in different client libraries and different wire protocols, it can be mapped differently. For example, it will likely be mapped to some exceptions in Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of environments, either with or without APIs, to provide a consistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client, it may embed the `Status` in the normal response to indicate the partial errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the `Status` message should be used directly inside batch response, one for each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation results in its response, the status of those operations should be represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could be used directly after any stripping needed for security/privacy reasons.",
+   "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).",
    "externalTypeName": "google.rpc.Status",
    "properties": {
     "code": {
@@ -1048,7 +1327,7 @@
   "Step": {
    "id": "Step",
    "type": "object",
-   "description": "A Step represents a single operation performed as part of Execution. A step can be used to represent the execution of a tool ( for example a test runner execution or an execution of a compiler).\n\nSteps can overlap (for instance two steps might have the same start time if some operations are done in parallel).\n\nHere is an example, let's consider that we have a continuous build is executing a test runner for each iteration. The workflow would look like: - user creates a Execution with id 1 - user creates an TestExecutionStep with id 100 for Execution 1 - user update TestExecutionStep with id 100 to add a raw xml log + the service parses the xml logs and returns a TestExecutionStep with updated TestResult(s). - user update the status of TestExecutionStep with id 100 to COMPLETE\n\nA Step can be updated until its state is set to COMPLETE at which points it becomes immutable.",
+   "description": "A Step represents a single operation performed as part of Execution. A step can be used to represent the execution of a tool ( for example a test runner execution or an execution of a compiler).\n\nSteps can overlap (for instance two steps might have the same start time if some operations are done in parallel).\n\nHere is an example, let's consider that we have a continuous build is executing a test runner for each iteration. The workflow would look like: - user creates a Execution with id 1 - user creates an TestExecutionStep with id 100 for Execution 1 - user update TestExecutionStep with id 100 to add a raw xml log + the service parses the xml logs and returns a TestExecutionStep with updated TestResult(s). - user update the status of TestExecutionStep with id 100 to COMPLETE\n\nA Step can be updated until its state is set to COMPLETE at which points it becomes immutable.\n\nNext tag: 27",
    "externalTypeName": "google.devtools.toolresults.v1.Step",
    "properties": {
     "completionTime": {
@@ -1084,6 +1363,10 @@
      "items": {
       "$ref": "StepLabelsEntry"
      }
+    },
+    "multiStep": {
+     "$ref": "MultiStep",
+     "description": "Details when multiple steps are run with the same configuration as a group. These details can be used identify which group this step is part of. It also identifies the groups 'primary step' which indexes all the group members.\n\n- In response: present if previously set. - In create request: optional, set iff this step was performed more than once. - In update request: optional"
     },
     "name": {
      "type": "string",
@@ -1156,11 +1439,75 @@
   "SuccessDetail": {
    "id": "SuccessDetail",
    "type": "object",
+   "description": "Details for an outcome with a SUCCESS outcome summary. LINT.IfChange",
    "externalTypeName": "google.devtools.toolresults.v1.SuccessDetail",
    "properties": {
     "otherNativeCrash": {
      "type": "boolean",
      "description": "If a native process other than the app crashed."
+    }
+   }
+  },
+  "TestCase": {
+   "id": "TestCase",
+   "type": "object",
+   "externalTypeName": "google.devtools.toolresults.v1.TestCase",
+   "properties": {
+    "elapsedTime": {
+     "$ref": "Duration",
+     "description": "The elapsed run time of the test case.\n\nRequired."
+    },
+    "endTime": {
+     "$ref": "Timestamp",
+     "description": "The end time of the test case.\n\nOptional."
+    },
+    "skippedMessage": {
+     "type": "string",
+     "description": "Why the test case was skipped.\n\nPresent only for skipped test case"
+    },
+    "stackTraces": {
+     "type": "array",
+     "description": "The stack trace details if the test case failed or encountered an error.\n\nThe maximum size of the stack traces is 100KiB, beyond which the stack track will be truncated.\n\nZero if the test case passed.",
+     "items": {
+      "$ref": "StackTrace"
+     }
+    },
+    "startTime": {
+     "$ref": "Timestamp",
+     "description": "The start time of the test case.\n\nOptional."
+    },
+    "status": {
+     "type": "string",
+     "description": "The status of the test case.\n\nRequired.",
+     "enum": [
+      "error",
+      "failed",
+      "flaky",
+      "passed",
+      "skipped"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "testCaseId": {
+     "type": "string",
+     "description": "A unique identifier within a Step for this Test Case."
+    },
+    "testCaseReference": {
+     "$ref": "TestCaseReference",
+     "description": "Test case reference, e.g. name, class name and test suite name.\n\nRequired."
+    },
+    "toolOutputs": {
+     "type": "array",
+     "description": "References to opaque files of any format output by the tool execution.",
+     "items": {
+      "$ref": "ToolOutputReference"
+     }
     }
    }
   },
@@ -1220,6 +1567,20 @@
    "description": "An issue detected occurring during a test execution.",
    "externalTypeName": "google.devtools.toolresults.v1.TestIssue",
    "properties": {
+    "category": {
+     "type": "string",
+     "description": "Category of issue. Required.",
+     "enum": [
+      "common",
+      "robo",
+      "unspecifiedCategory"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
     "errorMessage": {
      "type": "string",
      "description": "A brief human-readable message describing the issue. Required."
@@ -1230,10 +1591,12 @@
      "enum": [
       "info",
       "severe",
+      "suggestion",
       "unspecifiedSeverity",
       "warning"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -1249,11 +1612,59 @@
      "description": "Type of issue. Required.",
      "enum": [
       "anr",
+      "availableDeepLinks",
+      "blankScreen",
+      "compatibleWithOrchestrator",
+      "completeRoboScriptExecution",
+      "crashDialogError",
+      "encounteredLoginScreen",
+      "encounteredNonAndroidUiWidgetScreen",
+      "failedToInstall",
       "fatalException",
+      "inAppPurchases",
+      "incompleteRoboScriptExecution",
+      "insufficientCoverage",
+      "iosCrash",
+      "iosException",
+      "launcherActivityNotFound",
       "nativeCrash",
-      "unspecifiedType"
+      "nonSdkApiUsageReport",
+      "nonSdkApiUsageViolation",
+      "overlappingUiElements",
+      "performedGoogleLogin",
+      "performedMonkeyActions",
+      "startActivityNotFound",
+      "uiElementsTooDeep",
+      "unspecifiedType",
+      "unusedRoboDirective",
+      "usedRoboDirective",
+      "usedRoboIgnoreDirective"
      ],
      "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
       "",
       "",
       "",
@@ -1262,7 +1673,7 @@
     },
     "warning": {
      "$ref": "Any",
-     "description": "Warning message with additional details of the issue. Should always be a message from com.google.devtools.toolresults.v1.warnings Required."
+     "description": "Warning message with additional details of the issue. Should always be a message from com.google.devtools.toolresults.v1.warnings"
     }
    }
   },
@@ -1272,6 +1683,10 @@
    "description": "A summary of a test suite result either parsed from XML or uploaded directly by a user.\n\nNote: the API related comments are for StepService only. This message is also being used in ExecutionService in a read only mode for the corresponding step.",
    "externalTypeName": "google.devtools.toolresults.v1.TestSuiteOverview",
    "properties": {
+    "elapsedTime": {
+     "$ref": "Duration",
+     "description": "Elapsed time of test suite."
+    },
     "errorCount": {
      "type": "integer",
      "description": "Number of test cases in error, typically set by the service by parsing the xml_source.\n\n- In create/response: always set - In update request: never",
@@ -1280,6 +1695,11 @@
     "failureCount": {
      "type": "integer",
      "description": "Number of failed test cases, typically set by the service by parsing the xml_source. May also be set by the user.\n\n- In create/response: always set - In update request: never",
+     "format": "int32"
+    },
+    "flakyCount": {
+     "type": "integer",
+     "description": "Number of flaky test cases, set by the service by rolling up flaky test attempts.\n\nPresent only for rollup test suite overview at environment level. A step cannot have flaky test cases.",
      "format": "int32"
     },
     "name": {
@@ -1344,7 +1764,7 @@
   "Timestamp": {
    "id": "Timestamp",
    "type": "object",
-   "description": "A Timestamp represents a point in time independent of any time zone or calendar, represented as seconds and fractions of seconds at nanosecond resolution in UTC Epoch time. It is encoded using the Proleptic Gregorian Calendar which extends the Gregorian calendar backwards to year one. It is encoded assuming all minutes are 60 seconds long, i.e. leap seconds are \"smeared\" so that no leap second table is needed for interpretation. Range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By restricting to that range, we ensure that we can convert to and from RFC 3339 date strings. See [https://www.ietf.org/rfc/rfc3339.txt](https://www.ietf.org/rfc/rfc3339.txt).\n\n# Examples\n\nExample 1: Compute Timestamp from POSIX `time()`.\n\nTimestamp timestamp; timestamp.set_seconds(time(NULL)); timestamp.set_nanos(0);\n\nExample 2: Compute Timestamp from POSIX `gettimeofday()`.\n\nstruct timeval tv; gettimeofday(&tv, NULL);\n\nTimestamp timestamp; timestamp.set_seconds(tv.tv_sec); timestamp.set_nanos(tv.tv_usec * 1000);\n\nExample 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.\n\nFILETIME ft; GetSystemTimeAsFileTime(&ft); UINT64 ticks = (((UINT64)ft.dwHighDateTime) \u003c\u003c 32) | ft.dwLowDateTime;\n\n// A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z. Timestamp timestamp; timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL)); timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));\n\nExample 4: Compute Timestamp from Java `System.currentTimeMillis()`.\n\nlong millis = System.currentTimeMillis();\n\nTimestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000) .setNanos((int) ((millis % 1000) * 1000000)).build();\n\n\n\nExample 5: Compute Timestamp from current time in Python.\n\ntimestamp = Timestamp() timestamp.GetCurrentTime()\n\n# JSON Mapping\n\nIn JSON format, the Timestamp type is encoded as a string in the [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the format is \"{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z\" where {year} is always expressed using four digits while {month}, {day}, {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution), are optional. The \"Z\" suffix indicates the timezone (\"UTC\"); the timezone is required, though only UTC (as indicated by \"Z\") is presently supported.\n\nFor example, \"2017-01-15T01:30:15.01Z\" encodes 15.01 seconds past 01:30 UTC on January 15, 2017.\n\nIn JavaScript, one can convert a Date object to this format using the standard [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString] method. In Python, a standard `datetime.datetime` object can be converted to this format using [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use the Joda Time's [`ISODateTimeFormat.dateTime()`]( http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()) to obtain a formatter capable of generating timestamps in this format.",
+   "description": "A Timestamp represents a point in time independent of any time zone or local calendar, encoded as a count of seconds and fractions of seconds at nanosecond resolution. The count is relative to an epoch at UTC midnight on January 1, 1970, in the proleptic Gregorian calendar which extends the Gregorian calendar backwards to year one.\n\nAll minutes are 60 seconds long. Leap seconds are \"smeared\" so that no leap second table is needed for interpretation, using a [24-hour linear smear](https://developers.google.com/time/smear).\n\nThe range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By restricting to that range, we ensure that we can convert to and from [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.\n\n# Examples\n\nExample 1: Compute Timestamp from POSIX `time()`.\n\nTimestamp timestamp; timestamp.set_seconds(time(NULL)); timestamp.set_nanos(0);\n\nExample 2: Compute Timestamp from POSIX `gettimeofday()`.\n\nstruct timeval tv; gettimeofday(&tv, NULL);\n\nTimestamp timestamp; timestamp.set_seconds(tv.tv_sec); timestamp.set_nanos(tv.tv_usec * 1000);\n\nExample 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.\n\nFILETIME ft; GetSystemTimeAsFileTime(&ft); UINT64 ticks = (((UINT64)ft.dwHighDateTime) \u003c\u003c 32) | ft.dwLowDateTime;\n\n// A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z. Timestamp timestamp; timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL)); timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));\n\nExample 4: Compute Timestamp from Java `System.currentTimeMillis()`.\n\nlong millis = System.currentTimeMillis();\n\nTimestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000) .setNanos((int) ((millis % 1000) * 1000000)).build();\n\n\n\nExample 5: Compute Timestamp from current time in Python.\n\ntimestamp = Timestamp() timestamp.GetCurrentTime()\n\n# JSON Mapping\n\nIn JSON format, the Timestamp type is encoded as a string in the [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the format is \"{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z\" where {year} is always expressed using four digits while {month}, {day}, {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution), are optional. The \"Z\" suffix indicates the timezone (\"UTC\"); the timezone is required. A proto3 JSON serializer should always use UTC (as indicated by \"Z\") when printing the Timestamp type and a proto3 JSON parser should be able to accept both UTC and other timezones (as indicated by an offset).\n\nFor example, \"2017-01-15T01:30:15.01Z\" encodes 15.01 seconds past 01:30 UTC on January 15, 2017.\n\nIn JavaScript, one can convert a Date object to this format using the standard [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString) method. In Python, a standard `datetime.datetime` object can be converted to this format using [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use the Joda Time's [`ISODateTimeFormat.dateTime()`]( http://www.joda.org/joda-time/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime%2D%2D ) to obtain a formatter capable of generating timestamps in this format.",
    "externalTypeName": "google.protobuf.Timestamp",
    "properties": {
     "nanos": {
@@ -1674,7 +2094,7 @@
          "id": "toolresults.projects.histories.executions.list",
          "path": "{projectId}/histories/{historyId}/executions",
          "httpMethod": "GET",
-         "description": "Lists Histories for a given Project.\n\nThe executions are sorted by creation_time in descending order. The execution_id key will be used to order the executions with the same creation_time.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project - INVALID_ARGUMENT - if the request is malformed - NOT_FOUND - if the containing History does not exist",
+         "description": "Lists Executions for a given History.\n\nThe executions are sorted by creation_time in descending order. The execution_id key will be used to order the executions with the same creation_time.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project - INVALID_ARGUMENT - if the request is malformed - NOT_FOUND - if the containing History does not exist",
          "parameters": {
           "historyId": {
            "type": "string",
@@ -1837,6 +2257,102 @@
           }
          }
         },
+        "environments": {
+         "methods": {
+          "get": {
+           "id": "toolresults.projects.histories.executions.environments.get",
+           "path": "{projectId}/histories/{historyId}/executions/{executionId}/environments/{environmentId}",
+           "httpMethod": "GET",
+           "description": "Gets an Environment.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project - INVALID_ARGUMENT - if the request is malformed - NOT_FOUND - if the Environment does not exist",
+           "parameters": {
+            "environmentId": {
+             "type": "string",
+             "description": "Required. An Environment id.",
+             "required": true,
+             "location": "path"
+            },
+            "executionId": {
+             "type": "string",
+             "description": "Required. An Execution id.",
+             "required": true,
+             "location": "path"
+            },
+            "historyId": {
+             "type": "string",
+             "description": "Required. A History id.",
+             "required": true,
+             "location": "path"
+            },
+            "projectId": {
+             "type": "string",
+             "description": "Required. A Project id.",
+             "required": true,
+             "location": "path"
+            }
+           },
+           "parameterOrder": [
+            "projectId",
+            "historyId",
+            "executionId",
+            "environmentId"
+           ],
+           "response": {
+            "$ref": "Environment"
+           },
+           "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+           ]
+          },
+          "list": {
+           "id": "toolresults.projects.histories.executions.environments.list",
+           "path": "{projectId}/histories/{historyId}/executions/{executionId}/environments",
+           "httpMethod": "GET",
+           "description": "Lists Environments for a given Execution.\n\nThe Environments are sorted by display name.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project - INVALID_ARGUMENT - if the request is malformed - NOT_FOUND - if the containing Execution does not exist",
+           "parameters": {
+            "executionId": {
+             "type": "string",
+             "description": "Required. An Execution id.",
+             "required": true,
+             "location": "path"
+            },
+            "historyId": {
+             "type": "string",
+             "description": "Required. A History id.",
+             "required": true,
+             "location": "path"
+            },
+            "pageSize": {
+             "type": "integer",
+             "description": "The maximum number of Environments to fetch.\n\nDefault value: 25. The server will use this default if the field is not set or has a value of 0.",
+             "format": "int32",
+             "location": "query"
+            },
+            "pageToken": {
+             "type": "string",
+             "description": "A continuation token to resume the query at the next item.",
+             "location": "query"
+            },
+            "projectId": {
+             "type": "string",
+             "description": "Required. A Project id.",
+             "required": true,
+             "location": "path"
+            }
+           },
+           "parameterOrder": [
+            "projectId",
+            "historyId",
+            "executionId"
+           ],
+           "response": {
+            "$ref": "ListEnvironmentsResponse"
+           },
+           "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+           ]
+          }
+         }
+        },
         "steps": {
          "methods": {
           "create": {
@@ -1847,19 +2363,19 @@
            "parameters": {
             "executionId": {
              "type": "string",
-             "description": "A Execution id.\n\nRequired.",
+             "description": "Required. An Execution id.",
              "required": true,
              "location": "path"
             },
             "historyId": {
              "type": "string",
-             "description": "A History id.\n\nRequired.",
+             "description": "Required. A History id.",
              "required": true,
              "location": "path"
             },
             "projectId": {
              "type": "string",
-             "description": "A Project id.\n\nRequired.",
+             "description": "Required. A Project id.",
              "required": true,
              "location": "path"
             },
@@ -2457,6 +2973,116 @@
                ]
               }
              }
+            }
+           }
+          },
+          "testCases": {
+           "methods": {
+            "get": {
+             "id": "toolresults.projects.histories.executions.steps.testCases.get",
+             "path": "{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/testCases/{testCaseId}",
+             "httpMethod": "GET",
+             "description": "Gets details of a Test Case for a Step. Experimental test cases API. Still in active development.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to write to project - INVALID_ARGUMENT - if the request is malformed - NOT_FOUND - if the containing Test Case does not exist",
+             "parameters": {
+              "executionId": {
+               "type": "string",
+               "description": "A Execution id\n\nRequired.",
+               "required": true,
+               "location": "path"
+              },
+              "historyId": {
+               "type": "string",
+               "description": "A History id.\n\nRequired.",
+               "required": true,
+               "location": "path"
+              },
+              "projectId": {
+               "type": "string",
+               "description": "A Project id.\n\nRequired.",
+               "required": true,
+               "location": "path"
+              },
+              "stepId": {
+               "type": "string",
+               "description": "A Step id. Note: This step must include a TestExecutionStep.\n\nRequired.",
+               "required": true,
+               "location": "path"
+              },
+              "testCaseId": {
+               "type": "string",
+               "description": "A Test Case id.\n\nRequired.",
+               "required": true,
+               "location": "path"
+              }
+             },
+             "parameterOrder": [
+              "projectId",
+              "historyId",
+              "executionId",
+              "stepId",
+              "testCaseId"
+             ],
+             "response": {
+              "$ref": "TestCase"
+             },
+             "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform"
+             ]
+            },
+            "list": {
+             "id": "toolresults.projects.histories.executions.steps.testCases.list",
+             "path": "{projectId}/histories/{historyId}/executions/{executionId}/steps/{stepId}/testCases",
+             "httpMethod": "GET",
+             "description": "Lists Test Cases attached to a Step. Experimental test cases API. Still in active development.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to write to project - INVALID_ARGUMENT - if the request is malformed - NOT_FOUND - if the containing Step does not exist",
+             "parameters": {
+              "executionId": {
+               "type": "string",
+               "description": "A Execution id\n\nRequired.",
+               "required": true,
+               "location": "path"
+              },
+              "historyId": {
+               "type": "string",
+               "description": "A History id.\n\nRequired.",
+               "required": true,
+               "location": "path"
+              },
+              "pageSize": {
+               "type": "integer",
+               "description": "The maximum number of TestCases to fetch.\n\nDefault value: 100. The server will use this default if the field is not set or has a value of 0.\n\nOptional.",
+               "format": "int32",
+               "location": "query"
+              },
+              "pageToken": {
+               "type": "string",
+               "description": "A continuation token to resume the query at the next item.\n\nOptional.",
+               "location": "query"
+              },
+              "projectId": {
+               "type": "string",
+               "description": "A Project id.\n\nRequired.",
+               "required": true,
+               "location": "path"
+              },
+              "stepId": {
+               "type": "string",
+               "description": "A Step id. Note: This step must include a TestExecutionStep.\n\nRequired.",
+               "required": true,
+               "location": "path"
+              }
+             },
+             "parameterOrder": [
+              "projectId",
+              "historyId",
+              "executionId",
+              "stepId"
+             ],
+             "response": {
+              "$ref": "ListTestCasesResponse"
+             },
+             "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform"
+             ]
             }
            }
           },

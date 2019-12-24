@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,6 +32,10 @@ about the last update check.  The general process is as follows:
    in the component snapshot.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import json
 import os
 import time
@@ -38,6 +43,9 @@ import time
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core.updater import schemas
+from googlecloudsdk.core.util import files
+
+import six
 
 
 class UpdateCheckData(object):
@@ -55,21 +63,21 @@ class UpdateCheckData(object):
     if not os.path.isfile(self._last_update_check_file):
       return schemas.LastUpdateCheck.FromDictionary({})
 
-    with open(self._last_update_check_file) as fp:
-      try:
-        data = json.loads(fp.read())
-        return schemas.LastUpdateCheck.FromDictionary(data)
-      except ValueError:
-        log.debug('Failed to parse update check cache file.  Using empty '
-                  'cache instead.')
-        return schemas.LastUpdateCheck.FromDictionary({})
+    raw_data = files.ReadFileContents(self._last_update_check_file)
+    try:
+      data = json.loads(raw_data)
+      return schemas.LastUpdateCheck.FromDictionary(data)
+    except ValueError:
+      log.debug('Failed to parse update check cache file.  Using empty '
+                'cache instead.')
+      return schemas.LastUpdateCheck.FromDictionary({})
 
   def _SaveData(self):
     """Serializes data to the json file."""
     if not self._dirty:
       return
-    with open(self._last_update_check_file, 'w') as fp:
-      fp.write(json.dumps(self._data.ToDictionary()))
+    files.WriteFileContents(self._last_update_check_file,
+                            json.dumps(self._data.ToDictionary()))
     self._dirty = False
 
   def __enter__(self):
@@ -201,7 +209,7 @@ class UpdateCheckData(object):
     self._data.last_nag_times = (
         dict(
             (name, value)
-            for name, value in self._data.last_nag_times.iteritems()
+            for name, value in six.iteritems(self._data.last_nag_times)
             if name in activated_ids))
 
   def Notify(self, command_path):

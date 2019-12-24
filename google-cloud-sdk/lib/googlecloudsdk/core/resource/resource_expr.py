@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Cloud resource list filter expression evaluator backend."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 import re
 import unicodedata
@@ -24,6 +29,8 @@ from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import times
+
+import six
 
 
 def _ReCompile(pattern, flags=0):
@@ -43,16 +50,16 @@ def _ReCompile(pattern, flags=0):
     return re.compile(pattern, flags)
   except re.error as e:
     raise resource_exceptions.ExpressionSyntaxError(
-        u'Filter expression RE pattern [{}]: {}'.format(pattern, e))
+        'Filter expression RE pattern [{}]: {}'.format(pattern, e))
 
 
 def _Stringize(value):
   """Returns the unicode string representation for value."""
   if value is None:
-    return u'null'
-  if not isinstance(value, basestring):
+    return 'null'
+  if not isinstance(value, six.string_types):
     value = repr(value)
-  return unicode(encoding.Decode(value))
+  return six.text_type(encoding.Decode(value))
 
 
 def NormalizeForSearch(value, html=False):
@@ -72,8 +79,8 @@ def NormalizeForSearch(value, html=False):
   if html:
     text = re.sub('<[^>]*>', '', text)
   # Convert to NFKD normal form with accents stripped.
-  return u''.join([c for c in unicodedata.normalize('NFKD', text)
-                   if not unicodedata.combining(c)])
+  return ''.join([c for c in unicodedata.normalize('NFKD', text)
+                  if not unicodedata.combining(c)])
 
 
 def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
@@ -112,7 +119,6 @@ def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
   elif value == operand:
     return True
   elif value is None:
-    # if operand == '':  # pylint: disable=g-explicit-bool-comparison
     if operand in ('', None):
       return True
     if operand == '*' and op == ':':
@@ -130,20 +136,20 @@ def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
     return matched
 
   deprecated_matched = bool(deprecated_regex.search(text))
-  if (matched != deprecated_matched and
+  if (matched != deprecated_matched and warned_attribute and
       not getattr(backend, warned_attribute, False)):
     setattr(backend, warned_attribute, True)
     old_match = 'matches' if deprecated_matched else 'does not match'
     new_match = 'will match' if matched else 'will not match'
-    log.warn('--filter : operator evaluation is changing for '
-             'consistency across Google APIs.  {key}{op}{operand} currently '
-             '{old_match} but {new_match} in the near future.  Run '
-             '`gcloud topic filters` for details.'.format(
-                 key=resource_lex.GetKeyName(key),
-                 op=op,
-                 operand=operand,
-                 old_match=old_match,
-                 new_match=new_match))
+    log.warning('--filter : operator evaluation is changing for '
+                'consistency across Google APIs.  {key}{op}{operand} currently '
+                '{old_match} but {new_match} in the near future.  Run '
+                '`gcloud topic filters` for details.'.format(
+                    key=resource_lex.GetKeyName(key),
+                    op=op,
+                    operand=operand,
+                    old_match=old_match,
+                    new_match=new_match))
   return deprecated_matched
 
 
@@ -165,10 +171,14 @@ def _WordMatch(backend, key, op, warned_attribute, value, pattern):
     (or any element in operand if it is a list).
   """
   if isinstance(value, dict):
+    # Don't check deprecated diffs on dicts. It adds instability to the UX and
+    # test assertions. Checking dict keys may be deprecated in the unified
+    # filter spec anyway, so it's not terrible to disable the checks for dicts.
+    warned_attribute = None
     values = []
     if value:
-      values.extend(value.keys())
-      values.extend(value.values())
+      values.extend(six.iterkeys(value))
+      values.extend(six.itervalues(value))
   elif isinstance(value, (list, tuple)):
     values = value
   else:
@@ -271,10 +281,9 @@ class Backend(object):
 # _Expr* class instantiations are done by the Backend.Expr* methods.
 
 
+@six.add_metaclass(abc.ABCMeta)
 class _Expr(object):
   """Expression base class."""
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, backend):
     self.backend = backend
@@ -413,7 +422,7 @@ class _ExprOperand(object):
             _ExprOperand(self.backend, val, normalize=normalize))
     elif value and normalize:
       self.string_value = normalize(value)
-    elif isinstance(value, basestring):
+    elif isinstance(value, six.string_types):
       self.string_value = value
       try:
         self.numeric_value = self._NUMERIC_CONSTANTS[value.lower()]
@@ -431,6 +440,7 @@ class _ExprOperand(object):
       self.numeric_value = value
 
 
+@six.add_metaclass(abc.ABCMeta)
 class _ExprOperator(_Expr):
   """Base term (<key operator operand>) node.
 
@@ -443,8 +453,6 @@ class _ExprOperator(_Expr):
     _operand: The term ExprOperand operand.
     _transform: Optional key value transform calls.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, backend, key, operand, transform):
     super(_ExprOperator, self).__init__(backend)
@@ -476,7 +484,7 @@ class _ExprOperator(_Expr):
 
     # Check for datetime. Dates may have trailing timzone indicators. We don't
     # match them but ParseDateTime will handle them.
-    if re.match(r'\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d', value):
+    if re.match(r'\d\d\d\d-\d\d-\d\d[ T]\d\d:\d\d:\d\d', value):
       try:
         value = times.ParseDateTime(value)
         # Make sure the value and operand times are both tz aware or tz naive.
@@ -544,8 +552,11 @@ class _ExprOperator(_Expr):
         except (AttributeError, ValueError):
           pass
         except TypeError:
-          if (not isinstance(value, (basestring, dict, list)) and
+          if (value is not None and
+              not isinstance(value, (six.string_types, dict, list)) and
               self.Apply(_Stringize(value), operand.string_value)):
+            return True
+          if six.PY3 and value is None and self.Apply('', operand.string_value):
             return True
 
     return False
@@ -651,9 +662,9 @@ class _ExprHAS(_ExprWordMatchBase):
       standard_pattern = '.'
       deprecated_pattern = None
     else:
-      head = u'\\b'
-      glob = u''
-      tail = u'\\b'
+      head = '\\b'
+      glob = ''
+      tail = '\\b'
       normalized_pattern = NormalizeForSearch(pattern)
       parts = normalized_pattern.split('*')
       if len(parts) > 2:
@@ -663,7 +674,7 @@ class _ExprHAS(_ExprWordMatchBase):
       # Construct the standard RE pattern.
       if normalized_pattern.endswith('*'):
         normalized_pattern = normalized_pattern[:-1]
-        tail = u''
+        tail = ''
       word = re.escape(normalized_pattern)
       standard_pattern = head + word + tail
 
@@ -671,13 +682,13 @@ class _ExprHAS(_ExprWordMatchBase):
       if len(parts) == 1:
         parts.append('')
       elif pattern.startswith('*'):
-        head = u''
+        head = ''
       elif pattern.endswith('*'):
-        tail = u''
+        tail = ''
       else:
-        glob = u'.*'
-      left = re.escape(parts[0]) if parts[0] else u''
-      right = re.escape(parts[1]) if parts[1] else u''
+        glob = '.*'
+      left = re.escape(parts[0]) if parts[0] else ''
+      right = re.escape(parts[1]) if parts[1] else ''
       if head and tail:
         if glob:
           deprecated_pattern = '^' + left + glob + right + '$'
@@ -725,10 +736,10 @@ class _ExprEQ(_ExprWordMatchBase):
     word = re.escape(normalized_pattern)
 
     # Construct the standard RE pattern.
-    standard_pattern = u'\\b' + word + u'\\b'
+    standard_pattern = '\\b' + word + '\\b'
 
     # Construct the deprecated RE pattern.
-    deprecated_pattern = u'^' + word + u'$'
+    deprecated_pattern = '^' + word + '$'
 
     reflags = re.IGNORECASE|re.MULTILINE|re.UNICODE
     standard_regex = _ReCompile(standard_pattern, reflags)
@@ -768,7 +779,7 @@ class _ExprRE(_ExprOperator):
     self.pattern = _ReCompile(self._operand.string_value)
 
   def Apply(self, value, unused_operand):
-    if not isinstance(value, basestring):
+    if not isinstance(value, six.string_types):
       # This exception is caught by Evaluate().
       raise TypeError('RE match subject value must be a string.')
     return self.pattern.search(value) is not None
@@ -782,7 +793,7 @@ class _ExprNotRE(_ExprOperator):
     self.pattern = _ReCompile(self._operand.string_value)
 
   def Apply(self, value, unused_operand):
-    if not isinstance(value, basestring):
+    if not isinstance(value, six.string_types):
       # This exception is caught by Evaluate().
       raise TypeError('RE match subject value must be a string.')
     return self.pattern.search(value) is None

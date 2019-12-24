@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for `gcloud compute xpn` commands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 XPN_RESOURCE_ID_FORMAT = 'table(id:label=RESOURCE_ID, type:label=RESOURCE_TYPE)'
 XPN_PROJECTS_FORMAT = 'table(name, creationTimestamp, xpnProjectStatus)'

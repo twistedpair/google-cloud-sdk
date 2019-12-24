@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +16,10 @@
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 import collections
 from functools import wraps
@@ -24,9 +29,41 @@ import sys
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import display
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_printer
+
+import six
+
+# Category constants
+AI_AND_MACHINE_LEARNING_CATEGORY = 'AI and Machine Learning'
+API_PLATFORM_AND_ECOSYSTEMS_CATEGORY = 'API Platform and Ecosystems'
+COMPUTE_CATEGORY = 'Compute'
+DATA_ANALYTICS_CATEGORY = 'Data Analytics'
+DATABASES_CATEGORY = 'Databases'
+IDENTITY_AND_SECURITY_CATEGORY = 'Identity and Security'
+INTERNET_OF_THINGS_CATEGORY = 'Internet of Things'
+MANAGEMENT_TOOLS_CATEGORY = 'Management Tools'
+MOBILE_CATEGORY = 'Mobile'
+NETWORKING_CATEGORY = 'Networking'
+SDK_TOOLS_CATEGORY = 'SDK Tools'
+DISKS_CATEGORY = 'Disks'
+INFO_CATEGORY = 'Info'
+INSTANCES_CATEGORY = 'Instances'
+LOAD_BALANCING_CATEGORY = 'Load Balancing'
+TOOLS_CATEGORY = 'Tools'
+STORAGE_CATEGORY = 'Storage'
+BILLING_CATEGORY = 'Billing'
+SECURITY_CATEGORY = 'Security'
+IDENTITY_CATEGORY = 'Identity'
+BIG_DATA_CATEGORY = 'Big Data'
+CI_CD_CATEGORY = 'CI/CD'
+MONITORING_CATEGORY = 'Monitoring'
+SOLUTIONS_CATEGORY = 'Solutions'
+SERVERLESS_CATEGORY = 'Serverless'
+UNCATEGORIZED_CATEGORY = 'Other'
+IDENTITY_CATEGORY = 'Identity'
 
 
 # Common markdown.
@@ -35,7 +72,7 @@ MARKDOWN_ITALIC = '_'
 MARKDOWN_CODE = '`'
 
 
-class DeprecationException(Exception):
+class DeprecationException(exceptions.Error):
   """An exception for when a command or group has been deprecated."""
 
 
@@ -64,6 +101,9 @@ class ReleaseTrack(object):
     def __eq__(self, other):
       return self.id == other.id
 
+    def __hash__(self):
+      return hash(self.id)
+
   GA = _TRACK('GA', None, None, None)
   BETA = _TRACK(
       'BETA', 'beta',
@@ -72,7 +112,10 @@ class ReleaseTrack(object):
   ALPHA = _TRACK(
       'ALPHA', 'alpha',
       '{0}(ALPHA){0} '.format(MARKDOWN_BOLD),
-      'This command is currently in ALPHA and may change without notice.')
+      'This command is currently in ALPHA and may change without notice. '
+      'If this command fails with API permission errors despite specifying '
+      'the right project, you may be trying to access an API with '
+      'an invitation-only early access whitelist.')
   _ALL = [GA, BETA, ALPHA]
 
   @staticmethod
@@ -119,10 +162,8 @@ class ReleaseTrack(object):
     raise ValueError('Unknown release track id [{}].'.format(id))
 
 
-class Action(object):
+class Action(six.with_metaclass(abc.ABCMeta, object)):
   """A class that allows you to save an Action configuration for reuse."""
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, *args, **kwargs):
     """Creates the Action.
@@ -274,6 +315,18 @@ class Argument(Action):
 
 COMMONLY_USED_FLAGS = 'COMMONLY USED'
 
+FLAGS_FILE_FLAG = Argument(
+    '--flags-file',
+    metavar='YAML_FILE',
+    default=None,
+    category=COMMONLY_USED_FLAGS,
+    help="""\
+        A YAML or JSON file that specifies a *--flag*:*value* dictionary.
+        Useful for specifying complex flag values with special characters
+        that work with any command interpreter. Additionally, each
+        *--flags-file* arg is replaced by its constituent flags. See
+        $ gcloud topic flags-file for more information.""")
+
 FLATTEN_FLAG = Argument(
     '--flatten',
     metavar='KEY',
@@ -295,7 +348,7 @@ FORMAT_FLAG = Argument(
     default=None,
     category=COMMONLY_USED_FLAGS,
     help="""\
-        Sets the format for printing command output resources. The default is a
+        Set the format for printing command output resources. The default is a
         command-specific human-friendly output format. The supported formats
         are: `{0}`. For more details run $ gcloud topic formats.""".format(
             '`, `'.join(resource_printer.SupportedFormats())))
@@ -305,34 +358,38 @@ LIST_COMMAND_FLAGS = 'LIST COMMAND'
 ASYNC_FLAG = Argument(
     '--async',
     action='store_true',
+    dest='async_',
     help="""\
-    Display information about the operation in progress, without waiting for
-    the operation to complete.""")
+    Return immediately, without waiting for the operation in progress to
+    complete.""")
 
 FILTER_FLAG = Argument(
     '--filter',
     metavar='EXPRESSION',
+    require_coverage_in_tests=False,
     category=LIST_COMMAND_FLAGS,
     help="""\
     Apply a Boolean filter _EXPRESSION_ to each resource item to be listed.
-    If the expression evaluates True then that item is listed. For more
-    details and examples of filter expressions run $ gcloud topic filters. This
+    If the expression evaluates `True`, then that item is listed. For more
+    details and examples of filter expressions, run $ gcloud topic filters. This
     flag interacts with other flags that are applied in this order: *--flatten*,
     *--sort-by*, *--filter*, *--limit*.""")
 
 LIMIT_FLAG = Argument(
     '--limit',
-    type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
+    type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+    require_coverage_in_tests=False,
     category=LIST_COMMAND_FLAGS,
     help="""\
-    The maximum number of resources to list. The default is *unlimited*.
+    Maximum number of resources to list. The default is *unlimited*.
     This flag interacts with other flags that are applied in this order:
     *--flatten*, *--sort-by*, *--filter*, *--limit*.
     """)
 
 PAGE_SIZE_FLAG = Argument(
     '--page-size',
-    type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
+    type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+    require_coverage_in_tests=False,
     category=LIST_COMMAND_FLAGS,
     help="""\
     Some services group resource list output into pages. This flag specifies
@@ -346,9 +403,10 @@ SORT_BY_FLAG = Argument(
     '--sort-by',
     metavar='FIELD',
     type=arg_parsers.ArgList(),
+    require_coverage_in_tests=False,
     category=LIST_COMMAND_FLAGS,
     help="""\
-    A comma-separated list of resource field key names to sort by. The
+    Comma-separated list of resource field key names to sort by. The
     default order is ascending. Prefix a field with ``~'' for descending
     order on that field. This flag interacts with other flags that are applied
     in this order: *--flatten*, *--sort-by*, *--filter*, *--limit*.
@@ -357,14 +415,14 @@ SORT_BY_FLAG = Argument(
 URI_FLAG = Argument(
     '--uri',
     action='store_true',
+    require_coverage_in_tests=False,
     category=LIST_COMMAND_FLAGS,
     help='Print a list of resource URIs instead of the default output.')
 
 
-class _Common(object):
+class _Common(six.with_metaclass(abc.ABCMeta, object)):
   """Base class for Command and Group."""
-
-  __metaclass__ = abc.ABCMeta
+  category = None
   _cli_generator = None
   _is_hidden = False
   _is_unicode_supported = False
@@ -400,7 +458,10 @@ class _Common(object):
 
   @classmethod
   def IsUnicodeSupported(cls):
-    return cls._is_unicode_supported
+    if six.PY2:
+      return cls._is_unicode_supported
+    # We always support unicode on Python 3.
+    return True
 
   @classmethod
   def ReleaseTrack(cls):
@@ -424,7 +485,7 @@ class _Common(object):
       The attribute value from obj for tracks.
     """
     for track in ReleaseTrack._ALL:  # pylint: disable=protected-access
-      if track not in cls._valid_release_tracks:
+      if track not in cls._valid_release_tracks:  # pylint: disable=unsupported-membership-test
         continue
       names = []
       names.append(attribute + '_' + track.id)
@@ -448,28 +509,6 @@ class _Common(object):
     cls._notices[tag] = msg
 
   @classmethod
-  def GetExecutionFunction(cls, *args):
-    """Get a fully bound function that will call another gcloud command.
-
-    This class method can be called at any time to generate a function that will
-    execute another gcloud command.  The function itself can only be executed
-    after the gcloud CLI has been built i.e. after all Args methods have
-    been called.
-
-    Args:
-      *args: str, The args for the command to execute.  Each token should be a
-        separate string and the tokens should start from after the 'gcloud'
-        part of the invocation.
-
-    Returns:
-      A bound function to call the gcloud command.
-    """
-    def ExecFunc():
-      return cls._cli_generator.Generate().Execute(list(args),
-                                                   call_arg_complete=False)
-    return ExecFunc
-
-  @classmethod
   def GetCLIGenerator(cls):
     """Get a generator function that can be used to execute a gcloud command.
 
@@ -484,7 +523,7 @@ class _Common(object):
 class Group(_Common):
   """Group is a base class for groups to implement."""
 
-  _command_suggestions = {}
+  IS_COMMAND_GROUP = True
 
   def __init__(self):
     super(Group, self).__init__(is_group=True)
@@ -500,12 +539,8 @@ class Group(_Common):
     """
     pass
 
-  @classmethod
-  def CommandSuggestions(cls):
-    return cls._command_suggestions
 
-
-class Command(_Common):
+class Command(six.with_metaclass(abc.ABCMeta, _Common)):
   """Command is a base class for commands to implement.
 
   Attributes:
@@ -517,7 +552,7 @@ class Command(_Common):
     _uri_cache_enabled: bool, The URI cache enabled state.
   """
 
-  __metaclass__ = abc.ABCMeta
+  IS_COMMAND = True
 
   def __init__(self, cli, context):
     super(Command, self).__init__(is_group=False)
@@ -586,10 +621,8 @@ class Command(_Common):
     return None
 
 
-class TopicCommand(Command):
+class TopicCommand(six.with_metaclass(abc.ABCMeta, Command)):
   """A command that displays its own help on execution."""
-
-  __metaclass__ = abc.ABCMeta
 
   def Run(self, args):
     self.ExecuteCommandDoNotUse(args.command_path[1:] +
@@ -597,36 +630,28 @@ class TopicCommand(Command):
     return None
 
 
-class SilentCommand(Command):
+class SilentCommand(six.with_metaclass(abc.ABCMeta, Command)):
   """A command that produces no output."""
-
-  __metaclass__ = abc.ABCMeta
 
   @staticmethod
   def _Flags(parser):
     parser.display_info.AddFormat('none')
 
 
-class DescribeCommand(Command):
+class DescribeCommand(six.with_metaclass(abc.ABCMeta, Command)):
   """A command that prints one resource in the 'default' format."""
 
-  __metaclass__ = abc.ABCMeta
 
-
-class CacheCommand(Command):
+class CacheCommand(six.with_metaclass(abc.ABCMeta, Command)):
   """A command that affects the resource URI cache."""
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, *args, **kwargs):
     super(CacheCommand, self).__init__(*args, **kwargs)
     self._uri_cache_enabled = True
 
 
-class ListCommand(CacheCommand):
+class ListCommand(six.with_metaclass(abc.ABCMeta, CacheCommand)):
   """A command that pretty-prints all resources."""
-
-  __metaclass__ = abc.ABCMeta
 
   @staticmethod
   def _Flags(parser):
@@ -686,29 +711,6 @@ def Hidden(cmd_class):
   # pylint: disable=protected-access
   cmd_class._is_hidden = True
   return cmd_class
-
-
-def CommandSuggestion(command, suggestion):
-  """Decorator for adding a suggestion when a command is mistyped.
-
-  This applies to base.Group classes. When a user tries to run the given
-  `command` that does not exist, `suggestion` will but suggested as a
-  "did you mean".
-
-  Args:
-    command: str, The name of the command (just the command itself not including
-      the group).
-    suggestion: str, The full command name to suggest (excluding the gcloud
-      prefix).
-
-  Returns:
-    The inner decorator.
-  """
-  def Inner(cmd_class):
-    # pylint: disable=protected-access
-    cmd_class._command_suggestions[command] = suggestion
-    return cmd_class
-  return Inner
 
 
 def UnicodeIsSupported(cmd_class):
@@ -797,7 +799,7 @@ def Deprecate(is_removed=True,
       def WrappedRun(*args, **kw):
         if is_removed:
           raise DeprecationException(error)
-        log.warn(warning)
+        log.warning(warning)
         return run_func(*args, **kw)
       return WrappedRun
 
@@ -829,7 +831,8 @@ def _ChoiceValueType(value):
 
 
 def ChoiceArgument(name_or_flag, choices, help_str=None, required=False,
-                   action=None, metavar=None, dest=None, default=None):
+                   action=None, metavar=None, dest=None, default=None,
+                   hidden=False):
   """Returns Argument with a Cloud SDK style compliant set of choices.
 
   Args:
@@ -847,6 +850,7 @@ def ChoiceArgument(name_or_flag, choices, help_str=None, required=False,
        by parse_args().
     default: string,  The value produced if the argument is absent from the
        command line.
+    hidden: boolean, Whether or not the command-line option is hidden.
 
   Returns:
      Argument object with choices, that can accept both lowercase and uppercase
@@ -861,7 +865,7 @@ def ChoiceArgument(name_or_flag, choices, help_str=None, required=False,
     raise ValueError('Choices must not be empty.')
 
   if (not isinstance(choices, collections.Iterable)
-      or isinstance(choices, basestring)):
+      or isinstance(choices, six.string_types)):
     raise TypeError(
         'Choices must be an iterable container of options: [{}].'.format(
             ', '.join(choices)))
@@ -877,7 +881,7 @@ def ChoiceArgument(name_or_flag, choices, help_str=None, required=False,
 
   return Argument(name_or_flag, choices=choices, required=required,
                   type=_ChoiceValueType, help=help_str, action=action,
-                  metavar=metavar, dest=dest, default=default)
+                  metavar=metavar, dest=dest, default=default, hidden=hidden)
 
 
 def DisableUserProjectQuota():
@@ -885,3 +889,28 @@ def DisableUserProjectQuota():
   if not properties.VALUES.billing.quota_project.IsExplicitlySet():
     properties.VALUES.billing.quota_project.Set(
         properties.VALUES.billing.LEGACY)
+
+
+def EnableUserProjectQuota():
+  """Enable the quota header for current project."""
+  properties.VALUES.billing.quota_project.Set(
+      properties.VALUES.billing.CURRENT_PROJECT)
+
+
+def LogCommand(prog, args):
+  """Log (to debug) the command/arguments being run in a standard format.
+
+  `gcloud feedback` depends on this format.
+
+  Example format is:
+
+      Running [gcloud.example.command] with arguments: [--bar: "baz"]
+
+  Args:
+    prog: string, the dotted name of the command being run (ex.
+        "gcloud.foos.list")
+    args: argparse.namespace, the parsed arguments from the command line
+  """
+  specified_args = sorted(six.iteritems(args.GetSpecifiedArgs()))
+  arg_string = ', '.join(['{}: "{}"'.format(k, v) for k, v in specified_args])
+  log.debug('Running [{}] with arguments: [{}]'.format(prog, arg_string))

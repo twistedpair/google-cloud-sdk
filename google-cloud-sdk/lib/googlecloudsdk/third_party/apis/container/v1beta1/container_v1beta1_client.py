@@ -24,7 +24,7 @@ class ContainerV1beta1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new container handle."""
     url = url or self.BASE_URL
     super(ContainerV1beta1, self).__init__(
@@ -33,8 +33,12 @@ class ContainerV1beta1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
+    self.projects_aggregated_usableSubnetworks = self.ProjectsAggregatedUsableSubnetworksService(self)
+    self.projects_aggregated = self.ProjectsAggregatedService(self)
     self.projects_locations_clusters_nodePools = self.ProjectsLocationsClustersNodePoolsService(self)
+    self.projects_locations_clusters_well_known = self.ProjectsLocationsClustersWellKnownService(self)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -43,6 +47,53 @@ class ContainerV1beta1(base_api.BaseApiClient):
     self.projects_zones_operations = self.ProjectsZonesOperationsService(self)
     self.projects_zones = self.ProjectsZonesService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsAggregatedUsableSubnetworksService(base_api.BaseApiService):
+    """Service class for the projects_aggregated_usableSubnetworks resource."""
+
+    _NAME = u'projects_aggregated_usableSubnetworks'
+
+    def __init__(self, client):
+      super(ContainerV1beta1.ProjectsAggregatedUsableSubnetworksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists subnetworks that can be used for creating clusters in a project.
+
+      Args:
+        request: (ContainerProjectsAggregatedUsableSubnetworksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListUsableSubnetworksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/aggregated/usableSubnetworks',
+        http_method=u'GET',
+        method_id=u'container.projects.aggregated.usableSubnetworks.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/{+parent}/aggregated/usableSubnetworks',
+        request_field='',
+        request_type_name=u'ContainerProjectsAggregatedUsableSubnetworksListRequest',
+        response_type_name=u'ListUsableSubnetworksResponse',
+        supports_download=False,
+    )
+
+  class ProjectsAggregatedService(base_api.BaseApiService):
+    """Service class for the projects_aggregated resource."""
+
+    _NAME = u'projects_aggregated'
+
+    def __init__(self, client):
+      super(ContainerV1beta1.ProjectsAggregatedService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsClustersNodePoolsService(base_api.BaseApiService):
     """Service class for the projects_locations_clusters_nodePools resource."""
@@ -55,7 +106,7 @@ class ContainerV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a node pool for a cluster.
+      r"""Creates a node pool for a cluster.
 
       Args:
         request: (CreateNodePoolRequest) input message
@@ -82,7 +133,7 @@ class ContainerV1beta1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a node pool from a cluster.
+      r"""Deletes a node pool from a cluster.
 
       Args:
         request: (ContainerProjectsLocationsClustersNodePoolsDeleteRequest) input message
@@ -100,7 +151,7 @@ class ContainerV1beta1(base_api.BaseApiClient):
         method_id=u'container.projects.locations.clusters.nodePools.delete',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'version', u'zone'],
+        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
         relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersNodePoolsDeleteRequest',
@@ -109,7 +160,7 @@ class ContainerV1beta1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Retrieves the node pool requested.
+      r"""Retrieves the requested node pool.
 
       Args:
         request: (ContainerProjectsLocationsClustersNodePoolsGetRequest) input message
@@ -127,7 +178,7 @@ class ContainerV1beta1(base_api.BaseApiClient):
         method_id=u'container.projects.locations.clusters.nodePools.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'version', u'zone'],
+        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
         relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersNodePoolsGetRequest',
@@ -136,7 +187,7 @@ class ContainerV1beta1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the node pools for a cluster.
+      r"""Lists the node pools for a cluster.
 
       Args:
         request: (ContainerProjectsLocationsClustersNodePoolsListRequest) input message
@@ -154,7 +205,7 @@ class ContainerV1beta1(base_api.BaseApiClient):
         method_id=u'container.projects.locations.clusters.nodePools.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'clusterId', u'projectId', u'version', u'zone'],
+        query_params=[u'clusterId', u'projectId', u'zone'],
         relative_path=u'v1beta1/{+parent}/nodePools',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersNodePoolsListRequest',
@@ -163,8 +214,8 @@ class ContainerV1beta1(base_api.BaseApiClient):
     )
 
     def Rollback(self, request, global_params=None):
-      """Roll back the previously Aborted or Failed NodePool upgrade.
-This will be an no-op if the last upgrade successfully completed.
+      r"""Rolls back a previously Aborted or Failed NodePool upgrade.
+This makes no changes if the last upgrade successfully completed.
 
       Args:
         request: (RollbackNodePoolUpgradeRequest) input message
@@ -191,7 +242,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def SetAutoscaling(self, request, global_params=None):
-      """Sets the autoscaling settings of a specific node pool.
+      r"""Sets the autoscaling settings of a specific node pool.
 
       Args:
         request: (SetNodePoolAutoscalingRequest) input message
@@ -218,7 +269,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def SetManagement(self, request, global_params=None):
-      """Sets the NodeManagement options for a node pool.
+      r"""Sets the NodeManagement options for a node pool.
 
       Args:
         request: (SetNodePoolManagementRequest) input message
@@ -245,7 +296,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def SetSize(self, request, global_params=None):
-      """Sets the size of a specific node pool.
+      r"""Sets the size for a specific node pool.
 
       Args:
         request: (SetNodePoolSizeRequest) input message
@@ -272,7 +323,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the version and/or iamge type of a specific node pool.
+      r"""Updates the version and/or image type of a specific node pool.
 
       Args:
         request: (UpdateNodePoolRequest) input message
@@ -298,6 +349,49 @@ This will be an no-op if the last upgrade successfully completed.
         supports_download=False,
     )
 
+  class ProjectsLocationsClustersWellKnownService(base_api.BaseApiService):
+    """Service class for the projects_locations_clusters_well_known resource."""
+
+    _NAME = u'projects_locations_clusters_well_known'
+
+    def __init__(self, client):
+      super(ContainerV1beta1.ProjectsLocationsClustersWellKnownService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetOpenid_configuration(self, request, global_params=None):
+      r"""Gets the OIDC discovery document for the cluster.
+See the
+[OpenID Connect Discovery 1.0
+specification](https://openid.net/specs/openid-connect-discovery-1_0.html)
+for details.
+This API is not yet intended for general use, and is not available for all
+clusters.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetOpenIDConfigResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetOpenid_configuration')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetOpenid_configuration.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/.well-known/openid-configuration',
+        http_method=u'GET',
+        method_id=u'container.projects.locations.clusters.well-known.getOpenid-configuration',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1beta1/{+parent}/.well-known/openid-configuration',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest',
+        response_type_name=u'GetOpenIDConfigResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsClustersService(base_api.BaseApiService):
     """Service class for the projects_locations_clusters resource."""
 
@@ -309,7 +403,7 @@ This will be an no-op if the last upgrade successfully completed.
           }
 
     def CompleteIpRotation(self, request, global_params=None):
-      """Completes master IP rotation.
+      r"""Completes master IP rotation.
 
       Args:
         request: (CompleteIPRotationRequest) input message
@@ -336,19 +430,19 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a cluster, consisting of the specified number and type of Google.
+      r"""Creates a cluster, consisting of the specified number and type of Google.
 Compute Engine instances.
 
 By default, the cluster is created in the project's
 [default network](/compute/docs/networks-and-firewalls#networks).
 
 One firewall is added for the cluster. After cluster creation,
-the cluster creates routes for each node to allow the containers
+the Kubelet creates routes for each node to allow the containers
 on that node to communicate with all other instances in the
 cluster.
 
 Finally, an entry is added to the project's global metadata indicating
-which CIDR range is being used by the cluster.
+which CIDR range the cluster is using.
 
       Args:
         request: (CreateClusterRequest) input message
@@ -375,15 +469,15 @@ which CIDR range is being used by the cluster.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the cluster, including the Kubernetes endpoint and all worker.
+      r"""Deletes the cluster, including the Kubernetes endpoint and all worker.
 nodes.
 
 Firewalls and routes that were configured during cluster creation
 are also deleted.
 
-Other Google Compute Engine resources that might be in use by the cluster
-(e.g. load balancer resources) will not be deleted if they weren't present
-at the initial create time.
+Other Google Compute Engine resources that might be in use by the cluster,
+such as load balancer resources, are not deleted if they weren't present
+when the cluster was initially created.
 
       Args:
         request: (ContainerProjectsLocationsClustersDeleteRequest) input message
@@ -401,7 +495,7 @@ at the initial create time.
         method_id=u'container.projects.locations.clusters.delete',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'clusterId', u'projectId', u'version', u'zone'],
+        query_params=[u'clusterId', u'projectId', u'zone'],
         relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersDeleteRequest',
@@ -410,7 +504,7 @@ at the initial create time.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the details of a specific cluster.
+      r"""Gets the details for a specific cluster.
 
       Args:
         request: (ContainerProjectsLocationsClustersGetRequest) input message
@@ -428,7 +522,7 @@ at the initial create time.
         method_id=u'container.projects.locations.clusters.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'clusterId', u'projectId', u'version', u'zone'],
+        query_params=[u'clusterId', u'projectId', u'zone'],
         relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersGetRequest',
@@ -436,8 +530,38 @@ at the initial create time.
         supports_download=False,
     )
 
+    def GetJwks(self, request, global_params=None):
+      r"""Gets the public component of the cluster signing keys in.
+JSON Web Key format.
+This API is not yet intended for general use, and is not available for all
+clusters.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersGetJwksRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetJSONWebKeysResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetJwks')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetJwks.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/jwks',
+        http_method=u'GET',
+        method_id=u'container.projects.locations.clusters.getJwks',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1beta1/{+parent}/jwks',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsClustersGetJwksRequest',
+        response_type_name=u'GetJSONWebKeysResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
-      """Lists all clusters owned by a project in either the specified zone or all.
+      r"""Lists all clusters owned by a project in either the specified zone or all.
 zones.
 
       Args:
@@ -456,7 +580,7 @@ zones.
         method_id=u'container.projects.locations.clusters.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'projectId', u'version', u'zone'],
+        query_params=[u'projectId', u'zone'],
         relative_path=u'v1beta1/{+parent}/clusters',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersListRequest',
@@ -465,7 +589,7 @@ zones.
     )
 
     def SetAddons(self, request, global_params=None):
-      """Sets the addons of a specific cluster.
+      r"""Sets the addons for a specific cluster.
 
       Args:
         request: (SetAddonsConfigRequest) input message
@@ -492,7 +616,7 @@ zones.
     )
 
     def SetLegacyAbac(self, request, global_params=None):
-      """Enables or disables the ABAC authorization mechanism on a cluster.
+      r"""Enables or disables the ABAC authorization mechanism on a cluster.
 
       Args:
         request: (SetLegacyAbacRequest) input message
@@ -519,7 +643,7 @@ zones.
     )
 
     def SetLocations(self, request, global_params=None):
-      """Sets the locations of a specific cluster.
+      r"""Sets the locations for a specific cluster.
 
       Args:
         request: (SetLocationsRequest) input message
@@ -546,7 +670,7 @@ zones.
     )
 
     def SetLogging(self, request, global_params=None):
-      """Sets the logging service of a specific cluster.
+      r"""Sets the logging service for a specific cluster.
 
       Args:
         request: (SetLoggingServiceRequest) input message
@@ -573,7 +697,7 @@ zones.
     )
 
     def SetMaintenancePolicy(self, request, global_params=None):
-      """Sets the maintenance policy for a cluster.
+      r"""Sets the maintenance policy for a cluster.
 
       Args:
         request: (SetMaintenancePolicyRequest) input message
@@ -600,10 +724,9 @@ zones.
     )
 
     def SetMasterAuth(self, request, global_params=None):
-      """Used to set master auth materials. Currently supports :-.
-Changing the admin password of a specific cluster.
-This can be either via password generation or explicitly set.
-Modify basic_auth.csv and reset the K8S API server.
+      r"""Sets master auth materials. Currently supports changing the admin password.
+or a specific cluster, either via password generation or explicitly setting
+the password.
 
       Args:
         request: (SetMasterAuthRequest) input message
@@ -630,7 +753,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def SetMonitoring(self, request, global_params=None):
-      """Sets the monitoring service of a specific cluster.
+      r"""Sets the monitoring service for a specific cluster.
 
       Args:
         request: (SetMonitoringServiceRequest) input message
@@ -657,7 +780,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def SetNetworkPolicy(self, request, global_params=None):
-      """Enables/Disables Network Policy for a cluster.
+      r"""Enables or disables Network Policy for a cluster.
 
       Args:
         request: (SetNetworkPolicyRequest) input message
@@ -684,7 +807,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def SetResourceLabels(self, request, global_params=None):
-      """Sets labels on a cluster.
+      r"""Sets labels on a cluster.
 
       Args:
         request: (SetLabelsRequest) input message
@@ -711,7 +834,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def StartIpRotation(self, request, global_params=None):
-      """Start master IP rotation.
+      r"""Starts master IP rotation.
 
       Args:
         request: (StartIPRotationRequest) input message
@@ -738,7 +861,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the settings of a specific cluster.
+      r"""Updates the settings for a specific cluster.
 
       Args:
         request: (UpdateClusterRequest) input message
@@ -765,7 +888,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def UpdateMaster(self, request, global_params=None):
-      """Updates the master of a specific cluster.
+      r"""Updates the master for a specific cluster.
 
       Args:
         request: (UpdateMasterRequest) input message
@@ -802,7 +925,7 @@ Modify basic_auth.csv and reset the K8S API server.
           }
 
     def Cancel(self, request, global_params=None):
-      """Cancels the specified operation.
+      r"""Cancels the specified operation.
 
       Args:
         request: (CancelOperationRequest) input message
@@ -829,7 +952,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the specified operation.
+      r"""Gets the specified operation.
 
       Args:
         request: (ContainerProjectsLocationsOperationsGetRequest) input message
@@ -847,7 +970,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.locations.operations.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'operationId', u'projectId', u'version', u'zone'],
+        query_params=[u'operationId', u'projectId', u'zone'],
         relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsOperationsGetRequest',
@@ -856,7 +979,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def List(self, request, global_params=None):
-      """Lists all operations in a project in a specific zone or all zones.
+      r"""Lists all operations in a project in the specified zone or all zones.
 
       Args:
         request: (ContainerProjectsLocationsOperationsListRequest) input message
@@ -874,7 +997,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.locations.operations.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'projectId', u'version', u'zone'],
+        query_params=[u'projectId', u'zone'],
         relative_path=u'v1beta1/{+parent}/operations',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsOperationsListRequest',
@@ -893,7 +1016,7 @@ Modify basic_auth.csv and reset the K8S API server.
           }
 
     def GetServerConfig(self, request, global_params=None):
-      """Returns configuration info about the Kubernetes Engine service.
+      r"""Returns configuration info about the Google Kubernetes Engine service.
 
       Args:
         request: (ContainerProjectsLocationsGetServerConfigRequest) input message
@@ -911,11 +1034,38 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.locations.getServerConfig',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'projectId', u'version', u'zone'],
+        query_params=[u'projectId', u'zone'],
         relative_path=u'v1beta1/{+name}/serverConfig',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsGetServerConfigRequest',
         response_type_name=u'ServerConfig',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Fetches locations that offer Google Kubernetes Engine.
+
+      Args:
+        request: (ContainerProjectsLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations',
+        http_method=u'GET',
+        method_id=u'container.projects.locations.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1beta1/{+parent}/locations',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsListRequest',
+        response_type_name=u'ListLocationsResponse',
         supports_download=False,
     )
 
@@ -930,7 +1080,7 @@ Modify basic_auth.csv and reset the K8S API server.
           }
 
     def Autoscaling(self, request, global_params=None):
-      """Sets the autoscaling settings of a specific node pool.
+      r"""Sets the autoscaling settings of a specific node pool.
 
       Args:
         request: (SetNodePoolAutoscalingRequest) input message
@@ -956,7 +1106,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a node pool for a cluster.
+      r"""Creates a node pool for a cluster.
 
       Args:
         request: (CreateNodePoolRequest) input message
@@ -982,7 +1132,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a node pool from a cluster.
+      r"""Deletes a node pool from a cluster.
 
       Args:
         request: (ContainerProjectsZonesClustersNodePoolsDeleteRequest) input message
@@ -999,7 +1149,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.clusters.nodePools.delete',
         ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
         path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersNodePoolsDeleteRequest',
@@ -1008,7 +1158,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def Get(self, request, global_params=None):
-      """Retrieves the node pool requested.
+      r"""Retrieves the requested node pool.
 
       Args:
         request: (ContainerProjectsZonesClustersNodePoolsGetRequest) input message
@@ -1025,7 +1175,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.clusters.nodePools.get',
         ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
         path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersNodePoolsGetRequest',
@@ -1034,7 +1184,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def List(self, request, global_params=None):
-      """Lists the node pools for a cluster.
+      r"""Lists the node pools for a cluster.
 
       Args:
         request: (ContainerProjectsZonesClustersNodePoolsListRequest) input message
@@ -1051,7 +1201,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.clusters.nodePools.list',
         ordered_params=[u'projectId', u'zone', u'clusterId'],
         path_params=[u'clusterId', u'projectId', u'zone'],
-        query_params=[u'parent', u'version'],
+        query_params=[u'parent'],
         relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersNodePoolsListRequest',
@@ -1060,8 +1210,8 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def Rollback(self, request, global_params=None):
-      """Roll back the previously Aborted or Failed NodePool upgrade.
-This will be an no-op if the last upgrade successfully completed.
+      r"""Rolls back a previously Aborted or Failed NodePool upgrade.
+This makes no changes if the last upgrade successfully completed.
 
       Args:
         request: (RollbackNodePoolUpgradeRequest) input message
@@ -1087,7 +1237,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def SetManagement(self, request, global_params=None):
-      """Sets the NodeManagement options for a node pool.
+      r"""Sets the NodeManagement options for a node pool.
 
       Args:
         request: (SetNodePoolManagementRequest) input message
@@ -1113,7 +1263,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def SetSize(self, request, global_params=None):
-      """Sets the size of a specific node pool.
+      r"""Sets the size for a specific node pool.
 
       Args:
         request: (SetNodePoolSizeRequest) input message
@@ -1139,7 +1289,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the version and/or iamge type of a specific node pool.
+      r"""Updates the version and/or image type of a specific node pool.
 
       Args:
         request: (UpdateNodePoolRequest) input message
@@ -1175,7 +1325,7 @@ This will be an no-op if the last upgrade successfully completed.
           }
 
     def Addons(self, request, global_params=None):
-      """Sets the addons of a specific cluster.
+      r"""Sets the addons for a specific cluster.
 
       Args:
         request: (SetAddonsConfigRequest) input message
@@ -1201,7 +1351,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def CompleteIpRotation(self, request, global_params=None):
-      """Completes master IP rotation.
+      r"""Completes master IP rotation.
 
       Args:
         request: (CompleteIPRotationRequest) input message
@@ -1227,19 +1377,19 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a cluster, consisting of the specified number and type of Google.
+      r"""Creates a cluster, consisting of the specified number and type of Google.
 Compute Engine instances.
 
 By default, the cluster is created in the project's
 [default network](/compute/docs/networks-and-firewalls#networks).
 
 One firewall is added for the cluster. After cluster creation,
-the cluster creates routes for each node to allow the containers
+the Kubelet creates routes for each node to allow the containers
 on that node to communicate with all other instances in the
 cluster.
 
 Finally, an entry is added to the project's global metadata indicating
-which CIDR range is being used by the cluster.
+which CIDR range the cluster is using.
 
       Args:
         request: (CreateClusterRequest) input message
@@ -1265,15 +1415,15 @@ which CIDR range is being used by the cluster.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the cluster, including the Kubernetes endpoint and all worker.
+      r"""Deletes the cluster, including the Kubernetes endpoint and all worker.
 nodes.
 
 Firewalls and routes that were configured during cluster creation
 are also deleted.
 
-Other Google Compute Engine resources that might be in use by the cluster
-(e.g. load balancer resources) will not be deleted if they weren't present
-at the initial create time.
+Other Google Compute Engine resources that might be in use by the cluster,
+such as load balancer resources, are not deleted if they weren't present
+when the cluster was initially created.
 
       Args:
         request: (ContainerProjectsZonesClustersDeleteRequest) input message
@@ -1290,7 +1440,7 @@ at the initial create time.
         method_id=u'container.projects.zones.clusters.delete',
         ordered_params=[u'projectId', u'zone', u'clusterId'],
         path_params=[u'clusterId', u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersDeleteRequest',
@@ -1299,7 +1449,7 @@ at the initial create time.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the details of a specific cluster.
+      r"""Gets the details for a specific cluster.
 
       Args:
         request: (ContainerProjectsZonesClustersGetRequest) input message
@@ -1316,7 +1466,7 @@ at the initial create time.
         method_id=u'container.projects.zones.clusters.get',
         ordered_params=[u'projectId', u'zone', u'clusterId'],
         path_params=[u'clusterId', u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersGetRequest',
@@ -1325,7 +1475,7 @@ at the initial create time.
     )
 
     def LegacyAbac(self, request, global_params=None):
-      """Enables or disables the ABAC authorization mechanism on a cluster.
+      r"""Enables or disables the ABAC authorization mechanism on a cluster.
 
       Args:
         request: (SetLegacyAbacRequest) input message
@@ -1351,7 +1501,7 @@ at the initial create time.
     )
 
     def List(self, request, global_params=None):
-      """Lists all clusters owned by a project in either the specified zone or all.
+      r"""Lists all clusters owned by a project in either the specified zone or all.
 zones.
 
       Args:
@@ -1369,7 +1519,7 @@ zones.
         method_id=u'container.projects.zones.clusters.list',
         ordered_params=[u'projectId', u'zone'],
         path_params=[u'projectId', u'zone'],
-        query_params=[u'parent', u'version'],
+        query_params=[u'parent'],
         relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersListRequest',
@@ -1378,7 +1528,7 @@ zones.
     )
 
     def Locations(self, request, global_params=None):
-      """Sets the locations of a specific cluster.
+      r"""Sets the locations for a specific cluster.
 
       Args:
         request: (SetLocationsRequest) input message
@@ -1404,7 +1554,7 @@ zones.
     )
 
     def Logging(self, request, global_params=None):
-      """Sets the logging service of a specific cluster.
+      r"""Sets the logging service for a specific cluster.
 
       Args:
         request: (SetLoggingServiceRequest) input message
@@ -1430,7 +1580,7 @@ zones.
     )
 
     def Master(self, request, global_params=None):
-      """Updates the master of a specific cluster.
+      r"""Updates the master for a specific cluster.
 
       Args:
         request: (UpdateMasterRequest) input message
@@ -1456,7 +1606,7 @@ zones.
     )
 
     def Monitoring(self, request, global_params=None):
-      """Sets the monitoring service of a specific cluster.
+      r"""Sets the monitoring service for a specific cluster.
 
       Args:
         request: (SetMonitoringServiceRequest) input message
@@ -1482,7 +1632,7 @@ zones.
     )
 
     def ResourceLabels(self, request, global_params=None):
-      """Sets labels on a cluster.
+      r"""Sets labels on a cluster.
 
       Args:
         request: (SetLabelsRequest) input message
@@ -1508,7 +1658,7 @@ zones.
     )
 
     def SetMaintenancePolicy(self, request, global_params=None):
-      """Sets the maintenance policy for a cluster.
+      r"""Sets the maintenance policy for a cluster.
 
       Args:
         request: (SetMaintenancePolicyRequest) input message
@@ -1534,10 +1684,9 @@ zones.
     )
 
     def SetMasterAuth(self, request, global_params=None):
-      """Used to set master auth materials. Currently supports :-.
-Changing the admin password of a specific cluster.
-This can be either via password generation or explicitly set.
-Modify basic_auth.csv and reset the K8S API server.
+      r"""Sets master auth materials. Currently supports changing the admin password.
+or a specific cluster, either via password generation or explicitly setting
+the password.
 
       Args:
         request: (SetMasterAuthRequest) input message
@@ -1563,7 +1712,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def SetNetworkPolicy(self, request, global_params=None):
-      """Enables/Disables Network Policy for a cluster.
+      r"""Enables or disables Network Policy for a cluster.
 
       Args:
         request: (SetNetworkPolicyRequest) input message
@@ -1589,7 +1738,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def StartIpRotation(self, request, global_params=None):
-      """Start master IP rotation.
+      r"""Starts master IP rotation.
 
       Args:
         request: (StartIPRotationRequest) input message
@@ -1615,7 +1764,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the settings of a specific cluster.
+      r"""Updates the settings for a specific cluster.
 
       Args:
         request: (UpdateClusterRequest) input message
@@ -1651,7 +1800,7 @@ Modify basic_auth.csv and reset the K8S API server.
           }
 
     def Cancel(self, request, global_params=None):
-      """Cancels the specified operation.
+      r"""Cancels the specified operation.
 
       Args:
         request: (CancelOperationRequest) input message
@@ -1677,7 +1826,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the specified operation.
+      r"""Gets the specified operation.
 
       Args:
         request: (ContainerProjectsZonesOperationsGetRequest) input message
@@ -1694,7 +1843,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.operations.get',
         ordered_params=[u'projectId', u'zone', u'operationId'],
         path_params=[u'operationId', u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/operations/{operationId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesOperationsGetRequest',
@@ -1703,7 +1852,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def List(self, request, global_params=None):
-      """Lists all operations in a project in a specific zone or all zones.
+      r"""Lists all operations in a project in the specified zone or all zones.
 
       Args:
         request: (ContainerProjectsZonesOperationsListRequest) input message
@@ -1720,7 +1869,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.operations.list',
         ordered_params=[u'projectId', u'zone'],
         path_params=[u'projectId', u'zone'],
-        query_params=[u'parent', u'version'],
+        query_params=[u'parent'],
         relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/operations',
         request_field='',
         request_type_name=u'ContainerProjectsZonesOperationsListRequest',
@@ -1739,7 +1888,7 @@ Modify basic_auth.csv and reset the K8S API server.
           }
 
     def GetServerconfig(self, request, global_params=None):
-      """Returns configuration info about the Kubernetes Engine service.
+      r"""Returns configuration info about the Google Kubernetes Engine service.
 
       Args:
         request: (ContainerProjectsZonesGetServerconfigRequest) input message
@@ -1756,7 +1905,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.getServerconfig',
         ordered_params=[u'projectId', u'zone'],
         path_params=[u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/serverconfig',
         request_field='',
         request_type_name=u'ContainerProjectsZonesGetServerconfigRequest',

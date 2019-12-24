@@ -24,7 +24,7 @@ class ApikeysV1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new apikeys handle."""
     url = url or self.BASE_URL
     super(ApikeysV1, self).__init__(
@@ -33,7 +33,8 @@ class ApikeysV1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.projects_apiKeys = self.ProjectsApiKeysService(self)
     self.projects_deletedApiKeys = self.ProjectsDeletedApiKeysService(self)
     self.projects = self.ProjectsService(self)
@@ -49,7 +50,7 @@ class ApikeysV1(base_api.BaseApiClient):
           }
 
     def BatchDelete(self, request, global_params=None):
-      """Bulk delete a list of API keys.
+      r"""Bulk delete a list of API keys.
 
       Args:
         request: (ApikeysProjectsApiKeysBatchDeleteRequest) input message
@@ -75,7 +76,7 @@ class ApikeysV1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      """Creates a new API key.
+      r"""Creates a new API key.
 
       Args:
         request: (ApikeysProjectsApiKeysCreateRequest) input message
@@ -101,7 +102,7 @@ class ApikeysV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an API key.
+      r"""Deletes an API key.
 
       Args:
         request: (ApikeysProjectsApiKeysDeleteRequest) input message
@@ -127,7 +128,7 @@ class ApikeysV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the metadata for an API key.
+      r"""Gets the metadata for an API key.
 
       Args:
         request: (ApikeysProjectsApiKeysGetRequest) input message
@@ -153,7 +154,7 @@ class ApikeysV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the API keys owned by a project.
+      r"""Lists the API keys owned by a project.
 
       Args:
         request: (ApikeysProjectsApiKeysListRequest) input message
@@ -179,7 +180,7 @@ class ApikeysV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Patches the modifiable fields of an API key.
+      r"""Patches the modifiable fields of an API key.
 
       Args:
         request: (ApikeysProjectsApiKeysPatchRequest) input message
@@ -205,7 +206,7 @@ class ApikeysV1(base_api.BaseApiClient):
     )
 
     def Regenerate(self, request, global_params=None):
-      """Regenerates the key string for the specified API key.
+      r"""Regenerates the key string for the specified API key.
 This writes a new key string to `current_key` and writes the previous key
 string to `previous_key`.
 Returns the updated key entry.
@@ -234,7 +235,7 @@ Returns the updated key entry.
     )
 
     def Revert(self, request, global_params=None):
-      """Reverts a previous key regeneration.
+      r"""Reverts a previous key regeneration.
 This swaps the contents of `current_key` and `previous_key`.
 Returns the updated key entry.
 
@@ -272,7 +273,7 @@ Returns the updated key entry.
           }
 
     def List(self, request, global_params=None):
-      """Lists the deleted API keys owned by a project.
+      r"""Lists the deleted API keys owned by a project.
 
       Args:
         request: (ApikeysProjectsDeletedApiKeysListRequest) input message
@@ -308,7 +309,7 @@ Returns the updated key entry.
           }
 
     def GetProjectForApiKey(self, request, global_params=None):
-      """Get the project info about an API key.
+      r"""Get the project info about an API key.
 
       Args:
         request: (ApikeysProjectsGetProjectForApiKeyRequest) input message

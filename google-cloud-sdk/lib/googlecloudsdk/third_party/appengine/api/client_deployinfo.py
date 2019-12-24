@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ Library for parsing client_deploy.yaml files and working with these in memory.
 # information in docstrings.  If you must communicate internal information in
 # this source file, please place them in comments only.
 
+from __future__ import absolute_import
 import os
 
 # pylint: disable=g-import-not-at-top

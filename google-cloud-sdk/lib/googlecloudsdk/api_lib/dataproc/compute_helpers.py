@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Constants for the dataproc tool."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.compute import base_classes as compute_base
 from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.api_lib.compute import utils as compute_utils
@@ -25,7 +30,7 @@ from googlecloudsdk.core import properties
 
 # Copy into dataproc for cleaner separation
 SCOPE_ALIASES = compute_constants.SCOPES
-SCOPE_ALIASES_FOR_HELP = compute_constants.ScopesForHelp()
+SCOPES_HELP = compute_constants.ScopesHelp()
 
 
 def ExpandScopeAliases(scopes):
@@ -41,7 +46,7 @@ def ExpandScopeAliases(scopes):
   return sorted(expanded_scopes)
 
 
-def GetComputeResources(release_track, cluster_name):
+def GetComputeResources(release_track, cluster_name, dataproc_region):
   """Returns a resources object with resolved GCE zone and region."""
   holder = compute_base.ComputeApiHolder(release_track)
   region_prop = properties.VALUES.compute.region
@@ -51,7 +56,6 @@ def GetComputeResources(release_track, cluster_name):
   # Prompt for scope if necessary. If Dataproc regional stack is used, omitting
   # the zone allows the server to pick a zone
   zone = properties.VALUES.compute.zone.Get()
-  dataproc_region = properties.VALUES.dataproc.region.GetOrFail()
   if not zone and dataproc_region == 'global':
     _, zone = scope_prompter.PromptForScope(
         resource_name='cluster',

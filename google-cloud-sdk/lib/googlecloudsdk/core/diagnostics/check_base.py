@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,14 +15,18 @@
 
 """Base classes for checks."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 import collections
+import six
 
 
+@six.add_metaclass(abc.ABCMeta)
 class Checker(object):
   """Base class for a single check."""
-
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractproperty
   def issue(self):

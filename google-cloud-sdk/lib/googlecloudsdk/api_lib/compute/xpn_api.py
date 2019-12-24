@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for the API to configure cross-project networking (XPN)."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.compute import client_adapter
+from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.core import exceptions
 
 
 _DEFAULT_API_VERSION = 'v1'
@@ -184,5 +190,6 @@ class XpnClient(object):
         host_project, associated_project, xpn_resource_type=xpn_types.PROJECT)
 
 
-def GetXpnClient(api_version=_DEFAULT_API_VERSION):
-  return XpnClient(client_adapter.ClientAdapter(api_version))
+def GetXpnClient(release_track):
+  holder = base_classes.ComputeApiHolder(release_track)
+  return XpnClient(holder.client)

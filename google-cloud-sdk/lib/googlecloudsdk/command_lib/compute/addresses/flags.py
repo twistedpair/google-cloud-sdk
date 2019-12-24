@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +15,9 @@
 
 """Flags and helpers for the compute addresses commands."""
 
-import argparse
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
@@ -65,7 +68,7 @@ def SubnetworkArgument():
       resource_name='subnet',
       required=False,
       regional_collection='compute.subnetworks',
-      region_explanation=argparse.SUPPRESS,
+      region_hidden=True,
       short_help='The subnet in which to reserve the addresses.',
       detailed_help="""\
       If specified, the subnet name in which the address(es) should be reserved.
@@ -76,6 +79,22 @@ def SubnetworkArgument():
       IP range.
 
       May not be specified with --global.
+      """)
+
+
+def NetworkArgument():
+  return compute_flags.ResourceArgument(
+      name='--network',
+      resource_name='network',
+      required=False,
+      global_collection='compute.networks',
+      short_help='The network in which to reserve the addresses.',
+      detailed_help="""\
+      If specified, the network resource in which the address(es) should be
+      reserved.
+
+      This is only available for global internal address, which represents
+      an internal IP range reservation from within the network.
       """)
 
 
@@ -102,6 +121,20 @@ def AddAddresses(parser):
       """)
 
 
+def AddPrefixLength(parser):
+  """Adds the prefix-length flag."""
+  parser.add_argument(
+      '--prefix-length',
+      type=arg_parsers.BoundedInt(lower_bound=8, upper_bound=30),
+      help="""\
+      The prefix length of the IP range. It must be a value between 8 and 30
+      inclusive. If not present, it means the address field is a single IP
+      address.
+
+      This field is not applicable to external addresses.
+      """)
+
+
 def AddIpVersionGroup(parser):
   """Adds IP versions flag in a mutually exclusive group."""
   parser.add_argument(
@@ -109,8 +142,13 @@ def AddIpVersionGroup(parser):
       choices=['IPV4', 'IPV6'],
       type=lambda x: x.upper(),
       help="""\
-      The version of the IP address to be allocated and reserved if
-      --addresses is not used.  The default is IPv4.
+      Version of the IP address to be allocated and reserved.
+      The default is IPV4.
+
+      IP version can only be specified for global addresses that are generated
+      automatically (i.e., along with
+      the `--global` flag, given `--addresses` is not specified) and if the
+      `--network-tier` is `PREMIUM`.
       """)
 
 
@@ -138,4 +176,25 @@ def AddNetworkTier(parser):
       help="""\
       The network tier to assign to the reserved IP addresses. ``NETWORK_TIER''
       must be one of: `PREMIUM`, `STANDARD`. The default value is `PREMIUM`.
+
+      While regional external addresses (`--region` specified, `--subnet`
+      omitted) can use either `PREMIUM` or `STANDARD`, global external
+      addresses (`--global` specified, `--subnet` omitted) can only use
+      `PREMIUM`. Internal addresses can only use `PREMIUM`.
+      """)
+
+
+def AddPurpose(parser, support_shared_loadbalancer_vip):
+  """Adds purpose flag."""
+  if support_shared_loadbalancer_vip:
+    choices = ['VPC_PEERING', 'SHARED_LOADBALANCER_VIP', 'GCE_ENDPOINT']
+  else:
+    choices = ['VPC_PEERING', 'GCE_ENDPOINT']
+  parser.add_argument(
+      '--purpose',
+      choices=choices,
+      type=lambda x: x.upper(),
+      help="""\
+      The purpose of the address resource. This field is not applicable to
+      external addresses.
       """)

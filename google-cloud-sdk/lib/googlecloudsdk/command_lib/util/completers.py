@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +15,12 @@
 
 """Completer extensions for the core.cache.completion_cache module."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
-import StringIO
+import io
 
 from googlecloudsdk.api_lib.util import resource_search
 from googlecloudsdk.command_lib.util import parameter_info_lib
@@ -24,6 +29,8 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.cache import completion_cache
 from googlecloudsdk.core.cache import resource_cache
+
+import six
 
 
 _PSEUDO_COLLECTION_PREFIX = 'cloud.sdk'
@@ -49,12 +56,15 @@ class Converter(completion_cache.Completer):
   Attributes:
       _additional_params: A list of additional parameter names not int the
         parsed resource.
+      _parse_all: If True, attempt to parse any string, otherwise, just parse
+        strings beginning with 'http[s]://'.
       qualified_parameter_names: The list of parameter names that must be fully
         qualified.  Use the name 'collection' to qualify collections.
   """
 
   def __init__(self, additional_params=None, api=None,
-               qualified_parameter_names=None, style=None, **kwargs):
+               qualified_parameter_names=None, style=None,
+               parse_all=False, **kwargs):
     super(Converter, self).__init__(**kwargs)
     if api:
       self.api = api
@@ -76,6 +86,7 @@ class Converter(completion_cache.Completer):
       self._row_to_string = self._GRI_RowToString
     else:
       self._row_to_string = self._FLAGS_RowToString
+    self._parse_all = parse_all
 
   def StringToRow(self, string):
     """Returns the row representation of string."""
@@ -118,7 +129,8 @@ class Converter(completion_cache.Completer):
 
   def _StringToRow(self, string):
     if string and (string.startswith('https://') or
-                   string.startswith('http://')):
+                   string.startswith('http://') or
+                   self._parse_all):
       try:
         row = self.parse(string or None)
         return row
@@ -144,9 +156,11 @@ class Converter(completion_cache.Completer):
     else:
       collection = None
       is_fully_qualified = True
-    return str(resources.GRI(reversed(parts),
-                             collection=collection,
-                             is_fully_qualified=is_fully_qualified))
+    return six.text_type(
+        resources.GRI(
+            reversed(parts),
+            collection=collection,
+            is_fully_qualified=is_fully_qualified))
 
   def _FLAGS_RowToString(self, row, parameter_info=None):
     parts = [row[self.columns - 1]]
@@ -197,7 +211,7 @@ class ResourceCompleter(Converter):
       self.collection_info = resources.REGISTRY.GetCollectionInfo(
           collection, api_version=api_version)
       params = self.collection_info.GetParams('')
-      log.info(u'cache collection=%s api_version=%s params=%s' % (
+      log.info('cache collection=%s api_version=%s params=%s' % (
           collection, self.collection_info.api_version, params))
       parameters = [resource_cache.Parameter(name=name, column=column)
                     for column, name in enumerate(params)]
@@ -271,7 +285,7 @@ class ListCommandCompleter(ResourceCompleter):
       if not self._parse_output:
         return parameter_info.Execute(command)
       log_out = log.out
-      out = StringIO.StringIO()
+      out = io.StringIO()
       log.out = out
       parameter_info.Execute(command)
       return out.getvalue().rstrip('\n').split('\n')
@@ -287,16 +301,16 @@ class ListCommandCompleter(ResourceCompleter):
           parameter.name, parameter.value, for_update=True)
       if flag and flag not in command:
         command.append(flag)
-    log.info(u'cache update command: %s' % ' '.join(command))
+    log.info('cache update command: %s' % ' '.join(command))
     try:
       items = list(self.GetAllItems(command, parameter_info) or [])
     except (Exception, SystemExit) as e:  # pylint: disable=broad-except
-      if properties.VALUES.core.print_completion_tracebacks.Get():
+      if properties.VALUES.core.print_completion_tracebacks.GetBool():
         raise
-      log.info(unicode(e).rstrip())
+      log.info(six.text_type(e).rstrip())
       try:
-        raise (type(e))(u'Update command [{}]: {}'.format(
-            ' '.join(command), unicode(e).rstrip()))
+        raise (type(e))('Update command [{}]: {}'.format(
+            ' '.join(command), six.text_type(e).rstrip()))
       except TypeError:
         raise e
     return [self.StringToRow(item) for item in items]
@@ -312,11 +326,11 @@ class ResourceSearchCompleter(ResourceCompleter):
     try:
       items = resource_search.List(query=query, uri=True)
     except Exception as e:  # pylint: disable=broad-except
-      if properties.VALUES.core.print_completion_tracebacks.Get():
+      if properties.VALUES.core.print_completion_tracebacks.GetBool():
         raise
-      log.info(unicode(e).rstrip())
-      raise (type(e))(u'Update resource query [{}]: {}'.format(
-          query, unicode(e).rstrip()))
+      log.info(six.text_type(e).rstrip())
+      raise (type(e))('Update resource query [{}]: {}'.format(
+          query, six.text_type(e).rstrip()))
     return [self.StringToRow(item) for item in items]
 
 
@@ -364,7 +378,7 @@ class MultiResourceCompleter(Converter):
           else:
             name_count[parameter.name] = 1
     qualified_parameter_names = {
-        name for name, count in name_count.iteritems()
+        name for name, count in six.iteritems(name_count)
         if count != len(self.completers)}
 
     # The "collection" for a multi resource completer is the odered comma
@@ -397,10 +411,8 @@ class MultiResourceCompleter(Converter):
     del aggregations
 
 
-class NoCacheCompleter(Converter):
+class NoCacheCompleter(six.with_metaclass(abc.ABCMeta, Converter)):
   """A completer that does not cache completions."""
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, cache=None, **kwargs):
     del cache

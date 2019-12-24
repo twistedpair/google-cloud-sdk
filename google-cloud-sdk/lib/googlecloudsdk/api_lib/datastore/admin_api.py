@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +14,14 @@
 # limitations under the License.
 """Useful commands for interacting with the Cloud Datastore Admin API."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.datastore import constants
 from googlecloudsdk.api_lib.util import apis
 
-_DATASTORE_API_VERSION = 'v1beta1'
+_DATASTORE_API_VERSION = 'v1'
 
 
 def GetMessages():
@@ -39,7 +44,7 @@ def GetExportEntitiesRequest(project,
                              kinds=None,
                              namespaces=None,
                              labels=None):
-  """Returns a request for a Datastore Export.
+  """Returns a request for a Datastore Admin Export.
 
   Args:
     project: the project id to export, a string.
@@ -51,7 +56,7 @@ def GetExportEntitiesRequest(project,
     an ExportRequest message.
   """
   messages = GetMessages()
-  request_class = messages.GoogleDatastoreAdminV1beta1ExportEntitiesRequest
+  request_class = messages.GoogleDatastoreAdminV1ExportEntitiesRequest
 
   labels_message = request_class.LabelsValue()
   labels_message.additionalProperties = []
@@ -69,7 +74,7 @@ def GetExportEntitiesRequest(project,
 
   request = messages.DatastoreProjectsExportRequest(
       projectId=project,
-      googleDatastoreAdminV1beta1ExportEntitiesRequest=export_request)
+      googleDatastoreAdminV1ExportEntitiesRequest=export_request)
   return request
 
 
@@ -78,7 +83,7 @@ def GetImportEntitiesRequest(project,
                              kinds=None,
                              namespaces=None,
                              labels=None):
-  """Returns a request for a Datastore Import.
+  """Returns a request for a Datastore Admin Import.
 
   Args:
     project: the project id to import, a string.
@@ -90,7 +95,7 @@ def GetImportEntitiesRequest(project,
     an ImportRequest message.
   """
   messages = GetMessages()
-  request_class = messages.GoogleDatastoreAdminV1beta1ImportEntitiesRequest
+  request_class = messages.GoogleDatastoreAdminV1ImportEntitiesRequest
 
   entity_filter = _MakeEntityFilter(namespaces, kinds)
 
@@ -108,12 +113,12 @@ def GetImportEntitiesRequest(project,
 
   return messages.DatastoreProjectsImportRequest(
       projectId=project,
-      googleDatastoreAdminV1beta1ImportEntitiesRequest=import_request)
+      googleDatastoreAdminV1ImportEntitiesRequest=import_request)
 
 
 def Export(project, output_url_prefix, kinds=None, namespaces=None,
            labels=None):
-  """Performs a Datastore v1beta1 Export.
+  """Performs a Datastore Admin v1 Export.
 
   Args:
     project: the project id to export, a string.
@@ -130,7 +135,7 @@ def Export(project, output_url_prefix, kinds=None, namespaces=None,
 
 
 def Import(project, input_url, kinds=None, namespaces=None, labels=None):
-  """Performs a DatastoreAdmin v1beta3 Import.
+  """Performs a Datastore Admin v1 Import.
 
   Args:
     project: the project id to import, a string.
@@ -157,7 +162,7 @@ def _MakeEntityFilter(namespaces, kinds):
   namespaces = namespaces or []
   namespaces = [_TransformNamespaceId(namespace) for namespace in namespaces]
 
-  return GetMessages().GoogleDatastoreAdminV1beta1EntityFilter(
+  return GetMessages().GoogleDatastoreAdminV1EntityFilter(
       kinds=kinds or [], namespaceIds=namespaces)
 
 

@@ -1,5 +1,5 @@
 #
-# Copyright 2007 Google Inc. All Rights Reserved.
+# Copyright 2007 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,12 +26,14 @@ object so that it can construct a properly structured object.
 # this source file, please place them in comments only.
 
 
+from __future__ import absolute_import
 
+
+from ruamel import yaml
 
 from googlecloudsdk.third_party.appengine.api import yaml_errors
 from googlecloudsdk.third_party.appengine.api import yaml_listener
 
-import yaml
 
 # Token constants used by handler for keeping track of handler state.
 _TOKEN_DOCUMENT = 'document'

@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +15,12 @@
 
 """Common helper methods for Service Management commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import json
 import re
-import urllib2
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
@@ -28,10 +32,11 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import retry
-
-import yaml
+import six
 
 
 EMAIL_REGEX = re.compile(r'^.+@([^.@][^@]+)$')
@@ -63,10 +68,6 @@ def GetMessagesModule():
 
 def GetClientInstance():
   return apis.GetClientInstance('servicemanagement', 'v1')
-
-
-def GetEndpointsServiceName():
-  return 'endpoints.googleapis.com'
 
 
 def GetServiceManagementServiceName():
@@ -147,7 +148,7 @@ def PushAdvisorChangeTypeToString(change_type):
   messages = GetMessagesModule()
   enums = messages.ConfigChange.ChangeTypeValueValuesEnum
   if change_type in [enums.ADDED, enums.REMOVED, enums.MODIFIED]:
-    return str(change_type).lower()
+    return six.text_type(change_type).lower()
   else:
     return '[unknown]'
 
@@ -161,8 +162,8 @@ def PushAdvisorConfigChangeToString(config_change):
   Returns:
     An easily readable string representing the ConfigChange message.
   """
-  result = (u'Element [{element}] (old value = {old_value}, '
-            u'new value = {new_value}) was {change_type}. Advice:\n').format(
+  result = ('Element [{element}] (old value = {old_value}, '
+            'new value = {new_value}) was {change_type}. Advice:\n').format(
                 element=config_change.element,
                 old_value=config_change.oldValue,
                 new_value=config_change.newValue,
@@ -170,7 +171,7 @@ def PushAdvisorConfigChangeToString(config_change):
                     config_change.changeType))
 
   for advice in config_change.advices:
-    result += u'\t* {0}'.format(advice.description)
+    result += '\t* {0}'.format(advice.description)
 
   return result
 
@@ -248,26 +249,31 @@ def FilenameMatchesExtension(filename, extensions):
 
 
 def IsProtoDescriptor(filename):
-  return FilenameMatchesExtension(filename, ['.pb', '.descriptor'])
+  return FilenameMatchesExtension(
+      filename, ['.pb', '.descriptor', '.proto.bin'])
+
+
+def IsRawProto(filename):
+  return FilenameMatchesExtension(filename, ['.proto'])
 
 
 def ReadServiceConfigFile(file_path):
   try:
-    mode = 'rb' if IsProtoDescriptor(file_path) else 'r'
-    with open(file_path, mode) as f:
-      return f.read()
-  except IOError as ex:
+    if IsProtoDescriptor(file_path):
+      return files.ReadBinaryFileContents(file_path)
+    return files.ReadFileContents(file_path)
+  except files.Error as ex:
     raise calliope_exceptions.BadFileException(
         'Could not open service config file [{0}]: {1}'.format(file_path, ex))
 
 
-def PushNormalizedGoogleServiceConfig(service_name, project, config_contents):
+def PushNormalizedGoogleServiceConfig(service_name, project, config_dict):
   """Pushes a given normalized Google service configuration.
 
   Args:
     service_name: name of the service
     project: the producer project Id
-    config_contents: the contents of the Google Service Config file.
+    config_dict: the parsed contents of the Google Service Config file.
 
   Returns:
     Result of the ServicesConfigsCreate request (a Service object)
@@ -275,7 +281,9 @@ def PushNormalizedGoogleServiceConfig(service_name, project, config_contents):
   messages = GetMessagesModule()
   client = GetClientInstance()
 
-  service_config = encoding.JsonToMessage(messages.Service, config_contents)
+  # Be aware: DictToMessage takes the value first and message second;
+  # JsonToMessage takes the message first and value second
+  service_config = encoding.DictToMessage(config_dict, messages.Service)
   service_config.producerProjectId = project
   create_request = (
       messages.ServicemanagementServicesConfigsCreateRequest(
@@ -289,14 +297,14 @@ def GetServiceConfigIdFromSubmitConfigSourceResponse(response):
   return response.get('serviceConfig', {}).get('id')
 
 
-def PushMultipleServiceConfigFiles(service_name, config_files, async,
+def PushMultipleServiceConfigFiles(service_name, config_files, is_async,
                                    validate_only=False):
   """Pushes a given set of service configuration files.
 
   Args:
     service_name: name of the service.
     config_files: a list of ConfigFile message objects.
-    async: whether to wait for aync operations or not.
+    is_async: whether to wait for aync operations or not.
     validate_only: whether to perform a validate-only run of the operation
                      or not.
 
@@ -323,7 +331,7 @@ def PushMultipleServiceConfigFiles(service_name, config_files, async,
           submitConfigSourceRequest=config_source_request,
       ))
   api_response = client.services_configs.Submit(submit_request)
-  operation = ProcessOperationResult(api_response, async)
+  operation = ProcessOperationResult(api_response, is_async)
 
   response = operation.get('response', {})
   diagnostics = response.get('diagnostics', [])
@@ -332,7 +340,7 @@ def PushMultipleServiceConfigFiles(service_name, config_files, async,
   for diagnostic in diagnostics:
     kind = diagnostic.get('kind', '').upper()
     logger = log.error if kind == 'ERROR' else log.warning
-    msg = '{l}: {m}'.format(
+    msg = '{l}: {m}\n'.format(
         l=diagnostic.get('location'), m=diagnostic.get('message'))
     logger(msg)
 
@@ -349,7 +357,7 @@ def PushMultipleServiceConfigFiles(service_name, config_files, async,
 
 
 def PushOpenApiServiceConfig(
-    service_name, spec_file_contents, spec_file_path, async,
+    service_name, spec_file_contents, spec_file_path, is_async,
     validate_only=False):
   """Pushes a given Open API service configuration.
 
@@ -357,7 +365,7 @@ def PushOpenApiServiceConfig(
     service_name: name of the service
     spec_file_contents: the contents of the Open API spec file.
     spec_file_path: the path of the Open API spec file.
-    async: whether to wait for aync operations or not.
+    is_async: whether to wait for aync operations or not.
     validate_only: whether to perform a validate-only run of the operation
                    or not.
 
@@ -373,16 +381,18 @@ def PushOpenApiServiceConfig(
       fileType=(messages.ConfigFile.
                 FileTypeValueValuesEnum.OPEN_API_YAML),
   )
-  return PushMultipleServiceConfigFiles(service_name, [config_file], async,
+  return PushMultipleServiceConfigFiles(service_name, [config_file], is_async,
                                         validate_only=validate_only)
 
 
-def CreateServiceIfNew(service_name, project):
-  """Creates a Service resource if it does not already exist.
+def DoesServiceExist(service_name):
+  """Check if a service resource exists.
 
   Args:
-    service_name: name of the service to be returned or created.
-    project: the project Id
+    service_name: name of the service to check if exists.
+
+  Returns:
+    Whether or not the service exists.
   """
   messages = GetMessagesModule()
   client = GetClientInstance()
@@ -395,28 +405,29 @@ def CreateServiceIfNew(service_name, project):
           apitools_exceptions.HttpNotFoundError):
     # Older versions of service management backend return a 404 when service is
     # new, but more recent versions return a 403. Check for either one for now.
-    # create service
-    create_request = messages.ManagedService(
-        serviceName=service_name,
-        producerProjectId=project,
-    )
-    client.services.Create(create_request)
+    return False
+  else:
+    return True
 
 
-def GetByteStringFromFingerprint(fingerprint):
-  """Helper function to create a byte string from a SHA fingerprint.
+def CreateService(service_name, project, is_async=False):
+  """Creates a Service resource.
 
   Args:
-    fingerprint: The fingerprint to transform in the form of
-                 "12:34:56:78:90:...:EF".
-
-  Returns:
-    The fingerprint converted to a byte string (excluding the colons).
+    service_name: name of the service to be created.
+    project: the project Id
+    is_async: If False, the method will block until the operation completes.
   """
-  if not ValidateFingerprint(fingerprint):
-    raise exceptions.FingerprintError('Invalid fingerprint')
-  byte_tokens = fingerprint.split(':')
-  return str(bytearray([int(b, 16) for b in byte_tokens]))
+  messages = GetMessagesModule()
+  client = GetClientInstance()
+  # create service
+  create_request = messages.ManagedService(
+      serviceName=service_name,
+      producerProjectId=project,
+  )
+  result = client.services.Create(create_request)
+
+  GetProcessedOperationResult(result, is_async=is_async)
 
 
 def ValidateFingerprint(fingerprint):
@@ -441,31 +452,31 @@ def ValidateEmailString(email):
   return EMAIL_REGEX.match(email or '') is not None and len(email) <= 254
 
 
-def ProcessOperationResult(result, async=False):
+def ProcessOperationResult(result, is_async=False):
   """Validate and process Operation outcome for user display.
 
   Args:
     result: The message to process (expected to be of type Operation)'
-    async: If False, the method will block until the operation completes.
+    is_async: If False, the method will block until the operation completes.
 
   Returns:
     The processed Operation message in Python dict form
   """
-  op = GetProcessedOperationResult(result, async)
-  if async:
+  op = GetProcessedOperationResult(result, is_async)
+  if is_async:
     cmd = OP_WAIT_CMD.format(op.get('name'))
     log.status.Print('Asynchronous operation is in progress... '
                      'Use the following command to wait for its '
-                     'completion:\n {0}'.format(cmd))
+                     'completion:\n {0}\n'.format(cmd))
   else:
     cmd = OP_DESCRIBE_CMD.format(op.get('name'))
     log.status.Print('Operation finished successfully. '
                      'The following command can describe '
-                     'the Operation details:\n {0}'.format(cmd))
+                     'the Operation details:\n {0}\n'.format(cmd))
   return op
 
 
-def GetProcessedOperationResult(result, async=False):
+def GetProcessedOperationResult(result, is_async=False):
   """Validate and process Operation result message for user display.
 
   This method checks to make sure the result is of type Operation and
@@ -474,7 +485,7 @@ def GetProcessedOperationResult(result, async=False):
 
   Args:
     result: The message to process (expected to be of type Operation)'
-    async: If False, the method will block until the operation completes.
+    is_async: If False, the method will block until the operation completes.
 
   Returns:
     The processed message in Python dict form
@@ -488,7 +499,7 @@ def GetProcessedOperationResult(result, async=False):
 
   result_dict = encoding.MessageToDict(result)
 
-  if not async:
+  if not is_async:
     op_name = result_dict['name']
     op_ref = resources.REGISTRY.Parse(
         op_name,
@@ -579,18 +590,11 @@ def LoadJsonOrYaml(input_string):
   def TryYaml():
     try:
       return yaml.load(input_string)
-    except yaml.YAMLError as e:
-      if hasattr(e, 'problem_mark'):
-        mark = e.problem_mark
+    except yaml.YAMLParseError as e:
+      if hasattr(e.inner_error, 'problem_mark'):
+        mark = e.inner_error.problem_mark
         log.error('Service config YAML had an error at position (%s:%s)'
                   % (mark.line+1, mark.column+1))
 
   # First, try to decode JSON. If that fails, try to decode YAML.
   return TryJson() or TryYaml()
-
-
-def GenerateManagementUrl(service, project):
-  return ('https://console.cloud.google.com/endpoints/api/'
-          '{service}/overview?project={project}'.format(
-              service=urllib2.quote(service),
-              project=urllib2.quote(project)))

@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,18 +17,22 @@
 
 """
 
-from httplib import ResponseNotReady
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import pkg_resources
-from googlecloudsdk.core.util import platforms
 
 from oauth2client import client
 from oauth2client import tools
+from six.moves import input  # pylint: disable=redefined-builtin
+from six.moves.http_client import ResponseNotReady
 
 
 try:
   # pylint:disable=g-import-not-at-top
-  from urlparse import parse_qsl
+  from six.moves.urllib.parse import parse_qsl
 except ImportError:
   # pylint:disable=g-import-not-at-top
   from cgi import parse_qsl
@@ -124,18 +129,6 @@ def Run(flow, launch_browser=True, http=None,
       flow.redirect_uri = ('http://%s:%s/' % (auth_host_name, port_number))
 
       authorize_url = flow.step1_get_authorize_url()
-      # Without this, Chrome on MacOS will not launch unless Chrome
-      # is already open. This is due to an bug in webbbrowser.py that tries to
-      # open web browsers by app name using i.e. 'Chrome' but the actual app
-      # name is 'Google Chrome' on Mac.
-      if platforms.OperatingSystem.MACOSX == platforms.OperatingSystem.Current(
-      ):
-        try:
-          webbrowser.register('Google Chrome', None,
-                              webbrowser.MacOSXOSAScript('Google Chrome'), -1)
-        except AttributeError:  # If MacOSXOSAScript not defined on module,
-          pass                  # proceed with default behavior
-
       webbrowser.open(authorize_url, new=1, autoraise=True)
       message = 'Your browser has been opened to visit:'
       log.err.Print('{message}\n\n    {url}\n\n'.format(
@@ -155,13 +148,13 @@ def Run(flow, launch_browser=True, http=None,
                  'between {start_port} and {end_port}. Please check your '
                  'firewall settings or locally running programs that may be '
                  'blocking or using those ports.')
-      log.warn(message.format(
+      log.warning(message.format(
           start_port=auth_host_port_start,
           end_port=port_number,
       ))
 
       launch_browser = False
-      log.warn('Defaulting to URL copy/paste mode.')
+      log.warning('Defaulting to URL copy/paste mode.')
 
   if not launch_browser:
     flow.redirect_uri = client.OOB_CALLBACK_URN
@@ -172,7 +165,7 @@ def Run(flow, launch_browser=True, http=None,
         url=authorize_url,
     ))
     try:
-      code = raw_input('Enter verification code: ').strip()
+      code = input('Enter verification code: ').strip()
     except EOFError as e:
       raise AuthRequestRejectedException(e)
 

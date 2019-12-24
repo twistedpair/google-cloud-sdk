@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,26 +15,29 @@
 
 """A module for the Cloud SDK CLI tree external representation."""
 
-import argparse
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import json
 import os
 import re
 import sys
 import textwrap
 
-from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.calliope import walker
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core import module_util
-from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.console import progress_tracker
-from googlecloudsdk.core.resource import resource_printer
-from googlecloudsdk.core.resource import resource_projector
-from googlecloudsdk.core.updater import update_manager
+from googlecloudsdk.core.util import files
 
+import six
+
+# Lazy import modules to improve tab completion performance.
+# Alternatively, this module could be reorganized to separate tree loading from
+# dumping but that would have significant fallout for the module's usage
+# throughout the code base.
+# pylint:disable=g-import-not-at-top
 
 # This module is the CLI tree generator. VERSION is a stamp that is used to
 # detect breaking changes. If an external CLI tree version does not exactly
@@ -129,6 +133,8 @@ def _GetDefaultCliCommandVersion():
     # normal installation
     return version
   try:
+    from googlecloudsdk.core.updater import update_manager
+
     manager = update_manager.UpdateManager()
     components = manager.GetCurrentVersionsInformation()
     # personal installation
@@ -141,15 +147,13 @@ def _GetDefaultCliCommandVersion():
 
 def _GetDescription(arg):
   """Returns the most detailed description from arg."""
-  if arg.help == argparse.SUPPRESS:
-    return ''
+  from googlecloudsdk.calliope import usage_text
+
   return usage_text.GetArgDetails(arg)
 
 
 def _NormalizeDescription(description):
   """Normalizes description text.
-
-  argparse.SUPPRESS normalizes to None.
 
   Args:
     description: str, The text to be normalized.
@@ -159,11 +163,9 @@ def _NormalizeDescription(description):
   """
   if callable(description):
     description = description()
-  if description == argparse.SUPPRESS:
-    description = None
-  elif description:
+  if description:
     description = textwrap.dedent(description)
-  return unicode(description or '')
+  return six.text_type(description or '')
 
 
 class Argument(object):
@@ -184,32 +186,10 @@ class Argument(object):
     self.attr = {}
     self.description = _NormalizeDescription(_GetDescription(arg))
     self.is_group = False
-    self.is_hidden = arg.help == argparse.SUPPRESS
+    self.is_hidden = getattr(arg, 'is_hidden', getattr(arg, 'hidden', False))
     self.is_positional = False
     self.is_mutex = getattr(arg, 'is_mutex', getattr(arg, 'mutex', False))
     self.is_required = arg.is_required
-
-  def _Scrub(self):
-    """Scrubs private paths in the default value and description.
-
-    Argument default values and "The default is ..." description text are the
-    only places where dynamic private file paths can leak into the cli_tree.
-    This method is called on all args.
-
-    The test is rudimentary but effective. Any default value that looks like an
-    absolute path on unix or windows is scrubbed. The default value is set to
-    None and the trailing "The default ... is ..." sentence in the description,
-    if any, is deleted. It's OK to be conservative here and match aggressively.
-    """
-    if not isinstance(self.default, basestring):
-      return
-    if not re.match(r'/|[A-Za-z]:\\', self.default):
-      return
-    self.default = None
-    match = re.match(
-        r'(.*\.) The default (value )?is ', self.description, re.DOTALL)
-    if match:
-      self.description = match.group(1)
 
 
 class FlagOrPositional(Argument):
@@ -241,13 +221,35 @@ class FlagOrPositional(Argument):
     self.completer = completer
     self.default = arg.default
     self.description = _NormalizeDescription(_GetDescription(arg))
-    self.name = unicode(name)
-    self.nargs = str(arg.nargs or 0)
+    self.name = six.text_type(name)
+    self.nargs = six.text_type(arg.nargs or 0)
     if arg.metavar:
-      self.value = unicode(arg.metavar)
+      self.value = six.text_type(arg.metavar)
     else:
       self.value = self.name.lstrip('-').replace('-', '_').upper()
     self._Scrub()
+
+  def _Scrub(self):
+    """Scrubs private paths in the default value and description.
+
+    Argument default values and "The default is ..." description text are the
+    only places where dynamic private file paths can leak into the cli_tree.
+    This method is called on all args.
+
+    The test is rudimentary but effective. Any default value that looks like an
+    absolute path on unix or windows is scrubbed. The default value is set to
+    None and the trailing "The default ... is ..." sentence in the description,
+    if any, is deleted. It's OK to be conservative here and match aggressively.
+    """
+    if not isinstance(self.default, six.string_types):
+      return
+    if not re.match(r'/|[A-Za-z]:\\', self.default):
+      return
+    self.default = None
+    match = re.match(
+        r'(.*\.) The default (value )?is ', self.description, re.DOTALL)
+    if match:
+      self.description = match.group(1)
 
 
 class Flag(FlagOrPositional):
@@ -260,6 +262,7 @@ class Flag(FlagOrPositional):
   """
 
   def __init__(self, flag, name):
+    from googlecloudsdk.calliope import arg_parsers
 
     super(Flag, self).__init__(flag, name)
     self.choices = []
@@ -276,8 +279,8 @@ class Flag(FlagOrPositional):
       self.type = 'bool'
       self.default = bool(flag.default)
     else:
-      if (isinstance(flag.type, (int, long)) or
-          isinstance(flag.default, (int, long))):
+      if (isinstance(flag.type, six.integer_types) or
+          isinstance(flag.default, six.integer_types)):
         self.type = 'int'
       elif isinstance(flag.type, float) or isinstance(flag.default, float):
         self.type = 'float'
@@ -299,7 +302,7 @@ class Flag(FlagOrPositional):
     prop, kind, value = getattr(flag, 'store_property', (None, None, None))
     if prop:
       # This allows actions.Store*Property() to be reconstituted.
-      attr = {LOOKUP_NAME: str(prop)}
+      attr = {LOOKUP_NAME: six.text_type(prop)}
       if kind == 'bool':
         flag.type = 'bool'
       if value:
@@ -375,6 +378,7 @@ class Command(object):
   """
 
   def __init__(self, command, parent):
+    from googlecloudsdk.core.console import console_io
 
     self.commands = {}
     self.flags = {}
@@ -409,7 +413,7 @@ class Command(object):
     if notes:
       sections['NOTES'] = notes
     if sections:
-      for name, contents in sections.iteritems():
+      for name, contents in six.iteritems(sections):
         # islower() section names were used to convert markdown in command
         # docstrings into the static self.section[] entries seen here.
         if name.isupper():
@@ -605,20 +609,20 @@ def _Serialize(tree):
 
   def _FlagIndexKey(flag):
     return '::'.join([
-        str(flag.name),
-        str(flag.attr),
-        str(flag.category),
-        str(flag.choices),
-        str(flag.completer),
-        str(flag.default),
-        str(flag.description),
-        str(flag.is_hidden),
-        str(flag.is_global),
-        str(flag.is_group),
-        str(flag.is_required),
-        str(flag.nargs),
-        str(flag.type),
-        str(flag.value),
+        six.text_type(flag.name),
+        six.text_type(flag.attr),
+        six.text_type(flag.category),
+        six.text_type(flag.choices),
+        six.text_type(flag.completer),
+        six.text_type(flag.default),
+        six.text_type(flag.description),
+        six.text_type(flag.is_hidden),
+        six.text_type(flag.is_global),
+        six.text_type(flag.is_group),
+        six.text_type(flag.is_required),
+        six.text_type(flag.nargs),
+        six.text_type(flag.type),
+        six.text_type(flag.value),
     ])
 
   def _CollectAllFlags(command):
@@ -658,7 +662,7 @@ def _Serialize(tree):
           pass
 
   def _ReplaceFlagWithIndex(command):
-    for name, flag in command.flags.iteritems():
+    for name, flag in six.iteritems(command.flags):
       command.flags[name] = all_flags[_FlagIndexKey(flag)].index
       _ReplaceConstraintFlagWithIndex(command.constraints.arguments)
     for subcommand in command.commands.values():
@@ -673,6 +677,9 @@ def _Serialize(tree):
 
 def _DumpToFile(tree, f):
   """Dump helper."""
+  from googlecloudsdk.core.resource import resource_printer
+  from googlecloudsdk.core.resource import resource_projector
+
   resource_printer.Print(
       resource_projector.MakeSerializable(_Serialize(tree)),
       'json',
@@ -726,6 +733,8 @@ def CliTreePath(name=DEFAULT_CLI_NAME, directory=None):
 
 def _GenerateRoot(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
   """Generates and returns the CLI root for name."""
+  from googlecloudsdk.core.console import progress_tracker
+
   if path == '-':
     message = 'Generating the {} CLI'.format(name)
   elif path:
@@ -762,8 +771,10 @@ def Dump(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
   if path == '-':
     _DumpToFile(tree, sys.stdout)
   else:
-    with open(path, 'w') as f:
+    with files.FileWriter(path) as f:
       _DumpToFile(tree, f)
+  from googlecloudsdk.core.resource import resource_projector
+
   return resource_projector.MakeSerializable(tree)
 
 
@@ -808,6 +819,8 @@ def _IsUpToDate(tree, path, ignore_errors, verbose):
     return False
 
   if verbose:
+    from googlecloudsdk.core import log
+
     log.status.Print('[{}] CLI tree version [{}] is up to date.'.format(
         DEFAULT_CLI_NAME, expected_command_version))
   return True
@@ -817,8 +830,7 @@ def _Load(path, cli=None, force=False, verbose=False):
   """Load() helper. Returns a tree or None if the tree failed to load."""
   try:
     if not force:
-      with open(path, 'r') as f:
-        tree = json.loads(f.read())
+      tree = json.loads(files.ReadFileContents(path))
       if _IsUpToDate(tree, path, bool(cli), verbose):
         return tree
       del tree
@@ -827,9 +839,9 @@ def _Load(path, cli=None, force=False, verbose=False):
       os.remove(path)
     except OSError:
       pass
-  except (IOError, OSError) as e:
+  except files.Error as e:
     if not cli:
-      raise CliTreeLoadError(unicode(e))
+      raise CliTreeLoadError(six.text_type(e))
   return None
 
 
@@ -855,7 +867,7 @@ def _Deserialize(tree):
 
   def _ReplaceIndexWithFlagReference(command):
     flags = command[LOOKUP_FLAGS]
-    for name, index in flags.iteritems():
+    for name, index in six.iteritems(flags):
       flags[name] = all_flags_list[index]
     arguments = command[LOOKUP_CONSTRAINTS][LOOKUP_ARGUMENTS]
     _ReplaceConstraintIndexWithArgReference(
@@ -894,6 +906,8 @@ def Load(path=None, cli=None, force=False, one_time_use_ok=False,
       path = CliTreePath()
     except SdkRootNotFoundError:
       if cli and one_time_use_ok:
+        from googlecloudsdk.core.resource import resource_projector
+
         tree = _GenerateRoot(cli)
         return resource_projector.MakeSerializable(tree)
       raise

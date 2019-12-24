@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +15,12 @@
 
 """A module for diagnosing common network and proxy problems."""
 
-import httplib
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import socket
 import ssl
-import urlparse
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import http
@@ -25,7 +28,10 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.diagnostics import check_base
 from googlecloudsdk.core.diagnostics import diagnostic_base
 from googlecloudsdk.core.diagnostics import http_proxy_setup
+
 import httplib2
+from six.moves import http_client
+from six.moves import urllib
 import socks
 
 
@@ -54,7 +60,7 @@ def DefaultUrls():
   download_urls = (properties.VALUES.component_manager.snapshot_url.Get() or
                    config.INSTALLATION_CONFIG.snapshot_url)
   urls.extend(u for u in download_urls.split(',')
-              if urlparse.urlparse(u).scheme in ('http', 'https'))
+              if urllib.parse.urlparse(u).scheme in ('http', 'https'))
   return urls
 
 
@@ -103,7 +109,7 @@ class ReachabilityChecker(check_base.Checker):
     try:
       http.Http().request(url, method='GET')
     # TODO(b/29218762): Investigate other possible exceptions.
-    except (httplib.HTTPException, socket.error, ssl.SSLError,
+    except (http_client.HTTPException, socket.error, ssl.SSLError,
             httplib2.HttpLib2Error, socks.HTTPError) as err:
       msg = 'Cannot reach {0} ({1})'.format(url, type(err).__name__)
       return check_base.Failure(message=msg, exception=err)

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,8 +14,11 @@
 # limitations under the License.
 """Library for controlling instances of cloud-testenv-broker processes."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import errno
-import httplib
 import json
 import os
 import os.path
@@ -22,18 +26,23 @@ import socket
 import subprocess
 import threading
 import time
-import urllib
 
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.emulators import util
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
+from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 import httplib2
 
+import six.moves.http_client
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
 
-class BrokerError(exceptions.ToolException):
+
+class BrokerError(exceptions.Error):
   """All errors raised by this module subclass BrokerError."""
   pass
 
@@ -55,7 +64,7 @@ class RequestSocketError(RequestError):
   """A socket error. Check the errno field."""
 
   def __init__(self, *args, **kwargs):
-    super(RequestError, self).__init__(*args)
+    super(RequestSocketError, self).__init__(*args)
     self.errno = None
 
 
@@ -63,7 +72,7 @@ def SocketConnResetErrno():
   """The errno value for a socket connection reset error."""
   current_os = platforms.OperatingSystem.Current()
   if current_os == platforms.OperatingSystem.WINDOWS:
-    return errno.WSAECONNRESET
+    return errno.WSAECONNRESET  # pytype: disable=module-attr
   return errno.ECONNRESET
 
 
@@ -71,7 +80,7 @@ def SocketConnRefusedErrno():
   """The errno value for a socket connection refused error."""
   current_os = platforms.OperatingSystem.Current()
   if current_os == platforms.OperatingSystem.WINDOWS:
-    return errno.WSAECONNREFUSED
+    return errno.WSAECONNREFUSED  # pytype: disable=module-attr
   return errno.ECONNREFUSED
 
 
@@ -90,9 +99,9 @@ def _EmulatorPath(emulator_id=None, verb=None):
   """Builds a broker request path for operating on the specified emulator."""
   path = '/v1/emulators'
   if emulator_id:
-    path += '/' + urllib.quote(emulator_id)
+    path += '/' + six.moves.urllib.parse.quote(emulator_id)
     if verb:
-      path += ':' + urllib.quote(verb)
+      path += ':' + six.moves.urllib.parse.quote(verb)  # pytype: disable=wrong-arg-types
   return path
 
 
@@ -168,13 +177,15 @@ class Broker(object):
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE,
                                        **popen_args)
+      # pytype: disable=wrong-arg-types
       self._comm_thread = threading.Thread(target=self._process.communicate)
+      # pytype: enable=wrong-arg-types
       self._comm_thread.start()
     else:
       self._process = subprocess.Popen(args, **popen_args)
 
     if not _Await(self.IsRunning, wait_secs):
-      log.warn('Broker did not start within {0}s'.format(wait_secs))
+      log.warning('Broker did not start within {0}s'.format(wait_secs))
       try:
         # Clean up.
         self.Shutdown()
@@ -190,7 +201,7 @@ class Broker(object):
     try:
       response, _ = self._SendJsonRequest('GET', _EmulatorPath(),
                                           timeout_secs=1.0)
-      return response.status == httplib.OK
+      return response.status == six.moves.http_client.OK
     except RequestError:
       return False
 
@@ -211,7 +222,7 @@ class Broker(object):
           self._comm_thread.join()
           self._comm_thread = None
       except RuntimeError as e:
-        log.warn('Failed to shutdown broker: %s' % e)
+        log.warning('Failed to shutdown broker: %s' % e)
         raise BrokerError('Broker failed to shutdown: %s' % e)
     else:
       # Invoke the /shutdown handler.
@@ -224,7 +235,7 @@ class Broker(object):
         # request, because the shutdown may preempt the response.
 
     if not _Await(lambda: not self.IsRunning(), wait_secs):
-      log.warn('Failed to shutdown broker: still running after {0}s'.format(
+      log.warning('Failed to shutdown broker: still running after {0}s'.format(
           wait_secs))
       raise BrokerError('Broker failed to shutdown: timed-out')
 
@@ -272,9 +283,9 @@ class Broker(object):
     url = _EmulatorPath()
     body = json.dumps(emulator)
     response, data = self._SendJsonRequest('POST', url, body=body)
-    if response.status != httplib.OK:
-      log.warn('Failed to create emulator: {0} ({1})'.format(response.reason,
-                                                             response.status))
+    if response.status != six.moves.http_client.OK:
+      log.warning('Failed to create emulator: {0} ({1})'.format(
+          response.reason, response.status))
       raise BrokerError('Failed to create emulator: %s' % data)
 
   def GetEmulator(self, emulator_id):
@@ -294,7 +305,7 @@ class Broker(object):
       raise BrokerNotRunningError('Failed to get emulator: %s' % emulator_id)
 
     response, data = self._SendJsonRequest('GET', _EmulatorPath(emulator_id))
-    if response.status != httplib.OK:
+    if response.status != six.moves.http_client.OK:
       raise BrokerError('Failed to get emulator: %s' % data)
 
     return json.loads(data)
@@ -314,9 +325,9 @@ class Broker(object):
 
     try:
       response, data = self._SendJsonRequest('GET', _EmulatorPath())
-      if response.status != httplib.OK:
-        log.warn('Failed to list emulators: {0} ({1})'.format(response.reason,
-                                                              response.status))
+      if response.status != six.moves.http_client.OK:
+        log.warning('Failed to list emulators: {0} ({1})'
+                    .format(response.reason, response.status))
         return
     except RequestError:
       return
@@ -347,8 +358,8 @@ class Broker(object):
 
     url = _EmulatorPath(emulator_id, verb='start')
     response, data = self._SendJsonRequest('POST', url)
-    if response.status != httplib.OK:
-      log.warn('Failed to start emulator {0}: {1} ({2})'.format(
+    if response.status != six.moves.http_client.OK:
+      log.warning('Failed to start emulator {0}: {1} ({2})'.format(
           emulator_id, response.reason, response.status))
       raise BrokerError('Failed to start emulator: %s' % data)
 
@@ -371,8 +382,8 @@ class Broker(object):
 
     url = _EmulatorPath(emulator_id, verb='stop')
     response, data = self._SendJsonRequest('POST', url)
-    if response.status != httplib.OK:
-      log.warn('Failed to stop emulator {0}: {1} ({2})'.format(
+    if response.status != six.moves.http_client.OK:
+      log.warning('Failed to stop emulator {0}: {1} ({2})'.format(
           emulator_id, response.reason, response.status))
       raise BrokerError('Failed to stop emulator: %s' % data)
 
@@ -398,13 +409,14 @@ class Broker(object):
       RequestError: The request errored out in some other way.
     """
     uri = 'http://{0}{1}'.format(self._address, path)
-    http_client = httplib2.Http(timeout=timeout_secs)
+    http_client = http.HttpClient(timeout=timeout_secs)
     try:
-      return http_client.request(
+      http_response, body = http_client.request(
           uri=uri,
           method=method,
           headers={'Content-Type': 'application/json; charset=UTF-8'},
           body=body)
+      return http_response, body.decode('utf-8')
     except socket.error as e:
       if isinstance(e, socket.timeout):
         raise RequestTimeoutError(e)
@@ -412,8 +424,8 @@ class Broker(object):
       if e.errno:
         error.errno = e.errno
       raise error
-    except httplib.HTTPException as e:
-      if isinstance(e, httplib.ResponseNotReady):
+    except six.moves.http_client.HTTPException as e:
+      if isinstance(e, six.moves.http_client.ResponseNotReady):
         raise RequestTimeoutError(e)
       raise RequestError(e)
     except httplib2.HttpLib2Error as e:

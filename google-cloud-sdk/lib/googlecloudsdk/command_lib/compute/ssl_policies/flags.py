@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flags and helpers for the compute ssl-policies commands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -31,7 +36,6 @@ _TLS_VERSION_MAP = {
     '1.0': 'TLS_1_0',
     '1.1': 'TLS_1_1',
     '1.2': 'TLS_1_2',
-    '1.3': 'TLS_1_3',
 }
 
 
@@ -48,6 +52,7 @@ class SslPoliciesCompleter(compute_completers.ListCommandCompleter):
 def GetSslPolicyArgument(required=True, plural=False):
   """Returns the resource argument object for the SSL policy flag."""
   return compute_flags.ResourceArgument(
+      name='SSL_POLICY',
       resource_name='SSL policy',
       completer=SslPoliciesCompleter,
       plural=plural,

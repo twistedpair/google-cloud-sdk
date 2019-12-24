@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """Contains object representations of the JSON data for components."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import re
 import time
 
@@ -21,6 +26,8 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import semver
+
+import six
 
 
 class Error(Exception):
@@ -141,7 +148,7 @@ class DictionaryParser(object):
         raise ParseError('Expected a dict for field [{0}] in component [{1}]'
                          .format(field, self.__cls))
       if func:
-        value = dict((k, func(v)) for k, v in value.iteritems())
+        value = dict((k, func(v)) for k, v in six.iteritems(value))
     self.__args[field] = value
 
 
@@ -190,9 +197,11 @@ class DictionaryWriter(object):
       func: An optional function to call on each value in the list before
         writing it to the dictionary.
     """
-    def ListMapper(values):
-      return [func(v) for v in values]
-    list_func = ListMapper if func else None
+    list_func = None
+    if func:
+      def ListMapper(values):
+        return [func(v) for v in values]
+      list_func = ListMapper
     self.Write(field, func=list_func)
 
   def WriteDict(self, field, func=None):
@@ -207,7 +216,7 @@ class DictionaryWriter(object):
         writing it to the dictionary.
     """
     def DictMapper(values):
-      return dict((k, func(v)) for k, v in values.iteritems())
+      return dict((k, func(v)) for k, v in six.iteritems(values))
     dict_func = DictMapper if func else None
     self.Write(field, func=dict_func)
 
@@ -356,8 +365,10 @@ class ComponentPlatform(object):
         this component works on.  None indicates all architectures.
     """
     # Sort to make this independent of specified ordering.
-    self.operating_systems = operating_systems and sorted(operating_systems)
-    self.architectures = architectures and sorted(architectures)
+    self.operating_systems = operating_systems and sorted(
+        operating_systems, key=lambda x: (0, x) if x is None else (1, x))
+    self.architectures = architectures and sorted(
+        architectures, key=lambda x: (0, x) if x is None else (1, x))
 
   def Matches(self, platform):
     """Determines if the platform for this component matches the environment.

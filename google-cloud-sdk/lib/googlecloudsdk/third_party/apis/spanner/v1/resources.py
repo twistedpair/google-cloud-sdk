@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +28,8 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId']
+      [u'projectsId'],
+      True
   )
   PROJECTS_INSTANCECONFIGS = (
       'projects.instanceConfigs',
@@ -36,7 +38,8 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/instanceConfigs/{instanceConfigsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_INSTANCES = (
       'projects.instances',
@@ -45,7 +48,26 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/instances/{instancesId}',
       },
-      [u'name']
+      [u'name'],
+      True
+  )
+  PROJECTS_INSTANCES_BACKUPS = (
+      'projects.instances.backups',
+      'projects/{projectsId}/instances/{instancesId}/backups/{backupsId}',
+      {},
+      [u'projectsId', u'instancesId', u'backupsId'],
+      True
+  )
+  PROJECTS_INSTANCES_BACKUPS_OPERATIONS = (
+      'projects.instances.backups.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/instances/{instancesId}/backups/'
+              '{backupsId}/operations/{operationsId}',
+      },
+      [u'name'],
+      True
   )
   PROJECTS_INSTANCES_DATABASES = (
       'projects.instances.databases',
@@ -55,7 +77,8 @@ class Collections(enum.Enum):
               'projects/{projectsId}/instances/{instancesId}/databases/'
               '{databasesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_INSTANCES_DATABASES_OPERATIONS = (
       'projects.instances.databases.operations',
@@ -65,7 +88,8 @@ class Collections(enum.Enum):
               'projects/{projectsId}/instances/{instancesId}/databases/'
               '{databasesId}/operations/{operationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_INSTANCES_DATABASES_SESSIONS = (
       'projects.instances.databases.sessions',
@@ -75,7 +99,8 @@ class Collections(enum.Enum):
               'projects/{projectsId}/instances/{instancesId}/databases/'
               '{databasesId}/sessions/{sessionsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_INSTANCES_OPERATIONS = (
       'projects.instances.operations',
@@ -85,11 +110,14 @@ class Collections(enum.Enum):
               'projects/{projectsId}/instances/{instancesId}/operations/'
               '{operationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +15,17 @@
 
 """Utility functions for opening a GCE URL and getting contents."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import os
-import urllib2
 
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import http_encoding
+
+from six.moves import urllib
+
 
 GOOGLE_GCE_METADATA_URI = 'http://{}/computeMetadata/v1'.format(
     os.getenv('GCE_METADATA_ROOT', 'metadata.google.internal'))
@@ -40,13 +48,20 @@ GOOGLE_GCE_METADATA_ACCOUNT_URI = (
 GOOGLE_GCE_METADATA_ZONE_URI = (
     GOOGLE_GCE_METADATA_URI + '/instance/zone')
 
+GOOGLE_GCE_METADATA_ID_TOKEN_URI = (
+    GOOGLE_GCE_METADATA_URI + '/instance/service-accounts/default/identity?'
+    'audience={audience}&format={format}&licenses={licenses}')
+
+
 GOOGLE_GCE_METADATA_HEADERS = {'Metadata-Flavor': 'Google'}
 
 
 def ReadNoProxy(uri):
   """Opens a URI with metadata headers, without a proxy, and reads all data.."""
-  request = urllib2.Request(uri, headers=GOOGLE_GCE_METADATA_HEADERS)
+  request = urllib.request.Request(
+      uri, headers=GOOGLE_GCE_METADATA_HEADERS)
   timeout_property = (
       properties.VALUES.compute.gce_metadata_read_timeout_sec.GetInt())
-  return urllib2.build_opener(urllib2.ProxyHandler({})).open(
+  result = urllib.request.build_opener(urllib.request.ProxyHandler({})).open(
       request, timeout=timeout_property).read()
+  return http_encoding.Decode(result)

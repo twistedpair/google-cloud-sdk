@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +15,12 @@
 
 """Common helper methods for Runtime Config commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import base64
 import socket
-from string import lstrip
 
 from apitools.base.py import encoding
 
@@ -27,6 +32,8 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import retry
+
+import six
 
 # The important substring from the error message "The read operation
 # timed out".
@@ -53,7 +60,7 @@ def ConfigPath(project, config):
 
 def VariablePath(project, config, variable):
   return '/'.join([ConfigPath(project, config), 'variables',
-                   lstrip(variable, '/')])
+                   variable.lstrip('/')])
 
 
 def WaiterPath(project, config, waiter):
@@ -177,7 +184,8 @@ def IsSocketTimeout(error):
   # There doesn't appear to be any way to differentiate an SSL
   # timeout from any other SSL error other than checking the
   # message. :(
-  return isinstance(error, socket.timeout) or TIMEOUT_ERR_TEXT in error.message
+  return (isinstance(error, socket.timeout)
+          or TIMEOUT_ERR_TEXT in six.text_type(error))
 
 
 def WaitForWaiter(waiter_resource, sleep=None, max_wait=None):
@@ -302,7 +310,7 @@ def FormatVariable(message, output_value=False):
     if 'text' in message_dict:
       message_dict['value'] = message_dict['text']
     else:
-      message_dict['value'] = message_dict['value'].decode('base64')
+      message_dict['value'] = base64.b64decode(message_dict['value'])
 
   return message_dict
 

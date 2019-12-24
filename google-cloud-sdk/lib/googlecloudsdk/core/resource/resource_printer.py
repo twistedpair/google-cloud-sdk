@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,6 +33,10 @@ Example:
   gcloud compute instances list \
       --format='table[box](name, networkInterfaces[0].networkIP)'
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.resource import config_printer
@@ -104,11 +109,18 @@ class MultiPrinter(resource_printer_base.ResourcePrinter):
     `--format="multi(data:format=json, info:format='table[box](a, b, c)')"`
 
   formats the *data* field as JSON and the *info* field as a boxed table.
+
+  Printer attributes:
+    separator: Separator string to print between each format. If multiple
+      resources are provided, the separator is also printed between each
+      resource.
   """
 
   def __init__(self, *args, **kwargs):
     super(MultiPrinter, self).__init__(*args, **kwargs)
+    # pylint: disable=line-too-long
     self.columns = []
+    # pylint: disable=line-too-long
     for col in self.column_attributes.Columns():
       if not col.attribute.subformat:
         raise ProjectionFormatRequiredError(
@@ -118,7 +130,10 @@ class MultiPrinter(resource_printer_base.ResourcePrinter):
           (col, Printer(col.attribute.subformat, out=self._out)))
 
   def _AddRecord(self, record, delimit=True):
-    for col, printer in self.columns:
+    separator = self.attributes.get('separator', '')
+    for i, (col, printer) in enumerate(self.columns):
+      if i != 0 or delimit:
+        self._out.write(separator)
       printer.Print(resource_property.Get(record, col.key))
 
 
@@ -131,6 +146,7 @@ class PrinterAttributes(resource_printer_base.ResourcePrinter):
     disable: Disables formatted output and does not consume the resources.
     json-decode: Decodes string values that are JSON compact encodings of list
       and dictionary objects. This may become the default.
+    pager: If True, sends output to a pager.
     private: Disables log file output. Use this for sensitive resource data
       that should not be displayed in log files. Explicit command line IO
       redirection overrides this attribute.
@@ -157,6 +173,10 @@ _FORMATTERS = {
     'value': csv_printer.ValuePrinter,
     'yaml': yaml_printer.YamlPrinter,
 }
+
+
+def RegisterFormatter(format_name, printer):
+  _FORMATTERS[format_name] = printer
 
 
 def GetFormatRegistry():

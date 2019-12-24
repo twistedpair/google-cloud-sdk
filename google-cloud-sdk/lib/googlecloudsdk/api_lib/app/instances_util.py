@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,12 +14,18 @@
 # limitations under the License.
 """Utilities for manipulating GCE instances running an App Engine project."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import re
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from six.moves import filter  # pylint: disable=redefined-builtin
+from six.moves import map  # pylint: disable=redefined-builtin
 
 
 class InvalidInstanceSpecificationError(exceptions.Error):
@@ -187,11 +194,11 @@ def GetMatchingInstance(instances, service=None, version=None, instance=None):
   if len(matching) > 1:
     raise InvalidInstanceSpecificationError(
         'More than one instance matches the given specification.\n\n'
-        'Matching instances: {0}'.format(map(str, sorted(matching))))
+        'Matching instances: {0}'.format(list(sorted(map(str, matching)))))
   elif not matching:
     raise InvalidInstanceSpecificationError(
         'No instances match the given specification.\n\n'
-        'All instances: {0}'.format(map(str, sorted(instances))))
+        'All instances: {0}'.format(list(sorted(map(str, instances)))))
   return matching[0]
 
 
@@ -237,7 +244,7 @@ def SelectInstanceInteractive(all_instances, service=None, version=None):
   # Defined here to close over all_instances for the error message
   def _PromptOptions(options, type_):
     """Given an iterable options of type type_, prompt and return one."""
-    options = sorted(set(options))
+    options = sorted(set(options), key=str)
     if len(options) > 1:
       idx = console_io.PromptChoice(options, message='Which {0}?'.format(type_))
     elif len(options) == 1:
@@ -247,7 +254,8 @@ def SelectInstanceInteractive(all_instances, service=None, version=None):
       if all_instances:
         msg = ('No instances could be found matching the given criteria.\n\n'
                'All instances:\n' +
-               '\n'.join(map('* [{0}]'.format, sorted(all_instances))))
+               '\n'.join(
+                   map('* [{0}]'.format, sorted(all_instances, key=str))))
       else:
         msg = 'No instances were found for the current project [{0}].'.format(
             properties.VALUES.core.project.Get(required=True))

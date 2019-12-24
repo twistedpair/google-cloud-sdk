@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2019 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +15,15 @@
 
 """Support library for the auth command."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+from googlecloudsdk.api_lib.iamcredentials import util as impersonation_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import store as c_store
+from oauth2client import service_account
+from oauth2client.contrib import gce as oauth2client_gce
 
 
 ACCOUNT_TABLE_FORMAT = ("""\
@@ -43,3 +51,25 @@ def AllAccounts():
   active_account = properties.VALUES.core.account.Get()
   return [_AcctInfo(account, account == active_account)
           for account in c_store.AvailableAccounts()]
+
+
+def IsGceAccountCredentials(cred):
+  """Checks if the credential is a Compute Engine service account credential."""
+  return isinstance(cred, oauth2client_gce.AppAssertionCredentials)
+
+
+def IsServiceAccountCredential(cred):
+  """Checks if the credential is a service account credential."""
+  return isinstance(cred, service_account.ServiceAccountCredentials)
+
+
+def IsImpersonationCredential(cred):
+  """Checks if the credential is an impersonated service account credential."""
+  return (impersonation_util.
+          ImpersonationAccessTokenProvider.IsImpersonationCredential(cred))
+
+
+def ValidIdTokenCredential(cred):
+  return (IsImpersonationCredential(cred) or
+          IsServiceAccountCredential(cred) or
+          IsGceAccountCredentials(cred))

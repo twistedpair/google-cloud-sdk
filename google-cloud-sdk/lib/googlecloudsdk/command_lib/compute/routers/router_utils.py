@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,10 @@
 # limitations under the License.
 """Code that's shared between multiple routers subcommands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.compute import routers_utils
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -23,8 +28,8 @@ _MODE_SWITCH_MESSAGE = (
     'out any existing advertised groups/ranges from this {resource}.')
 
 _INCOMPATIBLE_INCREMENTAL_FLAGS_ERROR_MESSAGE = (
-    '--add/remove-advertisement flags are not compatible with other '
-    '--advertisement flags.')
+    '--add/remove-advertisement flags are not compatible with '
+    '--set-advertisement flags.')
 
 _CUSTOM_WITH_DEFAULT_ERROR_MESSAGE = (
     'Cannot specify custom advertisements for a {resource} with default mode.')
@@ -117,8 +122,9 @@ def CheckIncompatibleFlagsOrRaise(args):
 
 def HasReplaceAdvertisementFlags(args):
   """Returns whether replace-style flags are specified in arguments."""
-  return (args.advertisement_mode or args.advertisement_groups is not None or
-          args.advertisement_ranges is not None)
+  return (args.advertisement_mode or
+          args.set_advertisement_groups is not None or
+          args.set_advertisement_ranges is not None)
 
 
 def HasIncrementalAdvertisementFlags(args):
@@ -149,12 +155,13 @@ def ParseAdvertisements(messages, resource_class, args):
   if args.advertisement_mode is not None:
     mode = routers_utils.ParseMode(resource_class, args.advertisement_mode)
   groups = None
-  if args.advertisement_groups is not None:
+  if args.set_advertisement_groups is not None:
     groups = routers_utils.ParseGroups(resource_class,
-                                       args.advertisement_groups)
+                                       args.set_advertisement_groups)
   prefixes = None
-  if args.advertisement_ranges is not None:
-    prefixes = routers_utils.ParseIpRanges(messages, args.advertisement_ranges)
+  if args.set_advertisement_ranges is not None:
+    prefixes = routers_utils.ParseIpRanges(messages,
+                                           args.set_advertisement_ranges)
 
   if (mode is not None and
       mode is resource_class.AdvertiseModeValueValuesEnum.DEFAULT):

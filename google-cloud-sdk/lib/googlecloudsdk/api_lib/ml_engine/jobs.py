@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,12 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for dealing with ML jobs API."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-import yaml
+from googlecloudsdk.core import yaml
+
+
+class NoFieldsSpecifiedError(exceptions.Error):
+  """Error indicating that no updates were requested in a Patch operation."""
+
+
+class NoPackagesSpecifiedError(exceptions.Error):
+  """Error that no packages were specified for non-custom training."""
 
 
 def GetMessagesModule(version='v1'):
@@ -31,9 +47,16 @@ def GetClientInstance(version='v1', no_http=False):
 class JobsClient(object):
   """Client for jobs service in the Cloud ML Engine API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or GetClientInstance('v1')
+  def __init__(self, client=None, messages=None,
+               short_message_prefix='GoogleCloudMlV1', client_version='v1'):
+    self.client = client or GetClientInstance(client_version)
     self.messages = messages or self.client.MESSAGES_MODULE
+    self._short_message_prefix = short_message_prefix
+
+  def GetShortMessage(self, short_message_name):
+    return getattr(self.messages,
+                   '{prefix}{name}'.format(prefix=self._short_message_prefix,
+                                           name=short_message_name), None)
 
   @property
   def state_enum(self):
@@ -78,6 +101,22 @@ class JobsClient(object):
     req = self.messages.MlProjectsJobsGetRequest(name=job_ref.RelativeName())
     return self.client.projects_jobs.Get(req)
 
+  def Patch(self, job_ref, labels_update):
+    """Update a job."""
+    job = self.job_class()
+    update_mask = []
+    if labels_update.needs_update:
+      job.labels = labels_update.labels
+      update_mask.append('labels')
+    if not update_mask:
+      raise NoFieldsSpecifiedError('No updates requested.')
+    req = self.messages.MlProjectsJobsPatchRequest(
+        name=job_ref.RelativeName(),
+        googleCloudMlV1Job=job,
+        updateMask=','.join(update_mask)
+    )
+    return self.client.projects_jobs.Patch(req)
+
   def BuildTrainingJob(self,
                        path=None,
                        module_name=None,
@@ -87,7 +126,10 @@ class JobsClient(object):
                        job_dir=None,
                        scale_tier=None,
                        user_args=None,
-                       runtime_version=None):
+                       runtime_version=None,
+                       python_version=None,
+                       labels=None,
+                       custom_train_server_config=None):
     """Builds a Cloud ML Engine Job from a config file and/or flag values.
 
     Args:
@@ -105,19 +147,30 @@ class JobsClient(object):
         (overrides yaml file)
         runtime_version: the runtime version in which to run the job (overrides
           yaml file)
+        python_version: the Python version in which to run the job (overrides
+          yaml file)
+        labels: Job.LabelsValue, the Cloud labels for the job
+        custom_train_server_config: jobs_util.CustomTrainingInputServerConfig,
+          configuration object for custom server parameters.
+    Raises:
+      NoPackagesSpecifiedError: if a non-custom job was specified without any
+        trainer_uris.
     Returns:
         A constructed Job object.
     """
     job = self.job_class()
 
+    # TODO(b/123467089): Remove yaml file loading here, only parse data objects
     if path:
-      with open(path) as config_file:
-        data = yaml.load(config_file)
+      data = yaml.load_path(path)
       if data:
         job = encoding.DictToMessage(data, self.job_class)
 
     if job_name:
       job.jobId = job_name
+
+    if labels is not None:
+      job.labels = labels
 
     if not job.trainingInput:
       job.trainingInput = self.training_input_class()
@@ -128,13 +181,51 @@ class JobsClient(object):
         'region': region,
         'jobDir': job_dir,
         'scaleTier': scale_tier,
-        'runtimeVersion': runtime_version
+        'runtimeVersion': runtime_version,
+        'pythonVersion': python_version
     }
     for field_name, value in additional_fields.items():
       if value is not None:
         setattr(job.trainingInput, field_name, value)
 
+    if custom_train_server_config:
+      for field_name, value in custom_train_server_config.GetFieldMap().items():
+        if value is not None:
+          if field_name.endswith('Config'):
+            if value['imageUri']:
+              arg_utils.SetFieldInMessage(
+                  job,
+                  'trainingInput.{}.imageUri'.format(field_name),
+                  value['imageUri'])
+            if value['acceleratorConfig']['type']:
+              arg_utils.SetFieldInMessage(
+                  job,
+                  'trainingInput.{}.acceleratorConfig.type'.format(field_name),
+                  value['acceleratorConfig']['type'])
+            if value['acceleratorConfig']['count']:
+              arg_utils.SetFieldInMessage(
+                  job,
+                  'trainingInput.{}.acceleratorConfig.count'.format(field_name),
+                  value['acceleratorConfig']['count'])
+            if field_name == 'workerConfig' and value['tpuTfVersion']:
+              arg_utils.SetFieldInMessage(
+                  job,
+                  'trainingInput.{}.tpuTfVersion'.format(field_name),
+                  value['tpuTfVersion'])
+          else:
+            setattr(job.trainingInput, field_name, value)
+
+    if not self.HasPackageURIs(job) and not self.IsCustomContainerTraining(job):
+      raise NoPackagesSpecifiedError('Non-custom jobs must have packages.')
+
     return job
+
+  def HasPackageURIs(self, job):
+    return bool(job.trainingInput.packageUris)
+
+  def IsCustomContainerTraining(self, job):
+    return bool(job.trainingInput.masterConfig and
+                job.trainingInput.masterConfig.imageUri)
 
   def BuildBatchPredictionJob(self,
                               job_name=None,
@@ -147,7 +238,11 @@ class JobsClient(object):
                               region=None,
                               runtime_version=None,
                               max_worker_count=None,
-                              batch_size=None):
+                              batch_size=None,
+                              signature_name=None,
+                              labels=None,
+                              accelerator_count=None,
+                              accelerator_type=None):
     """Builds a Cloud ML Engine Job for batch prediction from flag values.
 
     Args:
@@ -161,11 +256,24 @@ class JobsClient(object):
         region: compute region in which to run the job
         runtime_version: the runtime version in which to run the job
         max_worker_count: int, the maximum number of workers to use
-        batch_size: str, the number of records per batch sent to Tensorflow
+        batch_size: int, the number of records per batch sent to Tensorflow
+        signature_name: str, name of input/output signature in the TF meta graph
+        labels: Job.LabelsValue, the Cloud labels for the job
+        accelerator_count: int, The number of accelerators to attach to the
+           machines
+       accelerator_type: AcceleratorsValueListEntryValuesEnum, The type of
+           accelerator to add to machine.
     Returns:
         A constructed Job object.
     """
     project_id = properties.VALUES.core.project.GetOrFail()
+
+    if accelerator_type:
+      accelerator_config_msg = self.GetShortMessage('AcceleratorConfig')
+      accelerator_config = accelerator_config_msg(count=accelerator_count,
+                                                  type=accelerator_type)
+    else:
+      accelerator_config = None
 
     prediction_input = self.prediction_input_class(
         inputPaths=input_paths,
@@ -173,7 +281,10 @@ class JobsClient(object):
         region=region,
         runtimeVersion=runtime_version,
         maxWorkerCount=max_worker_count,
-        batchSize=batch_size)
+        batchSize=batch_size,
+        accelerator=accelerator_config
+    )
+
     prediction_input.dataFormat = prediction_input.DataFormatValueValuesEnum(
         data_format)
     if model_dir:
@@ -189,7 +300,11 @@ class JobsClient(object):
           params={'projectsId': project_id})
       prediction_input.modelName = model_ref.RelativeName()
 
+    if signature_name:
+      prediction_input.signatureName = signature_name
+
     return self.job_class(
         jobId=job_name,
-        predictionInput=prediction_input
+        predictionInput=prediction_input,
+        labels=labels
     )

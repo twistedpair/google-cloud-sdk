@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +14,18 @@
 # limitations under the License.
 """Reducer functions to generate instance props from prior state and flags."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import argparse
+from googlecloudsdk.api_lib.sql import api_util as common_api_util
 from googlecloudsdk.api_lib.sql import constants
+from googlecloudsdk.api_lib.sql import instances as api_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import files
 
 
 def BackupConfiguration(sql_messages,
@@ -42,16 +51,16 @@ def BackupConfiguration(sql_messages,
   Raises:
     ToolException: Bad combination of arguments.
   """
-  no_backup_enabled = no_backup or backup is False
+  backup_enabled = no_backup is False or backup
   should_generate_config = any(
-      [backup_start_time, enable_bin_log is not None, no_backup_enabled])
+      [backup_start_time, enable_bin_log is not None, not backup_enabled])
 
   # TODO(b/63139210): Remove v1beta3-related logic -- isinstance(..., list).
   if not should_generate_config:
     return None
   elif not instance or not instance.settings.backupConfiguration:
     backup_config = sql_messages.BackupConfiguration(
-        startTime='00:00', enabled=False)
+        startTime='00:00', enabled=backup_enabled)
   elif isinstance(instance.settings.backupConfiguration, list):
     # Only one backup configuration was ever allowed.
     # Field switched from list to single object in v1beta4.
@@ -214,7 +223,7 @@ def MachineType(instance=None, tier=None, memory=None, cpu=None):
     custom_type_string = _CustomMachineTypeString(
         cpu,
         # Converting from B to MiB.
-        int(memory / (2**20)))
+        memory // (2**20))
 
     # Updating the machine type that is set for the URIs.
     machine_type = custom_type_string
@@ -224,3 +233,92 @@ def MachineType(instance=None, tier=None, memory=None, cpu=None):
     machine_type = constants.DEFAULT_MACHINE_TYPE
 
   return machine_type
+
+
+def OnPremisesConfiguration(sql_messages, source_ip_address, source_port):
+  """Generates the external master configuration for the instance.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    source_ip_address: string, the IP address of the external data source.
+    source_port: number, the port number of the external data source.
+
+  Returns:
+    sql_messages.OnPremisesConfiguration object.
+  """
+  return sql_messages.OnPremisesConfiguration(
+      hostPort='{0}:{1}'.format(source_ip_address, source_port))
+
+
+def PrivateNetworkUrl(network):
+  """Generates the self-link of the instance's private network.
+
+  Args:
+    network: The ID of the network.
+
+  Returns:
+    string, the URL of the network.
+  """
+  client = common_api_util.SqlClient(common_api_util.API_VERSION_DEFAULT)
+  network_ref = client.resource_parser.Parse(
+      network,
+      params={
+          'project': properties.VALUES.core.project.GetOrFail,
+      },
+      collection='compute.networks')
+  return network_ref.SelfLink()
+
+
+def ReplicaConfiguration(sql_messages,
+                         master_username,
+                         master_password,
+                         master_dump_file_path,
+                         master_ca_certificate_path=None,
+                         client_certificate_path=None,
+                         client_key_path=None):
+  """Generates the config for an external master replica.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    master_username: The username for connecting to the external instance.
+    master_password: The password for connecting to the external instance.
+    master_dump_file_path: ObjectReference, a wrapper for the URI of the Cloud
+        Storage path containing the dumpfile to seed the replica with.
+    master_ca_certificate_path: The path to the CA certificate PEM file.
+    client_certificate_path: The path to the client certificate PEM file.
+    client_key_path: The path to the client private key PEM file.
+
+  Returns:
+    sql_messages.MySqlReplicaConfiguration object.
+  """
+  mysql_replica_configuration = sql_messages.MySqlReplicaConfiguration(
+      username=master_username,
+      password=master_password,
+      dumpFilePath=master_dump_file_path.ToUrl())
+  if master_ca_certificate_path:
+    mysql_replica_configuration.caCertificate = files.ReadFileContents(
+        master_ca_certificate_path)
+  if client_certificate_path:
+    mysql_replica_configuration.clientCertificate = files.ReadFileContents(
+        client_certificate_path)
+  if client_key_path:
+    mysql_replica_configuration.clientKey = files.ReadFileContents(
+        client_key_path)
+  return sql_messages.ReplicaConfiguration(
+      mysqlReplicaConfiguration=mysql_replica_configuration)
+
+
+def Region(specified_region, gce_zone):
+  """Generates the region string for the instance.
+
+  Args:
+    specified_region: string, the GCE region to create the instance in.
+    gce_zone: string, the GCE zone to create the instance in.
+
+  Returns:
+    string, the region to create the instance in.
+  """
+  if gce_zone:
+    derived_region = api_util.GetRegionFromZone(gce_zone)
+    return derived_region
+  return specified_region

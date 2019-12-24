@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,15 +14,19 @@
 # limitations under the License.
 """A utility library to support interaction with the Tool Results service."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import collections
 import time
-import urlparse
 
 from googlecloudsdk.api_lib.firebase.test import exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import progress_tracker
 
+from six.moves.urllib import parse
 import uritemplate
 
 _STATUS_INTERVAL_SECS = 3
@@ -57,7 +62,7 @@ def CreateToolResultsUiUrl(project_id, tool_results_ids):
           'history': tool_results_ids.history_id,
           'execution': tool_results_ids.execution_id
       })
-  return urlparse.urljoin(url_base, url_end)
+  return parse.urljoin(url_base, url_end)
 
 
 def GetToolResultsIds(matrix,
@@ -116,23 +121,30 @@ def _ErrorFromInvalidMatrix(matrix):
       enum_values.NO_PACKAGE_NAME:
           'The APK manifest file is missing the package name',
       enum_values.TEST_SAME_AS_APP:
-          'The test APK is the same as the app APK',
+          'The test APK has the same package name as the app APK',
       enum_values.NO_INSTRUMENTATION:
           'The test APK declares no instrumentation tags in the manifest',
-      enum_values.INSTRUMENTATION_ORCHESTRATOR_INCOMPATIBLE: (
-          "The test runner class specified by the user or the test APK's "
-          'manifest file is not compatible with Android Test Orchestrator. '
-          'Please use AndroidJUnitRunner version 1.0 or higher'),
-      enum_values.NO_TEST_RUNNER_CLASS: (
-          'The test APK does not contain the test runner class specified by '
-          'the user or the manifest file. The test runner class name may be '
-          'incorrect, or the class may be mislocated in the app APK.'),
+      enum_values.NO_SIGNATURE:
+          'At least one supplied APK file has a missing or invalid signature',
+      enum_values.INSTRUMENTATION_ORCHESTRATOR_INCOMPATIBLE:
+          ("The test runner class specified by the user or the test APK's "
+           'manifest file is not compatible with Android Test Orchestrator. '
+           'Please use AndroidJUnitRunner version 1.0 or higher'),
+      enum_values.NO_TEST_RUNNER_CLASS:
+          ('The test APK does not contain the test runner class specified by '
+           'the user or the manifest file. The test runner class name may be '
+           'incorrect, or the class may be mislocated in the app APK.'),
       enum_values.NO_LAUNCHER_ACTIVITY:
           'The app APK does not specify a main launcher activity',
       enum_values.FORBIDDEN_PERMISSIONS:
           'The app declares one or more permissions that are not allowed',
       enum_values.INVALID_ROBO_DIRECTIVES:
           'Cannot have multiple robo-directives with the same resource name',
+      enum_values.INVALID_DIRECTIVE_ACTION:
+          'Robo Directive includes at least one invalid action definition.',
+      enum_values.INVALID_RESOURCE_NAME:
+          'Robo Directive resource name contains invalid characters: ":" '
+          ' (colon) or " " (space)',
       enum_values.TEST_LOOP_INTENT_FILTER_NOT_FOUND:
           'The app does not have a correctly formatted game-loop intent filter',
       enum_values.SCENARIO_LABEL_NOT_DECLARED:
@@ -141,11 +153,44 @@ def _ErrorFromInvalidMatrix(matrix):
           'A scenario-label in the manifest includes invalid numbers or ranges',
       enum_values.SCENARIO_NOT_DECLARED:
           'A scenario-number was not declared in the manifest file',
-      enum_values.TEST_ONLY_APK:
-          '"testOnly" found in the Manifest. testOnly APKs are not allowed',
-      enum_values.NO_SIGNATURE:
-          'There is a problem with signature of at least one of the supplied '
-          'APK(s)'
+      enum_values.DEVICE_ADMIN_RECEIVER:
+          'Device administrator applications are not allowed',
+      enum_values.MALFORMED_XC_TEST_ZIP:
+          'The XCTest zip file was malformed. The zip did not contain a single '
+          '.xctestrun file and the contents of the DerivedData/Build/Products '
+          'directory.',
+      enum_values.BUILT_FOR_IOS_SIMULATOR:
+          'The provided XCTest was built for the iOS simulator rather than for '
+          'a physical device',
+      enum_values.NO_TESTS_IN_XC_TEST_ZIP:
+          'The .xctestrun file did not specify any test targets to run',
+      enum_values.USE_DESTINATION_ARTIFACTS:
+          'One or more of the test targets defined in the .xctestrun file '
+          'specifies "UseDestinationArtifacts", which is not allowed',
+      enum_values.TEST_NOT_APP_HOSTED:
+          'One or more of the test targets defined in the .xctestrun file '
+          'does not have a host binary to run on the physical iOS device, '
+          'which may cause errors when running xcodebuild',
+      enum_values.NO_CODE_APK:
+          '"hasCode" is false in the Manifest. Tested APKs must contain code',
+      enum_values.INVALID_INPUT_APK:
+          'Either the provided input APK path was malformed, the APK file does '
+          'not exist, or the user does not have permission to access the file',
+      enum_values.INVALID_APK_PREVIEW_SDK:
+          "Your app targets a preview version of the Android SDK that's "
+          'incompatible with the selected devices.',
+      enum_values.PLIST_CANNOT_BE_PARSED:
+          'One or more of the Info.plist files in the zip could not be parsed',
+      enum_values.INVALID_PACKAGE_NAME:
+          'The APK application ID (aka package name) is invalid. See also '
+          'https://developer.android.com/studio/build/application-id',
+      enum_values.MALFORMED_IPA:
+          'The app IPA is not a valid iOS application',
+      enum_values.MISSING_URL_SCHEME:
+          'The iOS game loop application does not register the custom URL '
+          'scheme',
+      enum_values.MALFORMED_APP_BUNDLE:
+          'The iOS application bundle (.app) is invalid',
   }
   details_enum = matrix.invalidMatrixDetails
   if details_enum in error_dict:
@@ -155,5 +200,5 @@ def _ErrorFromInvalidMatrix(matrix):
   return (
       '\nMatrix [{m}] unexpectedly reached final status {s} without returning '
       'a URL to any test results in the Firebase console. Please re-check the '
-      'validity of your APK file(s) and test parameters and try again.'.format(
+      'validity of your test files and parameters and try again.'.format(
           m=matrix.testMatrixId, s=matrix.state))

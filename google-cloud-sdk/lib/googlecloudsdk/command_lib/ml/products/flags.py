@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,12 +14,18 @@
 # limitations under the License.
 
 """Flags for ml products commands."""
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.ml.products import product_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope.concepts import concept_parsers
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import resources
+
+from six.moves import map  # pylint: disable=redefined-builtin
 
 
 # Resource Args
@@ -45,7 +52,7 @@ def GetCatalogResourceSpec():
 def GetReferenceImageResourceSpec():
   return concepts.ResourceSpec(
       'alpha_vision.productSearch.catalogs.referenceImages',
-      resource_name='referenceImage',
+      resource_name='reference_image',
       api_version='v1alpha1',
       catalogsId=CatalogAttributeConfig(),
       referenceImagesId=ReferenceImageAttributeConfig())
@@ -161,7 +168,7 @@ def VertexType(value):
   """Builds NormalizedVertex messages from command line args."""
   messages = product_util.GetApiMessages(
       version=product_util.PRODUCTS_SEARCH_VERSION)
-  x_coord, y_coord = map(int, value.split(':'))
+  x_coord, y_coord = list(map(int, value.split(':')))
   return messages.NormalizedVertex(x=x_coord, y=y_coord)
 
 

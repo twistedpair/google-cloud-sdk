@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +15,12 @@
 
 """The calliope CLI/API is a framework for building library interfaces."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import argparse
+import collections
 import os
 import re
 import sys
@@ -27,18 +33,153 @@ from googlecloudsdk.calliope import backend
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import command_loading
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.calliope import parser_extensions
+from googlecloudsdk.core import argv_utils
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.console import console_attr
-from googlecloudsdk.core.resource import session_capturer
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import pkg_resources
+
+import six
 
 
 _COMMAND_SUFFIX = '.py'
+_FLAG_FILE_LINE_NAME = '---flag-file-line-'
+
+
+class _FlagLocation(object):
+  """--flags-file (file,line_col) location."""
+
+  def __init__(self, file_name, line_col):
+    self.file_name = file_name
+    self.line = line_col.line + 1  # ruamel does 0-offset line numbers?
+
+  def __str__(self):
+    return '{}:{}'.format(self.file_name, self.line)
+
+
+class _ArgLocations(object):
+  """--flags-file (arg,locations) info."""
+
+  def __init__(self, arg, file_name, line_col, locations=None):
+    self.arg = arg
+    self.locations = locations.locations[:] if locations else []
+    self.locations.append(_FlagLocation(file_name, line_col))
+
+  def __str__(self):
+    return ';'.join([six.text_type(location) for location in self.locations])
+
+  def FileInStack(self, file_name):
+    """Returns True if file_name is in the locations stack."""
+    return any([file_name == x.file_name for x in self.locations])
+
+
+def _AddFlagsFileFlags(inject, flags_file, parent_locations=None):
+  """Recursively append the flags file flags to inject."""
+
+  flag = calliope_base.FLAGS_FILE_FLAG.name
+
+  if parent_locations and parent_locations.FileInStack(flags_file):
+    raise parser_errors.ArgumentError(
+        '{} recursive reference ({}).'.format(flag, parent_locations))
+
+  # Load the YAML flag:value dict or list of dicts. List of dicts allows
+  # flags to be specified more than once.
+
+  if flags_file == '-':
+    contents = sys.stdin.read()
+  elif not os.path.exists(flags_file):
+    raise parser_errors.ArgumentError(
+        '{} [{}] not found.'.format(flag, flags_file))
+  else:
+    contents = files.ReadFileContents(flags_file)
+  data = yaml.load(contents, location_value=True)
+  group = data if isinstance(data, list) else [data]
+
+  # Generate the list of args to inject.
+
+  for member in group:
+
+    if not isinstance(member.value, dict):
+      raise parser_errors.ArgumentError(
+          '{}:{}: {} file must contain a dictionary or list of dictionaries '
+          'of flags.'.format(flags_file, member.lc.line + 1, flag))
+
+    for arg, obj in six.iteritems(member.value):
+
+      line_col = obj.lc
+      value = yaml.strip_locations(obj)
+
+      if arg == flag:
+        # The flags-file YAML arg value can be a path or list of paths.
+        file_list = obj.value if isinstance(obj.value, list) else [obj.value]
+        for path in file_list:
+          locations = _ArgLocations(arg, flags_file, line_col, parent_locations)
+          _AddFlagsFileFlags(inject, path, locations)
+        continue
+      if isinstance(value, (type(None), bool)):
+        separate_value_arg = False
+      elif isinstance(value, (list, dict)):
+        separate_value_arg = True
+      else:
+        separate_value_arg = False
+        arg = '{}={}'.format(arg, value)
+      inject.append(_FLAG_FILE_LINE_NAME)
+      inject.append(_ArgLocations(arg, flags_file, line_col, parent_locations))
+      inject.append(arg)
+      if separate_value_arg:
+        # Add the already lexed arg and with one swoop we sidestep all flag
+        # value and command line interpreter quoting issues. The ArgList and
+        # ArgDict arg parsers have been adjusted to handle this.
+        inject.append(value)
+
+
+def _ApplyFlagsFile(args):
+  """Applies FLAGS_FILE_FLAG in args and returns the new args.
+
+  The basic algorithm is arg list manipulation, done before ArgParse is called.
+  This function reaps all FLAGS_FILE_FLAG args from the command line, and
+  recursively from the flags files, and inserts them into a new args list by
+  replacing the --flags-file=YAML-FILE flag by its constituent flags. This
+  preserves the left-to-right precedence of the argument parser. Internal
+  _FLAG_FILE_LINE_NAME flags are also inserted into args. This specifies the
+  flags source file and line number for each flags file flag, and is used to
+  construct actionable error messages.
+
+  Args:
+    args: The original args list.
+
+  Returns:
+    A new args list with all FLAGS_FILE_FLAG args replaced by their constituent
+    flags.
+  """
+  flag = calliope_base.FLAGS_FILE_FLAG.name
+  flag_eq = flag + '='
+  if not any([arg == flag or arg.startswith(flag_eq) for arg in args]):
+    return args
+
+  # Find and replace all file flags by their constituent flags
+
+  peek = False
+  new_args = []
+  for arg in args:
+    if peek:
+      peek = False
+      _AddFlagsFileFlags(new_args, arg)
+    elif arg == flag:
+      peek = True
+    elif arg.startswith(flag_eq):
+      _AddFlagsFileFlags(new_args, arg[len(flag_eq):])
+    else:
+      new_args.append(arg)
+
+  return new_args
 
 
 class RunHook(object):
@@ -80,6 +221,23 @@ class RunHook(object):
     return True
 
 
+class _SetFlagsFileLine(argparse.Action):
+  """FLAG_INTERNAL_FLAG_FILE_LINE action."""
+
+  def __call__(self, parser, namespace, values, option_string=None):
+    if not hasattr(parser, 'flags_locations'):
+      setattr(parser, 'flags_locations', collections.defaultdict(set))
+    parser.flags_locations[values.arg].add(six.text_type(values))
+
+
+FLAG_INTERNAL_FLAG_FILE_LINE = calliope_base.Argument(
+    _FLAG_FILE_LINE_NAME,
+    default=None,
+    action=_SetFlagsFileLine,
+    hidden=True,
+    help='Internal *--flags-file* flag, line number, and source file.')
+
+
 class CLILoader(object):
   """A class to encapsulate loading the CLI and bootstrapping the REPL."""
 
@@ -88,9 +246,9 @@ class CLILoader(object):
   PATH_RE = re.compile(r'(?:([\w\.]+)\.)?([^\.]+)')
 
   def __init__(self, name, command_root_directory,
-               allow_non_existing_modules=False,
-               logs_dir=config.Paths().logs_dir, version_func=None,
-               known_error_handler=None, yaml_command_translator=None):
+               allow_non_existing_modules=False, logs_dir=None,
+               version_func=None, known_error_handler=None,
+               yaml_command_translator=None):
     """Initialize Calliope.
 
     Args:
@@ -120,7 +278,7 @@ class CLILoader(object):
 
     self.__allow_non_existing_modules = allow_non_existing_modules
 
-    self.__logs_dir = logs_dir
+    self.__logs_dir = logs_dir or config.Paths().logs_dir
     self.__version_func = version_func
     self.__known_error_handler = known_error_handler
     self.__yaml_command_translator = yaml_command_translator
@@ -213,7 +371,7 @@ class CLILoader(object):
     """
     path_string = '.'.join(command_path)
     return [component
-            for path, component in self.__missing_components.iteritems()
+            for path, component in six.iteritems(self.__missing_components)
             if path_string.startswith(self.__name + '.' + path)]
 
   def ReplicateCommandPathForAllOtherTracks(self, command_path):
@@ -280,7 +438,7 @@ class CLILoader(object):
     # Sub groups for each alternate release track.
     loaded_release_tracks = dict([(calliope_base.ReleaseTrack.GA, top_group)])
     track_names = set(track.prefix for track in self.__release_tracks.keys())
-    for track, (module_dir, component) in self.__release_tracks.iteritems():
+    for track, (module_dir, component) in six.iteritems(self.__release_tracks):
       impl_path = self.__ValidateCommandOrGroupInfo(
           module_dir,
           allow_non_existing_modules=self.__allow_non_existing_modules)
@@ -307,8 +465,10 @@ class CLILoader(object):
       root, name = match.group(1, 2)
       try:
         # Mount each registered sub group under each release track that exists.
-        for track, track_root_group in loaded_release_tracks.iteritems():
+        for track, track_root_group in six.iteritems(loaded_release_tracks):
+          # pylint: disable=line-too-long
           parent_group = self.__FindParentGroup(track_root_group, root)
+          # pylint: enable=line-too-long
           exception_if_present = None
           if not parent_group:
             if track != calliope_base.ReleaseTrack.GA:
@@ -412,6 +572,7 @@ class CLILoader(object):
     Args:
       top_element: backend._CommandCommon, The root of the command tree.
     """
+    calliope_base.FLAGS_FILE_FLAG.AddToParser(top_element.ai)
     calliope_base.FLATTEN_FLAG.AddToParser(top_element.ai)
     calliope_base.FORMAT_FLAG.AddToParser(top_element.ai)
 
@@ -431,7 +592,7 @@ class CLILoader(object):
         help="""\
         The configuration to use for this command invocation. For more
         information on how to use configurations, run:
-        `gcloud topic configurations`.  You can also use the [{0}] environment
+        `gcloud topic configurations`.  You can also use the {0} environment
         variable to set the equivalent of this flag for a terminal
         session.""".format(config.CLOUDSDK_ACTIVE_CONFIG_NAME))
 
@@ -440,9 +601,7 @@ class CLILoader(object):
         choices=log.OrderedVerbosityNames(),
         default=log.DEFAULT_VERBOSITY_STRING,
         category=calliope_base.COMMONLY_USED_FLAGS,
-        help='Override the default verbosity for this command with any of the '
-        'supported standard verbosity levels: `debug`, `info`, `warning`, '
-        '`error`, and `none`.',
+        help='Override the default verbosity for this command.',
         action=actions.StoreProperty(properties.VALUES.core.verbosity))
 
     # This should be a pure Boolean flag, but the alternate true/false explicit
@@ -470,27 +629,34 @@ class CLILoader(object):
         '--authority-selector',
         default=None,
         action=actions.StoreProperty(properties.VALUES.auth.authority_selector),
-        help=argparse.SUPPRESS)
+        hidden=True,
+        help='THIS ARGUMENT NEEDS HELP TEXT.')
 
     top_element.ai.add_argument(
         '--authorization-token-file',
         default=None,
         action=actions.StoreProperty(
             properties.VALUES.auth.authorization_token_file),
-        help=argparse.SUPPRESS)
+        hidden=True,
+        help='THIS ARGUMENT NEEDS HELP TEXT.')
 
     top_element.ai.add_argument(
         '--credential-file-override',
         action=actions.StoreProperty(
             properties.VALUES.auth.credential_file_override),
-        help=argparse.SUPPRESS)
+        hidden=True,
+        help='THIS ARGUMENT NEEDS HELP TEXT.')
 
     # Timeout value for HTTP requests.
     top_element.ai.add_argument(
         '--http-timeout',
         default=None,
         action=actions.StoreProperty(properties.VALUES.core.http_timeout),
-        help=argparse.SUPPRESS)
+        hidden=True,
+        help='THIS ARGUMENT NEEDS HELP TEXT.')
+
+    # --flags-file source line number hook.
+    FLAG_INTERNAL_FLAG_FILE_LINE.AddToParser(top_element.ai)
 
   def __MakeCLI(self, top_element):
     """Generate a CLI object from the given data.
@@ -535,7 +701,7 @@ class _CompletionFinder(argcomplete.CompletionFinder):
     return active_parsers
 
   def _get_completions(self, comp_words, cword_prefix, cword_prequote,
-                       first_colon_pos):
+                       last_wordbreak_pos):
     active_parsers = self._patch_argument_parser()
 
     parsed_args = parser_extensions.Namespace()
@@ -551,7 +717,79 @@ class _CompletionFinder(argcomplete.CompletionFinder):
     completions = self.collect_completions(
         active_parsers, parsed_args, cword_prefix, lambda *_: None)
     completions = self.filter_completions(completions)
-    return self.quote_completions(completions, cword_prequote, first_colon_pos)
+    return self.quote_completions(
+        completions, cword_prequote, last_wordbreak_pos)
+
+  def quote_completions(self, completions, cword_prequote, last_wordbreak_pos):
+    """Returns the completion (less aggressively) quoted for the shell.
+
+    If the word under the cursor started with a quote (as indicated by a
+    nonempty ``cword_prequote``), escapes occurrences of that quote character
+    in the completions, and adds the quote to the beginning of each completion.
+    Otherwise, escapes *most* characters that bash splits words on
+    (``COMP_WORDBREAKS``), and removes portions of completions before the first
+    colon if (``COMP_WORDBREAKS``) contains a colon.
+
+    If there is only one completion, and it doesn't end with a
+    **continuation character** (``/``, ``:``, or ``=``), adds a space after
+    the completion.
+
+    Args:
+      completions: The current completion strings.
+      cword_prequote: The current quote character in progress, '' if none.
+      last_wordbreak_pos: The index of the last wordbreak.
+
+    Returns:
+      The completions quoted for the shell.
+    """
+    # The *_special character sets are the only non-cosmetic changes from the
+    # argcomplete original. We drop { '!', ' ', '\n' } from _NO_QUOTE_SPECIAL
+    # and { '!' } from _DOUBLE_QUOTE_SPECIAL. argcomplete should make these
+    # settable properties.
+    no_quote_special = '\\();<>|&$* \t\n`"\''
+    double_quote_special = '\\`"$'
+    single_quote_special = '\\'
+    continuation_special = '=/:'
+
+    # If the word under the cursor was quoted, escape the quote char.
+    # Otherwise, escape most special characters and specially handle most
+    # COMP_WORDBREAKS chars.
+    if not cword_prequote:
+      # Bash mangles completions which contain characters in COMP_WORDBREAKS.
+      # This workaround has the same effect as __ltrim_colon_completions in
+      # bash_completion (extended to characters other than the colon).
+      if last_wordbreak_pos:
+        completions = [c[last_wordbreak_pos + 1:] for c in completions]
+      special_chars = no_quote_special
+    elif cword_prequote == '"':
+      special_chars = double_quote_special
+    else:
+      special_chars = single_quote_special
+
+    if os.environ.get('_ARGCOMPLETE_SHELL') == 'tcsh':
+      # tcsh escapes special characters itself.
+      special_chars = ''
+    elif cword_prequote == "'":
+      # Nothing can be escaped in single quotes, so we need to close
+      # the string, escape the single quote, then open a new string.
+      special_chars = ''
+      completions = [c.replace("'", r"'\''") for c in completions]
+
+    for char in special_chars:
+      completions = [c.replace(char, '\\' + char) for c in completions]
+
+    if getattr(self, 'append_space', False):
+      # Similar functionality in bash was previously turned off by supplying
+      # the "-o nospace" option to complete. Now it is conditionally disabled
+      # using "compopt -o nospace" if the match ends in a continuation
+      # character. This code is retained for environments where this isn't
+      # done natively.
+      continuation_chars = continuation_special
+      if len(completions) == 1 and completions[0][-1] not in continuation_chars:
+        if not cword_prequote:
+          completions[0] += ' '
+
+    return completions
 
 
 def _ArgComplete(ai, **kwargs):
@@ -593,6 +831,38 @@ def _ArgComplete(ai, **kwargs):
       argcomplete.mute_stderr = mute_stderr
 
 
+def _SubParsersActionCall(self, parser, namespace, values, option_string=None):
+  """argparse._SubParsersAction.__call__ version 1.2.1 MonkeyPatch."""
+  del option_string
+
+  # pylint: disable=protected-access
+
+  parser_name = values[0]
+  arg_strings = values[1:]
+
+  # set the parser name if requested
+  if self.dest is not argparse.SUPPRESS:
+    setattr(namespace, self.dest, parser_name)
+
+  # select the parser
+  try:
+    parser = self._name_parser_map[parser_name]
+  except KeyError:
+    tup = parser_name, ', '.join(self._name_parser_map)
+    msg = argparse._('unknown parser %r (choices: %s)' % tup)
+    raise argparse.ArgumentError(self, msg)
+
+  # parse all the remaining options into the namespace
+  # store any unrecognized options on the object, so that the top
+  # level parser can decide what to do with them
+  namespace, arg_strings = parser.parse_known_args(arg_strings, namespace)
+  if arg_strings:
+    vars(namespace).setdefault(argparse._UNRECOGNIZED_ARGS_ATTR, [])
+    getattr(namespace, argparse._UNRECOGNIZED_ARGS_ATTR).extend(arg_strings)
+
+  # pylint: enable=protected-access
+
+
 class CLI(object):
   """A generated command line tool."""
 
@@ -608,76 +878,6 @@ class CLI(object):
 
   def _TopElement(self):
     return self.__top_element
-
-  def _ConvertNonAsciiArgsToUnicode(self, args):
-    """Converts non-ascii args to unicode.
-
-    The args most likely came from sys.argv, and Python 2.7 passes them in as
-    bytestrings instead of unicode.
-
-    Args:
-      args: [str], The list of args to convert.
-
-    Raises:
-      InvalidCharacterInArgException if a non-ascii arg cannot be converted to
-      unicode.
-
-    Returns:
-      A new list of args with non-ascii args converted to unicode.
-    """
-    console_encoding = console_attr.GetConsoleAttr().GetEncoding()
-    filesystem_encoding = sys.getfilesystemencoding()
-    argv = []
-    for arg in args:
-
-      try:
-        arg.encode('ascii')
-        # Already ascii.
-        argv.append(arg)
-        continue
-      except UnicodeError:
-        pass
-
-      try:
-        # Convert bytestring to unicode using the console encoding.
-        argv.append(unicode(arg, console_encoding))
-        continue
-      except TypeError:
-        # Already unicode.
-        argv.append(arg)
-        continue
-      except UnicodeError:
-        pass
-
-      try:
-        # Convert bytestring to unicode using the filesystem encoding.
-        # A pathname could have been passed in rather than typed, and
-        # might not match the user terminal encoding, but still be a valid
-        # path. For example: $ foo $(grep -l bar *)
-        argv.append(unicode(arg, filesystem_encoding))
-        continue
-      except UnicodeError:
-        pass
-
-      # Can't convert to unicode -- bail out.
-      raise exceptions.InvalidCharacterInArgException([self.name] + args, arg)
-
-    return argv
-
-  def _EnforceAsciiArgs(self, argv):
-    """Fail if any arg in argv is not ascii.
-
-    Args:
-      argv: [str], The list of args to check.
-
-    Raises:
-      InvalidCharacterInArgException if there is a non-ascii arg.
-    """
-    for arg in argv:
-      try:
-        arg.decode('ascii')
-      except UnicodeError:
-        raise exceptions.InvalidCharacterInArgException([self.name] + argv, arg)
 
   @property
   def name(self):
@@ -712,7 +912,7 @@ class CLI(object):
     Raises:
       ValueError: for ill-typed arguments.
     """
-    if isinstance(args, basestring):
+    if isinstance(args, six.string_types):
       raise ValueError('Execute expects an iterable of strings, not a string.')
 
     # The argparse module does not handle unicode args when run in Python 2
@@ -723,22 +923,17 @@ class CLI(object):
     # statement coaxes the Python 3 behavior out of argparse running in
     # Python 2. Doing it here ensures that the workaround is in place for
     # calliope argparse use cases.
-    argparse.str = unicode
+    argparse.str = six.text_type
+    # We need the argparse 1.2.1 patch in _SubParsersActionCall.
+    # TODO(b/77288697) delete after py3 tests use non-hermetic python
+    if argparse.__version__ == '1.1':
+      argparse._SubParsersAction.__call__ = _SubParsersActionCall  # pylint: disable=protected-access
 
     if call_arg_complete:
       _ArgComplete(self.__top_element.ai)
 
     if not args:
-      args = sys.argv[1:]
-
-    # help ... is the same as ... --help or ... --document=style=help. We use
-    # --document=style=help to signal the metrics.Help() 'help' label in
-    # actions.RenderDocumentAction().Action(). It doesn't matter if we append
-    # to a command that already has --help or --document=style=... because the
-    # first --help/--document from the left takes effect. Note that
-    # `help ... --help` produces help for the help command itself.
-    if args and args[0] == 'help' and '--help' not in args:
-      args = args[1:] + ['--document=style=help']
+      args = argv_utils.GetDecodedArgv()[1:]
 
     # Look for a --configuration flag and update property state based on
     # that before proceeding to the main argparse parse step.
@@ -750,16 +945,21 @@ class CLI(object):
     command_path_string = self.__name
     specified_arg_names = None
 
-    argv = self._ConvertNonAsciiArgsToUnicode(args)
+    # Convert py2 args to text.
+    argv = [console_attr.Decode(arg) for arg in args] if six.PY2 else args
     old_user_output_enabled = None
     old_verbosity = None
     try:
-      args = self.__parser.parse_args(argv)
+      args = self.__parser.parse_args(_ApplyFlagsFile(argv))
+      if args.CONCEPT_ARGS is not None:
+        args.CONCEPT_ARGS.ParseConcepts()
       calliope_command = args._GetCommand()  # pylint: disable=protected-access
       command_path_string = '.'.join(calliope_command.GetPath())
-      if not calliope_command.IsUnicodeSupported():
-        self._EnforceAsciiArgs(argv)
       specified_arg_names = args.GetSpecifiedArgNames()
+      # If the CLI has not been reloaded since the last command execution (e.g.
+      # in test runs), args.CONCEPTS may contain cached values.
+      if args.CONCEPTS is not None:
+        args.CONCEPTS.Reset()
 
       # -h|--help|--document are dispatched by parse_args and never get here.
 
@@ -777,13 +977,6 @@ class CLI(object):
       # Set the invocation value for all commands, this is lost when popped
       properties.VALUES.SetInvocationValue(
           properties.VALUES.metrics.command_name, command_path_string, None)
-
-      if properties.VALUES.core.capture_session_file.Get() is not None:
-        capturer = session_capturer.SessionCapturer()
-        capturer.CaptureArgs(args)
-        capturer.CaptureState()
-        capturer.CaptureProperties(properties.VALUES.AllValues())
-        session_capturer.SessionCapturer.capturer = capturer
 
       for hook in self.__pre_run_hooks:
         hook.Run(command_path_string)
@@ -817,9 +1010,6 @@ class CLI(object):
       self._HandleAllErrors(exc, command_path_string, specified_arg_names)
 
     finally:
-      if session_capturer.SessionCapturer.capturer is not None:
-        with open(properties.VALUES.core.capture_session_file.Get(), 'w') as f:
-          session_capturer.SessionCapturer.capturer.Print(f)
       properties.VALUES.PopInvocationValues()
       named_configs.FLAG_OVERRIDE_STACK.Pop()
       # Reset these values to their previous state now that we popped the flag
@@ -840,8 +1030,6 @@ class CLI(object):
     Raises:
       exc or a core.exceptions variant that does not produce a stack trace.
     """
-    if session_capturer.SessionCapturer.capturer:
-      session_capturer.SessionCapturer.capturer.CaptureException(exc)
     error_extra_info = {'error_code': getattr(exc, 'exit_code', 1)}
     if isinstance(exc, exceptions.HttpException):
       error_extra_info['http_status_code'] = exc.payload.status_code
@@ -853,8 +1041,3 @@ class CLI(object):
                   error_extra_info=error_extra_info)
 
     exceptions.HandleError(exc, command_path_string, self.__known_error_handler)
-
-  def _Exit(self, exc):
-    """This method exists so we can mock this out during testing to not exit."""
-    # exit_code won't be defined in the KNOWN_ERRORs classes
-    sys.exit(getattr(exc, 'exit_code', 1))

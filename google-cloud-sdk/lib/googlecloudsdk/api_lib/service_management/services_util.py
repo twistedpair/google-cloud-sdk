@@ -28,10 +28,9 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import retry
-
-import yaml
 
 
 EMAIL_REGEX = re.compile(r'^.+@([^.@][^@]+)$')
@@ -589,7 +588,7 @@ def WaitForOperation(operation_ref, client):
                                   'is still pending.'.format(operation_id))
 
   # Check to see if the operation resulted in an error
-  if WaitForOperation.operation_response.error is not None:
+  if WaitForOperation.operation_response.error is not None:  # pytype: disable=none-attr
     raise exceptions.OperationErrorException(
         'The operation with ID {0} resulted in a failure.'.format(operation_id))
 
@@ -617,9 +616,9 @@ def LoadJsonOrYaml(input_string):
   def TryYaml():
     try:
       return yaml.load(input_string)
-    except yaml.YAMLError as e:
-      if hasattr(e, 'problem_mark'):
-        mark = e.problem_mark
+    except yaml.YAMLParseError as e:
+      if hasattr(e.inner_error, 'problem_mark'):
+        mark = e.inner_error.problem_mark
         log.error('Service config YAML had an error at position (%s:%s)'
                   % (mark.line+1, mark.column+1))
 
@@ -630,5 +629,5 @@ def LoadJsonOrYaml(input_string):
 def GenerateManagementUrl(service, project):
   return ('https://console.cloud.google.com/endpoints/api/'
           '{service}/overview?project={project}'.format(
-              service=urllib2.quote(service),
-              project=urllib2.quote(project)))
+              service=urllib2.quote(service),  # pytype: disable=module-attr
+              project=urllib2.quote(project)))  # pytype: disable=module-attr

@@ -1,4 +1,5 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,11 +15,17 @@
 
 """config format resource printer."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+import io
 import pipes
-import StringIO
 
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.util import platforms
+
+import six
 
 
 class ConfigPrinter(resource_printer_base.ResourcePrinter):
@@ -39,20 +46,20 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
     if 'export' in self.attributes:
       self._add_items = self._PrintEnvExport
       if platforms.OperatingSystem.IsWindows():
-        self._env_command_format = u'set {name}={value}\n'
+        self._env_command_format = 'set {name}={value}\n'
       else:
-        self._env_command_format = u'export {name}={value}\n'
+        self._env_command_format = 'export {name}={value}\n'
     elif 'unset' in self.attributes:
       self._add_items = self._PrintEnvUnset
       if platforms.OperatingSystem.IsWindows():
-        self._env_command_format = u'set {name}=\n'
+        self._env_command_format = 'set {name}=\n'
       else:
-        self._env_command_format = u'unset {name}\n'
+        self._env_command_format = 'unset {name}\n'
     else:
       self._add_items = self._PrintConfig
     # Print the title if specified.
     if 'title' in self.attributes:
-      self._out.write(self.attributes['title'] + u'\n')
+      self._out.write(self.attributes['title'] + '\n')
 
   def _PrintCategory(self, out, label, items):
     """Prints config items in the label category.
@@ -63,27 +70,27 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
       items: The items to list for label, either dict iteritems, an enumerated
         list, or a scalar value.
     """
-    top = StringIO.StringIO()
-    sub = StringIO.StringIO()
+    top = io.StringIO()
+    sub = io.StringIO()
     for name, value in sorted(items):
-      name = unicode(name)
+      name = six.text_type(name)
       try:
-        values = value.iteritems()
+        values = six.iteritems(value)
         self._PrintCategory(sub, label + [name], values)
         continue
       except AttributeError:
         pass
       if value is None:
-        top.write(u'{name} (unset)\n'.format(name=name))
+        top.write('{name} (unset)\n'.format(name=name))
       elif isinstance(value, list):
         self._PrintCategory(sub, label + [name], enumerate(value))
       else:
-        top.write(u'{name} = {value}\n'.format(name=name, value=value))
+        top.write('{name} = {value}\n'.format(name=name, value=value))
     top_content = top.getvalue()
     sub_content = sub.getvalue()
     if label and (top_content or
                   sub_content and not sub_content.startswith('[')):
-      out.write(u'[{0}]\n'.format('.'.join(label)))
+      out.write('[{0}]\n'.format('.'.join(label)))
     if top_content:
       out.write(top_content)
     if sub_content:
@@ -101,7 +108,7 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
   def _Prefix(prefix, name):
     """Returns a new prefix based on prefix and name."""
     if isinstance(name, int):
-      name = 'I' + str(name)
+      name = 'I' + six.text_type(name)
     return prefix + name + '_'
 
   def _PrintEnvExport(self, items, prefix=''):
@@ -115,20 +122,22 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
       prefix: Parent name prefix, prepended to each item name.
     """
     for name, value in sorted(items):
-      name = unicode(name)
+      name = six.text_type(name)
       if isinstance(value, dict):
-        self._PrintEnvExport(value.iteritems(),
+        self._PrintEnvExport(six.iteritems(value),
                              prefix=self._Prefix(prefix, name))
       elif value is None:
-        self._out.write(u'{name} (unset)\n'.format(name=prefix + name))
+        self._out.write('{name} (unset)\n'.format(name=prefix + name))
       elif isinstance(value, list):
         for i, v in enumerate(value):
           if not isinstance(v, dict):
-            v = {'I' + str(i): v}
-          self._PrintEnvExport(v.iteritems(), prefix=self._Prefix(prefix, name))
+            v = {'I' + six.text_type(i): v}
+          self._PrintEnvExport(six.iteritems(v),
+                               prefix=self._Prefix(prefix, name))
       else:
+        value = pipes.quote(six.text_type(value))
         self._out.write(self._env_command_format.format(
-            name=prefix + name, value=pipes.quote(unicode(value))))
+            name=prefix + name, value=value))
 
   def _PrintEnvUnset(self, items, prefix=''):
     """Prints the environment unset commands for items.
@@ -138,15 +147,16 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
       prefix: Parent name prefix, prepended to each item name.
     """
     for name, value in sorted(items):
-      name = unicode(name)
+      name = six.text_type(name)
       if isinstance(value, dict):
-        self._PrintEnvUnset(value.iteritems(),
+        self._PrintEnvUnset(six.iteritems(value),
                             prefix=self._Prefix(prefix, name))
       elif isinstance(value, list):
         for i, v in enumerate(value):
           if not isinstance(v, dict):
-            v = {'I' + str(i): v}
-          self._PrintEnvUnset(v.iteritems(), prefix=self._Prefix(prefix, name))
+            v = {'I' + six.text_type(i): v}
+          self._PrintEnvUnset(six.iteritems(v),
+                              prefix=self._Prefix(prefix, name))
       else:
         self._out.write(self._env_command_format.format(name=prefix + name))
 
@@ -160,6 +170,6 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
       delimit: Ignored.
     """
     try:
-      self._add_items(record.iteritems())
+      self._add_items(six.iteritems(record))
     except AttributeError:
       pass

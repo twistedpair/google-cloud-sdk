@@ -1,4 +1,5 @@
-# Copyright 2014 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2014 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,38 +14,50 @@
 # limitations under the License.
 """Utility functions that don't belong in the other utility modules."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import argparse
-import cStringIO
+import io
 import re
 
 from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_printer
 
+import six
 
-class InstanceNotReadyError(calliope_exceptions.ToolException):
+
+COMPUTE_ALPHA_API_VERSION = 'alpha'
+COMPUTE_BETA_API_VERSION = 'beta'
+COMPUTE_GA_API_VERSION = 'v1'
+
+
+class InstanceNotReadyError(exceptions.Error):
   """The user is attempting to perform an operation on a not-ready instance."""
 
 
-class InvalidUserError(calliope_exceptions.ToolException):
+class InvalidUserError(exceptions.Error):
   """The user provided an invalid username."""
 
 
-class MissingDependencyError(calliope_exceptions.ToolException):
+class MissingDependencyError(exceptions.Error):
   """An external dependency is missing."""
 
 
-class TimeoutError(calliope_exceptions.ToolException):
+class TimeoutError(exceptions.Error):
   """The user command timed out."""
 
 
-class WrongInstanceTypeError(calliope_exceptions.ToolException):
+class WrongInstanceTypeError(exceptions.Error):
   """The instance type is not appropriate for this command."""
 
 
-class ImageNotFoundError(calliope_exceptions.ToolException):
+class ImageNotFoundError(exceptions.Error):
   """The image resource could not be found."""
 
 
@@ -95,7 +108,7 @@ def CamelCaseToOutputFriendly(string):
 
 def ConstructList(title, items):
   """Returns a string displaying the items and a title."""
-  buf = cStringIO.StringIO()
+  buf = io.StringIO()
   fmt = 'list[title="{title}",always-display-title]'.format(title=title)
   resource_printer.Print(sorted(set(items)), fmt, out=buf)
   return buf.getvalue()
@@ -158,9 +171,9 @@ def BytesToGb(size):
   if size % constants.BYTES_IN_ONE_GB != 0:
     raise calliope_exceptions.ToolException(
         'Disk size must be a multiple of 1 GB. Did you mean [{0}GB]?'
-        .format(size / constants.BYTES_IN_ONE_GB + 1))
+        .format(size // constants.BYTES_IN_ONE_GB + 1))
 
-  return size / constants.BYTES_IN_ONE_GB
+  return size // constants.BYTES_IN_ONE_GB
 
 
 def BytesToMb(size):
@@ -171,9 +184,9 @@ def BytesToMb(size):
   if size % constants.BYTES_IN_ONE_MB != 0:
     raise calliope_exceptions.ToolException(
         'Disk size must be a multiple of 1 MB. Did you mean [{0}MB]?'
-        .format(size / constants.BYTES_IN_ONE_MB + 1))
+        .format(size // constants.BYTES_IN_ONE_MB + 1))
 
-  return size / constants.BYTES_IN_ONE_MB
+  return size // constants.BYTES_IN_ONE_MB
 
 
 def WarnIfDiskSizeIsTooSmall(size_gb, disk_type):
@@ -187,11 +200,19 @@ def WarnIfDiskSizeIsTooSmall(size_gb, disk_type):
     warning_threshold_gb = constants.STANDARD_DISK_PERFORMANCE_WARNING_GB
 
   if size_gb < warning_threshold_gb:
-    log.warn(
+    log.warning(
         'You have selected a disk size of under [%sGB]. This may result in '
         'poor I/O performance. For more information, see: '
         'https://developers.google.com/compute/docs/disks#performance.',
         warning_threshold_gb)
+
+
+def WarnIfPartialRequestFail(problems):
+  errors = []
+  for _, message in problems:
+    errors.append(six.text_type(message))
+
+  log.warning(ConstructList('Some requests did not succeed.', errors))
 
 
 def IsValidIPV4(ip):

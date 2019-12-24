@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2018 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,57 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""service-management enable helper functions."""
+"""services enable helper functions."""
 
-from apitools.base.py import exceptions as apitools_exceptions
-from apitools.base.py import list_pager
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.services import services_util
-from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
+from googlecloudsdk.api_lib.services import serviceusage
 from googlecloudsdk.core import log
-
-
-def _HandleStatusCode(e, api_exc_class):
-  exc = api_lib_exceptions.HttpException(e)
-  if exc.payload.status_code in [403, 404]:
-    # TODO(b/36865980): When backend supports it, differentiate errors.
-    raise api_exc_class(exc)
-  else:
-    raise exc
-
-
-def EnableServiceApiCall(project_id, service_name):
-  """Make API call to enable a specific API.
-
-  Args:
-    project_id: The ID of the project for which to enable the service.
-    service_name: The name of the service to enable on the project.
-
-  Raises:
-    exceptions.EnableServicePermissionDeniedException: when enabling the API
-        fails.
-    api_lib_exceptions.HttpException: Another miscellaneous error with the
-        enabling service.
-
-  Returns:
-    The result of the Enable operation
-  """
-
-  client = services_util.GetClientInstance()
-  messages = services_util.GetMessagesModule()
-
-  request = messages.ServicemanagementServicesEnableRequest(
-      serviceName=service_name,
-      enableServiceRequest=messages.EnableServiceRequest(
-          consumerId='project:' + project_id
-      )
-  )
-
-  try:
-    return client.services.Enable(request)
-  except apitools_exceptions.HttpError as e:
-    _HandleStatusCode(e, exceptions.EnableServicePermissionDeniedException)
 
 
 def IsServiceEnabled(project_id, service_name):
@@ -73,41 +32,50 @@ def IsServiceEnabled(project_id, service_name):
     service_name: The name of the service.
 
   Raises:
-    exceptions.ListServicesPermissionDeniedException: if a 403 or 404
-        error is returned by the List request.
-    api_lib_exceptions.HttpException: Another miscellaneous error with the
-        listing service.
+    exceptions.GetServicesPermissionDeniedException: if a 403 or 404
+        error is returned by the Get request.
+    apitools_exceptions.HttpError: Another miscellaneous error with the listing
+        service.
 
   Returns:
     True if the service is enabled, false otherwise.
   """
-
-  client = services_util.GetClientInstance()
-
-  # Get the list of enabled services.
-  request = services_util.GetEnabledListRequest(project_id)
-  try:
-    for service in list_pager.YieldFromList(
-        client.services,
-        request,
-        batch_size_attribute='pageSize',
-        field='services'):
-      # If the service is present in the list of enabled services, return
-      # True, otherwise return False
-      if service.serviceName.lower() == service_name.lower():
-        return True
-  except apitools_exceptions.HttpError as e:
-    _HandleStatusCode(e, exceptions.ListServicesPermissionDeniedException)
-  return False
+  service = serviceusage.GetService(project_id, service_name)
+  return serviceusage.IsServiceEnabled(service)
 
 
-def EnableServiceIfDisabled(project_id, service_name, async=False):
+def EnableService(project_id, service_name, is_async=False):
+  """Enable a service without checking if it is already enabled.
+
+  Args:
+    project_id: The ID of the project for which to enable the service.
+    service_name: The name of the service to enable on the project.
+    is_async: bool, if True, print the operation ID and return immediately,
+           without waiting for the op to complete.
+
+  Raises:
+    exceptions.EnableServicePermissionDeniedException: when enabling the API
+        fails with a 403 or 404 error code.
+    api_lib_exceptions.HttpException: Another miscellaneous error with the
+        servicemanagement service.
+  """
+  log.status.Print('Enabling service [{0}] on project [{1}]...'.format(
+      service_name, project_id))
+
+  # Enable the service
+  op = serviceusage.EnableApiCall(project_id, service_name)
+  if not is_async and not op.done:
+    op = services_util.WaitOperation(op.name, serviceusage.GetOperation)
+    services_util.PrintOperation(op)
+
+
+def EnableServiceIfDisabled(project_id, service_name, is_async=False):
   """Check to see if the service is enabled, and if it is not, do so.
 
   Args:
     project_id: The ID of the project for which to enable the service.
     service_name: The name of the service to enable on the project.
-    async: bool, if True, print the operation ID and return immediately,
+    is_async: bool, if True, print the operation ID and return immediately,
            without waiting for the op to complete.
 
   Raises:
@@ -125,12 +93,4 @@ def EnableServiceIfDisabled(project_id, service_name, async=False):
         service_name, project_id))
     return
 
-  # If the service is not yet enabled, enable it
-  log.status.Print('Enabling service {0} on project {1}...'.format(
-      service_name, project_id))
-
-  # Enable the service
-  operation = EnableServiceApiCall(project_id, service_name)
-
-  # Process the enable operation
-  services_util.ProcessOperationResult(operation, async)
+  EnableService(project_id, service_name, is_async)

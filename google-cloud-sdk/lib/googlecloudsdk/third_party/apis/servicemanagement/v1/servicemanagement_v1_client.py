@@ -24,7 +24,7 @@ class ServicemanagementV1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new servicemanagement handle."""
     url = url or self.BASE_URL
     super(ServicemanagementV1, self).__init__(
@@ -33,7 +33,8 @@ class ServicemanagementV1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.operations = self.OperationsService(self)
     self.services_accessPolicy = self.ServicesAccessPolicyService(self)
     self.services_configs = self.ServicesConfigsService(self)
@@ -42,7 +43,6 @@ class ServicemanagementV1(base_api.BaseApiClient):
     self.services_projectSettings = self.ServicesProjectSettingsService(self)
     self.services_rollouts = self.ServicesRolloutsService(self)
     self.services = self.ServicesService(self)
-    self.v1 = self.V1Service(self)
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
@@ -55,7 +55,7 @@ class ServicemanagementV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -83,7 +83,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      """Lists service operations that match the specified filter in the request.
+      r"""Lists service operations that match the specified filter in the request.
 
       Args:
         request: (ServicemanagementOperationsListRequest) input message
@@ -119,7 +119,7 @@ service.
           }
 
     def Query(self, request, global_params=None):
-      """Method to query the accessibility of a service and any associated.
+      r"""Method to query the accessibility of a service and any associated.
 visibility labels for a specified user.
 
 Members of the producer project may call this method and specify any user.
@@ -162,10 +162,14 @@ the service.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new service configuration (version) for a managed service.
+      r"""Creates a new service configuration (version) for a managed service.
 This method only stores the service configuration. To roll out the service
 configuration to backend systems please call
 CreateServiceRollout.
+
+Only the 100 most recent service configurations and ones referenced by
+existing rollouts are kept for each service. The rest will be deleted
+eventually.
 
       Args:
         request: (ServicemanagementServicesConfigsCreateRequest) input message
@@ -191,7 +195,7 @@ CreateServiceRollout.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a service configuration (version) for a managed service.
+      r"""Gets a service configuration (version) for a managed service.
 
       Args:
         request: (ServicemanagementServicesConfigsGetRequest) input message
@@ -217,7 +221,7 @@ CreateServiceRollout.
     )
 
     def List(self, request, global_params=None):
-      """Lists the history of the service configuration for a managed service,.
+      r"""Lists the history of the service configuration for a managed service,.
 from the newest to the oldest.
 
       Args:
@@ -244,13 +248,17 @@ from the newest to the oldest.
     )
 
     def Submit(self, request, global_params=None):
-      """Creates a new service configuration (version) for a managed service based.
+      r"""Creates a new service configuration (version) for a managed service based.
 on
 user-supplied configuration source files (for example: OpenAPI
 Specification). This method stores the source configurations as well as the
 generated service configuration. To rollout the service configuration to
 other services,
 please call CreateServiceRollout.
+
+Only the 100 most recent configuration sources and ones referenced by
+existing service configurtions are kept for each service. The rest will be
+deleted eventually.
 
 Operation<response: SubmitConfigSourceResponse>
 
@@ -288,7 +296,7 @@ Operation<response: SubmitConfigSourceResponse>
           }
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource.
+      r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -315,36 +323,11 @@ set.
         supports_download=False,
     )
 
-    def List(self, request, global_params=None):
-      """Lists consumer settings for managed services.
-To search across all services, specify {service_name} as '-'.
-
-      Args:
-        request: (ServicemanagementServicesConsumersListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListServiceConsumersResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'servicemanagement.services.consumers.list',
-        ordered_params=[u'serviceName'],
-        path_params=[u'serviceName'],
-        query_params=[u'consumerId', u'consumerIds', u'pageSize', u'pageToken'],
-        relative_path=u'v1/services/{serviceName}/consumers',
-        request_field='',
-        request_type_name=u'ServicemanagementServicesConsumersListRequest',
-        response_type_name=u'ListServiceConsumersResponse',
-        supports_download=False,
-    )
-
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
+      r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
+
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
 
       Args:
         request: (ServicemanagementServicesConsumersSetIamPolicyRequest) input message
@@ -370,7 +353,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -412,7 +395,7 @@ may "fail open" without warning.
           }
 
     def Get(self, request, global_params=None):
-      """Retrieves the settings that control the specified customer's usage of the.
+      r"""Retrieves the settings that control the specified customer's usage of the.
 service.
 
       Args:
@@ -439,7 +422,7 @@ service.
     )
 
     def Patch(self, request, global_params=None):
-      """Patches specified subset of the settings that control the specified.
+      r"""Patches specified subset of the settings that control the specified.
 customer's usage of the service.  Attempts to update a field not
 controlled by the caller will result in an access denied error.
 
@@ -479,7 +462,7 @@ Operation<response: CustomerSettings>
           }
 
     def Get(self, request, global_params=None):
-      """Retrieves the settings that control the specified consumer project's usage.
+      r"""Retrieves the settings that control the specified consumer project's usage.
 of the service.
 
       Args:
@@ -506,7 +489,7 @@ of the service.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates specified subset of the settings that control the specified.
+      r"""Updates specified subset of the settings that control the specified.
 consumer project's usage of the service.  Attempts to update a field not
 controlled by the caller will result in an access denied error.
 
@@ -529,42 +512,10 @@ object.
         method_id=u'servicemanagement.services.projectSettings.patch',
         ordered_params=[u'serviceName', u'consumerProjectId'],
         path_params=[u'consumerProjectId', u'serviceName'],
-        query_params=[u'updateMask'],
+        query_params=[u'excludeFinalQuotaSettingsInResponse', u'updateMask'],
         relative_path=u'v1/services/{serviceName}/projectSettings/{consumerProjectId}',
         request_field=u'projectSettings',
         request_type_name=u'ServicemanagementServicesProjectSettingsPatchRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def Update(self, request, global_params=None):
-      """NOTE: Currently unsupported.  Use PatchProjectSettings instead.
-
-Updates the settings that control the specified consumer project's usage
-of the service.  Attempts to update a field not controlled by the caller
-will result in an access denied error.
-
-Operation<response: ProjectSettings>
-
-      Args:
-        request: (ProjectSettings) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Update')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'servicemanagement.services.projectSettings.update',
-        ordered_params=[u'serviceName', u'consumerProjectId'],
-        path_params=[u'consumerProjectId', u'serviceName'],
-        query_params=[],
-        relative_path=u'v1/services/{serviceName}/projectSettings/{consumerProjectId}',
-        request_field='<request>',
-        request_type_name=u'ProjectSettings',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -580,7 +531,7 @@ Operation<response: ProjectSettings>
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new service configuration rollout. Based on rollout, the.
+      r"""Creates a new service configuration rollout. Based on rollout, the.
 Google Service Management will roll out the service configurations to
 different backend services. For example, the logging configuration will be
 pushed to Google Cloud Logging.
@@ -588,6 +539,10 @@ pushed to Google Cloud Logging.
 Please note that any previous pending and running Rollouts and associated
 Operations will be automatically cancelled so that the latest Rollout will
 not be blocked by previous Rollouts.
+
+Only the 100 most recent (in any state) and the last 10 successful (if not
+already part of the set of 100 most recent) rollouts are kept for each
+service. The rest will be deleted eventually.
 
 Operation<response: Rollout>
 
@@ -615,7 +570,7 @@ Operation<response: Rollout>
     )
 
     def Get(self, request, global_params=None):
-      """Gets a service configuration rollout.
+      r"""Gets a service configuration rollout.
 
       Args:
         request: (ServicemanagementServicesRolloutsGetRequest) input message
@@ -641,7 +596,7 @@ Operation<response: Rollout>
     )
 
     def List(self, request, global_params=None):
-      """Lists the history of the service configuration rollouts for a managed.
+      r"""Lists the history of the service configuration rollouts for a managed.
 service, from the newest to the oldest.
 
       Args:
@@ -677,38 +632,8 @@ service, from the newest to the oldest.
       self._upload_configs = {
           }
 
-    def ConvertConfig(self, request, global_params=None):
-      """DEPRECATED. `SubmitConfigSource` with `validate_only=true` will provide.
-config conversion moving forward.
-
-Converts an API specification (e.g. Swagger spec) to an
-equivalent `google.api.Service`.
-
-      Args:
-        request: (ConvertConfigRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ConvertConfigResponse) The response message.
-      """
-      config = self.GetMethodConfig('ConvertConfig')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ConvertConfig.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'servicemanagement.services.convertConfig',
-        ordered_params=[],
-        path_params=[],
-        query_params=[],
-        relative_path=u'v1/services:convertConfig',
-        request_field='<request>',
-        request_type_name=u'ConvertConfigRequest',
-        response_type_name=u'ConvertConfigResponse',
-        supports_download=False,
-    )
-
     def Create(self, request, global_params=None):
-      """Creates a new managed service.
+      r"""Creates a new managed service.
 Please note one producer project can own no more than 20 services.
 
 Operation<response: ManagedService>
@@ -737,7 +662,7 @@ Operation<response: ManagedService>
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a managed service. This method will change the service to the.
+      r"""Deletes a managed service. This method will change the service to the.
 `Soft-Delete` state for 30 days. Within this period, service producers may
 call UndeleteService to restore the service.
 After 30 days, the service will be permanently deleted.
@@ -768,7 +693,7 @@ Operation<response: google.protobuf.Empty>
     )
 
     def Disable(self, request, global_params=None):
-      """Disables a service for a project, so it can no longer be.
+      r"""Disables a service for a project, so it can no longer be.
 be used for the project. It prevents accidental usage that may cause
 unexpected billing charges or security leaks.
 
@@ -798,7 +723,7 @@ Operation<response: DisableServiceResponse>
     )
 
     def Enable(self, request, global_params=None):
-      """Enables a service for a project, so it can be used.
+      r"""Enables a service for a project, so it can be used.
 for the project. See
 [Cloud Auth Guide](https://cloud.google.com/docs/authentication) for
 more information.
@@ -829,7 +754,7 @@ Operation<response: EnableServiceResponse>
     )
 
     def GenerateConfigReport(self, request, global_params=None):
-      """Generates and returns a report (errors, warnings and changes from.
+      r"""Generates and returns a report (errors, warnings and changes from.
 existing configurations) associated with
 GenerateConfigReportRequest.new_value
 
@@ -865,7 +790,7 @@ service configuration.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a managed service. Authentication is required unless the service is.
+      r"""Gets a managed service. Authentication is required unless the service is.
 public.
 
       Args:
@@ -892,7 +817,7 @@ public.
     )
 
     def GetConfig(self, request, global_params=None):
-      """Gets a service configuration (version) for a managed service.
+      r"""Gets a service configuration (version) for a managed service.
 
       Args:
         request: (ServicemanagementServicesGetConfigRequest) input message
@@ -918,7 +843,7 @@ public.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource.
+      r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -946,7 +871,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Lists managed services.
+      r"""Lists managed services.
 
 Returns all public services. For authenticated users, also returns all
 services the calling user has "servicemanagement.services.get" permission
@@ -971,7 +896,7 @@ of "project:{PROJECT-ID}".
         method_id=u'servicemanagement.services.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'category', u'consumerId', u'consumerProjectId', u'expand', u'pageSize', u'pageToken', u'producerProjectId'],
+        query_params=[u'category', u'consumerId', u'consumerProjectId', u'pageSize', u'pageToken', u'producerProjectId'],
         relative_path=u'v1/services',
         request_field='',
         request_type_name=u'ServicemanagementServicesListRequest',
@@ -980,8 +905,9 @@ of "project:{PROJECT-ID}".
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified one of the configurations. If the specified service.
+      r"""Updates the specified one of the configurations. If the specified service.
 does not exist the patch operation fails.
+
 
 Operation<response: ManagedService>
 
@@ -1009,8 +935,10 @@ Operation<response: ManagedService>
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
+      r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
+
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
 
       Args:
         request: (ServicemanagementServicesSetIamPolicyRequest) input message
@@ -1036,7 +964,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -1068,7 +996,7 @@ may "fail open" without warning.
     )
 
     def Undelete(self, request, global_params=None):
-      """Revives a previously deleted managed service. The method restores the.
+      r"""Revives a previously deleted managed service. The method restores the.
 service using the configuration at the time the service was deleted.
 The target service must exist and must have been deleted within the
 last 30 days.
@@ -1095,74 +1023,5 @@ Operation<response: UndeleteServiceResponse>
         request_field='',
         request_type_name=u'ServicemanagementServicesUndeleteRequest',
         response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def Update(self, request, global_params=None):
-      """Updates the configuration of a service.  If the specified service does not.
-already exist, then it is created.
-
-Operation<response: ManagedService>
-
-      Args:
-        request: (ServicemanagementServicesUpdateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Update')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'servicemanagement.services.update',
-        ordered_params=[u'serviceName'],
-        path_params=[u'serviceName'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/services/{serviceName}',
-        request_field=u'managedService',
-        request_type_name=u'ServicemanagementServicesUpdateRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-  class V1Service(base_api.BaseApiService):
-    """Service class for the v1 resource."""
-
-    _NAME = u'v1'
-
-    def __init__(self, client):
-      super(ServicemanagementV1.V1Service, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def ConvertConfig(self, request, global_params=None):
-      """DEPRECATED. `SubmitConfigSource` with `validate_only=true` will provide.
-config conversion moving forward.
-
-Converts an API specification (e.g. Swagger spec) to an
-equivalent `google.api.Service`.
-
-      Args:
-        request: (ConvertConfigRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ConvertConfigResponse) The response message.
-      """
-      config = self.GetMethodConfig('ConvertConfig')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ConvertConfig.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'servicemanagement.convertConfig',
-        ordered_params=[],
-        path_params=[],
-        query_params=[],
-        relative_path=u'v1:convertConfig',
-        request_field='<request>',
-        request_type_name=u'ConvertConfigRequest',
-        response_type_name=u'ConvertConfigResponse',
         supports_download=False,
     )

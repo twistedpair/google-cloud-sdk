@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,8 +12,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Utilities for Cloud Pub/Sub Snapshots API."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from apitools.base.py import list_pager
+
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
 
@@ -54,6 +62,18 @@ class SnapshotsClient(object):
             labels=labels),
         name=snapshot_ref.RelativeName())
     return self._service.Create(create_req)
+
+  def Get(self, snapshot_ref):
+    """Gets a Snapshot.
+
+    Args:
+      snapshot_ref (Resource): Resource reference to the Snapshot to get.
+    Returns:
+      Snapshot: The snapshot.
+    """
+    get_req = self.messages.PubsubProjectsSnapshotsGetRequest(
+        snapshot=snapshot_ref.RelativeName())
+    return self._service.Get(get_req)
 
   def Delete(self, snapshot_ref):
     """Deletes a Snapshot."""

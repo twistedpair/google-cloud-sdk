@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
 
 """The meta cache command library support."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.calliope import parser_completer
 from googlecloudsdk.calliope import walker
@@ -24,6 +29,8 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.cache import exceptions as cache_exceptions
 from googlecloudsdk.core.cache import file_cache
 from googlecloudsdk.core.cache import resource_cache
+
+import six
 
 
 _CACHE_RI_DEFAULT = 'resource://'
@@ -74,7 +81,7 @@ class GetCache(object):
   def __enter__(self):
     # Each cache_class has a default cache name. None or '' names that default.
     if self._name:
-      for cache_id, cache_class in self._TYPES.iteritems():
+      for cache_id, cache_class in six.iteritems(self._TYPES):
         if self._name.startswith(cache_id + '://'):
           name = self._name[len(cache_id) + 3:]
           if not name:
@@ -161,8 +168,12 @@ class _CompleterModuleGenerator(walker.Walker):
     Returns:
       The subtree module list.
     """
+
+    def _ActionKey(action):
+      return action.__repr__()
+
     args = command.ai
-    for arg in sorted(args.flag_args + args.positional_args):
+    for arg in sorted(args.flag_args + args.positional_args, key=_ActionKey):
       try:
         completer_class = arg.completer
       except AttributeError:
@@ -185,7 +196,7 @@ class _CompleterModuleGenerator(walker.Walker):
             pass
         except (apis_util.UnknownAPIError,
                 resources.InvalidCollectionException) as e:
-          collection = u'ERROR: {}'.format(e)
+          collection = 'ERROR: {}'.format(e)
       if arg.option_strings:
         name = arg.option_strings[0]
       else:
@@ -212,4 +223,4 @@ class _CompleterModuleGenerator(walker.Walker):
 
 def ListAttachedCompleters(cli):
   """Returns the list of all attached CompleterModule objects in cli."""
-  return _CompleterModuleGenerator(cli).Walk().values()
+  return list(_CompleterModuleGenerator(cli).Walk().values())

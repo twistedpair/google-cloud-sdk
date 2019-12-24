@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,13 +18,38 @@
 Refer to the calliope.parser_extensions module for a detailed overview.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import argparse
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import display_info
 from googlecloudsdk.calliope import parser_completer
 from googlecloudsdk.calliope import parser_errors
+from googlecloudsdk.command_lib.concepts import concept_managers
 from googlecloudsdk.core.cache import completion_cache
+
+
+# pylint: disable=protected-access
+def _IsStoreTrueAction(action):  # pylint: disable=invalid-name
+  return (action == 'store_true' or
+          isinstance(action, argparse._StoreTrueAction) or
+          (isinstance(action, type) and
+           issubclass(action, argparse._StoreTrueAction)))
+
+
+# pylint: disable=protected-access
+def _IsStoreFalseAction(action):  # pylint: disable=invalid-name
+  return (action == 'store_false' or
+          isinstance(action, argparse._StoreFalseAction) or
+          (isinstance(action, type) and
+           issubclass(action, argparse._StoreFalseAction)))
+
+
+def _IsStoreBoolAction(action):  # pylint: disable=invalid-name
+  return _IsStoreTrueAction(action) or _IsStoreFalseAction(action)
 
 
 class Argument(object):
@@ -85,7 +111,7 @@ class ArgumentInterceptor(Argument):
       ancestor_flag_args: [argparse.Action], The flags for all ancestor groups
         in the cli tree.
       cli_generator: cli.CLILoader, The builder used to generate this CLI.
-      command_name: str, The dotted command name path.
+      command_name: [str], The parts of the command name path.
       concept_handler: calliope.concepts.handlers.RuntimeHandler, a handler
         for concept args.
       defaults: {dest: default}, For all registered arguments.
@@ -104,6 +130,8 @@ class ArgumentInterceptor(Argument):
 
       self.ancestor_flag_args = []
       self.concept_handler = None
+      # Concepts v2
+      self.concepts = None
       self.defaults = {}
       self.dests = []
       self.display_info = display_info.DisplayInfo()
@@ -183,7 +211,15 @@ class ArgumentInterceptor(Argument):
   def concept_handler(self):
     return self.data.concept_handler
 
-  def add_concepts(self, handler):
+  @property
+  def concepts(self):
+    return self.data.concepts
+
+  def add_concepts(self, handler):  # pylint: disable=invalid-name
+    # RuntimeParser is the v2 concepts handler.
+    if isinstance(handler, concept_managers.RuntimeParser):
+      self.data.concepts = handler
+      return
     if self.data.concept_handler:
       raise AttributeError(
           'It is not permitted to add two runtime handlers to a command class.')
@@ -209,12 +245,20 @@ class ArgumentInterceptor(Argument):
     # A flag that can only be supplied where it is defined and not propagated to
     # subcommands.
     do_not_propagate = kwargs.pop('do_not_propagate', False)
-    # hidden=True => help=argparse.SUPPRESS, but retains help in the source.
+    # hidden=True retains help but does not display it.
     hidden = kwargs.pop('hidden', False)
-    if hidden:
-      kwargs['help'] = argparse.SUPPRESS
-    elif kwargs.get('help') == argparse.SUPPRESS:
-      hidden = True
+    help_text = kwargs.get('help')
+    if not help_text:
+      raise ValueError('Argument {} requires help text [hidden={}]'.format(
+          name, hidden))
+    if help_text == argparse.SUPPRESS:
+      raise ValueError('Argument {} needs hidden=True instead of '
+                       'help=argparse.SUPPRESS.'.format(name))
+    # A flag that determines if when doing coverage we need to check for a unit
+    # test that exercises it. For example, list commands have the same flags and
+    # they have the same underlying implementation so they might not always be
+    # exclusively tested.
+    require_coverage_in_tests = kwargs.pop('require_coverage_in_tests', True)
     # A global flag that is added at each level explicitly because each command
     # has a different behavior (like -h).
     is_replicated = kwargs.pop('is_replicated', False)
@@ -242,19 +286,19 @@ class ArgumentInterceptor(Argument):
         # group the problem is in.
         raise parser_errors.ArgumentException(
             'Illegal positional argument [{0}] for command [{1}]'.format(
-                name, self.data.command_name))
+                name, '.'.join(self.data.command_name)))
       if '-' in name:
         raise parser_errors.ArgumentException(
             "Positional arguments cannot contain a '-'. Illegal argument [{0}] "
-            'for command [{1}]'.format(name, self.data.command_name))
+            'for command [{1}]'.format(name, '.'.join(self.data.command_name)))
       if category:
         raise parser_errors.ArgumentException(
             'Positional argument [{0}] cannot have a category in '
-            'command [{1}]'.format(name, self.data.command_name))
+            'command [{1}]'.format(name, '.'.join(self.data.command_name)))
       if suggestion_aliases:
         raise parser_errors.ArgumentException(
             'Positional argument [{0}] cannot have suggestion aliases in '
-            'command [{1}]'.format(name, self.data.command_name))
+            'command [{1}]'.format(name, '.'.join(self.data.command_name)))
 
     self.defaults[dest] = default
     if required:
@@ -268,16 +312,21 @@ class ArgumentInterceptor(Argument):
     else:
       added_argument = self.parser.add_argument(*args, **kwargs)
     self._AttachCompleter(added_argument, completer, positional)
+    added_argument.require_coverage_in_tests = require_coverage_in_tests
     added_argument.is_global = is_global
     added_argument.is_group = False
     added_argument.is_hidden = hidden
     added_argument.is_required = required
     added_argument.is_positional = positional
+    if hidden:
+      # argparse uses SUPPRESS -- cli_tree uses hidden_help to work around
+      added_argument.hidden_help = added_argument.help
+      added_argument.help = argparse.SUPPRESS
     if positional:
       if category:
         raise parser_errors.ArgumentException(
             'Positional argument [{0}] cannot have a category in '
-            'command [{1}]'.format(name, self.data.command_name))
+            'command [{1}]'.format(name, '.'.join(self.data.command_name)))
       if (nargs is None or
           nargs == '+' or
           isinstance(nargs, int) and nargs > 0):
@@ -287,11 +336,11 @@ class ArgumentInterceptor(Argument):
       if category and required:
         raise parser_errors.ArgumentException(
             'Required flag [{0}] cannot have a category in '
-            'command [{1}]'.format(name, self.data.command_name))
+            'command [{1}]'.format(name, '.'.join(self.data.command_name)))
       if category == 'REQUIRED':
         raise parser_errors.ArgumentException(
             "Flag [{0}] cannot have category='REQUIRED' in "
-            'command [{1}]'.format(name, self.data.command_name))
+            'command [{1}]'.format(name, '.'.join(self.data.command_name)))
       added_argument.category = category
       added_argument.do_not_propagate = do_not_propagate
       added_argument.is_replicated = is_replicated
@@ -335,7 +384,7 @@ class ArgumentInterceptor(Argument):
     return self.parser.parse_known_args(args=args, namespace=namespace)
 
   def add_group(self, help=None, category=None, mutex=False, required=False,
-                **kwargs):
+                hidden=False, **kwargs):
     """Adds an argument group with mutex/required attributes to the parser.
 
     Args:
@@ -343,6 +392,7 @@ class ArgumentInterceptor(Argument):
       category: str, The group flag category name, None for no category.
       mutex: bool, A mutually exclusive group if True.
       required: bool, A required group if True.
+      hidden: bool, A hidden group if True.
       **kwargs: Passed verbatim to ArgumentInterceptor().
 
     Returns:
@@ -352,7 +402,7 @@ class ArgumentInterceptor(Argument):
       raise parser_errors.ArgumentException(
           'parser.add_group(): description or title kwargs not supported '
           '-- use help=... instead.')
-    new_parser = self.parser.add_argument_group(**kwargs)
+    new_parser = self.parser.add_argument_group()
     group = ArgumentInterceptor(parser=new_parser,
                                 is_global=self.is_global,
                                 cli_generator=self.cli_generator,
@@ -361,7 +411,9 @@ class ArgumentInterceptor(Argument):
                                 help=help,
                                 category=category,
                                 mutex=mutex,
-                                required=required)
+                                required=required,
+                                hidden=hidden,
+                                **kwargs)
     self.arguments.append(group)
     return group
 
@@ -399,6 +451,13 @@ class ArgumentInterceptor(Argument):
     self.arguments.append(action)
     return action
 
+  def _FlagArgExists(self, option_string):
+    """If flag with the given option_string exists."""
+    for action in self.flag_args:
+      if option_string in action.option_strings:
+        return True
+    return False
+
   def AddFlagActionFromAncestors(self, action):
     """Add a flag action to this parser, but segregate it from the others.
 
@@ -407,8 +466,13 @@ class ArgumentInterceptor(Argument):
 
     Args:
       action: argparse.Action, The action for the flag being added.
-
     """
+    # go/gcloud-project-flag-overwritable
+    # Do not add global --project if command already has --project
+    # argument in parser
+    if self._FlagArgExists('--project') and (
+        '--project' in action.option_strings):
+      return
     # pylint:disable=protected-access, simply no other way to do this.
     self.parser._add_action(action)
     # explicitly do this second, in case ._add_action() fails.
@@ -457,11 +521,9 @@ class ArgumentInterceptor(Argument):
       inverted_synopsis = False
 
     kwargs = dict(original_kwargs)
-    if (action == 'store_true' or
-        action == argparse._StoreTrueAction):  # pylint: disable=protected-access
+    if _IsStoreTrueAction(action):
       action = 'store_false'
-    elif (action == 'store_false' or
-          action == argparse._StoreFalseAction):  # pylint: disable=protected-access
+    elif _IsStoreFalseAction(action):
       action = 'store_true'
 
     # This is a hacky workaround to get actions.DeprecationAction to properly
@@ -481,10 +543,10 @@ class ArgumentInterceptor(Argument):
     kwargs['action'] = action
     if not kwargs.get('dest'):
       kwargs['dest'] = dest
-    kwargs['help'] = argparse.SUPPRESS
 
     inverted_argument = self.parser.add_argument(
         name.replace('--', '--no-', 1), **kwargs)
+    inverted_argument.hidden = True
     if inverted_synopsis:
       # flag.inverted_synopsis means display the inverted flag in the SYNOPSIS.
       setattr(added_argument, 'inverted_synopsis', True)
@@ -513,9 +575,7 @@ class ArgumentInterceptor(Argument):
     if '--no-' + name[2:] in self.parser._option_string_actions:  # pylint: disable=protected-access
       # Don't override explicit --no-* inverted flag.
       return False, None
-    if (action in ('store_true', 'store_false') or
-        action == argparse._StoreTrueAction or  # pylint: disable=protected-access
-        action == argparse._StoreFalseAction):  # pylint: disable=protected-access
+    if _IsStoreBoolAction(action):
       return True, None
     prop, kind, _ = getattr(action, 'store_property', (None, None, None))
     if prop:

@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Functions for creating a client to talk to the App Engine Admin SSL APIs."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base as base
 from googlecloudsdk.calliope import base as calliope_base
@@ -68,8 +73,8 @@ class AppengineSslApiClient(base.AppengineApiClientBase):
     Raises:
       Error if the file does not exist or can't be opened/read.
     """
-    certificate_data = files.GetFileContents(cert_path)
-    private_key_data = files.GetFileContents(private_key_path)
+    certificate_data = files.ReadFileContents(cert_path)
+    private_key_data = files.ReadFileContents(private_key_path)
 
     cert = self.messages.CertificateRawData(
         privateKey=private_key_data, publicCertificate=certificate_data)
@@ -145,7 +150,9 @@ class AppengineSslApiClient(base.AppengineApiClientBase):
     Raises: InvalidInputError if the user does not specify both cert and key.
     """
     if bool(cert_path) ^ bool(private_key_path):
+      missing_arg = '--certificate' if not cert_path else '--private-key'
       raise exceptions.RequiredArgumentException(
+          missing_arg,
           'The certificate and the private key must both be updated together.')
 
     mask_fields = []
@@ -155,8 +162,8 @@ class AppengineSslApiClient(base.AppengineApiClientBase):
 
     cert_data = None
     if cert_path and private_key_path:
-      certificate = files.GetFileContents(cert_path)
-      private_key = files.GetFileContents(private_key_path)
+      certificate = files.ReadFileContents(cert_path)
+      private_key = files.ReadFileContents(private_key_path)
       cert_data = self.messages.CertificateRawData(
           privateKey=private_key, publicCertificate=certificate)
       mask_fields.append('certificateRawData')

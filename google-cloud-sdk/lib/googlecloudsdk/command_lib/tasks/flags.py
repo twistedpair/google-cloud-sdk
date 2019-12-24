@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for flags for `gcloud tasks` commands."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 import sys
 
@@ -38,10 +43,10 @@ def AddTaskResourceArgs(parser, verb):
   AddQueueResourceFlag(parser, required=False)
 
 
-def AddIdArg(parser, noun, verb, metavar=None):
-  metavar = metavar or '{}_ID'.format(noun.replace(' ', '_').upper())
-  argument = base.Argument('id', metavar=metavar,
-                           help='ID of the {} {}.\n\n'.format(noun, verb))
+def AddLocationFlag(parser):
+  argument = base.Argument(
+      '--location', hidden=True,
+      help='The location of the app associated with the active project.')
   argument.AddToParser(parser)
 
 
@@ -50,8 +55,12 @@ def AddCreatePullQueueFlags(parser):
     flag.AddToParser(parser)
 
 
-def AddCreateAppEngineQueueFlags(parser):
-  for flag in _AppEngineQueueFlags():
+def AddCreatePushQueueFlags(parser, release_track=base.ReleaseTrack.GA):
+  if release_track == base.ReleaseTrack.ALPHA:
+    flags = _AlphaPushQueueFlags()
+  else:
+    flags = _PushQueueFlags(release_track)
+  for flag in flags:
     flag.AddToParser(parser)
 
 
@@ -60,8 +69,12 @@ def AddUpdatePullQueueFlags(parser):
     _AddFlagAndItsClearEquivalent(flag, parser)
 
 
-def AddUpdateAppEngineQueueFlags(parser):
-  for flag in _AppEngineQueueFlags():
+def AddUpdatePushQueueFlags(parser, release_track=base.ReleaseTrack.GA):
+  if release_track == base.ReleaseTrack.ALPHA:
+    flags = _AlphaPushQueueFlags()
+  else:
+    flags = _PushQueueFlags(release_track)
+  for flag in flags:
     _AddFlagAndItsClearEquivalent(flag, parser)
 
 
@@ -102,7 +115,7 @@ def AddTaskLeaseDurationFlag(parser, helptext=None):
                 help=helptext).AddToParser(parser)
 
 
-def AddMaxTasksToPullFlag(parser):
+def AddMaxTasksToLeaseFlag(parser):
   # Default help for base.LIMIT_FLAG is inaccurate and confusing in this case
   base.Argument(
       '--limit', type=int, default=1000, category=base.LIST_COMMAND_FLAGS,
@@ -112,39 +125,52 @@ def AddMaxTasksToPullFlag(parser):
       """).AddToParser(parser)
 
 
-def AddFilterPulledTasksFlag(parser):
+def AddFilterLeasedTasksFlag(parser):
   tag_filter_group = parser.add_mutually_exclusive_group()
   tag_filter_group.add_argument('--tag', help="""\
-      A tag to filter each task to be pulled. If a task has the tag and the
-      task is available to be pulled, then it is listed and leased.
+      A tag to filter each task to be leased. If a task has the tag and the
+      task is available to be leased, then it is listed and leased.
       """)
   tag_filter_group.add_argument('--oldest-tag', action='store_true', help="""\
-      Only pull tasks which have the same tag as the task with the oldest
+      Only lease tasks which have the same tag as the task with the oldest
       schedule time.
       """)
 
 
 def AddCreatePullTaskFlags(parser):
   """Add flags needed for creating a pull task to the parser."""
-  AddQueueResourceFlag(parser, required=False)
+  AddQueueResourceFlag(parser, required=True)
+  _GetTaskIdFlag().AddToParser(parser)
   for flag in _PullTaskFlags():
     flag.AddToParser(parser)
-  _AddPayloadFlags(parser)
+  _AddPayloadFlags(parser, True)
 
 
-def AddCreateAppEngineTaskFlags(parser):
+def AddCreateAppEngineTaskFlags(parser, is_alpha=False):
   """Add flags needed for creating a App Engine task to the parser."""
-  AddQueueResourceFlag(parser, required=False)
-  for flag in _AppEngineTaskFlags():
+  AddQueueResourceFlag(parser, required=True)
+  _GetTaskIdFlag().AddToParser(parser)
+  flags = _AlphaAppEngineTaskFlags() if is_alpha else _AppEngineTaskFlags()
+  for flag in flags:
+    flag.AddToParser(parser)
+  _AddPayloadFlags(parser, is_alpha)
+
+
+def AddCreateHttpTaskFlags(parser):
+  """Add flags needed for creating a HTTP task to the parser."""
+  AddQueueResourceFlag(parser, required=True)
+  _GetTaskIdFlag().AddToParser(parser)
+  for flag in _HttpTaskFlags():
     flag.AddToParser(parser)
   _AddPayloadFlags(parser)
+  _AddAuthFlags(parser)
 
 
 def _PullQueueFlags():
   return [
       base.Argument(
           '--max-attempts',
-          type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
+          type=arg_parsers.BoundedInt(-1, sys.maxsize, unlimited=True),
           help="""\
           The maximum number of attempts per task in the queue.
           """),
@@ -161,33 +187,24 @@ def _PullQueueFlags():
   ]
 
 
-def _AppEngineQueueFlags():
+def _BasePushQueueFlags():
   return _PullQueueFlags() + [
-      base.Argument(
-          '--max-tasks-dispatched-per-second',
-          type=float,
-          help="""\
-          The maximum rate at which tasks are dispatched from this queue. This
-          also determines "max burst size" for App Engine queues: if
-          `--max-tasks-dispatched-per-second` is 1, then max burst size is 10;
-          otherwise it is `max-tasks-dispatched-per-second` / 5.
-          """),
-      base.Argument(
-          '--max-concurrent-tasks',
-          type=int,
-          help="""\
-          The maximum number of concurrent tasks that Cloud Tasks allows to
-          be dispatched for this queue. After this threshold has been reached,
-          Cloud Tasks stops dispatching tasks until the number of outstanding
-          requests decreases.
-          """),
       base.Argument(
           '--max-doublings',
           type=int,
           help="""\
-          The maximum number of times that the interval between failed task
-          retries will be doubled before the increase becomes constant. The
-          constant is: min-backoff * 2 ** (max-doublings - 1).
+          The time between retries will double maxDoublings times.
+
+          A tasks retry interval starts at minBackoff, then doubles maxDoublings
+          times, then increases linearly, and finally retries retries at
+          intervals of maxBackoff up to maxAttempts times.
+
+          For example, if minBackoff is 10s, maxBackoff is 300s, and
+          maxDoublings is 3, then the a task will first be retried in 10s. The
+          retry interval will double three times, and then increase linearly by
+          2^3 * 10s. Finally, the task will retry at intervals of maxBackoff
+          until the task has been attempted maxAttempts times. Thus, the
+          requests will retry at 10s, 20s, 40s, 80s, 160s, 240s, 300s, 300s.
           """),
       base.Argument(
           '--min-backoff',
@@ -217,6 +234,57 @@ def _AppEngineQueueFlags():
   ]
 
 
+def _AlphaPushQueueFlags():
+  return _BasePushQueueFlags() + [
+      base.Argument(
+          '--max-tasks-dispatched-per-second',
+          type=float,
+          help="""\
+          The maximum rate at which tasks are dispatched from this queue.
+          """),
+      base.Argument(
+          '--max-concurrent-tasks',
+          type=int,
+          help="""\
+          The maximum number of concurrent tasks that Cloud Tasks allows to
+          be dispatched for this queue. After this threshold has been reached,
+          Cloud Tasks stops dispatching tasks until the number of outstanding
+          requests decreases.
+          """),
+  ]
+
+
+def _PushQueueFlags(release_track=base.ReleaseTrack.GA):
+  """Returns flags needed by push queues."""
+  flags = _BasePushQueueFlags() + [
+      base.Argument(
+          '--max-dispatches-per-second',
+          type=float,
+          help="""\
+          The maximum rate at which tasks are dispatched from this queue.
+          """),
+      base.Argument(
+          '--max-concurrent-dispatches',
+          type=int,
+          help="""\
+          The maximum number of concurrent tasks that Cloud Tasks allows to
+          be dispatched for this queue. After this threshold has been reached,
+          Cloud Tasks stops dispatching tasks until the number of outstanding
+          requests decreases.
+          """),
+  ]
+  if release_track == base.ReleaseTrack.BETA:
+    flags.append(base.Argument(
+        '--log-sampling-ratio',
+        type=float,
+        help="""\
+        Specifies the fraction of operations to write to Stackdriver Logging.
+        This field may contain any value between 0.0 and 1.0, inclusive. 0.0 is
+        the default and means that no operations are logged.
+        """))
+  return flags
+
+
 def _PullTaskFlags():
   return _CommonTaskFlags() + [
       base.Argument('--tag', help="""\
@@ -225,16 +293,11 @@ def _PullTaskFlags():
   ]
 
 
-def _AppEngineTaskFlags():
+def _BasePushTaskFlags():
   return _CommonTaskFlags() + [
       base.Argument('--method', help="""\
           The HTTP method to use for the request. If not specified, "POST" will
           be used.
-          """),
-      base.Argument('--url', help="""\
-          The relative URL of the request. Must begin with "/" and must be a
-          valid HTTP relative URL. It can contain a path and query string
-          arguments. If not specified, then the root path "/" will be used.
           """),
       base.Argument('--header', metavar='HEADER_FIELD: HEADER_VALUE',
                     action='append', type=_GetHeaderArgValidator(),
@@ -243,6 +306,20 @@ def _AppEngineTaskFlags():
           can be repeated. Repeated header fields will have their values
           overridden.
           """),
+  ]
+
+
+def _HttpTaskFlags():
+  return _BasePushTaskFlags() + [
+      base.Argument('--url', required=True, help="""\
+          The full URL path that the request will be sent to. This string must
+          begin with either "http://" or "https://".
+          """),
+  ]
+
+
+def _BaseAppEngineTaskFlags():
+  return _BasePushTaskFlags() + [
       base.Argument(
           '--routing',
           type=arg_parsers.ArgDict(key_type=_GetAppEngineRoutingKeysValidator(),
@@ -259,23 +336,48 @@ def _AppEngineTaskFlags():
   ]
 
 
+def _AlphaAppEngineTaskFlags():
+  return _BaseAppEngineTaskFlags() + [
+      base.Argument('--url', help="""\
+          The relative URL of the request. Must begin with "/" and must be a
+          valid HTTP relative URL. It can contain a path and query string
+          arguments. If not specified, then the root path "/" will be used.
+          """),
+  ]
+
+
+def _AppEngineTaskFlags():
+  return _BaseAppEngineTaskFlags() + [
+      base.Argument('--relative-uri', help="""\
+          The relative URI of the request. Must begin with "/" and must be a
+          valid HTTP relative URI. It can contain a path and query string
+          arguments. If not specified, then the root path "/" will be used.
+          """),
+  ]
+
+
+def _GetTaskIdFlag():
+  return base.Argument(
+      'task',
+      metavar='TASK_ID',
+      nargs='?',
+      help="""\
+      The task to create.
+
+      If not specified then the system will generate a random unique task
+      ID. Explicitly specifying a task ID enables task de-duplication. If a
+      task's ID is identical to that of an existing task or a task that was
+      deleted or completed recently then the call will fail.
+
+      Because there is an extra lookup cost to identify duplicate task
+      names, tasks created with IDs have significantly increased latency.
+      Using hashed strings for the task ID or for the prefix of the task ID
+      is recommended.
+      """)
+
+
 def _CommonTaskFlags():
   return [
-      base.Argument(
-          '--id', required=False, metavar='TASK_ID',
-          help="""\
-          The ID of the task to create.
-
-          If not specified then the system will generate a random unique task
-          ID. Explicitly specifying a task ID enables task de-duplication. If a
-          task's ID is identical to that of an existing task or a task that was
-          deleted or completed recently then the call will fail.
-
-          Because there is an extra lookup cost to identify duplicate task
-          names, tasks created with IDs have significantly increased latency.
-          Using hashed strings for the task ID or for the prefix of the task ID
-          is recommended.
-          """),
       base.Argument('--schedule-time', help="""\
           The time when the task is scheduled to be first attempted. Defaults to
           "now" if not specified.
@@ -283,17 +385,63 @@ def _CommonTaskFlags():
   ]
 
 
-def _AddPayloadFlags(parser):
+def _AddPayloadFlags(parser, is_alpha=False):
+  """Adds either payload or body flags."""
   payload_group = parser.add_mutually_exclusive_group()
-  payload_group.add_argument('--payload-content', help="""\
-          Data payload to be consumed by the task worker to process the task.
-          """)
-  payload_group.add_argument('--payload-file', help="""\
-          File containing data payload to be consumed by the task worker to
-          execute the task. The payload will be sent as the HTTP message body. A
-          message body, and thus a payload, is allowed only if the HTTP method
-          is "POST" or "PUT".
-          """)
+  if is_alpha:
+    payload_group.add_argument('--payload-content', help="""\
+            Data payload used by the task worker to process the task.
+            """)
+    payload_group.add_argument('--payload-file', help="""\
+            File containing data payload used by the task worker to process the
+            task.
+            """)
+  else:
+    payload_group.add_argument('--body-content', help="""\
+            HTTP Body data sent to the task worker processing the task.
+            """)
+    payload_group.add_argument('--body-file', help="""\
+            File containing HTTP body data sent to the task worker processing
+            the task.
+            """)
+
+
+def _AddAuthFlags(parser):
+  """Add flags for http auth."""
+  auth_group = parser.add_mutually_exclusive_group(help="""\
+            How the request sent to the target when executing the task should be
+            authenticated.
+            """)
+  oidc_group = auth_group.add_argument_group(help='OpenId Connect')
+  oidc_group.add_argument('--oidc-service-account-email', required=True,
+                          help="""\
+            The service account email to be used for generating an OpenID
+            Connect token to be included in the request sent to the target when
+            executing the task. The service account must be within the same
+            project as the queue. The caller must have
+            'iam.serviceAccounts.actAs' permission for the service account.
+            """)
+  oidc_group.add_argument('--oidc-token-audience', help="""\
+            The audience to be used when generating an OpenID Connect token to
+            be included in the request sent to the target when executing the
+            task. If not specified, the URI specified in the target will be
+            used.
+            """)
+  oauth_group = auth_group.add_argument_group(help='OAuth2')
+  oauth_group.add_argument('--oauth-service-account-email', required=True,
+                           help="""\
+            The service account email to be used for generating an OAuth2 access
+            token to be included in the request sent to the target when
+            executing the task. The service account must be within the same
+            project as the queue. The caller must have
+            'iam.serviceAccounts.actAs' permission for the service account.
+            """)
+  oauth_group.add_argument('--oauth-token-scope', help="""\
+            The scope to be used when generating an OAuth2 access token to be
+            included in the request sent to the target when executing the task.
+            If not specified, 'https://www.googleapis.com/auth/cloud-platform'
+            will be used.
+            """)
 
 
 def _GetAppEngineRoutingKeysValidator():

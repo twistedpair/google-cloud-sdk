@@ -1,4 +1,5 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2013 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,10 +16,15 @@
 """A module to get an http proxy information."""
 
 
-import urllib
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import http_proxy_types
+
 import httplib2
+from six.moves import urllib
 
 
 def GetDefaultProxyInfo(method='http'):
@@ -35,13 +41,10 @@ def GetDefaultProxyInfo(method='http'):
     httplib2 ProxyInfo object or None
   """
 
-  proxy_dict = urllib.getproxies()
+  proxy_dict = urllib.request.getproxies()
   proxy_url = proxy_dict.get(method, None)
   if not proxy_url:
     return None
-
-  if isinstance(proxy_url, unicode):
-    proxy_url = proxy_url.encode('idna')
 
   pi = httplib2.proxy_info_from_url(proxy_url, method)
 
@@ -53,7 +56,9 @@ def GetDefaultProxyInfo(method='http'):
   # Since the urllib.proxy_bypass _function_ (no self arg) is not "bound" to the
   # class instance, it doesn't receive the self arg when its called. We don't
   # need to "bind" it via types.MethodType(urllib.proxy_bypass, pi).
-  pi.bypass_host = urllib.proxy_bypass
+  pi.bypass_host = urllib.request.proxy_bypass
+
+  # Modify proxy info object?
 
   return pi
 
@@ -65,7 +70,8 @@ def GetProxyProperties():
   proxy_address = properties.VALUES.proxy.address.Get()
   proxy_port = properties.VALUES.proxy.port.GetInt()
 
-  proxy_prop_set = len(filter(None, (proxy_type, proxy_address, proxy_port)))
+  proxy_prop_set = len(
+      [f for f in (proxy_type, proxy_address, proxy_port) if f])
   if proxy_prop_set > 0 and proxy_prop_set != 3:
     raise properties.InvalidValueError(
         'Please set all or none of the following properties: '

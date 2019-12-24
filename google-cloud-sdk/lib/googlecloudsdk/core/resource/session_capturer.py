@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,23 +15,28 @@
 
 """Session Dumper."""
 
-import __builtin__
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 import copy
 import io
 import json
 import random
-import StringIO
 import sys
-import types
 
 from googlecloudsdk.core import log
+from googlecloudsdk.core import module_util
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import yaml_printer
 from googlecloudsdk.core.util import files
+
+import six
+from six.moves import StringIO
 
 
 class _Mock(object):
@@ -54,9 +60,11 @@ class _Mock(object):
 class _StreamCapturerBase(io.IOBase):
   """A base class for input/output stream capturers."""
 
+  # pylint: disable=super-init-not-called, All this is about to be deleted.
   def __init__(self, real_stream):
+    super(_StreamCapturerBase, self).__init__()
     self._real_stream = real_stream
-    self._capturing_stream = StringIO.StringIO()
+    self._capturing_stream = StringIO()
 
   def isatty(self, *args, **kwargs):
     return True
@@ -70,7 +78,7 @@ class _StreamCapturerBase(io.IOBase):
 
 
 class OutputStreamCapturer(_StreamCapturerBase):
-  """A file-like object that captures all the information wrote to stream."""
+  """A file-like object that captures all the information written to stream."""
 
   def write(self, *args, **kwargs):
     self._capturing_stream.write(*args, **kwargs)
@@ -100,18 +108,17 @@ class InputStreamCapturer(_StreamCapturerBase):
     return result
 
 
-class FileIoCapturerBase(object):
+@six.add_metaclass(abc.ABCMeta)
+class FileIoCapturerBase(object):  # pytype: disable=ignored-abstractmethod
   """A base class to capture fileIO."""
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self):
     self._outputs = []
     self._private_outputs = []
-    self._real_open = __builtin__.open
-    self._real_private = files.OpenForWritingPrivate
+    self._real_open = io.open
     self._mocks = (
-        _Mock(__builtin__, 'open', new=self.Open),
-        _Mock(files, 'OpenForWritingPrivate', new=self.OpenForWritingPrivate),
+        _Mock(io, 'open', new=self.Open),
+        _Mock(files, 'PrivatizeFile', new=lambda x: None)
     )
 
   def Mock(self):
@@ -119,11 +126,7 @@ class FileIoCapturerBase(object):
       m.Start()
 
   @abc.abstractmethod
-  def Open(self, name, mode='r', buffering=-1):
-    pass
-
-  @abc.abstractmethod
-  def OpenForWritingPrivate(self, path, binary=False):
+  def Open(self, name, mode='r', buffering=-1, **kwargs):
     pass
 
   def Unmock(self):
@@ -170,7 +173,7 @@ class FileIoCapturer(FileIoCapturerBase):
     self._inputs = []
     self.Mock()
 
-  def Open(self, name, mode='r', buffering=-1):
+  def Open(self, name, mode='r', buffering=-1, **kwargs):
     if not self._ShouldCaptureFile(name, sys._getframe().f_back):  # pylint: disable=protected-access
       return self._real_open(name, mode, buffering)
     if 'w' in mode:
@@ -181,43 +184,13 @@ class FileIoCapturer(FileIoCapturerBase):
       self._Save(self._inputs, name, capturer)
     return capturer
 
-  def OpenForWritingPrivate(self, path, binary=False):
-    capturer = OutputStreamCapturer(self._real_private(path, binary))
-    self._Save(self._private_outputs, path, capturer)
-    return capturer
-
   def GetInputs(self):
     return self._GetResult(self._inputs)
 
 
-class SessionDeterminer(object):
-  """A class to mock several things that may make session undetermined as is."""
-
-  _mocks = []
-
-  @classmethod
-  def Mock(cls):
-    if cls._mocks:
-      raise Exception('Mocks already created')
-    cls._mocks = [
-        _Mock(progress_tracker.ProgressTracker, '_autotick',
-              new=property(lambda self: False)),
-        _Mock(progress_tracker.ProgressTracker, 'Tick',
-              new=lambda self: self._done),  # pylint: disable=protected-access
-    ]
-    for m in cls._mocks:
-      m.Start()
-
-  @classmethod
-  def Unmock(cls):
-    for m in cls._mocks:
-      m.Stop()
-    cls._mocks = []
-
-
-class _StateMock(object):
+@six.add_metaclass(abc.ABCMeta)
+class _StateMock(object):  # pytype: disable=ignored-abstractmethod
   """A class to represent a simple mock."""
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, default_value):
     self.default_value = default_value
@@ -285,14 +258,15 @@ def GetHttpRequestDict(uri, method, body, headers):
 
 def _FilterHeaders(headers):
   return {
-      k: v for k, v in headers.iteritems() if _KeepHeader(k)
+      k: v for k, v in six.iteritems(headers) if _KeepHeader(k)
   }
 
 
 def _KeepHeader(header):
-  if header.startswith('x-google'):
+  s = console_attr.SafeText(header)
+  if s.startswith('x-google'):
     return False
-  if header in ('user-agent', 'Authorization', 'content-length',):
+  if s in ('user-agent', 'Authorization', 'content-length',):
     return False
   return True
 
@@ -303,7 +277,12 @@ class SessionCapturer(object):
 
   def __init__(self, capture_streams=True):
     self._records = []
-    SessionDeterminer.Mock()
+    self._interactive_ux_style = (
+        properties.VALUES.core.interactive_ux_style.Get())
+    properties.VALUES.core.interactive_ux_style.Set(
+        properties.VALUES.core.InteractiveUXStyles.TESTING.name)
+    self._disable_color = properties.VALUES.core.disable_color.Get()
+    properties.VALUES.core.disable_color.Set(True)
     if capture_streams:
       self._streams = (OutputStreamCapturer(sys.stdout),
                        OutputStreamCapturer(sys.stderr),)
@@ -326,16 +305,16 @@ class SessionCapturer(object):
     self._records.append({
         'response': {
             'response': _FilterHeaders(response),
-            'content': self._ToList(content)
+            'content': self._ToList(six.text_type(content))
         }})
 
   def CaptureArgs(self, args):
     """Captures command line args."""
     specified_args = {}
     command = args.command_path[1:]
-    for k, v in args.GetSpecifiedArgs().iteritems():
+    for k, v in six.iteritems(args.GetSpecifiedArgs()):
       if not k.startswith('--'):
-        if isinstance(v, basestring):
+        if isinstance(v, six.string_types):
           command.append(v)
         elif isinstance(v, list):
           command += v
@@ -366,7 +345,7 @@ class SessionCapturer(object):
 
   def CaptureState(self):
     state = {}
-    for k, v in self.STATE_MOCKS.iteritems():
+    for k, v in six.iteritems(self.STATE_MOCKS):
       result = v.Capture()
       if result != v.default_value:
         state[k] = result
@@ -377,7 +356,7 @@ class SessionCapturer(object):
   def CaptureProperties(self, all_values):
     values = copy.deepcopy(all_values)
     for k in ('capture_session_file', 'account'):
-      if values['core'].has_key(k):
+      if k in values['core']:
         values['core'].pop(k)
     self._records.append({
         'properties': values
@@ -386,8 +365,8 @@ class SessionCapturer(object):
   def CaptureException(self, exc):
     self._records.append({
         'exception': {
-            'type': str(type(exc)),
-            'message': exc.message
+            'type': module_util.GetModulePath(exc),
+            'message': six.text_type(exc)
         }
     })
 
@@ -423,16 +402,19 @@ class SessionCapturer(object):
       self._records.insert(3, {
           'input': inputs
       })
-    SessionDeterminer.Unmock()
+    properties.VALUES.core.interactive_ux_style.Set(self._interactive_ux_style)
+    properties.VALUES.core.disable_color.Set(self._disable_color)
 
   @staticmethod
   def _FinalizePrimitive(primitive):
-    if isinstance(primitive, basestring):
+    if (isinstance(primitive, six.text_type) or
+        isinstance(primitive, six.binary_type)):
       project = properties.VALUES.core.project.Get()
       if not project:
         return primitive
       return primitive.replace(project, 'fake-project')
-    elif isinstance(primitive, (int, long, float, types.NoneType,)):
+    elif (isinstance(primitive, (float, type(None))) or
+          isinstance(primitive, six.integer_types)):
       return primitive
     else:
       raise Exception('Unknown primitive type {}'.format(type(primitive)))
@@ -441,7 +423,7 @@ class SessionCapturer(object):
     if isinstance(records, dict):
       return {
           self._FinalizePrimitive(k):
-              self._FinalizeRecords(v) for k, v in records.iteritems()
+              self._FinalizeRecords(v) for k, v in six.iteritems(records)
       }
     elif isinstance(records, (list, tuple)):
       return [

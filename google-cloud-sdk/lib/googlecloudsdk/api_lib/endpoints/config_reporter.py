@@ -1,4 +1,5 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2017 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +15,13 @@
 
 """A module container a helper class for generating config report requests."""
 
-from apitools.base.py import encoding
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
-import services_util
+from . import services_util
+
+from apitools.base.py import encoding
 
 
 class ConfigReporterValue(object):

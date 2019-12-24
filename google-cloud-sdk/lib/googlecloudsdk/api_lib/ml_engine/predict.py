@@ -1,4 +1,5 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2016 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +14,16 @@
 # limitations under the License.
 """Utilities for dealing with ML predict API."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import json
 
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.credentials import http
+
+import six
 
 
 class InstancesEncodeError(core_exceptions.Error):
@@ -29,13 +36,14 @@ class HttpRequestFailError(core_exceptions.Error):
   pass
 
 
-def Predict(model_or_version_ref, instances):
+def Predict(model_or_version_ref, instances, signature_name=None):
   """Performs online prediction on the input data file.
 
   Args:
       model_or_version_ref: a Resource representing either a model or a version.
       instances: a list of JSON or UTF-8 encoded instances to perform
           prediction on.
+      signature_name: name of input/output signature in the TF meta graph.
 
   Returns:
       A json object that contains predictions.
@@ -47,16 +55,65 @@ def Predict(model_or_version_ref, instances):
   url = model_or_version_ref.SelfLink() + ':predict'
   # Construct the body for the predict request.
   headers = {'Content-Type': 'application/json'}
+  content = {'instances': instances}
+  if signature_name:
+    content['signature_name'] = signature_name
   try:
-    body = json.dumps({'instances': instances}, sort_keys=True)
-  except UnicodeDecodeError:
+    body = json.dumps(content, sort_keys=True)
+  except (UnicodeDecodeError, TypeError):
+    # Python 2: UnicodeDecode Error, Python 3: TypeError
     raise InstancesEncodeError('Instances cannot be JSON encoded, probably '
                                'because the input is not utf-8 encoded.')
 
   # Workaround since current gcloud sdk cannot handle the httpbody properly.
   # TODO(b/31403673): use MlV1.ProjectsService.Predict once b/31403673
   # is fixed.
-  response, response_body = http.Http().request(
+  # TODO(b/77278279): Decide whether we should always set this or not.
+  encoding = None if six.PY2 else 'utf8'
+  response, response_body = http.Http(response_encoding=encoding).request(
+      uri=url, method='POST', body=body, headers=headers)
+  if response.get('status') != '200':
+    raise HttpRequestFailError('HTTP request failed. Response: ' +
+                               response_body)
+  try:
+    return json.loads(response_body)
+  except ValueError:
+    raise HttpRequestFailError('No JSON object could be decoded from the '
+                               'HTTP response body: ' + response_body)
+
+
+def Explain(model_or_version_ref, instances):
+  """Performs online explanation on the input data file.
+
+  Args:
+      model_or_version_ref: a Resource representing either a model or a version.
+      instances: a list of JSON or UTF-8 encoded instances to perform
+          prediction on.
+
+  Returns:
+      A json object that contains explanations.
+
+  Raises:
+      HttpRequestFailError: if error happens with http request, or parsing
+          the http response.
+  """
+  url = model_or_version_ref.SelfLink() + ':explain'
+  # Construct the body for the explain request.
+  headers = {'Content-Type': 'application/json'}
+  content = {'instances': instances}
+  try:
+    body = json.dumps(content, sort_keys=True)
+  except (UnicodeDecodeError, TypeError):
+    # Python 2: UnicodeDecode Error, Python 3: TypeError
+    raise InstancesEncodeError('Instances cannot be JSON encoded, probably '
+                               'because the input is not utf-8 encoded.')
+
+  # Workaround since current gcloud sdk cannot handle the httpbody properly.
+  # TODO(b/31403673): use MlV1.ProjectsService.Predict once b/31403673
+  # is fixed.
+  # TODO(b/77278279): Decide whether we should always set this or not.
+  encoding = None if six.PY2 else 'utf8'
+  response, response_body = http.Http(response_encoding=encoding).request(
       uri=url, method='POST', body=body, headers=headers)
   if response.get('status') != '200':
     raise HttpRequestFailError('HTTP request failed. Response: ' +
