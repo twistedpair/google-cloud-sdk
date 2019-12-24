@@ -34,14 +34,17 @@ process_sdk_release()
     ## Download each
     ARTIFACT_NAME="google-cloud-sdk-$RELEASE_VERSION-linux-x86_64.tar.gz"
     echo -e "\tDownloading..."
-    gsutil -mq cp "gs://cloud-sdk-release/$ARTIFACT_NAME" .
+    GCS_ARTIFACT_PATH="gs://cloud-sdk-release/$ARTIFACT_NAME" 
+    gsutil -mq cp ${GCS_ARTIFACT_PATH} .
     
     echo -e "\tExtracting..."
     tar -xf ${ARTIFACT_NAME}
 
     ## Extract date from release notes
     # dates are also in GCS metadata, but not accurate
+    set +e
     RELEASE_DATE=`grep -Po "## $RELEASE_VERSION \(\K\d{4}.\d{1,2}.\d{1,2}(?=\))" google-cloud-sdk/RELEASE_NOTES`
+    set -e
     #grep -Po "## \d+\.\d+\.\d+(\.\d+)? \(\K\d{4}.\d{1,2}.\d{1,2}(?=\))" /opt/gcloud/google-cloud-sdk/RELEASE_NOTES
 
     if [ -z $RELEASE_DATE ]; then
@@ -49,9 +52,10 @@ process_sdk_release()
         # Fix bugs in bad releases using corrections
         # TODO use look ahead (next release) to find the correctly updated manifest. Fail on bad pass, fix on next pas.
         RELEASE_DATE_FIX=${MISSING_RELEASE_DATES_FIXES[$RELEASE_VERSION]}
-        if [ -z RELEASE_DATE_FIX ]; then
-            echo -e "\tCannot find release date for $RELEASE_VERSION"    
-            exit 1
+        if [ -z ${RELEASE_DATE_FIX} ]; then
+            echo -e "\tUsing gsutil artifact creation as publication time to fix malformed relese notes"
+            RELEASE_DATE=$(gsutil stat ${GCS_ARTIFACT_PATH} | grep -oP 'Creation time:\s+\D+\s\K(\d{2}\s[A-Za-z]{3}\s\d{4})')
+            echo -e "\tUsing fix release date ${RELEASE_DATE}"
         else
             echo -e "\tUsing missing date lookup map for correction, $RELEASE_DATE_FIX"
             RELEASE_DATE=$RELEASE_DATE_FIX
