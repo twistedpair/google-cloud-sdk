@@ -34,7 +34,7 @@ SETLOCAL EnableDelayedExpansion
 
 IF "!CLOUDSDK_PYTHON!"=="" (
   SET BUNDLED_PYTHON=!CLOUDSDK_ROOT_DIR!\platform\bundledpython\python.exe
-  IF EXIST !BUNDLED_PYTHON! (
+  IF EXIST "!BUNDLED_PYTHON!" (
     SET CLOUDSDK_PYTHON=!BUNDLED_PYTHON!
   )
 )
@@ -47,7 +47,7 @@ IF defined WHERE_FOUND (
     IF NOT ERRORLEVEL 1 (
       FOR /F "tokens=* USEBACKQ" %%F IN (`where python`) DO (
       SET PYTHON_CANDIDATE_PATH="%%F"
-        !PYTHON_CANDIDATE_PATH! -c "import sys; print(sys.version)" > tmpfile
+        "!PYTHON_CANDIDATE_PATH!" -c "import sys; print(sys.version)" > tmpfile
       set PYTHON_CANDIDATE_VERSION=
       set /p PYTHON_CANDIDATE_VERSION= < tmpfile
       del tmpfile
@@ -64,7 +64,7 @@ IF defined WHERE_FOUND (
     IF NOT ERRORLEVEL 1 (
       FOR /F "tokens=* USEBACKQ" %%F IN (`where python`) DO (
       SET PYTHON_CANDIDATE_PATH="%%F"
-        !PYTHON_CANDIDATE_PATH! -c "import sys; print(sys.version)" > tmpfile
+        "!PYTHON_CANDIDATE_PATH!" -c "import sys; print(sys.version)" > tmpfile
       set PYTHON_CANDIDATE_VERSION=
       set /p PYTHON_CANDIDATE_VERSION= < tmpfile
       del tmpfile
@@ -81,7 +81,7 @@ IF defined WHERE_FOUND (
     IF NOT ERRORLEVEL 1 (
       FOR /F "tokens=* USEBACKQ" %%F IN (`where python3`) DO (
       SET PYTHON_CANDIDATE_PATH="%%F"
-        !PYTHON_CANDIDATE_PATH! -c "import sys; print(sys.version)" > tmpfile
+        "!PYTHON_CANDIDATE_PATH!" -c "import sys; print(sys.version)" > tmpfile
       set PYTHON_CANDIDATE_VERSION=
       set /p PYTHON_CANDIDATE_VERSION= < tmpfile
       del tmpfile
@@ -101,7 +101,7 @@ IF "!CLOUDSDK_PYTHON!"=="" (
 
 SET NO_WORKING_PYTHON_FOUND="false"
 rem We run sys.version to ensure it's not the Windows Store python.exe
-!CLOUDSDK_PYTHON! -c "import sys; print(sys.version)" >nul 2>&1
+"!CLOUDSDK_PYTHON!" -c "import sys; print(sys.version)" >nul 2>&1
 IF NOT %ERRORLEVEL%==0 (
   SET NO_WORKING_PYTHON_FOUND="true"
 )
