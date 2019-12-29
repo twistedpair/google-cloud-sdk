@@ -1,17 +1,18 @@
+name: Poll for Releases
+on: [push]
+# Check hourly
+#  schedule:
+#    - cron:  '0 * * * *'
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
+
     - name: Check For Releases 
-      run: ./
-        ...
-    - name: Commit files
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git commit -m "Add changes" -a
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+      run: ./sync_gcloud_releases.sh
+
+    - name: Push Releases 
+      run: ./push_results_github.sh
+      env:
+        GITHUB_PUSH_TOKEN: ${{ secrets.GITHUB_PUSH_TOKEN }}
