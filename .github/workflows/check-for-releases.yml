@@ -1,0 +1,18 @@
+name: Poll for Releases
+# Check hourly
+on:
+  schedule:
+    - cron:  '0 * * * *'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Check For Releases 
+      run: ./.github/workflows/sync_gcloud_releases.sh
+
+    - name: Push Releases 
+      run: ./.github/workflows/push_results_github.sh
+      env:
+        GITHUB_PUSH_TOKEN: ${{ secrets.GITHUB_PUSH_TOKEN }}
