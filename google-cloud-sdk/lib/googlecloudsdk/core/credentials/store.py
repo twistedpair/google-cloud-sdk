@@ -166,11 +166,6 @@ class AccountImpersonationError(Error):
   pass
 
 
-class CredentialFileSaveError(Error):
-  """An error for when we fail to save a credential file."""
-  pass
-
-
 class FlowError(Error):
   """Exception for when something goes wrong with a web flow."""
 
@@ -788,46 +783,6 @@ def AcquireFromGCE(account=None):
   return credentials
 
 
-def SaveCredentialsAsADC(credentials, file_path):
-  """Saves the credentials to the given file.
-
-  This file can be read back via
-    cred = client.GoogleCredentials.from_stream(file_path)
-
-  Args:
-    credentials: client.OAuth2Credentials, obtained from a web flow
-        or service account.
-    file_path: str, file path to store credentials to. The file will be created.
-
-  Raises:
-    CredentialFileSaveError: on file io errors.
-  """
-  creds_type = creds.CredentialType.FromCredentials(credentials)
-  if creds_type == creds.CredentialType.P12_SERVICE_ACCOUNT:
-    raise CredentialFileSaveError(
-        'Error saving Application Default Credentials: p12 keys are not'
-        'supported in this format')
-
-  if creds_type == creds.CredentialType.USER_ACCOUNT:
-    credentials = client.GoogleCredentials(
-        credentials.access_token,
-        credentials.client_id,
-        credentials.client_secret,
-        credentials.refresh_token,
-        credentials.token_expiry,
-        credentials.token_uri,
-        credentials.user_agent,
-        credentials.revoke_uri)
-  try:
-    contents = json.dumps(credentials.serialization_data, sort_keys=True,
-                          indent=2, separators=(',', ': '))
-    files.WriteFileContents(file_path, contents, private=True)
-  except files.Error as e:
-    log.debug(e, exc_info=True)
-    raise CredentialFileSaveError(
-        'Error saving Application Default Credentials: ' + six.text_type(e))
-
-
 class _LegacyGenerator(object):
   """A class to generate the credential file for legacy tools."""
 
@@ -870,7 +825,7 @@ class _LegacyGenerator(object):
 
     # General credentials used by bq and gsutil.
     if self.credentials_type != creds.CredentialType.P12_SERVICE_ACCOUNT:
-      SaveCredentialsAsADC(self.credentials, self._adc_path)
+      creds.ADC(self.credentials).DumpADCToFile(file_path=self._adc_path)
 
       if self.credentials_type == creds.CredentialType.USER_ACCOUNT:
         # We create a small .boto file for gsutil, to be put in BOTO_PATH.
@@ -896,7 +851,7 @@ class _LegacyGenerator(object):
                 'gs_service_key_file = {key_file}',
             ]).format(key_file=self._adc_path))
       else:
-        raise CredentialFileSaveError(
+        raise creds.CredentialFileSaveError(
             'Unsupported credentials type {0}'.format(type(self.credentials)))
     else:  # P12 service account
       cred = self.credentials

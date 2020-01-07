@@ -3,6 +3,7 @@
   "discoveryVersion": "v1",
   "id": "gameservices:v1alpha",
   "name": "gameservices",
+  "canonicalName": "Game Services",
   "version": "v1alpha",
   "revision": "0",
   "title": "Cloud Game Services API",
@@ -233,7 +234,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the allocation policy, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/allocationPolicies\/{allocation_policy_id}`.\nFor example,\n`projects\/my-project\/locations\/{location}\/allocationPolicies\/my-policy`.",
+          "description": "The resource name of the allocation policy, using the form:\n\n`projects\/{project}\/locations\/{location}\/allocationPolicies\/{allocation_policy_id}`.\nFor example,\n`projects\/my-project\/locations\/{location}\/allocationPolicies\/my-policy`.",
           "type": "string"
         },
         "createTime": {
@@ -285,6 +286,7 @@
       "type": "object",
       "properties": {
         "labels": {
+          "description": "Resource labels for this selector.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -340,6 +342,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "unreachable": {
+          "description": "List of locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -349,7 +358,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The resource name of the game server cluster, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm_id}\/gameServerClusters\/{cluster_id}`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/realms\/zanzibar\/gameServerClusters\/my-onprem-cluster`.",
+          "description": "Required. The resource name of the game server cluster, using the form:\n\n`projects\/{project}\/locations\/{location}\/realms\/{realm}\/gameServerClusters\/{cluster}`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/realms\/zanzibar\/gameServerClusters\/my-onprem-cluster`.",
           "type": "string"
         },
         "createTime": {
@@ -385,12 +394,16 @@
     },
     "GameServerClusterConnectionInfo": {
       "id": "GameServerClusterConnectionInfo",
-      "description": "Game server cluster connection information.",
+      "description": "The game server cluster connection information.",
       "type": "object",
       "properties": {
         "gkeClusterReference": {
-          "description": "Reference of the GKE cluster where the game servers are installed.",
+          "description": "Reference to the GKE cluster where the game servers are installed.",
           "$ref": "GkeClusterReference"
+        },
+        "gkeHubClusterReference": {
+          "description": "Reference to an external (non-GKE) cluster registered with GKE Hub using\nthe GKE connect agent. See\nhttps:\/\/cloud.google.com\/anthos\/multicluster-management\/\nfor more information about registering non-GKE clusters.",
+          "$ref": "GkeHubClusterReference"
         },
         "namespace": {
           "description": "Namespace designated on the game server cluster where the game server\ninstances will be created. The namespace existence will be validated\nduring creation.",
@@ -400,11 +413,22 @@
     },
     "GkeClusterReference": {
       "id": "GkeClusterReference",
-      "description": "GkeClusterReference represents a reference of a GKE cluster.",
+      "description": "GkeClusterReference represents a reference to a GKE cluster.",
       "type": "object",
       "properties": {
         "cluster": {
-          "description": "The full or partial name of a GKE cluster, using one of the following\nforms:\n<ul>\n   <li>`projects\/{project_id}\/locations\/{location}\/clusters\/{cluster_id}`\n   <\/li>\n   <li>`locations\/{location}\/clusters\/{cluster_id}`<\/li>\n   <li>`{cluster_id}`<\/li>\n<\/ul>\nIf project and location are not specified, the project and location of the\nGameServerCluster resource are used to generate the full name of the\nGKE cluster.",
+          "description": "The full or partial name of a GKE cluster, using one of the following\nforms:\n * `projects\/{project}\/locations\/{location}\/clusters\/{cluster}`\n * `locations\/{location}\/clusters\/{cluster}`\n * `{cluster}`\nIf project and location are not specified, the project and location of the\nGameServerCluster resource are used to generate the full name of the\nGKE cluster.",
+          "type": "string"
+        }
+      }
+    },
+    "GkeHubClusterReference": {
+      "id": "GkeHubClusterReference",
+      "description": "GkeHubClusterReference represents a reference to a Kubernetes cluster\nregistered through GKE Hub.",
+      "type": "object",
+      "properties": {
+        "membership": {
+          "description": "The full or partial name of a GKE Hub membership, using one of the\nfollowing forms:\n *\n`https:\n\/\/gkehub.googleapis.com\/v1beta1\/projects\n\/\/ \/{project_id}\/locations\/global\/memberships\/{membership_id}`\n * `projects\/{project_id}\/locations\/global\/memberships\/{membership_id}`\n * `{membership_id}`\nIf project is not specified, the project of the GameServerCluster resource\nis used to generate the full name of the GKE Hub membership.",
           "type": "string"
         }
       }
@@ -467,6 +491,7 @@
     },
     "AutoscalerDetails": {
       "id": "AutoscalerDetails",
+      "description": "Details about the Agones autoscaler.\nThe autoscaler details.",
       "type": "object",
       "properties": {
         "autoscalerName": {
@@ -499,14 +524,15 @@
       "type": "object",
       "properties": {
         "gameServerClusterName": {
-          "description": "The game server cluster name. It is of the form\n\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm-id}\/gameServerClusters\/{cluster_id}`",
+          "description": "The game server cluster name. It is of the form\n\n`projects\/{project}\/locations\/{location}\/realms\/{realm-id}\/gameServerClusters\/{cluster_id}`",
           "type": "string"
         },
         "gameServerDeploymentName": {
-          "description": "The game server deployment name. It is of the form\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`",
+          "description": "The game server deployment name. It is of the form\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`",
           "type": "string"
         },
         "fleetDetails": {
+          "description": "Agones fleet details for game server clusters and deployments.",
           "type": "array",
           "items": {
             "$ref": "TargetFleetDetails"
@@ -516,18 +542,22 @@
     },
     "TargetFleetDetails": {
       "id": "TargetFleetDetails",
+      "description": "Details of the target fleet.",
       "type": "object",
       "properties": {
         "fleet": {
+          "description": "Reference to target fleet.",
           "$ref": "TargetFleet"
         },
         "autoscaler": {
+          "description": "Reference to target fleet autoscaling policy.",
           "$ref": "TargetFleetAutoscaler"
         }
       }
     },
     "TargetFleet": {
       "id": "TargetFleet",
+      "description": "Target fleet specification.",
       "type": "object",
       "properties": {
         "name": {
@@ -546,7 +576,7 @@
       "type": "object",
       "properties": {
         "gameServerConfigName": {
-          "description": "The game server config resource. It is of the form\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/configs\/{config_id}`",
+          "description": "The game server config resource. It is of the form\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/configs\/{config_id}`",
           "type": "string"
         },
         "name": {
@@ -557,6 +587,7 @@
     },
     "TargetFleetAutoscaler": {
       "id": "TargetFleetAutoscaler",
+      "description": "Target autoscaler policy reference.",
       "type": "object",
       "properties": {
         "name": {
@@ -624,6 +655,13 @@
           "type": "string"
         },
         "unreachableLocations": {
+          "description": "List of locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unreachable": {
           "description": "List of locations that were not reachable.",
           "type": "array",
           "items": {
@@ -638,7 +676,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the game server config, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/configs\/{config_id}`.\nFor example,\n\n`projects\/my-project\/locations\/global\/gameServerDeployments\/my-game\/configs\/my-config`.",
+          "description": "The resource name of the game server config, using the form:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}\/configs\/{config}`.\nFor example,\n\n`projects\/my-project\/locations\/global\/gameServerDeployments\/my-game\/configs\/my-config`.",
           "type": "string"
         },
         "createTime": {
@@ -659,14 +697,14 @@
           }
         },
         "fleetConfigs": {
-          "description": "The fleet specs contains list of fleet specs. In the Single Cloud, there\nwill be only one.",
+          "description": "The fleet specs contains a list of fleet specs. For Single Cloud, only\none fleet config is allowed.",
           "type": "array",
           "items": {
             "$ref": "FleetConfig"
           }
         },
         "scalingConfigs": {
-          "description": "Optional. This contains the autoscaling settings.",
+          "description": "The autoscaling settings for Agones fleet.",
           "type": "array",
           "items": {
             "$ref": "ScalingConfig"
@@ -680,7 +718,7 @@
     },
     "FleetConfig": {
       "id": "FleetConfig",
-      "description": "A fleet config resource.",
+      "description": "Fleet configs for Agones.",
       "type": "object",
       "properties": {
         "fleetSpec": {
@@ -695,7 +733,7 @@
     },
     "ScalingConfig": {
       "id": "ScalingConfig",
-      "description": "A scaling config resource.",
+      "description": "Autoscaling configs for Agones fleet.",
       "type": "object",
       "properties": {
         "name": {
@@ -705,11 +743,6 @@
         "fleetAutoscalerSpec": {
           "description": "Required. Fleet autoscaler spec, which is sent to Agones.\nExample spec can be found :\nhttps:\/\/agones.dev\/site\/docs\/reference\/fleetautoscaler\/",
           "type": "string"
-        },
-        "priority": {
-          "description": "Required. The priority of the scaling config. A smaller value indicates a higher\npriority.",
-          "type": "integer",
-          "format": "int32"
         },
         "selectors": {
           "description": "Labels used to identify the clusters to which this scaling config\napplies. A cluster is subject to this scaling config if its labels match\nany of the selector entries.",
@@ -744,6 +777,13 @@
           "type": "string"
         },
         "unreachableLocations": {
+          "description": "List of locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unreachable": {
           "description": "List of locations that were not reachable.",
           "type": "array",
           "items": {
@@ -758,7 +798,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the game server deployment, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/gameServerDeployments\/my-deployment`.",
+          "description": "The resource name of the game server deployment, using the form:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/gameServerDeployments\/my-deployment`.",
           "type": "string"
         },
         "createTime": {
@@ -840,11 +880,11 @@
     },
     "GameServerDeploymentRollout": {
       "id": "GameServerDeploymentRollout",
-      "description": "This represents the rollout state. This is part of the  game server\ndeployment.",
+      "description": "The game server deployment rollout which represents the rollout state.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the game server deployment rollout, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/rollout`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/gameServerDeployments\/my-deployment\/rollout`.",
+          "description": "The resource name of the game server deployment rollout, using the form:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}\/rollout`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/gameServerDeployments\/my-deployment\/rollout`.",
           "type": "string"
         },
         "createTime": {
@@ -858,11 +898,11 @@
           "format": "google-datetime"
         },
         "defaultGameServerConfig": {
-          "description": "The default game server config points to the game server config  that is\napplied everywhere realm\/cluster. For example,\n\n`projects\/my-project\/locations\/global\/gameServerDeployments\/my-game\/configs\/my-config`.",
+          "description": "The default game server config points to the game server config  that is\napplied in all realms\/clustesr. For example,\n\n`projects\/my-project\/locations\/global\/gameServerDeployments\/my-game\/configs\/my-config`.",
           "type": "string"
         },
         "gameServerConfigOverrides": {
-          "description": "The game_server_config_overrides contains the per game server config\noverrides. The overrides are processed in the order they are listed. As\nsoon as a match is found for cluster, the rest of the list is not\nprocessed.",
+          "description": "Contains the per game server config overrides. The overrides are processed\nin the order they are listed. As soon as a match is found for cluster,\nthe rest of the list is not processed.",
           "type": "array",
           "items": {
             "$ref": "GameServerConfigOverride"
@@ -876,13 +916,15 @@
     },
     "GameServerConfigOverride": {
       "id": "GameServerConfigOverride",
-      "description": "A game server config override resource. This contains selector which cluster\nit is applied and the setting which specifies the version.",
+      "description": "A game server config override.",
       "type": "object",
       "properties": {
         "realmsSelector": {
+          "description": "Selector for choosing applicable realms.",
           "$ref": "RealmSelector"
         },
         "configVersion": {
+          "description": "The game server config for this override.",
           "type": "string"
         }
       }
@@ -893,6 +935,7 @@
       "type": "object",
       "properties": {
         "realms": {
+          "description": "List of realms to match against.",
           "type": "array",
           "items": {
             "type": "string"
@@ -956,6 +999,7 @@
     },
     "DeployedFleetDetails": {
       "id": "DeployedFleetDetails",
+      "description": "Details of the deployed fleet.",
       "type": "object",
       "properties": {
         "fleet": {
@@ -970,6 +1014,7 @@
     },
     "Fleet": {
       "id": "Fleet",
+      "description": "Fleet specification and details.",
       "type": "object",
       "properties": {
         "name": {
@@ -1094,6 +1139,13 @@
         "nextPageToken": {
           "description": "Token to retrieve the next page of results, or empty if there are no more\nresults in the list.",
           "type": "string"
+        },
+        "unreachable": {
+          "description": "List of locations that were not reachable.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1103,7 +1155,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the realm, using the form:\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm_id}`. For\nexample, `projects\/my-project\/locations\/{location}\/realms\/my-realm`.",
+          "description": "The resource name of the realm, using the form:\n`projects\/{project}\/locations\/{location}\/realms\/{realm}`. For\nexample, `projects\/my-project\/locations\/{location}\/realms\/my-realm`.",
           "type": "string"
         },
         "createTime": {
@@ -1187,7 +1239,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the scaling policy, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/scalingPolicies\/{scaling_policy_id}`.\nFor example,\n`projects\/my-project\/locations\/{location}\/scalingPolicies\/my-policy`.",
+          "description": "The resource name of the scaling policy, using the form:\n\n`projects\/{project}\/locations\/{location}\/scalingPolicies\/{scaling_policy_id}`.\nFor example,\n`projects\/my-project\/locations\/{location}\/scalingPolicies\/my-policy`.",
           "type": "string"
         },
         "createTime": {
@@ -2020,7 +2072,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, using the form:\n`projects\/{project_id}\/locations\/{location}`.",
+                      "description": "Required. The parent resource name, using the form:\n`projects\/{project}\/locations\/{location}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -2066,7 +2118,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the allocation policy to retrieve, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/allocationPolicies\/{allocation_policy_id}`",
+                      "description": "Required. The name of the allocation policy to retrieve, using the form:\n\n`projects\/{project}\/locations\/{location}\/allocationPolicies\/{allocation_policy_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/allocationPolicies\/[^\/]+$",
@@ -2091,7 +2143,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, using the form:\n`projects\/{project_id}\/locations\/{location}`.",
+                      "description": "Required. The parent resource name, using the form:\n`projects\/{project}\/locations\/{location}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -2124,7 +2176,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the allocation policy to delete, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/allocationPolicies\/{allocation_policy_id}`",
+                      "description": "Required. The name of the allocation policy to delete, using the form:\n\n`projects\/{project}\/locations\/{location}\/allocationPolicies\/{allocation_policy_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/allocationPolicies\/[^\/]+$",
@@ -2149,7 +2201,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the allocation policy, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/allocationPolicies\/{allocation_policy_id}`.\nFor example,\n`projects\/my-project\/locations\/{location}\/allocationPolicies\/my-policy`.",
+                      "description": "The resource name of the allocation policy, using the form:\n\n`projects\/{project}\/locations\/{location}\/allocationPolicies\/{allocation_policy_id}`.\nFor example,\n`projects\/my-project\/locations\/{location}\/allocationPolicies\/my-policy`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/allocationPolicies\/[^\/]+$",
@@ -2187,7 +2239,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, using the form:\n`projects\/{project_id}\/locations\/{location}`.",
+                      "description": "Required. The parent resource name, using the form:\n`projects\/{project}\/locations\/{location}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -2233,7 +2285,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the game server deployment to retrieve, using the\nform:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`",
+                      "description": "Required. The name of the game server deployment to retrieve, using the\nform:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -2258,7 +2310,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, using the form:\n`projects\/{project_id}\/locations\/{location}`.",
+                      "description": "Required. The parent resource name, using the form:\n`projects\/{project}\/locations\/{location}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -2291,7 +2343,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the game server deployment to delete, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`",
+                      "description": "Required. The name of the game server deployment to delete, using the form:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -2316,7 +2368,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the game server deployment, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/gameServerDeployments\/my-deployment`.",
+                      "description": "The resource name of the game server deployment, using the form:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/gameServerDeployments\/my-deployment`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -2350,7 +2402,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the game server deployment to retrieve, using the\nform:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/rollout`",
+                      "description": "Required. The name of the game server deployment to retrieve, using the\nform:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}\/rollout`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -2366,7 +2418,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a rollout of a single game server deployment."
+                  "description": "Gets details a single game server deployment rollout."
                 },
                 "updateRollout": {
                   "id": "gameservices.projects.locations.gameServerDeployments.updateRollout",
@@ -2375,7 +2427,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the game server deployment rollout, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/rollout`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/gameServerDeployments\/my-deployment\/rollout`.",
+                      "description": "The resource name of the game server deployment rollout, using the form:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}\/rollout`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/gameServerDeployments\/my-deployment\/rollout`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -2400,7 +2452,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Patches the rollout of game server deployment."
+                  "description": "Patches a single game server deployment rollout."
                 },
                 "previewRollout": {
                   "id": "gameservices.projects.locations.gameServerDeployments.previewRollout",
@@ -2409,7 +2461,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the game server deployment rollout, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/rollout`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/gameServerDeployments\/my-deployment\/rollout`.",
+                      "description": "The resource name of the game server deployment rollout, using the form:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}\/rollout`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/gameServerDeployments\/my-deployment\/rollout`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -2440,7 +2492,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Previews the rollout of game server deployment. This API does not\nmutate the rollout resource."
+                  "description": "Previews the game server deployment rollout. This API does not mutate the\nrollout resource."
                 },
                 "fetchDeploymentState": {
                   "id": "gameservices.projects.locations.gameServerDeployments.fetchDeploymentState",
@@ -2449,7 +2501,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the game server deployment, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`",
+                      "description": "Required. The name of the game server deployment, using the form:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -2477,7 +2529,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the game server deployment, using the\nform:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`",
+                      "description": "Required. The name of the game server deployment, using the\nform:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -2505,7 +2557,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the game server deployment, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`",
+                      "description": "Required. The name of the game server deployment, using the form:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -2533,7 +2585,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the game server deployment, using the\nform:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`",
+                      "description": "Required. The name of the game server deployment, using the\nform:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -2561,7 +2613,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the game server deployment to deploy, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}`",
+                      "description": "Required. The name of the game server deployment to deploy, using the form:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -2681,7 +2733,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent resource name, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/configs\/*`.",
+                          "description": "Required. The parent resource name, using the form:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}\/configs\/*`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -2727,7 +2779,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the game server config to retrieve, using the\nform:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/configs\/{config_id}`",
+                          "description": "Required. The name of the game server config to retrieve, using the\nform:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}\/configs\/{config}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+\/configs\/[^\/]+$",
@@ -2752,7 +2804,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent resource name, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/`.",
+                          "description": "Required. The parent resource name, using the form:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}\/`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+$",
@@ -2776,7 +2828,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new game server config in a given project, location, and game\nserver deployment. Game server configs are immutable. A game server config,\nis not applied until it is rolled out. The rollout is managed\nby updating the game server rollout resource."
+                      "description": "Creates a new game server config in a given project, location, and game\nserver deployment. Game server configs are immutable. A game server config\nis not applied until it is rolled out which is managed\nby updating the game server rollout resource."
                     },
                     "delete": {
                       "id": "gameservices.projects.locations.gameServerDeployments.configs.delete",
@@ -2785,7 +2837,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the game server config to delete, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerDeployments\/{deployment_id}\/configs\/{config_id}`",
+                          "description": "Required. The name of the game server config to delete, using the form:\n\n`projects\/{project}\/locations\/{location}\/gameServerDeployments\/{deployment}\/configs\/{config}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/gameServerDeployments\/[^\/]+\/configs\/[^\/]+$",
@@ -2801,7 +2853,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a single game server config. If a game server config referenced in\ngame server rollout, the deletion will fail since it will be in use."
+                      "description": "Deletes a single game server config. The deletion will fail if the game\nserver config is referenced in a game server rollout."
                     }
                   }
                 }
@@ -2816,7 +2868,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, using the form:\n`projects\/{project_id}\/locations\/{location}`.",
+                      "description": "Required. The parent resource name, using the form:\n`projects\/{project}\/locations\/{location}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -2862,7 +2914,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the realm to retrieve, using the form:\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm_id}`",
+                      "description": "Required. The name of the realm to retrieve, using the form:\n`projects\/{project}\/locations\/{location}\/realms\/{realm}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+$",
@@ -2887,7 +2939,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, using the form:\n`projects\/{project_id}\/locations\/{location}`.",
+                      "description": "Required. The parent resource name, using the form:\n`projects\/{project}\/locations\/{location}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -2920,7 +2972,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the realm to delete, using the form:\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm_id}`",
+                      "description": "Required. The name of the realm to delete, using the form:\n`projects\/{project}\/locations\/{location}\/realms\/{realm}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+$",
@@ -2945,7 +2997,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the realm, using the form:\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm_id}`. For\nexample, `projects\/my-project\/locations\/{location}\/realms\/my-realm`.",
+                      "description": "The resource name of the realm, using the form:\n`projects\/{project}\/locations\/{location}\/realms\/{realm}`. For\nexample, `projects\/my-project\/locations\/{location}\/realms\/my-realm`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+$",
@@ -2979,7 +3031,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the realm, using the form:\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm_id}`. For\nexample, `projects\/my-project\/locations\/{location}\/realms\/my-realm`.",
+                      "description": "The resource name of the realm, using the form:\n`projects\/{project}\/locations\/{location}\/realms\/{realm}`. For\nexample, `projects\/my-project\/locations\/{location}\/realms\/my-realm`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+$",
@@ -3024,7 +3076,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent resource name, using the form:\n\"projects\/{project_id}\/locations\/{location}\/realms\/{realm-id}\".",
+                          "description": "Required. The parent resource name, using the form:\n\"projects\/{project}\/locations\/{location}\/realms\/{realm-id}\".",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+$",
@@ -3070,7 +3122,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the game server cluster to retrieve, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm-id}\/gameServerClusters\/{cluster_id}`",
+                          "description": "Required. The name of the game server cluster to retrieve, using the form:\n\n`projects\/{project}\/locations\/{location}\/realms\/{realm-id}\/gameServerClusters\/{cluster}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+\/gameServerClusters\/[^\/]+$",
@@ -3095,7 +3147,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent resource name, using the form:\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm-id}`.",
+                          "description": "Required. The parent resource name, using the form:\n`projects\/{project}\/locations\/{location}\/realms\/{realm-id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+$",
@@ -3128,7 +3180,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent resource name, using the form:\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm-id}`.",
+                          "description": "Required. The parent resource name, using the form:\n`projects\/{project}\/locations\/{location}\/realms\/{realm-id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+$",
@@ -3167,7 +3219,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the game server cluster to delete, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerClusters\/{cluster_id}`",
+                          "description": "Required. The name of the game server cluster to delete, using the form:\n`projects\/{project}\/locations\/{location}\/gameServerClusters\/{cluster}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+\/gameServerClusters\/[^\/]+$",
@@ -3192,7 +3244,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the game server cluster to delete, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/gameServerClusters\/{cluster_id}`",
+                          "description": "Required. The name of the game server cluster to delete, using the form:\n`projects\/{project}\/locations\/{location}\/gameServerClusters\/{cluster}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+\/gameServerClusters\/[^\/]+$",
@@ -3223,7 +3275,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the game server cluster, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm_id}\/gameServerClusters\/{cluster_id}`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/realms\/zanzibar\/gameServerClusters\/my-onprem-cluster`.",
+                          "description": "Required. The resource name of the game server cluster, using the form:\n\n`projects\/{project}\/locations\/{location}\/realms\/{realm}\/gameServerClusters\/{cluster}`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/realms\/zanzibar\/gameServerClusters\/my-onprem-cluster`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+\/gameServerClusters\/[^\/]+$",
@@ -3257,7 +3309,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the game server cluster, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/realms\/{realm_id}\/gameServerClusters\/{cluster_id}`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/realms\/zanzibar\/gameServerClusters\/my-onprem-cluster`.",
+                          "description": "Required. The resource name of the game server cluster, using the form:\n\n`projects\/{project}\/locations\/{location}\/realms\/{realm}\/gameServerClusters\/{cluster}`.\nFor example,\n\n`projects\/my-project\/locations\/{location}\/realms\/zanzibar\/gameServerClusters\/my-onprem-cluster`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/realms\/[^\/]+\/gameServerClusters\/[^\/]+$",
@@ -3303,7 +3355,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, using the form:\n`projects\/{project_id}\/locations\/{location}`.",
+                      "description": "Required. The parent resource name, using the form:\n`projects\/{project}\/locations\/{location}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -3349,7 +3401,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the scaling policy to retrieve, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/scalingPolicies\/{scaling_policy_id}`",
+                      "description": "Required. The name of the scaling policy to retrieve, using the form:\n\n`projects\/{project}\/locations\/{location}\/scalingPolicies\/{scaling_policy_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/scalingPolicies\/[^\/]+$",
@@ -3374,7 +3426,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name, using the form:\n`projects\/{project_id}\/locations\/{location}`.",
+                      "description": "Required. The parent resource name, using the form:\n`projects\/{project}\/locations\/{location}`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -3407,7 +3459,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the scaling policy to delete, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/scalingPolicies\/{scaling_policy_id}`",
+                      "description": "Required. The name of the scaling policy to delete, using the form:\n\n`projects\/{project}\/locations\/{location}\/scalingPolicies\/{scaling_policy_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/scalingPolicies\/[^\/]+$",
@@ -3432,7 +3484,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the scaling policy, using the form:\n\n`projects\/{project_id}\/locations\/{location}\/scalingPolicies\/{scaling_policy_id}`.\nFor example,\n`projects\/my-project\/locations\/{location}\/scalingPolicies\/my-policy`.",
+                      "description": "The resource name of the scaling policy, using the form:\n\n`projects\/{project}\/locations\/{location}\/scalingPolicies\/{scaling_policy_id}`.\nFor example,\n`projects\/my-project\/locations\/{location}\/scalingPolicies\/my-policy`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/scalingPolicies\/[^\/]+$",

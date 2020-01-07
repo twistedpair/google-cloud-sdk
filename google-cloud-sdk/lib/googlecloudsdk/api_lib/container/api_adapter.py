@@ -183,10 +183,6 @@ ENABLE_PRIVATE_NODES_WITH_PRIVATE_CLUSTER_ERROR_MSG = """\
 Cannot specify both --[no-]enable-private-nodes and --[no-]private-cluster at the same time.
 """
 
-ENABLE_MPI_EMPTY_ERROR_MSG = """\
-Cannot use --federating-service-account without --enable-managed-pod-identity
-"""
-
 ENABLE_NETWORK_EGRESS_METERING_ERROR_MSG = """\
 Cannot use --[no-]enable-network-egress-metering without --resource-usage-bigquery-dataset.
 """
@@ -430,8 +426,6 @@ class CreateClusterOptions(object):
       enable_tpu_service_networking=None,
       default_max_pods_per_node=None,
       max_pods_per_node=None,
-      enable_managed_pod_identity=None,
-      federating_service_account=None,
       resource_usage_bigquery_dataset=None,
       security_group=None,
       enable_private_ipv6_access=None,
@@ -543,8 +537,6 @@ class CreateClusterOptions(object):
     self.issue_client_certificate = issue_client_certificate
     self.default_max_pods_per_node = default_max_pods_per_node
     self.max_pods_per_node = max_pods_per_node
-    self.enable_managed_pod_identity = enable_managed_pod_identity
-    self.federating_service_account = federating_service_account
     self.resource_usage_bigquery_dataset = resource_usage_bigquery_dataset
     self.security_group = security_group
     self.enable_private_ipv6_access = enable_private_ipv6_access
@@ -2938,12 +2930,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
               istio_auth = mtls
         cluster.addonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=False, auth=istio_auth)
-    if options.enable_managed_pod_identity:
-      cluster.managedPodIdentityConfig = self.messages.ManagedPodIdentityConfig(
-          enabled=options.enable_managed_pod_identity,
-          federatingServiceAccount=options.federating_service_account)
-    elif options.federating_service_account is not None:
-      raise util.Error(ENABLE_MPI_EMPTY_ERROR_MSG)
     if options.identity_namespace is not None:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
           identityNamespace=options.identity_namespace)

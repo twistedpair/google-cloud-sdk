@@ -519,6 +519,10 @@
         "type": {
           "description": "Required. The type of value this tag field can contain.",
           "$ref": "GoogleCloudDatacatalogV1beta1FieldType"
+        },
+        "isRequired": {
+          "description": "Whether this is a required field. Defaults to false.",
+          "type": "boolean"
         }
       }
     },
@@ -1809,7 +1813,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "The field mask specifies the parts of the template to be updated.\nAllowed fields:\n\n  * `display_name`\n  * `type.enum_type`\n\nIf `update_mask` is not set or empty, all of the allowed fields above will\nbe updated.\n\nWhen updating an enum type, the provided values will be merged with the\nexisting values. Therefore, enum values can only be added, existing enum\nvalues cannot be deleted nor renamed.",
+                          "description": "Optional. The field mask specifies the parts of the template to be updated.\nAllowed fields:\n\n  * `display_name`\n  * `type.enum_type`\n  * `is_required`\n\nIf `update_mask` is not set or empty, all of the allowed fields above will\nbe updated.\n\nWhen updating an enum type, the provided values will be merged with the\nexisting values. Therefore, enum values can only be added, existing enum\nvalues cannot be deleted nor renamed. Updating a template field from\noptional to required is NOT allowed.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"

@@ -512,8 +512,12 @@ def _GetListCommandFrontendPrototype(args, message=None):
   """
   filter_expr = flags.RewriteFilter(args, message=message)
   max_results = int(args.page_size) if args.page_size else None
+  local_filter, _ = filter_expr
   if args.limit and (max_results is None or max_results > args.limit):
     max_results = args.limit
+  if not local_filter:
+    # If we are not applying a client-side filter, don't limit batch size.
+    max_results = None
   return _Frontend(filter_expr=filter_expr, maxResults=max_results)
 
 

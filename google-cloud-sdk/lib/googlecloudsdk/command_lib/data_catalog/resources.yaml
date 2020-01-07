@@ -24,6 +24,7 @@ entry_group:
   name: entry group
   collection: datacatalog.projects.locations.entryGroups
   request_id_field: entryGroupId
+  disable_auto_completers: true
   attributes:
   - *project
   - *location
@@ -38,6 +39,7 @@ positional_entry_group:
   name: entry group
   collection: datacatalog.projects.locations.entryGroups
   request_id_field: entryGroupId
+  disable_auto_completers: true
   attributes:
   - *project
   - *location

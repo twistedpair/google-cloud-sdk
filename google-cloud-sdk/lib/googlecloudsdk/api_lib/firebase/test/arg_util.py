@@ -458,19 +458,17 @@ def AddAndroidBetaArgs(parser):
   parser.add_argument(
       '--other-files',
       type=arg_parsers.ArgDict(min_length=1),
-      action='append',
-      metavar='FILE=DEVICE_DIR',
+      metavar='DEVICE_PATH=FILE_PATH',
       help="""\
-      A list of file=device-directory pairs that indicate paths of files to push
-      to the device before starting tests, and the device directory to push them
-      to.\n
-      Source file paths may be in the local filesystem or in Google Cloud
-      Storage (gs://...). Device directories must be absolute, whitelisted paths
-      (${EXTERNAL_STORAGE}, or ${ANDROID_DATA}/local/tmp).\n
+      A list of device-path=file-path pairs that indicate the device paths to
+      push files to the device before starting tests, and the paths of files to
+      push.\n
+      Device paths must be under absolute, whitelisted paths
+      (${EXTERNAL_STORAGE}, or ${ANDROID_DATA}/local/tmp). Source file paths may
+      be in the local filesystem or in Google Cloud Storage (gs://...).\n
       Examples:\n
       ```
-      --other-files local/file1=/sdcard/dir1/
-      --other-files gs://bucket/file2=/sdcard/dir2
+      --other-files /sdcard/dir1/file1.txt=local/file.txt,/sdcard/dir2/file2.jpg=gs://bucket/file.jpg
       ```\n
       This flag only copies files to the device. To install files, like OBB or
       APK files, see --obb-files and --additional-apks.
@@ -496,7 +494,7 @@ def AddAndroidBetaArgs(parser):
       action='append',
       help="""\
       Specifies a group of packages, classes, and/or test cases to run in
-      each shard (a group of test cases). Shards are run in parallel on
+      each shard (a group of test cases). The shards are run in parallel on
       separate devices. You can repeat this flag up to 50 times to specify
       multiple shards.
 
@@ -509,7 +507,6 @@ def AddAndroidBetaArgs(parser):
       You can also specify multiple packages, classes, or test cases in the
       same shard by separating each item with a comma. For example:
 
-
       ```
       --test-targets-for-shard
       "package com.package1.for.shard1,com.package2.for.shard1"
@@ -520,8 +517,8 @@ def AddAndroidBetaArgs(parser):
       "class com.foo.ClassForShard2#testMethod1,com.foo.ClassForShard2#testMethod2"
       ```
 
-      To specify both package and class in the same shard, separate package
-      and class with semi-colons:
+      To specify both package and class in the same shard, separate
+      package and class with semi-colons:
 
       ```
       --test-targets-for-shard

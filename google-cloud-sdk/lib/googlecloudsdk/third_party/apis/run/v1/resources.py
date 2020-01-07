@@ -31,17 +31,6 @@ class Collections(enum.Enum):
       [u'namespacesId'],
       True
   )
-  NAMESPACES_AUTODOMAINMAPPINGS = (
-      'namespaces.autodomainmappings',
-      '{+name}',
-      {
-          '':
-              'namespaces/{namespacesId}/autodomainmappings/'
-              '{autodomainmappingsId}',
-      },
-      [u'name'],
-      True
-  )
   NAMESPACES_CONFIGURATIONS = (
       'namespaces.configurations',
       '{+name}',
@@ -105,17 +94,6 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/locations/{locationsId}',
-      },
-      [u'name'],
-      True
-  )
-  PROJECTS_LOCATIONS_AUTODOMAINMAPPINGS = (
-      'projects.locations.autodomainmappings',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'autodomainmappings/{autodomainmappingsId}',
       },
       [u'name'],
       True

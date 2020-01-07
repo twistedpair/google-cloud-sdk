@@ -30,7 +30,7 @@ from googlecloudsdk.core import resources
 CONTAINER_API_VERSION = 'v1beta1'
 
 SERVERLESS_API_NAME = 'run'
-SERVERLESS_API_VERSION = 'v1alpha1'
+SERVERLESS_API_VERSION = 'v1'
 
 _ALL_REGIONS = '-'
 

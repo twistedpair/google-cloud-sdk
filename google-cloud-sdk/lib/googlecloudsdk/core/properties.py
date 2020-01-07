@@ -880,12 +880,29 @@ class _SectionGameServices(_Section):
 
   def __init__(self):
     super(_SectionGameServices, self).__init__('game_services')
+    self.deployment = self._Add(
+        'default_deployment',
+        default='-',
+        help_text=('Default deployment to use when working with Cloud Game '
+                   'Services list configs. When a --deployment flag is '
+                   'required in a list command but not provided, the command '
+                   'will fall back to this value which envokes aggregated '
+                   'list from the backend.'))
     self.location = self._Add(
         'location',
         default='global',
-        help_text='Default location to use when working with Cloud Game '
-        'Services resources. When a `--location` flag is required but not '
-        'provided, the command will fall back to this value.')
+        help_text=(
+            'Default location to use when working with Cloud Game Services '
+            'resources. When a `--location` flag is required but not provided, '
+            'the command will fall back to this value.'))
+    self.realm = self._Add(
+        'default_realm',
+        default='-',
+        help_text=(
+            'Default realm to use when working with Cloud Game Services list '
+            'clusters. When a --realm flag is required in a list command but '
+            'not provided, the command will fall back to this value which '
+            'envokes aggregated list from the backend.'))
 
 
 class _SectionAccessibility(_Section):

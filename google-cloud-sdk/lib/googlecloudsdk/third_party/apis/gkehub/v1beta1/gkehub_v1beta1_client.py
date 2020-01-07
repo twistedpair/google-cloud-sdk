@@ -131,6 +131,43 @@ class GkehubV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GenerateExclusivityManifest(self, request, global_params=None):
+      r"""GenerateExclusivityManifest generates the manifests to update the.
+exclusivity artifacts in the cluster if needed.
+Exclusivity artifacts include the membership customer resource definition
+(CRD) and the singleton membership custom resource (CR).
+Combined with ValidateExclusivity, exclusivity
+artifacts guarantee that a Kubernetes cluster is only registered to
+a single GKE Hub.
+The membership CRD is versioned, and may require conversion when the GKE
+Hub API server begins serving a newer version of the CRD and
+corresponding CR. The response will be the converted CRD and CR if there
+are any differences between the versions.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsGenerateExclusivityManifestRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateExclusivityManifestResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateExclusivityManifest')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateExclusivityManifest.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:generateExclusivityManifest',
+        http_method=u'GET',
+        method_id=u'gkehub.projects.locations.memberships.generateExclusivityManifest',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'crManifest', u'crdManifest'],
+        relative_path=u'v1beta1/{+name}:generateExclusivityManifest',
+        request_field='',
+        request_type_name=u'GkehubProjectsLocationsMembershipsGenerateExclusivityManifestRequest',
+        response_type_name=u'GenerateExclusivityManifestResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Membership.
 
@@ -301,6 +338,34 @@ may "fail open" without warning.
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'GkehubProjectsLocationsMembershipsTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+    def ValidateExclusivity(self, request, global_params=None):
+      r"""ValidateExclusivity validates the state of exclusivity in the cluster.
+The validation does not depend on an existing Hub membership resource.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsValidateExclusivityRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateExclusivityResponse) The response message.
+      """
+      config = self.GetMethodConfig('ValidateExclusivity')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ValidateExclusivity.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/memberships:validateExclusivity',
+        http_method=u'GET',
+        method_id=u'gkehub.projects.locations.memberships.validateExclusivity',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'crManifest', u'intendedMembership'],
+        relative_path=u'v1beta1/{+parent}/memberships:validateExclusivity',
+        request_field='',
+        request_type_name=u'GkehubProjectsLocationsMembershipsValidateExclusivityRequest',
+        response_type_name=u'ValidateExclusivityResponse',
         supports_download=False,
     )
 
@@ -501,7 +566,7 @@ is the parent resource, without the operations collection id.
         method_id=u'gkehub.projects.locations.list',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'includeUnrevealedLocations', u'pageSize', u'pageToken'],
         relative_path=u'v1beta1/{+name}/locations',
         request_field='',
         request_type_name=u'GkehubProjectsLocationsListRequest',

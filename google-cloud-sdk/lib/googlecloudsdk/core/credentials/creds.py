@@ -21,13 +21,16 @@ from __future__ import unicode_literals
 
 import abc
 import base64
+import copy
 import json
+import os
 
 import enum
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.util import files
 
@@ -37,6 +40,8 @@ from oauth2client.contrib import gce as oauth2client_gce
 import six
 import sqlite3
 
+ADC_QUOTA_PROJECT_FIELD_NAME = 'quota_project_id'
+
 
 class Error(exceptions.Error):
   """Exceptions for this module."""
@@ -44,6 +49,11 @@ class Error(exceptions.Error):
 
 class UnknownCredentialsType(Error):
   """An error for when we fail to determine the type of the credentials."""
+  pass
+
+
+class CredentialFileSaveError(Error):
+  """An error for when we fail to save a credential file."""
   pass
 
 
@@ -462,3 +472,98 @@ def _GetSqliteStore(sqlite_credential_file=None, sqlite_access_token_file=None):
   files.PrivatizeFile(sqlite_access_token_file)
   access_token_cache = AccessTokenCache(sqlite_access_token_file)
   return CredentialStoreWithCache(credential_store, access_token_cache)
+
+
+def GetQuotaProject(credentials, force_resource_quota):
+  """Gets the value to use for the X-Goog-User-Project header.
+
+  Args:
+    credentials: The credentials that are going to be used for requests.
+    force_resource_quota: bool, If true, resource project quota will be used
+      even if gcloud is set to use legacy mode for quota. This should be set
+      when calling newer APIs that would not work without resource quota.
+
+  Returns:
+    str, The project id to send in the header or None to not populate the
+    header.
+  """
+  if not CredentialType.FromCredentials(credentials).is_user:
+    return None
+
+  quota_project = properties.VALUES.billing.quota_project.Get()
+  if quota_project == properties.VALUES.billing.CURRENT_PROJECT:
+    return properties.VALUES.core.project.Get()
+  elif quota_project == properties.VALUES.billing.LEGACY:
+    if force_resource_quota:
+      return properties.VALUES.core.project.Get()
+    return None
+  return quota_project
+
+
+class ADC(object):
+  """Application default credential object."""
+
+  def __init__(self, credentials):
+    self._credentials = credentials
+    self.adc = _ConvertCredentialsToADC(self._credentials)
+    self.default_adc_file_path = config.ADCFilePath()
+
+  def DumpADCToFile(self, file_path=None):
+    """Dumps the credentials to the ADC json file."""
+    file_path = file_path or self.default_adc_file_path
+    return _DumpADCJsonToFile(self.adc, file_path)
+
+  def DumpExtendedADCToFile(self, file_path=None, quota_project=None):
+    """Dumps the credentials and the quota project to the ADC json file."""
+    if (CredentialType.FromCredentials(self._credentials) !=
+        CredentialType.USER_ACCOUNT):
+      raise CredentialFileSaveError(
+          'The credential is not a user credential, so we cannot insert a '
+          'quota project to application default credential.')
+    file_path = file_path or self.default_adc_file_path
+    if not quota_project:
+      quota_project = GetQuotaProject(
+          self._credentials, force_resource_quota=True)
+    extended_adc = self._ExtendADCWithQuotaProject(quota_project)
+    return _DumpADCJsonToFile(extended_adc, file_path)
+
+  def _ExtendADCWithQuotaProject(self, quota_project):
+    """Add quota_project_id field to ADC json."""
+    extended_adc = copy.deepcopy(self.adc)
+    if quota_project:
+      extended_adc[ADC_QUOTA_PROJECT_FIELD_NAME] = quota_project
+    else:
+      log.warning(
+          'Cannot find a project to insert into application default '
+          'credentials (ADC) as a quota project.\n'
+          'Run $gcloud auth application-default set-quota-project to insert a '
+          'quota project to ADC.')
+    return extended_adc
+
+
+def _DumpADCJsonToFile(adc, file_path):
+  """Dumps ADC json object to file."""
+  try:
+    contents = json.dumps(adc, sort_keys=True, indent=2, separators=(',', ': '))
+    files.WriteFileContents(file_path, contents, private=True)
+  except files.Error as e:
+    log.debug(e, exc_info=True)
+    raise CredentialFileSaveError(
+        'Error saving Application Default Credentials: ' + six.text_type(e))
+  return os.path.abspath(file_path)
+
+
+def _ConvertCredentialsToADC(credentials):
+  """Converts given credentials to application default credentials."""
+  creds_type = CredentialType.FromCredentials(credentials)
+  if creds_type == CredentialType.P12_SERVICE_ACCOUNT:
+    raise CredentialFileSaveError(
+        'Error saving Application Default Credentials: p12 keys are not'
+        'supported in this format')
+  if creds_type == CredentialType.USER_ACCOUNT:
+    credentials = client.GoogleCredentials(
+        credentials.access_token, credentials.client_id,
+        credentials.client_secret, credentials.refresh_token,
+        credentials.token_expiry, credentials.token_uri, credentials.user_agent,
+        credentials.revoke_uri)
+  return credentials.serialization_data

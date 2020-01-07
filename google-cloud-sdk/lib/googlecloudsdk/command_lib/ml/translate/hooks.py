@@ -23,13 +23,20 @@ from __future__ import unicode_literals
 import os
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
 
 SPEECH_API = 'translate'
-version = 'v3beta1'
+
+
+def _GetApiVersion(args):
+  if args.calliope_command.ReleaseTrack() == calliope_base.ReleaseTrack.BETA:
+    return 'v3'
+  else:
+    return 'v3beta1'
 
 
 class Error(exceptions.Error):
@@ -44,7 +51,7 @@ def UpdateRequestLangDetection(unused_instance_ref, args, request):
   """The hook to inject content into the language detection request."""
   content = args.content
   content_file = args.content_file
-  messages = apis.GetMessagesModule(SPEECH_API, version)
+  messages = apis.GetMessagesModule(SPEECH_API, _GetApiVersion(args))
   detect_language_request = messages.DetectLanguageRequest()
   project = properties.VALUES.core.project.GetOrFail()
 
@@ -74,7 +81,7 @@ def UpdateRequestTranslateText(unused_instance_ref, args, request):
   """The hook to inject content into the translate request."""
   content = args.content
   content_file = args.content_file
-  messages = apis.GetMessagesModule(SPEECH_API, version)
+  messages = apis.GetMessagesModule(SPEECH_API, _GetApiVersion(args))
   translate_text_request = messages.TranslateTextRequest()
   project = properties.VALUES.core.project.GetOrFail()
 
@@ -120,7 +127,7 @@ def UpdateRequestGetSupportedLanguages(unused_instance_ref, args, request):
 
 def UpdateRequestBatchTranslateText(unused_instance_ref, args, request):
   """The hook to inject content into the batch translate request."""
-  messages = apis.GetMessagesModule(SPEECH_API, version)
+  messages = apis.GetMessagesModule(SPEECH_API, _GetApiVersion(args))
   batch_translate_text_request = messages.BatchTranslateTextRequest()
   project = properties.VALUES.core.project.GetOrFail()
   request.parent = 'projects/{}/locations/{}'.format(project, args.zone)

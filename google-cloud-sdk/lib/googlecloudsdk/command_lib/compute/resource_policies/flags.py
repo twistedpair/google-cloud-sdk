@@ -69,14 +69,13 @@ def AddCycleFrequencyArgs(parser, flag_suffix, start_time_help,
         'Cycle Frequency Group.', required=True, mutex=True)
   if has_restricted_start_times:
     start_time_help += """\
-        Valid choices are 00:00, 04:00, 08:00,12:00,
-        16:00 and 20:00 UTC. For example, `--start-time="03:00-05"`
-        (which gets converted to 08:00 UTC)."""
+        Valid choices are 00:00, 04:00, 08:00, 12:00,
+        16:00 and 20:00 UTC. For example, `--start-time="08:00"`."""
   freq_flags_group = freq_group.add_group(
       'From flags:' if supports_weekly else '')
   freq_flags_group.add_argument(
       '--start-time', required=True,
-      type=arg_parsers.Datetime.Parse,
+      type=arg_parsers.Datetime.ParseUtcTime,
       help=start_time_help)
   cadence_group = freq_flags_group.add_group(mutex=True, required=True)
   cadence_group.add_argument(
@@ -173,6 +172,38 @@ def AddSnapshotScheduleArgs(parser, messages):
       help='Create an application consistent snapshot by informing the OS to '
            'prepare for the snapshot process.')
   compute_flags.AddStorageLocationFlag(snapshot_properties_group, 'snapshot')
+
+
+def AddGroupPlacementArgs(parser, messages):
+  """Adds flags specific to snapshot schedule resource policies."""
+  parser.add_argument(
+      '--vm-count',
+      required=True,
+      type=arg_parsers.BoundedInt(lower_bound=1),
+      help='Number of instances targeted by the group placement policy.')
+  parser.add_argument(
+      '--availability-domain-count',
+      type=arg_parsers.BoundedInt(lower_bound=1),
+      help='Number of availability domain in the group placement policy.')
+  GetCollocationFlagMapper(messages).choice_arg.AddToParser(parser)
+
+
+def GetCollocationFlagMapper(messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--collocation',
+      messages.ResourcePolicyGroupPlacementPolicy.CollocationValueValuesEnum,
+      custom_mappings={
+          'UNSPECIFIED_COLLOCATION':
+              ('unspecified-collocation',
+               'Unspecified network latency between VMs placed on the same'
+               'availability domain. This is the default behavior.'),
+          'COLLOCATED': ('collocated',
+                         'Low network latency between VMs placed on the same'
+                         'availability domain.')
+      },
+      default=None,
+      help_str='Collocation specifies whether to place VMs inside the same'
+      'availability domain on the same low-latency network.')
 
 
 def AddResourcePoliciesArgs(parser, action, resource, required=False):

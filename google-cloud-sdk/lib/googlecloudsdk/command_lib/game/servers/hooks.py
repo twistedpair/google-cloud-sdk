@@ -30,8 +30,15 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 import six
 
+DEFAULT_LOCATION = 'global'
+
 PARENT_TEMPLATE = 'projects/{}/locations/{}'
+PARENT_DEPLOYMENT_TEMPLATE = 'projects/{}/locations/{}/gameServerDeployments/{}'
+PARENT_REALM_TEMPLATE = 'projects/{}/locations/{}/realms/{}'
+
+DEPLOYMENT_WILDCARD = '-'
 LOCATION_WILDCARD = '-'
+REALM_WILDCARD = '-'
 
 
 class InvalidSpecFileError(exceptions.Error):
@@ -62,10 +69,38 @@ def ProcessSpecFile(spec_file):
 
 def AddDefaultLocationToListRequest(ref, args, req):
   """Python hook for yaml commands to wildcard the location in list requests."""
-  del ref
+  del ref  # Unused
   project = properties.VALUES.core.project.Get(required=True)
   location = args.location or LOCATION_WILDCARD
   req.parent = PARENT_TEMPLATE.format(project, location)
+  return req
+
+
+def AddDefaultLocationAndRealmToListRequest(ref, args, req):
+  """Python hook for yaml commands to wildcard the realm and location in list requests."""
+  del ref
+  project = properties.VALUES.core.project.Get(required=True)
+  location = args.location or LOCATION_WILDCARD
+  # If realm is specified but location is not, we fall back to global, which is
+  # the default location for realms.
+  if args.realm and not args.location:
+    location = DEFAULT_LOCATION
+  realm = args.realm or REALM_WILDCARD
+  req.parent = PARENT_REALM_TEMPLATE.format(project, location, realm)
+  return req
+
+
+def AddDefaultLocationAndDeploymentToListRequest(ref, args, req):
+  """Python hook for yaml commands to wildcard the deployment and location in list requests."""
+  del ref
+  project = properties.VALUES.core.project.Get(required=True)
+  location = args.location or LOCATION_WILDCARD
+  # If deployment is specified but location is not, we fall back to global
+  # which is the default location for realms.
+  if args.deployment and not args.location:
+    location = DEFAULT_LOCATION
+  deployment = args.deployment or DEPLOYMENT_WILDCARD
+  req.parent = PARENT_DEPLOYMENT_TEMPLATE.format(project, location, deployment)
   return req
 
 
@@ -161,8 +196,6 @@ def ProcessScalingConfigsFile(scaling_configs_file):
       if not esc.selectors:
         # Add default selector if not set
         esc.selectors = [selector]
-      # Set priority to None as the priority field will be removed from API.
-      esc.priority = None
       # Convert yaml to json
       spec = yaml.load(esc.fleetAutoscalerSpec)
       spec_as_json_str = json.dumps(spec)

@@ -1086,7 +1086,11 @@ def ReadBinaryFileContents(path):
     raise Error('Unable to read file [{0}]: {1}'.format(path, e))
 
 
-def WriteFileContents(path, contents, overwrite=True, private=False):
+def WriteFileContents(path,
+                      contents,
+                      overwrite=True,
+                      private=False,
+                      create_path=True):
   """Writes the given text contents to a file at the given path.
 
   Args:
@@ -1094,13 +1098,14 @@ def WriteFileContents(path, contents, overwrite=True, private=False):
     contents: str, The text string to write.
     overwrite: bool, False to error out if the file already exists.
     private: bool, True to make the file have 0o600 permissions.
+    create_path: bool, True to create intermediate directories, if needed.
 
   Raises:
     Error: If the file cannot be written.
   """
   try:
     _CheckOverwrite(path, overwrite)
-    with FileWriter(path, private=private) as f:
+    with FileWriter(path, private=private, create_path=create_path) as f:
       # This decode is here because a lot of libraries on Python 2 can return
       # both text or bytes depending on if unicode is present. If you truly
       # pass binary data to this, the decode will fail (as it should). If you
@@ -1113,7 +1118,11 @@ def WriteFileContents(path, contents, overwrite=True, private=False):
     raise Error('Unable to write file [{0}]: {1}'.format(path, e))
 
 
-def WriteBinaryFileContents(path, contents, overwrite=True, private=False):
+def WriteBinaryFileContents(path,
+                            contents,
+                            overwrite=True,
+                            private=False,
+                            create_path=True):
   """Writes the given binary contents to a file at the given path.
 
   Args:
@@ -1121,13 +1130,14 @@ def WriteBinaryFileContents(path, contents, overwrite=True, private=False):
     contents: str, The byte string to write.
     overwrite: bool, False to error out if the file already exists.
     private: bool, True to make the file have 0o600 permissions.
+    create_path: bool, True to create intermediate directories, if needed.
 
   Raises:
     Error: If the file cannot be written.
   """
   try:
     _CheckOverwrite(path, overwrite)
-    with BinaryFileWriter(path, private=private) as f:
+    with BinaryFileWriter(path, private=private, create_path=create_path) as f:
       f.write(contents)
   except EnvironmentError as e:
     # EnvironmentError is parent of IOError, OSError and WindowsError.
@@ -1165,38 +1175,54 @@ def BinaryFileReader(path):
   return _FileOpener(encoding_util.Encode(path, encoding='utf-8'), 'rb', 'read')
 
 
-def FileWriter(path, private=False, append=False):
+def FileWriter(path, private=False, append=False, create_path=False):
   """Opens the given file for text write for use in a 'with' statement.
 
   Args:
     path: str, The file path to write to.
     private: bool, True to create or update the file permission to be 0o600.
     append: bool, True to append to an existing file.
+    create_path: bool, True to create intermediate directories, if needed.
 
   Returns:
     A file-like object opened for write in text mode.
   """
   mode = 'at' if append else 'wt'
-  return _FileOpener(path, mode, 'write', encoding='utf8', private=private)
+  return _FileOpener(
+      path,
+      mode,
+      'write',
+      encoding='utf8',
+      private=private,
+      create_path=create_path)
 
 
-def BinaryFileWriter(path, private=False):
+def BinaryFileWriter(path, private=False, create_path=False):
   """Opens the given file for binary write for use in a 'with' statement.
 
   Args:
     path: str, The file path to write to.
     private: bool, True to create or update the file permission to be 0o600.
+    create_path: bool, True to create intermediate directories, if needed.
 
   Returns:
     A file-like object opened for write in binary mode.
   """
-  return _FileOpener(path, 'wb', 'write', private=private)
+  return _FileOpener(
+      path, 'wb', 'write', private=private, create_path=create_path)
 
 
-def _FileOpener(path, mode, verb, encoding=None, private=False):
+def _FileOpener(path,
+                mode,
+                verb,
+                encoding=None,
+                private=False,
+                create_path=False):
   """Opens a file in various modes and does error handling."""
   if private:
     PrivatizeFile(path)
+  if create_path:
+    _MakePathToFile(path)
   try:
     return io.open(path, mode, encoding=encoding)
   except EnvironmentError as e:
@@ -1218,6 +1244,12 @@ def ExpandHomeDir(path):
   return encoding_util.Decode(os.path.expanduser(path))
 
 
+def _MakePathToFile(path, mode=0o777):
+  parent_dir_path, _ = os.path.split(path)
+  full_parent_dir_path = os.path.realpath(ExpandHomeDir(parent_dir_path))
+  MakeDir(full_parent_dir_path, mode)
+
+
 def PrivatizeFile(path):
   """Makes an existing file private or creates a new, empty private file.
 
@@ -1233,10 +1265,7 @@ def PrivatizeFile(path):
     if os.path.exists(path):
       os.chmod(path, 0o600)
     else:
-      parent_dir_path, _ = os.path.split(path)
-      full_parent_dir_path = os.path.realpath(ExpandHomeDir(parent_dir_path))
-      MakeDir(full_parent_dir_path, mode=0o700)
-
+      _MakePathToFile(path, mode=0o700)
       flags = os.O_RDWR | os.O_CREAT | os.O_TRUNC
       # Accommodate Windows; stolen from python2.6/tempfile.py.
       if hasattr(os, 'O_NOINHERIT'):

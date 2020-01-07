@@ -35,9 +35,15 @@ class EntriesClient(object):
   def __init__(self):
     self.client = util.GetClientInstance()
     self.messages = util.GetMessagesModule()
-    self.service = self.client.entries
+    self.entry_lookup_service = self.client.entries
+    self.entry_service = self.client.projects_locations_entryGroups_entries
 
   def Lookup(self, resource):
     request = ParseResourceIntoLookupRequest(
         resource, self.messages.DatacatalogEntriesLookupRequest())
-    return self.service.Lookup(request)
+    return self.entry_lookup_service.Lookup(request)
+
+  def Get(self, resource):
+    request = self.messages.DatacatalogProjectsLocationsEntryGroupsEntriesGetRequest(
+        name=resource.RelativeName())
+    return self.entry_service.Get(request)

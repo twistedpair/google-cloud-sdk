@@ -34,11 +34,27 @@ class NetworkEndpointGroupsClient(object):
     self._zonal_service = self.client.apitools_client.networkEndpointGroups
     if hasattr(self.client.apitools_client, 'globalNetworkEndpointGroups'):
       self._global_service = self.client.apitools_client.globalNetworkEndpointGroups
+    if hasattr(self.client.apitools_client, 'regionNetworkEndpointGroups'):
+      self._region_service = self.client.apitools_client.regionNetworkEndpointGroups
 
-  def Create(self, neg_ref, network_endpoint_type, default_port=None,
-             network=None, subnet=None):
+  def Create(self,
+             neg_ref,
+             network_endpoint_type,
+             default_port=None,
+             network=None,
+             subnet=None,
+             cloud_run_service=None,
+             cloud_run_tag=None,
+             cloud_run_url_mask=None,
+             app_engine_app=False,
+             app_engine_service=None,
+             app_engine_version=None,
+             app_engine_url_mask=None,
+             cloud_function_name=None,
+             cloud_function_url_mask=None):
     """Creates a network endpoint group."""
     is_zonal = hasattr(neg_ref, 'zone')
+    is_regional = hasattr(neg_ref, 'region')
 
     network_uri = None
     if network and is_zonal:
@@ -54,15 +70,48 @@ class NetworkEndpointGroupsClient(object):
           collection='compute.subnetworks')
       subnet_uri = subnet_ref.SelfLink()
 
+    cloud_run = None
+    if cloud_run_service or cloud_run_tag or cloud_run_url_mask:
+      cloud_run = self.messages.NetworkEndpointGroupCloudRun(
+          service=cloud_run_service,
+          tag=cloud_run_tag,
+          urlMask=cloud_run_url_mask)
+    app_engine = None
+    if (app_engine_app or app_engine_service or app_engine_version or
+        app_engine_url_mask):
+      app_engine = self.messages.NetworkEndpointGroupAppEngine(
+          service=app_engine_service,
+          version=app_engine_version,
+          urlMask=app_engine_url_mask)
+    cloud_function = None
+    if cloud_function_name or cloud_function_url_mask:
+      cloud_function = self.messages.NetworkEndpointGroupCloudFunction(
+          function=cloud_function_name, urlMask=cloud_function_url_mask)
+
     endpoint_type_enum = (self.messages.NetworkEndpointGroup
                           .NetworkEndpointTypeValueValuesEnum)
-    network_endpoint_group = self.messages.NetworkEndpointGroup(
-        name=neg_ref.Name(),
-        networkEndpointType=arg_utils.ChoiceToEnum(network_endpoint_type,
-                                                   endpoint_type_enum),
-        defaultPort=default_port,
-        network=network_uri,
-        subnetwork=subnet_uri)
+
+    # TODO(b/137663401): remove the check below after all Serverless flags go
+    # to GA.
+    if is_regional:
+      network_endpoint_group = self.messages.NetworkEndpointGroup(
+          name=neg_ref.Name(),
+          networkEndpointType=arg_utils.ChoiceToEnum(network_endpoint_type,
+                                                     endpoint_type_enum),
+          defaultPort=default_port,
+          network=network_uri,
+          subnetwork=subnet_uri,
+          cloudRun=cloud_run,
+          appEngine=app_engine,
+          cloudFunction=cloud_function)
+    else:
+      network_endpoint_group = self.messages.NetworkEndpointGroup(
+          name=neg_ref.Name(),
+          networkEndpointType=arg_utils.ChoiceToEnum(network_endpoint_type,
+                                                     endpoint_type_enum),
+          defaultPort=default_port,
+          network=network_uri,
+          subnetwork=subnet_uri)
 
     if is_zonal:
       request = self.messages.ComputeNetworkEndpointGroupsInsertRequest(
@@ -70,6 +119,13 @@ class NetworkEndpointGroupsClient(object):
           project=neg_ref.project,
           zone=neg_ref.zone)
       return self.client.MakeRequests([(self._zonal_service, 'Insert', request)
+                                      ])[0]
+    elif is_regional:
+      request = self.messages.ComputeRegionNetworkEndpointGroupsInsertRequest(
+          networkEndpointGroup=network_endpoint_group,
+          project=neg_ref.project,
+          region=neg_ref.region)
+      return self.client.MakeRequests([(self._region_service, 'Insert', request)
                                       ])[0]
     else:
       request = self.messages.ComputeGlobalNetworkEndpointGroupsInsertRequest(

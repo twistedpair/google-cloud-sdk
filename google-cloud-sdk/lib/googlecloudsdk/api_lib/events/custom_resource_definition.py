@@ -75,7 +75,7 @@ class EventType(object):
   def details(self):
     """Returns a dict with details about this event type."""
     details = self.AsDict()
-    details['category'] = self._crd.source_kind
+    details['source'] = self._crd.source_kind
     return details
 
   def AsDict(self):

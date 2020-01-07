@@ -76,6 +76,19 @@ _GCS_PREFIXES = ('gs://', 'https://www.googleapis.com/storage/v1/',
                  'https://storage.googleapis.com/')
 
 
+_MAX_LIST_BATCH_SIZE = 100
+
+
+def GetListBatchSize(args):
+  """Returns the batch size for listing resources."""
+  if args.page_size:
+    return args.page_size
+  elif args.limit:
+    return min(args.limit, _MAX_LIST_BATCH_SIZE)
+  else:
+    return None
+
+
 def GetParentUriPath(parent_name, parent_id):
   """Returns the URI path of a GCP parent resource."""
   return '/'.join([parent_name, parent_id])

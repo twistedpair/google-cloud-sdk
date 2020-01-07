@@ -419,6 +419,18 @@ URI_FLAG = Argument(
     category=LIST_COMMAND_FLAGS,
     help='Print a list of resource URIs instead of the default output.')
 
+# Binary Command Flags
+BINARY_BACKED_COMMAND_FLAGS = 'BINARY BACKED COMMAND'
+
+SHOW_EXEC_ERROR_FLAG = Argument(
+    '--show-exec-error',
+    hidden=True,
+    action='store_true',
+    required=False,
+    category=BINARY_BACKED_COMMAND_FLAGS,
+    help='If true and command fails, print the underlying command '
+         'that was executed and its exit status.')
+
 
 class _Common(six.with_metaclass(abc.ABCMeta, object)):
   """Base class for Command and Group."""
@@ -640,6 +652,27 @@ class SilentCommand(six.with_metaclass(abc.ABCMeta, Command)):
 
 class DescribeCommand(six.with_metaclass(abc.ABCMeta, Command)):
   """A command that prints one resource in the 'default' format."""
+
+
+class BinaryBackedCommand(six.with_metaclass(abc.ABCMeta, Command)):
+  """A command that wraps a BinaryBackedOperation."""
+
+  @staticmethod
+  def _Flags(parser):
+    SHOW_EXEC_ERROR_FLAG.AddToParser(parser)
+
+  @staticmethod
+  def _DefaultOperationResponseHandler(response):
+    """Process results of BinaryOperation Execution."""
+    if response.stdout:
+      log.status.Print(response.stdout)
+
+    if response.failed:
+      log.error(response.stderr)
+      return None
+
+    log.status.Print(response.stderr)
+    return response.stdout
 
 
 class CacheCommand(six.with_metaclass(abc.ABCMeta, Command)):

@@ -152,20 +152,3 @@ def GetLabelValueIfArgsAreValid(args):
     return GetLabelValueFromDisplayName(label_value_id, label_key)
 
   return label_value_id
-
-
-def GetIdFromResourceName(name):
-  """Returns the numeric id of the given resource name.
-
-  Args:
-    name: String, resource name of a given resource, either in short form or as
-    its fully qualified resource name:
-    https://cloud.google.com/apis/design/resource_names.
-
-  Returns:
-    The substring after the last '/' in the given string. Since we
-    only call this method on resource names, this should extract the numeric
-    id from the given resource name.
-  """
-  last_slash_index = name.rfind('/')
-  return name[last_slash_index+1:]

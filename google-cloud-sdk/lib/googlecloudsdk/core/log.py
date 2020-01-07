@@ -854,7 +854,7 @@ def Print(*msg):
 
 
 def WriteToFileOrStdout(path, content, overwrite=True, binary=False,
-                        private=False):
+                        private=False, create_path=False):
   """Writes content to the specified file or stdout if path is '-'.
 
   Args:
@@ -863,6 +863,7 @@ def WriteToFileOrStdout(path, content, overwrite=True, binary=False,
     overwrite: bool, Whether or not to overwrite the file if it exists.
     binary: bool, True to open the file in binary mode.
     private: bool, Whether to write the file in private mode.
+    create_path: bool, True to create intermediate directories, if needed.
 
   Raises:
     Error: If the file cannot be written.
@@ -874,9 +875,14 @@ def WriteToFileOrStdout(path, content, overwrite=True, binary=False,
       out.write(content)
   elif binary:
     files.WriteBinaryFileContents(path, content, overwrite=overwrite,
-                                  private=private)
+                                  private=private, create_path=create_path)
   else:
-    files.WriteFileContents(path, content, overwrite=overwrite, private=private)
+    files.WriteFileContents(
+        path,
+        content,
+        overwrite=overwrite,
+        private=private,
+        create_path=create_path)
 
 
 def Reset(stdout=None, stderr=None):
@@ -1071,7 +1077,6 @@ def GetLogFilePath():
   return _log_manager.current_log_file
 
 
-# TODO(b/117488015): Remove this in favor of console.style.log
 def _PrintResourceChange(operation,
                          resource,
                          kind,
@@ -1098,27 +1103,33 @@ def _PrintResourceChange(operation,
   """
   msg = []
   if failed:
-    msg.append('Failed to')
+    msg.append('Failed to ')
     msg.append(operation)
   elif is_async:
     msg.append(operation.capitalize())
-    msg.append('in progress for')
+    msg.append(' in progress for')
   else:
     verb = operation_past_tense or '{0}d'.format(operation)
     msg.append('{0}'.format(verb.capitalize()))
 
   if kind:
+    msg.append(' ')
     msg.append(kind)
   if resource:
-    msg.append('[{0}]'.format(six.text_type(resource)))
+    msg.append(' ')
+    msg.append(text.TextTypes.RESOURCE_NAME(six.text_type(resource)))
   if details:
+    msg.append(' ')
     msg.append(details)
+
   if failed:
-    msg[-1] = '{0}:'.format(msg[-1])
+    msg.append(': ')
     msg.append(failed)
-  period = '' if msg[-1].endswith('.') else '.'
+  period = '' if str(msg[-1]).endswith('.') else '.'
+  msg.append(period)
+  msg = text.TypedText(msg)
   writer = error if failed else status.Print
-  writer('{0}{1}'.format(' '.join(msg), period))
+  writer(msg)
 
 
 def CreatedResource(resource, kind=None, is_async=False, details=None,

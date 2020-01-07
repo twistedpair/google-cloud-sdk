@@ -311,6 +311,7 @@ class ResourceSpec(ConceptSpec):
     self._attributes = []
     self._param_names_map = {}
 
+    orig_kwargs = list(six.iterkeys(kwargs))
     # Add attributes.
     anchor = False
     for i, param_name in enumerate(collection_params):
@@ -340,9 +341,11 @@ class ResourceSpec(ConceptSpec):
                                            self._name))
     if kwargs:
       raise ResourceConfigurationError('Resource [{}] was given an attribute '
-                                       'config for unknown attribute(s): [{}]'
+                                       'config for unknown attribute(s): '
+                                       'Expected [{}], Found [{}]'
                                        .format(self._name,
-                                               ', '.join(six.iterkeys(kwargs))))
+                                               ', '.join(collection_params),
+                                               ', '.join(orig_kwargs)))
 
   @property
   def attributes(self):

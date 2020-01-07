@@ -29,6 +29,8 @@ from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import pkg_resources
 from googlecloudsdk.core.util import platforms
+
+from oauth2client import client
 import six
 
 
@@ -493,3 +495,23 @@ class Paths(object):
       str, The path to the GCE cache.
     """
     return os.path.join(self.global_config_dir, 'gce')
+
+
+def ADCFilePath():
+  """Gets the ADC default file path.
+
+  Returns:
+    str, The path to the default ADC file.
+  """
+  # pylint:disable=protected-access
+  return client._get_well_known_file()
+
+
+def ADCEnvVariable():
+  """Gets the value of the ADC environment variable.
+
+  Returns:
+    str, The value of the env var or None if unset.
+  """
+  return encoding.GetEncodedValue(
+      os.environ, client.GOOGLE_APPLICATION_CREDENTIALS, None)

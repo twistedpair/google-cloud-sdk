@@ -156,6 +156,12 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.billingbudgets.v1alpha1',
                 client_classpath='billingbudgets_v1alpha1_client.BillingbudgetsV1alpha1',
                 messages_modulepath='billingbudgets_v1alpha1_messages',
+                default_version=False),
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.billingbudgets.v1beta1',
+                client_classpath='billingbudgets_v1beta1_client.BillingbudgetsV1beta1',
+                messages_modulepath='billingbudgets_v1beta1_messages',
                 default_version=True),
     },
     'binaryauthorization': {
@@ -906,6 +912,14 @@ MAP = {
                 messages_modulepath='pubsub_v1_messages',
                 default_version=True),
     },
+    'recaptchaenterprise': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.recaptchaenterprise.v1',
+                client_classpath='recaptchaenterprise_v1_client.RecaptchaenterpriseV1',
+                messages_modulepath='recaptchaenterprise_v1_messages',
+                default_version=True),
+    },
     'recommender': {
         'v1':
             APIDef(
@@ -1016,6 +1030,14 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.serviceconsumermanagement.v1beta1',
                 client_classpath='serviceconsumermanagement_v1beta1_client.ServiceconsumermanagementV1beta1',
                 messages_modulepath='serviceconsumermanagement_v1beta1_messages',
+                default_version=True),
+    },
+    'servicedirectory': {
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.servicedirectory.v1beta1',
+                client_classpath='servicedirectory_v1beta1_client.ServicedirectoryV1beta1',
+                messages_modulepath='servicedirectory_v1beta1_messages',
                 default_version=True),
     },
     'servicemanagement': {
@@ -1159,6 +1181,12 @@ MAP = {
                 default_version=True),
     },
     'translate': {
+        'v3':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.translate.v3',
+                client_classpath='translate_v3_client.TranslateV3',
+                messages_modulepath='translate_v3_messages',
+                default_version=False),
         'v3beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.translate.v3beta1',

@@ -82,7 +82,7 @@ def Http(timeout='unset', enable_resource_quota=True,
   if creds:
     # Inject the resource project header for quota unless explicitly disabled.
     if enable_resource_quota or force_resource_quota:
-      quota_project = _GetQuotaProject(creds, force_resource_quota)
+      quota_project = core_creds.GetQuotaProject(creds, force_resource_quota)
       if quota_project:
         handlers.append(http.Modifiers.Handler(
             http.Modifiers.SetHeader('X-Goog-User-Project', quota_project)))
@@ -93,32 +93,6 @@ def Http(timeout='unset', enable_resource_quota=True,
         http_client, handlers, _HandleAuthError, client.AccessTokenRefreshError)
 
   return http_client
-
-
-def _GetQuotaProject(credentials, force_resource_quota):
-  """Gets the value to use for the X-Goog-User-Project header.
-
-  Args:
-    credentials: The credentials that are going to be used for requests.
-    force_resource_quota: bool, If true, resource project quota will be used
-      even if gcloud is set to use legacy mode for quota. This should be set
-      when calling newer APIs that would not work without resource quota.
-
-  Returns:
-    str, The project id to send in the header or None to not populate the
-    header.
-  """
-  if not core_creds.CredentialType.FromCredentials(credentials).is_user:
-    return None
-
-  quota_project = properties.VALUES.billing.quota_project.Get()
-  if quota_project == properties.VALUES.billing.CURRENT_PROJECT:
-    return properties.VALUES.core.project.Get()
-  elif quota_project == properties.VALUES.billing.LEGACY:
-    if force_resource_quota:
-      return properties.VALUES.core.project.Get()
-    return None
-  return quota_project
 
 
 def _GetIAMAuthHandlers(authority_selector, authorization_token_file):

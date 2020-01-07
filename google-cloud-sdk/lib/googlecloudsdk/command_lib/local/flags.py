@@ -38,6 +38,11 @@ def CommonFlags(parser):
       'used.')
 
   parser.add_argument(
+      '--builder',
+      help='Build with a given Cloud Native Computing Foundation Buildpack '
+      'builder.')
+
+  parser.add_argument(
       '--service-account',
       help='When connecting to Google Cloud Platform services, use a service '
       'account key.')

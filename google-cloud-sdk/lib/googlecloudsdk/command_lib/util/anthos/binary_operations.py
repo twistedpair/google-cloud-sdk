@@ -47,6 +47,10 @@ class BinaryOperationError(core_exceptions.Error):
   """Base class for binary operation errors."""
 
 
+class InvalidOperationForBinary(BinaryOperationError):
+  """Raised when an invalid Operation is invoked on a binary."""
+
+
 class MissingExecutableException(BinaryOperationError):
   """Raised if an executable can not be found on the path."""
 
@@ -243,7 +247,7 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
   def defaults(self):
     return self._default_args
 
-  def _Execute(self, **kwargs):
+  def _Execute(self, cmd, **kwargs):
     """Execute binary and return operation result.
 
      Will parse args from kwargs into a list of args to pass to underlying
@@ -251,7 +255,9 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
      and failure handlers for this operation if configured or module defaults.
 
     Args:
-      **kwargs: mapping of arguments to pass to the underlying binary
+      cmd: [str], command to be executed with args
+      **kwargs: mapping of additional arguments to pass to the underlying
+        executor.
 
     Returns:
       OperationResult: execution result for this invocation of the binary.
@@ -260,9 +266,6 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
       ArgumentError, if there is an error parsing the supplied arguments.
       BinaryOperationError, if there is an error executing the binary.
     """
-    cmd = [self.executable]
-    cmd.extend(self._ParseArgsForCommand(**kwargs))
-
     result_holder = self.OperationResult(cmd)
     std_out_handler = (self.std_out_handler or
                        DefaultStdOutHandler(result_holder))
@@ -305,4 +308,6 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
     pass
 
   def __call__(self, **kwargs):
-    return self._Execute(**kwargs)
+    cmd = [self.executable]
+    cmd.extend(self._ParseArgsForCommand(**kwargs))
+    return self._Execute(cmd, **kwargs)

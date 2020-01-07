@@ -2063,58 +2063,6 @@ of RAM:
   parser.add_argument('--machine-type', '-m', help=help_text)
 
 
-def AddManagedPodIdentityFlags(parser):
-  """Adds Managed Pod Identity flags to the parser."""
-  enable_help_text = """\
-Enable Managed Pod Identity on the cluster.
-
-When enabled, pods with cloud.google.com/service-account annotations will be
-able to authenticate to Google Cloud Platform APIs on behalf of service account
-specified in the annotation.
-"""
-  parser.add_argument(
-      '--enable-managed-pod-identity',
-      action=actions.DeprecationAction(
-          '--[no-]enable-managed-pod-identity',
-          warn="""\
-Alpha flag `--[no-]enable-managed-pod-identity` is deprecated and will be removed
-in a future release.
-
-Instead, use the beta `--identity-namespace` flag:
-
-    $ gcloud beta container clusters create --identity-namespace=PROJECT_NAME.svc.id.goog
-""",
-          removed=False,
-          action='store_true'),
-      default=False,
-      hidden=True,
-      help=enable_help_text)
-  sa_help_text = """\
-Federating Service Account to use with Managed Pod Identity.
-
-Sets the name (email) of the GCP Service Account used to connect
-Kubernetes Service Accounts to GCP Service Accounts.
-
-Must be set with `--enable-managed-pod-identity`.
-"""
-  parser.add_argument(
-      '--federating-service-account',
-      action=actions.DeprecationAction(
-          '--federating-service-account',
-          warn="""\
-Alpha flag `--federating-service-account` is deprecated and will be removed
-in a future release.
-
-Instead, use the beta `--identity-namespace` flag:
-
-    $ gcloud beta container clusters create --identity-namespace=PROJECT_NAME.svc.id.goog
-""",
-          removed=False),
-      default=None,
-      hidden=True,
-      help=sa_help_text)
-
-
 def AddWorkloadIdentityFlags(parser):
   """Adds Workload Identity flags to the parser."""
   parser.add_argument(

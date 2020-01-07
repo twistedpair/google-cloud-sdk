@@ -1,6 +1,100 @@
 # Google Cloud SDK - Release Notes
 
-Copyright 2014-2019 Google Inc. All rights reserved.
+Copyright 2014-2020 Google Inc. All rights reserved.
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 275.0.0 (2020-01-07)
+
+### Breaking Changes
+
+*   **(Firebase Test Lab)** Modified `--other-files` to allow the specification of a list of
+  device-path=file-path instead of a list of file-path=device-directory.
+  Additionally, the flag can no longer be specified multiple times. Use a
+  comma-separated list to push multiple files to a device.
+
+
+### Cloud SDK
+
+* Modified `gcloud auth application-default login` to find a quota project from
+  gcloud command-line tool's context and write it to the application default
+  credentials. This allows Google client libraries to use the project for quota
+  and billing.
+* Added `gcloud auth application-default set-quota-project` to update the
+  quota project in application default credentials.
+* Fixed issue where `gcloud components update` and `gcloud components install`
+  would crash with a UnicodeDecodeError when encountering certain network
+  errors. The gcloud command-line tool will now correctly display the error
+  encountered during the update or installation. This issue was reported at
+  <https://issuetracker.google.com/issues/80344082>.
+
+### App Engine
+
+* 
+* Updated the Python SDK to version 1.9.88.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/python/release-notes>.
+
+### Cloud Asset Inventory
+
+* Promoted group commands of `gcloud asset feeds` to GA.
+
+### Cloud DNS
+
+* Promoted DNS Peering to GA.
+
+### Cloud Data Catalog
+
+* Added flags to `gcloud beta data-catalog entries update` for updating an entry's description, display name, and Cloud Storage file patterns.
+* Added `required` field to `gcloud beta data-catalog tag-templates create --field` to specify whether the tag template field is required.
+* Added `--required` flag to `gcloud beta data-catalog tag-templates fields update` to specify whether the tag template field is required.
+* Removed `gcloud beta data-catalog entries set-iam-policy` commands.
+
+### Cloud Identity-Aware Proxy
+
+*    Promoted `gcloud iap` command group to GA.
+
+### Cloud Run
+
+* Promoted `gcloud run services replace` to beta.
+* Promoted `--command` and `--args` flags for `gcloud run deploy` and
+  `gcloud services update` to GA.
+* Promoted `--port` flag for `gcloud run deploy` and `gcloud services update` to
+  GA.
+* Promoted `--revision-suffix` flag for `gcloud run deploy` and `gcloud services update` to
+  GA.
+
+### Compute Engine
+
+* Changed `gcloud compute backend-services create` to make specification of
+health checks optional when no associated backends are specified.
+* Added `--no-health-checks` flag to `gcloud compute backend-services update` to
+support unsetting all health checks for the given backend service.
+* Added `group-placement-policy` to `resource-policies` creation.
+* Promoted `resource-policies` `group-placement-policy` creation to beta.
+* Updated Windows PuTTY executables to version 0.73.
+* Modified `gcloud beta compute images import` and `gcloud beta compute
+  instances import` to validate required permissions.
+* Promoted `gcloud compute networks peerings list-routes` to GA.
+* Promoted `--stateful-disks` flag in managed instance group creation to beta.
+* Promoted `--update-stateful-disks` and `--remove-stateful-disks` flags for updating managed instance groups to beta.
+* Fixed `gcloud compute instances import` to support importing OVFs stored
+  directly in Cloud Storage buckets (as opposed to stored in sub-directories).
+
+### Kubernetes Engine
+
+*   The following flags are now available in GA on `gcloud container clusters
+    create` and `gcloud container clusters update`:
+    *   `--maintenance-window-start`
+    *   `--maintenance-window-end`
+    *   `--maintenance-window-recurrence`
+    *   `--add-maintenance-exclusion-name`
+    *   `--add-maintenance-exclusion-start`
+    *   `--add-maintenance-exclusion-end`
+    *   `--clear-maintenance-window`
+    *   `--remove-maintenance-exclusion`
+
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 

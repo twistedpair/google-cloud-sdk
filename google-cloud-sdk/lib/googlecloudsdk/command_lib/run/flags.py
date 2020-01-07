@@ -198,10 +198,7 @@ def AddFunctionArg(parser):
 
 def AddNoTrafficFlag(parser):
   """Add flag to deploy a revision with no traffic."""
-
-  group = GetGkeArgGroup(parser).add_mutually_exclusive_group()
-
-  group.add_argument(
+  parser.add_argument(
       '--no-traffic',
       default=False,
       action='store_true',
@@ -236,7 +233,7 @@ def AddUpdateTrafficFlags(parser):
       )
     return result
 
-  group = GetGkeArgGroup(parser).add_mutually_exclusive_group()
+  group = parser.add_mutually_exclusive_group()
 
   group.add_argument(
       '--to-revisions',
@@ -523,8 +520,8 @@ def AddMaxInstancesFlag(parser):
   parser.add_argument(
       '--max-instances',
       type=_ScaleValue,
-      help=('The maximum number of container instances of the Service to run '
-            "or 'default' to remove any maximum."))
+      help=('The maximum number of container instances of the Service to run. '
+            "Use 'default' to unset the limit and use the platform default."))
 
 
 def AddCommandFlag(parser):

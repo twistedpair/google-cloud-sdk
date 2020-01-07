@@ -386,6 +386,24 @@
         "expiryDetail": {
           "description": "The expiry details of the `MembershipRole`.\n\nMay be set if the only `MembershipRole` is one with `name` `MEMBER`. Must\nnot be set if any other `MembershipRole`s exist.",
           "$ref": "ExpiryDetail"
+        },
+        "type": {
+          "description": "Output only. The type of the membership.",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "Represents user type.",
+            "Represents service account type.",
+            "Represents group type.",
+            "Represents other type."
+          ],
+          "type": "string",
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "USER",
+            "SERVICE_ACCOUNT",
+            "GROUP",
+            "OTHER"
+          ]
         }
       }
     },

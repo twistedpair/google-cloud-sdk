@@ -554,6 +554,9 @@ class Membership(_messages.Message):
   defines a relationship between a `Group` and an entity belonging to that
   `Group`, referred to as a "member".
 
+  Enums:
+    TypeValueValuesEnum: Output only. The type of the membership.
+
   Fields:
     createTime: Output only. The time when the `Membership` was created.
     expiryDetail: The expiry details of the `MembershipRole`.  May be set if
@@ -568,15 +571,33 @@ class Membership(_messages.Message):
       unspecified, defaults to a single `MembershipRole` with `name` `MEMBER`
       and no `expiry_detail`.  Must not contain duplicate `MembershipRole`s
       with the same `name`.
+    type: Output only. The type of the membership.
     updateTime: Output only. The time when the `Membership` was last updated.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the membership.
+
+    Values:
+      TYPE_UNSPECIFIED: Default. Should not be used.
+      USER: Represents user type.
+      SERVICE_ACCOUNT: Represents service account type.
+      GROUP: Represents group type.
+      OTHER: Represents other type.
+    """
+    TYPE_UNSPECIFIED = 0
+    USER = 1
+    SERVICE_ACCOUNT = 2
+    GROUP = 3
+    OTHER = 4
 
   createTime = _messages.StringField(1)
   expiryDetail = _messages.MessageField('ExpiryDetail', 2)
   name = _messages.StringField(3)
   preferredMemberKey = _messages.MessageField('EntityKey', 4)
   roles = _messages.MessageField('MembershipRole', 5, repeated=True)
-  updateTime = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
 
 
 class MembershipRole(_messages.Message):

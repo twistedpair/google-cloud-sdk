@@ -393,6 +393,28 @@
           "description": "The time when the version was last updated.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "relatedTags": {
+          "description": "Output only. A list of related tags. Will contain up to 100 tags that\nreference this version.",
+          "type": "array",
+          "items": {
+            "$ref": "Tag"
+          }
+        }
+      }
+    },
+    "Tag": {
+      "id": "Tag",
+      "description": "Tags point to a version and represent an alternative name that can be used\nto access the version.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the tag, for example:\n\"projects\/p1\/locations\/us-central1\/repositories\/repo1\/packages\/pkg1\/tags\/tag1\".",
+          "type": "string"
+        },
+        "version": {
+          "description": "The name of the version the tag refers to, for example:\n\"projects\/p1\/locations\/us-central1\/repositories\/repo1\/packages\/pkg1\/versions\/sha256:5243811\"",
+          "type": "string"
         }
       }
     },
@@ -489,21 +511,6 @@
         },
         "nextPageToken": {
           "description": "The token to retrieve the next page of tags, or empty if there are no\nmore tags to return.",
-          "type": "string"
-        }
-      }
-    },
-    "Tag": {
-      "id": "Tag",
-      "description": "Tags point to a version and represent an alternative name that can be used\nto access the version.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the tag, for example:\n\"projects\/p1\/locations\/us-central1\/repositories\/repo1\/packages\/pkg1\/tags\/tag1\".",
-          "type": "string"
-        },
-        "version": {
-          "description": "The name of the version the tag refers to, for example:\n\"projects\/p1\/locations\/us-central1\/repositories\/repo1\/packages\/pkg1\/versions\/sha256:5243811\"",
           "type": "string"
         }
       }
@@ -1131,6 +1138,16 @@
                               "description": "The next_page_token value returned from a previous list request, if any.",
                               "location": "query",
                               "type": "string"
+                            },
+                            "view": {
+                              "description": "The view that should be returned in the response.",
+                              "location": "query",
+                              "type": "string",
+                              "enum": [
+                                "VERSION_VIEW_UNSPECIFIED",
+                                "BASIC",
+                                "FULL"
+                              ]
                             }
                           },
                           "parameterOrder": [
@@ -1157,6 +1174,16 @@
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+\/versions\/[^\/]+$",
                               "type": "string"
+                            },
+                            "view": {
+                              "description": "The view that should be returned in the response.",
+                              "location": "query",
+                              "type": "string",
+                              "enum": [
+                                "VERSION_VIEW_UNSPECIFIED",
+                                "BASIC",
+                                "FULL"
+                              ]
                             }
                           },
                           "parameterOrder": [

@@ -796,9 +796,6 @@ def _ArgComplete(ai, **kwargs):
   """Runs argcomplete.autocomplete on a calliope argument interceptor."""
   if '_ARGCOMPLETE' not in os.environ:
     return
-  if '_ARGCOMPLETE_COMP_WORDBREAKS' not in os.environ:
-    # The default would \ escape : and . -- bud tugley for GRIs.
-    os.environ['_ARGCOMPLETE_COMP_WORDBREAKS'] = '\t"\'@><;|&('
   mute_stderr = None
   namespace = None
   try:

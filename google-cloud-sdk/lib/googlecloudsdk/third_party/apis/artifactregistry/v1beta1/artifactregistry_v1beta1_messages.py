@@ -305,11 +305,28 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsGetRequest(_m
   ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsGetRequest
   object.
 
+  Enums:
+    ViewValueValuesEnum: The view that should be returned in the response.
+
   Fields:
     name: The name of the version to retrieve.
+    view: The view that should be returned in the response.
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The view that should be returned in the response.
+
+    Values:
+      VERSION_VIEW_UNSPECIFIED: <no description>
+      BASIC: <no description>
+      FULL: <no description>
+    """
+    VERSION_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
   name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest(_messages.Message):
@@ -317,16 +334,33 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest(_
   ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest
   object.
 
+  Enums:
+    ViewValueValuesEnum: The view that should be returned in the response.
+
   Fields:
     pageSize: The maximum number of versions to return.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
     parent: The name of the parent resource whose versions will be listed.
+    view: The view that should be returned in the response.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The view that should be returned in the response.
+
+    Values:
+      VERSION_VIEW_UNSPECIFIED: <no description>
+      BASIC: <no description>
+      FULL: <no description>
+    """
+    VERSION_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesPatchRequest(_messages.Message):
@@ -1124,13 +1158,16 @@ class Version(_messages.Message):
       metadata.
     name: The name of the version, for example: "projects/p1/locations/us-
       central1/repositories/repo1/packages/pkg1/versions/art1".
+    relatedTags: Output only. A list of related tags. Will contain up to 100
+      tags that reference this version.
     updateTime: The time when the version was last updated.
   """
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  relatedTags = _messages.MessageField('Tag', 4, repeated=True)
+  updateTime = _messages.StringField(5)
 
 
 encoding.AddCustomJsonFieldMapping(

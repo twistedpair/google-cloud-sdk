@@ -59,13 +59,12 @@ def MakeStatefulPolicyPreservedStateDiskEntry(messages, stateful_disk_dict):
 
 def MakeStatefulPolicy(messages, preserved_state_disks):
   """Make stateful policy proto from a list of preserved state disk protos."""
-  if preserved_state_disks:
-    return messages.StatefulPolicy(
-        preservedState=messages.StatefulPolicyPreservedState(
-            disks=messages.StatefulPolicyPreservedState.DisksValue(
-                additionalProperties=preserved_state_disks)))
-  else:
-    return messages.StatefulPolicy()
+  if not preserved_state_disks:
+    preserved_state_disks = []
+  return messages.StatefulPolicy(
+      preservedState=messages.StatefulPolicyPreservedState(
+          disks=messages.StatefulPolicyPreservedState.DisksValue(
+              additionalProperties=preserved_state_disks)))
 
 
 def PatchStatefulPolicyDisk(preserved_state, patch):

@@ -25,12 +25,12 @@ from googlecloudsdk.command_lib.events import exceptions
 from googlecloudsdk.core import yaml
 
 
-def AddCategoryFlag(parser):
+def AddSourceFlag(parser):
   """Adds a source flag."""
   parser.add_argument(
-      '--category',
+      '--source',
       required=False,
-      help='Events type category by which to filter results.')
+      help='Events source by which to filter results.')
 
 
 def AddEventTypePositionalArg(parser):

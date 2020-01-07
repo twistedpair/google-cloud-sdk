@@ -97,6 +97,8 @@ apis:
   billingbudgets:
     v1alpha1:
       discovery_doc: billingbudgets_v1alpha1.json
+    v1beta1:
+      discovery_doc: billingbudgets_v1beta1.json
       default: true
   buildartifacts:
     v1alpha2:
@@ -544,6 +546,10 @@ apis:
       resources:
         projects.snapshots:
           path: projects/{projectsId}/snapshots/{snapshotsId}
+  recaptchaenterprise:
+    v1:
+      discovery_doc: recaptchaenterprise_v1.json
+      default: true
   redis:
     v1alpha1:
       discovery_doc: redis_v1alpha1.json
@@ -587,6 +593,9 @@ apis:
     v1beta1:
       discovery_doc: serviceconsumermanagement_v1beta1.json
       default: true
+  servicedirectory:
+    v1beta1:
+      discovery_doc: servicedirectory_v1beta1.json
   servicemanagement:
     v1:
       discovery_doc: servicemanagement_v1.json
@@ -747,3 +756,6 @@ apis:
   translate:
     v3beta1:
       discovery_doc: translate_v3beta1.json
+      default: true
+    v3:
+      discovery_doc: translate_v3.json

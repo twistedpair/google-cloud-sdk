@@ -18,6 +18,16 @@ location:
     attribute_name: location
     help: The location of {resource}.
 
+# TODO(b/141858337): Delete this and just use entry above
+non_primary_location:
+  name: location
+  collection: vision.projects.locations
+  attributes:
+  - *project
+  - parameter_name: locationsId
+    attribute_name: location
+    help: The location of {resource}.
+
 product_set:
   name: product set
   collection: vision.projects.locations.productSets

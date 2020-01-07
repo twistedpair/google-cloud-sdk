@@ -522,8 +522,9 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
       if not disable_header:
         self.PrintSectionHeader(
             '{} WIDE FLAGS'.format(self._top.upper()), sep=False)
+      # NOTE: We need two newlines before 'Run' for a paragraph break.
       self._out('\nThese flags are available to all commands: {}.'
-                '\nRun *$ {} help* for details.\n'
+                '\n\nRun *$ {} help* for details.\n'
                 .format(', '.join(sorted(self._global_flags)),
                         self._top))
 

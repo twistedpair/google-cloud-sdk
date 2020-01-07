@@ -202,8 +202,8 @@ class GameservicesV1alpha(base_api.BaseApiClient):
 
     def Create(self, request, global_params=None):
       r"""Creates a new game server config in a given project, location, and game.
-server deployment. Game server configs are immutable. A game server config,
-is not applied until it is rolled out. The rollout is managed
+server deployment. Game server configs are immutable. A game server config
+is not applied until it is rolled out which is managed
 by updating the game server rollout resource.
 
       Args:
@@ -231,8 +231,8 @@ by updating the game server rollout resource.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single game server config. If a game server config referenced in.
-game server rollout, the deletion will fail since it will be in use.
+      r"""Deletes a single game server config. The deletion will fail if the game.
+server config is referenced in a game server rollout.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsConfigsDeleteRequest) input message
@@ -492,7 +492,7 @@ set.
     )
 
     def GetRollout(self, request, global_params=None):
-      r"""Gets details of a rollout of a single game server deployment.
+      r"""Gets details a single game server deployment rollout.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsGetRolloutRequest) input message
@@ -573,8 +573,8 @@ set.
     )
 
     def PreviewRollout(self, request, global_params=None):
-      r"""Previews the rollout of game server deployment. This API does not.
-mutate the rollout resource.
+      r"""Previews the game server deployment rollout. This API does not mutate the.
+rollout resource.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsPreviewRolloutRequest) input message
@@ -749,7 +749,7 @@ may "fail open" without warning.
     )
 
     def UpdateRollout(self, request, global_params=None):
-      r"""Patches the rollout of game server deployment.
+      r"""Patches a single game server deployment rollout.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsUpdateRolloutRequest) input message

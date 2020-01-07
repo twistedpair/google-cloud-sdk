@@ -29,11 +29,12 @@ def AddCreateTagTemplateFlags():
       type=arg_parsers.ArgDict(spec={
           'id': str,
           'type': str,
-          'display_name': str,
+          'display-name': str,
+          'required': bool,
       }, required_keys=['id', 'type']),
       action='append',
       required=True,
-      metavar='id=ID,type=TYPE,display_name=DISPLAY_NAME',
+      metavar='id=ID,type=TYPE,display-name=DISPLAY_NAME,required=REQUIRED',
       help="""\
         Specification for a tag template field. This flag can be repeated to
         specify multiple fields. The following keys are allowed:
@@ -49,7 +50,10 @@ def AddCreateTagTemplateFlags():
                     To specify an enum field with values 'A' and 'B':
                       `type=enum(A|B)`
 
-          *display_name*::: Display name of the tag template field.
+          *display-name*::: Display name of the tag template field.
+
+          *required*::: Indicates if the tag template field is required.
+              Defaults to FALSE.
       """)
 
   return [field_flag]

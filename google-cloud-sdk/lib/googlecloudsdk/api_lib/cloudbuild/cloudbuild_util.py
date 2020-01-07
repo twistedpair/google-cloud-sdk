@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
 from apitools.base.protorpclite import messages as proto_messages
 from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.api_lib.util import apis
@@ -31,6 +32,9 @@ import six
 _API_NAME = 'cloudbuild'
 _API_VERSION = 'v1'
 _ALPHA_API_VERSION = 'v1alpha2'
+
+WORKERPOOL_NAME_MATCHER = r'projects/.*/workerPools/.*'
+WORKERPOOL_NAME_SELECTOR = r'projects/.*/workerPools/(.*)'
 
 
 def GetMessagesModule():
@@ -412,3 +416,24 @@ def LoadMessagesFromPath(path,
   with files.FileReader(path) as f:  # Returns user-friendly error messages
     return LoadMessagesFromStream(f, msg_type, msg_friendly_name,
                                   skip_camel_case, path)
+
+
+def WorkerPoolShortName(resource_name):
+  """Turn a worker pool's full resource name into its short name (the ID).
+
+  For example, this turns "projects/abc/workerPools/def" into "def".
+
+  Args:
+    resource_name: A Worker pool's full resource name.
+
+  Raises:
+    ValueError: If the full resource name was not well-formatted.
+
+  Returns:
+    The worker pool's short name.
+  """
+  match = re.search(WORKERPOOL_NAME_SELECTOR, resource_name)
+  if match:
+    return match.group(1)
+  raise ValueError('The worker pool resource name must match "%s"' %
+                   (WORKERPOOL_NAME_MATCHER,))

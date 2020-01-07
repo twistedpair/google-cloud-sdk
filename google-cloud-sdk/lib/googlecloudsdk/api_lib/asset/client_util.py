@@ -35,7 +35,6 @@ import six
 
 API_NAME = 'cloudasset'
 DEFAULT_API_VERSION = 'v1'
-V1P2BETA1_API_VERSION = 'v1p2beta1'
 V1P4ALPHA1_API_VERSION = 'v1p4alpha1'
 V1P5ALPHA1_API_VERSION = 'v1p5alpha1'
 BASE_URL = 'https://cloudasset.googleapis.com'
@@ -224,7 +223,7 @@ class AssetExportClient(object):
 class AssetFeedClient(object):
   """Client for asset feed."""
 
-  def __init__(self, parent, api_version=V1P2BETA1_API_VERSION):
+  def __init__(self, parent, api_version=DEFAULT_API_VERSION):
     self.parent = parent
     self.message_module = GetMessages(api_version)
     self.service = GetClient(api_version).feeds
@@ -326,11 +325,12 @@ class AssetListClient(object):
     snapshot_time = None
     if args.snapshot_time:
       snapshot_time = times.FormatDateTime(args.snapshot_time)
+    content_type = ContentTypeTranslation(args.content_type)
     list_assets_request = self.message_module.CloudassetAssetsListRequest(
         parent=self.parent,
         contentType=getattr(
             self.message_module.CloudassetAssetsListRequest
-            .ContentTypeValueValuesEnum, 'RESOURCE'),
+            .ContentTypeValueValuesEnum, content_type),
         assetTypes=args.asset_types,
         readTime=snapshot_time)
     return list_pager.YieldFromList(

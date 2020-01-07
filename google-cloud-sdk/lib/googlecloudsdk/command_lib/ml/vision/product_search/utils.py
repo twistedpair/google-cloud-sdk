@@ -26,6 +26,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core.console import console_io
 
 
 class Error(core_exceptions.Error):
@@ -547,3 +548,18 @@ def _IsPolygonSpecifiedAsNormalizedVertex(bounding_polygon_coordinates):
   return len(coordinate_with_decimal_point) == len(bounding_polygon_coordinates)
 
 
+def PromptDeleteAll(ref, args, request):
+  """Prompts to confirm deletion. Changes orphan-products to None if False."""
+  del ref
+  if not args.force:
+    console_io.PromptContinue(
+        message=('You are about to delete products. After deletion, the '
+                 'products cannot be restored.'),
+        cancel_on_no=True)
+    request.purgeProductsRequest.force = True
+    # because deleteOrphanProducts is boolean, if it isn't declared, it will
+    # have a value of False instead of None
+  if args.product_set:
+    request.purgeProductsRequest.deleteOrphanProducts = None
+
+  return request

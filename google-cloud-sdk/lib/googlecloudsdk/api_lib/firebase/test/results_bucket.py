@@ -150,12 +150,14 @@ class ResultsBucketOps(object):
                .format(b=bucket_name, e=util.GetError(err)))
       raise exceptions.BadFileException(msg)
 
-  def UploadFileToGcs(self, path):
+  def UploadFileToGcs(self, path, destination_object=None):
     """Upload a file to the GCS results bucket using the storage API.
 
     Args:
-      path: str, the absolute or relative path of the file to upload. File
-        may be in located in GCS or the local filesystem.
+      path: str, the absolute or relative path of the file to upload. File may
+        be in located in GCS or the local filesystem.
+      destination_object: str, the destination object path in GCS to upload to,
+        if it's different than the base name of the path argument.
 
     Raises:
       BadFileException if the file upload is not successful.
@@ -170,7 +172,8 @@ class ResultsBucketOps(object):
             sourceObject=file_obj,
             destinationBucket=self._results_bucket,
             destinationObject='{obj}/{name}'.format(
-                obj=self._gcs_object_name, name=os.path.basename(file_obj)))
+                obj=self._gcs_object_name,
+                name=destination_object or os.path.basename(file_obj)))
         self._storage_client.objects.Copy(copy_req)
       else:
         # Perform a GCS insert of a file which is not in GCS
@@ -185,8 +188,9 @@ class ResultsBucketOps(object):
             mime_type='application/vnd.android.package-archive')
         insert_req = self._storage_messages.StorageObjectsInsertRequest(
             bucket=self._results_bucket,
-            name='{obj}/{name}'.format(obj=self._gcs_object_name,
-                                       name=os.path.basename(path)),
+            name='{obj}/{name}'.format(
+                obj=self._gcs_object_name,
+                name=destination_object or os.path.basename(path)),
             object=src_obj)
         response = self._storage_client.objects.Insert(insert_req,
                                                        upload=upload)

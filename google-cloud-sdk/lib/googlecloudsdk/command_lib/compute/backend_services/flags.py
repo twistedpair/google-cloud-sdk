@@ -392,7 +392,7 @@ def HttpHealthCheckArgument(required=False):
       possible to use a legacy health check on a backend service for a HTTP(S)
       load balancer if that backend service uses instance groups. For more
       information, refer to this guide:
-      https://cloud.google.com/load-balancing/docs/health-check-concepts#lb_guide
+      https://cloud.google.com/load-balancing/docs/health-check-concepts#lb_guide.
       """)
 
 
@@ -412,8 +412,17 @@ def HttpsHealthCheckArgument(required=False):
       possible to use a legacy health check on a backend service for a HTTP(S)
       load balancer if that backend service uses instance groups. For more
       information, refer to this guide:
-      https://cloud.google.com/load-balancing/docs/health-check-concepts#lb_guide
+      https://cloud.google.com/load-balancing/docs/health-check-concepts#lb_guide.
       """)
+
+
+def AddNoHealthChecks(parser, default=None):
+  """Adds the no health checks argument to the argparse."""
+  parser.add_argument(
+      '--no-health-checks',
+      action='store_true',
+      default=default,
+      help='Removes all health checks for the backend service.')
 
 
 def GetHealthCheckUris(args, resource_resolver, resource_parser):
@@ -441,6 +450,12 @@ def GetHealthCheckUris(args, resource_resolver, resource_parser):
               args,
               resource_parser,
               default_scope=compute_scope.ScopeEnum.GLOBAL))
+
+  if health_check_refs and getattr(args, 'no_health_checks', None):
+    raise exceptions.ToolException(
+        'Combining --health-checks, --http-health-checks, or '
+        '--https-health-checks with --no-health-checks is not supported.'
+    )
 
   return [health_check_ref.SelfLink() for health_check_ref in health_check_refs]
 
@@ -610,11 +625,18 @@ def AddProtocol(parser, default='HTTP'):
       help="""\
       Protocol for incoming requests.
 
-      If the load-balancing-scheme is `INTERNAL`, the protocol must be one of:
-      `TCP`, `UDP`.
+      If the `load-balancing-scheme` is `INTERNAL` (internal TCP/UDP load
+      balancers), the protocol must be one of: TCP, UDP.
 
-      If the load-balancing-scheme is `EXTERNAL`, the protocol must be one of:
-      `HTTP`, `HTTPS`, `HTTP2`, `SSL`, `TCP`.
+      If the `load-balancing-scheme` is `INTERNAL_SELF_MANAGED` (Traffic
+      Director), the protocol must be one of: HTTP, HTTPS, HTTP2.
+
+      If the `load-balancing-scheme` is `INTERNAL_MANAGED` (internal HTTP(S)
+      load balancers), the protocol must be one of: HTTP, HTTPS, HTTP2.
+
+      If the `load-balancing-scheme` is `EXTERNAL` (HTTP(S), SSL proxy, or TCP
+      proxy load balancers), the protocol must be one of: HTTP, HTTPS, HTTP2,
+      SSL, TCP.
       """)
 
 

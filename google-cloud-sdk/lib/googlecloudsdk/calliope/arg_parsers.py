@@ -56,6 +56,8 @@ import collections
 import copy
 import re
 
+from dateutil import tz
+
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import log
 from googlecloudsdk.core import yaml
@@ -616,11 +618,11 @@ class Day(object):
 
 
 class Datetime(object):
-  """A class for parsing a datetime object in UTC timezone."""
+  """A class for parsing a datetime object."""
 
   @staticmethod
   def Parse(s):
-    """Parses a string value into a Datetime object."""
+    """Parses a string value into a Datetime object in local timezone."""
     if not s:
       return None
     try:
@@ -629,6 +631,19 @@ class Datetime(object):
       raise ArgumentTypeError(
           _GenerateErrorMessage(
               'Failed to parse date/time: {0}'.format(six.text_type(e)),
+              user_input=s))
+
+  @staticmethod
+  def ParseUtcTime(s):
+    """Parses a string representing a time in UTC into a Datetime object."""
+    if not s:
+      return None
+    try:
+      return times.ParseDateTime(s, tzinfo=tz.tzutc())
+    except times.Error as e:
+      raise ArgumentTypeError(
+          _GenerateErrorMessage(
+              'Failed to parse UTC time: {0}'.format(six.text_type(e)),
               user_input=s))
 
 

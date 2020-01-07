@@ -140,36 +140,34 @@ class Duration(object):
 
     # Percolate fractional parts down to self.microseconds.
 
-    fraction = self.years - int(self.years)
+    # Returns (whole,fraction) of pleasingly rounded f.
+    def _Percolate(f):
+      return int(f), round(f, 4) - int(f)
+
+    self.years, fraction = _Percolate(self.years)
     if fraction:
       self.days += _DAYS_PER_YEAR * fraction
-    self.years = int(self.years)
 
-    fraction = self.months - int(self.months)
+    self.months, fraction = _Percolate(self.months)
     if fraction:
       # Truncate to integer days because of irregular months.
       self.days += int(_DAYS_PER_YEAR * fraction / _MONTHS_PER_YEAR)
-    self.months = int(self.months)
 
-    fraction = self.days - int(self.days)
+    self.days, fraction = _Percolate(self.days)
     if fraction:
-      self.hours += int(_HOURS_PER_DAY * fraction)
-    self.days = int(self.days)
+      self.hours += _HOURS_PER_DAY * fraction
 
-    fraction = self.hours - int(self.hours)
+    self.hours, fraction = _Percolate(self.hours)
     if fraction:
-      self.minutes += int(_MINUTES_PER_HOUR * fraction)
-    self.hours = int(self.hours)
+      self.minutes += _MINUTES_PER_HOUR * fraction
 
-    fraction = self.minutes - int(self.minutes)
+    self.minutes, fraction = _Percolate(self.minutes)
     if fraction:
-      self.seconds += int(_SECONDS_PER_MINUTE * fraction)
-    self.minutes = int(self.minutes)
+      self.seconds += _SECONDS_PER_MINUTE * fraction
 
-    fraction = self.seconds - int(self.seconds)
+    self.seconds, fraction = _Percolate(self.seconds)
     if fraction:
       self.microseconds = int(_MICROSECONDS_PER_SECOND * fraction)
-    self.seconds = int(self.seconds)
 
     # Adjust ranges to carry over to larger units.
 
@@ -280,7 +278,7 @@ class Duration(object):
           self.days += number * 7
         elif c == 'D':
           self.days += number
-        elif c in ('M', 'U', 'N')  and len(s) == i + 2 and s[i + 1] == 'S':
+        elif c in ('M', 'U', 'N') and len(s) == i + 2 and s[i + 1] == 'S':
           # ms, us, ns OK if it's the last part.
           if c == 'M':
             n = 1000

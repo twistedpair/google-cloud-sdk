@@ -42,3 +42,20 @@ display_name:
   api_field: googleCloudDatacatalogV1beta1Entry.displayName
   help_text: |-
     Human-readable name for the entry.
+add_file_patterns:
+  arg_name: add-file-patterns
+  type: 'googlecloudsdk.calliope.arg_parsers:ArgList:'
+  metavar: PATTERN
+  help_text: |-
+    A list of file patterns to add to the current list.
+remove_file_patterns:
+  arg_name: remove-file-patterns
+  type: 'googlecloudsdk.calliope.arg_parsers:ArgList:'
+  metavar: PATTERN
+  help_text: |-
+    A list of file patterns to remove from the current list.
+clear_file_patterns:
+  arg_name: clear-file-patterns
+  action: store_true
+  help_text: |-
+    If specified, clear the current list of file patterns.

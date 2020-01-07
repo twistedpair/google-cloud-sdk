@@ -30,7 +30,8 @@ from googlecloudsdk.command_lib.util import completers
 
 FORWARDING_RULES_OVERVIEW = """\
         A forwarding rule directs traffic that matches a destination IP address
-        to a forwarding target (load balancer, VPN gateway or VM instance).
+        (and possibly a TCP or UDP port) to a forwarding target (load balancer,
+        VPN gateway or VM instance).
 
         Forwarding rules can be either global or regional, specified with the
         ``--global'' or ``--region=REGION'' flags. For more information about
@@ -52,7 +53,7 @@ FORWARDING_RULES_OVERVIEW = """\
         provide an IP address for an internal self-managed forwarding rule.
 
         Different types of load balancers work at different layers of the OSI
-        networking model (http://en.wikipedia.org/wiki/Network_layer). Layer 3
+        networking model (http://en.wikipedia.org/wiki/Network_layer). Layer 3/4
         targets include target pools, target SSL proxies, target TCP proxies,
         and backend services. Layer 7 targets include target HTTP proxies and
         target HTTPS proxies. For more information, refer to
@@ -62,7 +63,8 @@ FORWARDING_RULES_OVERVIEW = """\
 
 FORWARDING_RULES_OVERVIEW_ALPHA = """\
         A forwarding rule directs traffic that matches a destination IP address
-        to a forwarding target (load balancer, VPN gateway or VM instance).
+        (and possibly a TCP or UDP port) to a forwarding target (load balancer,
+        VPN gateway or VM instance).
 
         Forwarding rules can be either global or regional, specified with the
         ``--global'' or ``--region=REGION'' flag. For more information about
@@ -328,7 +330,9 @@ def AddressArgHelp(include_l7_internal_load_balancing):
     - address-1
 
     The load-balancing-scheme (%s) and the forwarding rule's target determine
-    the type of IP address that you can use. For detailed information, refer to
+    the type of IP address that you can use. The address type must be external
+    for load-balancing-scheme EXTERNAL, and for the other load-balancing-schemes
+    the address must be internal. For detailed information, refer to
     https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications.
   """ % (
       lb_schemes)

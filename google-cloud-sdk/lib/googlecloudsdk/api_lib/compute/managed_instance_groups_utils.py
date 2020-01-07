@@ -1383,3 +1383,21 @@ def ValidateIgmReadyForStatefulness(igm_resource, client):
         'Stateful regional IGMs cannot use proactive instance redistribution. '
         'Try `gcloud alpha compute instance-groups managed '
         'update --instance-redistribution-type=NONE')
+
+
+def ValueOrNone(message):
+  """Return message if message is a proto with one or more fields set or None.
+
+  If message is None or is the default proto, it returns None. In all other
+  cases, it returns the message.
+
+  Args:
+    message: An generated proto message object.
+
+  Returns:
+    message if message is initialized or None
+  """
+  if message is None:
+    return message
+  default_object = message.__class__()
+  return message if message != default_object else None

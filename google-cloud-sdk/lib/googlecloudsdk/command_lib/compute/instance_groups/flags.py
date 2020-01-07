@@ -711,7 +711,7 @@ def AddMigUpdateStatefulFlags(parser):
 
 
 def ValidateUpdateStatefulPolicyParams(args, current_stateful_policy):
-  """Check stateful properties of update request; returns final device list."""
+  """Check stateful properties of update request."""
   current_device_names = set(
       managed_instance_groups_utils.GetDeviceNamesFromStatefulPolicy(
           current_stateful_policy))
@@ -750,8 +750,6 @@ def ValidateUpdateStatefulPolicyParams(args, current_stateful_policy):
         message=('Disks [{}] are not currently set as stateful, '
                  'so they cannot be removed from Stateful Policy.'.format(
                      six.text_type(not_current_device_names))))
-  final_disks = current_device_names.union(update_set).difference(remove_set)
-  return final_disks
 
 
 INSTANCE_REDISTRIBUTION_TYPES = ['NONE', 'PROACTIVE']

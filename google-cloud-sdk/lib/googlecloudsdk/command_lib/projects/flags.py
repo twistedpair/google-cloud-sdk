@@ -37,6 +37,5 @@ CREATE_DELETE_IN_CONSOLE_SEE_ALSO = (
     'See https://support.google.com/cloud/answer/6251787 for information on '
     'creating or deleting projects from the Google Cloud Platform Console.')
 
-SHUT_DOWN_PROJECTS = (
-    'See {0} for information on shutting down projects'
-    .format(SHUT_DOWN_PROJECTS_URL))
+SHUT_DOWN_PROJECTS = ('See {0} for information on shutting down projects.'
+                      .format(SHUT_DOWN_PROJECTS_URL))

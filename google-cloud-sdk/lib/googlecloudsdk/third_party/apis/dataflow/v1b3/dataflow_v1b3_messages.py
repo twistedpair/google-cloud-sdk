@@ -286,6 +286,21 @@ class ConcatPosition(_messages.Message):
   position = _messages.MessageField('Position', 2)
 
 
+class ContainerSpec(_messages.Message):
+  r"""Container Spec.
+
+  Fields:
+    image: Name of the docker container image. E.g., gcr.io/project/some-image
+    metadata: Metadata describing a template including description and
+      validation rules.
+    sdkInfo: Required. SDK info of the Flex Template.
+  """
+
+  image = _messages.StringField(1)
+  metadata = _messages.MessageField('TemplateMetadata', 2)
+  sdkInfo = _messages.MessageField('SDKInfo', 3)
+
+
 class CounterMetadata(_messages.Message):
   r"""CounterMetadata includes all static non-name non-value counter
   attributes.
@@ -928,6 +943,24 @@ class DataflowProjectsJobsWorkItemsReportStatusRequest(_messages.Message):
   jobId = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2, required=True)
   reportWorkItemStatusRequest = _messages.MessageField('ReportWorkItemStatusRequest', 3)
+
+
+class DataflowProjectsLocationsFlexTemplatesLaunchRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsFlexTemplatesLaunchRequest object.
+
+  Fields:
+    launchFlexTemplateRequest: A LaunchFlexTemplateRequest resource to be
+      passed as the request body.
+    location: Required. The [regional endpoint]
+      (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints) to
+      which to direct the request. E.g., us-central1, us-west1.
+    projectId: Required. The ID of the Cloud Platform project that the job
+      belongs to.
+  """
+
+  launchFlexTemplateRequest = _messages.MessageField('LaunchFlexTemplateRequest', 1)
+  location = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
 
 
 class DataflowProjectsLocationsJobsCreateRequest(_messages.Message):
@@ -2815,6 +2848,74 @@ class KeyRangeLocation(_messages.Message):
   deprecatedPersistentDirectory = _messages.StringField(3)
   end = _messages.StringField(4)
   start = _messages.StringField(5)
+
+
+class LaunchFlexTemplateParameter(_messages.Message):
+  r"""Launch FlexTemplate Parameter.
+
+  Messages:
+    ParametersValue: The parameters for FlexTemplate. Ex. {"num_workers":"5"}
+
+  Fields:
+    containerSpec: Spec about the container image to launch.
+    containerSpecGcsPath: Gcs path to a file with json serialized
+      ContainerSpec as content.
+    jobName: Required. The job name to use for the created job.
+    parameters: The parameters for FlexTemplate. Ex. {"num_workers":"5"}
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""The parameters for FlexTemplate. Ex. {"num_workers":"5"}
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  containerSpec = _messages.MessageField('ContainerSpec', 1)
+  containerSpecGcsPath = _messages.StringField(2)
+  jobName = _messages.StringField(3)
+  parameters = _messages.MessageField('ParametersValue', 4)
+
+
+class LaunchFlexTemplateRequest(_messages.Message):
+  r"""A request to launch a Cloud Dataflow job from a FlexTemplate.
+
+  Fields:
+    launchParameter: Required. Parameter to launch a job form Flex Template.
+    validateOnly: If true, the request is validated but not actually executed.
+      Defaults to false.
+  """
+
+  launchParameter = _messages.MessageField('LaunchFlexTemplateParameter', 1)
+  validateOnly = _messages.BooleanField(2)
+
+
+class LaunchFlexTemplateResponse(_messages.Message):
+  r"""Response to the request to launch a job from Flex Template.
+
+  Fields:
+    job: The job that was launched, if the request was not a dry run and the
+      job was successfully launched.
+  """
+
+  job = _messages.MessageField('Job', 1)
 
 
 class LaunchTemplateParameters(_messages.Message):

@@ -15,17 +15,16 @@
 
 """A library to support auth commands."""
 
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
 import json
-import os
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import store as c_store
-from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
 from oauth2client import client
@@ -123,37 +122,3 @@ def GetClientSecretsType(client_id_file):
         'Expected a JSON object with a single property for a "web" or '
         '"installed" application')
   return tuple(obj)[0]
-
-
-def ADCFilePath():
-  """Gets the ADC default file path.
-
-  Returns:
-    str, The path to the default ADC file.
-  """
-  # pylint:disable=protected-access
-  return client._get_well_known_file()
-
-
-def AdcEnvVariable():
-  """Gets the value of the ADC environment variable.
-
-  Returns:
-    str, The value of the env var or None if unset.
-  """
-  return encoding.GetEncodedValue(
-      os.environ, client.GOOGLE_APPLICATION_CREDENTIALS, None)
-
-
-def SaveCredentialsAsADC(creds):
-  """Saves the credentials to the given file.
-
-  Args:
-    creds: The credentials obtained from a web flow.
-
-  Returns:
-    str, The full path to the ADC file that was written.
-  """
-  adc_file = ADCFilePath()
-  c_store.SaveCredentialsAsADC(creds, adc_file)
-  return os.path.abspath(adc_file)

@@ -79,8 +79,9 @@ class TagTemplatesClient(object):
     value = (
         self.messages
         .GoogleCloudDatacatalogV1beta1TagTemplateField(
-            displayName=field.get('display_name', None),
+            displayName=field.get('display-name', None),
             type=self._ParseFieldType(field['type']),
+            isRequired=field.get('required', False),
         )
     )
     return (

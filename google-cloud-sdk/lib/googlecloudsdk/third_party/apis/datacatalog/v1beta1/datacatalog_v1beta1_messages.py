@@ -446,12 +446,14 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsPatchRequest(_messages.Messa
     name: Required. The name of the tag template field. Example:  * projects/{
       project_id}/locations/{location}/tagTemplates/{tag_template_id}/fields/{
       tag_template_field_id}
-    updateMask: The field mask specifies the parts of the template to be
-      updated. Allowed fields:    * `display_name`   * `type.enum_type`  If
-      `update_mask` is not set or empty, all of the allowed fields above will
-      be updated.  When updating an enum type, the provided values will be
-      merged with the existing values. Therefore, enum values can only be
-      added, existing enum values cannot be deleted nor renamed.
+    updateMask: Optional. The field mask specifies the parts of the template
+      to be updated. Allowed fields:    * `display_name`   * `type.enum_type`
+      * `is_required`  If `update_mask` is not set or empty, all of the
+      allowed fields above will be updated.  When updating an enum type, the
+      provided values will be merged with the existing values. Therefore, enum
+      values can only be added, existing enum values cannot be deleted nor
+      renamed. Updating a template field from optional to required is NOT
+      allowed.
   """
 
   googleCloudDatacatalogV1beta1TagTemplateField = _messages.MessageField('GoogleCloudDatacatalogV1beta1TagTemplateField', 1)
@@ -1648,6 +1650,7 @@ class GoogleCloudDatacatalogV1beta1TagTemplateField(_messages.Message):
 
   Fields:
     displayName: The display name for this field. Defaults to an empty string.
+    isRequired: Whether this is a required field. Defaults to false.
     name: Output only. The resource name of the tag template field in URL
       format. Example:  * projects/{project_id}/locations/{location}/tagTempla
       tes/{tag_template}/fields/{field}  Note that this TagTemplateField may
@@ -1656,8 +1659,9 @@ class GoogleCloudDatacatalogV1beta1TagTemplateField(_messages.Message):
   """
 
   displayName = _messages.StringField(1)
-  name = _messages.StringField(2)
-  type = _messages.MessageField('GoogleCloudDatacatalogV1beta1FieldType', 3)
+  isRequired = _messages.BooleanField(2)
+  name = _messages.StringField(3)
+  type = _messages.MessageField('GoogleCloudDatacatalogV1beta1FieldType', 4)
 
 
 class GoogleCloudDatacatalogV1beta1Taxonomy(_messages.Message):

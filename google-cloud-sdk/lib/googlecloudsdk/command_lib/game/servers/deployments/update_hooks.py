@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.game.servers import hooks
 from googlecloudsdk.command_lib.game.servers import utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -44,7 +45,7 @@ def ConvertOutput(response, args):
 
 def GetResourceRef(args):
   project = properties.VALUES.core.project.Get(required=True)
-  location = args.location
+  location = args.location or hooks.DEFAULT_LOCATION
   ref = resources.REGISTRY.Create(
       'gameservices.projects.locations.gameServerDeployments',
       projectsId=project,

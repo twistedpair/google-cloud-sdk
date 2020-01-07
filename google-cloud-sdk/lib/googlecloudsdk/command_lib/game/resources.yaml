@@ -30,18 +30,6 @@ operation:
     attribute_name: operation
     help: Cloud Game Services Operation.
 
-allocation_policy:
-  name: allocation policy
-  collection: gameservices.projects.locations.allocationPolicies
-  request_id_field: allocationPolicyId
-  attributes:
-  - *project
-  - *location
-  - &allocation-policy
-    parameter_name: allocationPoliciesId
-    attribute_name: allocation_policy
-    help: Cloud Game Servers Allocation Policy.
-
 realm:
   name: realm
   collection: gameservices.projects.locations.realms
@@ -52,6 +40,19 @@ realm:
   - &realm
     parameter_name: realmsId
     attribute_name: realm
+    help: Cloud Game Servers Realm.
+
+default_realm:
+  name: realm
+  collection: gameservices.projects.locations.realms
+  request_id_field: realmId
+  attributes:
+  - *project
+  - *location
+  - &default_realm
+    parameter_name: realmsId
+    attribute_name: realm
+    property: game_services/default_realm
     help: Cloud Game Servers Realm.
 
 cluster:
@@ -79,6 +80,20 @@ deployment:
     attribute_name: deployment
     help: Cloud Game Servers Deployment.
 
+default_deployment:
+  name: deployment
+  collection: gameservices.projects.locations.gameServerDeployments
+  request_id_field: deploymentId
+  attributes:
+  - *project
+  - *location
+  - &default_deployment
+    parameter_name: gameServerDeploymentsId
+    attribute_name: deployment
+    property: game_services/default_deployment
+    help: Cloud Game Servers Deployment.
+
+
 config:
   name: game server config
   collection: gameservices.projects.locations.gameServerDeployments.configs
@@ -91,15 +106,3 @@ config:
     parameter_name: configsId
     attribute_name: config
     help: Cloud Game Servers Configs.
-
-scaling_policy:
-  name: scaling policy
-  collection: gameservices.projects.locations.scalingPolicies
-  request_id_field: scalingPolicyId
-  attributes:
-  - *project
-  - *location
-  - &scaling-policy
-    parameter_name: scalingPoliciesId
-    attribute_name: scaling_policy
-    help: Cloud Game Servers Scaling Policy.

@@ -107,91 +107,6 @@ class AuthorizedDomain(_messages.Message):
   name = _messages.StringField(2)
 
 
-class AutoDomainMapping(_messages.Message):
-  r"""Resource to hold the state and status of a user's auto domain mapping.
-
-  Fields:
-    apiVersion: The API version for this call such as
-      "serving.knative.dev/v1".
-    kind: The kind of resource, in this case "AutoDomainMapping".
-    metadata: Metadata associated with this BuildTemplate.
-    spec: The spec for this AutoDomainMapping.
-    status: The current status of the AutoDomainMapping.
-  """
-
-  apiVersion = _messages.StringField(1)
-  kind = _messages.StringField(2)
-  metadata = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1ObjectMeta', 3)
-  spec = _messages.MessageField('AutoDomainMappingSpec', 4)
-  status = _messages.MessageField('AutoDomainMappingStatus', 5)
-
-
-class AutoDomainMappingSpec(_messages.Message):
-  r"""The desired state of the Auto Domain Mapping.
-
-  Enums:
-    CertificateModeValueValuesEnum: The mode of the certificate.
-    ExpansionTypeValueValuesEnum: The type of expansion for the auto auto
-      domain mapping.
-
-  Fields:
-    certificateMode: The mode of the certificate.
-    expansionType: The type of expansion for the auto auto domain mapping.
-    forceOverride: If set, the mapping will override any mapping set before
-      this spec was set. It is recommended that the user leaves this empty to
-      receive an error warning about a potential conflict and only set it once
-      the respective UI has given such a warning.
-  """
-
-  class CertificateModeValueValuesEnum(_messages.Enum):
-    r"""The mode of the certificate.
-
-    Values:
-      CERTIFICATE_MODE_UNSPECIFIED: <no description>
-      NONE: Do not provision an HTTPS certificate.
-      AUTOMATIC: Automatically provisions an HTTPS certificate via
-        LetsEncrypt.
-    """
-    CERTIFICATE_MODE_UNSPECIFIED = 0
-    NONE = 1
-    AUTOMATIC = 2
-
-  class ExpansionTypeValueValuesEnum(_messages.Enum):
-    r"""The type of expansion for the auto auto domain mapping.
-
-    Values:
-      EXPANSION_TYPE_UNSPECIFIED: <no description>
-      PREFIX: <no description>
-    """
-    EXPANSION_TYPE_UNSPECIFIED = 0
-    PREFIX = 1
-
-  certificateMode = _messages.EnumField('CertificateModeValueValuesEnum', 1)
-  expansionType = _messages.EnumField('ExpansionTypeValueValuesEnum', 2)
-  forceOverride = _messages.BooleanField(3)
-
-
-class AutoDomainMappingStatus(_messages.Message):
-  r"""The current state of the Domain Mapping.
-
-  Fields:
-    conditions: Array of observed AutoDomainMappingConditions, indicating the
-      current state of the AutoDomainMapping.
-    observedGeneration: ObservedGeneration is the 'Generation' of the
-      AutoDomainMapping that was last processed by the controller.  Clients
-      polling for completed reconciliation should poll until
-      observedGeneration = metadata.generation and the Ready condition's
-      status is True or False.
-    resourceRecords: The resource records required to configure this domain
-      mapping. These records must be added to the domain's DNS configuration
-      in order to serve the application via this domain mapping.
-  """
-
-  conditions = _messages.MessageField('GoogleCloudRunV1Condition', 1, repeated=True)
-  observedGeneration = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  resourceRecords = _messages.MessageField('ResourceRecord', 3, repeated=True)
-
-
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
@@ -210,9 +125,26 @@ class Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: The G Suite domain (primary) that represents all
-      the    users of that domain. For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding.  *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus    unique identifier) representing a service account that has been
+      recently    deleted. For example,    `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique    identifier) representing a Google group
+      that has been recently    deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If    the group is
+      recovered, this value reverts to `group:{emailid}` and the    recovered
+      group retains the role in the binding.   * `domain:{domain}`: The G
+      Suite domain (primary) that represents all the    users of that domain.
+      For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -223,41 +155,51 @@ class Binding(_messages.Message):
 
 
 class ConfigMapEnvSource(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   ConfigMapEnvSource selects a ConfigMap to populate the environment variables
   with.  The contents of the target ConfigMap's Data field will represent the
   key-value pairs as environment variables.
 
   Fields:
-    localObjectReference: The ConfigMap to select from.
-    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Specify whether the ConfigMap must be defined
+    localObjectReference: This field should not be used directly as it is
+      meant to be inlined directly into the message. Use the "name" field
+      instead.
+    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  The ConfigMap to select from.
+    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run
+      for Anthos: supported  Specify whether the ConfigMap must be defined
   """
 
   localObjectReference = _messages.MessageField('LocalObjectReference', 1)
-  optional = _messages.BooleanField(2)
+  name = _messages.StringField(2)
+  optional = _messages.BooleanField(3)
 
 
 class ConfigMapKeySelector(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   Selects a key from a ConfigMap.
 
   Fields:
-    key: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
-      The key to select.
-    localObjectReference: Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  The ConfigMap to select from.
-    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Specify whether the ConfigMap or its key must be defined
+    key: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  The key to select.
+    localObjectReference: This field should not be used directly as it is
+      meant to be inlined directly into the message. Use the "name" field
+      instead.
+    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  The ConfigMap to select from.
+    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run
+      for Anthos: supported  Specify whether the ConfigMap or its key must be
+      defined
   """
 
   key = _messages.StringField(1)
   localObjectReference = _messages.MessageField('LocalObjectReference', 2)
-  optional = _messages.BooleanField(3)
+  name = _messages.StringField(3)
+  optional = _messages.BooleanField(4)
 
 
 class ConfigMapVolumeSource(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   Adapts a ConfigMap into a volume. The contents of the target ConfigMap's
   Data field will be presented in a volume as files using the keys in the Data
   field as the file names, unless the items element is populated with specific
@@ -265,22 +207,23 @@ class ConfigMapVolumeSource(_messages.Message):
 
   Fields:
     defaultMode: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      on GKE: supported  Mode bits to use on created files by default. Must be
-      a value between 0 and 0777. Defaults to 0644. Directories within the
-      path are not affected by this setting. This might be in conflict with
-      other options that affect the file mode, like fsGroup, and the result
-      can be other mode bits set.
-    items: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  If unspecified, each key-value pair in the Data field of
-      the referenced Secret will be projected into the volume as a file whose
-      name is the key and content is the value. If specified, the listed keys
-      will be projected into the specified paths, and unlisted keys will not
-      be present. If a key is specified which is not present in the Secret,
-      the volume setup will error unless it is marked optional.
-    name: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
-      Name of the config.
-    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Specify whether the Secret or its keys must be defined.
+      for Anthos: supported  Mode bits to use on created files by default.
+      Must be a value between 0 and 0777. Defaults to 0644. Directories within
+      the path are not affected by this setting. This might be in conflict
+      with other options that affect the file mode, like fsGroup, and the
+      result can be other mode bits set.
+    items: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  If unspecified, each key-value pair in the Data field
+      of the referenced Secret will be projected into the volume as a file
+      whose name is the key and content is the value. If specified, the listed
+      keys will be projected into the specified paths, and unlisted keys will
+      not be present. If a key is specified which is not present in the
+      Secret, the volume setup will error unless it is marked optional.
+    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  Name of the config.
+    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run
+      for Anthos: supported  Specify whether the Secret or its keys must be
+      defined.
   """
 
   defaultMode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -310,7 +253,7 @@ class Configuration(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   kind = _messages.StringField(2)
-  metadata = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1ObjectMeta', 3)
+  metadata = _messages.MessageField('ObjectMeta', 3)
   spec = _messages.MessageField('ConfigurationSpec', 4)
   status = _messages.MessageField('ConfigurationStatus', 5)
 
@@ -323,8 +266,8 @@ class ConfigurationSpec(_messages.Message):
     template: Optional metadata for this Revision, including labels and
       annotations. Name will be generated by the Configuration. To set minimum
       instances for this revision, use the "autoscaling.knative.dev/minScale"
-      annotation key. (Cloud Run on GKE only). To set maximum instances for
-      this revision, use the "autoscaling.knative.dev/maxScale" annotation
+      annotation key. (Cloud Run for Anthos only). To set maximum instances
+      for this revision, use the "autoscaling.knative.dev/maxScale" annotation
       key. To set Cloud SQL connections for the revision, use the
       "run.googleapis.com/cloudsql-instances" annotation key. Values should be
       comma separated.
@@ -368,73 +311,71 @@ class Container(_messages.Message):
   container at runtime.
 
   Fields:
-    args: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Arguments to the entrypoint. The docker image's CMD is
-      used if this is not provided. Variable references $(VAR_NAME) are
+    args: (Optional)  Cloud Run fully managed: supported  Cloud Run for
+      Anthos: supported  Arguments to the entrypoint. The docker image's CMD
+      is used if this is not provided. Variable references $(VAR_NAME) are
       expanded using the container's environment. If a variable cannot be
       resolved, the reference in the input string will be unchanged. The
       $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME).
       Escaped references will never be expanded, regardless of whether the
-      variable exists or not. Cannot be updated. More info:
-      https://kubernetes.io/docs/tasks/inject-data-application/define-command-
-      argument-container/#running-a-command-in-a-shell
+      variable exists or not. More info: https://kubernetes.io/docs/tasks
+      /inject-data-application/define-command-argument-container/#running-a
+      -command-in-a-shell
     command: A string attribute.
-    env: (Optional)  Cloud Run fully managed: supported  Cloud Run on GKE:
-      supported  List of environment variables to set in the container. Cannot
-      be updated.
-    envFrom: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  List of sources to populate environment variables in the
-      container. The keys defined within a source must be a C_IDENTIFIER. All
-      invalid keys will be reported as an event when the container is
+    env: (Optional)  Cloud Run fully managed: supported  Cloud Run for Anthos:
+      supported  List of environment variables to set in the container.
+    envFrom: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  List of sources to populate environment variables in
+      the container. The keys defined within a source must be a C_IDENTIFIER.
+      All invalid keys will be reported as an event when the container is
       starting. When a key exists in multiple sources, the value associated
       with the last source will take precedence. Values defined by an Env with
       a duplicate key will take precedence. Cannot be updated.
     image: Cloud Run fully managed: only supports containers from Google
-      Container Registry  Cloud Run on GKE: supported  URL of the Container
-      image. More info: https://kubernetes.io/docs/concepts/containers/images
+      Container Registry  Cloud Run for Anthos: supported  URL of the
+      Container image. More info:
+      https://kubernetes.io/docs/concepts/containers/images
     imagePullPolicy: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run on GKE: supported  Image pull policy. One of Always, Never,
+      Run for Anthos: supported  Image pull policy. One of Always, Never,
       IfNotPresent. Defaults to Always if :latest tag is specified, or
-      IfNotPresent otherwise. Cannot be updated. More info:
+      IfNotPresent otherwise. More info:
       https://kubernetes.io/docs/concepts/containers/images#updating-images
     livenessProbe: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run on GKE: supported  Periodic probe of container liveness. Container
-      will be restarted if the probe fails. Cannot be updated. More info:
+      Run for Anthos: supported  Periodic probe of container liveness.
+      Container will be restarted if the probe fails. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle
       #container-probes
     name: (Optional)  Name of the container specified as a DNS_LABEL.
-    ports: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  List of ports to expose from the container. Exposing a
-      port here gives the system additional information about the network
+    ports: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  List of ports to expose from the container. Exposing
+      a port here gives the system additional information about the network
       connections a container uses, but is primarily informational. Not
       specifying a port here DOES NOT prevent that port from being exposed.
       Any port which is listening on the default "0.0.0.0" address inside a
-      container will be accessible from the network. Cannot be updated.
+      container will be accessible from the network.
     readinessProbe: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run on GKE: supported  Periodic probe of container service readiness.
-      Container will be removed from service endpoints if the probe fails.
-      Cannot be updated. More info:
-      https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle
-      #container-probes
-    resources: (Optional)  Cloud Run fully managed: supported  Cloud Run on
-      GKE: supported  Compute Resources required by this container. Cannot be
-      updated. More info: https://kubernetes.io/docs/concepts/storage
-      /persistent-volumes#resources
+      Run for Anthos: supported  Periodic probe of container service
+      readiness. Container will be removed from service endpoints if the probe
+      fails. More info: https://kubernetes.io/docs/concepts/workloads/pods
+      /pod-lifecycle#container-probes
+    resources: (Optional)  Cloud Run fully managed: supported  Cloud Run for
+      Anthos: supported  Compute Resources required by this container. More
+      info: https://kubernetes.io/docs/concepts/storage/persistent-
+      volumes#resources
     securityContext: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run on GKE: supported  Security options the pod should run with. More
-      info: https://kubernetes.io/docs/concepts/policy/security-context/ More
-      info: https://kubernetes.io/docs/tasks/configure-pod-container/security-
-      context/
+      Run for Anthos: supported  Security options the pod should run with.
+      More info: https://kubernetes.io/docs/concepts/policy/security-context/
+      More info: https://kubernetes.io/docs/tasks/configure-pod-container
+      /security-context/
     terminationMessagePath: (Optional)  Cloud Run fully managed: not supported
-      Cloud Run on GKE: supported  Path at which the file to which the
+      Cloud Run for Anthos: supported  Path at which the file to which the
       container's termination message will be written is mounted into the
       container's filesystem. Message written is intended to be brief final
       status, such as an assertion failure message. Will be truncated by the
       node if greater than 4096 bytes. The total message length across all
       containers will be limited to 12kb. Defaults to /dev/termination-log.
-      Cannot be updated.
     terminationMessagePolicy: (Optional)  Cloud Run fully managed: not
-      supported  Cloud Run on GKE: supported  Indicate how the termination
+      supported  Cloud Run for Anthos: supported  Indicate how the termination
       message should be populated. File will use the contents of
       terminationMessagePath to populate the container status message on both
       success and failure. FallbackToLogsOnError will use the last chunk of
@@ -442,12 +383,12 @@ class Container(_messages.Message):
       container exited with an error. The log output is limited to 2048 bytes
       or 80 lines, whichever is smaller. Defaults to File. Cannot be updated.
     volumeMounts: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run on GKE: supported  Pod volumes to mount into the container's
-      filesystem. Cannot be updated.
+      Run for Anthos: supported  Pod volumes to mount into the container's
+      filesystem.
     workingDir: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      on GKE: supported  Container's working directory. If not specified, the
-      container runtime's default will be used, which might be configured in
-      the container image. Cannot be updated.
+      for Anthos: supported  Container's working directory. If not specified,
+      the container runtime's default will be used, which might be configured
+      in the container image.
   """
 
   args = _messages.StringField(1, repeated=True)
@@ -469,18 +410,19 @@ class Container(_messages.Message):
 
 
 class ContainerPort(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   ContainerPort represents a network port in a single container.
 
   Fields:
-    containerPort: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run on GKE: supported  Number of port to expose on the pod's IP address.
-      This must be a valid port number, 0 < x < 65536.
-    name: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  If specified, used to specify which protocol to use.
+    containerPort: (Optional)  Cloud Run fully managed: supported  Cloud Run
+      for Anthos: supported  Port number the container listens on. This must
+      be a valid port number, 0 < x < 65536.
+    name: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  If specified, used to specify which protocol to use.
       Allowed values are "http1" and "h2c".
-    protocol: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Protocol for port. Must be TCP. Defaults to "TCP".
+    protocol: (Optional)  Cloud Run fully managed: not supported  Cloud Run
+      for Anthos: supported  Protocol for port. Must be TCP. Defaults to
+      "TCP".
   """
 
   containerPort = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -502,7 +444,7 @@ class DomainMapping(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   kind = _messages.StringField(2)
-  metadata = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1ObjectMeta', 3)
+  metadata = _messages.MessageField('ObjectMeta', 3)
   spec = _messages.MessageField('DomainMappingSpec', 4)
   status = _messages.MessageField('DomainMappingStatus', 5)
 
@@ -566,17 +508,17 @@ class DomainMappingStatus(_messages.Message):
 
 
 class EnvFromSource(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   EnvFromSource represents the source of a set of ConfigMaps
 
   Fields:
     configMapRef: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run on GKE: supported  The ConfigMap to select from
-    prefix: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  An optional identifier to prepend to each key in the
+      Run for Anthos: supported  The ConfigMap to select from
+    prefix: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  An optional identifier to prepend to each key in the
       ConfigMap. Must be a C_IDENTIFIER.
     secretRef: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      on GKE: supported  The Secret to select from
+      for Anthos: supported  The Secret to select from
   """
 
   configMapRef = _messages.MessageField('ConfigMapEnvSource', 1)
@@ -597,8 +539,8 @@ class EnvVar(_messages.Message):
       never be expanded, regardless of whether the variable exists or not.
       Defaults to "".
     valueFrom: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      on GKE: supported  Source for the environment variable's value. Cannot
-      be used if value is not empty.
+      for Anthos: supported  Source for the environment variable's value.
+      Cannot be used if value is not empty.
   """
 
   name = _messages.StringField(1)
@@ -607,14 +549,15 @@ class EnvVar(_messages.Message):
 
 
 class EnvVarSource(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   EnvVarSource represents a source for the value of an EnvVar.
 
   Fields:
     configMapKeyRef: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run on GKE: supported  Selects a key of a ConfigMap.
+      Run for Anthos: supported  Selects a key of a ConfigMap.
     secretKeyRef: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run on GKE: supported  Selects a key of a secret in the pod's namespace
+      Run for Anthos: supported  Selects a key of a secret in the pod's
+      namespace
   """
 
   configMapKeyRef = _messages.MessageField('ConfigMapKeySelector', 1)
@@ -622,12 +565,12 @@ class EnvVarSource(_messages.Message):
 
 
 class ExecAction(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   ExecAction describes a "run in container" action.
 
   Fields:
-    command: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Command is the command line to execute inside the
+    command: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  Command is the command line to execute inside the
       container, the working directory for the command  is root ('/') in the
       container's filesystem. The command is simply exec'd, it is not run
       inside a shell, so traditional shell instructions ('|', etc) won't work.
@@ -690,72 +633,21 @@ class GoogleCloudRunV1Condition(_messages.Message):
   type = _messages.StringField(6)
 
 
-class GoogleRpcStatus(_messages.Message):
-  r"""The `Status` type defines a logical error model that is suitable for
-  different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
-  find out more about this error model and how to work with it in the [API
-  Design Guide](https://cloud.google.com/apis/design/errors).
-
-  Messages:
-    DetailsValueListEntry: A DetailsValueListEntry object.
-
-  Fields:
-    code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
-      common set of message types for APIs to use.
-    message: A developer-facing error message, which should be in English. Any
-      user-facing error message should be localized and sent in the
-      google.rpc.Status.details field, or localized by the client.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class DetailsValueListEntry(_messages.Message):
-    r"""A DetailsValueListEntry object.
-
-    Messages:
-      AdditionalProperty: An additional property for a DetailsValueListEntry
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a DetailsValueListEntry object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
-  message = _messages.StringField(3)
-
-
 class HTTPGetAction(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   HTTPGetAction describes an action based on HTTP Get requests.
 
   Fields:
-    host: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Host name to connect to, defaults to the pod IP. You
+    host: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  Host name to connect to, defaults to the pod IP. You
       probably want to set "Host" in httpHeaders instead.
     httpHeaders: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      on GKE: supported  Custom headers to set in the request. HTTP allows
+      for Anthos: supported  Custom headers to set in the request. HTTP allows
       repeated headers.
-    path: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Path to access on the HTTP server.
-    scheme: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Scheme to use for connecting to the host. Defaults to
+    path: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  Path to access on the HTTP server.
+    scheme: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  Scheme to use for connecting to the host. Defaults to
       HTTP.
   """
 
@@ -766,14 +658,14 @@ class HTTPGetAction(_messages.Message):
 
 
 class HTTPHeader(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   HTTPHeader describes a custom header to be used in HTTP probes
 
   Fields:
-    name: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
-      The header field name
-    value: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
-      The header field value
+    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  The header field name
+    value: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  The header field value
   """
 
   name = _messages.StringField(1)
@@ -781,85 +673,23 @@ class HTTPHeader(_messages.Message):
 
 
 class Handler(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   Handler defines a specific action that should be taken
 
   Fields:
-    exec_: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  One and only one of the following should be specified.
-      Exec specifies the action to take.
-    httpGet: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  HTTPGet specifies the http request to perform.
+    exec_: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  One and only one of the following should be
+      specified. Exec specifies the action to take.
+    httpGet: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  HTTPGet specifies the http request to perform.
     tcpSocket: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      on GKE: supported  TCPSocket specifies an action involving a TCP port.
-      TCP hooks not yet supported
+      for Anthos: supported  TCPSocket specifies an action involving a TCP
+      port. TCP hooks not yet supported
   """
 
   exec_ = _messages.MessageField('ExecAction', 1)
   httpGet = _messages.MessageField('HTTPGetAction', 2)
   tcpSocket = _messages.MessageField('TCPSocketAction', 3)
-
-
-class HttpBody(_messages.Message):
-  r"""Message that represents an arbitrary HTTP body. It should only be used
-  for payload formats that can't be represented as JSON, such as raw binary or
-  an HTML page.   This message can be used both in streaming and non-streaming
-  API methods in the request as well as the response.  It can be used as a
-  top-level request field, which is convenient if one wants to extract
-  parameters from either the URL or HTTP template into the request fields and
-  also want access to the raw HTTP body.  Example:      message
-  GetResourceRequest {       // A unique request id.       string request_id =
-  1;        // The raw HTTP body is bound to this field.
-  google.api.HttpBody http_body = 2;     }      service ResourceService {
-  rpc GetResource(GetResourceRequest) returns (google.api.HttpBody);       rpc
-  UpdateResource(google.api.HttpBody) returns       (google.protobuf.Empty);
-  }  Example with streaming methods:      service CaldavService {       rpc
-  GetCalendar(stream google.api.HttpBody)         returns (stream
-  google.api.HttpBody);       rpc UpdateCalendar(stream google.api.HttpBody)
-  returns (stream google.api.HttpBody);     }  Use of this type only changes
-  how the request and response bodies are handled, all other features will
-  continue to work unchanged.
-
-  Messages:
-    ExtensionsValueListEntry: A ExtensionsValueListEntry object.
-
-  Fields:
-    contentType: The HTTP Content-Type header value specifying the content
-      type of the body.
-    data: The HTTP request/response body as raw binary.
-    extensions: Application specific response metadata. Must be set in the
-      first response for streaming APIs.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ExtensionsValueListEntry(_messages.Message):
-    r"""A ExtensionsValueListEntry object.
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        ExtensionsValueListEntry object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ExtensionsValueListEntry object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  contentType = _messages.StringField(1)
-  data = _messages.BytesField(2)
-  extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
 
 
 class IntOrString(_messages.Message):
@@ -879,7 +709,93 @@ class IntOrString(_messages.Message):
   type = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
-class K8sIoApimachineryPkgApisMetaV1ListMeta(_messages.Message):
+class KeyToPath(_messages.Message):
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  Maps a string key to a path within a volume.
+
+  Fields:
+    key: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  The key to project.
+    mode: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  Mode bits to use on this file, must be a value
+      between 0 and 0777. If not specified, the volume defaultMode will be
+      used. This might be in conflict with other options that affect the file
+      mode, like fsGroup, and the result can be other mode bits set.
+    path: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  The relative path of the file to map the key to. May not be
+      an absolute path. May not contain the path element '..'. May not start
+      with the string '..'.
+  """
+
+  key = _messages.StringField(1)
+  mode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  path = _messages.StringField(3)
+
+
+class ListAuthorizedDomainsResponse(_messages.Message):
+  r"""A list of Authorized Domains.
+
+  Fields:
+    domains: The authorized domains belonging to the user.
+    nextPageToken: Continuation token for fetching the next page of results.
+  """
+
+  domains = _messages.MessageField('AuthorizedDomain', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListConfigurationsResponse(_messages.Message):
+  r"""ListConfigurationsResponse is a list of Configuration resources.
+
+  Fields:
+    apiVersion: The API version for this call such as
+      "serving.knative.dev/v1".
+    items: List of Configurations.
+    kind: The kind of this resource, in this case "ConfigurationList".
+    metadata: Metadata associated with this Configuration list.
+    unreachable: Locations that could not be reached.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('Configuration', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
+
+
+class ListDomainMappingsResponse(_messages.Message):
+  r"""ListDomainMappingsResponse is a list of DomainMapping resources.
+
+  Fields:
+    apiVersion: The API version for this call such as
+      "domains.cloudrun.com/v1".
+    items: List of DomainMappings.
+    kind: The kind of this resource, in this case "DomainMappingList".
+    metadata: Metadata associated with this DomainMapping list.
+    unreachable: Locations that could not be reached.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('DomainMapping', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
+
+
+class ListLocationsResponse(_messages.Message):
+  r"""The response message for Locations.ListLocations.
+
+  Fields:
+    locations: A list of locations that matches the specified filter in the
+      request.
+    nextPageToken: The standard List next-page token.
+  """
+
+  locations = _messages.MessageField('Location', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListMeta(_messages.Message):
   r"""ListMeta describes metadata that synthetic resources must have,
   including lists and various status objects. A resource may have only one of
   {ObjectMeta, ListMeta}.
@@ -908,529 +824,8 @@ class K8sIoApimachineryPkgApisMetaV1ListMeta(_messages.Message):
   selfLink = _messages.StringField(3)
 
 
-class K8sIoApimachineryPkgApisMetaV1ObjectMeta(_messages.Message):
-  r"""k8s.io.apimachinery.pkg.apis.meta.v1.ObjectMeta is metadata that all
-  persisted resources must have, which includes all objects users must create.
-
-  Messages:
-    AnnotationsValue: (Optional)  Annotations is an unstructured key value map
-      stored with a resource that may be set by external tools to store and
-      retrieve arbitrary metadata. They are not queryable and should be
-      preserved when modifying objects. More info: http://kubernetes.io/docs
-      /user-guide/annotations
-    LabelsValue: (Optional)  Map of string keys and values that can be used to
-      organize and categorize (scope and select) objects. May match selectors
-      of replication controllers and routes. More info:
-      http://kubernetes.io/docs/user-guide/labels
-
-  Fields:
-    annotations: (Optional)  Annotations is an unstructured key value map
-      stored with a resource that may be set by external tools to store and
-      retrieve arbitrary metadata. They are not queryable and should be
-      preserved when modifying objects. More info: http://kubernetes.io/docs
-      /user-guide/annotations
-    clusterName: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      on GKE: supported  The name of the cluster which the object belongs to.
-      This is used to distinguish resources with same name and namespace in
-      different clusters. This field is not set anywhere right now and
-      apiserver is going to ignore it if set in create or update request.
-    creationTimestamp: (Optional)  CreationTimestamp is a timestamp
-      representing the server time when this object was created. It is not
-      guaranteed to be set in happens-before order across separate operations.
-      Clients may not set this value. It is represented in RFC3339 form and is
-      in UTC.  Populated by the system. Read-only. Null for lists. More info:
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#metadata
-    deletionGracePeriodSeconds: (Optional)  Cloud Run fully managed: not
-      supported  Cloud Run on GKE: supported  Number of seconds allowed for
-      this object to gracefully terminate before it will be removed from the
-      system. Only set when deletionTimestamp is also set. May only be
-      shortened. Read-only.
-    deletionTimestamp: (Optional)  Cloud Run fully managed: not supported
-      Cloud Run on GKE: supported  DeletionTimestamp is RFC 3339 date and time
-      at which this resource will be deleted. This field is set by the server
-      when a graceful deletion is requested by the user, and is not directly
-      settable by a client. The resource is expected to be deleted (no longer
-      visible from resource lists, and not reachable by name) after the time
-      in this field, once the finalizers list is empty. As long as the
-      finalizers list contains items, deletion is blocked. Once the
-      deletionTimestamp is set, this value may not be unset or be set further
-      into the future, although it may be shortened or the resource may be
-      deleted prior to this time. For example, a user may request that a pod
-      is deleted in 30 seconds. The Kubelet will react by sending a graceful
-      termination signal to the containers in the pod. After that 30 seconds,
-      the Kubelet will send a hard termination signal (SIGKILL) to the
-      container and after cleanup, remove the pod from the API. In the
-      presence of network partitions, this object may still exist after this
-      timestamp, until an administrator or automated process can determine the
-      resource is fully terminated. If not set, graceful deletion of the
-      object has not been requested.  Populated by the system when a graceful
-      deletion is requested. Read-only. More info:
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#metadata
-    finalizers: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      on GKE: supported  Must be empty before the object is deleted from the
-      registry. Each entry is an identifier for the responsible component that
-      will remove the entry from the list. If the deletionTimestamp of the
-      object is non-nil, entries in this list can only be removed.
-      +patchStrategy=merge
-    generateName: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run on GKE: supported  GenerateName is an optional prefix, used by the
-      server, to generate a unique name ONLY IF the Name field has not been
-      provided. If this field is used, the name returned to the client will be
-      different than the name passed. This value will also be combined with a
-      unique suffix. The provided value has the same validation rules as the
-      Name field, and may be truncated by the length of the suffix required to
-      make the value unique on the server.  If this field is specified and the
-      generated name exists, the server will NOT return a 409 - instead, it
-      will either return 201 Created or 500 with Reason ServerTimeout
-      indicating a unique name could not be found in the time allotted, and
-      the client should retry (optionally after the time indicated in the
-      Retry-After header).  Applied only if Name is not specified. More info:
-      https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#idempotency  string generateName = 2;
-    generation: (Optional)  A sequence number representing a specific
-      generation of the desired state. Populated by the system. Read-only.
-    labels: (Optional)  Map of string keys and values that can be used to
-      organize and categorize (scope and select) objects. May match selectors
-      of replication controllers and routes. More info:
-      http://kubernetes.io/docs/user-guide/labels
-    name: Name must be unique within a namespace, within a Cloud Run region.
-      Is required when creating resources, although some resources may allow a
-      client to request the generation of an appropriate name automatically.
-      Name is primarily intended for creation idempotence and configuration
-      definition. Cannot be updated. More info: http://kubernetes.io/docs
-      /user-guide/identifiers#names +optional
-    namespace: Namespace defines the space within each name must be unique,
-      within a Cloud Run region. In Cloud Run the namespace must be equal to
-      either the project ID or project number.
-    ownerReferences: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run on GKE: supported  List of objects that own this object. If ALL
-      objects in the list have been deleted, this object will be garbage
-      collected.
-    resourceVersion: (Optional)  An opaque value that represents the internal
-      version of this object that can be used by clients to determine when
-      objects have changed. May be used for optimistic concurrency, change
-      detection, and the watch operation on a resource or set of resources.
-      Clients must treat these values as opaque and passed unmodified back to
-      the server. They may only be valid for a particular resource or set of
-      resources.  Populated by the system. Read-only. Value must be treated as
-      opaque by clients and . More info:
-      https://git.k8s.io/community/contributors/devel/api-conventions.md
-      #concurrency-control-and-consistency
-    selfLink: (Optional)  SelfLink is a URL representing this object.
-      Populated by the system. Read-only.  string selfLink = 4;
-    uid: (Optional)  UID is the unique in time and space value for this
-      object. It is typically generated by the server on successful creation
-      of a resource and is not allowed to change on PUT operations.  Populated
-      by the system. Read-only. More info: http://kubernetes.io/docs/user-
-      guide/identifiers#uids
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AnnotationsValue(_messages.Message):
-    r"""(Optional)  Annotations is an unstructured key value map stored with a
-    resource that may be set by external tools to store and retrieve arbitrary
-    metadata. They are not queryable and should be preserved when modifying
-    objects. More info: http://kubernetes.io/docs/user-guide/annotations
-
-    Messages:
-      AdditionalProperty: An additional property for a AnnotationsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AnnotationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AnnotationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""(Optional)  Map of string keys and values that can be used to organize
-    and categorize (scope and select) objects. May match selectors of
-    replication controllers and routes. More info: http://kubernetes.io/docs
-    /user-guide/labels
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  clusterName = _messages.StringField(2)
-  creationTimestamp = _messages.StringField(3)
-  deletionGracePeriodSeconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  deletionTimestamp = _messages.StringField(5)
-  finalizers = _messages.StringField(6, repeated=True)
-  generateName = _messages.StringField(7)
-  generation = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  namespace = _messages.StringField(11)
-  ownerReferences = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1OwnerReference', 12, repeated=True)
-  resourceVersion = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  uid = _messages.StringField(15)
-
-
-class K8sIoApimachineryPkgApisMetaV1OwnerReference(_messages.Message):
-  r"""OwnerReference contains enough information to let you identify an owning
-  object. Currently, an owning object must be in the same namespace, so there
-  is no namespace field.
-
-  Fields:
-    apiVersion: API version of the referent.
-    blockOwnerDeletion: If true, AND if the owner has the "foregroundDeletion"
-      finalizer, then the owner cannot be deleted from the key-value store
-      until this reference is removed. Defaults to false. To set this field, a
-      user needs "delete" permission of the owner, otherwise 422
-      (Unprocessable Entity) will be returned. +optional
-    controller: If true, this reference points to the managing controller.
-      +optional
-    kind: Kind of the referent. More info:
-      https://git.k8s.io/community/contributors/devel/api-conventions.md
-      #types-kinds
-    name: Name of the referent. More info: http://kubernetes.io/docs/user-
-      guide/identifiers#names
-    uid: UID of the referent. More info: http://kubernetes.io/docs/user-
-      guide/identifiers#uids
-  """
-
-  apiVersion = _messages.StringField(1)
-  blockOwnerDeletion = _messages.BooleanField(2)
-  controller = _messages.BooleanField(3)
-  kind = _messages.StringField(4)
-  name = _messages.StringField(5)
-  uid = _messages.StringField(6)
-
-
-class K8sIoApimachineryPkgApisMetaV1Status(_messages.Message):
-  r"""Status is a return value for calls that don't return other objects
-
-  Fields:
-    code: Suggested HTTP return code for this status, 0 if not set. +optional
-    details: Extended data associated with the reason.  Each reason may define
-      its own extended details. This field is optional and the data returned
-      is not guaranteed to conform to any schema except that defined by the
-      reason type. +optional
-    message: A human-readable description of the status of this operation.
-      +optional
-    metadata: Standard list metadata. More info:
-      https://git.k8s.io/community/contributors/devel/api-conventions.md
-      #types-kinds +optional
-    reason: A machine-readable description of why this operation is in the
-      "Failure" status. If this value is empty there is no information
-      available. A Reason clarifies an HTTP status code but does not override
-      it. +optional
-    status: Status of the operation. One of: "Success" or "Failure". More
-      info: https://git.k8s.io/community/contributors/devel/api-conventions.md
-      #spec-and-status +optional
-  """
-
-  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  details = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1StatusDetails', 2)
-  message = _messages.StringField(3)
-  metadata = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1ListMeta', 4)
-  reason = _messages.StringField(5)
-  status = _messages.StringField(6)
-
-
-class K8sIoApimachineryPkgApisMetaV1StatusCause(_messages.Message):
-  r"""StatusCause provides more information about an api.Status failure,
-  including cases when multiple errors are encountered.
-
-  Fields:
-    field: The field of the resource that has caused this error, as named by
-      its JSON serialization. May include dot and postfix notation for nested
-      attributes. Arrays are zero-indexed.  Fields may appear more than once
-      in an array of causes due to fields having multiple errors. Optional.
-      Examples:   "name" - the field "name" on the current resource
-      "items[0].name" - the field "name" on the first array entry in "items"
-      +optional
-    message: A human-readable description of the cause of the error.  This
-      field may be presented as-is to a reader. +optional
-    reason: A machine-readable description of the cause of the error. If this
-      value is empty there is no information available. +optional
-  """
-
-  field = _messages.StringField(1)
-  message = _messages.StringField(2)
-  reason = _messages.StringField(3)
-
-
-class K8sIoApimachineryPkgApisMetaV1StatusDetails(_messages.Message):
-  r"""StatusDetails is a set of additional properties that MAY be set by the
-  server to provide additional information about a response. The Reason field
-  of a Status object defines what attributes will be set. Clients must ignore
-  fields that do not match the defined type of each attribute, and should
-  assume that any attribute may be empty, invalid, or under defined.
-
-  Fields:
-    causes: The Causes array includes more details associated with the
-      StatusReason failure. Not all StatusReasons may provide detailed causes.
-      +optional
-    group: The group attribute of the resource associated with the status
-      StatusReason. +optional
-    kind: The kind attribute of the resource associated with the status
-      StatusReason. On some operations may differ from the requested resource
-      Kind. More info: https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#types-kinds +optional
-    name: The name attribute of the resource associated with the status
-      StatusReason (when there is a single name which can be described).
-      +optional
-    retryAfterSeconds: If specified, the time in seconds before the operation
-      should be retried. Some errors may indicate the client must take an
-      alternate action - for those errors this field may indicate how long to
-      wait before taking the alternate action. +optional
-    uid: UID of the resource. (when there is a single resource which can be
-      described). More info: http://kubernetes.io/docs/user-
-      guide/identifiers#uids +optional
-  """
-
-  causes = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1StatusCause', 1, repeated=True)
-  group = _messages.StringField(2)
-  kind = _messages.StringField(3)
-  name = _messages.StringField(4)
-  retryAfterSeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  uid = _messages.StringField(6)
-
-
-class KeyToPath(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
-  Maps a string key to a path within a volume.
-
-  Fields:
-    key: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
-      The key to project.
-    mode: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Mode bits to use on this file, must be a value between 0
-      and 0777. If not specified, the volume defaultMode will be used. This
-      might be in conflict with other options that affect the file mode, like
-      fsGroup, and the result can be other mode bits set.
-    path: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
-      The relative path of the file to map the key to. May not be an absolute
-      path. May not contain the path element '..'. May not start with the
-      string '..'.
-  """
-
-  key = _messages.StringField(1)
-  mode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  path = _messages.StringField(3)
-
-
-class ListAuthorizedDomainsResponse(_messages.Message):
-  r"""A list of Authorized Domains.
-
-  Fields:
-    domains: The authorized domains belonging to the user.
-    nextPageToken: Continuation token for fetching the next page of results.
-  """
-
-  domains = _messages.MessageField('AuthorizedDomain', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
-class ListAutoDomainMappingsResponse(_messages.Message):
-  r"""ListAutoDomainMappingsResponse is a list of AutoDomainMapping resources.
-
-  Messages:
-    RegionDetailsValue: Details for the regions used during a global call
-      including any failures. This is not populated when targeting a specific
-      region.
-
-  Fields:
-    apiVersion: The API version for this call such as
-      "serving.knative.dev/v1".
-    items: List of AutoDomainMappings.
-    kind: The kind of this resource, in this case "AutoDomainMappingList".
-    metadata: Metadata associated with this AutoDomainMapping list.
-    regionDetails: Details for the regions used during a global call including
-      any failures. This is not populated when targeting a specific region.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RegionDetailsValue(_messages.Message):
-    r"""Details for the regions used during a global call including any
-    failures. This is not populated when targeting a specific region.
-
-    Messages:
-      AdditionalProperty: An additional property for a RegionDetailsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type RegionDetailsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RegionDetailsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A RegionDetails attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('RegionDetails', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  apiVersion = _messages.StringField(1)
-  items = _messages.MessageField('AutoDomainMapping', 2, repeated=True)
-  kind = _messages.StringField(3)
-  metadata = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1ListMeta', 4)
-  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
-
-
-class ListConfigurationsResponse(_messages.Message):
-  r"""ListConfigurationsResponse is a list of Configuration resources.
-
-  Messages:
-    RegionDetailsValue: Details for the regions used during a global call
-      including any failures. This is not populated when targeting a specific
-      region.
-
-  Fields:
-    apiVersion: The API version for this call such as
-      "serving.knative.dev/v1".
-    items: List of Configurations.
-    kind: The kind of this resource, in this case "ConfigurationList".
-    metadata: Metadata associated with this Configuration list.
-    regionDetails: Details for the regions used during a global call including
-      any failures. This is not populated when targeting a specific region.
-    unreachable: Locations that could not be reached.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RegionDetailsValue(_messages.Message):
-    r"""Details for the regions used during a global call including any
-    failures. This is not populated when targeting a specific region.
-
-    Messages:
-      AdditionalProperty: An additional property for a RegionDetailsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type RegionDetailsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RegionDetailsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A RegionDetails attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('RegionDetails', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  apiVersion = _messages.StringField(1)
-  items = _messages.MessageField('Configuration', 2, repeated=True)
-  kind = _messages.StringField(3)
-  metadata = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1ListMeta', 4)
-  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
-  unreachable = _messages.StringField(6, repeated=True)
-
-
-class ListDomainMappingsResponse(_messages.Message):
-  r"""ListDomainMappingsResponse is a list of DomainMapping resources.
-
-  Messages:
-    RegionDetailsValue: Details for the regions used during a global call
-      including any failures. This is not populated when targeting a specific
-      region.
-
-  Fields:
-    apiVersion: The API version for this call such as
-      "domains.cloudrun.com/v1".
-    items: List of DomainMappings.
-    kind: The kind of this resource, in this case "DomainMappingList".
-    metadata: Metadata associated with this DomainMapping list.
-    regionDetails: Details for the regions used during a global call including
-      any failures. This is not populated when targeting a specific region.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RegionDetailsValue(_messages.Message):
-    r"""Details for the regions used during a global call including any
-    failures. This is not populated when targeting a specific region.
-
-    Messages:
-      AdditionalProperty: An additional property for a RegionDetailsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type RegionDetailsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RegionDetailsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A RegionDetails attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('RegionDetails', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  apiVersion = _messages.StringField(1)
-  items = _messages.MessageField('DomainMapping', 2, repeated=True)
-  kind = _messages.StringField(3)
-  metadata = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1ListMeta', 4)
-  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
-
-
-class ListLocationsResponse(_messages.Message):
-  r"""The response message for Locations.ListLocations.
-
-  Fields:
-    locations: A list of locations that matches the specified filter in the
-      request.
-    nextPageToken: The standard List next-page token.
-  """
-
-  locations = _messages.MessageField('Location', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
 class ListRevisionsResponse(_messages.Message):
   r"""ListRevisionsResponse is a list of Revision resources.
-
-  Messages:
-    RegionDetailsValue: Details for the regions used during a global call
-      including any failures. This is not populated when targeting a specific
-      region.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -1438,52 +833,18 @@ class ListRevisionsResponse(_messages.Message):
     items: List of Revisions.
     kind: The kind of this resource, in this case "RevisionList".
     metadata: Metadata associated with this revision list.
-    regionDetails: Details for the regions used during a global call including
-      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RegionDetailsValue(_messages.Message):
-    r"""Details for the regions used during a global call including any
-    failures. This is not populated when targeting a specific region.
-
-    Messages:
-      AdditionalProperty: An additional property for a RegionDetailsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type RegionDetailsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RegionDetailsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A RegionDetails attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('RegionDetails', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Revision', 2, repeated=True)
   kind = _messages.StringField(3)
-  metadata = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1ListMeta', 4)
-  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
-  unreachable = _messages.StringField(6, repeated=True)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class ListRoutesResponse(_messages.Message):
   r"""ListRoutesResponse is a list of Route resources.
-
-  Messages:
-    RegionDetailsValue: Details for the regions used during a global call
-      including any failures. This is not populated when targeting a specific
-      region.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -1491,52 +852,18 @@ class ListRoutesResponse(_messages.Message):
     items: List of Routes.
     kind: The kind of this resource, in this case always "RouteList".
     metadata: Metadata associated with this Route list.
-    regionDetails: Details for the regions used during a global call including
-      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RegionDetailsValue(_messages.Message):
-    r"""Details for the regions used during a global call including any
-    failures. This is not populated when targeting a specific region.
-
-    Messages:
-      AdditionalProperty: An additional property for a RegionDetailsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type RegionDetailsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RegionDetailsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A RegionDetails attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('RegionDetails', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Route', 2, repeated=True)
   kind = _messages.StringField(3)
-  metadata = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1ListMeta', 4)
-  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
-  unreachable = _messages.StringField(6, repeated=True)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class ListServicesResponse(_messages.Message):
   r"""A list of Service resources.
-
-  Messages:
-    RegionDetailsValue: Details for the regions used during a global call
-      including any failures. This is not populated when targeting a specific
-      region.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -1544,53 +871,24 @@ class ListServicesResponse(_messages.Message):
     items: List of Services.
     kind: The kind of this resource, in this case "ServiceList".
     metadata: Metadata associated with this Service list.
-    regionDetails: Details for the regions used during a global call including
-      any failures. This is not populated when targeting a specific region.
     unreachable: Locations that could not be reached.
   """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RegionDetailsValue(_messages.Message):
-    r"""Details for the regions used during a global call including any
-    failures. This is not populated when targeting a specific region.
-
-    Messages:
-      AdditionalProperty: An additional property for a RegionDetailsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type RegionDetailsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RegionDetailsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A RegionDetails attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('RegionDetails', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Service', 2, repeated=True)
   kind = _messages.StringField(3)
-  metadata = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1ListMeta', 4)
-  regionDetails = _messages.MessageField('RegionDetailsValue', 5)
-  unreachable = _messages.StringField(6, repeated=True)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class LocalObjectReference(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   LocalObjectReference contains enough information to let you locate the
   referenced object inside the same namespace.
 
   Fields:
-    name: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Name of the referent. More info:
+    name: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  Name of the referent. More info:
       https://kubernetes.io/docs/concepts/overview/working-with-
       objects/names/#names
   """
@@ -1678,30 +976,265 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class ObjectMeta(_messages.Message):
+  r"""k8s.io.apimachinery.pkg.apis.meta.v1.ObjectMeta is metadata that all
+  persisted resources must have, which includes all objects users must create.
+
+  Messages:
+    AnnotationsValue: (Optional)  Annotations is an unstructured key value map
+      stored with a resource that may be set by external tools to store and
+      retrieve arbitrary metadata. They are not queryable and should be
+      preserved when modifying objects. More info: http://kubernetes.io/docs
+      /user-guide/annotations
+    LabelsValue: (Optional)  Map of string keys and values that can be used to
+      organize and categorize (scope and select) objects. May match selectors
+      of replication controllers and routes. More info:
+      http://kubernetes.io/docs/user-guide/labels
+
+  Fields:
+    annotations: (Optional)  Annotations is an unstructured key value map
+      stored with a resource that may be set by external tools to store and
+      retrieve arbitrary metadata. They are not queryable and should be
+      preserved when modifying objects. More info: http://kubernetes.io/docs
+      /user-guide/annotations
+    clusterName: (Optional)  Cloud Run fully managed: not supported  Cloud Run
+      for Anthos: supported  The name of the cluster which the object belongs
+      to. This is used to distinguish resources with same name and namespace
+      in different clusters. This field is not set anywhere right now and
+      apiserver is going to ignore it if set in create or update request.
+    creationTimestamp: (Optional)  CreationTimestamp is a timestamp
+      representing the server time when this object was created. It is not
+      guaranteed to be set in happens-before order across separate operations.
+      Clients may not set this value. It is represented in RFC3339 form and is
+      in UTC.  Populated by the system. Read-only. Null for lists. More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#metadata
+    deletionGracePeriodSeconds: (Optional)  Cloud Run fully managed: not
+      supported  Cloud Run for Anthos: supported  Number of seconds allowed
+      for this object to gracefully terminate before it will be removed from
+      the system. Only set when deletionTimestamp is also set. May only be
+      shortened. Read-only.
+    deletionTimestamp: (Optional)  Cloud Run fully managed: not supported
+      Cloud Run for Anthos: supported  DeletionTimestamp is RFC 3339 date and
+      time at which this resource will be deleted. This field is set by the
+      server when a graceful deletion is requested by the user, and is not
+      directly settable by a client. The resource is expected to be deleted
+      (no longer visible from resource lists, and not reachable by name) after
+      the time in this field, once the finalizers list is empty. As long as
+      the finalizers list contains items, deletion is blocked. Once the
+      deletionTimestamp is set, this value may not be unset or be set further
+      into the future, although it may be shortened or the resource may be
+      deleted prior to this time. For example, a user may request that a pod
+      is deleted in 30 seconds. The Kubelet will react by sending a graceful
+      termination signal to the containers in the pod. After that 30 seconds,
+      the Kubelet will send a hard termination signal (SIGKILL) to the
+      container and after cleanup, remove the pod from the API. In the
+      presence of network partitions, this object may still exist after this
+      timestamp, until an administrator or automated process can determine the
+      resource is fully terminated. If not set, graceful deletion of the
+      object has not been requested.  Populated by the system when a graceful
+      deletion is requested. Read-only. More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#metadata
+    finalizers: (Optional)  Cloud Run fully managed: not supported  Cloud Run
+      for Anthos: supported  Must be empty before the object is deleted from
+      the registry. Each entry is an identifier for the responsible component
+      that will remove the entry from the list. If the deletionTimestamp of
+      the object is non-nil, entries in this list can only be removed.
+      +patchStrategy=merge
+    generateName: (Optional)  Cloud Run fully managed: not supported  Cloud
+      Run for Anthos: supported  GenerateName is an optional prefix, used by
+      the server, to generate a unique name ONLY IF the Name field has not
+      been provided. If this field is used, the name returned to the client
+      will be different than the name passed. This value will also be combined
+      with a unique suffix. The provided value has the same validation rules
+      as the Name field, and may be truncated by the length of the suffix
+      required to make the value unique on the server.  If this field is
+      specified and the generated name exists, the server will NOT return a
+      409 - instead, it will either return 201 Created or 500 with Reason
+      ServerTimeout indicating a unique name could not be found in the time
+      allotted, and the client should retry (optionally after the time
+      indicated in the Retry-After header).  Applied only if Name is not
+      specified. More info: https://git.k8s.io/community/contributors/devel
+      /api-conventions.md#idempotency  string generateName = 2;
+    generation: (Optional)  A sequence number representing a specific
+      generation of the desired state. Populated by the system. Read-only.
+    labels: (Optional)  Map of string keys and values that can be used to
+      organize and categorize (scope and select) objects. May match selectors
+      of replication controllers and routes. More info:
+      http://kubernetes.io/docs/user-guide/labels
+    name: Name must be unique within a namespace, within a Cloud Run region.
+      Is required when creating resources, although some resources may allow a
+      client to request the generation of an appropriate name automatically.
+      Name is primarily intended for creation idempotence and configuration
+      definition. Cannot be updated. More info: http://kubernetes.io/docs
+      /user-guide/identifiers#names +optional
+    namespace: Namespace defines the space within each name must be unique,
+      within a Cloud Run region. In Cloud Run the namespace must be equal to
+      either the project ID or project number.
+    ownerReferences: (Optional)  Cloud Run fully managed: not supported  Cloud
+      Run for Anthos: supported  List of objects that own this object. If ALL
+      objects in the list have been deleted, this object will be garbage
+      collected.
+    resourceVersion: (Optional)  An opaque value that represents the internal
+      version of this object that can be used by clients to determine when
+      objects have changed. May be used for optimistic concurrency, change
+      detection, and the watch operation on a resource or set of resources.
+      Clients must treat these values as opaque and passed unmodified back to
+      the server. They may only be valid for a particular resource or set of
+      resources.  Populated by the system. Read-only. Value must be treated as
+      opaque by clients and . More info:
+      https://git.k8s.io/community/contributors/devel/api-conventions.md
+      #concurrency-control-and-consistency
+    selfLink: (Optional)  SelfLink is a URL representing this object.
+      Populated by the system. Read-only.  string selfLink = 4;
+    uid: (Optional)  UID is the unique in time and space value for this
+      object. It is typically generated by the server on successful creation
+      of a resource and is not allowed to change on PUT operations.  Populated
+      by the system. Read-only. More info: http://kubernetes.io/docs/user-
+      guide/identifiers#uids
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""(Optional)  Annotations is an unstructured key value map stored with a
+    resource that may be set by external tools to store and retrieve arbitrary
+    metadata. They are not queryable and should be preserved when modifying
+    objects. More info: http://kubernetes.io/docs/user-guide/annotations
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""(Optional)  Map of string keys and values that can be used to organize
+    and categorize (scope and select) objects. May match selectors of
+    replication controllers and routes. More info: http://kubernetes.io/docs
+    /user-guide/labels
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  clusterName = _messages.StringField(2)
+  creationTimestamp = _messages.StringField(3)
+  deletionGracePeriodSeconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  deletionTimestamp = _messages.StringField(5)
+  finalizers = _messages.StringField(6, repeated=True)
+  generateName = _messages.StringField(7)
+  generation = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  namespace = _messages.StringField(11)
+  ownerReferences = _messages.MessageField('OwnerReference', 12, repeated=True)
+  resourceVersion = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  uid = _messages.StringField(15)
+
+
+class OwnerReference(_messages.Message):
+  r"""OwnerReference contains enough information to let you identify an owning
+  object. Currently, an owning object must be in the same namespace, so there
+  is no namespace field.
+
+  Fields:
+    apiVersion: API version of the referent.
+    blockOwnerDeletion: If true, AND if the owner has the "foregroundDeletion"
+      finalizer, then the owner cannot be deleted from the key-value store
+      until this reference is removed. Defaults to false. To set this field, a
+      user needs "delete" permission of the owner, otherwise 422
+      (Unprocessable Entity) will be returned. +optional
+    controller: If true, this reference points to the managing controller.
+      +optional
+    kind: Kind of the referent. More info:
+      https://git.k8s.io/community/contributors/devel/api-conventions.md
+      #types-kinds
+    name: Name of the referent. More info: http://kubernetes.io/docs/user-
+      guide/identifiers#names
+    uid: UID of the referent. More info: http://kubernetes.io/docs/user-
+      guide/identifiers#uids
+  """
+
+  apiVersion = _messages.StringField(1)
+  blockOwnerDeletion = _messages.BooleanField(2)
+  controller = _messages.BooleanField(3)
+  kind = _messages.StringField(4)
+  name = _messages.StringField(5)
+  uid = _messages.StringField(6)
+
+
 class Policy(_messages.Message):
-  r"""Defines an Identity and Access Management (IAM) policy. It is used to
-  specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `binding` binds a list of `members` to a
-  `role`, where the members can be user accounts, Google groups, Google
-  domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **JSON Example**      {       "bindings": [         {
-  "role": "roles/owner",           "members": [
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources.   A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members` to a single `role`.
+  Members can be user accounts, service accounts, Google groups, and domains
+  (such as G Suite). A `role` is a named list of permissions; each `role` can
+  be an IAM predefined role or a user-created custom role.  Optionally, a
+  `binding` can specify a `condition`, which is a logical expression that
+  allows access to a resource only if the expression evaluates to `true`. A
+  condition can add constraints based on attributes of the request, the
+  resource, or both.  **JSON example:**      {       "bindings": [         {
+  "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  **YAML Example**      bindings:     - members:       -
-  user:mike@example.com       - group:admins@example.com       -
-  domain:google.com       - serviceAccount:my-other-
-  app@appspot.gserviceaccount.com       role: roles/owner     - members:
-  - user:sean@example.com       role: roles/viewer   For a description of IAM
-  and its features, see the [IAM developer's
-  guide](https://cloud.google.com/iam/docs).
+  "domain:google.com",             "serviceAccount:my-project-
+  id@appspot.gserviceaccount.com"           ]         },         {
+  "role": "roles/resourcemanager.organizationViewer",           "members":
+  ["user:eve@example.com"],           "condition": {             "title":
+  "expirable access",             "description": "Does not grant access after
+  Sep 2020",             "expression": "request.time <
+  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
+  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
+  bindings:     - members:       - user:mike@example.com       -
+  group:admins@example.com       - domain:google.com       - serviceAccount
+  :my-project-id@appspot.gserviceaccount.com       role:
+  roles/resourcemanager.organizationAdmin     - members:       -
+  user:eve@example.com       role: roles/resourcemanager.organizationViewer
+  condition:         title: expirable access         description: Does not
+  grant access after Sep 2020         expression: request.time <
+  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
+  version: 3  For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. `bindings` with no
-      members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally, may
+      specify a `condition` that determines how and when the `bindings` are
+      applied. Each of the `bindings` must contain at least one member.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -1709,13 +1242,24 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten.
-    version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Policies with
-      any conditional bindings must specify version 3. Policies without any
-      conditional bindings may specify any valid value or leave the field
-      unset.
+      policy.  **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
+    version: Specifies the format of the policy.  Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected.  Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations:  * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy   that includes conditions  **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost.  If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -1725,31 +1269,31 @@ class Policy(_messages.Message):
 
 
 class Probe(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   Probe describes a health check to be performed against a container to
   determine whether it is alive or ready to receive traffic.
 
   Fields:
     failureThreshold: (Optional)  Cloud Run fully managed: not supported
-      Cloud Run on GKE: supported  Minimum consecutive failures for the probe
-      to be considered failed after having succeeded. Defaults to 3. Minimum
-      value is 1.
-    handler: Cloud Run fully managed: not supported  Cloud Run on GKE:
+      Cloud Run for Anthos: supported  Minimum consecutive failures for the
+      probe to be considered failed after having succeeded. Defaults to 3.
+      Minimum value is 1.
+    handler: Cloud Run fully managed: not supported  Cloud Run for Anthos:
       supported  The action taken to determine the health of a container
     initialDelaySeconds: (Optional)  Cloud Run fully managed: not supported
-      Cloud Run on GKE: supported  Number of seconds after the container has
-      started before liveness probes are initiated. More info:
+      Cloud Run for Anthos: supported  Number of seconds after the container
+      has started before liveness probes are initiated. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle
       #container-probes
     periodSeconds: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run on GKE: supported  How often (in seconds) to perform the probe.
+      Run for Anthos: supported  How often (in seconds) to perform the probe.
       Default to 10 seconds. Minimum value is 1.
     successThreshold: (Optional)  Cloud Run fully managed: not supported
-      Cloud Run on GKE: supported  Minimum consecutive successes for the probe
-      to be considered successful after having failed. Defaults to 1. Must be
-      1 for liveness. Minimum value is 1.
+      Cloud Run for Anthos: supported  Minimum consecutive successes for the
+      probe to be considered successful after having failed. Defaults to 1.
+      Must be 1 for liveness. Minimum value is 1.
     timeoutSeconds: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run on GKE: supported  Number of seconds after which the probe times
+      Run for Anthos: supported  Number of seconds after which the probe times
       out. Defaults to 1 second. Minimum value is 1. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle
       #container-probes
@@ -1761,16 +1305,6 @@ class Probe(_messages.Message):
   periodSeconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   successThreshold = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   timeoutSeconds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-
-
-class RegionDetails(_messages.Message):
-  r"""Information for a regional call used for a global API.
-
-  Fields:
-    error: The status indicating why the regional call failed
-  """
-
-  error = _messages.MessageField('GoogleRpcStatus', 1)
 
 
 class ResourceRecord(_messages.Message):
@@ -1810,13 +1344,15 @@ class ResourceRequirements(_messages.Message):
   r"""ResourceRequirements describes the compute resource requirements.
 
   Messages:
-    LimitsValue: (Optional)  Cloud Run fully managed: Only memory is supported
-      Cloud Run on GKE: supported  Limits describes the maximum amount of
-      compute resources allowed. The values of the map is string form of the
+    LimitsValue: (Optional)  Cloud Run fully managed: Only memory and CPU are
+      supported. Note: The only supported value for CPU is '1'.  Cloud Run for
+      Anthos: supported  Limits describes the maximum amount of compute
+      resources allowed. The values of the map is string form of the
       'quantity' k8s type: https://github.com/kubernetes/kubernetes/blob/maste
       r/staging/src/k8s.io/apimachinery/pkg/api/resource/quantity.go
-    RequestsValue: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run on GKE: supported  Requests describes the minimum amount of compute
+    RequestsValue: (Optional)  Cloud Run fully managed: Only memory and CPU
+      are supported. Note: The only supported value for CPU is '1'.  Cloud Run
+      for Anthos: supported  Requests describes the minimum amount of compute
       resources required. If Requests is omitted for a container, it defaults
       to Limits if that is explicitly specified, otherwise to an
       implementation-defined value. The values of the map is string form of
@@ -1824,13 +1360,15 @@ class ResourceRequirements(_messages.Message):
       aster/staging/src/k8s.io/apimachinery/pkg/api/resource/quantity.go
 
   Fields:
-    limits: (Optional)  Cloud Run fully managed: Only memory is supported
-      Cloud Run on GKE: supported  Limits describes the maximum amount of
-      compute resources allowed. The values of the map is string form of the
+    limits: (Optional)  Cloud Run fully managed: Only memory and CPU are
+      supported. Note: The only supported value for CPU is '1'.  Cloud Run for
+      Anthos: supported  Limits describes the maximum amount of compute
+      resources allowed. The values of the map is string form of the
       'quantity' k8s type: https://github.com/kubernetes/kubernetes/blob/maste
       r/staging/src/k8s.io/apimachinery/pkg/api/resource/quantity.go
-    requests: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Requests describes the minimum amount of compute
+    requests: (Optional)  Cloud Run fully managed: Only memory and CPU are
+      supported. Note: The only supported value for CPU is '1'.  Cloud Run for
+      Anthos: supported  Requests describes the minimum amount of compute
       resources required. If Requests is omitted for a container, it defaults
       to Limits if that is explicitly specified, otherwise to an
       implementation-defined value. The values of the map is string form of
@@ -1840,8 +1378,9 @@ class ResourceRequirements(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LimitsValue(_messages.Message):
-    r"""(Optional)  Cloud Run fully managed: Only memory is supported  Cloud
-    Run on GKE: supported  Limits describes the maximum amount of compute
+    r"""(Optional)  Cloud Run fully managed: Only memory and CPU are
+    supported. Note: The only supported value for CPU is '1'.  Cloud Run for
+    Anthos: supported  Limits describes the maximum amount of compute
     resources allowed. The values of the map is string form of the 'quantity'
     k8s type: https://github.com/kubernetes/kubernetes/blob/master/staging/src
     /k8s.io/apimachinery/pkg/api/resource/quantity.go
@@ -1868,13 +1407,14 @@ class ResourceRequirements(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RequestsValue(_messages.Message):
-    r"""(Optional)  Cloud Run fully managed: not supported  Cloud Run on GKE:
-    supported  Requests describes the minimum amount of compute resources
-    required. If Requests is omitted for a container, it defaults to Limits if
-    that is explicitly specified, otherwise to an implementation-defined
-    value. The values of the map is string form of the 'quantity' k8s type: ht
-    tps://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apim
-    achinery/pkg/api/resource/quantity.go
+    r"""(Optional)  Cloud Run fully managed: Only memory and CPU are
+    supported. Note: The only supported value for CPU is '1'.  Cloud Run for
+    Anthos: supported  Requests describes the minimum amount of compute
+    resources required. If Requests is omitted for a container, it defaults to
+    Limits if that is explicitly specified, otherwise to an implementation-
+    defined value. The values of the map is string form of the 'quantity' k8s
+    type: https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s
+    .io/apimachinery/pkg/api/resource/quantity.go
 
     Messages:
       AdditionalProperty: An additional property for a RequestsValue object.
@@ -1919,7 +1459,7 @@ class Revision(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   kind = _messages.StringField(2)
-  metadata = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1ObjectMeta', 3)
+  metadata = _messages.MessageField('ObjectMeta', 3)
   spec = _messages.MessageField('RevisionSpec', 4)
   status = _messages.MessageField('RevisionStatus', 5)
 
@@ -1931,8 +1471,8 @@ class RevisionSpec(_messages.Message):
     containerConcurrency: (Optional)  ContainerConcurrency specifies the
       maximum allowed in-flight (concurrent) requests per container instance
       of the Revision.  Cloud Run fully managed: supported, defaults to 80
-      Cloud Run on GKE: supported, defaults to 0, which means concurrency to
-      the application is not limited, and the system decides the target
+      Cloud Run for Anthos: supported, defaults to 0, which means concurrency
+      to the application is not limited, and the system decides the target
       concurrency for the autoscaler.
     containers: Containers holds the single container that defines the unit of
       execution for this Revision. In the context of a Revision, we disallow a
@@ -2007,7 +1547,7 @@ class RevisionTemplate(_messages.Message):
       client).
   """
 
-  metadata = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1ObjectMeta', 1)
+  metadata = _messages.MessageField('ObjectMeta', 1)
   spec = _messages.MessageField('RevisionSpec', 2)
 
 
@@ -2035,7 +1575,7 @@ class Route(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   kind = _messages.StringField(2)
-  metadata = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1ObjectMeta', 3)
+  metadata = _messages.MessageField('ObjectMeta', 3)
   spec = _messages.MessageField('RouteSpec', 4)
   status = _messages.MessageField('RouteStatus', 5)
 
@@ -2101,134 +1641,12 @@ class RunNamespacesAuthorizeddomainsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class RunNamespacesAutodomainmappingsCreateRequest(_messages.Message):
-  r"""A RunNamespacesAutodomainmappingsCreateRequest object.
-
-  Fields:
-    autoDomainMapping: A AutoDomainMapping resource to be passed as the
-      request body.
-    parent: The project ID or project number in which this auto domain mapping
-      should be created.
-  """
-
-  autoDomainMapping = _messages.MessageField('AutoDomainMapping', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class RunNamespacesAutodomainmappingsDeleteRequest(_messages.Message):
-  r"""A RunNamespacesAutodomainmappingsDeleteRequest object.
-
-  Fields:
-    apiVersion: Cloud Run currently ignores this parameter.
-    kind: Cloud Run currently ignores this parameter.
-    name: The name of the auto domain mapping being deleted. If needed,
-      replace {namespace_id} with the project ID.
-    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
-      currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
-  """
-
-  apiVersion = _messages.StringField(1)
-  kind = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  propagationPolicy = _messages.StringField(4)
-
-
-class RunNamespacesAutodomainmappingsGetRequest(_messages.Message):
-  r"""A RunNamespacesAutodomainmappingsGetRequest object.
-
-  Fields:
-    name: The name of the auto domain mapping being retrieved. If needed,
-      replace {namespace_id} with the project ID.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class RunNamespacesAutodomainmappingsListRequest(_messages.Message):
-  r"""A RunNamespacesAutodomainmappingsListRequest object.
-
-  Fields:
-    continue_: Optional encoded string to continue paging.
-    fieldSelector: Allows to filter resources based on a specific value for a
-      field name. Send this in a query string format. i.e.
-      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
-    includeUninitialized: Not currently used by Cloud Run.
-    labelSelector: Allows to filter resources based on a label. Supported
-      operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the auto domain
-      mappings should be listed.
-    resourceVersion: The baseline resource version from which the list or
-      watch operation should start. Not currently used by Cloud Run.
-    watch: Flag that indicates that the client expects to watch this resource
-      as well. Not currently used by Cloud Run.
-  """
-
-  continue_ = _messages.StringField(1)
-  fieldSelector = _messages.StringField(2)
-  includeUninitialized = _messages.BooleanField(3)
-  labelSelector = _messages.StringField(4)
-  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  parent = _messages.StringField(6, required=True)
-  resourceVersion = _messages.StringField(7)
-  watch = _messages.BooleanField(8)
-
-
-class RunNamespacesAutodomainmappingsReplaceAutoDomainMappingRequest(_messages.Message):
-  r"""A RunNamespacesAutodomainmappingsReplaceAutoDomainMappingRequest object.
-
-  Fields:
-    autoDomainMapping: A AutoDomainMapping resource to be passed as the
-      request body.
-    name: The name of the auto domain mapping being retrieved. If needed,
-      replace {namespace_id} with the project ID.
-  """
-
-  autoDomainMapping = _messages.MessageField('AutoDomainMapping', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class RunNamespacesConfigurationsCreateRequest(_messages.Message):
-  r"""A RunNamespacesConfigurationsCreateRequest object.
-
-  Fields:
-    configuration: A Configuration resource to be passed as the request body.
-    parent: The project ID or project number in which this configuration
-      should be created.
-  """
-
-  configuration = _messages.MessageField('Configuration', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class RunNamespacesConfigurationsDeleteRequest(_messages.Message):
-  r"""A RunNamespacesConfigurationsDeleteRequest object.
-
-  Fields:
-    apiVersion: Cloud Run currently ignores this parameter.
-    kind: Cloud Run currently ignores this parameter.
-    name: The name of the configuration being deleted. If needed, replace
-      {namespace_id} with the project ID.
-    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
-      currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
-  """
-
-  apiVersion = _messages.StringField(1)
-  kind = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  propagationPolicy = _messages.StringField(4)
-
-
 class RunNamespacesConfigurationsGetRequest(_messages.Message):
   r"""A RunNamespacesConfigurationsGetRequest object.
 
   Fields:
-    name: The name of the configuration being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the configuration to retrieve. For Cloud Run (fully
+      managed), replace {namespace_id} with the project ID or number.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2246,8 +1664,9 @@ class RunNamespacesConfigurationsListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the configurations
-      should be listed.
+    parent: The namespace from which the configurations should be listed. For
+      Cloud Run (fully managed), replace {namespace_id} with the project ID or
+      number.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2264,26 +1683,14 @@ class RunNamespacesConfigurationsListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunNamespacesConfigurationsReplaceConfigurationRequest(_messages.Message):
-  r"""A RunNamespacesConfigurationsReplaceConfigurationRequest object.
-
-  Fields:
-    configuration: A Configuration resource to be passed as the request body.
-    name: The name of the configuration being retrieved. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  configuration = _messages.MessageField('Configuration', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class RunNamespacesDomainmappingsCreateRequest(_messages.Message):
   r"""A RunNamespacesDomainmappingsCreateRequest object.
 
   Fields:
     domainMapping: A DomainMapping resource to be passed as the request body.
-    parent: The project ID or project number in which this domain mapping
-      should be created.
+    parent: The namespace in which the domain mapping should be created. For
+      Cloud Run (fully managed), replace {namespace_id} with the project ID or
+      number.
   """
 
   domainMapping = _messages.MessageField('DomainMapping', 1)
@@ -2296,8 +1703,8 @@ class RunNamespacesDomainmappingsDeleteRequest(_messages.Message):
   Fields:
     apiVersion: Cloud Run currently ignores this parameter.
     kind: Cloud Run currently ignores this parameter.
-    name: The name of the domain mapping being deleted. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the domain mapping to delete. For Cloud Run (fully
+      managed), replace {namespace_id} with the project ID or number.
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
       see kubernetes.io/docs/concepts/workloads/controllers/garbage-
@@ -2314,8 +1721,8 @@ class RunNamespacesDomainmappingsGetRequest(_messages.Message):
   r"""A RunNamespacesDomainmappingsGetRequest object.
 
   Fields:
-    name: The name of the domain mapping being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the domain mapping to retrieve. For Cloud Run (fully
+      managed), replace {namespace_id} with the project ID or number.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2333,8 +1740,9 @@ class RunNamespacesDomainmappingsListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the domain mappings
-      should be listed.
+    parent: The namespace from which the domain mappings should be listed. For
+      Cloud Run (fully managed), replace {namespace_id} with the project ID or
+      number.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2351,27 +1759,14 @@ class RunNamespacesDomainmappingsListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunNamespacesDomainmappingsReplaceDomainMappingRequest(_messages.Message):
-  r"""A RunNamespacesDomainmappingsReplaceDomainMappingRequest object.
-
-  Fields:
-    domainMapping: A DomainMapping resource to be passed as the request body.
-    name: The name of the domain mapping being retrieved. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  domainMapping = _messages.MessageField('DomainMapping', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class RunNamespacesRevisionsDeleteRequest(_messages.Message):
   r"""A RunNamespacesRevisionsDeleteRequest object.
 
   Fields:
     apiVersion: Cloud Run currently ignores this parameter.
     kind: Cloud Run currently ignores this parameter.
-    name: The name of the revision being deleted. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the revision to delete. For Cloud Run (fully managed),
+      replace {namespace_id} with the project ID or number.
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
       see kubernetes.io/docs/concepts/workloads/controllers/garbage-
@@ -2388,8 +1783,8 @@ class RunNamespacesRevisionsGetRequest(_messages.Message):
   r"""A RunNamespacesRevisionsGetRequest object.
 
   Fields:
-    name: The name of the revision being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the revision to retrieve. For Cloud Run (fully managed),
+      replace {namespace_id} with the project ID or number.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2407,8 +1802,9 @@ class RunNamespacesRevisionsListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the revisions should
-      be listed.
+    parent: The namespace from which the revisions should be listed. For Cloud
+      Run (fully managed), replace {namespace_id} with the project ID or
+      number.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2425,45 +1821,12 @@ class RunNamespacesRevisionsListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunNamespacesRoutesCreateRequest(_messages.Message):
-  r"""A RunNamespacesRoutesCreateRequest object.
-
-  Fields:
-    parent: The project ID or project number in which this route should be
-      created.
-    route: A Route resource to be passed as the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  route = _messages.MessageField('Route', 2)
-
-
-class RunNamespacesRoutesDeleteRequest(_messages.Message):
-  r"""A RunNamespacesRoutesDeleteRequest object.
-
-  Fields:
-    apiVersion: Cloud Run currently ignores this parameter.
-    kind: Cloud Run currently ignores this parameter.
-    name: The name of the route being deleted. If needed, replace
-      {namespace_id} with the project ID.
-    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
-      currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
-  """
-
-  apiVersion = _messages.StringField(1)
-  kind = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  propagationPolicy = _messages.StringField(4)
-
-
 class RunNamespacesRoutesGetRequest(_messages.Message):
   r"""A RunNamespacesRoutesGetRequest object.
 
   Fields:
-    name: The name of the route being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the route to retrieve. For Cloud Run (fully managed),
+      replace {namespace_id} with the project ID or number.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2481,8 +1844,9 @@ class RunNamespacesRoutesListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the routes should be
-      listed.
+    parent: The namespace from which the routes should be listed. For Cloud
+      Run (fully managed), replace {namespace_id} with the project ID or
+      number.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2499,25 +1863,13 @@ class RunNamespacesRoutesListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunNamespacesRoutesReplaceRouteRequest(_messages.Message):
-  r"""A RunNamespacesRoutesReplaceRouteRequest object.
-
-  Fields:
-    name: The name of the route being replaced. If needed, replace
-      {namespace_id} with the project ID.
-    route: A Route resource to be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  route = _messages.MessageField('Route', 2)
-
-
 class RunNamespacesServicesCreateRequest(_messages.Message):
   r"""A RunNamespacesServicesCreateRequest object.
 
   Fields:
-    parent: The project ID or project number in which this service should be
-      created.
+    parent: The namespace in which the service should be created. For Cloud
+      Run (fully managed), replace {namespace_id} with the project ID or
+      number.
     service: A Service resource to be passed as the request body.
   """
 
@@ -2531,8 +1883,8 @@ class RunNamespacesServicesDeleteRequest(_messages.Message):
   Fields:
     apiVersion: Cloud Run currently ignores this parameter.
     kind: Cloud Run currently ignores this parameter.
-    name: The name of the service being deleted. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the service to delete. For Cloud Run (fully managed),
+      replace {namespace_id} with the project ID or number.
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
       see kubernetes.io/docs/concepts/workloads/controllers/garbage-
@@ -2549,8 +1901,8 @@ class RunNamespacesServicesGetRequest(_messages.Message):
   r"""A RunNamespacesServicesGetRequest object.
 
   Fields:
-    name: The name of the service being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the service to retrieve. For Cloud Run (fully managed),
+      replace {namespace_id} with the project ID or number.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2568,8 +1920,9 @@ class RunNamespacesServicesListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the services should be
-      listed.
+    parent: The namespace from which the services should be listed. For Cloud
+      Run (fully managed), replace {namespace_id} with the project ID or
+      number.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2586,25 +1939,12 @@ class RunNamespacesServicesListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunNamespacesServicesPatchRequest(_messages.Message):
-  r"""A RunNamespacesServicesPatchRequest object.
-
-  Fields:
-    httpBody: A HttpBody resource to be passed as the request body.
-    name: The name of the service being patched. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  httpBody = _messages.MessageField('HttpBody', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class RunNamespacesServicesReplaceServiceRequest(_messages.Message):
   r"""A RunNamespacesServicesReplaceServiceRequest object.
 
   Fields:
-    name: The name of the service being replaced. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the service being replaced. For Cloud Run (fully
+      managed), replace {namespace_id} with the project ID or number.
     service: A Service resource to be passed as the request body.
   """
 
@@ -2626,135 +1966,12 @@ class RunProjectsLocationsAuthorizeddomainsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class RunProjectsLocationsAutodomainmappingsCreateRequest(_messages.Message):
-  r"""A RunProjectsLocationsAutodomainmappingsCreateRequest object.
-
-  Fields:
-    autoDomainMapping: A AutoDomainMapping resource to be passed as the
-      request body.
-    parent: The project ID or project number in which this auto domain mapping
-      should be created.
-  """
-
-  autoDomainMapping = _messages.MessageField('AutoDomainMapping', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class RunProjectsLocationsAutodomainmappingsDeleteRequest(_messages.Message):
-  r"""A RunProjectsLocationsAutodomainmappingsDeleteRequest object.
-
-  Fields:
-    apiVersion: Cloud Run currently ignores this parameter.
-    kind: Cloud Run currently ignores this parameter.
-    name: The name of the auto domain mapping being deleted. If needed,
-      replace {namespace_id} with the project ID.
-    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
-      currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
-  """
-
-  apiVersion = _messages.StringField(1)
-  kind = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  propagationPolicy = _messages.StringField(4)
-
-
-class RunProjectsLocationsAutodomainmappingsGetRequest(_messages.Message):
-  r"""A RunProjectsLocationsAutodomainmappingsGetRequest object.
-
-  Fields:
-    name: The name of the auto domain mapping being retrieved. If needed,
-      replace {namespace_id} with the project ID.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class RunProjectsLocationsAutodomainmappingsListRequest(_messages.Message):
-  r"""A RunProjectsLocationsAutodomainmappingsListRequest object.
-
-  Fields:
-    continue_: Optional encoded string to continue paging.
-    fieldSelector: Allows to filter resources based on a specific value for a
-      field name. Send this in a query string format. i.e.
-      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
-    includeUninitialized: Not currently used by Cloud Run.
-    labelSelector: Allows to filter resources based on a label. Supported
-      operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the auto domain
-      mappings should be listed.
-    resourceVersion: The baseline resource version from which the list or
-      watch operation should start. Not currently used by Cloud Run.
-    watch: Flag that indicates that the client expects to watch this resource
-      as well. Not currently used by Cloud Run.
-  """
-
-  continue_ = _messages.StringField(1)
-  fieldSelector = _messages.StringField(2)
-  includeUninitialized = _messages.BooleanField(3)
-  labelSelector = _messages.StringField(4)
-  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  parent = _messages.StringField(6, required=True)
-  resourceVersion = _messages.StringField(7)
-  watch = _messages.BooleanField(8)
-
-
-class RunProjectsLocationsAutodomainmappingsReplaceAutoDomainMappingRequest(_messages.Message):
-  r"""A RunProjectsLocationsAutodomainmappingsReplaceAutoDomainMappingRequest
-  object.
-
-  Fields:
-    autoDomainMapping: A AutoDomainMapping resource to be passed as the
-      request body.
-    name: The name of the auto domain mapping being retrieved. If needed,
-      replace {namespace_id} with the project ID.
-  """
-
-  autoDomainMapping = _messages.MessageField('AutoDomainMapping', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class RunProjectsLocationsConfigurationsCreateRequest(_messages.Message):
-  r"""A RunProjectsLocationsConfigurationsCreateRequest object.
-
-  Fields:
-    configuration: A Configuration resource to be passed as the request body.
-    parent: The project ID or project number in which this configuration
-      should be created.
-  """
-
-  configuration = _messages.MessageField('Configuration', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class RunProjectsLocationsConfigurationsDeleteRequest(_messages.Message):
-  r"""A RunProjectsLocationsConfigurationsDeleteRequest object.
-
-  Fields:
-    apiVersion: Cloud Run currently ignores this parameter.
-    kind: Cloud Run currently ignores this parameter.
-    name: The name of the configuration being deleted. If needed, replace
-      {namespace_id} with the project ID.
-    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
-      currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
-  """
-
-  apiVersion = _messages.StringField(1)
-  kind = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  propagationPolicy = _messages.StringField(4)
-
-
 class RunProjectsLocationsConfigurationsGetRequest(_messages.Message):
   r"""A RunProjectsLocationsConfigurationsGetRequest object.
 
   Fields:
-    name: The name of the configuration being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the configuration to retrieve. For Cloud Run (fully
+      managed), replace {namespace_id} with the project ID or number.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2772,8 +1989,9 @@ class RunProjectsLocationsConfigurationsListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the configurations
-      should be listed.
+    parent: The namespace from which the configurations should be listed. For
+      Cloud Run (fully managed), replace {namespace_id} with the project ID or
+      number.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2790,26 +2008,14 @@ class RunProjectsLocationsConfigurationsListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunProjectsLocationsConfigurationsReplaceConfigurationRequest(_messages.Message):
-  r"""A RunProjectsLocationsConfigurationsReplaceConfigurationRequest object.
-
-  Fields:
-    configuration: A Configuration resource to be passed as the request body.
-    name: The name of the configuration being retrieved. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  configuration = _messages.MessageField('Configuration', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class RunProjectsLocationsDomainmappingsCreateRequest(_messages.Message):
   r"""A RunProjectsLocationsDomainmappingsCreateRequest object.
 
   Fields:
     domainMapping: A DomainMapping resource to be passed as the request body.
-    parent: The project ID or project number in which this domain mapping
-      should be created.
+    parent: The namespace in which the domain mapping should be created. For
+      Cloud Run (fully managed), replace {namespace_id} with the project ID or
+      number.
   """
 
   domainMapping = _messages.MessageField('DomainMapping', 1)
@@ -2822,8 +2028,8 @@ class RunProjectsLocationsDomainmappingsDeleteRequest(_messages.Message):
   Fields:
     apiVersion: Cloud Run currently ignores this parameter.
     kind: Cloud Run currently ignores this parameter.
-    name: The name of the domain mapping being deleted. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the domain mapping to delete. For Cloud Run (fully
+      managed), replace {namespace_id} with the project ID or number.
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
       see kubernetes.io/docs/concepts/workloads/controllers/garbage-
@@ -2840,8 +2046,8 @@ class RunProjectsLocationsDomainmappingsGetRequest(_messages.Message):
   r"""A RunProjectsLocationsDomainmappingsGetRequest object.
 
   Fields:
-    name: The name of the domain mapping being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the domain mapping to retrieve. For Cloud Run (fully
+      managed), replace {namespace_id} with the project ID or number.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2859,8 +2065,9 @@ class RunProjectsLocationsDomainmappingsListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the domain mappings
-      should be listed.
+    parent: The namespace from which the domain mappings should be listed. For
+      Cloud Run (fully managed), replace {namespace_id} with the project ID or
+      number.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2875,19 +2082,6 @@ class RunProjectsLocationsDomainmappingsListRequest(_messages.Message):
   parent = _messages.StringField(6, required=True)
   resourceVersion = _messages.StringField(7)
   watch = _messages.BooleanField(8)
-
-
-class RunProjectsLocationsDomainmappingsReplaceDomainMappingRequest(_messages.Message):
-  r"""A RunProjectsLocationsDomainmappingsReplaceDomainMappingRequest object.
-
-  Fields:
-    domainMapping: A DomainMapping resource to be passed as the request body.
-    name: The name of the domain mapping being retrieved. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  domainMapping = _messages.MessageField('DomainMapping', 1)
-  name = _messages.StringField(2, required=True)
 
 
 class RunProjectsLocationsGetRequest(_messages.Message):
@@ -2922,8 +2116,8 @@ class RunProjectsLocationsRevisionsDeleteRequest(_messages.Message):
   Fields:
     apiVersion: Cloud Run currently ignores this parameter.
     kind: Cloud Run currently ignores this parameter.
-    name: The name of the revision being deleted. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the revision to delete. For Cloud Run (fully managed),
+      replace {namespace_id} with the project ID or number.
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
       see kubernetes.io/docs/concepts/workloads/controllers/garbage-
@@ -2940,8 +2134,8 @@ class RunProjectsLocationsRevisionsGetRequest(_messages.Message):
   r"""A RunProjectsLocationsRevisionsGetRequest object.
 
   Fields:
-    name: The name of the revision being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the revision to retrieve. For Cloud Run (fully managed),
+      replace {namespace_id} with the project ID or number.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2959,8 +2153,9 @@ class RunProjectsLocationsRevisionsListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the revisions should
-      be listed.
+    parent: The namespace from which the revisions should be listed. For Cloud
+      Run (fully managed), replace {namespace_id} with the project ID or
+      number.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -2977,45 +2172,12 @@ class RunProjectsLocationsRevisionsListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunProjectsLocationsRoutesCreateRequest(_messages.Message):
-  r"""A RunProjectsLocationsRoutesCreateRequest object.
-
-  Fields:
-    parent: The project ID or project number in which this route should be
-      created.
-    route: A Route resource to be passed as the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  route = _messages.MessageField('Route', 2)
-
-
-class RunProjectsLocationsRoutesDeleteRequest(_messages.Message):
-  r"""A RunProjectsLocationsRoutesDeleteRequest object.
-
-  Fields:
-    apiVersion: Cloud Run currently ignores this parameter.
-    kind: Cloud Run currently ignores this parameter.
-    name: The name of the route being deleted. If needed, replace
-      {namespace_id} with the project ID.
-    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
-      currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
-  """
-
-  apiVersion = _messages.StringField(1)
-  kind = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  propagationPolicy = _messages.StringField(4)
-
-
 class RunProjectsLocationsRoutesGetRequest(_messages.Message):
   r"""A RunProjectsLocationsRoutesGetRequest object.
 
   Fields:
-    name: The name of the route being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the route to retrieve. For Cloud Run (fully managed),
+      replace {namespace_id} with the project ID or number.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3033,8 +2195,9 @@ class RunProjectsLocationsRoutesListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the routes should be
-      listed.
+    parent: The namespace from which the routes should be listed. For Cloud
+      Run (fully managed), replace {namespace_id} with the project ID or
+      number.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -3051,25 +2214,13 @@ class RunProjectsLocationsRoutesListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunProjectsLocationsRoutesReplaceRouteRequest(_messages.Message):
-  r"""A RunProjectsLocationsRoutesReplaceRouteRequest object.
-
-  Fields:
-    name: The name of the route being replaced. If needed, replace
-      {namespace_id} with the project ID.
-    route: A Route resource to be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  route = _messages.MessageField('Route', 2)
-
-
 class RunProjectsLocationsServicesCreateRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesCreateRequest object.
 
   Fields:
-    parent: The project ID or project number in which this service should be
-      created.
+    parent: The namespace in which the service should be created. For Cloud
+      Run (fully managed), replace {namespace_id} with the project ID or
+      number.
     service: A Service resource to be passed as the request body.
   """
 
@@ -3083,8 +2234,8 @@ class RunProjectsLocationsServicesDeleteRequest(_messages.Message):
   Fields:
     apiVersion: Cloud Run currently ignores this parameter.
     kind: Cloud Run currently ignores this parameter.
-    name: The name of the service being deleted. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the service to delete. For Cloud Run (fully managed),
+      replace {namespace_id} with the project ID or number.
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
       see kubernetes.io/docs/concepts/workloads/controllers/garbage-
@@ -3119,8 +2270,8 @@ class RunProjectsLocationsServicesGetRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesGetRequest object.
 
   Fields:
-    name: The name of the service being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the service to retrieve. For Cloud Run (fully managed),
+      replace {namespace_id} with the project ID or number.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3138,8 +2289,9 @@ class RunProjectsLocationsServicesListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the services should be
-      listed.
+    parent: The namespace from which the services should be listed. For Cloud
+      Run (fully managed), replace {namespace_id} with the project ID or
+      number.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -3156,25 +2308,12 @@ class RunProjectsLocationsServicesListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunProjectsLocationsServicesPatchRequest(_messages.Message):
-  r"""A RunProjectsLocationsServicesPatchRequest object.
-
-  Fields:
-    httpBody: A HttpBody resource to be passed as the request body.
-    name: The name of the service being patched. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  httpBody = _messages.MessageField('HttpBody', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class RunProjectsLocationsServicesReplaceServiceRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesReplaceServiceRequest object.
 
   Fields:
-    name: The name of the service being replaced. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the service being replaced. For Cloud Run (fully
+      managed), replace {namespace_id} with the project ID or number.
     service: A Service resource to be passed as the request body.
   """
 
@@ -3213,63 +2352,73 @@ class RunProjectsLocationsServicesTestIamPermissionsRequest(_messages.Message):
 
 
 class SecretEnvSource(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   SecretEnvSource selects a Secret to populate the environment variables with.
   The contents of the target Secret's Data field will represent the key-value
   pairs as environment variables.
 
   Fields:
-    localObjectReference: Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  The Secret to select from.
-    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Specify whether the Secret must be defined
+    localObjectReference: This field should not be used directly as it is
+      meant to be inlined directly into the message. Use the "name" field
+      instead.
+    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  The Secret to select from.
+    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run
+      for Anthos: supported  Specify whether the Secret must be defined
   """
 
   localObjectReference = _messages.MessageField('LocalObjectReference', 1)
-  optional = _messages.BooleanField(2)
+  name = _messages.StringField(2)
+  optional = _messages.BooleanField(3)
 
 
 class SecretKeySelector(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   SecretKeySelector selects a key of a Secret.
 
   Fields:
-    key: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
-      The key of the secret to select from.  Must be a valid secret key.
-    localObjectReference: Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  The name of the secret in the pod's namespace to select
-      from.
-    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Specify whether the Secret or its key must be defined
+    key: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  The key of the secret to select from.  Must be a valid secret
+      key.
+    localObjectReference: This field should not be used directly as it is
+      meant to be inlined directly into the message. Use the "name" field
+      instead.
+    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  The name of the secret in the pod's namespace to select from.
+    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run
+      for Anthos: supported  Specify whether the Secret or its key must be
+      defined
   """
 
   key = _messages.StringField(1)
   localObjectReference = _messages.MessageField('LocalObjectReference', 2)
-  optional = _messages.BooleanField(3)
+  name = _messages.StringField(3)
+  optional = _messages.BooleanField(4)
 
 
 class SecretVolumeSource(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported  The
-  contents of the target Secret's Data field will be presented in a volume as
-  files using the keys in the Data field as the file names.
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  The contents of the target Secret's Data field will be presented in a volume
+  as files using the keys in the Data field as the file names.
 
   Fields:
     defaultMode: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      on GKE: supported  Mode bits to use on created files by default. Must be
-      a value between 0 and 0777. Defaults to 0644. Directories within the
-      path are not affected by this setting. This might be in conflict with
-      other options that affect the file mode, like fsGroup, and the result
-      can be other mode bits set.
-    items: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  If unspecified, each key-value pair in the Data field of
-      the referenced Secret will be projected into the volume as a file whose
-      name is the key and content is the value. If specified, the listed keys
-      will be projected into the specified paths, and unlisted keys will not
-      be present. If a key is specified which is not present in the Secret,
-      the volume setup will error unless it is marked optional.
-    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Specify whether the Secret or its keys must be defined.
-    secretName: Cloud Run fully managed: not supported  Cloud Run on GKE:
+      for Anthos: supported  Mode bits to use on created files by default.
+      Must be a value between 0 and 0777. Defaults to 0644. Directories within
+      the path are not affected by this setting. This might be in conflict
+      with other options that affect the file mode, like fsGroup, and the
+      result can be other mode bits set.
+    items: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  If unspecified, each key-value pair in the Data field
+      of the referenced Secret will be projected into the volume as a file
+      whose name is the key and content is the value. If specified, the listed
+      keys will be projected into the specified paths, and unlisted keys will
+      not be present. If a key is specified which is not present in the
+      Secret, the volume setup will error unless it is marked optional.
+    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run
+      for Anthos: supported  Specify whether the Secret or its keys must be
+      defined.
+    secretName: Cloud Run fully managed: not supported  Cloud Run for Anthos:
       supported  Name of the secret in the container's namespace to use.
   """
 
@@ -3280,7 +2429,7 @@ class SecretVolumeSource(_messages.Message):
 
 
 class SecurityContext(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   SecurityContext holds security configuration that will be applied to a
   container. Some fields are present in both SecurityContext and
   PodSecurityContext.  When both are set, the values in SecurityContext take
@@ -3288,7 +2437,7 @@ class SecurityContext(_messages.Message):
 
   Fields:
     runAsUser: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      on GKE: supported  The UID to run the entrypoint of the container
+      for Anthos: supported  The UID to run the entrypoint of the container
       process. Defaults to user specified in image metadata if unspecified.
       May also be set in PodSecurityContext.  If set in both SecurityContext
       and PodSecurityContext, the value specified in SecurityContext takes
@@ -3323,7 +2472,7 @@ class Service(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   kind = _messages.StringField(2)
-  metadata = _messages.MessageField('K8sIoApimachineryPkgApisMetaV1ObjectMeta', 3)
+  metadata = _messages.MessageField('ObjectMeta', 3)
   spec = _messages.MessageField('ServiceSpec', 4)
   status = _messages.MessageField('ServiceStatus', 5)
 
@@ -3465,17 +2614,108 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class Status(_messages.Message):
+  r"""Status is a return value for calls that don't return other objects
+
+  Fields:
+    code: Suggested HTTP return code for this status, 0 if not set. +optional
+    details: Extended data associated with the reason.  Each reason may define
+      its own extended details. This field is optional and the data returned
+      is not guaranteed to conform to any schema except that defined by the
+      reason type. +optional
+    message: A human-readable description of the status of this operation.
+      +optional
+    metadata: Standard list metadata. More info:
+      https://git.k8s.io/community/contributors/devel/api-conventions.md
+      #types-kinds +optional
+    reason: A machine-readable description of why this operation is in the
+      "Failure" status. If this value is empty there is no information
+      available. A Reason clarifies an HTTP status code but does not override
+      it. +optional
+    status: Status of the operation. One of: "Success" or "Failure". More
+      info: https://git.k8s.io/community/contributors/devel/api-conventions.md
+      #spec-and-status +optional
+  """
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('StatusDetails', 2)
+  message = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  reason = _messages.StringField(5)
+  status = _messages.StringField(6)
+
+
+class StatusCause(_messages.Message):
+  r"""StatusCause provides more information about an api.Status failure,
+  including cases when multiple errors are encountered.
+
+  Fields:
+    field: The field of the resource that has caused this error, as named by
+      its JSON serialization. May include dot and postfix notation for nested
+      attributes. Arrays are zero-indexed.  Fields may appear more than once
+      in an array of causes due to fields having multiple errors. Optional.
+      Examples:   "name" - the field "name" on the current resource
+      "items[0].name" - the field "name" on the first array entry in "items"
+      +optional
+    message: A human-readable description of the cause of the error.  This
+      field may be presented as-is to a reader. +optional
+    reason: A machine-readable description of the cause of the error. If this
+      value is empty there is no information available. +optional
+  """
+
+  field = _messages.StringField(1)
+  message = _messages.StringField(2)
+  reason = _messages.StringField(3)
+
+
+class StatusDetails(_messages.Message):
+  r"""StatusDetails is a set of additional properties that MAY be set by the
+  server to provide additional information about a response. The Reason field
+  of a Status object defines what attributes will be set. Clients must ignore
+  fields that do not match the defined type of each attribute, and should
+  assume that any attribute may be empty, invalid, or under defined.
+
+  Fields:
+    causes: The Causes array includes more details associated with the
+      StatusReason failure. Not all StatusReasons may provide detailed causes.
+      +optional
+    group: The group attribute of the resource associated with the status
+      StatusReason. +optional
+    kind: The kind attribute of the resource associated with the status
+      StatusReason. On some operations may differ from the requested resource
+      Kind. More info: https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#types-kinds +optional
+    name: The name attribute of the resource associated with the status
+      StatusReason (when there is a single name which can be described).
+      +optional
+    retryAfterSeconds: If specified, the time in seconds before the operation
+      should be retried. Some errors may indicate the client must take an
+      alternate action - for those errors this field may indicate how long to
+      wait before taking the alternate action. +optional
+    uid: UID of the resource. (when there is a single resource which can be
+      described). More info: http://kubernetes.io/docs/user-
+      guide/identifiers#uids +optional
+  """
+
+  causes = _messages.MessageField('StatusCause', 1, repeated=True)
+  group = _messages.StringField(2)
+  kind = _messages.StringField(3)
+  name = _messages.StringField(4)
+  retryAfterSeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  uid = _messages.StringField(6)
+
+
 class TCPSocketAction(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   TCPSocketAction describes an action based on opening a socket
 
   Fields:
-    host: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Optional: Host name to connect to, defaults to the pod
-      IP.
-    port: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
-      Number or name of the port to access on the container. Number must be in
-      the range 1 to 65535. Name must be an IANA_SVC_NAME.
+    host: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  Optional: Host name to connect to, defaults to the
+      pod IP.
+    port: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  Number or name of the port to access on the container. Number
+      must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
   """
 
   host = _messages.StringField(1)
@@ -3547,15 +2787,15 @@ class TrafficTarget(_messages.Message):
 
 
 class Volume(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   Volume represents a named volume in a container.
 
   Fields:
-    configMap: Cloud Run fully managed: not supported  Cloud Run on GKE:
+    configMap: Cloud Run fully managed: not supported  Cloud Run for Anthos:
       supported
-    name: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
-      Volume's name.
-    secret: Cloud Run fully managed: not supported  Cloud Run on GKE:
+    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  Volume's name.
+    secret: Cloud Run fully managed: not supported  Cloud Run for Anthos:
       supported
   """
 
@@ -3565,20 +2805,20 @@ class Volume(_messages.Message):
 
 
 class VolumeMount(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
   VolumeMount describes a mounting of a Volume within a container.
 
   Fields:
-    mountPath: Cloud Run fully managed: not supported  Cloud Run on GKE:
+    mountPath: Cloud Run fully managed: not supported  Cloud Run for Anthos:
       supported  Path within the container at which the volume should be
       mounted.  Must not contain ':'.
-    name: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
-      This must match the Name of a Volume.
-    readOnly: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Only true is accepted. Defaults to true.
-    subPath: (Optional)  Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Path within the volume from which the container's volume
-      should be mounted. Defaults to "" (volume's root).
+    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+      supported  This must match the Name of a Volume.
+    readOnly: (Optional)  Cloud Run fully managed: not supported  Cloud Run
+      for Anthos: supported  Only true is accepted. Defaults to true.
+    subPath: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  Path within the volume from which the container's
+      volume should be mounted. Defaults to "" (volume's root).
   """
 
   mountPath = _messages.StringField(1)
@@ -3590,7 +2830,7 @@ class VolumeMount(_messages.Message):
 encoding.AddCustomJsonFieldMapping(
     Handler, 'exec_', 'exec')
 encoding.AddCustomJsonFieldMapping(
-    K8sIoApimachineryPkgApisMetaV1ListMeta, 'continue_', 'continue')
+    ListMeta, 'continue_', 'continue')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

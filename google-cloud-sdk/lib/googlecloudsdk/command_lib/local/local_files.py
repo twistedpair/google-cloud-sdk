@@ -27,9 +27,7 @@ _SKAFFOLD_TEMPLATE = """
 apiVersion: skaffold/v1
 kind: Config
 build:
-  artifacts:
-  - image: {image_name}
-    context: {context_path}
+  artifacts: []
 deploy:
   kubectl:
     manifests: []
@@ -82,5 +80,15 @@ class LocalRuntimeFiles(object):
     manifests = yaml_helper.GetOrCreate(
         skaffold_yaml, ('deploy', 'kubectl', 'manifests'), constructor=list)
     manifests.append(kubernetes_file_path)
+    artifact = {'image': self._settings.image_name}
+    if self._settings.builder:
+      artifact['buildpack'] = {'builder': self._settings.builder}
+    else:
+      artifact['context'] = (
+          self._settings.build_context_directory or
+          os.path.dirname(self._settings.dockerfile) or '.')
+    artifacts = yaml_helper.GetOrCreate(
+        skaffold_yaml, ('build', 'artifacts'), constructor=list)
+    artifacts.append(artifact)
 
     return yaml.dump(skaffold_yaml)

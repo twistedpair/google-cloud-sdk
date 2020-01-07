@@ -179,6 +179,11 @@ IF "%CLOUDSDK_COMPONENT_MANAGER_SNAPSHOT_URL%"=="" (
 :SETENABLEDELAYED
 SETLOCAL EnableDelayedExpansion
 
+rem temporarily set code page to utf-8 support
+for /F "tokens=4" %%G in ('chcp') do (set OLD_CP=%%G)
+set PYTHONIOENCODING=utf-8
+chcp 65001
+
 IF %NO_WORKING_PYTHON_FOUND%=="true" (
   echo.
   echo To use the Google Cloud SDK, you must have Python installed and on your PATH.
@@ -191,12 +196,16 @@ IF %NO_WORKING_PYTHON_FOUND%=="true" (
   rem interpreter. We want to use this copy to install the Cloud SDK, since the
   rem bundled copy can't modify itself.
   FOR /F "delims=" %%i in (
-    '""%COMSPEC%" /C ""!CLOUDSDK_PYTHON!" "!CLOUDSDK_ROOT_DIR!\lib\gcloud.py""" components copy-bundled-python'
+    '""%COMSPEC%" /U /C ""!CLOUDSDK_PYTHON!" "!CLOUDSDK_ROOT_DIR!\lib\gcloud.py""" components copy-bundled-python'
   ) DO (
     SET CLOUDSDK_PYTHON=%%i
   )
-  "%COMSPEC%" /C ""!CLOUDSDK_PYTHON!" "!CLOUDSDK_ROOT_DIR!\bin\bootstrapping\install.py" %*"
+  "%COMSPEC%" /U /C ""!CLOUDSDK_PYTHON!" "!CLOUDSDK_ROOT_DIR!\bin\bootstrapping\install.py" %*"
 )
+
+set EXIT_CODE=%ERRORLEVEL%
+
+chcp %OLD_CP%
 
 IF _%INTERACTIVE%_==_0_ (
   IF _%CLOUDSDK_CORE_DISABLE_PROMPTS%_==__ (
@@ -205,4 +214,4 @@ IF _%INTERACTIVE%_==_0_ (
   )
 )
 
-"%COMSPEC%" /C exit %ERRORLEVEL%
+"%COMSPEC%" /C exit %EXIT_CODE%

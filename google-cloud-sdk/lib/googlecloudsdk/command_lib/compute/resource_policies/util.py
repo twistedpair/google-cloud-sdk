@@ -141,6 +141,27 @@ def MakeDiskSnapshotSchedulePolicy(policy_ref, args, messages):
       snapshotSchedulePolicy=snapshot_policy)
 
 
+def MakeGroupPlacementPolicy(policy_ref, args, messages):
+  """Creates a Group Placement Resource Policy message from args."""
+  availability_domain_count = None
+  if args.IsSpecified('availability_domain_count'):
+    availability_domain_count = args.availability_domain_count
+  collocation = None
+  if args.IsSpecified('collocation'):
+    collocation = flags.GetCollocationFlagMapper(messages).GetEnumForChoice(
+        args.collocation)
+  placement_policy = messages.ResourcePolicyGroupPlacementPolicy(
+      vmCount=args.vm_count,
+      availabilityDomainCount=availability_domain_count,
+      collocation=collocation)
+
+  return messages.ResourcePolicy(
+      name=policy_ref.Name(),
+      description=args.description,
+      region=policy_ref.region,
+      groupPlacementPolicy=placement_policy)
+
+
 def _ParseCycleFrequencyArgs(args, messages, supports_hourly=False,
                              supports_weekly=False):
   """Parses args and returns a tuple of DailyCycle and WeeklyCycle messages."""
@@ -199,7 +220,7 @@ def _ParseWeeklyCycleFromFile(args, messages):
       raise exceptions.InvalidArgumentException(
           args.GetFlag('weekly_cycle_from_file'),
           'Invalid value for `day`: [{}].'.format(day))
-    start_time = arg_parsers.Datetime.Parse(day_and_time['startTime'])
+    start_time = arg_parsers.Datetime.ParseUtcTime(day_and_time['startTime'])
     day, start_time = _ParseWeeklyDayAndTime(start_time, weekday)
     days_of_week.append(
         messages.ResourcePolicyWeeklyCycleDayOfWeek(

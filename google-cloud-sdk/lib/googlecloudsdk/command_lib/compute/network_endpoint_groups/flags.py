@@ -23,16 +23,20 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
-def MakeNetworkEndpointGroupsArg(support_global_scope=False):
+def MakeNetworkEndpointGroupsArg(support_global_scope=False,
+                                 support_regional_scope=False):
   return compute_flags.ResourceArgument(
       resource_name='network endpoint group',
       zonal_collection='compute.networkEndpointGroups',
       global_collection='compute.globalNetworkEndpointGroups'
       if support_global_scope else None,
-      zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+      regional_collection='compute.regionNetworkEndpointGroups'
+      if support_regional_scope else None,
+      zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
-def AddNetworkEndpointGroupType(parser, support_neg_type):
+def _AddNetworkEndpointGroupType(parser, support_neg_type):
   """Adds NEG type argument for creating network endpoint group."""
   if support_neg_type:
     base.ChoiceArgument(
@@ -44,8 +48,8 @@ def AddNetworkEndpointGroupType(parser, support_neg_type):
             parser)
 
 
-def AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
-                           support_l4ilb_neg):
+def _AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
+                            support_l4ilb_neg, support_regional_scope):
   """Adds endpoint type argument for creating network endpoint groups."""
   endpoint_type_choices = ['gce-vm-ip-port']
   endpoint_type_hidden = True
@@ -58,6 +62,9 @@ def AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
     endpoint_type_hidden = False
   if support_l4ilb_neg:
     endpoint_type_choices.append('gce-vm-primary-ip')
+    endpoint_type_hidden = False
+  if support_regional_scope:
+    endpoint_type_choices.append('serverless')
     endpoint_type_hidden = False
 
   help_text = 'The network endpoint type.'
@@ -109,6 +116,16 @@ def AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
           Endpoint IP address must be the primary IP of a VM's primary
           network interface in Google Compute Engine.
     """
+  if support_regional_scope:
+    help_text += """\
+
+      * `SERVERLESS`
+
+          The network endpoint is handled by specified serverless
+          infrastructure, such as Cloud Run, App Engine, or Cloud Function.
+          Default port, network, and subnet are not effective for SERVERLESS
+          endpoints.
+    """
 
   base.ChoiceArgument(
       '--network-endpoint-type',
@@ -118,8 +135,8 @@ def AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
       help_str=help_text).AddToParser(parser)
 
 
-def AddNetwork(parser, support_global_scope, support_hybrid_neg,
-               support_l4ilb_neg):
+def _AddNetwork(parser, support_global_scope, support_hybrid_neg,
+                support_l4ilb_neg, support_regional_scope):
   """Adds network argument for creating network endpoint groups."""
   help_text = """\
       Name of the network in which the NEG is created. `default` project
@@ -130,7 +147,7 @@ def AddNetwork(parser, support_global_scope, support_hybrid_neg,
     network_applicable_ne_types.append('`NON_GCP_PRIVATE_IP_PORT`')
   if support_l4ilb_neg:
     network_applicable_ne_types.append('`GCE_VM_PRIMARY_IP`')
-  if support_global_scope:
+  if support_global_scope or support_regional_scope:
     help_text += """\
 
       This is only supported for NEGs with endpoint type {0}.
@@ -138,8 +155,8 @@ def AddNetwork(parser, support_global_scope, support_hybrid_neg,
   parser.add_argument('--network', help=help_text)
 
 
-def AddSubnet(parser, support_global_scope, support_hybrid_neg,
-              support_l4ilb_neg):
+def _AddSubnet(parser, support_global_scope, support_hybrid_neg,
+               support_l4ilb_neg, support_regional_scope):
   """Adds subnet argument for creating network endpoint groups."""
   help_text = """\
       Name of the subnet to which all network endpoints belong.
@@ -147,7 +164,7 @@ def AddSubnet(parser, support_global_scope, support_hybrid_neg,
       If not specified, network endpoints may belong to any subnetwork in the
       region where the network endpoint group is created.
   """
-  if support_global_scope or support_hybrid_neg:
+  if support_global_scope or support_hybrid_neg or support_regional_scope:
     subnet_applicable_types = ['`GCE_VM_IP_PORT`']
     if support_l4ilb_neg:
       subnet_applicable_types.append('`GCE_VM_PRIMARY_IP`')
@@ -158,7 +175,8 @@ def AddSubnet(parser, support_global_scope, support_hybrid_neg,
   parser.add_argument('--subnet', help=help_text)
 
 
-def AddDefaultPort(parser, support_global_scope, support_hybrid_neg):
+def _AddDefaultPort(parser, support_global_scope, support_hybrid_neg,
+                    support_regional_scope):
   """Adds default port argument for creating network endpoint groups."""
   help_text = """\
     The default port to use if the port number is not specified in the network
@@ -183,26 +201,118 @@ def AddDefaultPort(parser, support_global_scope, support_hybrid_neg):
       If the default port is not specified the well known port for your backend
       protocol will be used (80 for http,  443 for https).
       """
+    if support_regional_scope:
+      help_text += """\
+
+      This flag is not supported for NEGs with endpoint type `SERVERLESS`.
+      """
   parser.add_argument('--default-port', type=int, help=help_text)
 
 
+def _AddServerlessRoutingInfo(parser):
+  """Adds serverless routing info arguments for network endpoint groups."""
+  serverless_group_help = """\
+      The serverless routing configurations are only valid when endpoint type
+      of the network endpoint group is `SERVERLESS`.
+  """
+  serverless_group = parser.add_group(help=serverless_group_help, mutex=True)
+
+  cloud_run_group_help = """\
+      Configuration for a Cloud Run network endpoint group. Cloud Run service
+      must be provided explicitly or in the URL mask. Cloud Run tag is optional,
+      and may be provided explicitly or in the URL mask.
+  """
+  cloud_run_group = serverless_group.add_group(help=cloud_run_group_help)
+  cloud_run_service_help = """\
+      Cloud Run service name to add to the Serverless network endpoint groups
+      (NEG). The service must be in the same project and the same region as the
+      Serverless NEG.
+  """
+  cloud_run_group.add_argument(
+      '--cloud-run-service', help=cloud_run_service_help)
+  cloud_run_tag_help = """\
+      Cloud Run tag represents the "named revision" to provide additional
+      fine-grained traffic routing configuration.
+  """
+  cloud_run_group.add_argument('--cloud-run-tag', help=cloud_run_tag_help)
+  cloud_run_url_mask_help = """\
+      A template to parse service and tag fields from a request URL. URL mask
+      allows for routing to multiple Run services without having to create
+      multiple network endpoint groups and backend services.
+  """
+  cloud_run_group.add_argument(
+      '--cloud-run-url-mask', help=cloud_run_url_mask_help)
+
+  app_engine_group_help = """\
+      Configuration for an App Engine network endpoint group. Both App Engine
+      service and version are optional, and may be provided explicitly or in the
+      URL mask. The `app-engine-app` flag is only used for default routing. The
+      App Engine app must be in the same project as the Serverless network
+      endpoint groups (NEG).
+  """
+  app_engine_group = serverless_group.add_group(help=app_engine_group_help)
+  app_engine_group.add_argument(
+      '--app-engine-app',
+      action=arg_parsers.StoreTrueFalseAction,
+      help='If set, the default routing will be used.')
+  app_engine_group.add_argument(
+      '--app-engine-service',
+      help='Optional serving service to add to the Serverless NEG.')
+  app_engine_group.add_argument(
+      '--app-engine-version',
+      help='Optional serving version to add to the Serverless NEG.')
+  app_engine_url_mask_help = """\
+      A template to parse service and version fields from a request URL. URL
+      mask allows for routing to multiple App Engine services without having
+      to create multiple network endpoint groups and backend services.
+  """
+  app_engine_group.add_argument(
+      '--app-engine-url-mask', help=app_engine_url_mask_help)
+
+  cloud_function_group_help = """\
+      Configuration for a Cloud Function network endpoint group. Cloud Function
+      name must be provided explicitly or in the URL mask.
+  """
+  cloud_function_group = serverless_group.add_group(
+      help=cloud_function_group_help)
+  cloud_function_name_help = """\
+      Cloud Function name to add to the Serverless NEG. The function must be in
+      the same project and the same region as the Serverless network endpoint
+      groups (NEG).
+  """
+  cloud_function_group.add_argument(
+      '--cloud-function-name', help=cloud_function_name_help)
+  cloud_function_url_mask_help = """\
+      A template to parse function field from a request URL. URL mask allows
+      for routing to multiple Cloud Functions without having to create multiple
+      network endpoint groups and backend services.
+  """
+  cloud_function_group.add_argument(
+      '--cloud-function-url-mask', help=cloud_function_url_mask_help)
+
+
 def AddCreateNegArgsToParser(parser,
-                             support_neg_type,
+                             support_neg_type=False,
                              support_global_scope=False,
                              support_hybrid_neg=False,
-                             support_l4ilb_neg=False):
+                             support_l4ilb_neg=False,
+                             support_regional_scope=False):
   """Adds flags for creating a network endpoint group to the parser."""
-  AddNetworkEndpointGroupType(parser, support_neg_type)
-  AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
-                         support_l4ilb_neg)
-  AddNetwork(parser, support_global_scope, support_hybrid_neg,
-             support_l4ilb_neg)
-  AddSubnet(parser, support_global_scope, support_hybrid_neg, support_l4ilb_neg)
-  AddDefaultPort(parser, support_global_scope, support_hybrid_neg)
+  _AddNetworkEndpointGroupType(parser, support_neg_type)
+  _AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
+                          support_l4ilb_neg, support_regional_scope)
+  _AddNetwork(parser, support_global_scope, support_hybrid_neg,
+              support_l4ilb_neg, support_regional_scope)
+  _AddSubnet(parser, support_global_scope, support_hybrid_neg,
+             support_l4ilb_neg, support_regional_scope)
+  _AddDefaultPort(parser, support_global_scope, support_hybrid_neg,
+                  support_regional_scope)
+  if support_regional_scope:
+    _AddServerlessRoutingInfo(parser)
 
 
-def AddAddEndpoint(endpoint_group, endpoint_spec, support_global_scope,
-                   support_hybrid_neg, support_l4ilb_neg):
+def _AddAddEndpoint(endpoint_group, endpoint_spec, support_global_scope,
+                    support_hybrid_neg, support_l4ilb_neg):
   """Adds add endpoint argument for updating network endpoint groups."""
   help_text = """\
           The network endpoint to add to the network endpoint group. Allowed
@@ -294,9 +404,16 @@ def AddAddEndpoint(endpoint_group, endpoint_spec, support_global_scope,
 
           `GCE_VM_PRIMARY_IP`
 
+              *instance* - Required instance name in same zone as the network
+              endpoint group.
+
+              The VM instance must belong to the network / subnetwork
+              associated with the network endpoint group. If the VM instance
+              is deleted, then any network endpoint group that has a reference
+              to it is updated.
+
               *ip* - Required IP address of the network endpoint to attach. The
-              IP address must be the primary IP of a VM's primary network
-              interface.
+              IP address must be the primary IP of a VM's network interface.
       """
 
   endpoint_group.add_argument(
@@ -306,8 +423,8 @@ def AddAddEndpoint(endpoint_group, endpoint_spec, support_global_scope,
       help=help_text)
 
 
-def AddRemoveEndpoint(endpoint_group, endpoint_spec, support_global_scope,
-                      support_hybrid_neg, support_l4ilb_neg):
+def _AddRemoveEndpoint(endpoint_group, endpoint_spec, support_global_scope,
+                       support_hybrid_neg, support_l4ilb_neg):
   """Adds remove endpoint argument for updating network endpoint groups."""
   help_text = """\
           The network endpoint to detach from the network endpoint group.
@@ -373,9 +490,12 @@ def AddRemoveEndpoint(endpoint_group, endpoint_spec, support_global_scope,
 
           `GCE_VM_PRIMARY_IP`
 
+              *instance* - Required name of instance whose endpoint(s) to
+              detach. If IP address is unset then all endpoints for the
+              instance in the NEG will be detached.
+
               *ip* - Required IP address of the network endpoint to attach. The
-              IP address must be the primary IP of a VM's primary network
-              interface.
+              IP address must be the primary IP of a VM's network interface.
       """
 
   endpoint_group.add_argument(
@@ -400,7 +520,7 @@ def AddUpdateNegArgsToParser(parser,
   if support_global_scope:
     endpoint_spec['fqdn'] = str
 
-  AddAddEndpoint(endpoint_group, endpoint_spec, support_global_scope,
-                 support_hybrid_neg, support_l4ilb_neg)
-  AddRemoveEndpoint(endpoint_group, endpoint_spec, support_global_scope,
-                    support_hybrid_neg, support_l4ilb_neg)
+  _AddAddEndpoint(endpoint_group, endpoint_spec, support_global_scope,
+                  support_hybrid_neg, support_l4ilb_neg)
+  _AddRemoveEndpoint(endpoint_group, endpoint_spec, support_global_scope,
+                     support_hybrid_neg, support_l4ilb_neg)

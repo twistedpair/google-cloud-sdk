@@ -107,7 +107,7 @@ class NetworkIssueError(Error):
         '{message}\n'
         'This may be due to network connectivity issues. Please check your '
         'network settings, and the status of the service you are trying to '
-        'reach.'.format(message=message))
+        'reach.'.format(message=encoding.Decode(message)))
 
 
 class ExceptionContext(object):

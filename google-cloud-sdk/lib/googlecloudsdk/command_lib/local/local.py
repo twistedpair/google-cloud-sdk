@@ -42,7 +42,7 @@ class Settings(object):
   """Settings for local development environments."""
 
   __slots__ = ('service_name', 'image_name', 'service_account', 'dockerfile',
-               'build_context_directory')
+               'build_context_directory', 'builder')
 
   @classmethod
   def FromArgs(cls, args):
@@ -66,10 +66,10 @@ class Settings(object):
       image_name = args.image_name
 
     return cls(service_name, image_name, args.service_account, args.dockerfile,
-               args.build_context_directory)
+               args.build_context_directory, args.builder)
 
   def __init__(self, service_name, image_name, service_account, dockerfile,
-               build_context_directory):
+               build_context_directory, builder):
     """Initialize Settings.
 
     Args:
@@ -78,7 +78,8 @@ class Settings(object):
       service_account: Service account id.
       dockerfile: Path to dockerfile.
       build_context_directory: Path to directory to use as the current working
-        directory for the docker build.
+          directory for the docker build.
+      builder: Buildpack builder.
     """
     super(Settings, self).__setattr__('service_name', service_name)
     super(Settings, self).__setattr__('image_name', image_name)
@@ -86,6 +87,7 @@ class Settings(object):
     super(Settings, self).__setattr__('dockerfile', dockerfile)
     super(Settings, self).__setattr__('build_context_directory',
                                       build_context_directory)
+    super(Settings, self).__setattr__('builder', builder)
 
   def __setattr__(self, name, value):
     """Prevent modification of attributes."""

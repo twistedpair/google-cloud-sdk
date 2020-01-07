@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import time
 
 from apitools.base.py import encoding
+from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cb_logs
@@ -232,6 +233,110 @@ def _CheckIamPermissions(project_id):
       projects_api.AddIamPolicyBinding(project_id, account, role)
 
 
+# TODO(b/146166409): Rename to `_CheckIamPermissions` (deleting the old
+#  function) when we've pushed the new permission checking to GA.
+def _CheckIamPermissionsBeta(project_id):
+  """Check for needed IAM permissions and prompt to add if missing.
+
+  Args:
+    project_id: A string with the id of the project.
+  """
+  project = projects_api.Get(project_id)
+  # If the user's project doesn't have cloudbuild enabled yet, then the service
+  # account won't even exist. If so, then ask to enable it before continuing.
+  # Also prompt them to enable Stackdriver Logging if they haven't yet.
+  expected_services = ['cloudbuild.googleapis.com', 'logging.googleapis.com']
+  for service_name in expected_services:
+    if not services_api.IsServiceEnabled(project.projectId, service_name):
+      # TODO(b/112757283): Split this out into a separate library.
+      prompt_message = (
+          'The "{0}" service is not enabled for this project. '
+          'It is required for this operation.\n').format(service_name)
+      console_io.PromptContinue(
+          prompt_message,
+          'Would you like to enable this service?',
+          throw_if_unattended=True,
+          cancel_on_no=True)
+      services_api.EnableService(project.projectId, service_name)
+
+  # Now that we're sure the service account exists, actually check permissions.
+  policy = projects_api.GetIamPolicy(project_id)
+  build_account = 'serviceAccount:{0}@cloudbuild.gserviceaccount.com'.format(
+      project.projectNumber)
+  _VerifyRolesAndPromptIfMissing(
+      project_id, build_account, _CurrentRolesForAccount(policy, build_account),
+      {
+          'roles/compute.admin', 'roles/iam.serviceAccountUser',
+          'roles/iam.serviceAccountTokenCreator'
+      })
+
+  # https://cloud.google.com/compute/docs/access/service-accounts#default_service_account
+  compute_account = (
+      'serviceAccount:{0}-compute@developer.gserviceaccount.com'.format(
+          project.projectNumber))
+  current_compute_account_roles = _CurrentRolesForAccount(
+      policy, compute_account)
+
+  # By default, the Compute Engine service account has the role `roles/editor`
+  # applied to it, which is sufficient for import and export. If that's not
+  # present, then request the minimal number of permissions.
+  if 'roles/editor' not in current_compute_account_roles:
+    try:
+      _VerifyRolesAndPromptIfMissing(
+          project_id, compute_account, current_compute_account_roles,
+          {'roles/compute.storageAdmin', 'roles/storage.objectViewer'})
+    except apitools_exceptions.HttpForbiddenError:
+      log.warning(
+          'Your account does not have permission to add roles to the '
+          'default compute engine service account. If import fails, '
+          'ensure "{0}" has the roles "{1}" and "{2}" before retrying.'.format(
+              compute_account, 'roles/compute.storageAdmin',
+              'roles/storage.objectViewer'))
+
+
+def _VerifyRolesAndPromptIfMissing(project_id, account, applied_roles,
+                                   required_roles):
+  """Check for IAM permissions for an account and prompt to add if missing.
+
+  Args:
+    project_id: A string with the id of the project.
+    account: A string with the identifier of an account.
+    applied_roles: A set of strings containing the current roles for the
+      account.
+    required_roles: A set of strings containing the required roles for the
+      account. If a role isn't found, then the user is prompted to add the role.
+  """
+
+  # If there were unsatisfied roles, then prompt the user to add them.
+  missing_roles = required_roles - applied_roles
+  if missing_roles:
+    ep_table = ['{0} {1}'.format(role, account) for role in missing_roles]
+    prompt_message = (
+        'The following IAM permissions are needed for this operation:\n'
+        '[{0}]\n'.format('\n'.join(ep_table)))
+    console_io.PromptContinue(
+        message=prompt_message,
+        prompt_string='Would you like to add the permissions',
+        throw_if_unattended=True,
+        cancel_on_no=False)
+
+    for role in missing_roles:
+      log.info('Adding [{0}] to [{1}]'.format(account, role))
+      projects_api.AddIamPolicyBinding(project_id, account, role)
+
+
+def _CurrentRolesForAccount(project_iam_policy, account):
+  """Returns a set containing the roles for `account`.
+
+  Args:
+    project_iam_policy: The response from GetIamPolicy.
+    account: A string with the identifier of an account.
+  """
+  return set(binding.role
+             for binding in project_iam_policy.bindings
+             if account in binding.members)
+
+
 def _CreateCloudBuild(build_config, client, messages):
   """Create a build in cloud build.
 
@@ -329,7 +434,13 @@ def AppendNetworkAndSubnetArgs(args, builder_args):
     AppendArg(builder_args, 'network', args.network.lower())
 
 
-def RunImageImport(args, import_args, tags, output_filter,
+# TODO(b/146166409): Remove `compute_release_track`
+#  when we've pushed the new permission checking to GA.
+def RunImageImport(args,
+                   import_args,
+                   tags,
+                   output_filter,
+                   compute_release_track,
                    docker_image_tag=_DEFAULT_BUILDER_VERSION):
   """Run a build over gce_vm_image_import on Google Cloud Builder.
 
@@ -341,6 +452,8 @@ def RunImageImport(args, import_args, tags, output_filter,
     output_filter: A list of strings indicating what lines from the log should
       be output. Only lines that start with one of the strings in output_filter
       will be displayed.
+    compute_release_track: release track to be used for Compute API calls. One
+      of - "alpha", "beta" or "ga"
     docker_image_tag: Specified docker image tag.
 
   Returns:
@@ -351,10 +464,15 @@ def RunImageImport(args, import_args, tags, output_filter,
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
   builder = _IMAGE_IMPORT_BUILDER.format(docker_image_tag)
-  return RunImageCloudBuild(args, builder, import_args, tags, output_filter)
+  return RunImageCloudBuild(args, builder, import_args, tags, output_filter,
+                            compute_release_track)
 
 
-def RunImageExport(args, export_args, tags, output_filter,
+def RunImageExport(args,
+                   export_args,
+                   tags,
+                   output_filter,
+                   compute_release_track,
                    docker_image_tag=_DEFAULT_BUILDER_VERSION):
   """Run a build over gce_vm_image_export on Google Cloud Builder.
 
@@ -366,6 +484,8 @@ def RunImageExport(args, export_args, tags, output_filter,
     output_filter: A list of strings indicating what lines from the log should
       be output. Only lines that start with one of the strings in output_filter
       will be displayed.
+    compute_release_track: release track to be used for Compute API calls. One
+      of - "alpha", "beta" or "ga"
     docker_image_tag: Specified docker image tag.
 
   Returns:
@@ -376,10 +496,14 @@ def RunImageExport(args, export_args, tags, output_filter,
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
   builder = _IMAGE_EXPORT_BUILDER.format(docker_image_tag)
-  return RunImageCloudBuild(args, builder, export_args, tags, output_filter)
+  return RunImageCloudBuild(args, builder, export_args, tags, output_filter,
+                            compute_release_track)
 
 
-def RunImageCloudBuild(args, builder, builder_args, tags, output_filter):
+# TODO(b/146166409): Remove `compute_release_track`
+#  when we've pushed the new permission checking to GA.
+def RunImageCloudBuild(args, builder, builder_args, tags, output_filter,
+                       compute_release_track):
   """Run a build related to image on Google Cloud Builder.
 
   Args:
@@ -391,6 +515,8 @@ def RunImageCloudBuild(args, builder, builder_args, tags, output_filter):
     output_filter: A list of strings indicating what lines from the log should
       be output. Only lines that start with one of the strings in output_filter
       will be displayed.
+    compute_release_track: release track to be used for Compute API calls. One
+      of - "alpha", "beta" or "ga"
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -402,7 +528,10 @@ def RunImageCloudBuild(args, builder, builder_args, tags, output_filter):
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
-  _CheckIamPermissions(project_id)
+  if compute_release_track in ['alpha', 'beta']:
+    _CheckIamPermissionsBeta(project_id)
+  else:
+    _CheckIamPermissions(project_id)
 
   return _RunCloudBuild(args, builder, builder_args,
                         ['gce-daisy'] + tags, output_filter, args.log_location)
@@ -542,7 +671,10 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
-  _CheckIamPermissions(project_id)
+  if compute_release_track in ['alpha', 'beta']:
+    _CheckIamPermissionsBeta(project_id)
+  else:
+    _CheckIamPermissions(project_id)
 
   # Make OVF import time-out before gcloud by shaving off 2% from the timeout
   # time, up to a max of 5m (300s).
@@ -614,15 +746,7 @@ def AppendBoolArg(args, name, arg=True):
 
 
 def MakeGcsUri(uri):
-  obj_ref = resources.REGISTRY.Parse(uri)
-  return 'gs://{0}/{1}'.format(obj_ref.bucket, obj_ref.object)
-
-
-def MakeGcsObjectOrPathUri(uri):
   """Creates Google Cloud Storage URI for an object or a path.
-
-  Raises storage_util.InvalidObjectNameError if a path contains only bucket
-  name.
 
   Args:
     uri: a string to a Google Cloud Storage object or a path. Can be a gs:// or
@@ -630,6 +754,26 @@ def MakeGcsObjectOrPathUri(uri):
 
   Returns:
     Google Cloud Storage URI for an object or a path.
+  """
+  obj_ref = resources.REGISTRY.Parse(uri)
+  if hasattr(obj_ref, 'object'):
+    return 'gs://{0}/{1}'.format(obj_ref.bucket, obj_ref.object)
+  else:
+    return 'gs://{0}/'.format(obj_ref.bucket)
+
+
+def MakeGcsObjectUri(uri):
+  """Creates Google Cloud Storage URI for an object.
+
+  Raises storage_util.InvalidObjectNameError if a path contains only bucket
+  name.
+
+  Args:
+    uri: a string to a Google Cloud Storage object. Can be a gs:// or an
+    https:// variant.
+
+  Returns:
+    Google Cloud Storage URI for an object.
   """
   obj_ref = resources.REGISTRY.Parse(uri)
   if hasattr(obj_ref, 'object'):
