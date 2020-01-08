@@ -8,6 +8,9 @@ declare -A MISSING_RELEASE_DATES_FIXES=(
  )
 
 COMMIT_AUTHOR="Google <gcloud@google.com>" # TODO who really authors these?
+# Set commit metadata
+git config --global user.email "gcloud@google.com"
+git config --global user.name "Google"
 
 REPO_URI="https://github.com/twistedpair/google-cloud-sdk.git"
 WORK_DIR=/tmp/gcloud_history
