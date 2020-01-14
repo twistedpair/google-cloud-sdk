@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20191206",
+ "revision": "20200103",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -663,6 +663,11 @@
     "shuffleOutputBytesSpilled": {
      "type": "string",
      "description": "Total number of bytes written to shuffle and spilled to disk.",
+     "format": "int64"
+    },
+    "slotMs": {
+     "type": "string",
+     "description": "Slot-milliseconds used by the stage.",
      "format": "int64"
     },
     "startMs": {

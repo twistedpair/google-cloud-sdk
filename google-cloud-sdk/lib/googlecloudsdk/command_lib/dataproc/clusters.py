@@ -344,6 +344,11 @@ If you want to enable all scopes use the 'cloud-platform' scope.
         metavar='type=TYPE,[count=COUNT]',
         help=help_msg)
 
+  AddReservationAffinityGroup(
+      parser,
+      group_text='Specifies the reservation for the instance.',
+      affinity_text='The type of reservation for the instance.')
+
 
 def _AddDiskArgs(parser):
   """Adds disk related args to the parser."""
@@ -424,8 +429,6 @@ def BetaArgsForClusterRef(parser):
         Enable access to the web UIs of selected components on the cluster
         through the component gateway.
         """)
-
-  AddReservationAffinityGroup(parser)
 
 
 def GetClusterConfig(args,
@@ -542,9 +545,8 @@ def GetClusterConfig(args,
       serviceAccountScopes=expanded_scopes,
       zoneUri=properties.VALUES.compute.zone.GetOrFail())
 
-  if beta:
-    reservation_affinity = GetReservationAffinity(args, dataproc)
-    gce_cluster_config.reservationAffinity = reservation_affinity
+  reservation_affinity = GetReservationAffinity(args, dataproc)
+  gce_cluster_config.reservationAffinity = reservation_affinity
 
   if args.tags:
     gce_cluster_config.tags = args.tags
@@ -751,8 +753,8 @@ def CreateCluster(dataproc, cluster_ref, cluster, is_async, timeout):
         details='Cluster placed in zone [{0}]'.format(zone_short_name))
   else:
     log.error('Create cluster failed!')
-    if operation.error:
-      log.error('Details:\n' + operation.error.message)
+    if operation.details:
+      log.error('Details:\n' + operation.details)
   return cluster
 
 
@@ -779,67 +781,63 @@ def DeleteGeneratedLabels(cluster, dataproc):
           labels, dataproc.messages.Cluster.LabelsValue)
 
 
-def AddReservationAffinityGroup(parser):
+def AddReservationAffinityGroup(parser, group_text, affinity_text):
   """Adds the argument group to handle reservation affinity configurations."""
-  group = parser.add_group(help='Manage the configuration of desired'
-                                'reservation which this instance could'
-                                'take capacity from.'
-                          )
+  group = parser.add_group(help=group_text)
   group.add_argument(
       '--reservation-affinity',
       choices=['any', 'none', 'specific'],
       default='any',
-      hidden=True,
-      help="""
-Specifies the configuration of desired reservation which this instance could
-take capacity from. Choices are 'any', 'none' and 'specific', default is 'any'.
-""")
+      help=affinity_text)
   group.add_argument(
-      '--reservation-label',
-      type=arg_parsers.ArgDict(spec={
-          'key': str,
-          'value': str,
-      }),
-      hidden=True,
+      '--reservation',
       help="""
-The key and values of the label of the reservation resource. Required if the
-value of `--reservation-affinity` is `specific`.
-
-*key*::: The label key of reservation resource.
-
-*value*::: The label value of reservation resource.
+The name of the reservation, required when `--reservation-affinity=specific`.
 """)
+
+
+def ValidateReservationAffinityGroup(args):
+  """Validates flags specifying reservation affinity."""
+  affinity = getattr(args, 'reservation_affinity', None)
+  if affinity == 'specific':
+    if not args.IsSpecified('reservation'):
+      raise exceptions.ArgumentError(
+          '--reservation must be specified with --reservation-affinity=specific'
+      )
 
 
 def GetReservationAffinity(args, client):
   """Returns the message of reservation affinity for the instance."""
-  if not args.IsSpecified('reservation_affinity'):
-    return None
+  if args.IsSpecified('reservation_affinity'):
+    type_msgs = client.messages.ReservationAffinity\
+      .ConsumeReservationTypeValueValuesEnum
 
-  type_msgs = (client.messages.
-               ReservationAffinity.ConsumeReservationTypeValueValuesEnum)
-
-  if args.reservation_affinity == 'none':
-    reservation_type = type_msgs.NO_RESERVATION
-    reservation_key = None
-    reservation_values = []
-  elif args.reservation_affinity == 'specific':
-    reservation_type = type_msgs.SPECIFIC_RESERVATION
-    # Currently, the key is fixed and the value is the name of the reservation.
-    # The value being a repeated field is reserved for future use when user
-    # can specify more than one reservation names from which the Vm can take
-    # capacity from.
-    reservation_key = args.reservation_label.get('key', None)
-    reservation_values = [args.reservation_label.get('value', None)]
-  else:
-    reservation_type = type_msgs.ANY_RESERVATION
     reservation_key = None
     reservation_values = []
 
-  return client.messages.ReservationAffinity(
-      consumeReservationType=reservation_type,
-      key=reservation_key,
-      values=reservation_values)
+    if args.reservation_affinity == 'none':
+      reservation_type = type_msgs.NO_RESERVATION
+    elif args.reservation_affinity == 'specific':
+      reservation_type = type_msgs.SPECIFIC_RESERVATION
+      # Currently, the key is fixed and the value is the name of the
+      # reservation.
+      # The value being a repeated field is reserved for future use when user
+      # can specify more than one reservation names from which the VM can take
+      # capacity from.
+      reservation_key = RESERVATION_AFFINITY_KEY
+      reservation_values = [args.reservation]
+    else:
+      reservation_type = type_msgs.ANY_RESERVATION
+
+    return client.messages.ReservationAffinity(
+        consumeReservationType=reservation_type,
+        key=reservation_key or None,
+        values=reservation_values)
+
+  return None
+
+
+RESERVATION_AFFINITY_KEY = 'compute.googleapis.com/reservation-name'
 
 
 def AddKerberosGroup(parser):

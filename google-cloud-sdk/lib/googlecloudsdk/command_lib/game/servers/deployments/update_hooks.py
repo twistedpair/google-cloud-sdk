@@ -98,7 +98,7 @@ def SetUpdateMask(ref, args, request):
   del ref
   update_mask = []
 
-  if args.IsSpecified('default_config'):
+  if args.IsSpecified('default_config') or args.clear_default_config:
     update_mask.append('defaultGameServerConfig')
   if args.config_overrides_file or args.clear_config_overrides:
     update_mask.append('gameServerConfigOverrides')
@@ -115,6 +115,19 @@ def ClearConfigOverrides(ref, args, request):
   del ref
   if args.clear_config_overrides:
     if not request.gameServerDeploymentRollout:
-      request.gameServerDeploymentRollout = {}
+      messages = utils.GetMessages()
+      gsd = messages.GameServerDeploymentRollout()
+      request.gameServerDeploymentRollout = gsd
     request.gameServerDeploymentRollout.gameServerConfigOverrides = []
+  return request
+
+
+def ClearDefaultConfig(ref, args, request):
+  del ref
+  if args.clear_default_config:
+    if not request.gameServerDeploymentRollout:
+      messages = utils.GetMessages()
+      gsd = messages.GameServerDeploymentRollout()
+      request.gameServerDeploymentRollout = gsd
+    request.gameServerDeploymentRollout.defaultGameServerConfig = ''
   return request

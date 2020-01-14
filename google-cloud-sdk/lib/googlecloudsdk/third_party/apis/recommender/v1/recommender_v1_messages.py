@@ -77,18 +77,22 @@ class GoogleCloudRecommenderV1MarkRecommendationClaimedRequest(_messages.Message
 
   Messages:
     StateMetadataValue: State properties to include with this state.
-      Overwrites any existing `state_metadata`.
+      Overwrites any existing `state_metadata`. Keys must match the regex
+      /^a-z0-9{0,62}$/. Values must match the regex
+      /^[a-zA-Z0-9_./-]{0,255}$/.
 
   Fields:
     etag: Fingerprint of the Recommendation. Provides optimistic locking.
     stateMetadata: State properties to include with this state. Overwrites any
-      existing `state_metadata`.
+      existing `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/.
+      Values must match the regex /^[a-zA-Z0-9_./-]{0,255}$/.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StateMetadataValue(_messages.Message):
     r"""State properties to include with this state. Overwrites any existing
-    `state_metadata`.
+    `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/. Values must
+    match the regex /^[a-zA-Z0-9_./-]{0,255}$/.
 
     Messages:
       AdditionalProperty: An additional property for a StateMetadataValue
@@ -120,18 +124,22 @@ class GoogleCloudRecommenderV1MarkRecommendationFailedRequest(_messages.Message)
 
   Messages:
     StateMetadataValue: State properties to include with this state.
-      Overwrites any existing `state_metadata`.
+      Overwrites any existing `state_metadata`. Keys must match the regex
+      /^a-z0-9{0,62}$/. Values must match the regex
+      /^[a-zA-Z0-9_./-]{0,255}$/.
 
   Fields:
     etag: Fingerprint of the Recommendation. Provides optimistic locking.
     stateMetadata: State properties to include with this state. Overwrites any
-      existing `state_metadata`.
+      existing `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/.
+      Values must match the regex /^[a-zA-Z0-9_./-]{0,255}$/.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StateMetadataValue(_messages.Message):
     r"""State properties to include with this state. Overwrites any existing
-    `state_metadata`.
+    `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/. Values must
+    match the regex /^[a-zA-Z0-9_./-]{0,255}$/.
 
     Messages:
       AdditionalProperty: An additional property for a StateMetadataValue
@@ -163,18 +171,22 @@ class GoogleCloudRecommenderV1MarkRecommendationSucceededRequest(_messages.Messa
 
   Messages:
     StateMetadataValue: State properties to include with this state.
-      Overwrites any existing `state_metadata`.
+      Overwrites any existing `state_metadata`. Keys must match the regex
+      /^a-z0-9{0,62}$/. Values must match the regex
+      /^[a-zA-Z0-9_./-]{0,255}$/.
 
   Fields:
     etag: Fingerprint of the Recommendation. Provides optimistic locking.
     stateMetadata: State properties to include with this state. Overwrites any
-      existing `state_metadata`.
+      existing `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/.
+      Values must match the regex /^[a-zA-Z0-9_./-]{0,255}$/.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StateMetadataValue(_messages.Message):
     r"""State properties to include with this state. Overwrites any existing
-    `state_metadata`.
+    `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/. Values must
+    match the regex /^[a-zA-Z0-9_./-]{0,255}$/.
 
     Messages:
       AdditionalProperty: An additional property for a StateMetadataValue

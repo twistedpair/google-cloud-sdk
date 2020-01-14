@@ -937,7 +937,7 @@ class Entity(dict):
     more information, see:
 
       http://www.atomenabled.org/developers/syndication/
-      http://code.google.com/apis/gdata/common-elements.html
+      https://developers.google.com/gdata/docs/1.0/elements
 
     This is *not* optimized. It shouldn't be used anywhere near code that's
     performance-critical.
@@ -1318,7 +1318,8 @@ class Query(dict):
 
   def __init__(self, kind=None, filters={}, _app=None, keys_only=False,
                compile=True, cursor=None, namespace=None, end_cursor=None,
-               projection=None, distinct=None, _namespace=None):
+               projection=None, distinct=None, _namespace=None,
+               _read_time_us=None):  # pylint: disable=g-doc-args
     """Constructor.
 
     Raises BadArgumentError if kind is not a string. Raises BadValueError or
@@ -1341,6 +1342,10 @@ class Query(dict):
     # other trusted apps. the datastore backend will prevent untrusted apps
     # from using it.
 
+    # the _read_time_us argument is intentionally not publicly documented. it's
+    # only intended to be used by apps with DATASTORE_SNAPSHOT_READ permission.
+    # appserver will prevent other apps from using it.
+
     # Use _namespace if namespace is None for legacy support.
     # TODO(user) remove this code when we decide to remove the
     # _namespace parameter.
@@ -1361,6 +1366,8 @@ class Query(dict):
 
     self.__app = datastore_types.ResolveAppId(_app)
     self.__namespace = datastore_types.ResolveNamespace(namespace)
+
+    self.__read_time_us = _read_time_us
 
     # QueryOptions validates these values
     self.__query_options = datastore_query.QueryOptions(
@@ -1542,7 +1549,8 @@ class Query(dict):
                                  ancestor=self.__ancestor_pb,
                                  filter_predicate=self.GetFilterPredicate(),
                                  order=self.GetOrder(),
-                                 group_by=self.__group_by)
+                                 group_by=self.__group_by,
+                                 read_time_us=self.__read_time_us)
 
   def GetOrder(self):
     """Gets a datastore_query.Order for the current instance.
@@ -2213,7 +2221,7 @@ class MultiQuery(Query):
     return lower_bound, upper_bound, config
 
   def __GetProjectionOverride(self,  config):
-    """Returns a tuple of (original projection, projeciton override).
+    """Returns a tuple of (original projection, projection override).
 
     If projection is None, there is no projection. If override is None,
     projection is sufficent for this query.

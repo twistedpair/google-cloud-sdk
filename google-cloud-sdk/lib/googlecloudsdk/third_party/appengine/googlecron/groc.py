@@ -22,13 +22,12 @@
 
 from __future__ import absolute_import
 
-__author__ = 'arb@google.com (Anthony Baxter)'
-
 
 from . import GrocLexer
 from . import GrocParser
-
 import antlr3
+
+__author__ = 'arb@google.com (Anthony Baxter)'
 
 
 class GrocException(Exception):
@@ -46,6 +45,7 @@ class GrocLexerWithErrors(GrocLexer.GrocLexer):
 
     Arguments:
       msg: the error message
+
     Raises:
       GrocException: always.
     """
@@ -63,6 +63,7 @@ class GrocParserWithErrors(GrocParser.GrocParser):
 
     Arguments:
       msg: the error message
+
     Raises:
       GrocException: always.
     """

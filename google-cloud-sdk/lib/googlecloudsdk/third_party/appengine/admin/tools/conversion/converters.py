@@ -121,7 +121,7 @@ def EnumConverter(prefix):
     raise ValueError(
         'Prefix should not contain a trailing underscore: "%s"' % prefix)
 
-  return lambda value: '_'.join([prefix, value.upper()])
+  return lambda value: '_'.join([prefix, str(value).upper()])
 
 
 def Not(value):

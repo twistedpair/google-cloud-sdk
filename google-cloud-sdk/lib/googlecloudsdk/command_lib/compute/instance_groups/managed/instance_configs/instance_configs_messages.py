@@ -181,10 +181,11 @@ def GetApplyUpdatesToInstancesRequestsZonal(holder, igm_ref, instances):
   messages = holder.client.messages
   request = messages.InstanceGroupManagersApplyUpdatesRequest(
       instances=instances,
-      minimalAction=messages.InstanceGroupManagersApplyUpdatesRequest.
-      MinimalActionValueValuesEnum.NONE,
-      maximalAction=messages.InstanceGroupManagersApplyUpdatesRequest.
-      MaximalActionValueValuesEnum.RESTART)
+      minimalAction=messages.InstanceGroupManagersApplyUpdatesRequest
+      .MinimalActionValueValuesEnum.NONE,
+      mostDisruptiveAllowedAction=messages
+      .InstanceGroupManagersApplyUpdatesRequest
+      .MostDisruptiveAllowedActionValueValuesEnum.RESTART)
   return messages.ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest(
       instanceGroupManager=igm_ref.Name(),
       instanceGroupManagersApplyUpdatesRequest=request,
@@ -198,10 +199,11 @@ def GetApplyUpdatesToInstancesRequestsRegional(holder, igm_ref, instances):
   messages = holder.client.messages
   request = messages.RegionInstanceGroupManagersApplyUpdatesRequest(
       instances=instances,
-      minimalAction=messages.RegionInstanceGroupManagersApplyUpdatesRequest.
-      MinimalActionValueValuesEnum.NONE,
-      maximalAction=messages.RegionInstanceGroupManagersApplyUpdatesRequest.
-      MaximalActionValueValuesEnum.RESTART)
+      minimalAction=messages.RegionInstanceGroupManagersApplyUpdatesRequest
+      .MinimalActionValueValuesEnum.NONE,
+      mostDisruptiveAllowedAction=messages
+      .RegionInstanceGroupManagersApplyUpdatesRequest
+      .MostDisruptiveAllowedActionValueValuesEnum.RESTART)
   return (
       messages.ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest
   )(

@@ -211,6 +211,12 @@ MAP = {
                 client_classpath='cloudasset_v1p1alpha1_client.CloudassetV1p1alpha1',
                 messages_modulepath='cloudasset_v1p1alpha1_messages',
                 default_version=False),
+        'v1p1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.cloudasset.v1p1beta1',
+                client_classpath='cloudasset_v1p1beta1_client.CloudassetV1p1beta1',
+                messages_modulepath='cloudasset_v1p1beta1_messages',
+                default_version=False),
         'v1p2beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.cloudasset.v1p2beta1',
@@ -761,12 +767,18 @@ MAP = {
                 default_version=True),
     },
     'iap': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.iap.v1',
+                client_classpath='iap_v1_client.IapV1',
+                messages_modulepath='iap_v1_messages',
+                default_version=True),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.iap.v1beta1',
                 client_classpath='iap_v1beta1_client.IapV1beta1',
                 messages_modulepath='iap_v1beta1_messages',
-                default_version=True),
+                default_version=False),
     },
     'labelmanager': {
         'v1alpha1':
@@ -1003,6 +1015,12 @@ MAP = {
                 default_version=True),
     },
     'secretmanager': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.secretmanager.v1',
+                client_classpath='secretmanager_v1_client.SecretmanagerV1',
+                messages_modulepath='secretmanager_v1_messages',
+                default_version=False),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.secretmanager.v1beta1',

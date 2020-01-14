@@ -173,6 +173,15 @@ class CloudFunction(_messages.Message):
   Fields:
     availableMemoryMb: The amount of memory in MB available for a function.
       Defaults to 256MB.
+    buildWorkerPool: Name of the Cloud Build Custom Worker Pool that should be
+      used to build the function. The format of this field is
+      `projects/{project}/workerPools/{workerPool}` where {project} is the
+      project id where the worker pool is defined and {workerPool} is the
+      short name of the worker pool.  If the project id is not the same as the
+      function, then the Cloud Functions Service Agent
+      (service-<project_number>@gcf-admin-robot.iam.gserviceaccount.com) must
+      be granted the role Cloud Build Custom Workers Builder
+      (roles/cloudbuild.customworkers.builder) in the project.
     description: User-provided description of a function.
     entryPoint: The name of the function (as defined in source code) that will
       be executed. Defaults to the resource name suffix, if not specified. For
@@ -337,27 +346,28 @@ class CloudFunction(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   availableMemoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  description = _messages.StringField(2)
-  entryPoint = _messages.StringField(3)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 4)
-  eventTrigger = _messages.MessageField('EventTrigger', 5)
-  httpsTrigger = _messages.MessageField('HttpsTrigger', 6)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  maxInstances = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  runtime = _messages.StringField(12)
-  serviceAccountEmail = _messages.StringField(13)
-  sourceArchiveUrl = _messages.StringField(14)
-  sourceRepository = _messages.MessageField('SourceRepository', 15)
-  sourceUploadUrl = _messages.StringField(16)
-  status = _messages.EnumField('StatusValueValuesEnum', 17)
-  timeout = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  versionId = _messages.IntegerField(20)
-  vpcConnector = _messages.StringField(21)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 22)
+  buildWorkerPool = _messages.StringField(2)
+  description = _messages.StringField(3)
+  entryPoint = _messages.StringField(4)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 5)
+  eventTrigger = _messages.MessageField('EventTrigger', 6)
+  httpsTrigger = _messages.MessageField('HttpsTrigger', 7)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  maxInstances = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  runtime = _messages.StringField(13)
+  serviceAccountEmail = _messages.StringField(14)
+  sourceArchiveUrl = _messages.StringField(15)
+  sourceRepository = _messages.MessageField('SourceRepository', 16)
+  sourceUploadUrl = _messages.StringField(17)
+  status = _messages.EnumField('StatusValueValuesEnum', 18)
+  timeout = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
+  versionId = _messages.IntegerField(21)
+  vpcConnector = _messages.StringField(22)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 23)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):

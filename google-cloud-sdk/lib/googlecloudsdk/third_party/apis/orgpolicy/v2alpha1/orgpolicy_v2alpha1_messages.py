@@ -204,10 +204,12 @@ class GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRule(_messages.Message):
       field can be set only in Policies for list constraints.
     condition: An optional condition which determines whether this rule is
       used in the evaluation of the policy. When set, the `expression` field
-      in the `Expr` must have the form "resource.matchLabels(key_id,
-      value_id)", where key_id and value_id are the numeric identifiers for
-      Label Keys and Values. These identifiers are available from the Label
-      Manager Service.
+      in the `Expr' must include from 1 to 10 subexpressions, joined by the
+      "||" or "&&" operators. Each subexpression must be of the form
+      "resource.matchLabels(key_name, value_name)", where key_name and
+      value_name are the resource names for Label Keys and Values. These names
+      are available from the Label Manager Service. An example expression is:
+      "resource.matchLabels('labelKeys/123, 'labelValues/456')".
     denyAll: Setting this to true means that all values are denied. This field
       can be set only in Policies for list constraints.
     enforce: If `true`, then the `Policy` is enforced. If `false`, then any

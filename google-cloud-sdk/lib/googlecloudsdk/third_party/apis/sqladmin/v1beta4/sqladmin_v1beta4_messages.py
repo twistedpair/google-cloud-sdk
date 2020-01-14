@@ -1932,6 +1932,8 @@ class User(_messages.Message):
     project: The project ID of the project containing the Cloud SQL database.
       The Google apps domain is prefixed if applicable. Can be omitted for
       update since it is already specified on the URL.
+    type: The user type. It determines the method to authenticate the user
+      during login.
   """
 
   etag = _messages.StringField(1)
@@ -1941,6 +1943,7 @@ class User(_messages.Message):
   name = _messages.StringField(5)
   password = _messages.StringField(6)
   project = _messages.StringField(7)
+  type = _messages.StringField(8)
 
 
 class UsersListResponse(_messages.Message):

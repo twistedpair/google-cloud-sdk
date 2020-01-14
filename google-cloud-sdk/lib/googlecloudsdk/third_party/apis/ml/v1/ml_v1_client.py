@@ -11,7 +11,7 @@ class MlV1(base_api.BaseApiClient):
   BASE_URL = u'https://ml.googleapis.com/'
 
   _PACKAGE = u'ml'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
+  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
   _VERSION = u'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
@@ -938,9 +938,6 @@ is the parent resource, without the operations collection id.
 AI Platform implements a custom `explain` verb on top of an HTTP POST
 method.
 
-For details of the request and response format, see the **guide
-to the [explain request format](/ml-engine/docs/v1/explain-request)**.
-
       Args:
         request: (MlProjectsExplainRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -996,12 +993,9 @@ for training the model with Google Cloud Machine Learning.
     )
 
     def Predict(self, request, global_params=None):
-      r"""Performs prediction on the data in the request.
-AI Platform implements a custom `predict` verb on top of an HTTP POST
-method.
+      r"""Performs online prediction on the data in the request.
 
-For details of the request and response format, see the **guide
-to the [predict request format](/ml-engine/docs/v1/predict-request)**.
+<div>{% dynamic include "/ai-platform/includes/___predict-request" %}</div>
 
       Args:
         request: (MlProjectsPredictRequest) input message

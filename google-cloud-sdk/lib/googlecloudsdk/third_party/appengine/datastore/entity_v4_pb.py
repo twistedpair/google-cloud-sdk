@@ -37,7 +37,7 @@ else:
 class PartitionId(ProtocolBuffer.ProtocolMessage):
 
   # Constants values
-  MAX_DIMENSION_TAG =  100
+  MAX_DIMENSION_TAG =  100 
 
   _Constants_NAMES = {
     100: "MAX_DIMENSION_TAG",

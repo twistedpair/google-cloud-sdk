@@ -264,6 +264,10 @@
           "description": "Cluster-level Vertical Pod Autoscaling configuration.",
           "$ref": "VerticalPodAutoscaling"
         },
+        "shieldedNodes": {
+          "description": "Shielded Nodes configuration.",
+          "$ref": "ShieldedNodes"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -886,7 +890,7 @@
           "description": "Machine-friendly representation of the condition",
           "enumDescriptions": [
             "UNKNOWN indicates a generic condition.",
-            "GCE_STOCKOUT indicates a Google Compute Engine stockout.",
+            "GCE_STOCKOUT indicates that Google Compute Engine resources are\ntemporarily unavailable.",
             "GKE_SERVICE_ACCOUNT_DELETED indicates that the user deleted their robot\nservice account.",
             "Google Compute Engine quota was exceeded.",
             "Cluster state was manually changed by an SRE due to a system logic error.",
@@ -1292,6 +1296,10 @@
         "publicEndpoint": {
           "description": "Output only. The external IP address of this cluster's master endpoint.",
           "type": "string"
+        },
+        "peeringName": {
+          "description": "Output only. The peering name in the customer VPC used by this cluster.",
+          "type": "string"
         }
       }
     },
@@ -1327,6 +1335,17 @@
       "properties": {
         "enabled": {
           "description": "Enables vertical pod autoscaling.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ShieldedNodes": {
+      "id": "ShieldedNodes",
+      "description": "Configuration of Shielded Nodes feature.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether Shielded Nodes features are enabled on all nodes in this cluster.",
           "type": "boolean"
         }
       }
@@ -1534,6 +1553,10 @@
         "desiredDatabaseEncryption": {
           "description": "Configuration of etcd encryption.",
           "$ref": "DatabaseEncryption"
+        },
+        "desiredShieldedNodes": {
+          "description": "Configuration for Shielded Nodes.",
+          "$ref": "ShieldedNodes"
         },
         "desiredNodePoolAutoscaling": {
           "description": "Autoscaler configuration for the node pool specified in\ndesired_node_pool_id. If there is only one pool in the\ncluster and desired_node_pool_id is not provided then\nthe change applies to that single node pool.",

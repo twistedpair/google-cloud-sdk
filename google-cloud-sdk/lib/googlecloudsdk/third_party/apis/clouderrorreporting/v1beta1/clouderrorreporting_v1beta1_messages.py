@@ -17,9 +17,10 @@ class ClouderrorreportingProjectsDeleteEventsRequest(_messages.Message):
 
   Fields:
     projectName: Required. The resource name of the Google Cloud Platform
-      project. Written as `projects/` plus the [Google Cloud Platform project
-      ID](https://support.google.com/cloud/answer/6158840). Example: `projects
-      /my-project-123`.
+      project. Written as `projects/{projectID}`, where `{projectID}` is the
+      [Google Cloud Platform project
+      ID](https://support.google.com/cloud/answer/6158840).  Example:
+      `projects/my-project-123`.
   """
 
   projectName = _messages.StringField(1, required=True)
@@ -37,9 +38,10 @@ class ClouderrorreportingProjectsEventsListRequest(_messages.Message):
     pageSize: Optional. The maximum number of results to return per response.
     pageToken: Optional. A `next_page_token` provided by a previous response.
     projectName: Required. The resource name of the Google Cloud Platform
-      project. Written as `projects/` plus the [Google Cloud Platform project
-      ID](https://support.google.com/cloud/answer/6158840). Example: `projects
-      /my-project-123`.
+      project. Written as `projects/{projectID}`, where `{projectID}` is the
+      [Google Cloud Platform project
+      ID](https://support.google.com/cloud/answer/6158840).  Example:
+      `projects/my-project-123`.
     serviceFilter_resourceType: Optional. The exact value to match against
       [`ServiceContext.resource_type`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.resource_type).
@@ -85,9 +87,10 @@ class ClouderrorreportingProjectsEventsReportRequest(_messages.Message):
 
   Fields:
     projectName: Required. The resource name of the Google Cloud Platform
-      project. Written as `projects/` plus the [Google Cloud Platform project
-      ID](https://support.google.com/cloud/answer/6158840). Example: `projects
-      /my-project-123`.
+      project. Written as `projects/{projectId}`, where `{projectId}` is the
+      [Google Cloud Platform project
+      ID](https://support.google.com/cloud/answer/6158840).  Example: //
+      `projects/my-project-123`.
     reportedErrorEvent: A ReportedErrorEvent resource to be passed as the
       request body.
   """
@@ -121,9 +124,10 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
       To view additional results, pass this token along with the identical
       query parameters as the first request.
     projectName: Required. The resource name of the Google Cloud Platform
-      project. Written as <code>projects/</code> plus the <a
-      href="https://support.google.com/cloud/answer/6158840">Google Cloud
-      Platform project ID</a>.  Example: <code>projects/my-project-123</code>.
+      project. Written as `projects/{projectID}`, where `{projectID}` is the
+      [Google Cloud Platform project
+      ID](https://support.google.com/cloud/answer/6158840).  Example:
+      `projects/my-project-123`.
     serviceFilter_resourceType: Optional. The exact value to match against
       [`ServiceContext.resource_type`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.resource_type).

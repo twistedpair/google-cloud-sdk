@@ -40,23 +40,23 @@ googlecloudsdk_dot_third_party_dot_appengine_dot_datastore_dot_entity__v4__pb = 
 class Error(ProtocolBuffer.ProtocolMessage):
 
   # ErrorCode values
-  BAD_REQUEST  =    1
-  CONCURRENT_TRANSACTION =    2
-  INTERNAL_ERROR =    3
-  NEED_INDEX   =    4
-  TIMEOUT      =    5
-  PERMISSION_DENIED =    6
-  BIGTABLE_ERROR =    7
-  COMMITTED_BUT_STILL_APPLYING =    8
-  CAPABILITY_DISABLED =    9
-  TRY_ALTERNATE_BACKEND =   10
-  SAFE_TIME_TOO_OLD =   11
-  RESOURCE_EXHAUSTED =   12
-  NOT_FOUND    =   13
-  ALREADY_EXISTS =   14
-  FAILED_PRECONDITION =   15
-  UNAUTHENTICATED =   16
-  ABORTED      =   17
+  BAD_REQUEST  =    1 
+  CONCURRENT_TRANSACTION =    2 
+  INTERNAL_ERROR =    3 
+  NEED_INDEX   =    4 
+  TIMEOUT      =    5 
+  PERMISSION_DENIED =    6 
+  BIGTABLE_ERROR =    7 
+  COMMITTED_BUT_STILL_APPLYING =    8 
+  CAPABILITY_DISABLED =    9 
+  TRY_ALTERNATE_BACKEND =   10 
+  SAFE_TIME_TOO_OLD =   11 
+  RESOURCE_EXHAUSTED =   12 
+  NOT_FOUND    =   13 
+  ALREADY_EXISTS =   14 
+  FAILED_PRECONDITION =   15 
+  UNAUTHENTICATED =   16 
+  ABORTED      =   17 
 
   _ErrorCode_NAMES = {
     1: "BAD_REQUEST",
@@ -150,9 +150,9 @@ class Error(ProtocolBuffer.ProtocolMessage):
 class EntityResult(ProtocolBuffer.ProtocolMessage):
 
   # ResultType values
-  FULL         =    1
-  PROJECTION   =    2
-  KEY_ONLY     =    3
+  FULL         =    1 
+  PROJECTION   =    2 
+  KEY_ONLY     =    3 
 
   _ResultType_NAMES = {
     1: "FULL",
@@ -170,7 +170,7 @@ class EntityResult(ProtocolBuffer.ProtocolMessage):
   cursor_ = ""
 
   def __init__(self, contents=None):
-    self.entity_ = Entity()
+    self.entity_ = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Entity()
     if contents is not None: self.MergeFromString(contents)
 
   def entity(self): return self.entity_
@@ -1004,7 +1004,7 @@ class PropertyReference(ProtocolBuffer.ProtocolMessage):
 class PropertyExpression(ProtocolBuffer.ProtocolMessage):
 
   # AggregationFunction values
-  FIRST        =    1
+  FIRST        =    1 
 
   _AggregationFunction_NAMES = {
     1: "FIRST",
@@ -1155,8 +1155,8 @@ class PropertyExpression(ProtocolBuffer.ProtocolMessage):
 class PropertyOrder(ProtocolBuffer.ProtocolMessage):
 
   # Direction values
-  ASCENDING    =    1
-  DESCENDING   =    2
+  ASCENDING    =    1 
+  DESCENDING   =    2 
 
   _Direction_NAMES = {
     1: "ASCENDING",
@@ -1470,7 +1470,7 @@ class Filter(ProtocolBuffer.ProtocolMessage):
 class CompositeFilter(ProtocolBuffer.ProtocolMessage):
 
   # Operator values
-  AND          =    1
+  AND          =    1 
 
   _Operator_NAMES = {
     1: "AND",
@@ -1636,12 +1636,12 @@ class CompositeFilter(ProtocolBuffer.ProtocolMessage):
 class PropertyFilter(ProtocolBuffer.ProtocolMessage):
 
   # Operator values
-  LESS_THAN    =    1
-  LESS_THAN_OR_EQUAL =    2
-  GREATER_THAN =    3
-  GREATER_THAN_OR_EQUAL =    4
-  EQUAL        =    5
-  HAS_ANCESTOR =   11
+  LESS_THAN    =    1 
+  LESS_THAN_OR_EQUAL =    2 
+  GREATER_THAN =    3 
+  GREATER_THAN_OR_EQUAL =    4 
+  EQUAL        =    5 
+  HAS_ANCESTOR =   11 
 
   _Operator_NAMES = {
     1: "LESS_THAN",
@@ -1662,7 +1662,7 @@ class PropertyFilter(ProtocolBuffer.ProtocolMessage):
 
   def __init__(self, contents=None):
     self.property_ = PropertyReference()
-    self.value_ = Value()
+    self.value_ = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Value()
     if contents is not None: self.MergeFromString(contents)
 
   def property(self): return self.property_
@@ -2113,7 +2113,7 @@ class GqlQueryArg(ProtocolBuffer.ProtocolMessage):
     if self.value_ is None:
       self.lazy_init_lock_.acquire()
       try:
-        if self.value_ is None: self.value_ = Value()
+        if self.value_ is None: self.value_ = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Value()
       finally:
         self.lazy_init_lock_.release()
     return self.value_
@@ -2268,9 +2268,9 @@ class GqlQueryArg(ProtocolBuffer.ProtocolMessage):
 class QueryResultBatch(ProtocolBuffer.ProtocolMessage):
 
   # MoreResultsType values
-  NOT_FINISHED =    1
-  MORE_RESULTS_AFTER_LIMIT =    2
-  NO_MORE_RESULTS =    3
+  NOT_FINISHED =    1 
+  MORE_RESULTS_AFTER_LIMIT =    2 
+  NO_MORE_RESULTS =    3 
 
   _MoreResultsType_NAMES = {
     1: "NOT_FINISHED",
@@ -2613,11 +2613,11 @@ class QueryResultBatch(ProtocolBuffer.ProtocolMessage):
 class Mutation(ProtocolBuffer.ProtocolMessage):
 
   # Operation values
-  UNKNOWN      =    0
-  INSERT       =    1
-  UPDATE       =    2
-  UPSERT       =    3
-  DELETE       =    4
+  UNKNOWN      =    0 
+  INSERT       =    1 
+  UPDATE       =    2 
+  UPSERT       =    3 
+  DELETE       =    4 
 
   _Operation_NAMES = {
     0: "UNKNOWN",
@@ -2658,7 +2658,7 @@ class Mutation(ProtocolBuffer.ProtocolMessage):
     if self.key_ is None:
       self.lazy_init_lock_.acquire()
       try:
-        if self.key_ is None: self.key_ = Key()
+        if self.key_ is None: self.key_ = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Key()
       finally:
         self.lazy_init_lock_.release()
     return self.key_
@@ -2677,7 +2677,7 @@ class Mutation(ProtocolBuffer.ProtocolMessage):
     if self.entity_ is None:
       self.lazy_init_lock_.acquire()
       try:
-        if self.entity_ is None: self.entity_ = Entity()
+        if self.entity_ is None: self.entity_ = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Entity()
       finally:
         self.lazy_init_lock_.release()
     return self.entity_
@@ -2839,7 +2839,7 @@ class MutationResult(ProtocolBuffer.ProtocolMessage):
     if self.key_ is None:
       self.lazy_init_lock_.acquire()
       try:
-        if self.key_ is None: self.key_ = Key()
+        if self.key_ is None: self.key_ = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Key()
       finally:
         self.lazy_init_lock_.release()
     return self.key_
@@ -2994,7 +2994,7 @@ class DeprecatedMutation(ProtocolBuffer.ProtocolMessage):
     return self.upsert_[i]
 
   def add_upsert(self):
-    x = Entity()
+    x = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Entity()
     self.upsert_.append(x)
     return x
 
@@ -3010,7 +3010,7 @@ class DeprecatedMutation(ProtocolBuffer.ProtocolMessage):
     return self.update_[i]
 
   def add_update(self):
-    x = Entity()
+    x = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Entity()
     self.update_.append(x)
     return x
 
@@ -3026,7 +3026,7 @@ class DeprecatedMutation(ProtocolBuffer.ProtocolMessage):
     return self.insert_[i]
 
   def add_insert(self):
-    x = Entity()
+    x = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Entity()
     self.insert_.append(x)
     return x
 
@@ -3042,7 +3042,7 @@ class DeprecatedMutation(ProtocolBuffer.ProtocolMessage):
     return self.insert_auto_id_[i]
 
   def add_insert_auto_id(self):
-    x = Entity()
+    x = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Entity()
     self.insert_auto_id_.append(x)
     return x
 
@@ -3058,7 +3058,7 @@ class DeprecatedMutation(ProtocolBuffer.ProtocolMessage):
     return self.delete_[i]
 
   def add_delete(self):
-    x = Key()
+    x = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Key()
     self.delete_.append(x)
     return x
 
@@ -3370,7 +3370,7 @@ class DeprecatedMutationResult(ProtocolBuffer.ProtocolMessage):
     return self.insert_auto_id_key_[i]
 
   def add_insert_auto_id_key(self):
-    x = Key()
+    x = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Key()
     self.insert_auto_id_key_.append(x)
     return x
 
@@ -3707,9 +3707,9 @@ class DeprecatedMutationResult(ProtocolBuffer.ProtocolMessage):
 class ReadOptions(ProtocolBuffer.ProtocolMessage):
 
   # ReadConsistency values
-  DEFAULT      =    0
-  STRONG       =    1
-  EVENTUAL     =    2
+  DEFAULT      =    0 
+  STRONG       =    1 
+  EVENTUAL     =    2 
 
   _ReadConsistency_NAMES = {
     0: "DEFAULT",
@@ -3888,7 +3888,7 @@ class LookupRequest(ProtocolBuffer.ProtocolMessage):
     return self.key_[i]
 
   def add_key(self):
-    x = Key()
+    x = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Key()
     self.key_.append(x)
     return x
 
@@ -4066,7 +4066,7 @@ class LookupResponse(ProtocolBuffer.ProtocolMessage):
     return self.deferred_[i]
 
   def add_deferred(self):
-    x = Key()
+    x = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Key()
     self.deferred_.append(x)
     return x
 
@@ -4279,7 +4279,7 @@ class RunQueryRequest(ProtocolBuffer.ProtocolMessage):
     if self.partition_id_ is None:
       self.lazy_init_lock_.acquire()
       try:
-        if self.partition_id_ is None: self.partition_id_ = PartitionId()
+        if self.partition_id_ is None: self.partition_id_ = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.PartitionId()
       finally:
         self.lazy_init_lock_.release()
     return self.partition_id_
@@ -5319,8 +5319,8 @@ class RollbackResponse(ProtocolBuffer.ProtocolMessage):
 class CommitRequest(ProtocolBuffer.ProtocolMessage):
 
   # Mode values
-  TRANSACTIONAL =    1
-  NON_TRANSACTIONAL =    2
+  TRANSACTIONAL =    1 
+  NON_TRANSACTIONAL =    2 
 
   _Mode_NAMES = {
     1: "TRANSACTIONAL",
@@ -5814,7 +5814,7 @@ class AllocateIdsRequest(ProtocolBuffer.ProtocolMessage):
     return self.allocate_[i]
 
   def add_allocate(self):
-    x = Key()
+    x = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Key()
     self.allocate_.append(x)
     return x
 
@@ -5830,7 +5830,7 @@ class AllocateIdsRequest(ProtocolBuffer.ProtocolMessage):
     return self.reserve_[i]
 
   def add_reserve(self):
-    x = Key()
+    x = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Key()
     self.reserve_.append(x)
     return x
 
@@ -5982,7 +5982,7 @@ class AllocateIdsResponse(ProtocolBuffer.ProtocolMessage):
     return self.allocated_[i]
 
   def add_allocated(self):
-    x = Key()
+    x = googlecloudsdk.third_party.appengine.datastore.entity_v4_pb.Key()
     self.allocated_.append(x)
     return x
 

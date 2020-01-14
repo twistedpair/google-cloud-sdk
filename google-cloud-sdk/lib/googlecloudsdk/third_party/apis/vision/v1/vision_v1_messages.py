@@ -7496,7 +7496,7 @@ class VisionProjectsLocationsProductSetsGetRequest(_messages.Message):
 
   Fields:
     name: Required. Resource name of the ProductSet to get.  Format is:
-      `projects/PROJECT_ID/locations/LOG_ID/productSets/PRODUCT_SET_ID`
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`
   """
 
   name = _messages.StringField(1, required=True)

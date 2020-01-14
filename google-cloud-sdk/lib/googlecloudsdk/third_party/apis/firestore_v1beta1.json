@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1beta1",
-  "revision": "20191206",
+  "revision": "20200103",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development.\n",
   "ownerDomain": "google.com",
@@ -721,7 +721,7 @@
           }
         },
         "commitTime": {
-          "description": "The time at which the commit occurred.",
+          "description": "The time at which the commit occurred. Any read with an equal or greater\n`read_time` is guaranteed to see the effects of the commit.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -1101,7 +1101,7 @@
           }
         },
         "commitTime": {
-          "description": "The time at which the commit occurred.",
+          "description": "The time at which the commit occurred. Any read with an equal or greater\n`read_time` is guaranteed to see the effects of the write.",
           "type": "string",
           "format": "google-datetime"
         }

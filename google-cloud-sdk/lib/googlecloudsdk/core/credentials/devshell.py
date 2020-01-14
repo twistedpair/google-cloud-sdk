@@ -29,6 +29,7 @@ from googlecloudsdk.core import config
 
 from oauth2client import client
 import six
+from google.oauth2 import credentials
 
 DEVSHELL_ENV = 'CLOUD_SHELL'
 DEVSHELL_CLIENT_PORT = 'DEVSHELL_CLIENT_PORT'
@@ -216,6 +217,51 @@ class DevshellCredentials(client.OAuth2Credentials):
       # Use utcnow as Oauth2client uses utcnow to determine if token is expired.
       self.token_expiry = (datetime.datetime.utcnow() + datetime.timedelta(
           seconds=self.devshell_response.expires_in))
+
+
+# TODO(b/147098689): Deprecate dev shell credentails and use GCE credentials
+# for the dev shell environment.
+class DevShellCredentialsGoogleAuth(credentials.Credentials):
+  """Implementation of devshell credentials based on google-auth library.
+
+     This class serves as a short term quick solution for the dev shell
+     environment for phase 1 of the 'gcloud & GUAC' work (go/gcloud-guac).
+     This phase converts any kinds of oauth2client credentials to GUAC
+     credentials.
+
+     As discussed with dev shell team, for the long term, dev shell credentials
+     will be deprecated and GCE credentials will be used for this environment.
+     This part requires refactor on the credentials store and will be
+     achieved in the phase 2 of the 'gcloud & GUAC'.
+  """
+
+  def refresh(self, request):
+    request = CredentialInfoRequest()
+    self.devshell_response = _SendRecv(request)
+    self.token = self.devshell_response.access_token
+    self._id_token = self.devshell_response.id_token
+    self.id_tokenb64 = self._id_token
+    if self.devshell_response.expires_in is not None:
+      # Use utcnow as google-auth uses utcnow to determine if token is expired.
+      self.expiry = (
+          datetime.datetime.utcnow() +
+          datetime.timedelta(seconds=self.devshell_response.expires_in))
+
+  @classmethod
+  def from_devshell_credentials(cls, creds):
+    """Create from an DevshellCredentials instance.
+
+    Args:
+      creds: DevshellCredentials, credentials of DevshellCredentials.
+
+    Returns:
+      DevShellCredentialsGoogleAuth, the converted credentials.
+    """
+    goog_auth_creds = cls(token=creds.access_token, id_token=creds.id_tokenb64)
+    goog_auth_creds.devshell_response = creds.devshell_response
+    goog_auth_creds.id_tokenb64 = creds.id_tokenb64
+    goog_auth_creds.expiry = getattr(creds, 'token_expiry', None)
+    return goog_auth_creds
 
 
 def LoadDevshellCredentials():

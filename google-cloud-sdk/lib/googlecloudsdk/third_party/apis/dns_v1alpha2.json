@@ -1214,18 +1214,12 @@
       "methods": {
         "list": {
           "id": "dns.activePeeringZones.list",
-          "path": "dns/v1alpha2/projects/{project}/activePeeringZones/{targetNetwork}",
-          "flatPath": "dns/v1alpha2/projects/{project}/activePeeringZones/{targetNetwork}",
+          "path": "dns/v1alpha2/projects/{project}/activePeeringZones",
+          "flatPath": "dns/v1alpha2/projects/{project}/activePeeringZones",
           "httpMethod": "GET",
           "parameters": {
             "project": {
               "description": "! Identifies the producer project addressed by this request.",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            },
-            "targetNetwork": {
-              "description": "! Identifies the target network addressed by this request by network name.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -1239,6 +1233,12 @@
             "pageToken": {
               "description": "! Optional. A tag returned by a previous list request that was truncated.\n! Use this parameter to continue a previous list request.",
               "location": "query",
+              "type": "string"
+            },
+            "targetNetwork": {
+              "description": "! Identifies the target network addressed by this request by network name.",
+              "location": "query",
+              "required": true,
               "type": "string"
             }
           },
@@ -1259,10 +1259,16 @@
         },
         "getPeeringZoneInfo": {
           "id": "dns.activePeeringZones.getPeeringZoneInfo",
-          "path": "dns/v1alpha2/activePeeringZones/{peeringZoneId}",
-          "flatPath": "dns/v1alpha2/activePeeringZones/{peeringZoneId}",
+          "path": "dns/v1alpha2/projects/{project}/activePeeringZones/{peeringZoneId}",
+          "flatPath": "dns/v1alpha2/projects/{project}/activePeeringZones/{peeringZoneId}",
           "httpMethod": "GET",
           "parameters": {
+            "project": {
+              "description": "! Identifies the producer project targeted by the peering zone in this\n! request.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
             "peeringZoneId": {
               "description": "! ManagedZoneId addressed by this request",
               "location": "path",
@@ -1274,17 +1280,11 @@
               "description": "! For mutating operation requests only. An optional identifier\n! specified by the client. Must be unique for operation resources in the\n! Operations collection.",
               "location": "query",
               "type": "string"
-            },
-            "project": {
-              "description": "! Identifies the producer project targeted by the peering zone in this\n! request.",
-              "location": "query",
-              "required": true,
-              "type": "string"
             }
           },
           "parameterOrder": [
-            "peeringZoneId",
-            "project"
+            "project",
+            "peeringZoneId"
           ],
           "response": {
             "$ref": "ManagedZone"

@@ -32,7 +32,7 @@ def AddDescription(parser):
 
 
 def AddInstanceGroup(parser, operation_type, with_deprecated_zone=False):
-  """Add arguments to define instance group."""
+  """Adds arguments to define instance group."""
   parser.add_argument(
       '--instance-group',
       required=True,
@@ -120,29 +120,49 @@ def _GetBalancingModes():
   return balancing_modes
 
 
-def _GetInternetDisallowedClause(support_global_neg):
-  return """\
+def AddBalancingMode(parser,
+                     support_global_neg=False,
+                     support_region_neg=False):
+  """Adds balancing mode argument to the argparse."""
+  help_text = """\
+  Defines the strategy for balancing load.
+  """
+  incompatible_types = []
+  if support_global_neg:
+    incompatible_types.extend(['INTERNET_IP_PORT', 'INTERNET_FQDN_PORT'])
+  if support_region_neg:
+    incompatible_types.append('SERVERLESS')
+  if incompatible_types:
+    help_text += """\
 
-     This cannot be used when the endpoint type of an attached NEG is
-     INTERNET_IP_PORT or INTERNET_FQDN_PORT.
-     """ if support_global_neg else ''
-
-
-def AddBalancingMode(parser):
-  """Add balancing mode arguments."""
+  This cannot be used when the endpoint type of an attached network endpoint
+  group is {0}.
+    """.format(' or '.join(incompatible_types))
   parser.add_argument(
       '--balancing-mode',
       choices=_GetBalancingModes(),
       type=lambda x: x.upper(),
-      help="""\
-      Defines the strategy for balancing load.""")
+      help=help_text)
 
 
-def AddCapacityLimits(parser, support_global_neg=False):
-  """Add capacity thresholds arguments."""
+def AddCapacityLimits(parser,
+                      support_global_neg=False,
+                      support_region_neg=False):
+  """Adds capacity thresholds arguments to the argparse."""
   AddMaxUtilization(parser)
   capacity_group = parser.add_group(mutex=True)
-  internet_disallowed_clause = _GetInternetDisallowedClause(support_global_neg)
+  capacity_incompatible_types = []
+  if support_global_neg:
+    capacity_incompatible_types.extend(
+        ['INTERNET_IP_PORT', 'INTERNET_FQDN_PORT'])
+  if support_region_neg:
+    capacity_incompatible_types.append('SERVERLESS')
+  append_help_text = """\
+
+  This cannot be used when the endpoint type of an attached network endpoint
+  group is {0}.
+  """.format(' or '.join(
+      capacity_incompatible_types)) if capacity_incompatible_types else ''
   capacity_group.add_argument(
       '--max-rate-per-endpoint',
       type=float,
@@ -153,7 +173,7 @@ def AddCapacityLimits(parser, support_global_neg=False):
       maximum rate per healthy endpoint is calculated by multiplying
       `MAX_RATE_PER_ENDPOINT` by the number of endpoints in the network
       endpoint group, then dividing by the number of healthy endpoints.
-      """ + internet_disallowed_clause)
+      """ + append_help_text)
   capacity_group.add_argument(
       '--max-connections-per-endpoint',
       type=int,
@@ -164,7 +184,7 @@ def AddCapacityLimits(parser, support_global_neg=False):
       connections per healthy endpoint is calculated by multiplying
       `MAX_CONNECTIONS_PER_ENDPOINT` by the number of endpoints in the network
       endpoint group, then dividing by the number of healthy endpoints.
-      """ + internet_disallowed_clause)
+      """ + append_help_text)
 
   capacity_group.add_argument(
       '--max-rate',
@@ -174,7 +194,7 @@ def AddCapacityLimits(parser, support_global_neg=False):
       handle. Valid for instance group and network endpoint group backends.
       Must not be defined if the backend is a managed instance group using
       autoscaling based on load balancing.
-      """ + internet_disallowed_clause)
+      """ + append_help_text)
   capacity_group.add_argument(
       '--max-rate-per-instance',
       type=float,
@@ -194,7 +214,7 @@ def AddCapacityLimits(parser, support_global_neg=False):
       help="""\
       Maximum concurrent connections that the backend can handle.
       Valid for instance group and network endpoint group backends.
-      """ + internet_disallowed_clause)
+      """ + append_help_text)
   capacity_group.add_argument(
       '--max-connections-per-instance',
       type=int,
@@ -210,6 +230,7 @@ def AddCapacityLimits(parser, support_global_neg=False):
 
 
 def AddMaxUtilization(parser):
+  """Adds max utilization argument to the argparse."""
   parser.add_argument(
       '--max-utilization',
       type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
@@ -252,11 +273,11 @@ def AddMaxUtilization(parser):
       maximum utilization or the maximum rate is reached.""")
 
 
-def AddCapacityScalar(parser, support_global_neg=False):
-  parser.add_argument(
-      '--capacity-scaler',
-      type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
-      help="""\
+def AddCapacityScalar(parser,
+                      support_global_neg=False,
+                      support_region_neg=False):
+  """Adds capacity thresholds argument to the argparse."""
+  help_text = """\
       A setting that applies to all balancing modes. This value is multiplied
       by the balancing mode value to set the current max usage of the instance
       group. Acceptable values are `0.0` (0%) through `1.0` (100%). Setting this
@@ -264,7 +285,22 @@ def AddCapacityScalar(parser, support_global_neg=False):
       backend service only prevents new connections to instances in the group.
       All existing connections are allowed to continue until they close by
       normal means. This cannot be used for internal load balancing.
-      """ + _GetInternetDisallowedClause(support_global_neg))
+      """
+  incompatible_types = []
+  if support_global_neg:
+    incompatible_types.extend(['INTERNET_IP_PORT', 'INTERNET_FQDN_PORT'])
+  if support_region_neg:
+    incompatible_types.append('SERVERLESS')
+  if incompatible_types:
+    help_text += """\
+
+    This cannot be used when the endpoint type of an attached network endpoint
+    group is {0}.
+    """.format(' or '.join(incompatible_types))
+  parser.add_argument(
+      '--capacity-scaler',
+      type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
+      help=help_text)
 
 
 def AddFailover(parser, default):

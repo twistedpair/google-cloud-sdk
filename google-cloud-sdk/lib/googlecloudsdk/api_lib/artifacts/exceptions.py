@@ -22,7 +22,7 @@ from googlecloudsdk.core import exceptions
 
 
 class InvalidInputValueError(exceptions.Error):
-  """Raised when the given flag value is invalid."""
+  """Raised when the given input value is invalid."""
 
 
 class UnsupportedLocationError(exceptions.Error):

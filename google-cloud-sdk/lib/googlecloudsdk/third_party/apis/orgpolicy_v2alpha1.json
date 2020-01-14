@@ -277,7 +277,7 @@
           "type": "boolean"
         },
         "condition": {
-          "description": "An optional condition which determines whether this rule is used\nin the evaluation of the policy. When set, the `expression` field in\nthe `Expr` must have the form \"resource.matchLabels(key_id, value_id)\",\nwhere key_id and value_id are the numeric identifiers for Label Keys\nand Values. These identifiers are available from the Label Manager\nService.",
+          "description": "An optional condition which determines whether this rule is used\nin the evaluation of the policy. When set, the `expression` field in\nthe `Expr' must include from 1 to 10 subexpressions, joined by the \"||\"\nor \"&&\" operators. Each subexpression must be of the form\n\"resource.matchLabels(key_name, value_name)\",\nwhere key_name and value_name are the resource names for Label Keys\nand Values. These names are available from the Label Manager Service. An\nexample expression is:\n\"resource.matchLabels('labelKeys\/123, 'labelValues\/456')\".",
           "$ref": "GoogleTypeExpr"
         }
       }

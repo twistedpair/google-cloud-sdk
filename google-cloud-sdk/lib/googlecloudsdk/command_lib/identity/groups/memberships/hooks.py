@@ -25,12 +25,12 @@ from googlecloudsdk.core.util import times
 
 
 # request hooks
-def SetMembership(unused_ref, unused_args, request):
+def SetMembership(unused_ref, args, request):
   """Set Membership in request.
 
   Args:
     unused_ref: unused.
-    unused_args: unused.
+    args: The argparse namespace.
     request: The request to modify.
 
   Returns:
@@ -38,7 +38,8 @@ def SetMembership(unused_ref, unused_args, request):
 
   """
 
-  messages = ci_client.GetMessages()
+  version = groups_hooks.GetApiVersion(args)
+  messages = ci_client.GetMessages(version)
   request.membership = messages.Membership()
 
   return request
@@ -57,7 +58,8 @@ def SetEntityKey(unused_ref, args, request):
 
   """
 
-  messages = ci_client.GetMessages()
+  version = groups_hooks.GetApiVersion(args)
+  messages = ci_client.GetMessages(version)
   if hasattr(args, 'member_email') and args.IsSpecified('member_email'):
     entity_key = messages.EntityKey(id=args.member_email)
     if hasattr(request.membership, 'memberKey'):
@@ -100,10 +102,11 @@ def SetMembershipParent(unused_ref, args, request):
 
   """
 
+  version = groups_hooks.GetApiVersion(args)
   if args.IsSpecified('group_email'):
     # Resource name example: groups/03qco8b4452k99t
     request.parent = groups_hooks.ConvertEmailToResourceName(
-        args.group_email, 'group_email')
+        version, args.group_email, 'group_email')
 
   return request
 
@@ -121,10 +124,11 @@ def SetMembershipResourceName(unused_ref, args, request):
 
   """
 
+  version = groups_hooks.GetApiVersion(args)
   name = ''
   if args.IsSpecified('group_email') and args.IsSpecified('member_email'):
     name = ConvertEmailToMembershipResourceName(
-        args.group_email, args.member_email, 'group_email', 'member_email')
+        version, args, 'group_email', 'member_email')
   else:
     raise exceptions.InvalidArgumentException(
         'Must specify group-email and member-email argument.')
@@ -150,11 +154,12 @@ def SetMembershipRoles(unused_ref, args, request):
 
   """
 
+  version = groups_hooks.GetApiVersion(args)
   if not hasattr(args, 'roles') or not args.IsSpecified('roles'):
     empty_list = []
-    request.membership.roles = ReformatMembershipRoles(empty_list)
+    request.membership.roles = ReformatMembershipRoles(version, empty_list)
   else:
-    request.membership.roles = ReformatMembershipRoles(args.roles)
+    request.membership.roles = ReformatMembershipRoles(version, args.roles)
 
   return request
 
@@ -172,8 +177,10 @@ def SetExpiryDetail(unused_ref, args, request):
 
   """
 
+  version = groups_hooks.GetApiVersion(args)
   if hasattr(args, 'expiration') and args.IsSpecified('expiration'):
-    request.membership.expiryDetail = ReformatExpiryDetail(args.expiration)
+    request.membership.expiryDetail = ReformatExpiryDetail(
+        version, args.expiration)
 
   return request
 
@@ -191,31 +198,46 @@ def UpdateMembershipRoles(unused_ref, args, request):
 
   """
 
+  version = groups_hooks.GetApiVersion(args)
   if hasattr(args, 'roles') and args.IsSpecified('roles'):
-    request.membership.roles = ReformatMembershipRoles(args.roles)
+    request.membership.roles = ReformatMembershipRoles(version, args.roles)
+
+  return request
+
+
+def UpdateRoles(unused_ref, args, request):
+  """Update 'MembershipRoles' to request.modifyMembershipRolesRequest.
+
+  Args:
+    unused_ref: unused.
+    args: The argparse namespace.
+    request: The request to modify.
+
+  Returns:
+    The updated request.
+
+  """
+
+  # Following logic is used only when 'add-roles' parameter is used.
+  if hasattr(args, 'add_roles') and args.IsSpecified('add_roles'):
+    # Convert a comma separated string to a list of strings.
+    role_list = args.add_roles.split(',')
+
+    # Convert a list of strings to a list of MembershipRole objects.
+    version = groups_hooks.GetApiVersion(args)
+    roles = []
+    messages = ci_client.GetMessages(version)
+    for role in role_list:
+      membership_role = messages.MembershipRole(name=role)
+      roles.append(membership_role)
+
+    request.modifyMembershipRolesRequest = messages.ModifyMembershipRolesRequest(
+        addRoles=roles)
 
   return request
 
 
 # processor hooks
-def UpdateRolesToAdd(arg_list):
-  """Update roles to add to modifyMembershipRolesRequest.addRoles.
-
-  Args:
-    arg_list: list of roles to add in string.
-  Returns:
-    List of MembershipRoles to add.
-  """
-
-  roles = []
-  messages = ci_client.GetMessages()
-  for arg in arg_list:
-    membership_role = messages.MembershipRole(name=arg)
-    roles.append(membership_role)
-
-  return roles
-
-
 def UpdateRolesParamsToUpdate(arg_dict):
   """Update roles params to update to modifyMembershipRolesRequest.updateRolesParams.
 
@@ -229,6 +251,7 @@ def UpdateRolesParamsToUpdate(arg_dict):
   """
 
   roles_params = []
+  # TODO(b/147011481): Remove hard coded version info if necessary.
   messages = ci_client.GetMessages('v1alpha1')
   arg_name = '--update-roles-params'
   for role, params in arg_dict.items():
@@ -239,7 +262,8 @@ def UpdateRolesParamsToUpdate(arg_dict):
     param_name, param_value = TokenizeParams(params, arg_name)
 
     # Instantiate MembershipRole object.
-    expiry_detail = ReformatExpiryDetail(param_value)
+    # TODO(b/147011481): Remove hard coded version info if necessary.
+    expiry_detail = ReformatExpiryDetail('v1alpha1', param_value)
     membership_role = messages.MembershipRole(
         name=role, expiryDetail=expiry_detail)
 
@@ -256,12 +280,12 @@ def UpdateRolesParamsToUpdate(arg_dict):
 
 # private methods
 def ConvertEmailToMembershipResourceName(
-    group_email, member_email, group_arg_name, member_arg_name):
+    version, args, group_arg_name, member_arg_name):
   """Convert email to membership resource name.
 
   Args:
-    group_email: group email
-    member_email: member email
+    version: Release track information
+    args: The argparse namespace
     group_arg_name: argument/parameter name related to group info
     member_arg_name: argument/parameter name related to member info
 
@@ -272,10 +296,10 @@ def ConvertEmailToMembershipResourceName(
 
   # Resource name example: groups/03qco8b4452k99t
   group_id = groups_hooks.ConvertEmailToResourceName(
-      group_email, group_arg_name)
+      version, args.group_email, group_arg_name)
 
   lookup_membership_name_resp = ci_client.LookupMembershipName(
-      group_id, member_email)
+      version, group_id, args.member_email)
 
   if 'name' in lookup_membership_name_resp:
     return lookup_membership_name_resp['name']
@@ -284,15 +308,16 @@ def ConvertEmailToMembershipResourceName(
   # print out an error message.
   parameter_name = group_arg_name + ', ' + member_arg_name
   error_msg = ('There is no such a membership associated with the specified '
-               'arguments:{}, {}').format(group_email, member_email)
+               'arguments:{}, {}').format(args.group_email, args.member_email)
 
   raise exceptions.InvalidArgumentException(parameter_name, error_msg)
 
 
-def ReformatExpiryDetail(expiration):
+def ReformatExpiryDetail(version, expiration):
   """Reformat expiration string to ExpiryDetail object.
 
   Args:
+    version: Release track information
     expiration: expiration string.
 
   Returns:
@@ -300,16 +325,17 @@ def ReformatExpiryDetail(expiration):
 
   """
 
-  messages = ci_client.GetMessages()
+  messages = ci_client.GetMessages(version)
   duration = 'P' + expiration
   expiration_ts = FormatDateTime(duration)
   return messages.MembershipRoleExpiryDetail(expireTime=expiration_ts)
 
 
-def ReformatMembershipRoles(roles_list):
+def ReformatMembershipRoles(version, roles_list):
   """Reformat roles string to MembershipRoles object list.
 
   Args:
+    version: Release track information
     roles_list: list of roles in a string format.
 
   Returns:
@@ -317,7 +343,7 @@ def ReformatMembershipRoles(roles_list):
 
   """
 
-  messages = ci_client.GetMessages()
+  messages = ci_client.GetMessages(version)
   roles = []
   if not roles_list:
     # If no MembershipRole is provided, 'MEMBER' is used as a default value.

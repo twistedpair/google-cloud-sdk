@@ -21,7 +21,7 @@ Most of these types are based on XML elements from Atom and GData elements
 from the atom and gd namespaces. For more information, see:
 
   http://www.atomenabled.org/developers/syndication/
-  http://code.google.com/apis/gdata/common-elements.html
+  https://developers.google.com/gdata/docs/1.0/elements
 
 The namespace schemas are:
 
@@ -869,7 +869,7 @@ class Email(six_subset.text_type):
 
   This is the gd:email element. In XML output, the email address is provided as
   the address attribute. See:
-  http://code.google.com/apis/gdata/common-elements.html#gdEmail
+  https://developers.google.com/gdata/docs/1.0/elements#gdEmail
 
   Raises BadValueError if email is not a valid email address.
   """
@@ -990,7 +990,7 @@ class IM(object):
 
   This is the gd:im element. In XML output, the address and protocol are
   provided as the address and protocol attributes, respectively. See:
-  http://code.google.com/apis/gdata/common-elements.html#gdIm
+  https://developers.google.com/gdata/docs/1.0/elements#gdIm
 
   Serializes to '<protocol> <address>'. Raises BadValueError if tag is not a
   standard IM scheme or a URL.
@@ -1075,7 +1075,7 @@ class PhoneNumber(six_subset.text_type):
 
   This is the gd:phoneNumber element. In XML output, the phone number is
   provided as the text of the element. See:
-  http://code.google.com/apis/gdata/common-elements.html#gdPhoneNumber
+  https://developers.google.com/gdata/docs/1.0/elements#gdPhoneNumber
 
   Raises BadValueError if phone is not a string or subtype.
   """
@@ -1093,7 +1093,7 @@ class PostalAddress(six_subset.text_type):
 
   This is the gd:postalAddress element. In XML output, the address is provided
   as the text of the element. See:
-  http://code.google.com/apis/gdata/common-elements.html#gdPostalAddress
+  https://developers.google.com/gdata/docs/1.0/elements#gdPostalAddress
 
   Raises BadValueError if address is not a string or subtype.
   """
@@ -1111,7 +1111,7 @@ class Rating(_PREFERRED_NUM_TYPE):
 
   This is the gd:rating element. In XML output, the address is provided
   as the text of the element. See:
-  http://code.google.com/apis/gdata/common-elements.html#gdRating
+  https://developers.google.com/gdata/docs/1.0/elements#gdRating
 
   Serializes to the decimal string representation of the rating. Raises
   BadValueError if the rating is not an integer in the range [0, 100].

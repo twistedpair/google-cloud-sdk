@@ -160,8 +160,7 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a endpoint. If the endpoint did not exist, will.
-create the endpoint.
+      r"""Updates a endpoint.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesServicesEndpointsPatchRequest) input message
@@ -334,7 +333,7 @@ the service.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a service. If the service did not exist, will create the service.
+      r"""Updates a service.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesServicesPatchRequest) input message
@@ -361,9 +360,9 @@ the service.
     )
 
     def Resolve(self, request, global_params=None):
-      r"""Returns all the runtime information of a given.
-service. This includes
-all service and endpoint data.
+      r"""Returns a service and its.
+associated endpoints.
+Resolving a service is not considered an active developer method.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesServicesResolveRequest) input message
@@ -381,7 +380,7 @@ all service and endpoint data.
         method_id=u'servicedirectory.projects.locations.namespaces.services.resolve',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[],
+        query_params=[u'maxEndpoints'],
         relative_path=u'v1beta1/{+name}:resolve',
         request_field='',
         request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesResolveRequest',
@@ -590,8 +589,7 @@ the namespace.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a namespace. If the namespace did not exist, will create the.
-namespace.
+      r"""Updates a namespace.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesPatchRequest) input message

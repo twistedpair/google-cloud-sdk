@@ -108,6 +108,13 @@ class Collections(enum.Enum):
       [u'project', u'forwardingRule'],
       True
   )
+  GLOBALNETWORKENDPOINTGROUPS = (
+      'globalNetworkEndpointGroups',
+      'projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}',
+      {},
+      [u'project', u'networkEndpointGroup'],
+      True
+  )
   GLOBALOPERATIONS = (
       'globalOperations',
       'projects/{project}/global/operations/{operation}',

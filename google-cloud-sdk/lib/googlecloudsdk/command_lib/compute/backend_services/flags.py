@@ -90,20 +90,6 @@ MULTISCOPE_INSTANCE_GROUP_ARG = compute_flags.ResourceArgument(
     region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
-NETWORK_ENDPOINT_GROUP_ARG = compute_flags.ResourceArgument(
-    name='--network-endpoint-group',
-    resource_name='network endpoint group',
-    zonal_collection='compute.networkEndpointGroups',
-    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
-
-
-GLOBAL_NETWORK_ENDPOINT_GROUP_ARG = compute_flags.ResourceArgument(
-    name='--network-endpoint-group',
-    resource_name='network endpoint group',
-    zonal_collection='compute.networkEndpointGroups',
-    global_collection='compute.globalNetworkEndpointGroups',
-    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
-
 GLOBAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     name='backend_service_name',
     resource_name='backend service',
@@ -146,6 +132,21 @@ NETWORK_ARG = compute_flags.ResourceArgument(
         Network that this backend service applies to. It can only be set if
         the load-balancing-scheme is INTERNAL.
         """)
+
+
+def GetNetworkEndpointGroupArg(support_global_neg=False,
+                               support_region_neg=False):
+  return compute_flags.ResourceArgument(
+      name='--network-endpoint-group',
+      resource_name='network endpoint group',
+      zonal_collection='compute.networkEndpointGroups',
+      global_collection='compute.globalNetworkEndpointGroups'
+      if support_global_neg else None,
+      regional_collection='compute.regionNetworkEndpointGroups'
+      if support_region_neg else None,
+      zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
+      if support_region_neg else None)
 
 
 def BackendServiceArgumentForUrlMap(required=True,
@@ -710,15 +711,17 @@ def AddLoggingSampleRate(parser):
 
 def AddInstanceGroupAndNetworkEndpointGroupArgs(parser,
                                                 verb,
-                                                support_global_neg=False):
+                                                support_global_neg=False,
+                                                support_region_neg=False):
   """Adds instance group and network endpoint group args to the argparse."""
   backend_group = parser.add_group(required=True, mutex=True)
   instance_group = backend_group.add_group('Instance Group')
   neg_group = backend_group.add_group('Network Endpoint Group')
   MULTISCOPE_INSTANCE_GROUP_ARG.AddArgument(
       instance_group, operation_type='{} the backend service'.format(verb))
-  neg_group_arg = (GLOBAL_NETWORK_ENDPOINT_GROUP_ARG if support_global_neg
-                   else NETWORK_ENDPOINT_GROUP_ARG)
+  neg_group_arg = GetNetworkEndpointGroupArg(
+      support_global_neg=support_global_neg,
+      support_region_neg=support_region_neg)
   neg_group_arg.AddArgument(
       neg_group, operation_type='{} the backend service'.format(verb))
 

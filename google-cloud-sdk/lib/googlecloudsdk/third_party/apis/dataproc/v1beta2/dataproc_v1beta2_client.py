@@ -816,7 +816,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
         method_id=u'dataproc.projects.regions.clusters.create',
         ordered_params=[u'projectId', u'region'],
         path_params=[u'projectId', u'region'],
-        query_params=[u'requestId'],
+        query_params=[u'deleteOnFailure', u'diagnoseOnFailure', u'requestId'],
         relative_path=u'v1beta2/projects/{projectId}/regions/{region}/clusters',
         request_field=u'cluster',
         request_type_name=u'DataprocProjectsRegionsClustersCreateRequest',

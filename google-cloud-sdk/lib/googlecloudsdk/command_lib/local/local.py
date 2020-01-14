@@ -42,34 +42,31 @@ class Settings(object):
   """Settings for local development environments."""
 
   __slots__ = ('service_name', 'image_name', 'service_account', 'dockerfile',
-               'build_context_directory', 'builder')
+               'build_context_directory', 'builder', 'local_port')
 
   @classmethod
   def FromArgs(cls, args):
     """Create a LocalRuntimeFiles object from an args object."""
     project_name = properties.VALUES.core.project.Get(required=True)
 
-    if not args.IsSpecified('service_name'):
+    if args.IsSpecified('service_name'):
+      service_name = args.service_name
+    else:
       dir_name = os.path.basename(
           os.path.dirname(os.path.join(files.GetCWD(), args.dockerfile)))
-      service_name = console_io.PromptWithDefault(
-          message='Service name', default=dir_name)
-    else:
-      service_name = args.service_name
+      service_name = dir_name.replace('_', '-')
 
     if not args.IsSpecified('image_name'):
-      default_image_name = 'gcr.io/{project}/{service}'.format(
+      image_name = 'gcr.io/{project}/{service}'.format(
           project=project_name, service=service_name)
-      image_name = console_io.PromptWithDefault(
-          message='Docker image tag', default=default_image_name)
     else:
       image_name = args.image_name
 
     return cls(service_name, image_name, args.service_account, args.dockerfile,
-               args.build_context_directory, args.builder)
+               args.build_context_directory, args.builder, args.local_port)
 
   def __init__(self, service_name, image_name, service_account, dockerfile,
-               build_context_directory, builder):
+               build_context_directory, builder, local_port):
     """Initialize Settings.
 
     Args:
@@ -80,6 +77,7 @@ class Settings(object):
       build_context_directory: Path to directory to use as the current working
           directory for the docker build.
       builder: Buildpack builder.
+      local_port: Local port to which to forward the service connection.
     """
     super(Settings, self).__setattr__('service_name', service_name)
     super(Settings, self).__setattr__('image_name', image_name)
@@ -88,6 +86,7 @@ class Settings(object):
     super(Settings, self).__setattr__('build_context_directory',
                                       build_context_directory)
     super(Settings, self).__setattr__('builder', builder)
+    super(Settings, self).__setattr__('local_port', local_port)
 
   def __setattr__(self, name, value):
     """Prevent modification of attributes."""

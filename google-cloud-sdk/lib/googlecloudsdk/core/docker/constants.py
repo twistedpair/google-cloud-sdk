@@ -20,7 +20,20 @@ from __future__ import unicode_literals
 
 
 DEFAULT_REGISTRY = 'gcr.io'
-REGIONAL_REGISTRIES = ['us.gcr.io', 'eu.gcr.io', 'asia.gcr.io']
+REGIONAL_GCR_REGISTRIES = ['us.gcr.io', 'eu.gcr.io', 'asia.gcr.io']
+REGIONAL_AR_REGISTRIES = [
+    'northamerica-northeast1-docker.pkg.dev', 'us-central1-docker.pkg.dev',
+    'us-east1-docker.pkg.dev', 'us-east4-docker.pkg.dev',
+    'us-west2-docker.pkg.dev', 'us-west1-docker.pkg.dev',
+    'southamerica-east1-docker.pkg.dev', 'europe-north1-docker.pkg.dev',
+    'europe-west1-docker.pkg.dev', 'europe-west2-docker.pkg.dev',
+    'europe-west3-docker.pkg.dev', 'europe-west4-docker.pkg.dev',
+    'europe-west6-docker.pkg.dev', 'asia-east1-docker.pkg.dev',
+    'asia-east2-docker.pkg.dev', 'asia-northeast1-docker.pkg.dev',
+    'asia-northeast2-docker.pkg.dev', 'asia-south1-docker.pkg.dev',
+    'asia-southeast1-docker.pkg.dev', 'australia-southeast1-docker.pkg.dev',
+    'asia-docker.pkg.dev', 'europe-docker.pkg.dev', 'us-docker.pkg.dev'
+]
 AUTHENTICATED_LAUNCHER_REGISTRIES = ['marketplace.gcr.io']
 LAUNCHER_REGISTRIES = AUTHENTICATED_LAUNCHER_REGISTRIES + [
     'l.gcr.io', 'launcher.gcr.io'
@@ -38,11 +51,12 @@ MIRROR_REGISTRIES = [
 MIRROR_PROJECT = 'cloud-containers-mirror'
 # These are the registries to authenticatefor by default, during
 # `gcloud docker` and `gcloud auth configure-docker`
-DEFAULT_REGISTRIES_TO_AUTHENTICATE = (
-    [DEFAULT_REGISTRY] + REGIONAL_REGISTRIES + [KUBERNETES_PUSH] +
-    AUTHENTICATED_LAUNCHER_REGISTRIES)
+DEFAULT_REGISTRIES_TO_AUTHENTICATE = ([DEFAULT_REGISTRY] +
+                                      REGIONAL_GCR_REGISTRIES +
+                                      [KUBERNETES_PUSH] +
+                                      AUTHENTICATED_LAUNCHER_REGISTRIES)
 ALL_SUPPORTED_REGISTRIES = (
-    DEFAULT_REGISTRIES_TO_AUTHENTICATE + LAUNCHER_REGISTRIES +
-    MIRROR_REGISTRIES + [KUBERNETES_READ_ONLY])
+    DEFAULT_REGISTRIES_TO_AUTHENTICATE + REGIONAL_AR_REGISTRIES +
+    LAUNCHER_REGISTRIES + MIRROR_REGISTRIES + [KUBERNETES_READ_ONLY])
 DEFAULT_DEVSHELL_IMAGE = (DEFAULT_REGISTRY + '/dev_con/cloud-dev-common:prod')
 METADATA_IMAGE = DEFAULT_REGISTRY + '/google_appengine/faux-metadata:latest'

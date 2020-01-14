@@ -410,7 +410,8 @@ class AbstractRpcServer(object):
     """
     if email:
       user_id_digest = hashlib.md5(email.lower()).digest()
-      user_id = "1" + "".join(["%02d" % ord(x) for x in user_id_digest])[:20]
+      user_id = "1" + "".join(
+          ["%02d" % x for x in six_subset.iterbytes(user_id_digest)])[:20]
     else:
       user_id = ""
     return "%s:%s:%s" % (email, bool(admin), user_id)

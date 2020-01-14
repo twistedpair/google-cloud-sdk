@@ -92,8 +92,7 @@ class Configuration(object):
 
     """
     if self.contents and CREDENTIAL_HELPER_KEY in self.contents:
-      return {CREDENTIAL_HELPER_KEY:
-              self.contents[CREDENTIAL_HELPER_KEY]}
+      return {CREDENTIAL_HELPER_KEY: self.contents[CREDENTIAL_HELPER_KEY]}
 
     return {}
 
@@ -104,18 +103,19 @@ class Configuration(object):
     configuration to disk.
 
     Args:
-      mappings_dict: The dict of 'credHelpers' mappings ({registry: handler})
-      to add to the Docker configuration. If not set, use default values from
-      GetOrderedCredentialHelperRegistries()
+      mappings_dict: The dict of 'credHelpers' mappings ({registry: handler}) to
+        add to the Docker configuration. If not set, use the values from
+        BuildOrderedCredentialHelperRegistries(DefaultAuthenticatedRegistries())
 
     Raises:
       ValueError: mappings are not a valid dict.
       DockerConfigUpdateError: Configuration does not support 'credHelpers'.
     """
-    mappings_dict = mappings_dict or GetOrderedCredentialHelperRegistries()
+    mappings_dict = mappings_dict or BuildOrderedCredentialHelperRegistries(
+        DefaultAuthenticatedRegistries())
     if not isinstance(mappings_dict, dict):
-      raise ValueError('Invalid Docker credential helpers mappings {}'.format(
-          mappings_dict))
+      raise ValueError(
+          'Invalid Docker credential helpers mappings {}'.format(mappings_dict))
 
     if not self.SupportsRegistryHelpers():
       raise DockerConfigUpdateError('Credential Helpers not supported for this '
@@ -145,7 +145,7 @@ class Configuration(object):
 
     Args:
       path: string, path to look for the Docker config file. If empty will
-      attempt to read from the new config location (default).
+        attempt to read from the new config location (default).
 
     Returns:
       A Configuration object
@@ -175,11 +175,17 @@ def SupportedRegistries():
   return constants.ALL_SUPPORTED_REGISTRIES
 
 
-def GetOrderedCredentialHelperRegistries():
-  """Returns ordered dict of Docker registry to gcloud helper mappings.
+def BuildOrderedCredentialHelperRegistries(registries):
+  """Returns dict of gcloud helper mappings for the supplied repositories.
+
+  Returns ordered dict of Docker registry to gcloud helper mappings for the
+  supplied list of registries.
 
   Ensures that the order in which credential helper registry entries are
-  processed is consistient.
+  processed is consistent.
+
+  Args:
+      registries: list, the registries to create the mappings for.
 
   Returns:
    OrderedDict of Docker registry to gcloud helper mappings.
@@ -187,22 +193,26 @@ def GetOrderedCredentialHelperRegistries():
   # Based on Docker credHelper docs this should work on Windows transparently
   # so we do not need to register .exe files seperately, see
   # https://docs.docker.com/engine/reference/commandline/login/#credential-helpers
-  return collections.OrderedDict(
-      [(registry, 'gcloud') for registry in DefaultAuthenticatedRegistries()])
+  return collections.OrderedDict([
+      (registry, 'gcloud') for registry in registries
+  ])
 
 
-def GetGcloudCredentialHelperConfig():
+def GetGcloudCredentialHelperConfig(registries=None):
   """Gets the credHelpers Docker config entry for gcloud supported registries.
 
   Returns a Docker configuration JSON entry that will register gcloud as the
-  credential helper for all Google supported Docker registries. If mappings_only
-  is True, it will only return the registered credential helper mappings instead
-  of the entire credHelpers entry.
+  credential helper for all Google supported Docker registries.
+
+  Args:
+      registries: list, the registries to create the mappings for. If not
+        supplied, will use DefaultAuthenticatedRegistries().
 
   Returns:
     The config used to register gcloud as the credential helper for all
     supported Docker registries.
   """
-  registered_helpers = GetOrderedCredentialHelperRegistries()
+  registered_helpers = BuildOrderedCredentialHelperRegistries(
+      registries or DefaultAuthenticatedRegistries())
 
   return {CREDENTIAL_HELPER_KEY: registered_helpers}

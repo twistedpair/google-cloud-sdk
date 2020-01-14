@@ -35,11 +35,158 @@ class FileV1p1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_backups = self.ProjectsLocationsBackupsService(self)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_snapshots = self.ProjectsLocationsSnapshotsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsBackupsService(base_api.BaseApiService):
+    """Service class for the projects_locations_backups resource."""
+
+    _NAME = u'projects_locations_backups'
+
+    def __init__(self, client):
+      super(FileV1p1alpha1.ProjectsLocationsBackupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a backup.
+
+      Args:
+        request: (FileProjectsLocationsBackupsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/backups',
+        http_method=u'POST',
+        method_id=u'file.projects.locations.backups.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'backupId'],
+        relative_path=u'v1p1alpha1/{+parent}/backups',
+        request_field=u'backup',
+        request_type_name=u'FileProjectsLocationsBackupsCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a backup.
+
+      Args:
+        request: (FileProjectsLocationsBackupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}',
+        http_method=u'DELETE',
+        method_id=u'file.projects.locations.backups.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1p1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'FileProjectsLocationsBackupsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the details of a specific backup.
+
+      Args:
+        request: (FileProjectsLocationsBackupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Backup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}',
+        http_method=u'GET',
+        method_id=u'file.projects.locations.backups.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1p1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'FileProjectsLocationsBackupsGetRequest',
+        response_type_name=u'Backup',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all backups in a project for either a specified location or for all.
+locations.
+
+      Args:
+        request: (FileProjectsLocationsBackupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/backups',
+        http_method=u'GET',
+        method_id=u'file.projects.locations.backups.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
+        relative_path=u'v1p1alpha1/{+parent}/backups',
+        request_field='',
+        request_type_name=u'FileProjectsLocationsBackupsListRequest',
+        response_type_name=u'ListBackupsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the settings of a specific backup.
+
+      Args:
+        request: (FileProjectsLocationsBackupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1alpha1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}',
+        http_method=u'PATCH',
+        method_id=u'file.projects.locations.backups.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1p1alpha1/{+name}',
+        request_field=u'backup',
+        request_type_name=u'FileProjectsLocationsBackupsPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsInstancesService(base_api.BaseApiService):
     """Service class for the projects_locations_instances resource."""
@@ -188,7 +335,7 @@ or for all locations.
     )
 
     def Restore(self, request, global_params=None):
-      r"""Restores an existing instance's file share to a snapshot.
+      r"""Restores an existing instance's file share from a snapshot or backup.
 
       Args:
         request: (FileProjectsLocationsInstancesRestoreRequest) input message

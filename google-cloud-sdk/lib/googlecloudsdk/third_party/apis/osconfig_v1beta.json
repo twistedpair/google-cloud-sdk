@@ -451,7 +451,7 @@
           }
         },
         "interpreter": {
-          "description": "The script interpreter to use to run the script. If no interpreter is\nspecified the script will be executed directly, which will likely\nonly succeed for scripts with shebang lines.\n[Wikipedia shebang](https:\/\/en.wikipedia.org\/wiki\/Shebang_(Unix)).",
+          "description": "The script interpreter to use to run the script. If no interpreter is\nspecified the script will be executed directly, which will likely\nonly succeed for scripts with [shebang lines]\n(https:\/\/en.wikipedia.org\/wiki\/Shebang_\\(Unix\\)).",
           "enumDescriptions": [
             "Invalid for a Windows ExecStepConfig. For a Linux ExecStepConfig, the\ninterpreter will be parsed from the shebang line of the script if\nunspecified.",
             "Indicates that the script is run with `\/bin\/sh` on Linux and `cmd`\non Windows.",
@@ -1038,7 +1038,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Unique name of the resource in this project using one of the following\nforms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
+          "description": "Required. Unique name of the resource in this project using one of the following\nforms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.",
           "type": "string"
         },
         "description": {
@@ -1056,7 +1056,7 @@
           "format": "google-datetime"
         },
         "assignment": {
-          "description": "Required. Specifies the VM instances that are assigned to this policy. This allows\nyou to target sets or groups of VM instances by different parameters such\nas labels, names, OS, or zones.\n\nIf left empty, all VM instances underneath this policy are targeted.\n\n\nConflict Management\n\nPolicies that exist higher up in the resource hierarchy\n(closer to the organization) override those lower down if there is a\nconflict.\n\nAt the same level in the resource hierarchy (that is within a project), the\nservice prevents the creation of multiple policies that conflict with\neach other. If there are multiple policies that specify the same config\n(eg. package, software recipe, repository, etc.), the service ensures\nthat no VM instance could potentially receive instructions from both\npolicies. To create multiple policies that specify different versions of a\npackage or different configs for different operating systems, each policy\nmust be mutually exclusive in their targeting according to labels, OS, or\nother criteria.\n\nDifferent configs are identified for conflicts in different ways. Packages\nare identified by their name and the package manager(s) they target.\nPackage repositories are identified by their unique id where applicable.\nSome package managers don't have a unique identifier for repositories and\nwhere that's the case, no uniqueness is validated by the service.\n\nNote that if OS Inventory is disabled, a VM instance cannot assign a policy\nthat targets by OS because the service sees the OS as unknown.",
+          "description": "Required. Specifies the VM instances that are assigned to this policy. This allows\nyou to target sets or groups of VM instances by different parameters such\nas labels, names, OS, or zones.\n\nIf left empty, all VM instances underneath this policy are targeted.\n\n\nConflict Management\n\nAt the same level in the resource hierarchy (that is within a project), the\nservice prevents the creation of multiple policies that conflict with\neach other. If there are multiple policies that specify the same config\n(eg. package, software recipe, repository, etc.), the service ensures\nthat no VM instance could potentially receive instructions from both\npolicies. To create multiple policies that specify different versions of a\npackage or different configs for different operating systems, each policy\nmust be mutually exclusive in their targeting according to labels, OS, or\nother criteria.\n\nDifferent configs are identified for conflicts in different ways. Packages\nare identified by their name and the package manager(s) they target.\nPackage repositories are identified by their unique id where applicable.\nSome package managers don't have a unique identifier for repositories and\nwhere that's the case, no uniqueness is validated by the service.\n\nNote that if OS Inventory is disabled, a VM instance cannot assign a policy\nthat targets by OS because the service sees the OS as unknown.",
           "$ref": "Assignment"
         },
         "packages": {
@@ -1639,7 +1639,7 @@
           }
         },
         "interpreter": {
-          "description": "The script interpreter to use to run the script. If no interpreter is\nspecified the script is executed directly, which likely\nonly succeed for scripts with\n[shebang lines](https:\/\/en.wikipedia.org\/wiki\/Shebang_(Unix)).",
+          "description": "The script interpreter to use to run the script. If no interpreter is\nspecified the script is executed directly, which likely\nonly succeed for scripts with\n[shebang lines](https:\/\/en.wikipedia.org\/wiki\/Shebang_\\(Unix\\)).",
           "enumDescriptions": [
             "Default value for ScriptType.",
             "Indicates that the script is run with `\/bin\/sh` on Linux and `cmd`\non windows.",
@@ -1678,15 +1678,15 @@
       "type": "object",
       "properties": {
         "osShortName": {
-          "description": "Short name of the OS running on the instance. The OS Config agent only\nprovideS this field for targeting if OS Inventory is enabled for that\ninstance.",
+          "description": "Short name of the OS running on the instance. The OS Config agent only\nprovides this field for targeting if OS Inventory is enabled for that\ninstance.",
           "type": "string"
         },
         "osVersion": {
-          "description": "Version of the OS running on the instance. The OS Config agent only\nprovide this field for targeting if OS Inventory is enabled for that\nVM instance.",
+          "description": "Version of the OS running on the instance. The OS Config agent only\nprovides this field for targeting if OS Inventory is enabled for that\nVM instance.",
           "type": "string"
         },
         "osArchitecture": {
-          "description": "Architecture of OS running on the instance. The OS Config agent only\nprovide this field for targeting if OS Inventory is enabled for that\ninstance.",
+          "description": "Architecture of OS running on the instance. The OS Config agent only\nprovides this field for targeting if OS Inventory is enabled for that\ninstance.",
           "type": "string"
         }
       }
@@ -2083,7 +2083,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource name of the parent using one of the following forms:\n`projects\/{project_number}`.\n`folders\/{folder_id}`.\n`organizations\/{organization_id}`.",
+                  "description": "Required. The resource name of the parent using one of the following forms:\n`projects\/{project_number}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -2117,7 +2117,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of the guest policy using one of the following forms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
+                  "description": "Required. The resource name of the guest policy using one of the following forms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/guestPolicies\/[^\/]+$",
@@ -2143,7 +2143,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource name of the parent using one of the following forms:\n`projects\/{project_number}`.\n`folders\/{folder_id}`.\n`organizations\/{organization_id}`.",
+                  "description": "Required. The resource name of the parent using one of the following forms:\n`projects\/{project_number}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -2180,7 +2180,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "Required. Unique name of the resource in this project using one of the following\nforms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
+                  "description": "Required. Unique name of the resource in this project using one of the following\nforms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/guestPolicies\/[^\/]+$",
@@ -2215,7 +2215,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of the guest policy  using one of the following forms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
+                  "description": "Required. The resource name of the guest policy  using one of the following forms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/guestPolicies\/[^\/]+$",
@@ -2270,338 +2270,6 @@
                   "description": "Lookup the effective guest policy that applies to a VM instance. This\nlookup merges all policies that are assigned to the instance ancestry."
                 }
               }
-            }
-          }
-        }
-      }
-    },
-    "organizations": {
-      "resources": {
-        "guestPolicies": {
-          "methods": {
-            "create": {
-              "id": "osconfig.organizations.guestPolicies.create",
-              "path": "v1beta/{+parent}/guestPolicies",
-              "flatPath": "v1beta/organizations/{organizationsId}/guestPolicies",
-              "httpMethod": "POST",
-              "parameters": {
-                "parent": {
-                  "description": "Required. The resource name of the parent using one of the following forms:\n`projects\/{project_number}`.\n`folders\/{folder_id}`.\n`organizations\/{organization_id}`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
-                  "type": "string"
-                },
-                "guestPolicyId": {
-                  "description": "Required. The logical name of the guest policy in the project\nwith the following restrictions:\n\n* Must contain only lowercase letters, numbers, and hyphens.\n* Must start with a letter.\n* Must be between 1-63 characters.\n* Must end with a number or a letter.\n* Must be unique within the project.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "request": {
-                "$ref": "GuestPolicy"
-              },
-              "response": {
-                "$ref": "GuestPolicy"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
-              ],
-              "description": "Create an OS Config guest policy."
-            },
-            "get": {
-              "id": "osconfig.organizations.guestPolicies.get",
-              "path": "v1beta/{+name}",
-              "flatPath": "v1beta/organizations/{organizationsId}/guestPolicies/{guestPoliciesId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "Required. The resource name of the guest policy using one of the following forms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^organizations\/[^\/]+\/guestPolicies\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "GuestPolicy"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
-              ],
-              "description": "Get an OS Config guest policy."
-            },
-            "list": {
-              "id": "osconfig.organizations.guestPolicies.list",
-              "path": "v1beta/{+parent}/guestPolicies",
-              "flatPath": "v1beta/organizations/{organizationsId}/guestPolicies",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "Required. The resource name of the parent using one of the following forms:\n`projects\/{project_number}`.\n`folders\/{folder_id}`.\n`organizations\/{organization_id}`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^organizations\/[^\/]+$",
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "The maximum number of guest policies to return.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "pageToken": {
-                  "description": "A pagination token returned from a previous call to `ListGuestPolicies`\nthat indicates where this listing should continue from.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListGuestPoliciesResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
-              ],
-              "description": "Get a page of OS Config guest policies."
-            },
-            "patch": {
-              "id": "osconfig.organizations.guestPolicies.patch",
-              "path": "v1beta/{+name}",
-              "flatPath": "v1beta/organizations/{organizationsId}/guestPolicies/{guestPoliciesId}",
-              "httpMethod": "PATCH",
-              "parameters": {
-                "name": {
-                  "description": "Required. Unique name of the resource in this project using one of the following\nforms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^organizations\/[^\/]+\/guestPolicies\/[^\/]+$",
-                  "type": "string"
-                },
-                "updateMask": {
-                  "description": "Field mask that controls which fields of the guest policy should be\nupdated.",
-                  "location": "query",
-                  "type": "string",
-                  "format": "google-fieldmask"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "GuestPolicy"
-              },
-              "response": {
-                "$ref": "GuestPolicy"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
-              ],
-              "description": "Update an OS Config guest policy."
-            },
-            "delete": {
-              "id": "osconfig.organizations.guestPolicies.delete",
-              "path": "v1beta/{+name}",
-              "flatPath": "v1beta/organizations/{organizationsId}/guestPolicies/{guestPoliciesId}",
-              "httpMethod": "DELETE",
-              "parameters": {
-                "name": {
-                  "description": "Required. The resource name of the guest policy  using one of the following forms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^organizations\/[^\/]+\/guestPolicies\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
-              ],
-              "description": "Delete an OS Config guest policy."
-            }
-          }
-        }
-      }
-    },
-    "folders": {
-      "resources": {
-        "guestPolicies": {
-          "methods": {
-            "create": {
-              "id": "osconfig.folders.guestPolicies.create",
-              "path": "v1beta/{+parent}/guestPolicies",
-              "flatPath": "v1beta/folders/{foldersId}/guestPolicies",
-              "httpMethod": "POST",
-              "parameters": {
-                "parent": {
-                  "description": "Required. The resource name of the parent using one of the following forms:\n`projects\/{project_number}`.\n`folders\/{folder_id}`.\n`organizations\/{organization_id}`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^folders\/[^\/]+$",
-                  "type": "string"
-                },
-                "guestPolicyId": {
-                  "description": "Required. The logical name of the guest policy in the project\nwith the following restrictions:\n\n* Must contain only lowercase letters, numbers, and hyphens.\n* Must start with a letter.\n* Must be between 1-63 characters.\n* Must end with a number or a letter.\n* Must be unique within the project.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "request": {
-                "$ref": "GuestPolicy"
-              },
-              "response": {
-                "$ref": "GuestPolicy"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
-              ],
-              "description": "Create an OS Config guest policy."
-            },
-            "get": {
-              "id": "osconfig.folders.guestPolicies.get",
-              "path": "v1beta/{+name}",
-              "flatPath": "v1beta/folders/{foldersId}/guestPolicies/{guestPoliciesId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "Required. The resource name of the guest policy using one of the following forms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^folders\/[^\/]+\/guestPolicies\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "GuestPolicy"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
-              ],
-              "description": "Get an OS Config guest policy."
-            },
-            "list": {
-              "id": "osconfig.folders.guestPolicies.list",
-              "path": "v1beta/{+parent}/guestPolicies",
-              "flatPath": "v1beta/folders/{foldersId}/guestPolicies",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "Required. The resource name of the parent using one of the following forms:\n`projects\/{project_number}`.\n`folders\/{folder_id}`.\n`organizations\/{organization_id}`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^folders\/[^\/]+$",
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "The maximum number of guest policies to return.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "pageToken": {
-                  "description": "A pagination token returned from a previous call to `ListGuestPolicies`\nthat indicates where this listing should continue from.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListGuestPoliciesResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
-              ],
-              "description": "Get a page of OS Config guest policies."
-            },
-            "patch": {
-              "id": "osconfig.folders.guestPolicies.patch",
-              "path": "v1beta/{+name}",
-              "flatPath": "v1beta/folders/{foldersId}/guestPolicies/{guestPoliciesId}",
-              "httpMethod": "PATCH",
-              "parameters": {
-                "name": {
-                  "description": "Required. Unique name of the resource in this project using one of the following\nforms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^folders\/[^\/]+\/guestPolicies\/[^\/]+$",
-                  "type": "string"
-                },
-                "updateMask": {
-                  "description": "Field mask that controls which fields of the guest policy should be\nupdated.",
-                  "location": "query",
-                  "type": "string",
-                  "format": "google-fieldmask"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "GuestPolicy"
-              },
-              "response": {
-                "$ref": "GuestPolicy"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
-              ],
-              "description": "Update an OS Config guest policy."
-            },
-            "delete": {
-              "id": "osconfig.folders.guestPolicies.delete",
-              "path": "v1beta/{+name}",
-              "flatPath": "v1beta/folders/{foldersId}/guestPolicies/{guestPoliciesId}",
-              "httpMethod": "DELETE",
-              "parameters": {
-                "name": {
-                  "description": "Required. The resource name of the guest policy  using one of the following forms:\n`projects\/{project_number}\/guestPolicies\/{guest_policy_id}`.\n`folders\/{folder_id}\/guestPolicies\/{guest_policy_id}`.\n`organizations\/{organization_id}\/guestPolicies\/{guest_policy_id}`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^folders\/[^\/]+\/guestPolicies\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
-              ],
-              "description": "Delete an OS Config guest policy."
             }
           }
         }

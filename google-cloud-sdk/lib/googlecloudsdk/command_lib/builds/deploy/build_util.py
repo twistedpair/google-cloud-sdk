@@ -32,12 +32,10 @@ _DEFAULT_TAGS = [
     'gcp-cloud-build-deploy-gcloud'
 ]
 _DEFAULT_PR_PREVIEW_TAGS = [
-    'gcp-cloud-build-deploy',
     'gcp-cloud-build-deploy-gcloud',
     'gcp-cloud-build-deploy-pr-preview',
 ]
 _DEFAULT_CLEAN_PREVIEW_TAGS = [
-    'gcp-cloud-build-deploy',
     'gcp-cloud-build-deploy-gcloud',
     'gcp-cloud-build-deploy-clean-preview',
 ]

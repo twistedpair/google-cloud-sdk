@@ -791,6 +791,21 @@ class RedisProjectsLocationsInstancesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class RedisProjectsLocationsInstancesUpgradeRequest(_messages.Message):
+  r"""A RedisProjectsLocationsInstancesUpgradeRequest object.
+
+  Fields:
+    name: Required. Redis instance resource name using the form:
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+      where `location_id` refers to a GCP region.
+    upgradeInstanceRequest: A UpgradeInstanceRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  upgradeInstanceRequest = _messages.MessageField('UpgradeInstanceRequest', 2)
+
+
 class RedisProjectsLocationsListRequest(_messages.Message):
   r"""A RedisProjectsLocationsListRequest object.
 
@@ -965,6 +980,17 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class UpgradeInstanceRequest(_messages.Message):
+  r"""Request for UpgradeInstance.
+
+  Fields:
+    redisVersion: Required. Specifies the target version of Redis software to
+      upgrade to.
+  """
+
+  redisVersion = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

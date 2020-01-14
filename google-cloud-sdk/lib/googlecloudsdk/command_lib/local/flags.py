@@ -46,3 +46,9 @@ def CommonFlags(parser):
       '--service-account',
       help='When connecting to Google Cloud Platform services, use a service '
       'account key.')
+
+  parser.add_argument(
+      '--local-port',
+      type=int,
+      help='Local port to which the service connection is forwarded. If this '
+      'flag is not set, then a random port is chosen.')

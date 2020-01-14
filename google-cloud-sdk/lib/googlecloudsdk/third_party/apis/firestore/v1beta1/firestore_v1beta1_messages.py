@@ -124,7 +124,8 @@ class CommitResponse(_messages.Message):
   r"""The response for Firestore.Commit.
 
   Fields:
-    commitTime: The time at which the commit occurred.
+    commitTime: The time at which the commit occurred. Any read with an equal
+      or greater `read_time` is guaranteed to see the effects of the commit.
     writeResults: The result of applying the writes.  This i-th write result
       corresponds to the i-th write in the request.
   """
@@ -1979,7 +1980,8 @@ class WriteResponse(_messages.Message):
   r"""The response for Firestore.Write.
 
   Fields:
-    commitTime: The time at which the commit occurred.
+    commitTime: The time at which the commit occurred. Any read with an equal
+      or greater `read_time` is guaranteed to see the effects of the write.
     streamId: The ID of the stream. Only set on the first message, when a new
       stream was created.
     streamToken: A token that represents the position of this response in the

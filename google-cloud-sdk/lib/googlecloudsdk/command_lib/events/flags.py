@@ -26,11 +26,11 @@ from googlecloudsdk.core import yaml
 
 
 def AddSourceFlag(parser):
-  """Adds a source flag."""
+  """Adds a source flag. This refers to a source kind, not instance."""
   parser.add_argument(
       '--source',
       required=False,
-      help='Events source by which to filter results.')
+      help='Events source kind by which to filter results.')
 
 
 def AddEventTypePositionalArg(parser):
@@ -45,7 +45,8 @@ def AddTargetServiceFlag(parser, required=False):
   parser.add_argument(
       '--target-service',
       required=required,
-      help='Name of the Cloud Run service to receive events at.')
+      help='Name or absolute uri of the Cloud Run service at which '
+      'events should be received.')
 
 
 def AddEventTypeFlagArg(parser):

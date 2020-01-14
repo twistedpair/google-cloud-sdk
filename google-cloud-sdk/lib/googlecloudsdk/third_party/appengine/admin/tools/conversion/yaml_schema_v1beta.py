@@ -66,8 +66,7 @@ SCHEMA = s.Message(
             'target_read_bytes_per_sec'),
         target_disk_read_ops_per_sec=s.Value(
             'target_read_ops_per_sec'),
-        target_request_count_per_sec=s.Value(
-            'target_request_count_per_second'),
+        target_request_count_per_sec=s.Value(),
         target_concurrent_requests=s.Value(),
         custom_metrics=s.RepeatedField(element=s.Message(
             metric_name=s.Value(converter=c.ToJsonString),
@@ -162,10 +161,6 @@ SCHEMA = s.Message(
                                                         c.ToJsonString)),
         session_affinity=s.Value()
     ),
-    vpc_access_connector=s.Message(
-        name=s.Value(converter=c.ToJsonString),
-    ),
-    zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)),
     nobuild_files=s.Value('nobuild_files_regex', converter=c.ToJsonString),
     resources=s.Message(
         memory_gb=s.Value(),
@@ -181,4 +176,5 @@ SCHEMA = s.Message(
     threadsafe=s.Value(),
     version=s.Value('id', converter=c.ToJsonString),
     vm=s.Value(),
-    vm_settings=s.Map('beta_settings'))
+    vm_settings=s.Map('beta_settings'),
+    vpc_access_connector=s.Message(name=s.Value(converter=c.ToJsonString)))

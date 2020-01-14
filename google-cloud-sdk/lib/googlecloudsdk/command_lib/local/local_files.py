@@ -91,4 +91,12 @@ class LocalRuntimeFiles(object):
         skaffold_yaml, ('build', 'artifacts'), constructor=list)
     artifacts.append(artifact)
 
+    if self._settings.local_port:
+      skaffold_yaml['portForward'] = [{
+          'resourceType': 'service',
+          'resourceName': self._settings.service_name,
+          'port': 8080,
+          'localPort': self._settings.local_port
+      }]
+
     return yaml.dump(skaffold_yaml)

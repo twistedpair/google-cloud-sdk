@@ -201,10 +201,6 @@
         "audio": {
           "description": "Required. The audio data to be recognized.",
           "$ref": "RecognitionAudio"
-        },
-        "name": {
-          "description": "Use `model` field in RecognitionConfig instead.",
-          "type": "string"
         }
       }
     },
@@ -526,7 +522,7 @@
           "format": "int32"
         },
         "languageCode": {
-          "description": "The [BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag\nof the language in this result. This language code was detected to have\nthe most likelihood of being spoken in the audio.",
+          "description": "Output only. The [BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag\nof the language in this result. This language code was detected to have\nthe most likelihood of being spoken in the audio.",
           "type": "string"
         }
       }
@@ -579,7 +575,7 @@
           "format": "float"
         },
         "speakerTag": {
-          "description": "A distinct integer value is assigned for every speaker within\nthe audio. This field specifies which one of those speakers was detected to\nhave spoken this word. Value ranges from '1' to diarization_speaker_count.\nspeaker_tag is set if enable_speaker_diarization = 'true' and only in the\ntop alternative.",
+          "description": "Output only. A distinct integer value is assigned for every speaker within\nthe audio. This field specifies which one of those speakers was detected to\nhave spoken this word. Value ranges from '1' to diarization_speaker_count.\nspeaker_tag is set if enable_speaker_diarization = 'true' and only in the\ntop alternative.",
           "type": "integer",
           "format": "int32"
         }

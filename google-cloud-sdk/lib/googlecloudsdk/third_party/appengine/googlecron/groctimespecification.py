@@ -17,7 +17,6 @@
 # this file will be stripped.  The docstrings will NOT.  Do not put sensitive
 # information in docstrings.  If you must communicate internal information in
 # this source file, please place them in comments only.
-
 """Implementation of scheduling for Groc format schedules.
 
 A Groc schedule looks like '1st,2nd monday 9:00', or 'every 20 mins'. This
@@ -33,13 +32,15 @@ Extensions to be considered:
 """
 
 from __future__ import absolute_import
-
-__author__ = 'arb@google.com (Anthony Baxter)'
+from __future__ import division
+from __future__ import print_function
 
 import calendar
 import datetime
 
 from . import groc
+
+__author__ = 'arb@google.com (Anthony Baxter)'
 
 # Because this module is used in some App Engine client code, it is possible
 # that it be run in an environment without pytz. So, we except the ImportError
@@ -73,9 +74,10 @@ def GrocTimeSpecification(schedule, timezone=None):
 
   Arguments:
     schedule: the schedule specification, as a string
-    timezone: the optional timezone as a string for this specification.
-        Defaults to 'UTC' - valid entries are things like 'Australia/Victoria'
-        or 'PST8PDT'.
+    timezone: the optional timezone as a string for this specification. Defaults
+      to 'UTC' - valid entries are things like 'Australia/Victoria' or
+      'PST8PDT'.
+
   Returns:
     a TimeSpecification instance
   """
@@ -83,18 +85,14 @@ def GrocTimeSpecification(schedule, timezone=None):
   parser.timespec()
 
   if parser.period_string:
-    return IntervalTimeSpecification(parser.interval_mins,
-                                     parser.period_string,
+    return IntervalTimeSpecification(parser.interval_mins, parser.period_string,
                                      parser.synchronized,
                                      parser.start_time_string,
-                                     parser.end_time_string,
-                                     timezone)
+                                     parser.end_time_string, timezone)
   else:
     return SpecificTimeSpecification(parser.ordinal_set, parser.weekday_set,
-                                     parser.month_set,
-                                     parser.monthday_set,
-                                     parser.time_string,
-                                     timezone)
+                                     parser.month_set, parser.monthday_set,
+                                     parser.time_string, timezone)
 
 
 class TimeSpecification(object):
@@ -111,7 +109,7 @@ class TimeSpecification(object):
       a list of n datetime objects
     """
     out = []
-    for _ in range(n):
+    while len(out) < n:
       start = self.GetMatch(start)
       out.append(start)
     return out
@@ -123,8 +121,8 @@ class TimeSpecification(object):
 
     Arguments:
       start: a datetime to start from. Matches will start from after this time.
-          This may be in any pytz time zone, or it may be timezone-naive
-          (interpreted as UTC).
+        This may be in any pytz time zone, or it may be timezone-naive
+        (interpreted as UTC).
 
     Returns:
       a datetime object in the timezone of the input 'start'
@@ -161,7 +159,7 @@ def _ToTimeZone(t, tzinfo):
 
   Arguments:
     t: a datetime object.  It may be in any pytz time zone, or it may be
-        timezone-naive (interpreted as UTC).
+      timezone-naive (interpreted as UTC).
     tzinfo: a pytz timezone object, or None.
 
   Returns:
@@ -212,8 +210,13 @@ class IntervalTimeSpecification(TimeSpecification):
       interpreted, or None (defaults to UTC).  This is a pytz timezone object.
   """
 
-  def __init__(self, interval, period, synchronized=False,
-               start_time_string='', end_time_string='', timezone=None):
+  def __init__(self,
+               interval,
+               period,
+               synchronized=False,
+               start_time_string='',
+               end_time_string='',
+               timezone=None):
     super(IntervalTimeSpecification, self).__init__()
     if interval < 1:
       raise groc.GrocException('interval must be greater than zero')
@@ -259,8 +262,8 @@ class IntervalTimeSpecification(TimeSpecification):
 
     Arguments:
       start: a datetime to start from. Matches will start from after this time.
-          This may be in any pytz time zone, or it may be timezone-naive
-          (interpreted as UTC).
+        This may be in any pytz time zone, or it may be timezone-naive
+        (interpreted as UTC).
 
     Returns:
       a datetime object in the timezone of the input 'start'
@@ -282,7 +285,7 @@ class IntervalTimeSpecification(TimeSpecification):
     # after start_time.
     t_delta = t - start_time
     t_delta_seconds = (t_delta.days * 60 * 24 + t_delta.seconds)
-    num_intervals = (t_delta_seconds + self.seconds) / self.seconds
+    num_intervals = (t_delta_seconds + self.seconds) // self.seconds
     interval_time = (
         start_time + datetime.timedelta(seconds=(num_intervals * self.seconds)))
     if self.timezone:
@@ -291,8 +294,7 @@ class IntervalTimeSpecification(TimeSpecification):
     # If 't' and interval_time are contained in the same day's range, we return
     # interval_time.  Otherwise, we return the start of the next range.
     next_start_time = self._GetNextDateTime(t, self.start_time, self.timezone)
-    if (self._TimeIsInRange(t) and
-        self._TimeIsInRange(interval_time) and
+    if (self._TimeIsInRange(t) and self._TimeIsInRange(interval_time) and
         interval_time < next_start_time):
       result = interval_time
     else:
@@ -312,10 +314,10 @@ class IntervalTimeSpecification(TimeSpecification):
     """
     # Determine whether a start time or end time happened more recently before
     # 't'.
-    previous_start_time = self._GetPreviousDateTime(
-        t, self.start_time, self.timezone)
-    previous_end_time = self._GetPreviousDateTime(
-        t, self.end_time, self.timezone)
+    previous_start_time = self._GetPreviousDateTime(t, self.start_time,
+                                                    self.timezone)
+    previous_end_time = self._GetPreviousDateTime(t, self.end_time,
+                                                  self.timezone)
     if previous_start_time > previous_end_time:
       return True
     else:
@@ -378,8 +380,8 @@ class IntervalTimeSpecification(TimeSpecification):
     Returns:
       a datetime.datetime object, in the timezone 'tzinfo'
     """
-    naive_result = datetime.datetime(
-        date.year, date.month, date.day, time.hour, time.minute, time.second)
+    naive_result = datetime.datetime(date.year, date.month, date.day, time.hour,
+                                     time.minute, time.second)
     if tzinfo is None:
       return naive_result
 
@@ -388,8 +390,9 @@ class IntervalTimeSpecification(TimeSpecification):
     except AmbiguousTimeError:
       # Return the daylight version, which should be earlier than the
       # standard version.
-      return min(tzinfo.localize(naive_result, is_dst=True),
-                 tzinfo.localize(naive_result, is_dst=False))
+      return min(
+          tzinfo.localize(naive_result, is_dst=True),
+          tzinfo.localize(naive_result, is_dst=False))
     except NonExistentTimeError:
       # Advance a minute at a time until we find a time that exists.  This
       # has some potentially counterintuitive effects -- for example, a job
@@ -425,8 +428,13 @@ class SpecificTimeSpecification(TimeSpecification):
   time would be '09:15'.
   """
 
-  def __init__(self, ordinals=None, weekdays=None, months=None, monthdays=None,
-               timestr='00:00', timezone=None):
+  def __init__(self,
+               ordinals=None,
+               weekdays=None,
+               months=None,
+               monthdays=None,
+               timestr='00:00',
+               timezone=None):
     super(SpecificTimeSpecification, self).__init__()
     if weekdays and monthdays:
       raise ValueError('cannot supply both monthdays and weekdays')
@@ -544,8 +552,8 @@ class SpecificTimeSpecification(TimeSpecification):
 
     Arguments:
       start: a datetime to start from. Matches will start from after this time.
-          This may be in any pytz time zone, or it may be timezone-naive
-          (interpreted as UTC).
+        This may be in any pytz time zone, or it may be timezone-naive
+        (interpreted as UTC).
 
     Returns:
       a datetime object in the timezone of the input 'start'
@@ -561,22 +569,25 @@ class SpecificTimeSpecification(TimeSpecification):
       months = self._NextMonthGenerator(start_time.month, self.months)
     while True:
       # Get the next month that matches
-      month, yearwraps = months.next()
-      candidate_month = start_time.replace(day=1, month=month,
-                                           year=start_time.year + yearwraps)
+      month, yearwraps = next(months)
+      candidate_month = start_time.replace(
+          day=1, month=month, year=start_time.year + yearwraps)
 
       # find days in the month that match
       day_matches = self._MatchingDays(candidate_month.year, month)
 
-      if ((candidate_month.year, candidate_month.month)
-          == (start_time.year, start_time.month)):
+      if ((candidate_month.year, candidate_month.month) == (start_time.year,
+                                                            start_time.month)):
         # we're looking at the current month. Remove days earlier than today
         day_matches = [x for x in day_matches if x >= start_time.day]
       while day_matches:
         # try all the remaining days to see if we can find a good one.
-        out = candidate_month.replace(day=day_matches[0], hour=self.time.hour,
-                                      minute=self.time.minute, second=0,
-                                      microsecond=0)
+        out = candidate_month.replace(
+            day=day_matches[0],
+            hour=self.time.hour,
+            minute=self.time.minute,
+            second=0,
+            microsecond=0)
         # convert back to UTC, first putting the timezone back.
         if self.timezone and pytz is not None:
           # First we ask pytz to just localise the time, asking it to throw

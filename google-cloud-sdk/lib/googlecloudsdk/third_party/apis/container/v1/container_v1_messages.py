@@ -317,6 +317,7 @@ class Cluster(_messages.Message):
       services in this cluster, in [CIDR](http://en.wikipedia.org/wiki
       /Classless_Inter-Domain_Routing) notation (e.g. `1.2.3.4/29`). Service
       addresses are typically put in the last `/16` from the container CIDR.
+    shieldedNodes: Shielded Nodes configuration.
     status: [Output only] The current status of this cluster.
     statusMessage: [Output only] Additional information about the current
       status of this cluster, if available.
@@ -428,12 +429,13 @@ class Cluster(_messages.Message):
   resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 40)
   selfLink = _messages.StringField(41)
   servicesIpv4Cidr = _messages.StringField(42)
-  status = _messages.EnumField('StatusValueValuesEnum', 43)
-  statusMessage = _messages.StringField(44)
-  subnetwork = _messages.StringField(45)
-  tpuIpv4CidrBlock = _messages.StringField(46)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 47)
-  zone = _messages.StringField(48)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 43)
+  status = _messages.EnumField('StatusValueValuesEnum', 44)
+  statusMessage = _messages.StringField(45)
+  subnetwork = _messages.StringField(46)
+  tpuIpv4CidrBlock = _messages.StringField(47)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 48)
+  zone = _messages.StringField(49)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -526,6 +528,7 @@ class ClusterUpdate(_messages.Message):
       picks the Kubernetes master version
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
+    desiredShieldedNodes: Configuration for Shielded Nodes.
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
   """
@@ -547,7 +550,8 @@ class ClusterUpdate(_messages.Message):
   desiredNodePoolId = _messages.StringField(15)
   desiredNodeVersion = _messages.StringField(16)
   desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 17)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 18)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 18)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 19)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2101,6 +2105,8 @@ class PrivateClusterConfig(_messages.Message):
       addresses to the master or set of masters, as well as the ILB VIP. This
       range must not overlap with any other ranges in use within the cluster's
       network.
+    peeringName: Output only. The peering name in the customer VPC used by
+      this cluster.
     privateEndpoint: Output only. The internal IP address of this cluster's
       master endpoint.
     publicEndpoint: Output only. The external IP address of this cluster's
@@ -2110,8 +2116,9 @@ class PrivateClusterConfig(_messages.Message):
   enablePrivateEndpoint = _messages.BooleanField(1)
   enablePrivateNodes = _messages.BooleanField(2)
   masterIpv4CidrBlock = _messages.StringField(3)
-  privateEndpoint = _messages.StringField(4)
-  publicEndpoint = _messages.StringField(5)
+  peeringName = _messages.StringField(4)
+  privateEndpoint = _messages.StringField(5)
+  publicEndpoint = _messages.StringField(6)
 
 
 class RecurringTimeWindow(_messages.Message):
@@ -2685,6 +2692,17 @@ class ShieldedInstanceConfig(_messages.Message):
   enableSecureBoot = _messages.BooleanField(2)
 
 
+class ShieldedNodes(_messages.Message):
+  r"""Configuration of Shielded Nodes feature.
+
+  Fields:
+    enabled: Whether Shielded Nodes features are enabled on all nodes in this
+      cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -2791,7 +2809,8 @@ class StatusCondition(_messages.Message):
 
     Values:
       UNKNOWN: UNKNOWN indicates a generic condition.
-      GCE_STOCKOUT: GCE_STOCKOUT indicates a Google Compute Engine stockout.
+      GCE_STOCKOUT: GCE_STOCKOUT indicates that Google Compute Engine
+        resources are temporarily unavailable.
       GKE_SERVICE_ACCOUNT_DELETED: GKE_SERVICE_ACCOUNT_DELETED indicates that
         the user deleted their robot service account.
       GCE_QUOTA_EXCEEDED: Google Compute Engine quota was exceeded.

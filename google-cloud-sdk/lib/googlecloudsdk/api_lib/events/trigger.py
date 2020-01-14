@@ -82,6 +82,9 @@ class Trigger(k8s_object.KubernetesObject):
 
   @property
   def subscriber(self):
+    # TODO(b/147249685): Support ref + relative uri case
+    if self._m.spec.subscriber.uri:
+      return self._m.spec.subscriber.uri
     return self._m.spec.subscriber.ref.name
 
   @subscriber.setter

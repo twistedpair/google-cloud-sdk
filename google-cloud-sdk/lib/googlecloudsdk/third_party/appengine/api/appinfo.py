@@ -31,6 +31,8 @@ and load from configuration files.
 # to be reflected in the java code. For questions, talk to clouser@ or
 
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 import logging
 import os
 import re
@@ -51,12 +53,9 @@ else:
   from googlecloudsdk.third_party.appengine.api import yaml_listener
   from googlecloudsdk.third_party.appengine.api import yaml_object
 
-from googlecloudsdk.core.util import encoding
 from googlecloudsdk.third_party.appengine.api import appinfo_errors
 from googlecloudsdk.third_party.appengine.api import backendinfo
 from googlecloudsdk.third_party.appengine._internal import six_subset
-
-import six
 
 
 # pylint: enable=g-import-not-at-top
@@ -164,7 +163,7 @@ GCE_RESOURCE_PATH_REGEX = r'^[a-z\d-]+(/[a-z\d-]+)*$'
 
 GCE_RESOURCE_NAME_REGEX = r'^[a-z]([a-z\d-]{0,61}[a-z\d])?$'
 
-VPC_ACCESS_CONNECTOR_NAME_REGEX = r'^[a-z\d-]+(/[a-z\d-]+)*$'
+VPC_ACCESS_CONNECTOR_NAME_REGEX = r'^[a-z\d-]+(/.+)*$'
 
 ALTERNATE_HOSTNAME_SEPARATOR = '-dot-'
 
@@ -538,6 +537,7 @@ _SUPPORTED_LIBRARIES = [
         'grpcio',
         'http://www.grpc.io/',
         'A high performance general RPC framework',
+        # Note: For documentation this is overridden to display 1.1.0dev0
         ['1.0.0'],
         latest_version='1.0.0',
         experimental_versions=['1.0.0'],
@@ -588,6 +588,13 @@ _SUPPORTED_LIBRARIES = [
         deprecated_versions=['1.2.4b4', '1.2.4'],
         ),
     _VersionedLibrary(
+        'mysqlclient',
+        'http://mysql-python.sourceforge.net/',
+        'A Python DB API v2.0 compatible interface to MySQL.',
+        ['1.4.4'],
+        latest_version='1.4.4',
+        ),
+    _VersionedLibrary(
         'numpy',
         'http://numpy.scipy.org/',
         'A general-purpose library for array-processing.',
@@ -635,6 +642,13 @@ _SUPPORTED_LIBRARIES = [
         experimental_versions=['3.0.0'],
         ),
     _VersionedLibrary(
+        'psycopg2',
+        'http://initd.org/psycopg/',
+        'A Python DB API v2.0 compatible interface to PostgreSQL.',
+        ['2.8.3'],
+        latest_version='2.8.3',
+        ),
+    _VersionedLibrary(
         'PyAMF',
         'https://pypi.python.org/pypi/PyAMF',
         'A library that provides (AMF) Action Message Format functionality.',
@@ -663,16 +677,17 @@ _SUPPORTED_LIBRARIES = [
         'six',
         'https://pypi.python.org/pypi/six',
         'Abstract differences between py2.x and py3',
-        ['1.9.0'],
-        latest_version='1.9.0',
+        ['1.9.0', '1.12.0'],
+        latest_version='1.12.0',
+        default_version='1.12.0',
         ),
     _VersionedLibrary(
         'ssl',
         'http://docs.python.org/dev/library/ssl.html',
         'The SSL socket wrapper built-in module.',
-        ['2.7', '2.7.11'],
+        ['2.7', '2.7.11', '2.7.16', '2.7.current'],
         latest_version='2.7.11',
-        deprecated_versions=['2.7']
+        deprecated_versions=['2.7', '2.7.16']
         ),
     _VersionedLibrary(
         'ujson',
@@ -731,10 +746,10 @@ REQUIRED_LIBRARIES = {
     ('jinja2', 'latest'): [('markupsafe', 'latest'), ('setuptools', 'latest')],
     ('matplotlib', '1.2.0'): [('numpy', '1.6.1')],
     ('matplotlib', 'latest'): [('numpy', 'latest')],
-    ('protobuf', '3.0.0'): [('six', '1.9.0')],
+    ('protobuf', '3.0.0'): [('six', 'latest')],
     ('protobuf', 'latest'): [('six', 'latest')],
     ('grpcio', '1.0.0'): [('protobuf', '3.0.0'), ('enum', '0.9.23'),
-                          ('futures', '3.0.5'), ('six', '1.9.0'),
+                          ('futures', '3.0.5'), ('six', 'latest'),
                           ('setuptools', '36.6.0')],
     ('grpcio', 'latest'): [('protobuf', 'latest'), ('enum', 'latest'),
                            ('futures', 'latest'), ('six', 'latest'),
@@ -923,7 +938,7 @@ class HttpHeadersDict(validation.ValidatedDict):
             'HTTP header values must not contain non-ASCII data'))
 
       # HTTP headers are case-insensitive.
-      name = encoding.Decode(name.lower(),encoding='utf8')
+      name = name.lower().decode('ascii')
 
       if not _HTTP_TOKEN_RE.match(name):
         raise appinfo_errors.InvalidHttpHeaderName(
@@ -980,12 +995,12 @@ class HttpHeadersDict(validation.ValidatedDict):
          https://www.ietf.org/rfc/rfc2616.txt
       """
       # Make sure only ASCII data is used.
+      error = appinfo_errors.InvalidHttpHeaderValue(
+          'HTTP header values must not contain non-ASCII data')
       if isinstance(value, six_subset.string_types):
-        value = EnsureAsciiBytes(value, appinfo_errors.InvalidHttpHeaderValue(
-            'HTTP header values must not contain non-ASCII data'))
-        b_value = value
+        b_value = EnsureAsciiBytes(value, error)
       else:
-        b_value = ('%s' % value).encode('ascii')
+        b_value = EnsureAsciiBytes(('%s' % value), error)
 
       # HTTP headers are case-insensitive.
       key = key.lower()
@@ -1001,11 +1016,11 @@ class HttpHeadersDict(validation.ValidatedDict):
 
       HttpHeadersDict.ValueValidator.AssertHeaderNotTooLong(key, value)
 
-      return six.ensure_text(value)
+      return value
 
     @staticmethod
     def AssertHeaderNotTooLong(name, value):
-      header_length = len('%s: %s\r\n' % (name, value))
+      header_length = len(('%s: %s\r\n' % (name, value)).encode('ascii'))
 
       # The `>=` operator here is a little counter-intuitive. The reason for it
       # is that I'm trying to follow the
@@ -2078,28 +2093,19 @@ class AppInclude(validation.Validated):
             `manual_scaling.instances` sets.
 
       Returns:
-        The number of instances as an integer, or `None`.
+        The number of instances as an integer. If the value of
+        `manual_scaling.instances` evaluates to False (e.g. 0 or None), then
+        return 0.
       """
       if appinclude.manual_scaling:
         if appinclude.manual_scaling.instances:
           return int(appinclude.manual_scaling.instances)
-      return None
+      return 0
 
     # We only want to mutate a param if at least one of the given
     # arguments has manual_scaling.instances set.
-    instances_one = _Instances(appinclude_one)
-    instances_two = _Instances(appinclude_two)
-
-    if instances_one is not None and instances_two is not None:
-      instances = max(instances_one, instances_two)
-    elif instances_one is not None:
-      instances = instances_one
-    elif instances_two is not None:
-      instances = instances_two
-    else:
-      instances = None
-
-    if instances is not None:
+    if _Instances(appinclude_one) or _Instances(appinclude_two):
+      instances = max(_Instances(appinclude_one), _Instances(appinclude_two))
       appinclude_one.manual_scaling = ManualScaling(instances=str(instances))
     return appinclude_one
 
@@ -2761,7 +2767,6 @@ def ParseExpiration(expiration):
 #   - java/com/google/appengine/tools/admin/AppVersionUpload.java
 #   - java/com/google/apphosting/admin/legacy/LegacyAppInfo.java
 
-# LINT.IfChange
 # Forbid `.`, `..`, and leading `-`, `_ah/` or `/`
 _file_path_negative_1_re = re.compile(r'\.\.|^\./|\.$|/\./|^-|^_ah/|^/')
 
@@ -2807,4 +2812,3 @@ def ValidFilename(filename):
   if _file_path_negative_3_re.search(filename) is not None:
     return 'Any spaces must be in the middle of a filename: %s' % filename
   return ''
-# LINT.ThenChange(

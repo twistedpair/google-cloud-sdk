@@ -2435,6 +2435,12 @@ through a filter.
     def Patch(self, request, global_params=None):
       r"""Update the message.
 
+The contents of the message in Message.data and data extracted from
+the contents such as Message.create_time cannot be altered. Only the
+Message.labels field is allowed to be updated. The labels in the
+request are merged with the existing set of labels. Existing labels with
+the same keys are updated.
+
       Args:
         request: (HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments

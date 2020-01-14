@@ -520,6 +520,9 @@ class DialogflowProjectsAgentSessionsContextsPatchRequest(_messages.Message):
       `projects/<Project ID>/agent/sessions/<Session ID>/contexts/<Context
       ID>`.  The `Context ID` is always converted to lowercase, may only
       contain characters in [a-zA-Z0-9_-%] and may be at most 250 bytes long.
+      The following context names are reserved for internal use by Dialogflow.
+      You should not use these contexts or create contexts with these names:
+      * `__system_counters__` * `*_id_dialog_context` * `*_dialog_params_size`
     updateMask: Optional. The mask to control which fields get updated.
   """
 
@@ -1058,6 +1061,9 @@ class GoogleCloudDialogflowV2Context(_messages.Message):
       `projects/<Project ID>/agent/sessions/<Session ID>/contexts/<Context
       ID>`.  The `Context ID` is always converted to lowercase, may only
       contain characters in [a-zA-Z0-9_-%] and may be at most 250 bytes long.
+      The following context names are reserved for internal use by Dialogflow.
+      You should not use these contexts or create contexts with these names:
+      * `__system_counters__` * `*_id_dialog_context` * `*_dialog_params_size`
     parameters: Optional. The collection of parameters associated with this
       context. Refer to [this doc](https://cloud.google.com/dialogflow/docs
       /intents-actions-parameters) for syntax.
@@ -1392,17 +1398,33 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
 
   Fields:
     audioEncoding: Required. Audio encoding of the audio content to process.
+    enableWordInfo: Optional. If `true`, Dialogflow returns SpeechWordInfo in
+      StreamingRecognitionResult with information about the recognized speech
+      words, e.g. start and end time offsets. If false or unspecified, Speech
+      doesn't return any word-level information.
     languageCode: Required. The language of the supplied audio. Dialogflow
       does not do translations. See [Language
       Support](https://cloud.google.com/dialogflow/docs/reference/language)
       for a list of the currently supported language codes. Note that queries
       in the same session do not necessarily need to specify the same
       language.
+    model: Optional. Which Speech model to select for the given request.
+      Select the model best suited to your domain to get best results. If a
+      model is not explicitly specified, then we auto-select a model based on
+      the parameters in the InputAudioConfig. If enhanced speech model is
+      enabled for the agent and an enhanced version of the specified model for
+      the language does not exist, then the speech is recognized using the
+      standard version of the specified model. Refer to [Cloud Speech API
+      documentation](https://cloud.google.com/speech-to-text/docs/basics
+      #select-model) for more details.
     modelVariant: Optional. Which variant of the Speech model to use.
     phraseHints: Optional. A list of strings containing words and phrases that
       the speech recognizer should recognize with higher likelihood.  See [the
       Cloud Speech documentation](https://cloud.google.com/speech-to-
-      text/docs/basics#phrase-hints) for more details.
+      text/docs/basics#phrase-hints) for more details.  This field is
+      deprecated. Please use [speech_contexts]() instead. If you specify both
+      [phrase_hints]() and [speech_contexts](), Dialogflow will treat the
+      [phrase_hints]() as a single additional [SpeechContext]().
     sampleRateHertz: Required. Sample rate (in Hertz) of the audio content
       sent in the query. Refer to [Cloud Speech API
       documentation](https://cloud.google.com/speech-to-text/docs/basics) for
@@ -1416,6 +1438,10 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
       relevant only for streaming methods. Note: When specified,
       InputAudioConfig.single_utterance takes precedence over
       StreamingDetectIntentRequest.single_utterance.
+    speechContexts: Optional. Context information to assist speech
+      recognition.  See [the Cloud Speech
+      documentation](https://cloud.google.com/speech-to-text/docs/basics
+      #phrase-hints) for more details.
   """
 
   class AudioEncodingValueValuesEnum(_messages.Enum):
@@ -1493,11 +1519,14 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
     USE_ENHANCED = 3
 
   audioEncoding = _messages.EnumField('AudioEncodingValueValuesEnum', 1)
-  languageCode = _messages.StringField(2)
-  modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 3)
-  phraseHints = _messages.StringField(4, repeated=True)
-  sampleRateHertz = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  singleUtterance = _messages.BooleanField(6)
+  enableWordInfo = _messages.BooleanField(2)
+  languageCode = _messages.StringField(3)
+  model = _messages.StringField(4)
+  modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 5)
+  phraseHints = _messages.StringField(6, repeated=True)
+  sampleRateHertz = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  singleUtterance = _messages.BooleanField(8)
+  speechContexts = _messages.MessageField('GoogleCloudDialogflowV2SpeechContext', 9, repeated=True)
 
 
 class GoogleCloudDialogflowV2Intent(_messages.Message):
@@ -2654,9 +2683,10 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
   r"""Represents the result of conversational query or event processing.
 
   Messages:
-    DiagnosticInfoValue: The free-form diagnostic info. For example, this
-      field could contain webhook call latency. The string keys of the
-      Struct's fields map can change without notice.
+    DiagnosticInfoValue: Free-form diagnostic information for the associated
+      detect intent request. The fields of this data can change without
+      notice, so you should not write code that depends on its structure. The
+      data may contain:  - webhook call latency - webhook errors
     ParametersValue: The collection of extracted parameters.
     WebhookPayloadValue: If the query was fulfilled by a webhook call, this
       field is set to the value of the `payload` field returned in the webhook
@@ -2669,9 +2699,10 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
       values have been collected. - `true` if all required parameter values
       have been collected, or if the    matched intent doesn't contain any
       required parameters.
-    diagnosticInfo: The free-form diagnostic info. For example, this field
-      could contain webhook call latency. The string keys of the Struct's
-      fields map can change without notice.
+    diagnosticInfo: Free-form diagnostic information for the associated detect
+      intent request. The fields of this data can change without notice, so
+      you should not write code that depends on its structure. The data may
+      contain:  - webhook call latency - webhook errors
     fulfillmentMessages: The collection of rich messages to present to the
       user.
     fulfillmentText: The text to be pronounced to the user or shown on the
@@ -2723,9 +2754,10 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DiagnosticInfoValue(_messages.Message):
-    r"""The free-form diagnostic info. For example, this field could contain
-    webhook call latency. The string keys of the Struct's fields map can
-    change without notice.
+    r"""Free-form diagnostic information for the associated detect intent
+    request. The fields of this data can change without notice, so you should
+    not write code that depends on its structure. The data may contain:  -
+    webhook call latency - webhook errors
 
     Messages:
       AdditionalProperty: An additional property for a DiagnosticInfoValue
@@ -2932,6 +2964,31 @@ class GoogleCloudDialogflowV2SessionEntityType(_messages.Message):
   name = _messages.StringField(3)
 
 
+class GoogleCloudDialogflowV2SpeechContext(_messages.Message):
+  r"""Hints for the speech recognizer to help with recognition in a specific
+  conversation state.
+
+  Fields:
+    boost: Optional. Boost for this context compared to other contexts: * If
+      the boost is positive, Dialogflow will increase the probability that
+      the phrases in this context are recognized over similar sounding
+      phrases. * If the boost is unspecified or non-positive, Dialogflow will
+      not apply   any boost.  Dialogflow recommends that you use boosts in the
+      range (0, 20] and that you find a value that fits your use case with
+      binary search.
+    phrases: Optional. A list of strings containing words and phrases that the
+      speech recognizer should recognize with higher likelihood.  This list
+      can be used to: * improve accuracy for words and phrases you expect the
+      user to say,   e.g. typical commands for your Dialogflow agent * add
+      additional words to the speech recognizer vocabulary * ...  See the
+      [Cloud Speech documentation](https://cloud.google.com/speech-to-
+      text/quotas) for usage limits.
+  """
+
+  boost = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  phrases = _messages.StringField(2, repeated=True)
+
+
 class GoogleCloudDialogflowV2SynthesizeSpeechConfig(_messages.Message):
   r"""Configuration of how speech should be synthesized.
 
@@ -3059,7 +3116,13 @@ class GoogleCloudDialogflowV2WebhookRequest(_messages.Message):
 
 
 class GoogleCloudDialogflowV2WebhookResponse(_messages.Message):
-  r"""The response message for a webhook call.
+  r"""The response message for a webhook call.  This response is validated by
+  the Dialogflow server. If validation fails, an error will be returned in the
+  QueryResult.diagnostic_info field. Setting JSON fields to an empty value
+  with the wrong type is a common error. To avoid this error:  - Use `""` for
+  empty strings - Use `{}` or `null` for empty objects - Use `[]` or `null`
+  for empty arrays  For more information, see the [Protocol Buffers Language
+  Guide](https://developers.google.com/protocol-buffers/docs/proto3#json).
 
   Messages:
     PayloadValue: Optional. This value is passed directly to
@@ -3230,6 +3293,9 @@ class GoogleCloudDialogflowV2beta1Context(_messages.Message):
       characters in a-zA-Z0-9_-% and may be at most 250 bytes long.  If
       `Environment ID` is not specified, we assume default 'draft'
       environment. If `User ID` is not specified, we assume default '-' user.
+      The following context names are reserved for internal use by Dialogflow.
+      You should not use these contexts or create contexts with these names:
+      * `__system_counters__` * `*_id_dialog_context` * `*_dialog_params_size`
     parameters: Optional. The collection of parameters associated with this
       context. Refer to [this doc](https://cloud.google.com/dialogflow/docs
       /intents-actions-parameters) for syntax.
@@ -4679,7 +4745,7 @@ class GoogleCloudDialogflowV2beta1KnowledgeOperationMetadata(_messages.Message):
 
 
 class GoogleCloudDialogflowV2beta1LabelConversationResponse(_messages.Message):
-  r"""The response for ConversationDatasets.LabelConversation
+  r"""The response for ConversationDatasets.LabelConversation.
 
   Fields:
     annotatedConversationDataset: New annotated conversation dataset created
@@ -4761,9 +4827,10 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
   r"""Represents the result of conversational query or event processing.
 
   Messages:
-    DiagnosticInfoValue: The free-form diagnostic info. For example, this
-      field could contain webhook call latency. The string keys of the
-      Struct's fields map can change without notice.
+    DiagnosticInfoValue: Free-form diagnostic information for the associated
+      detect intent request. The fields of this data can change without
+      notice, so you should not write code that depends on its structure. The
+      data may contain:  - webhook call latency - webhook errors
     ParametersValue: The collection of extracted parameters.
     WebhookPayloadValue: If the query was fulfilled by a webhook call, this
       field is set to the value of the `payload` field returned in the webhook
@@ -4776,9 +4843,10 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
       values have been collected. - `true` if all required parameter values
       have been collected, or if the    matched intent doesn't contain any
       required parameters.
-    diagnosticInfo: The free-form diagnostic info. For example, this field
-      could contain webhook call latency. The string keys of the Struct's
-      fields map can change without notice.
+    diagnosticInfo: Free-form diagnostic information for the associated detect
+      intent request. The fields of this data can change without notice, so
+      you should not write code that depends on its structure. The data may
+      contain:  - webhook call latency - webhook errors
     fulfillmentMessages: The collection of rich messages to present to the
       user.
     fulfillmentText: The text to be pronounced to the user or shown on the
@@ -4832,9 +4900,10 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DiagnosticInfoValue(_messages.Message):
-    r"""The free-form diagnostic info. For example, this field could contain
-    webhook call latency. The string keys of the Struct's fields map can
-    change without notice.
+    r"""Free-form diagnostic information for the associated detect intent
+    request. The fields of this data can change without notice, so you should
+    not write code that depends on its structure. The data may contain:  -
+    webhook call latency - webhook errors
 
     Messages:
       AdditionalProperty: An additional property for a DiagnosticInfoValue
@@ -5034,7 +5103,13 @@ class GoogleCloudDialogflowV2beta1WebhookRequest(_messages.Message):
 
 
 class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
-  r"""The response message for a webhook call.
+  r"""The response message for a webhook call.  This response is validated by
+  the Dialogflow server. If validation fails, an error will be returned in the
+  QueryResult.diagnostic_info field. Setting JSON fields to an empty value
+  with the wrong type is a common error. To avoid this error:  - Use `""` for
+  empty strings - Use `{}` or `null` for empty objects - Use `[]` or `null`
+  for empty arrays  For more information, see the [Protocol Buffers Language
+  Guide](https://developers.google.com/protocol-buffers/docs/proto3#json).
 
   Messages:
     PayloadValue: Optional. This value is passed directly to

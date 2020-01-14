@@ -48,11 +48,6 @@ _BGP_ROUTING_MODE_CHOICES = {
                 'learned BGP routes.',
 }
 
-_MULTICAST_MODE_CHOICES = {
-    'disabled': 'Multicast is disabled for this network.',
-    'zonal': 'Multicast is allowed within a zone.',
-}
-
 _CREATE_SUBNET_MODE_CHOICES = {
     'auto': 'Subnets are created automatically.  This is the recommended '
             'selection.',
@@ -107,17 +102,6 @@ def AddCreateBgpRoutingModeArg(parser):
               to regional.""")
 
 
-def AddMulticastModeArg(parser):
-  """Adds the --multicast-mode flag."""
-  parser.add_argument(
-      '--multicast-mode',
-      choices=_MULTICAST_MODE_CHOICES,
-      type=lambda mode: mode.lower(),
-      hidden=True,
-      help="""The multicast mode for this network. If not specified, defaults to
-              disabled.""")
-
-
 def AddUpdateArgs(parser):
   """Adds arguments for updating a network."""
 
@@ -140,13 +124,6 @@ def AddUpdateArgsAlpha(parser):
   """Adds arguments for updating a network."""
 
   AddUpdateArgs(parser)
-
-  parser.add_argument(
-      '--multicast-mode',
-      choices=_MULTICAST_MODE_CHOICES,
-      type=lambda mode: mode.lower(),
-      hidden=True,
-      help="""The multicast mode for this network.""")
   AddMtuArg(parser)
 
 

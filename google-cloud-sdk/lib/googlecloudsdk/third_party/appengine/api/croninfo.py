@@ -79,6 +79,7 @@ _VERSION_REGEX = r'^(?:(?:(%s):)?)(%s)$' % (SERVER_ID_RE_STRING,
 
 
 # This is in groc format - see
+# http://g3doc/borg/borgcron/g3doc/userguide.md
 class GrocValidator(validation.Validator):
   """Checks that a schedule is in valid groc format."""
 

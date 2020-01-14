@@ -41,10 +41,16 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
         legitimate.
       FRAUDULENT: Provides information that the event turned out to be
         fraudulent.
+      PASSWORD_CORRECT: Provides information that the event was related to a
+        login event in which the user typed the correct password.
+      PASSWORD_INCORRECT: Provides information that the event was related to a
+        login event in which the user typed the incorrect password.
     """
     ANNOTATION_UNSPECIFIED = 0
     LEGITIMATE = 1
     FRAUDULENT = 2
+    PASSWORD_CORRECT = 3
+    PASSWORD_INCORRECT = 4
 
   annotation = _messages.EnumField('AnnotationValueValuesEnum', 1)
 

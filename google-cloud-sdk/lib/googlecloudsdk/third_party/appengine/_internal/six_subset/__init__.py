@@ -47,6 +47,7 @@ if PY3:
   text_type = str
   binary_type = bytes
   class_types = type,
+  iterbytes = iter
 
   def reraise(tp, value, tb=None):
     try:
@@ -73,6 +74,9 @@ else:
   text_type = unicode
   binary_type = str
   class_types = (type, types.ClassType)
+
+  def iterbytes(s):
+    return (ord(c) for c in s)
 
   def exec_(_code_, _globs_=None, _locs_=None):
     """Execute code in a namespace."""

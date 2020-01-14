@@ -360,7 +360,7 @@
           "type": "string"
         },
         "externalProtectionLevelOptions": {
-          "description": "[ExternalProtectionLevelOptions] stores a group of additional fields for\nconfiguring a [CryptoKeyVersion] that are specific to the [EXTERNAL]\nprotection level.",
+          "description": "ExternalProtectionLevelOptions stores a group of additional fields for\nconfiguring a CryptoKeyVersion that are specific to the\nEXTERNAL protection level.",
           "$ref": "ExternalProtectionLevelOptions"
         }
       }
@@ -393,7 +393,7 @@
     },
     "ExternalProtectionLevelOptions": {
       "id": "ExternalProtectionLevelOptions",
-      "description": "[ExternalProtectionLevelOptions] stores a group of additional fields for\nconfiguring a [CryptoKeyVersion] that are specific to the [EXTERNAL]\nprotection level.",
+      "description": "ExternalProtectionLevelOptions stores a group of additional fields for\nconfiguring a CryptoKeyVersion that are specific to the\nEXTERNAL protection level.",
       "type": "object",
       "properties": {
         "externalKeyUri": {

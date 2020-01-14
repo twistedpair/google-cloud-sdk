@@ -814,12 +814,10 @@ class RecognizeRequest(_messages.Message):
     audio: Required. The audio data to be recognized.
     config: Required. Provides information to the recognizer that specifies
       how to process the request.
-    name: Use `model` field in RecognitionConfig instead.
   """
 
   audio = _messages.MessageField('RecognitionAudio', 1)
   config = _messages.MessageField('RecognitionConfig', 2)
-  name = _messages.StringField(3)
 
 
 class RecognizeResponse(_messages.Message):
@@ -1198,9 +1196,10 @@ class SpeechRecognitionResult(_messages.Message):
       corresponding to the recognized result for the audio from that channel.
       For audio_channel_count = N, its output values can range from '1' to
       'N'.
-    languageCode: The [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt)
-      language tag of the language in this result. This language code was
-      detected to have the most likelihood of being spoken in the audio.
+    languageCode: Output only. The [BCP-47](https://www.rfc-
+      editor.org/rfc/bcp/bcp47.txt) language tag of the language in this
+      result. This language code was detected to have the most likelihood of
+      being spoken in the audio.
   """
 
   alternatives = _messages.MessageField('SpeechRecognitionAlternative', 1, repeated=True)
@@ -1337,9 +1336,9 @@ class WordInfo(_messages.Message):
       corresponding to the end of the spoken word. This field is only set if
       `enable_word_time_offsets=true` and only in the top hypothesis. This is
       an experimental feature and the accuracy of the time offset can vary.
-    speakerTag: A distinct integer value is assigned for every speaker within
-      the audio. This field specifies which one of those speakers was detected
-      to have spoken this word. Value ranges from '1' to
+    speakerTag: Output only. A distinct integer value is assigned for every
+      speaker within the audio. This field specifies which one of those
+      speakers was detected to have spoken this word. Value ranges from '1' to
       diarization_speaker_count. speaker_tag is set if
       enable_speaker_diarization = 'true' and only in the top alternative.
     startTime: Time offset relative to the beginning of the audio, and

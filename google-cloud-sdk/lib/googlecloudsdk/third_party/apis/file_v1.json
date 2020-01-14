@@ -487,7 +487,8 @@
             "Instance has been created and is ready to use.",
             "Instance is being updated.",
             "Instance is unheathy and under repair.",
-            "Instance is being deleted."
+            "Instance is being deleted.",
+            "Instance encountered an error and is in indeterministic state."
           ],
           "type": "string",
           "enum": [
@@ -496,7 +497,8 @@
             "READY",
             "UPDATING",
             "REPAIRING",
-            "DELETING"
+            "DELETING",
+            "ERROR"
           ]
         },
         "softwareVersions": {

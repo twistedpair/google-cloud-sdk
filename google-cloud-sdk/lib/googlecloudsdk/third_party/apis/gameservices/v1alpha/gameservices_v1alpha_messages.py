@@ -2178,10 +2178,20 @@ class Operation(_messages.Message):
 class OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
+  Messages:
+    OperationStatusValue: Output only. Operation status for game services
+      operations. Operation status is in the form of key-value pairs where
+      keys are resource IDs and the values show the status of the operation.
+      In case of failures, the value includes an error code and error message.
+
   Fields:
     apiVersion: Output only. API version used to start the operation.
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
+    operationStatus: Output only. Operation status for game services
+      operations. Operation status is in the form of key-value pairs where
+      keys are resource IDs and the values show the status of the operation.
+      In case of failures, the value includes an error code and error message.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
       successfully been cancelled have Operation.error value with a
@@ -2190,16 +2200,78 @@ class OperationMetadata(_messages.Message):
       any.
     target: Output only. Server-defined resource path for the target of the
       operation.
+    unreachable: Output only. List of locations that could not be reached.
     verb: Output only. Name of the verb executed by the operation.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OperationStatusValue(_messages.Message):
+    r"""Output only. Operation status for game services operations. Operation
+    status is in the form of key-value pairs where keys are resource IDs and
+    the values show the status of the operation. In case of failures, the
+    value includes an error code and error message.
+
+    Messages:
+      AdditionalProperty: An additional property for a OperationStatusValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type OperationStatusValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OperationStatusValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A OperationStatus attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('OperationStatus', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   apiVersion = _messages.StringField(1)
   createTime = _messages.StringField(2)
   endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
+  operationStatus = _messages.MessageField('OperationStatusValue', 4)
+  requestedCancellation = _messages.BooleanField(5)
+  statusMessage = _messages.StringField(6)
+  target = _messages.StringField(7)
+  unreachable = _messages.StringField(8, repeated=True)
+  verb = _messages.StringField(9)
+
+
+class OperationStatus(_messages.Message):
+  r"""A OperationStatus object.
+
+  Enums:
+    ErrorCodeValueValuesEnum: The error code in case of failures.
+
+  Fields:
+    done: Output only. Whether the operation is done or still in progress.
+    errorCode: The error code in case of failures.
+    errorMessage: The human-readable error message.
+  """
+
+  class ErrorCodeValueValuesEnum(_messages.Enum):
+    r"""The error code in case of failures.
+
+    Values:
+      ERROR_CODE_UNSPECIFIED: <no description>
+      INTERNAL_ERROR: <no description>
+      PERMISSION_DENIED: <no description>
+      CLUSTER_CONNECTION: <no description>
+    """
+    ERROR_CODE_UNSPECIFIED = 0
+    INTERNAL_ERROR = 1
+    PERMISSION_DENIED = 2
+    CLUSTER_CONNECTION = 3
+
+  done = _messages.BooleanField(1)
+  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 2)
+  errorMessage = _messages.StringField(3)
 
 
 class Policy(_messages.Message):

@@ -213,6 +213,14 @@
             "NORMAL",
             "LOW"
           ]
+        },
+        "managedScan": {
+          "description": "Whether the scan config is managed by Cloud Web Security Scanner, output\nonly.",
+          "type": "boolean"
+        },
+        "staticIpScan": {
+          "description": "Whether the scan configuration has enabled static IP address scan feature.\nIf enabled, the scanner will access applications from static IP addresses.",
+          "type": "boolean"
         }
       }
     },
@@ -228,6 +236,10 @@
         "customAccount": {
           "description": "Authentication using a custom account.",
           "$ref": "CustomAccount"
+        },
+        "iapCredential": {
+          "description": "Authentication using Identity-Aware-Proxy (IAP).",
+          "$ref": "IapCredential"
         }
       }
     },
@@ -261,6 +273,28 @@
         },
         "loginUrl": {
           "description": "Required. The login form URL of the website.",
+          "type": "string"
+        }
+      }
+    },
+    "IapCredential": {
+      "id": "IapCredential",
+      "description": "Describes authentication configuration for Identity-Aware-Proxy (IAP).",
+      "type": "object",
+      "properties": {
+        "iapTestServiceAccountInfo": {
+          "description": "Authentication configuration when Web-Security-Scanner service\naccount is added in Identity-Aware-Proxy (IAP) access policies.",
+          "$ref": "IapTestServiceAccountInfo"
+        }
+      }
+    },
+    "IapTestServiceAccountInfo": {
+      "id": "IapTestServiceAccountInfo",
+      "description": "Describes authentication configuration when Web-Security-Scanner\nservice account is added in Identity-Aware-Proxy (IAP) access policies.",
+      "type": "object",
+      "properties": {
+        "targetAudienceClientId": {
+          "description": "Required. Describes OAuth2 Client ID of resources protected by\nIdentity-Aware-Proxy(IAP).",
           "type": "string"
         }
       }

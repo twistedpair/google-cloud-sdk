@@ -243,6 +243,44 @@ ReplaceAccessLevelsResponse.
       self._upload_configs = {
           }
 
+    def Commit(self, request, global_params=None):
+      r"""Commit the dry-run spec for all the Service Perimeters in an.
+Access Policy.
+A commit operation on a Service Perimeter involves copying its `spec` field
+to that Service Perimeter's `status` field. Only Service Perimeters with
+`dry_run` field set to true are affected by a commit operation.
+The longrunning operation from this RPC will have a successful status once
+the dry-run specs for all the Service Perimeters have been
+committed. If a commit fails, it will cause the longrunning operation to
+return an error response and the entire commit operation will be cancelled.
+When successful, Operation.response field will contain
+CommitServicePerimetersResponse. The `dry_run` and the `spec` fields will
+be cleared after a successful commit operation.
+
+      Args:
+        request: (AccesscontextmanagerAccessPoliciesServicePerimetersCommitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Commit')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Commit.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha/accessPolicies/{accessPoliciesId}/servicePerimeters:commit',
+        http_method=u'POST',
+        method_id=u'accesscontextmanager.accessPolicies.servicePerimeters.commit',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha/{+parent}/servicePerimeters:commit',
+        request_field=u'commitServicePerimetersRequest',
+        request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersCommitRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Create an Service Perimeter. The.
 longrunning operation from this RPC will have a successful status once the

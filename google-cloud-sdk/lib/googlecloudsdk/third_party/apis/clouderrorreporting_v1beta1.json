@@ -448,7 +448,7 @@
           "httpMethod": "DELETE",
           "parameters": {
             "projectName": {
-              "description": "Required. The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
+              "description": "Required. The resource name of the Google Cloud Platform project. Written\nas `projects\/{projectID}`, where `{projectID}` is the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840).\n\nExample: `projects\/my-project-123`.",
               "location": "path",
               "required": true,
               "pattern": "^projects\/[^\/]+$",
@@ -535,7 +535,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "projectName": {
-                  "description": "Required. The resource name of the Google Cloud Platform project. Written\nas <code>projects\/<\/code> plus the\n<a href=\"https:\/\/support.google.com\/cloud\/answer\/6158840\">Google Cloud\nPlatform project ID<\/a>.\n\nExample: <code>projects\/my-project-123<\/code>.",
+                  "description": "Required. The resource name of the Google Cloud Platform project. Written\nas `projects\/{projectID}`, where `{projectID}` is the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840).\n\nExample: `projects\/my-project-123`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -643,7 +643,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "projectName": {
-                  "description": "Required. The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
+                  "description": "Required. The resource name of the Google Cloud Platform project. Written\nas `projects\/{projectID}`, where `{projectID}` is the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840).\n\nExample: `projects\/my-project-123`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -712,7 +712,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "projectName": {
-                  "description": "Required. The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840). Example:\n`projects\/my-project-123`.",
+                  "description": "Required. The resource name of the Google Cloud Platform project. Written\nas `projects\/{projectId}`, where `{projectId}` is the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840).\n\nExample: \/\/ `projects\/my-project-123`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -731,7 +731,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Report an individual error event.\n\nThis endpoint accepts **either** an OAuth token,\n**or** an [API key](https:\/\/support.google.com\/cloud\/answer\/6158862)\nfor authentication. To use an API key, append it to the URL as the value of\na `key` parameter. For example:\n\n`POST\nhttps:\/\/clouderrorreporting.googleapis.com\/v1beta1\/projects\/example-project\/events:report?key=123ABC456`"
+              "description": "Report an individual error event.\n\nThis endpoint accepts **either** an OAuth token,\n**or** an [API key](https:\/\/support.google.com\/cloud\/answer\/6158862)\nfor authentication. To use an API key, append it to the URL as the value of\na `key` parameter. For example:\n\n`POST\nhttps:\/\/clouderrorreporting.googleapis.com\/v1beta1\/{projectName}\/events:report?key=123ABC456`"
             }
           }
         }

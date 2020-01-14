@@ -1045,6 +1045,7 @@ class ExplainQueryStage(_messages.Message):
     shuffleOutputBytes: Total number of bytes written to shuffle.
     shuffleOutputBytesSpilled: Total number of bytes written to shuffle and
       spilled to disk.
+    slotMs: Slot-milliseconds used by the stage.
     startMs: Stage start time represented as milliseconds since epoch.
     status: Current status for the stage.
     steps: List of operations within the stage in dependency order
@@ -1081,17 +1082,18 @@ class ExplainQueryStage(_messages.Message):
   recordsWritten = _messages.IntegerField(16)
   shuffleOutputBytes = _messages.IntegerField(17)
   shuffleOutputBytesSpilled = _messages.IntegerField(18)
-  startMs = _messages.IntegerField(19)
-  status = _messages.StringField(20)
-  steps = _messages.MessageField('ExplainQueryStep', 21, repeated=True)
-  waitMsAvg = _messages.IntegerField(22)
-  waitMsMax = _messages.IntegerField(23)
-  waitRatioAvg = _messages.FloatField(24)
-  waitRatioMax = _messages.FloatField(25)
-  writeMsAvg = _messages.IntegerField(26)
-  writeMsMax = _messages.IntegerField(27)
-  writeRatioAvg = _messages.FloatField(28)
-  writeRatioMax = _messages.FloatField(29)
+  slotMs = _messages.IntegerField(19)
+  startMs = _messages.IntegerField(20)
+  status = _messages.StringField(21)
+  steps = _messages.MessageField('ExplainQueryStep', 22, repeated=True)
+  waitMsAvg = _messages.IntegerField(23)
+  waitMsMax = _messages.IntegerField(24)
+  waitRatioAvg = _messages.FloatField(25)
+  waitRatioMax = _messages.FloatField(26)
+  writeMsAvg = _messages.IntegerField(27)
+  writeMsMax = _messages.IntegerField(28)
+  writeRatioAvg = _messages.FloatField(29)
+  writeRatioMax = _messages.FloatField(30)
 
 
 class ExplainQueryStep(_messages.Message):

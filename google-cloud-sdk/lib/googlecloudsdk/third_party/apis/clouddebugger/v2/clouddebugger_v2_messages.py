@@ -671,7 +671,7 @@ class SetBreakpointResponse(_messages.Message):
 
   Fields:
     breakpoint: Breakpoint resource. The field `id` is guaranteed to be set
-      (in addition to the echoed fileds).
+      (in addition to the echoed fields).
   """
 
   breakpoint = _messages.MessageField('Breakpoint', 1)

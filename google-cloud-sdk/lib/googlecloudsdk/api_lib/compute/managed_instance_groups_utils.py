@@ -99,7 +99,7 @@ def ArgsSupportQueueScaling(args):
 
 def AddAutoscalerArgs(
     parser, queue_scaling_enabled=False, autoscaling_file_enabled=False,
-    stackdriver_metrics_flags=False, mode_enabled=False, scale_down=False):
+    stackdriver_metrics_flags=False, scale_down=False):
   """Adds commandline arguments to parser."""
   parser.add_argument(
       '--cool-down-period',
@@ -254,8 +254,7 @@ Mutually exclusive with `--update-stackdriver-metric`.
               '`-stackdriver-metric-utilization-target-type`, and '
               '`--custom-metric-utilization`.'))
 
-  if mode_enabled:
-    GetModeFlag().AddToParser(parser)
+  GetModeFlag().AddToParser(parser)
 
   if scale_down:
     AddScaleDownControlFlag(parser)
@@ -267,21 +266,20 @@ def GetModeFlag():
   return base.ChoiceArgument(
       '--mode',
       {
-          'on': ('to permit autoscaling to scale up and down (default for '
+          'on': ('To permit autoscaling to scale up and down (default for '
                  'new autoscalers).'),
-          'only-up': 'to permit autoscaling to scale only up and not down.',
-          'off': ('to turn off autoscaling, while keeping the new '
+          'only-up': 'To permit autoscaling to scale only up and not down.',
+          'off': ('To turn off autoscaling, while keeping the new '
                   'configuration.')
       },
       help_str="""\
           Set the mode of an autoscaler for a managed instance group.
 
-          You can turn off or restrict MIG autoscaler activities (scaling up,
-          scaling down) without changing autoscaler configuration and then
-          having to restore it later. Autoscaler configuration persists while
-          the activities are turned off or restricted, and the activities pick
-          it up when they are turned on again or when the restrictions are
-          lifted.
+          You can turn off or restrict MIG autoscaler activities without
+          affecting your autoscaler configuration. The autoscaler configuration
+          persists while the activities are turned off or restricted, and the
+          activities resume when the autoscaler is turned on again or when the
+          restrictions are lifted.
       """)
 
 
@@ -302,13 +300,13 @@ def AddScaleDownControlFlag(parser):
 
         *max-scaled-down-replicas*::: Maximum allowed number of VMs that can be
         deducted from the peak recommendation during the window. Possibly all
-        these VMs can be deleted at once so user service needs to be prepared
+        these VMs can be deleted at once so the application needs to be prepared
         to lose that many VMs in one step. Mutually exclusive with
         'max-scaled-down-replicas-percent'.
 
         *max-scaled-down-replicas-percent*::: Maximum allowed percent of VMs
         that can be deducted from the peak recommendation during the window.
-        Possibly all these VMs can be deleted at once so user service needs
+        Possibly all these VMs can be deleted at once so the application needs
         to be prepared to lose that many VMs in one step. Mutually exclusive
         with  'max-scaled-down-replicas'.
 
@@ -953,16 +951,13 @@ def BuildScaleDown(args, messages):
         timeWindowSec=args.scale_down_control.get('time-window'))
 
 
-def _BuildAutoscalerPolicy(args, messages, original, mode_enabled=False,
-                           scale_down=False):
+def _BuildAutoscalerPolicy(args, messages, original, scale_down=False):
   """Builds AutoscalingPolicy from args.
 
   Args:
     args: command line arguments.
     messages: module containing message classes.
     original: original autoscaler message.
-    mode_enabled: bool, whether to include the 'autoscalingPolicy.mode' field in
-      the message.
     scale_down: bool, whether to include the
     'autoscalingPolicy.scaleDownControl' field in the message
   Returns:
@@ -979,8 +974,7 @@ def _BuildAutoscalerPolicy(args, messages, original, mode_enabled=False,
       'maxNumReplicas': args.max_num_replicas,
       'minNumReplicas': args.min_num_replicas,
   }
-  if mode_enabled:
-    policy_dict['mode'] = _BuildMode(args, messages, original)
+  policy_dict['mode'] = _BuildMode(args, messages, original)
   if scale_down:
     policy_dict['scaleDownControl'] = BuildScaleDown(args, messages)
 
@@ -1014,12 +1008,10 @@ def AdjustAutoscalerNameForCreation(autoscaler_resource, igm_ref):
   autoscaler_resource.name = new_name
 
 
-def BuildAutoscaler(args, messages, igm_ref, name, original,
-                    mode_enabled=False, scale_down=False):
+def BuildAutoscaler(args, messages, igm_ref, name, original, scale_down=False):
   """Builds autoscaler message protocol buffer."""
   autoscaler = messages.Autoscaler(
       autoscalingPolicy=_BuildAutoscalerPolicy(args, messages, original,
-                                               mode_enabled=mode_enabled,
                                                scale_down=scale_down),
       description=args.description,
       name=name,

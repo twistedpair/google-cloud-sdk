@@ -1378,7 +1378,15 @@ class _SectionAuth(_Section):
     self.credential_file_override = self._Add(
         'credential_file_override', hidden=True)
     self.impersonate_service_account = self._Add(
-        'impersonate_service_account', hidden=True)
+        'impersonate_service_account',
+        help_text='After setting this property, all API requests will be made '
+        'as the given service account instead of the currently selected '
+        'account. This is done without needing to create, download, and '
+        'activate a key for the account. In order to perform operations as the '
+        'service account, your currently selected account must have an IAM '
+        'role that includes the iam.serviceAccounts.getAccessToken permission '
+        'for the service account. The roles/iam.serviceAccountTokenCreator '
+        'role has this permission or you may create a custom role.')
     self.pkce_code_verifier = self._Add('pkce_code_verifier', hidden=True)
 
 

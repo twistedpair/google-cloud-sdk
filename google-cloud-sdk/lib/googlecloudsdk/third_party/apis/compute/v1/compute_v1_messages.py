@@ -536,20 +536,20 @@ class AccessConfig(_messages.Message):
 
 
 class Address(_messages.Message):
-  r"""Represents an IP Address resource.  An address resource represents a
-  regional internal IP address. Regional internal IP addresses are RFC 1918
-  addresses that come from either a primary or secondary IP range of a subnet
-  in a VPC network. Regional external IP addresses can be assigned to GCP VM
-  instances, Cloud VPN gateways, regional external forwarding rules for
-  network load balancers (in either Standard or Premium Tier), and regional
-  external forwarding rules for HTTP(S), SSL Proxy, and TCP Proxy load
-  balancers in Standard Tier. For more information, read IP addresses.  A
-  globalAddresses resource represent a global external IP address. Global
-  external IP addresses are IPv4 or IPv6 addresses. They can only be assigned
-  to global forwarding rules for HTTP(S), SSL Proxy, or TCP Proxy load
-  balancers in Premium Tier. For more information, read Global resources. (==
-  resource_for {$api_version}.addresses ==) (== resource_for
-  {$api_version}.globalAddresses ==)
+  r"""Use global external addresses for GFE-based external HTTP(S) load
+  balancers in Premium Tier.  Use global internal addresses for reserved
+  peering network range.  Use regional external addresses for the following
+  resources:  - External IP addresses for VM instances - Regional external
+  forwarding rules - Cloud NAT external IP addresses - GFE based LBs in
+  Standard Tier - Network LBs in Premium or Standard Tier - Cloud VPN gateways
+  (both Classic and HA)  Use regional internal IP addresses for subnet IP
+  ranges (primary and secondary). This includes:  - Internal IP addresses for
+  VM instances - Alias IP ranges of VM instances (/32 only) - Regional
+  internal forwarding rules - Internal TCP/UDP load balancer addresses -
+  Internal HTTP(S) load balancer addresses - Cloud DNS inbound forwarding IP
+  addresses  For more information, read reserved IP address.  (== resource_for
+  {$api_version}.addresses ==) (== resource_for {$api_version}.globalAddresses
+  ==)
 
   Enums:
     AddressTypeValueValuesEnum: The type of address to reserve, either
@@ -1548,12 +1548,16 @@ class AuthorizationLoggingOptions(_messages.Message):
 
 
 class Autoscaler(_messages.Message):
-  r"""Represents an Autoscaler resource.    Use autoscalers to automatically
-  add or delete instances from a managed instance group according to your
-  defined autoscaling policy. For more information, read Autoscaling Groups of
-  Instances.  For zonal managed instance groups resource, use the autoscaler
-  resource.  For regional managed instance groups, use the regionAutoscalers
-  resource. (== resource_for {$api_version}.autoscalers ==) (== resource_for
+  r"""Represents an Autoscaler resource.  Google Compute Engine has two
+  Autoscaler resources:  *
+  [Global](/compute/docs/reference/rest/latest/autoscalers) *
+  [Regional](/compute/docs/reference/rest/latest/regionAutoscalers)  Use
+  autoscalers to automatically add or delete instances from a managed instance
+  group according to your defined autoscaling policy. For more information,
+  read Autoscaling Groups of Instances.  For zonal managed instance groups
+  resource, use the autoscaler resource.  For regional managed instance
+  groups, use the regionAutoscalers resource. (== resource_for
+  {$api_version}.autoscalers ==) (== resource_for
   {$api_version}.regionAutoscalers ==)
 
   Enums:
@@ -2678,7 +2682,11 @@ class BackendBucketList(_messages.Message):
 
 class BackendService(_messages.Message):
   r"""Represents a Backend Service resource.  A backend service contains
-  configuration values for Google Cloud Platform load balancing services.  For
+  configuration values for Google Cloud Platform load balancing services.
+  Backend services in Google Compute Engine can be either regionally or
+  globally scoped.  *
+  [Global](/compute/docs/reference/rest/latest/backendServices) *
+  [Regional](/compute/docs/reference/rest/latest/regionBackendServices)  For
   more information, read Backend Services.  (== resource_for
   {$api_version}.backendService ==)
 
@@ -2770,9 +2778,11 @@ class BackendService(_messages.Message):
       BackendService.
     healthChecks: The list of URLs to the HttpHealthCheck or HttpsHealthCheck
       resource for health checking this BackendService. Currently at most one
-      health check can be specified, and a health check is required for
-      Compute Engine backend services. A health check must not be specified
-      for App Engine backend and Cloud Function backend.  For internal load
+      health check can be specified. Health check is optional for Compute
+      Engine backend services if there is no backend. A health check must not
+      be specified when adding Internet Network Endpoint Group or Serverless
+      Network Endpoint Group as backends. In all other cases, a health check
+      is required for Compute Engine backend services.  For internal load
       balancing, a URL to a HealthCheck resource must be specified instead.
     iap: A BackendServiceIAP attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -5948,6 +5958,34 @@ class ComputeForwardingRulesListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
+class ComputeForwardingRulesPatchRequest(_messages.Message):
+  r"""A ComputeForwardingRulesPatchRequest object.
+
+  Fields:
+    forwardingRule: Name of the ForwardingRule resource to patch.
+    forwardingRuleResource: A ForwardingRule resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  forwardingRule = _messages.StringField(1, required=True)
+  forwardingRuleResource = _messages.MessageField('ForwardingRule', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
 class ComputeForwardingRulesSetTargetRequest(_messages.Message):
   r"""A ComputeForwardingRulesSetTargetRequest object.
 
@@ -6184,6 +6222,32 @@ class ComputeGlobalForwardingRulesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeGlobalForwardingRulesPatchRequest(_messages.Message):
+  r"""A ComputeGlobalForwardingRulesPatchRequest object.
+
+  Fields:
+    forwardingRule: Name of the ForwardingRule resource to patch.
+    forwardingRuleResource: A ForwardingRule resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  forwardingRule = _messages.StringField(1, required=True)
+  forwardingRuleResource = _messages.MessageField('ForwardingRule', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeGlobalForwardingRulesSetTargetRequest(_messages.Message):
@@ -10854,6 +10918,210 @@ class ComputeNodeTypesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputePacketMirroringsAggregatedListRequest(_messages.Message):
+  r"""A ComputePacketMirroringsAggregatedListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputePacketMirroringsDeleteRequest(_messages.Message):
+  r"""A ComputePacketMirroringsDeleteRequest object.
+
+  Fields:
+    packetMirroring: Name of the PacketMirroring resource to delete.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  packetMirroring = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputePacketMirroringsGetRequest(_messages.Message):
+  r"""A ComputePacketMirroringsGetRequest object.
+
+  Fields:
+    packetMirroring: Name of the PacketMirroring resource to return.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  packetMirroring = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputePacketMirroringsInsertRequest(_messages.Message):
+  r"""A ComputePacketMirroringsInsertRequest object.
+
+  Fields:
+    packetMirroring: A PacketMirroring resource to be passed as the request
+      body.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  packetMirroring = _messages.MessageField('PacketMirroring', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputePacketMirroringsListRequest(_messages.Message):
+  r"""A ComputePacketMirroringsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputePacketMirroringsPatchRequest(_messages.Message):
+  r"""A ComputePacketMirroringsPatchRequest object.
+
+  Fields:
+    packetMirroring: Name of the PacketMirroring resource to patch.
+    packetMirroringResource: A PacketMirroring resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  packetMirroring = _messages.StringField(1, required=True)
+  packetMirroringResource = _messages.MessageField('PacketMirroring', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
+class ComputePacketMirroringsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputePacketMirroringsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class ComputeProjectsDisableXpnHostRequest(_messages.Message):
@@ -17656,9 +17924,8 @@ class CorsPolicy(_messages.Message):
       value of false, which indicates that the CORS policy is in effect.
     exposeHeaders: Specifies the content for the Access-Control-Expose-Headers
       header.
-    maxAge: Specifies how long the results of a preflight request can be
-      cached. This translates to the content for the Access-Control-Max-Age
-      header.
+    maxAge: Specifies how long results of a preflight request can be cached in
+      seconds. This translates to the Access-Control-Max-Age header.
   """
 
   allowCredentials = _messages.BooleanField(1)
@@ -17766,14 +18033,16 @@ class DeprecationStatus(_messages.Message):
 
 
 class Disk(_messages.Message):
-  r"""Represents a Persistent Disk resource.  Persistent disks are required
-  for running your VM instances. Create both boot and non-boot (data)
-  persistent disks. For more information, read Persistent Disks. For more
-  storage options, read Storage options.  The disks resource represents a
-  zonal persistent disk. For more information, read Zonal persistent disks.
-  The regionDisks resource represents a regional persistent disk. For more
-  information, read  Regional resources. (== resource_for {$api_version}.disks
-  ==) (== resource_for {$api_version}.regionDisks ==)
+  r"""Represents a Persistent Disk resource.  Google Compute Engine has two
+  Disk resources:  * [Global](/compute/docs/reference/rest/latest/disks) *
+  [Regional](/compute/docs/reference/rest/latest/regionDisks)  Persistent
+  disks are required for running your VM instances. Create both boot and non-
+  boot (data) persistent disks. For more information, read Persistent Disks.
+  For more storage options, read Storage options.  The disks resource
+  represents a zonal persistent disk. For more information, read Zonal
+  persistent disks.  The regionDisks resource represents a regional persistent
+  disk. For more information, read  Regional resources. (== resource_for
+  {$api_version}.disks ==) (== resource_for {$api_version}.regionDisks ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of disk creation.
@@ -18349,13 +18618,16 @@ class DiskMoveRequest(_messages.Message):
 
 
 class DiskType(_messages.Message):
-  r"""Represents a Disk Type resource.  You can choose from a variety of disk
-  types based on your needs. For more information, read Storage options.  The
-  diskTypes resource represents disk types for a zonal persistent disk. For
-  more information, read Zonal persistent disks.  The regionDiskTypes resource
-  represents disk types for a regional persistent disk. For more information,
-  read Regional persistent disks. (== resource_for {$api_version}.diskTypes
-  ==) (== resource_for {$api_version}.regionDiskTypes ==)
+  r"""Represents a Disk Type resource.  Google Compute Engine has two Disk
+  Type resources:  * [Global](/compute/docs/reference/rest/latest/diskTypes) *
+  [Regional](/compute/docs/reference/rest/latest/regionDiskTypes)  You can
+  choose from a variety of disk types based on your needs. For more
+  information, read Storage options.  The diskTypes resource represents disk
+  types for a zonal persistent disk. For more information, read Zonal
+  persistent disks.  The regionDiskTypes resource represents disk types for a
+  regional persistent disk. For more information, read Regional persistent
+  disks. (== resource_for {$api_version}.diskTypes ==) (== resource_for
+  {$api_version}.regionDiskTypes ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -19169,7 +19441,7 @@ class Expr(_messages.Message):
 
 class ExternalVpnGateway(_messages.Message):
   r"""External VPN gateway is the on-premises VPN gateway(s) or another cloud
-  provider?s VPN gateway that connects to your Google Cloud VPN gateway. To
+  provider's VPN gateway that connects to your Google Cloud VPN gateway. To
   create a highly available VPN from Google Cloud to your on-premises side or
   another Cloud provider's VPN gateway, you must create a external VPN gateway
   resource in GCP, which provides the information to GCP about your external
@@ -19278,7 +19550,7 @@ class ExternalVpnGatewayInterface(_messages.Message):
       FOUR_IPS_REDUNDANCY - 0, 1, 2, 3
     ipAddress: IP address of the interface in the external VPN gateway. Only
       IPv4 is supported. This IP address can be either from your on-premise
-      gateway or another Cloud provider?s VPN gateway, it cannot be an IP
+      gateway or another Cloud provider's VPN gateway, it cannot be an IP
       address from Google Compute Engine.
   """
 
@@ -19756,14 +20028,17 @@ class FixedOrPercent(_messages.Message):
 
 
 class ForwardingRule(_messages.Message):
-  r"""Represents a Forwarding Rule resource.  A forwarding rule and its
-  corresponding IP address represent the frontend configuration of a Google
-  Cloud Platform load balancer. Forwarding rules can also reference target
-  instances and Cloud VPN Classic gateways (targetVpnGateway).  For more
-  information, read Forwarding rule concepts and Using protocol forwarding.
-  (== resource_for {$api_version}.forwardingRules ==) (== resource_for
-  {$api_version}.globalForwardingRules ==) (== resource_for
-  {$api_version}.regionForwardingRules ==)
+  r"""Represents a Forwarding Rule resource.  Forwarding rule resources in GCP
+  can be either regional or global in scope:  *
+  [Global](/compute/docs/reference/rest/latest/globalForwardingRules) *
+  [Regional](/compute/docs/reference/rest/latest/forwardingRules)  A
+  forwarding rule and its corresponding IP address represent the frontend
+  configuration of a Google Cloud Platform load balancer. Forwarding rules can
+  also reference target instances and Cloud VPN Classic gateways
+  (targetVpnGateway).  For more information, read Forwarding rule concepts and
+  Using protocol forwarding.  (== resource_for {$api_version}.forwardingRules
+  ==) (== resource_for {$api_version}.globalForwardingRules ==) (==
+  resource_for {$api_version}.regionForwardingRules ==)
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies. For
@@ -19780,14 +20055,14 @@ class ForwardingRule(_messages.Message):
       forwarding rule. Valid options are IPV4 or IPV6. This can only be
       specified for an external global forwarding rule.
     LoadBalancingSchemeValueValuesEnum: Specifies the forwarding rule type.
-      EXTERNAL is used for: - Classic Cloud VPN gateways - Protocol forwarding
-      to VMs from an external IP address - The following load balancers:
-      HTTP(S), SSL Proxy, TCP Proxy, and Network TCP/UDP.  INTERNAL is used
-      for: - Protocol forwarding to VMs from an internal IP address - Internal
-      TCP/UDP load balancers  INTERNAL_MANAGED is used for: - Internal HTTP(S)
-      load balancers  INTERNAL_SELF_MANAGED is used for: - Traffic Director
-      For more information about forwarding rules, refer to Forwarding rule
-      concepts.
+      - EXTERNAL is used for:   - Classic Cloud VPN gateways  - Protocol
+      forwarding to VMs from an external IP address  - The following load
+      balancers: HTTP(S), SSL Proxy, TCP Proxy, and Network TCP/UDP     -
+      INTERNAL is used for:   - Protocol forwarding to VMs from an internal IP
+      address  - Internal TCP/UDP load balancers    - INTERNAL_MANAGED is used
+      for:   - Internal HTTP(S) load balancers    - >INTERNAL_SELF_MANAGED is
+      used for:   - Traffic Director      For more information about
+      forwarding rules, refer to Forwarding rule concepts.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this load balancer and can only take the following values:
       PREMIUM , STANDARD.  For regional ForwardingRule, the valid values are
@@ -19827,6 +20102,11 @@ class ForwardingRule(_messages.Message):
       When the load balancing scheme is INTERNAL and protocol is TCP/UDP,
       specify this field to allow packets addressed to any ports will be
       forwarded to the backends configured with this forwarding rule.
+    allowGlobalAccess: This field is used along with the backend_service field
+      for internal load balancing or with the target field for internal
+      TargetInstance. If the field is set to TRUE, clients can access ILB from
+      all regions. Otherwise only allows access from clients in the same
+      region as the internal load balancer.
     backendService: This field is only used for INTERNAL load balancing.  For
       internal load balancing, this field identifies the BackendService
       resource to receive the matched traffic.
@@ -19834,22 +20114,34 @@ class ForwardingRule(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    fingerprint: Fingerprint of this resource. A hash of the contents stored
+      in this object. This field is used in optimistic locking. This field
+      will be ignored when inserting a ForwardingRule. Include the fingerprint
+      in patch request to ensure that you do not overwrite changes that were
+      applied from another concurrent request.  To see the latest fingerprint,
+      make a get() request to retrieve a ForwardingRule.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     ipVersion: The IP Version that will be used by this forwarding rule. Valid
       options are IPV4 or IPV6. This can only be specified for an external
       global forwarding rule.
+    isMirroringCollector: Indicates whether or not this load balancer can be
+      used as a collector for packet mirroring. To prevent mirroring loops,
+      instances behind this load balancer will not have their traffic mirrored
+      even if a PacketMirroring rule applies to them. This can only be set to
+      true for load balancers that have their loadBalancingScheme set to
+      INTERNAL.
     kind: [Output Only] Type of the resource. Always compute#forwardingRule
       for Forwarding Rule resources.
-    loadBalancingScheme: Specifies the forwarding rule type. EXTERNAL is used
-      for: - Classic Cloud VPN gateways - Protocol forwarding to VMs from an
-      external IP address - The following load balancers: HTTP(S), SSL Proxy,
-      TCP Proxy, and Network TCP/UDP.  INTERNAL is used for: - Protocol
-      forwarding to VMs from an internal IP address - Internal TCP/UDP load
-      balancers  INTERNAL_MANAGED is used for: - Internal HTTP(S) load
-      balancers  INTERNAL_SELF_MANAGED is used for: - Traffic Director  For
-      more information about forwarding rules, refer to Forwarding rule
-      concepts.
+    loadBalancingScheme: Specifies the forwarding rule type.    - EXTERNAL is
+      used for:   - Classic Cloud VPN gateways  - Protocol forwarding to VMs
+      from an external IP address  - The following load balancers: HTTP(S),
+      SSL Proxy, TCP Proxy, and Network TCP/UDP     - INTERNAL is used for:
+      - Protocol forwarding to VMs from an internal IP address  - Internal
+      TCP/UDP load balancers    - INTERNAL_MANAGED is used for:   - Internal
+      HTTP(S) load balancers    - >INTERNAL_SELF_MANAGED is used for:   -
+      Traffic Director      For more information about forwarding rules, refer
+      to Forwarding rule concepts.
     metadataFilters: Opaque filter criteria used by Loadbalancer to restrict
       routing configuration to a limited set of xDS compliant clients. In
       their xDS requests to Loadbalancer, xDS clients present node metadata.
@@ -19934,7 +20226,7 @@ class ForwardingRule(_messages.Message):
       the forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
       appropriate to the target object. For INTERNAL_SELF_MANAGED load
-      balancing, only HTTP and HTTPS targets are valid.
+      balancing, only targetHttpProxy is valid, not targetHttpsProxy.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -19979,14 +20271,14 @@ class ForwardingRule(_messages.Message):
     UNSPECIFIED_VERSION = 2
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
-    r"""Specifies the forwarding rule type. EXTERNAL is used for: - Classic
-    Cloud VPN gateways - Protocol forwarding to VMs from an external IP
-    address - The following load balancers: HTTP(S), SSL Proxy, TCP Proxy, and
-    Network TCP/UDP.  INTERNAL is used for: - Protocol forwarding to VMs from
-    an internal IP address - Internal TCP/UDP load balancers  INTERNAL_MANAGED
-    is used for: - Internal HTTP(S) load balancers  INTERNAL_SELF_MANAGED is
-    used for: - Traffic Director  For more information about forwarding rules,
-    refer to Forwarding rule concepts.
+    r"""Specifies the forwarding rule type.    - EXTERNAL is used for:   -
+    Classic Cloud VPN gateways  - Protocol forwarding to VMs from an external
+    IP address  - The following load balancers: HTTP(S), SSL Proxy, TCP Proxy,
+    and Network TCP/UDP     - INTERNAL is used for:   - Protocol forwarding to
+    VMs from an internal IP address  - Internal TCP/UDP load balancers    -
+    INTERNAL_MANAGED is used for:   - Internal HTTP(S) load balancers    -
+    >INTERNAL_SELF_MANAGED is used for:   - Traffic Director      For more
+    information about forwarding rules, refer to Forwarding rule concepts.
 
     Values:
       EXTERNAL: <no description>
@@ -20019,25 +20311,28 @@ class ForwardingRule(_messages.Message):
   IPAddress = _messages.StringField(1)
   IPProtocol = _messages.EnumField('IPProtocolValueValuesEnum', 2)
   allPorts = _messages.BooleanField(3)
-  backendService = _messages.StringField(4)
-  creationTimestamp = _messages.StringField(5)
-  description = _messages.StringField(6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 8)
-  kind = _messages.StringField(9, default=u'compute#forwardingRule')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 10)
-  metadataFilters = _messages.MessageField('MetadataFilter', 11, repeated=True)
-  name = _messages.StringField(12)
-  network = _messages.StringField(13)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 14)
-  portRange = _messages.StringField(15)
-  ports = _messages.StringField(16, repeated=True)
-  region = _messages.StringField(17)
-  selfLink = _messages.StringField(18)
-  serviceLabel = _messages.StringField(19)
-  serviceName = _messages.StringField(20)
-  subnetwork = _messages.StringField(21)
-  target = _messages.StringField(22)
+  allowGlobalAccess = _messages.BooleanField(4)
+  backendService = _messages.StringField(5)
+  creationTimestamp = _messages.StringField(6)
+  description = _messages.StringField(7)
+  fingerprint = _messages.BytesField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 10)
+  isMirroringCollector = _messages.BooleanField(11)
+  kind = _messages.StringField(12, default=u'compute#forwardingRule')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 13)
+  metadataFilters = _messages.MessageField('MetadataFilter', 14, repeated=True)
+  name = _messages.StringField(15)
+  network = _messages.StringField(16)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 17)
+  portRange = _messages.StringField(18)
+  ports = _messages.StringField(19, repeated=True)
+  region = _messages.StringField(20)
+  selfLink = _messages.StringField(21)
+  serviceLabel = _messages.StringField(22)
+  serviceName = _messages.StringField(23)
+  subnetwork = _messages.StringField(24)
+  target = _messages.StringField(25)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -20847,10 +21142,14 @@ class HTTPSHealthCheck(_messages.Message):
 
 
 class HealthCheck(_messages.Message):
-  r"""Represents a Health Check resource.  Health checks are used for most GCP
-  load balancers and managed instance group auto-healing. For more
-  information, read Health Check Concepts.  To perform health checks on
-  network load balancers, you must use either httpHealthChecks or
+  r"""Represents a Health Check resource.  Google Compute Engine has two
+  Health Check resources:  *
+  [Global](/compute/docs/reference/rest/latest/healthChecks) *
+  [Regional](/compute/docs/reference/rest/latest/regionHealthChecks)  Internal
+  HTTP(S) load balancers use regional health checks. All other types of GCP
+  load balancers and managed instance group auto-healing use global health
+  checks. For more information, read Health Check Concepts.  To perform health
+  checks on network load balancers, you must use either httpHealthChecks or
   httpsHealthChecks.
 
   Enums:
@@ -21794,12 +22093,16 @@ class HttpRedirectAction(_messages.Message):
       UrlMaps used in TargetHttpProxys. Setting this true for TargetHttpsProxy
       is not permitted. The default is set to false.
     pathRedirect: The path that will be used in the redirect response instead
-      of the one that was supplied in the request. Only one of pathRedirect or
-      prefixRedirect must be specified. The value must be between 1 and 1024
-      characters.
+      of the one that was supplied in the request. pathRedirect cannot be
+      supplied together with prefixRedirect. Supply one alone or neither. If
+      neither is supplied, the path of the original request will be used for
+      the redirect. The value must be between 1 and 1024 characters.
     prefixRedirect: The prefix that replaces the prefixMatch specified in the
       HttpRouteRuleMatch, retaining the remaining portion of the URL before
-      redirecting the request.
+      redirecting the request. prefixRedirect cannot be supplied together with
+      pathRedirect. Supply one alone or neither. If neither is supplied, the
+      path of the original request will be used for the redirect. The value
+      must be between 1 and 1024 characters.
     redirectResponseCode: The HTTP Status code to use for this RedirectAction.
       Supported values are:   - MOVED_PERMANENTLY_DEFAULT, which is the
       default value and corresponds to 301.  - FOUND, which corresponds to
@@ -25436,7 +25739,7 @@ class InterconnectAttachment(_messages.Message):
       this attachment. All prefixes must be within link-local address space
       (169.254.0.0/16) and must be /29 or shorter (/28, /27, etc). Google will
       attempt to select an unused /29 from the supplied candidate prefix(es).
-      The request will fail if all possible /29s are in use on Google?s edge.
+      The request will fail if all possible /29s are in use on Google's edge.
       If not supplied, Google will randomly select an unused /29 from all of
       link-local space.
     cloudRouterIpAddress: [Output Only] IPv4 address + prefix length to be
@@ -25959,12 +26262,12 @@ class InterconnectAttachmentPartnerMetadata(_messages.Message):
 
   Fields:
     interconnectName: Plain text name of the Interconnect this attachment is
-      connected to, as displayed in the Partner?s portal. For instance
+      connected to, as displayed in the Partner's portal. For instance
       "Chicago 1". This value may be validated to match approved Partner
       values.
     partnerName: Plain text name of the Partner providing this attachment.
       This value may be validated to match approved Partner values.
-    portalUrl: URL of the Partner?s portal for this Attachment. Partners may
+    portalUrl: URL of the Partner's portal for this Attachment. Partners may
       customise this to be a deep link to the specific resource on the Partner
       portal. This value may be validated to match approved Partner values.
   """
@@ -26122,7 +26425,7 @@ class InterconnectCircuitInfo(_messages.Message):
 
 class InterconnectDiagnostics(_messages.Message):
   r"""Diagnostics information about interconnect, contains detailed and
-  current technical information about Google?s side of the connection.
+  current technical information about Google's side of the connection.
 
   Fields:
     arpCaches: A list of InterconnectDiagnostics.ARPEntry objects, describing
@@ -26161,9 +26464,9 @@ class InterconnectDiagnosticsLinkLACPStatus(_messages.Message):
       This means that the rest of the object should be empty.
 
   Fields:
-    googleSystemId: System ID of the port on Google?s side of the LACP
+    googleSystemId: System ID of the port on Google's side of the LACP
       exchange.
-    neighborSystemId: System ID of the port on the neighbor?s side of the LACP
+    neighborSystemId: System ID of the port on the neighbor's side of the LACP
       exchange.
     state: The state of a LACP link, which can take one of the following
       values:  - ACTIVE: The link is configured and active within the bundle.
@@ -27647,6 +27950,8 @@ class ManagedInstance(_messages.Message):
       empty when instance does not exist.
     instance: [Output Only] The URL of the instance. The URL can exist even if
       the instance has not yet been created.
+    instanceHealth: [Output Only] Health state of the instance per health-
+      check.
     instanceStatus: [Output Only] The status of the instance. This field is
       empty when the instance does not exist.
     lastAttempt: [Output Only] Information about the last attempt to create or
@@ -27724,9 +28029,44 @@ class ManagedInstance(_messages.Message):
   currentAction = _messages.EnumField('CurrentActionValueValuesEnum', 1)
   id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
   instance = _messages.StringField(3)
-  instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 4)
-  lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 5)
-  version = _messages.MessageField('ManagedInstanceVersion', 6)
+  instanceHealth = _messages.MessageField('ManagedInstanceInstanceHealth', 4, repeated=True)
+  instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 5)
+  lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 6)
+  version = _messages.MessageField('ManagedInstanceVersion', 7)
+
+
+class ManagedInstanceInstanceHealth(_messages.Message):
+  r"""A ManagedInstanceInstanceHealth object.
+
+  Enums:
+    DetailedHealthStateValueValuesEnum: [Output Only] The current detailed
+      instance health state.
+
+  Fields:
+    detailedHealthState: [Output Only] The current detailed instance health
+      state.
+    healthCheck: [Output Only] The URL for the health check that verifies
+      whether the instance is healthy.
+  """
+
+  class DetailedHealthStateValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The current detailed instance health state.
+
+    Values:
+      DRAINING: <no description>
+      HEALTHY: <no description>
+      TIMEOUT: <no description>
+      UNHEALTHY: <no description>
+      UNKNOWN: <no description>
+    """
+    DRAINING = 0
+    HEALTHY = 1
+    TIMEOUT = 2
+    UNHEALTHY = 3
+    UNKNOWN = 4
+
+  detailedHealthState = _messages.EnumField('DetailedHealthStateValueValuesEnum', 1)
+  healthCheck = _messages.StringField(2)
 
 
 class ManagedInstanceLastAttempt(_messages.Message):
@@ -29609,7 +29949,7 @@ class NodeTemplate(_messages.Message):
   r"""Represent a sole-tenant Node Template resource.  You can use a template
   to define properties for nodes in a node group. For more information, read
   Creating node groups and instances. (== resource_for
-  {$api_version}.nodeTemplates ==)
+  {$api_version}.nodeTemplates ==) (== NextID: 18 ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the node template. One
@@ -30557,14 +30897,19 @@ class NodeTypesScopedList(_messages.Message):
 
 
 class Operation(_messages.Message):
-  r"""Represents an Operation resource.  You can use an operation resource to
-  manage asynchronous API requests. For more information, read Handling API
-  responses.  Operations can be global, regional or zonal.   - For global
-  operations, use the globalOperations resource.  - For regional operations,
-  use the regionOperations resource.  - For zonal operations, use the
-  zonalOperations resource.    For more information, read  Global, Regional,
-  and Zonal Resources. (== resource_for {$api_version}.globalOperations ==)
-  (== resource_for {$api_version}.regionOperations ==) (== resource_for
+  r"""Represents an Operation resource.  Google Compute Engine has three
+  Operation resources:  *
+  [Global](/compute/docs/reference/rest/latest/globalOperations) *
+  [Regional](/compute/docs/reference/rest/latest/regionOperations) *
+  [Zonal](/compute/docs/reference/rest/latest/zoneOperations)  You can use an
+  operation resource to manage asynchronous API requests. For more
+  information, read Handling API responses.  Operations can be global,
+  regional or zonal.   - For global operations, use the globalOperations
+  resource.  - For regional operations, use the regionOperations resource.  -
+  For zonal operations, use the zonalOperations resource.    For more
+  information, read  Global, Regional, and Zonal Resources. (== resource_for
+  {$api_version}.globalOperations ==) (== resource_for
+  {$api_version}.regionOperations ==) (== resource_for
   {$api_version}.zoneOperations ==)
 
   Enums:
@@ -31242,6 +31587,565 @@ class OutlierDetection(_messages.Message):
   successRateStdevFactor = _messages.IntegerField(11, variant=_messages.Variant.INT32)
 
 
+class PacketMirroring(_messages.Message):
+  r"""Represents a PacketMirroring resource.
+
+  Enums:
+    EnableValueValuesEnum: Indicates whether or not this packet mirroring
+      takes effect. If set to FALSE, this packet mirroring policy will not be
+      enforced on the network.  The default is TRUE.
+
+  Fields:
+    collectorIlb: The Forwarding Rule resource of type
+      loadBalancingScheme=INTERNAL that will be used as collector for mirrored
+      traffic. The specified forwarding rule must have isMirroringCollector
+      set to true.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    enable: Indicates whether or not this packet mirroring takes effect. If
+      set to FALSE, this packet mirroring policy will not be enforced on the
+      network.  The default is TRUE.
+    filter: Filter for mirrored traffic. If unspecified, all traffic is
+      mirrored.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of the resource. Always compute#packetMirroring
+      for packet mirrorings.
+    mirroredResources: PacketMirroring mirroredResourceInfos.
+      MirroredResourceInfo specifies a set of mirrored VM instances,
+      subnetworks and/or tags for which traffic from/to all VM instances will
+      be mirrored.
+    name: Name of the resource; provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    network: Specifies the mirrored VPC network. Only packets in this network
+      will be mirrored. All mirrored VMs should have a NIC in the given
+      network. All mirrored subnetworks should belong to the given network.
+    priority: The priority of applying this configuration. Priority is used to
+      break ties in cases where there is more than one matching rule. In the
+      case of two rules that apply for a given Instance, the one with the
+      lowest-numbered priority value wins.  Default value is 1000. Valid range
+      is 0 through 65535.
+    region: [Output Only] URI of the region where the packetMirroring resides.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  class EnableValueValuesEnum(_messages.Enum):
+    r"""Indicates whether or not this packet mirroring takes effect. If set to
+    FALSE, this packet mirroring policy will not be enforced on the network.
+    The default is TRUE.
+
+    Values:
+      FALSE: <no description>
+      TRUE: <no description>
+    """
+    FALSE = 0
+    TRUE = 1
+
+  collectorIlb = _messages.MessageField('PacketMirroringForwardingRuleInfo', 1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  enable = _messages.EnumField('EnableValueValuesEnum', 4)
+  filter = _messages.MessageField('PacketMirroringFilter', 5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#packetMirroring')
+  mirroredResources = _messages.MessageField('PacketMirroringMirroredResourceInfo', 8)
+  name = _messages.StringField(9)
+  network = _messages.MessageField('PacketMirroringNetworkInfo', 10)
+  priority = _messages.IntegerField(11, variant=_messages.Variant.UINT32)
+  region = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+
+
+class PacketMirroringAggregatedList(_messages.Message):
+  r"""Contains a list of packetMirrorings.
+
+  Messages:
+    ItemsValue: A list of PacketMirroring resources.
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of PacketMirroring resources.
+    kind: Type of resource.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    r"""A list of PacketMirroring resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: Name of the scope containing this set of
+        packetMirrorings.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PacketMirroringsScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PacketMirroringsScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default=u'compute#packetMirroringAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
+class PacketMirroringFilter(_messages.Message):
+  r"""A PacketMirroringFilter object.
+
+  Fields:
+    IPProtocols: Protocols that apply as filter on mirrored traffic. If no
+      protocols are specified, all traffic that matches the specified CIDR
+      ranges is mirrored. If neither cidrRanges nor IPProtocols is specified,
+      all traffic is mirrored.
+    cidrRanges: IP CIDR ranges that apply as filter on the source (ingress) or
+      destination (egress) IP in the IP header. Only IPv4 is supported. If no
+      ranges are specified, all traffic that matches the specified IPProtocols
+      is mirrored. If neither cidrRanges nor IPProtocols is specified, all
+      traffic is mirrored.
+  """
+
+  IPProtocols = _messages.StringField(1, repeated=True)
+  cidrRanges = _messages.StringField(2, repeated=True)
+
+
+class PacketMirroringForwardingRuleInfo(_messages.Message):
+  r"""A PacketMirroringForwardingRuleInfo object.
+
+  Fields:
+    canonicalUrl: [Output Only] Unique identifier for the forwarding rule;
+      defined by the server.
+    url: Resource URL to the forwarding rule representing the ILB configured
+      as destination of the mirrored traffic.
+  """
+
+  canonicalUrl = _messages.StringField(1)
+  url = _messages.StringField(2)
+
+
+class PacketMirroringList(_messages.Message):
+  r"""Contains a list of PacketMirroring resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of PacketMirroring resources.
+    kind: [Output Only] Type of resource. Always compute#packetMirroring for
+      packetMirrorings.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('PacketMirroring', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#packetMirroringList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
+class PacketMirroringMirroredResourceInfo(_messages.Message):
+  r"""A PacketMirroringMirroredResourceInfo object.
+
+  Fields:
+    instances: A set of virtual machine instances that are being mirrored.
+      They must live in zones contained in the same region as this
+      packetMirroring.  Note that this config will apply only to those network
+      interfaces of the Instances that belong to the network specified in this
+      packetMirroring.  You may specify a maximum of 50 Instances.
+    subnetworks: A set of subnetworks for which traffic from/to all VM
+      instances will be mirrored. They must live in the same region as this
+      packetMirroring.  You may specify a maximum of 5 subnetworks.
+    tags: A set of mirrored tags. Traffic from/to all VM instances that have
+      one or more of these tags will be mirrored.
+  """
+
+  instances = _messages.MessageField('PacketMirroringMirroredResourceInfoInstanceInfo', 1, repeated=True)
+  subnetworks = _messages.MessageField('PacketMirroringMirroredResourceInfoSubnetInfo', 2, repeated=True)
+  tags = _messages.StringField(3, repeated=True)
+
+
+class PacketMirroringMirroredResourceInfoInstanceInfo(_messages.Message):
+  r"""A PacketMirroringMirroredResourceInfoInstanceInfo object.
+
+  Fields:
+    canonicalUrl: [Output Only] Unique identifier for the instance; defined by
+      the server.
+    url: Resource URL to the virtual machine instance which is being mirrored.
+  """
+
+  canonicalUrl = _messages.StringField(1)
+  url = _messages.StringField(2)
+
+
+class PacketMirroringMirroredResourceInfoSubnetInfo(_messages.Message):
+  r"""A PacketMirroringMirroredResourceInfoSubnetInfo object.
+
+  Fields:
+    canonicalUrl: [Output Only] Unique identifier for the subnetwork; defined
+      by the server.
+    url: Resource URL to the subnetwork for which traffic from/to all VM
+      instances will be mirrored.
+  """
+
+  canonicalUrl = _messages.StringField(1)
+  url = _messages.StringField(2)
+
+
+class PacketMirroringNetworkInfo(_messages.Message):
+  r"""A PacketMirroringNetworkInfo object.
+
+  Fields:
+    canonicalUrl: [Output Only] Unique identifier for the network; defined by
+      the server.
+    url: URL of the network resource.
+  """
+
+  canonicalUrl = _messages.StringField(1)
+  url = _messages.StringField(2)
+
+
+class PacketMirroringsScopedList(_messages.Message):
+  r"""A PacketMirroringsScopedList object.
+
+  Messages:
+    WarningValue: Informational warning which replaces the list of
+      packetMirrorings when the list is empty.
+
+  Fields:
+    packetMirrorings: A list of packetMirrorings contained in this scope.
+    warning: Informational warning which replaces the list of packetMirrorings
+      when the list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""Informational warning which replaces the list of packetMirrorings when
+    the list is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  packetMirrorings = _messages.MessageField('PacketMirroring', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
+
+
 class PathMatcher(_messages.Message):
   r"""A matcher for the path portion of the URL. The BackendService from the
   longest-matched rule will serve the URL. If no rule was matched, the default
@@ -31624,6 +32528,7 @@ class Quota(_messages.Message):
       COMMITTED_C2_CPUS: <no description>
       COMMITTED_CPUS: <no description>
       COMMITTED_LOCAL_SSD_TOTAL_GB: <no description>
+      COMMITTED_N2D_CPUS: <no description>
       COMMITTED_N2_CPUS: <no description>
       COMMITTED_NVIDIA_K80_GPUS: <no description>
       COMMITTED_NVIDIA_P100_GPUS: <no description>
@@ -31654,6 +32559,7 @@ class Quota(_messages.Message):
       IN_USE_SNAPSHOT_SCHEDULES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
       MACHINE_IMAGES: <no description>
+      N2D_CPUS: <no description>
       N2_CPUS: <no description>
       NETWORKS: <no description>
       NETWORK_ENDPOINT_GROUPS: <no description>
@@ -31665,6 +32571,7 @@ class Quota(_messages.Message):
       NVIDIA_T4_GPUS: <no description>
       NVIDIA_T4_VWS_GPUS: <no description>
       NVIDIA_V100_GPUS: <no description>
+      PACKET_MIRRORINGS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
       PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
@@ -31682,6 +32589,7 @@ class Quota(_messages.Message):
       ROUTERS: <no description>
       ROUTES: <no description>
       SECURITY_POLICIES: <no description>
+      SECURITY_POLICY_CEVAL_RULES: <no description>
       SECURITY_POLICY_RULES: <no description>
       SNAPSHOTS: <no description>
       SSD_TOTAL_GB: <no description>
@@ -31707,80 +32615,84 @@ class Quota(_messages.Message):
     COMMITTED_C2_CPUS = 5
     COMMITTED_CPUS = 6
     COMMITTED_LOCAL_SSD_TOTAL_GB = 7
-    COMMITTED_N2_CPUS = 8
-    COMMITTED_NVIDIA_K80_GPUS = 9
-    COMMITTED_NVIDIA_P100_GPUS = 10
-    COMMITTED_NVIDIA_P4_GPUS = 11
-    COMMITTED_NVIDIA_T4_GPUS = 12
-    COMMITTED_NVIDIA_V100_GPUS = 13
-    CPUS = 14
-    CPUS_ALL_REGIONS = 15
-    DISKS_TOTAL_GB = 16
-    EXTERNAL_VPN_GATEWAYS = 17
-    FIREWALLS = 18
-    FORWARDING_RULES = 19
-    GLOBAL_INTERNAL_ADDRESSES = 20
-    GPUS_ALL_REGIONS = 21
-    HEALTH_CHECKS = 22
-    IMAGES = 23
-    INSTANCES = 24
-    INSTANCE_GROUPS = 25
-    INSTANCE_GROUP_MANAGERS = 26
-    INSTANCE_TEMPLATES = 27
-    INTERCONNECTS = 28
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 29
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 30
-    INTERCONNECT_TOTAL_GBPS = 31
-    INTERNAL_ADDRESSES = 32
-    IN_USE_ADDRESSES = 33
-    IN_USE_BACKUP_SCHEDULES = 34
-    IN_USE_SNAPSHOT_SCHEDULES = 35
-    LOCAL_SSD_TOTAL_GB = 36
-    MACHINE_IMAGES = 37
-    N2_CPUS = 38
-    NETWORKS = 39
-    NETWORK_ENDPOINT_GROUPS = 40
-    NVIDIA_K80_GPUS = 41
-    NVIDIA_P100_GPUS = 42
-    NVIDIA_P100_VWS_GPUS = 43
-    NVIDIA_P4_GPUS = 44
-    NVIDIA_P4_VWS_GPUS = 45
-    NVIDIA_T4_GPUS = 46
-    NVIDIA_T4_VWS_GPUS = 47
-    NVIDIA_V100_GPUS = 48
-    PREEMPTIBLE_CPUS = 49
-    PREEMPTIBLE_LOCAL_SSD_GB = 50
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 51
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 52
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 53
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 54
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 55
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 56
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 57
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 58
-    REGIONAL_AUTOSCALERS = 59
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 60
-    RESERVATIONS = 61
-    RESOURCE_POLICIES = 62
-    ROUTERS = 63
-    ROUTES = 64
-    SECURITY_POLICIES = 65
-    SECURITY_POLICY_RULES = 66
-    SNAPSHOTS = 67
-    SSD_TOTAL_GB = 68
-    SSL_CERTIFICATES = 69
-    STATIC_ADDRESSES = 70
-    SUBNETWORKS = 71
-    TARGET_HTTPS_PROXIES = 72
-    TARGET_HTTP_PROXIES = 73
-    TARGET_INSTANCES = 74
-    TARGET_POOLS = 75
-    TARGET_SSL_PROXIES = 76
-    TARGET_TCP_PROXIES = 77
-    TARGET_VPN_GATEWAYS = 78
-    URL_MAPS = 79
-    VPN_GATEWAYS = 80
-    VPN_TUNNELS = 81
+    COMMITTED_N2D_CPUS = 8
+    COMMITTED_N2_CPUS = 9
+    COMMITTED_NVIDIA_K80_GPUS = 10
+    COMMITTED_NVIDIA_P100_GPUS = 11
+    COMMITTED_NVIDIA_P4_GPUS = 12
+    COMMITTED_NVIDIA_T4_GPUS = 13
+    COMMITTED_NVIDIA_V100_GPUS = 14
+    CPUS = 15
+    CPUS_ALL_REGIONS = 16
+    DISKS_TOTAL_GB = 17
+    EXTERNAL_VPN_GATEWAYS = 18
+    FIREWALLS = 19
+    FORWARDING_RULES = 20
+    GLOBAL_INTERNAL_ADDRESSES = 21
+    GPUS_ALL_REGIONS = 22
+    HEALTH_CHECKS = 23
+    IMAGES = 24
+    INSTANCES = 25
+    INSTANCE_GROUPS = 26
+    INSTANCE_GROUP_MANAGERS = 27
+    INSTANCE_TEMPLATES = 28
+    INTERCONNECTS = 29
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 30
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 31
+    INTERCONNECT_TOTAL_GBPS = 32
+    INTERNAL_ADDRESSES = 33
+    IN_USE_ADDRESSES = 34
+    IN_USE_BACKUP_SCHEDULES = 35
+    IN_USE_SNAPSHOT_SCHEDULES = 36
+    LOCAL_SSD_TOTAL_GB = 37
+    MACHINE_IMAGES = 38
+    N2D_CPUS = 39
+    N2_CPUS = 40
+    NETWORKS = 41
+    NETWORK_ENDPOINT_GROUPS = 42
+    NVIDIA_K80_GPUS = 43
+    NVIDIA_P100_GPUS = 44
+    NVIDIA_P100_VWS_GPUS = 45
+    NVIDIA_P4_GPUS = 46
+    NVIDIA_P4_VWS_GPUS = 47
+    NVIDIA_T4_GPUS = 48
+    NVIDIA_T4_VWS_GPUS = 49
+    NVIDIA_V100_GPUS = 50
+    PACKET_MIRRORINGS = 51
+    PREEMPTIBLE_CPUS = 52
+    PREEMPTIBLE_LOCAL_SSD_GB = 53
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 54
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 55
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 56
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 57
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 58
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 59
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 60
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 61
+    REGIONAL_AUTOSCALERS = 62
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 63
+    RESERVATIONS = 64
+    RESOURCE_POLICIES = 65
+    ROUTERS = 66
+    ROUTES = 67
+    SECURITY_POLICIES = 68
+    SECURITY_POLICY_CEVAL_RULES = 69
+    SECURITY_POLICY_RULES = 70
+    SNAPSHOTS = 71
+    SSD_TOTAL_GB = 72
+    SSL_CERTIFICATES = 73
+    STATIC_ADDRESSES = 74
+    SUBNETWORKS = 75
+    TARGET_HTTPS_PROXIES = 76
+    TARGET_HTTP_PROXIES = 77
+    TARGET_INSTANCES = 78
+    TARGET_POOLS = 79
+    TARGET_SSL_PROXIES = 80
+    TARGET_TCP_PROXIES = 81
+    TARGET_VPN_GATEWAYS = 82
+    URL_MAPS = 83
+    VPN_GATEWAYS = 84
+    VPN_TUNNELS = 85
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -33978,7 +34890,7 @@ class ResourcePolicySnapshotSchedulePolicySnapshotProperties(_messages.Message):
       modified by the setLabels method. Label values may be empty.
 
   Fields:
-    guestFlush: Indication to perform a ?guest aware? snapshot.
+    guestFlush: Indication to perform a 'guest aware' snapshot.
     labels: Labels to apply to scheduled snapshots. These can be later
       modified by the setLabels method. Label values may be empty.
     storageLocations: Cloud Storage bucket storage location of the auto
@@ -35750,7 +36662,7 @@ class SecurityPolicyRule(_messages.Message):
     kind: [Output only] Type of the resource. Always
       compute#securityPolicyRule for security policy rules
     match: A match condition that incoming traffic is evaluated against. If it
-      evaluates to true, the corresponding ?action? is enforced.
+      evaluates to true, the corresponding 'action' is enforced.
     preview: If set to true, the specified action is not enforced.
     priority: An integer indicating the priority of a rule in the list. The
       priority must be a positive value between 0 and 2147483647. Rules are
@@ -35972,6 +36884,8 @@ class Snapshot(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     diskSizeGb: [Output Only] Size of the source disk, specified in GB.
+    downloadBytes: [Output Only] Number of bytes downloaded to restore a
+      snapshot to a disk.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#snapshot for
@@ -36088,22 +37002,23 @@ class Snapshot(_messages.Message):
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   diskSizeGb = _messages.IntegerField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#snapshot')
-  labelFingerprint = _messages.BytesField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  licenseCodes = _messages.IntegerField(9, repeated=True)
-  licenses = _messages.StringField(10, repeated=True)
-  name = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 13)
-  sourceDisk = _messages.StringField(14)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
-  sourceDiskId = _messages.StringField(16)
-  status = _messages.EnumField('StatusValueValuesEnum', 17)
-  storageBytes = _messages.IntegerField(18)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 19)
-  storageLocations = _messages.StringField(20, repeated=True)
+  downloadBytes = _messages.IntegerField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#snapshot')
+  labelFingerprint = _messages.BytesField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  licenseCodes = _messages.IntegerField(10, repeated=True)
+  licenses = _messages.StringField(11, repeated=True)
+  name = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
+  sourceDisk = _messages.StringField(15)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
+  sourceDiskId = _messages.StringField(17)
+  status = _messages.EnumField('StatusValueValuesEnum', 18)
+  storageBytes = _messages.IntegerField(19)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 20)
+  storageLocations = _messages.StringField(21, repeated=True)
 
 
 class SnapshotList(_messages.Message):
@@ -36245,11 +37160,17 @@ class SourceInstanceParams(_messages.Message):
 
 
 class SslCertificate(_messages.Message):
-  r"""Represents an SSL Certificate resource.  This SSL certificate resource
-  also contains a private key. You can use SSL keys and certificates to secure
-  connections to a load balancer. For more information, read  Creating and
-  Using SSL Certificates. (== resource_for {$api_version}.sslCertificates ==)
-  (== resource_for {$api_version}.regionSslCertificates ==) Next ID: 17
+  r"""Represents an SSL Certificate resource.  Google Compute Engine has two
+  SSL Certificate resources:  *
+  [Global](/compute/docs/reference/rest/latest/sslCertificates) *
+  [Regional](/compute/docs/reference/rest/latest/regionSslCertificates)  -
+  sslCertificates are used by: - external HTTPS load balancers - SSL proxy
+  load balancers  - regionSslCertificates are used by: - internal HTTPS load
+  balancers  This SSL certificate resource also contains a private key. You
+  can use SSL keys and certificates to secure connections to a load balancer.
+  For more information, read  Creating and Using SSL Certificates. (==
+  resource_for {$api_version}.sslCertificates ==) (== resource_for
+  {$api_version}.regionSslCertificates ==) Next ID: 17
 
   Fields:
     certificate: A local certificate file. The certificate must be in PEM
@@ -37940,11 +38861,17 @@ class TargetHttpProxiesScopedList(_messages.Message):
 
 
 class TargetHttpProxy(_messages.Message):
-  r"""Represents a Target HTTP Proxy resource.  A target HTTP proxy is a
-  component of GCP HTTP load balancers. Forwarding rules reference a target
-  HTTP proxy, and the target proxy then references a URL map. For more
-  information, read Using Target Proxies and  Forwarding rule concepts. (==
-  resource_for {$api_version}.targetHttpProxies ==) (== resource_for
+  r"""Represents a Target HTTP Proxy resource.  Google Compute Engine has two
+  Target HTTP Proxy resources:  *
+  [Global](/compute/docs/reference/rest/latest/targetHttpProxies) *
+  [Regional](/compute/docs/reference/rest/latest/regionTargetHttpProxies)  A
+  target HTTP proxy is a component of GCP HTTP load balancers.  *
+  targetHttpProxies are used by external HTTP load balancers and Traffic
+  Director. * regionTargetHttpProxies are used by internal HTTP load
+  balancers.  Forwarding rules reference a target HTTP proxy, and the target
+  proxy then references a URL map. For more information, read Using Target
+  Proxies and  Forwarding rule concepts. (== resource_for
+  {$api_version}.targetHttpProxies ==) (== resource_for
   {$api_version}.regionTargetHttpProxies ==)
 
   Fields:
@@ -38311,12 +39238,17 @@ class TargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
 
 
 class TargetHttpsProxy(_messages.Message):
-  r"""Represents a Target HTTPS Proxy resource.  A target HTTPS proxy is a
-  component of GCP HTTPS load balancers. Forwarding rules reference a target
-  HTTPS proxy, and the target proxy then references a URL map. For more
-  information, read Using Target Proxies and  Forwarding rule concepts. (==
-  resource_for {$api_version}.targetHttpsProxies ==) (== resource_for
-  {$api_version}.regionTargetHttpsProxies ==)
+  r"""Represents a Target HTTPS Proxy resource.  Google Compute Engine has two
+  Target HTTPS Proxy resources:  *
+  [Global](/compute/docs/reference/rest/latest/targetHttpsProxies) *
+  [Regional](/compute/docs/reference/rest/latest/regionTargetHttpsProxies)  A
+  target HTTPS proxy is a component of GCP HTTPS load balancers.  *
+  targetHttpsProxies are used by external HTTPS load balancers. *
+  regionTargetHttpsProxies are used by internal HTTPS load balancers.
+  Forwarding rules reference a target HTTPS proxy, and the target proxy then
+  references a URL map. For more information, read Using Target Proxies and
+  Forwarding rule concepts. (== resource_for {$api_version}.targetHttpsProxies
+  ==) (== resource_for {$api_version}.regionTargetHttpsProxies ==)
 
   Enums:
     QuicOverrideValueValuesEnum: Specifies the QUIC override policy for this
@@ -40655,12 +41587,18 @@ class TestPermissionsResponse(_messages.Message):
 
 
 class UrlMap(_messages.Message):
-  r"""Represents a URL Map resource.  A URL map resource is a component of
-  certain types of load balancers. This resource defines mappings from host
-  names and URL paths to either a backend service or a backend bucket.  To use
-  this resource, the backend service must have a loadBalancingScheme of either
-  EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED For more information,
-  read URL Map Concepts.
+  r"""Represents a URL Map resource.  Google Compute Engine has two URL Map
+  resources:  * [Global](/compute/docs/reference/rest/latest/urlMaps) *
+  [Regional](/compute/docs/reference/rest/latest/regionUrlMaps)  A URL map
+  resource is a component of certain types of GCP load balancers and Traffic
+  Director.  * urlMaps are used by external HTTP(S) load balancers and Traffic
+  Director. * regionUrlMaps are used by internal HTTP(S) load balancers.  This
+  resource defines mappings from host names and URL paths to either a backend
+  service or a backend bucket.  To use the global urlMaps resource, the
+  backend service must have a loadBalancingScheme of either EXTERNAL or
+  INTERNAL_SELF_MANAGED. To use the regionUrlMaps resource, the backend
+  service must have a loadBalancingScheme of INTERNAL_MANAGED. For more
+  information, read URL Map Concepts.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text

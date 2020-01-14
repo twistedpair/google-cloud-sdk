@@ -779,6 +779,12 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
       WORKING_DIR_NOT_IN_BASE_DIR: Working directory is not under the base
         directory
       DOCKER_UNAVAILABLE: There are issues with docker service/runtime.
+      NO_CUDA_CAPABLE_DEVICE: The command failed with "no cuda-capable device
+        is detected" error.
+      REMOTE_CAS_DOWNLOAD_ERROR: The bot encountered errors from remote CAS
+        when downloading blobs.
+      REMOTE_CAS_UPLOAD_ERROR: The bot encountered errors from remote CAS when
+        uploading blobs.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -800,6 +806,9 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     WORKING_DIR_NOT_FOUND = 17
     WORKING_DIR_NOT_IN_BASE_DIR = 18
     DOCKER_UNAVAILABLE = 19
+    NO_CUDA_CAPABLE_DEVICE = 20
+    REMOTE_CAS_DOWNLOAD_ERROR = 21
+    REMOTE_CAS_UPLOAD_ERROR = 22
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

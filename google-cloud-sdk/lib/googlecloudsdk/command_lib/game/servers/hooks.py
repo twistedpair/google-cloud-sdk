@@ -28,6 +28,7 @@ from googlecloudsdk.command_lib.game.servers import utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
+
 import six
 
 DEFAULT_LOCATION = 'global'
@@ -52,19 +53,6 @@ class InvalidSchemaError(exceptions.Error):
 def FlattenedArgDict(value):
   dict_value = arg_parsers.ArgDict()(value)
   return [{'key': key, 'value': value} for key, value in dict_value.items()]
-
-
-def ProcessSpecFile(spec_file):
-  """Reads a JSON/YAML spec_file and returns JSON format of it."""
-
-  try:
-    spec = json.loads(spec_file)
-  except ValueError as e:
-    try:
-      spec = yaml.load(spec_file)
-    except yaml.YAMLParseError as e:
-      raise InvalidSpecFileError('Error parsing spec file: [{}]'.format(e))
-  return json.dumps(spec)
 
 
 def AddDefaultLocationToListRequest(ref, args, req):
@@ -162,9 +150,19 @@ def ProcessFleetConfigsFile(fleet_configs_file):
     raise InvalidSchemaError(
         'Invalid schema: expected proper fleet configs')
   except _messages.ValidationError as e:
-    # Unfortunately apitools doesn't provide a way to get the path to the
-    # invalid field here.
-    raise InvalidSchemaError('Invalid schema: [{}]'.format(e))
+    # The most likely reason this is reaised is the file that is submitted is
+    # following new format (json/yaml without string blob) and we will parse
+    # with the new format
+    for fc in fleet_configs:
+      f = messages.FleetConfig()
+      if 'name' in fc:
+        f.name = fc['name']
+      if 'fleetSpec' not in fc:
+        raise InvalidSchemaError(
+            'Invalid schema: expected proper fleet configs')
+      spec_as_json_str = json.dumps(fc['fleetSpec'])
+      f.fleetSpec = spec_as_json_str
+      fleet_configs_message.append(f)
   unrecognized_field_paths = _GetUnrecognizedFieldPaths(fleet_configs_message)
   if unrecognized_field_paths:
     error_msg_lines = ['Invalid schema, the following fields are unrecognized:']
@@ -188,9 +186,9 @@ def ProcessScalingConfigsFile(scaling_configs_file):
 
   messages = utils.GetMessages()
   message_class = messages.ScalingConfig
+  selector = messages.LabelSelector()
+  scaling_configs_message = []
   try:
-    selector = messages.LabelSelector()
-    scaling_configs_message = []
     for sc in scaling_configs:
       esc = encoding.DictToMessage(sc, message_class)
       if not esc.selectors:
@@ -205,10 +203,26 @@ def ProcessScalingConfigsFile(scaling_configs_file):
     raise InvalidSchemaError(
         'Invalid schema: expected proper scaling configs')
   except _messages.ValidationError as e:
-    # Unfortunately apitools doesn't provide a way to get the path to the
-    # invalid field here.
-    raise InvalidSchemaError('Invalid schema: [{}]'.format(e))
-
+    # The most likely reason this is reaised is the file that is submitted is
+    # following new format (json/yaml without string blob) and we will parse
+    # with the new format
+    for sc in scaling_configs:
+      s = messages.ScalingConfig()
+      if 'selectors' in sc:
+        s.selectors = sc['selectors']
+      else:
+        # Add default selector if not set
+        s.selectors = [selector]
+      if 'name' in sc:
+        s.name = sc['name']
+      if 'schedules' in sc:
+        s.schedules = sc['schedules']
+      if 'fleetAutoscalerSpec' not in sc:
+        raise InvalidSchemaError(
+            'Invalid schema: expected proper scaling configs')
+      spec_as_json_str = json.dumps(sc['fleetAutoscalerSpec'])
+      s.fleetAutoscalerSpec = spec_as_json_str
+      scaling_configs_message.append(s)
   return scaling_configs_message
 
 

@@ -98,8 +98,8 @@ class Attestor(_messages.Message):
     name: Required. The resource name, in the format:
       `projects/*/attestors/*`. This field may not be updated.
     updateTime: Output only. Time when the attestor was last updated.
-    userOwnedGrafeasNote: A Grafeas Attestation.Authority Note, created by the
-      user.
+    userOwnedGrafeasNote: This specifies how an attestation will be read, and
+      how it will be used during policy enforcement.
   """
 
   description = _messages.StringField(1)

@@ -885,9 +885,9 @@ class CryptoKeyVersion(_messages.Message):
       material was destroyed. Only present if state is DESTROYED.
     destroyTime: Output only. The time this CryptoKeyVersion's key material is
       scheduled for destruction. Only present if state is DESTROY_SCHEDULED.
-    externalProtectionLevelOptions: [ExternalProtectionLevelOptions] stores a
-      group of additional fields for configuring a [CryptoKeyVersion] that are
-      specific to the [EXTERNAL] protection level.
+    externalProtectionLevelOptions: ExternalProtectionLevelOptions stores a
+      group of additional fields for configuring a CryptoKeyVersion that are
+      specific to the EXTERNAL protection level.
     generateTime: Output only. The time this CryptoKeyVersion's key material
       was generated.
     importFailureReason: Output only. The root cause of an import failure.
@@ -1218,9 +1218,9 @@ class Expr(_messages.Message):
 
 
 class ExternalProtectionLevelOptions(_messages.Message):
-  r"""[ExternalProtectionLevelOptions] stores a group of additional fields for
-  configuring a [CryptoKeyVersion] that are specific to the [EXTERNAL]
-  protection level.
+  r"""ExternalProtectionLevelOptions stores a group of additional fields for
+  configuring a CryptoKeyVersion that are specific to the EXTERNAL protection
+  level.
 
   Fields:
     externalKeyUri: The URI for an external resource that this

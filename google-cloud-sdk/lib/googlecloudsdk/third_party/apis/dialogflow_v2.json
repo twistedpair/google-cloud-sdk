@@ -384,7 +384,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The unique identifier of the context. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/contexts\/<Context ID>`.\n\nThe `Context ID` is always converted to lowercase, may only contain\ncharacters in [a-zA-Z0-9_-%] and may be at most 250 bytes long.",
+          "description": "Required. The unique identifier of the context. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/contexts\/<Context ID>`.\n\nThe `Context ID` is always converted to lowercase, may only contain\ncharacters in [a-zA-Z0-9_-%] and may be at most 250 bytes long.\n\nThe following context names are reserved for internal use by Dialogflow.\nYou should not use these contexts or create contexts with these names:\n\n* `__system_counters__`\n* `*_id_dialog_context`\n* `*_dialog_params_size`",
           "type": "string"
         },
         "lifespanCount": {
@@ -546,7 +546,7 @@
           "type": "string"
         },
         "parentFollowupIntentName": {
-          "description": "Read-only after creation. The unique identifier of the parent intent in the\nchain of followup intents. You can set this field when creating an intent,\nfor example with CreateIntent or BatchUpdateIntents, in order to\nmake this intent a followup intent.\n\nIt identifies the parent followup intent.\nFormat: `projects\/<Project ID>\/agent\/intents\/<Intent ID>`.",
+          "description": "Read-only after creation. The unique identifier of the parent intent in the\nchain of followup intents. You can set this field when creating an intent,\nfor example with CreateIntent or\nBatchUpdateIntents, in order to make this\nintent a followup intent.\n\nIt identifies the parent followup intent.\nFormat: `projects\/<Project ID>\/agent\/intents\/<Intent ID>`.",
           "type": "string"
         },
         "followupIntentInfo": {
@@ -1789,12 +1789,27 @@
           "description": "Required. The language of the supplied audio. Dialogflow does not do\ntranslations. See [Language\nSupport](https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language)\nfor a list of the currently supported language codes. Note that queries in\nthe same session do not necessarily need to specify the same language.",
           "type": "string"
         },
+        "enableWordInfo": {
+          "description": "Optional. If `true`, Dialogflow returns SpeechWordInfo in\nStreamingRecognitionResult with information about the recognized speech\nwords, e.g. start and end time offsets. If false or unspecified, Speech\ndoesn't return any word-level information.",
+          "type": "boolean"
+        },
         "phraseHints": {
-          "description": "Optional. A list of strings containing words and phrases that the speech\nrecognizer should recognize with higher likelihood.\n\nSee [the Cloud Speech\ndocumentation](https:\/\/cloud.google.com\/speech-to-text\/docs\/basics#phrase-hints)\nfor more details.",
+          "description": "Optional. A list of strings containing words and phrases that the speech\nrecognizer should recognize with higher likelihood.\n\nSee [the Cloud Speech\ndocumentation](https:\/\/cloud.google.com\/speech-to-text\/docs\/basics#phrase-hints)\nfor more details.\n\nThis field is deprecated. Please use [speech_contexts]() instead. If you\nspecify both [phrase_hints]() and [speech_contexts](), Dialogflow will\ntreat the [phrase_hints]() as a single additional [SpeechContext]().",
           "type": "array",
           "items": {
             "type": "string"
           }
+        },
+        "speechContexts": {
+          "description": "Optional. Context information to assist speech recognition.\n\nSee [the Cloud Speech\ndocumentation](https:\/\/cloud.google.com\/speech-to-text\/docs\/basics#phrase-hints)\nfor more details.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2SpeechContext"
+          }
+        },
+        "model": {
+          "description": "Optional. Which Speech model to select for the given request. Select the\nmodel best suited to your domain to get best results. If a model is not\nexplicitly specified, then we auto-select a model based on the parameters\nin the InputAudioConfig.\nIf enhanced speech model is enabled for the agent and an enhanced\nversion of the specified model for the language does not exist, then the\nspeech is recognized using the standard version of the specified model.\nRefer to\n[Cloud Speech API\ndocumentation](https:\/\/cloud.google.com\/speech-to-text\/docs\/basics#select-model)\nfor more details.",
+          "type": "string"
         },
         "modelVariant": {
           "description": "Optional. Which variant of the Speech model to use.",
@@ -1815,6 +1830,25 @@
         "singleUtterance": {
           "description": "Optional. If `false` (default), recognition does not cease until the\nclient closes the stream.\nIf `true`, the recognizer will detect a single spoken utterance in input\naudio. Recognition ceases when it detects the audio's voice has\nstopped or paused. In this case, once a detected intent is received, the\nclient should close the stream and start a new request with a new stream as\nneeded.\nNote: This setting is relevant only for streaming methods.\nNote: When specified, InputAudioConfig.single_utterance takes precedence\nover StreamingDetectIntentRequest.single_utterance.",
           "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2SpeechContext": {
+      "id": "GoogleCloudDialogflowV2SpeechContext",
+      "description": "Hints for the speech recognizer to help with recognition in a specific\nconversation state.",
+      "type": "object",
+      "properties": {
+        "phrases": {
+          "description": "Optional. A list of strings containing words and phrases that the speech\nrecognizer should recognize with higher likelihood.\n\nThis list can be used to:\n* improve accuracy for words and phrases you expect the user to say,\n  e.g. typical commands for your Dialogflow agent\n* add additional words to the speech recognizer vocabulary\n* ...\n\nSee the [Cloud Speech\ndocumentation](https:\/\/cloud.google.com\/speech-to-text\/quotas) for usage\nlimits.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "boost": {
+          "description": "Optional. Boost for this context compared to other contexts:\n* If the boost is positive, Dialogflow will increase the probability that\n  the phrases in this context are recognized over similar sounding phrases.\n* If the boost is unspecified or non-positive, Dialogflow will not apply\n  any boost.\n\nDialogflow recommends that you use boosts in the range (0, 20] and that you\nfind a value that fits your use case with binary search.",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -2050,7 +2084,7 @@
           "format": "float"
         },
         "diagnosticInfo": {
-          "description": "The free-form diagnostic info. For example, this field could contain\nwebhook call latency. The string keys of the Struct's fields map can change\nwithout notice.",
+          "description": "Free-form diagnostic information for the associated detect intent request.\nThe fields of this data can change without notice, so you should not write\ncode that depends on its structure.\nThe data may contain:\n\n- webhook call latency\n- webhook errors",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -2307,7 +2341,7 @@
     },
     "GoogleCloudDialogflowV2WebhookResponse": {
       "id": "GoogleCloudDialogflowV2WebhookResponse",
-      "description": "The response message for a webhook call.",
+      "description": "The response message for a webhook call.\n\nThis response is validated by the Dialogflow server. If validation fails,\nan error will be returned in the QueryResult.diagnostic_info field.\nSetting JSON fields to an empty value with the wrong type is a common error.\nTo avoid this error:\n\n- Use `\"\"` for empty strings\n- Use `{}` or `null` for empty objects\n- Use `[]` or `null` for empty arrays\n\nFor more information, see the\n[Protocol Buffers Language\nGuide](https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json).",
       "type": "object",
       "properties": {
         "fulfillmentText": {
@@ -2589,7 +2623,7 @@
           "type": "string"
         },
         "parentFollowupIntentName": {
-          "description": "Read-only after creation. The unique identifier of the parent intent in the\nchain of followup intents. You can set this field when creating an intent,\nfor example with CreateIntent or BatchUpdateIntents, in order to\nmake this intent a followup intent.\n\nIt identifies the parent followup intent.\nFormat: `projects\/<Project ID>\/agent\/intents\/<Intent ID>`.",
+          "description": "Read-only after creation. The unique identifier of the parent intent in the\nchain of followup intents. You can set this field when creating an intent,\nfor example with CreateIntent or\nBatchUpdateIntents, in order to make this\nintent a followup intent.\n\nIt identifies the parent followup intent.\nFormat: `projects\/<Project ID>\/agent\/intents\/<Intent ID>`.",
           "type": "string"
         },
         "followupIntentInfo": {
@@ -2667,7 +2701,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The unique identifier of the context. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/contexts\/<Context ID>`,\nor `projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User\nID>\/sessions\/<Session ID>\/contexts\/<Context ID>`.\n\nThe `Context ID` is always converted to lowercase, may only contain\ncharacters in a-zA-Z0-9_-% and may be at most 250 bytes long.\n\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.",
+          "description": "Required. The unique identifier of the context. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/contexts\/<Context ID>`,\nor `projects\/<Project ID>\/agent\/environments\/<Environment ID>\/users\/<User\nID>\/sessions\/<Session ID>\/contexts\/<Context ID>`.\n\nThe `Context ID` is always converted to lowercase, may only contain\ncharacters in a-zA-Z0-9_-% and may be at most 250 bytes long.\n\nIf `Environment ID` is not specified, we assume default 'draft'\nenvironment. If `User ID` is not specified, we assume default '-' user.\n\nThe following context names are reserved for internal use by Dialogflow.\nYou should not use these contexts or create contexts with these names:\n\n* `__system_counters__`\n* `*_id_dialog_context`\n* `*_dialog_params_size`",
           "type": "string"
         },
         "lifespanCount": {
@@ -3844,7 +3878,7 @@
           "format": "float"
         },
         "diagnosticInfo": {
-          "description": "The free-form diagnostic info. For example, this field could contain\nwebhook call latency. The string keys of the Struct's fields map can change\nwithout notice.",
+          "description": "Free-form diagnostic information for the associated detect intent request.\nThe fields of this data can change without notice, so you should not write\ncode that depends on its structure.\nThe data may contain:\n\n- webhook call latency\n- webhook errors",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -3945,7 +3979,7 @@
     },
     "GoogleCloudDialogflowV2beta1WebhookResponse": {
       "id": "GoogleCloudDialogflowV2beta1WebhookResponse",
-      "description": "The response message for a webhook call.",
+      "description": "The response message for a webhook call.\n\nThis response is validated by the Dialogflow server. If validation fails,\nan error will be returned in the QueryResult.diagnostic_info field.\nSetting JSON fields to an empty value with the wrong type is a common error.\nTo avoid this error:\n\n- Use `\"\"` for empty strings\n- Use `{}` or `null` for empty objects\n- Use `[]` or `null` for empty arrays\n\nFor more information, see the\n[Protocol Buffers Language\nGuide](https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json).",
       "type": "object",
       "properties": {
         "fulfillmentText": {
@@ -4052,7 +4086,7 @@
     },
     "GoogleCloudDialogflowV2beta1LabelConversationResponse": {
       "id": "GoogleCloudDialogflowV2beta1LabelConversationResponse",
-      "description": "The response for\nConversationDatasets.LabelConversation",
+      "description": "The response for\nConversationDatasets.LabelConversation.",
       "type": "object",
       "properties": {
         "annotatedConversationDataset": {
@@ -4712,7 +4746,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Required. The unique identifier of the context. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/contexts\/<Context ID>`.\n\nThe `Context ID` is always converted to lowercase, may only contain\ncharacters in [a-zA-Z0-9_-%] and may be at most 250 bytes long.",
+                          "description": "Required. The unique identifier of the context. Format:\n`projects\/<Project ID>\/agent\/sessions\/<Session ID>\/contexts\/<Context ID>`.\n\nThe `Context ID` is always converted to lowercase, may only contain\ncharacters in [a-zA-Z0-9_-%] and may be at most 250 bytes long.\n\nThe following context names are reserved for internal use by Dialogflow.\nYou should not use these contexts or create contexts with these names:\n\n* `__system_counters__`\n* `*_id_dialog_context`\n* `*_dialog_params_size`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/agent\/sessions\/[^\/]+\/contexts\/[^\/]+$",
@@ -5492,7 +5526,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Updates or creates multiple entities in the specified entity type. This\nmethod does not affect entities in the entity type that aren't explicitly\nspecified in the request.\n\nOperation <response: google.protobuf.Empty>"
+                      "description": "Updates or creates multiple entities in the specified entity type. This\nmethod does not affect entities in the entity type that aren't explicitly\nspecified in the request.\n\n\nOperation <response: google.protobuf.Empty>"
                     },
                     "batchDelete": {
                       "id": "dialogflow.projects.agent.entityTypes.entities.batchDelete",
@@ -5521,7 +5555,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Deletes entities in the specified entity type.\n\nOperation <response: google.protobuf.Empty>"
+                      "description": "Deletes entities in the specified entity type.\n\n\nOperation <response: google.protobuf.Empty>"
                     }
                   }
                 }

@@ -104,6 +104,9 @@
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
           "description": "View and manage your data across Google Cloud Platform services"
+        },
+        "https://www.googleapis.com/auth/cloud-platform.read-only": {
+          "description": "View your data across Google Cloud Platform services"
         }
       }
     }
@@ -293,11 +296,11 @@
           "type": "string"
         },
         "runtimeVersion": {
-          "description": "Optional. The AI Platform runtime version to use for training. If not\nset, AI Platform uses the default stable version, 1.0. For more\ninformation, see the\n<a href=\"\/ml-engine\/docs\/runtime-version-list\">runtime version list<\/a>\nand\n<a href=\"\/ml-engine\/docs\/versioning\">how to manage runtime versions<\/a>.",
+          "description": "Optional. The AI Platform runtime version to use for training. If not\nset, AI Platform uses the default stable version, 1.0. Starting [January\n13, 2020](\/ml-engine\/docs\/release-notes#december_10_2019), this field is\nrequired.\n\nFor more information, see the\n<a href=\"\/ml-engine\/docs\/runtime-version-list\">runtime version list<\/a>\nand\n<a href=\"\/ml-engine\/docs\/versioning\">how to manage runtime versions<\/a>.",
           "type": "string"
         },
         "pythonVersion": {
-          "description": "Optional. The version of Python used in training. If not set, the default\nversion is '2.7'. Python '3.5' is available when `runtime_version` is set\nto '1.4' and above. Python '2.7' works with all supported\n<a href=\"\/ml-engine\/docs\/runtime-version-list\">runtime versions<\/a>.",
+          "description": "Optional. The version of Python used in training. If not set, the default\nversion is '2.7'. Starting [January 13,\n2020](\/ml-engine\/docs\/release-notes#december_10_2019), this field is\nrequired.\n\nThe following Python versions are available:\n\n* Python '3.7' is available when `runtime_version` is set to '1.15' or\n  later.\n* Python '3.5' is available when `runtime_version` is set to a version\n  from '1.4' to '1.14'.\n* Python '2.7' is available when `runtime_version` is set to '1.15' or\n  earlier. (Runtime versions released [after January 1,\n  2020](\/ml-engine\/docs\/release-notes#december_10_2019) do not support\n  Python 2.7.)\n\nRead more about the Python versions available for [each runtime\nversion](\/ml-engine\/docs\/runtime-version-list).",
           "type": "string"
         },
         "useChiefInTfConfig": {
@@ -840,7 +843,7 @@
       "type": "object",
       "properties": {
         "ablationAttribution": {
-          "description": "Tensorflow framework explanation methods.",
+          "description": "TensorFlow framework explanation methods.",
           "$ref": "GoogleCloudMlV1__AblationAttribution"
         },
         "integratedGradientsAttribution": {
@@ -849,11 +852,14 @@
         "sampledShapleyAttribution": {
           "$ref": "GoogleCloudMlV1__SampledShapleyAttribution"
         },
+        "xraiAttribution": {
+          "$ref": "GoogleCloudMlV1__XraiAttribution"
+        },
         "samplingShapAttribution": {
           "$ref": "GoogleCloudMlV1__SamplingShapAttribution"
         },
         "treeShapAttribution": {
-          "description": "XGBoost Framework explanation methods.",
+          "description": "XGBoost framework explanation methods.",
           "$ref": "GoogleCloudMlV1__TreeShapAttribution"
         },
         "saabasAttribution": {
@@ -863,7 +869,7 @@
     },
     "GoogleCloudMlV1__AblationAttribution": {
       "id": "GoogleCloudMlV1__AblationAttribution",
-      "description": "Attributes credit to model inputs by ablating features (ie. setting them to\ntheir default\/missing values) and computing corresponding model score delta\nper feature. The term \"ablation\" is in reference to running an\n\"ablation study\" to analyze input effects on the outcome of interest, which\nin this case is the model's output.\nThis attribution method is supported for Tensorflow and XGBoost models.",
+      "description": "Attributes credit to model inputs by ablating features (ie. setting them to\ntheir default\/missing values) and computing corresponding model score delta\nper feature. The term \"ablation\" is in reference to running an\n\"ablation study\" to analyze input effects on the outcome of interest, which\nin this case is the model's output.\nThis attribution method is supported for TensorFlow and XGBoost models.",
       "type": "object",
       "properties": {
         "numFeatureInteractions": {
@@ -891,7 +897,19 @@
       "type": "object",
       "properties": {
         "numPaths": {
-          "description": "The number of feature permutations to consider when approximating the\nshapley values.",
+          "description": "The number of feature permutations to consider when approximating the\nShapley values.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudMlV1__XraiAttribution": {
+      "id": "GoogleCloudMlV1__XraiAttribution",
+      "description": "Attributes credit by computing the XRAI taking advantage\nof the model's fully differentiable structure. Refer to this paper for\nmore details: https:\/\/arxiv.org\/abs\/1906.02825\nCurrently only implemented for models with natural image inputs.",
+      "type": "object",
+      "properties": {
+        "numIntegralSteps": {
+          "description": "Number of steps for approximating the path integral.\nA good value to start is 50 and gradually increase until the\nsum to diff property is met within the desired error range.",
           "type": "integer",
           "format": "int32"
         }
@@ -1505,7 +1523,7 @@
           "format": "google-datetime"
         },
         "runtimeVersion": {
-          "description": "Optional. The AI Platform runtime version to use for this deployment.\nIf not set, AI Platform uses the default stable version, 1.0. For more\ninformation, see the\n[runtime version list](\/ml-engine\/docs\/runtime-version-list) and\n[how to manage runtime versions](\/ml-engine\/docs\/versioning).",
+          "description": "Optional. The AI Platform runtime version to use for this deployment.\nIf not set, AI Platform uses the default stable version, 1.0. Starting\n[January 13, 2020](\/ml-engine\/docs\/release-notes#december_10_2019), this\nfield is required.\n\nFor more information, see the\n[runtime version list](\/ml-engine\/docs\/runtime-version-list) and\n[how to manage runtime versions](\/ml-engine\/docs\/versioning).",
           "type": "string"
         },
         "machineType": {
@@ -1587,7 +1605,7 @@
           ]
         },
         "pythonVersion": {
-          "description": "Optional. The version of Python used in prediction. If not set, the default\nversion is '2.7'. Python '3.5' is available when `runtime_version` is set\nto '1.4' and above. Python '2.7' works with all supported runtime versions.",
+          "description": "Optional. The version of Python used in prediction. If not set, the default\nversion is '2.7'. Starting [January 13,\n2020](\/ml-engine\/docs\/release-notes#december_10_2019), this field is\nrequired.\n\nThe following Python versions are available:\n\n* Python '3.7' is available when `runtime_version` is set to '1.15' or\n  later.\n* Python '3.5' is available when `runtime_version` is set to a version\n  from '1.4' to '1.14'.\n* Python '2.7' is available when `runtime_version` is set to '1.15' or\n  earlier. (Runtime versions released [after January 1,\n  2020](\/ml-engine\/docs\/release-notes#december_10_2019) do not support\n  Python 2.7.)\n\nRead more about the Python versions available for [each runtime\nversion](\/ml-engine\/docs\/runtime-version-list).",
           "type": "string"
         },
         "acceleratorConfig": {
@@ -1609,6 +1627,9 @@
         "explanationConfig": {
           "description": "Optional. Configures explainability features on the model's version.\nSome explanation features require additional metadata to be loaded\nas part of the model payload.",
           "$ref": "GoogleCloudMlV1__ExplanationConfig"
+        },
+        "container": {
+          "$ref": "GoogleCloudMlV1__ContainerSpec"
         }
       }
     },
@@ -1648,6 +1669,72 @@
         },
         "bigqueryTableName": {
           "description": "Required. Fully qualified BigQuery table name in the following format:\n\"<var>project_id<\/var>.<var>dataset_name<\/var>.<var>table_name<\/var>\"\n\nThe specifcied table must already exist, and the \"Cloud ML Service Agent\"\nfor your project must have permission to write to it. The table must have\nthe following [schema](\/bigquery\/docs\/schemas):\n\n<table>\n  <tr><th>Field name<\/th><th style=\"display: table-cell\">Type<\/th>\n    <th style=\"display: table-cell\">Mode<\/th><\/tr>\n  <tr><td>model<\/td><td>STRING<\/td><td>REQUIRED<\/td><\/tr>\n  <tr><td>model_version<\/td><td>STRING<\/td><td>REQUIRED<\/td><\/tr>\n  <tr><td>time<\/td><td>TIMESTAMP<\/td><td>REQUIRED<\/td><\/tr>\n  <tr><td>raw_data<\/td><td>STRING<\/td><td>REQUIRED<\/td><\/tr>\n  <tr><td>raw_prediction<\/td><td>STRING<\/td><td>NULLABLE<\/td><\/tr>\n  <tr><td>groundtruth<\/td><td>STRING<\/td><td>NULLABLE<\/td><\/tr>\n<\/table>",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudMlV1__ContainerSpec": {
+      "id": "GoogleCloudMlV1__ContainerSpec",
+      "description": "Specify a custom container to deploy.\nOur ContainerSpec is a subset of the Kubernetes Container specification.\nhttps:\/\/kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.10\/#container-v1-core",
+      "type": "object",
+      "properties": {
+        "image": {
+          "description": "Docker image name.\nMore info: https:\/\/kubernetes.io\/docs\/concepts\/containers\/images",
+          "type": "string"
+        },
+        "command": {
+          "description": "Entrypoint array. Not executed within a shell.\nThe docker image's ENTRYPOINT is used if this is not provided.\nVariable references $(VAR_NAME) are expanded using the container's\nenvironment. If a variable cannot be resolved, the reference in the input\nstring will be unchanged. The $(VAR_NAME) syntax can be escaped with a\ndouble $$, ie: $$(VAR_NAME). Escaped references will never be expanded,\nregardless of whether the variable exists or not.\nCannot be updated.\nMore info:\nhttps:\/\/kubernetes.io\/docs\/tasks\/inject-data-application\/define-command-argument-container\/#running-a-command-in-a-shell",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "args": {
+          "description": "Arguments to the entrypoint.\nThe docker image's CMD is used if this is not provided.\nVariable references $(VAR_NAME) are expanded using the container's\nenvironment. If a variable cannot be resolved, the reference in the input\nstring will be unchanged. The $(VAR_NAME) syntax can be escaped with a\ndouble $$, ie: $$(VAR_NAME). Escaped references will never be expanded,\nregardless of whether the variable exists or not.\nCannot be updated.\nMore info:\nhttps:\/\/kubernetes.io\/docs\/tasks\/inject-data-application\/define-command-argument-container\/#running-a-command-in-a-shell",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ports": {
+          "description": "List of ports to expose from the container. Exposing a port here gives\nthe system additional information about the network connections a\ncontainer uses, but is primarily informational. Not specifying a port here\nDOES NOT prevent that port from being exposed. Any port which is\nlistening on the default \"0.0.0.0\" address inside a container will be\naccessible from the network.\nCannot be updated.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudMlV1__ContainerPort"
+          }
+        },
+        "env": {
+          "description": "List of environment variables to set in the container.\nCannot be updated.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudMlV1__EnvVar"
+          }
+        }
+      }
+    },
+    "GoogleCloudMlV1__ContainerPort": {
+      "id": "GoogleCloudMlV1__ContainerPort",
+      "description": "ContainerPort represents a network port in a single container.",
+      "type": "object",
+      "properties": {
+        "containerPort": {
+          "description": "Number of port to expose on the pod's IP address.\nThis must be a valid port number, 0 < x < 65536.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudMlV1__EnvVar": {
+      "id": "GoogleCloudMlV1__EnvVar",
+      "description": "EnvVar represents an environment variable present in a Container.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the environment variable. Must be a C_IDENTIFIER.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Variable references $(VAR_NAME) are expanded\nusing the previous defined environment variables in the container and\nany service environment variables. If a variable cannot be resolved,\nthe reference in the input string will be unchanged. The $(VAR_NAME)\nsyntax can be escaped with a double $$, ie: $$(VAR_NAME). Escaped\nreferences will never be expanded, regardless of whether the variable\nexists or not.\nDefaults to \"\".",
           "type": "string"
         }
       }
@@ -1701,7 +1788,7 @@
       "type": "object",
       "properties": {
         "httpBody": {
-          "description": "\nRequired. The prediction request body.",
+          "description": "\nRequired. The prediction request body. Refer to the [request body details\nsection](#request-body-details) for more information on how to structure\nyour request.",
           "$ref": "GoogleApi__HttpBody"
         }
       }
@@ -2039,7 +2126,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Performs prediction on the data in the request.\nAI Platform implements a custom `predict` verb on top of an HTTP POST\nmethod.\n\nFor details of the request and response format, see the **guide\nto the [predict request format](\/ml-engine\/docs\/v1\/predict-request)**."
+          "description": "Performs online prediction on the data in the request.\n\n<div>{% dynamic include \"\/ai-platform\/includes\/___predict-request\" %}<\/div>"
         },
         "explain": {
           "id": "ml.projects.explain",
@@ -2067,7 +2154,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Performs explanation on the data in the request.\nAI Platform implements a custom `explain` verb on top of an HTTP POST\nmethod.\n\nFor details of the request and response format, see the **guide\nto the [explain request format](\/ml-engine\/docs\/v1\/explain-request)**."
+          "description": "Performs explanation on the data in the request.\nAI Platform implements a custom `explain` verb on top of an HTTP POST\nmethod."
         },
         "getConfig": {
           "id": "ml.projects.getConfig",
@@ -2164,7 +2251,8 @@
                 "$ref": "GoogleCloudMlV1__ListJobsResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
               ],
               "description": "Lists the jobs in the project.\n\nIf there are no jobs that match the request parameters, the list\nrequest returns an empty response body: {}."
             },
@@ -2189,7 +2277,8 @@
                 "$ref": "GoogleCloudMlV1__Job"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
               ],
               "description": "Describes a job."
             },
@@ -2367,7 +2456,8 @@
                 "$ref": "GoogleCloudMlV1__Location"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
               ],
               "description": "Get the complete list of CMLE capabilities in a location, along with their\nlocation-specific properties."
             },
@@ -2403,7 +2493,8 @@
                 "$ref": "GoogleCloudMlV1__ListLocationsResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
               ],
               "description": "List all locations that provides at least one type of CMLE capability."
             }
@@ -2571,7 +2662,8 @@
                 "$ref": "GoogleCloudMlV1__ListModelsResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
               ],
               "description": "Lists the models in a project.\n\nEach project can contain multiple models, and each model can have multiple\nversions.\n\nIf there are no models that match the request parameters, the list request\nreturns an empty response body: {}."
             },
@@ -2596,7 +2688,8 @@
                 "$ref": "GoogleCloudMlV1__Model"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only"
               ],
               "description": "Gets information about a model, including its name, the description (if\nset), and the default version (if at least one version of the model has\nbeen deployed)."
             },
@@ -2850,7 +2943,8 @@
                     "$ref": "GoogleCloudMlV1__ListVersionsResponse"
                   },
                   "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only"
                   ],
                   "description": "Gets basic information about all the versions of a model.\n\nIf you expect that a model has many versions, or if you need to handle\nonly a limited number of results at a time, you can request that the list\nbe retrieved in batches (called pages).\n\nIf there are no versions that match the request parameters, the list\nrequest returns an empty response body: {}."
                 },

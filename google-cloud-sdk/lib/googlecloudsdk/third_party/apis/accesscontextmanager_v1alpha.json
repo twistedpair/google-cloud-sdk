@@ -215,6 +215,10 @@
           "description": "Output only. Time the `AccessPolicy` was updated in UTC.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "etag": {
+          "description": "Output only. An opaque identifier for the current version of the\n`AccessPolicy`. This will always be a strongly validated etag, meaning that\ntwo Access Polices will be identical if and only if their etags are\nidentical. Clients should not expect this to be in any specific format.",
+          "type": "string"
         }
       }
     },
@@ -588,6 +592,17 @@
         }
       }
     },
+    "CommitServicePerimetersRequest": {
+      "id": "CommitServicePerimetersRequest",
+      "description": "A request to commit dry-run specs in all Service Perimeters belonging to\nan Access\nPolicy.",
+      "type": "object",
+      "properties": {
+        "etag": {
+          "description": "Optional. The etag for the version of the Access Policy that this\ncommit operation is to be performed on. If, at the time of commit, the\netag for the Access Policy stored in Access Context Manager is different\nfrom the specified etag, then the commit operation will not be performed\nand the call will fail. This field is not required. If etag is not\nprovided, the operation will be performed as if a valid etag is provided.",
+          "type": "string"
+        }
+      }
+    },
     "ReplaceAccessLevelsResponse": {
       "id": "ReplaceAccessLevelsResponse",
       "description": "A response to ReplaceAccessLevelsRequest. This will be put inside of\nOperation.response field.",
@@ -609,6 +624,20 @@
       "properties": {
         "servicePerimeters": {
           "description": "List of the Service Perimeter instances.",
+          "type": "array",
+          "items": {
+            "$ref": "ServicePerimeter"
+          }
+        }
+      }
+    },
+    "CommitServicePerimetersResponse": {
+      "id": "CommitServicePerimetersResponse",
+      "description": "A response to CommitServicePerimetersRequest. This will be put inside of\nOperation.response field.",
+      "type": "object",
+      "properties": {
+        "servicePerimeters": {
+          "description": "List of all the Service Perimeter instances\nin the Access Policy.",
           "type": "array",
           "items": {
             "$ref": "ServicePerimeter"
@@ -1166,6 +1195,34 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Replace all existing Service Perimeters in an\nAccess Policy\nwith the Service Perimeters provided.\nThis is done within one transaction. The longrunning operation from this\nRPC will have a successful status once all replacements have propagated to\nlong-lasting storage. Replacements containing errors will result in an\nerror response for the first error encountered and the transaction will be\ncancelled. Operation.response field will contain\nReplaceServicePerimetersResponse."
+            },
+            "commit": {
+              "id": "accesscontextmanager.accessPolicies.servicePerimeters.commit",
+              "path": "v1alpha/{+parent}/servicePerimeters:commit",
+              "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/servicePerimeters:commit",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Resource name for the parent Access Policy which owns all\nService Perimeters in scope\nfor the commit operation.\n\nFormat: `accessPolicies\/{policy_id}`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^accessPolicies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "CommitServicePerimetersRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Commit the dry-run spec for all the Service Perimeters in an\nAccess Policy.\nA commit operation on a Service Perimeter involves copying its `spec` field\nto that Service Perimeter's `status` field. Only Service Perimeters with\n`dry_run` field set to true are affected by a commit operation.\nThe longrunning operation from this RPC will have a successful status once\nthe dry-run specs for all the Service Perimeters have been\ncommitted. If a commit fails, it will cause the longrunning operation to\nreturn an error response and the entire commit operation will be cancelled.\nWhen successful, Operation.response field will contain\nCommitServicePerimetersResponse. The `dry_run` and the `spec` fields will\nbe cleared after a successful commit operation."
             }
           }
         }

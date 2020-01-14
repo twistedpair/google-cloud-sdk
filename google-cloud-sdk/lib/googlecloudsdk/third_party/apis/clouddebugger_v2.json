@@ -21,6 +21,7 @@
   "baseUrl": "https://clouddebugger.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -678,7 +679,7 @@
       "type": "object",
       "properties": {
         "breakpoint": {
-          "description": "Breakpoint resource.\nThe field `id` is guaranteed to be set (in addition to the echoed fileds).",
+          "description": "Breakpoint resource.\nThe field `id` is guaranteed to be set (in addition to the echoed fields).",
           "$ref": "Breakpoint"
         }
       }

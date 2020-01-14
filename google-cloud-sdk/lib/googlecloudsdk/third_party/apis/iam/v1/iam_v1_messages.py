@@ -8,7 +8,6 @@ to Google and make API calls.
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
-from apitools.base.py import extra_types
 
 
 package = 'iam'
@@ -1324,24 +1323,10 @@ class IamRolesListRequest(_messages.Message):
 
 
 class LintPolicyRequest(_messages.Message):
-  r"""The request to lint a Cloud IAM policy object. LintPolicy is currently
-  functional only for `lint_object` of type `condition`.
-
-  Messages:
-    ContextValue: `context` contains additional *permission-controlled* data
-      that any lint unit may depend on, in form of `{key: value}` pairs.
-      Currently, this field is non-operational and it will not be used during
-      the lint operation.
+  r"""The request to lint a Cloud IAM policy object.
 
   Fields:
-    binding: Binding object to be linted. The functionality of linting a
-      binding is not yet implemented and if this field is set, it returns
-      NOT_IMPLEMENTED error.
     condition: google.iam.v1.Binding.condition object to be linted.
-    context: `context` contains additional *permission-controlled* data that
-      any lint unit may depend on, in form of `{key: value}` pairs. Currently,
-      this field is non-operational and it will not be used during the lint
-      operation.
     fullResourceName: The full resource name of the policy this lint request
       is about.  The name follows the Google Cloud Platform (GCP) resource
       format. For example, a GCP project with ID `my-project` will be named
@@ -1349,43 +1334,10 @@ class LintPolicyRequest(_messages.Message):
       resource name is not used to read the policy instance from the Cloud IAM
       database. The candidate policy for lint has to be provided in the same
       request object.
-    policy: Policy object to be linted. The functionality of linting a policy
-      is not yet implemented and if this field is set, it returns
-      NOT_IMPLEMENTED error.
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ContextValue(_messages.Message):
-    r"""`context` contains additional *permission-controlled* data that any
-    lint unit may depend on, in form of `{key: value}` pairs. Currently, this
-    field is non-operational and it will not be used during the lint
-    operation.
-
-    Messages:
-      AdditionalProperty: An additional property for a ContextValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ContextValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  binding = _messages.MessageField('Binding', 1)
-  condition = _messages.MessageField('Expr', 2)
-  context = _messages.MessageField('ContextValue', 3)
-  fullResourceName = _messages.StringField(4)
-  policy = _messages.MessageField('Policy', 5)
+  condition = _messages.MessageField('Expr', 1)
+  fullResourceName = _messages.StringField(2)
 
 
 class LintPolicyResponse(_messages.Message):
@@ -1393,13 +1345,8 @@ class LintPolicyResponse(_messages.Message):
   operation was able to fully execute and no lint issue was found.
 
   Fields:
-    lintResults: List of lint results sorted by a composite <severity,
-      binding_ordinal> key, descending order of severity and ascending order
-      of binding_ordinal. There is no certain order among the same keys.  For
-      cross-binding results (only if the input object to lint is instance of
-      google.iam.v1.Policy), there will be a google.iam.admin.v1.LintResult
-      for each of the involved bindings, and the associated debug_message may
-      enumerate the other involved binding ordinal number(s).
+    lintResults: List of lint results sorted by `severity` in descending
+      order.
   """
 
   lintResults = _messages.MessageField('LintResult', 1, repeated=True)
@@ -1413,22 +1360,13 @@ class LintResult(_messages.Message):
     SeverityValueValuesEnum: The validation unit severity.
 
   Fields:
-    bindingOrdinal: 0-based index ordinality of the binding in the input
-      object associated with this result. This field is populated only if the
-      input object to lint is of type google.iam.v1.Policy, which can comprise
-      more than one binding. It is set to -1 if the result is not associated
-      with any particular binding and only targets the policy as a whole, such
-      as results about policy size violations.
     debugMessage: Human readable debug message associated with the issue.
     fieldName: The name of the field for which this lint result is about.  For
-      nested messages, `field_name` consists of names of the embedded fields
+      nested messages `field_name` consists of names of the embedded fields
       separated by period character. The top-level qualifier is the input
-      object to lint in the request. For instance, if the lint request is on a
-      google.iam.v1.Policy and this lint result is about a condition
-      expression of one of the input policy bindings, the field would be
-      populated as `policy.bindings.condition.expression`.  This field does
-      not identify the ordinality of the repetitive fields (for instance
-      bindings in a policy).
+      object to lint in the request. For example, the `field_name` value
+      `condition.expression` identifies a lint result for the `expression`
+      field of the provided condition.
     level: The validation unit level.
     locationOffset: 0-based character position of problematic construct within
       the object identified by `field_name`. Currently, this is populated only
@@ -1443,20 +1381,11 @@ class LintResult(_messages.Message):
 
     Values:
       LEVEL_UNSPECIFIED: Level is unspecified.
-      POLICY: A validation unit which operates on a policy. It is executed
-        only if the input object to lint is of type google.iam.v1.Policy.
-      BINDING: A validation unit which operates on an individual binding. It
-        is executed in both cases where the input object to lint is of type
-        google.iam.v1.Policy or google.iam.v1.Binding.
       CONDITION: A validation unit which operates on an individual condition
-        within a binding. It is executed in all three cases where the input
-        object to lint is of type google.iam.v1.Policy, google.iam.v1.Binding
-        or google.iam.v1.Binding.condition.
+        within a binding.
     """
     LEVEL_UNSPECIFIED = 0
-    POLICY = 1
-    BINDING = 2
-    CONDITION = 3
+    CONDITION = 1
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""The validation unit severity.
@@ -1490,13 +1419,12 @@ class LintResult(_messages.Message):
     INFO = 4
     DEPRECATED = 5
 
-  bindingOrdinal = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  debugMessage = _messages.StringField(2)
-  fieldName = _messages.StringField(3)
-  level = _messages.EnumField('LevelValueValuesEnum', 4)
-  locationOffset = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 6)
-  validationUnitName = _messages.StringField(7)
+  debugMessage = _messages.StringField(1)
+  fieldName = _messages.StringField(2)
+  level = _messages.EnumField('LevelValueValuesEnum', 3)
+  locationOffset = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 5)
+  validationUnitName = _messages.StringField(6)
 
 
 class ListRolesResponse(_messages.Message):

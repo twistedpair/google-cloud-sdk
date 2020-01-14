@@ -1857,6 +1857,50 @@
         "apiVersion": {
           "description": "Output only. API version used to start the operation.",
           "type": "string"
+        },
+        "unreachable": {
+          "description": "Output only. List of locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "operationStatus": {
+          "description": "Output only. Operation status for game services operations. Operation status is in the\nform of key-value pairs where keys are resource IDs and the values show the\nstatus of the operation. In case of failures, the value includes an error\ncode and error message.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "OperationStatus"
+          }
+        }
+      }
+    },
+    "OperationStatus": {
+      "id": "OperationStatus",
+      "type": "object",
+      "properties": {
+        "done": {
+          "description": "Output only. Whether the operation is done or still in progress.",
+          "type": "boolean"
+        },
+        "errorCode": {
+          "description": "The error code in case of failures.",
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            ""
+          ],
+          "type": "string",
+          "enum": [
+            "ERROR_CODE_UNSPECIFIED",
+            "INTERNAL_ERROR",
+            "PERMISSION_DENIED",
+            "CLUSTER_CONNECTION"
+          ]
+        },
+        "errorMessage": {
+          "description": "The human-readable error message.",
+          "type": "string"
         }
       }
     }

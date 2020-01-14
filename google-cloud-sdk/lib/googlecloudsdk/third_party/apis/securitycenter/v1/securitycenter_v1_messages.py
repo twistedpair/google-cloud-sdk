@@ -503,9 +503,12 @@ class GroupAssetsRequest(_messages.Message):
       resource_properties: `=`, `:`, `>`, `<`, `>=`, `<=` *
       security_marks.marks: `=`, `:` *
       security_center_properties.resource_name: `=`, `:` *
+      security_center_properties.resource_display_name: `=`, `:` *
       security_center_properties.resource_type: `=`, `:` *
       security_center_properties.resource_parent: `=`, `:` *
+      security_center_properties.resource_parent_display_name: `=`, `:` *
       security_center_properties.resource_project: `=`, `:` *
+      security_center_properties.resource_project_display_name: `=`, `:` *
       security_center_properties.resource_owners: `=`, `:`  For example,
       `resource_properties.size = 100` is a valid filter string.
     groupBy: Required. Expression that defines what assets fields to use for
@@ -514,10 +517,14 @@ class GroupAssetsRequest(_messages.Message):
       t,security_center_properties.project".  The following fields are
       supported when compare_duration is not set:  *
       security_center_properties.resource_project *
+      security_center_properties.resource_project_display_name *
       security_center_properties.resource_type *
-      security_center_properties.resource_parent  The following fields are
-      supported when compare_duration is set:  *
-      security_center_properties.resource_type
+      security_center_properties.resource_parent *
+      security_center_properties.resource_parent_display_name  The following
+      fields are supported when compare_duration is set:  *
+      security_center_properties.resource_type *
+      security_center_properties.resource_project_display_name *
+      security_center_properties.resource_parent_display_name
     pageSize: The maximum number of results to return in a single response.
       Default is 10, minimum is 1, maximum is 1000.
     pageToken: The value returned by the last `GroupAssetsResponse`; indicates
@@ -1055,6 +1062,7 @@ class SecurityCenterProperties(_messages.Message):
   and cannot be modified by the user.
 
   Fields:
+    resourceDisplayName: The user defined display name for this resource.
     resourceName: The full resource name of the GCP resource this asset
       represents. This field is immutable after create time. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
@@ -1062,20 +1070,27 @@ class SecurityCenterProperties(_messages.Message):
     resourceParent: The full resource name of the immediate parent of the
       resource. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
+    resourceParentDisplayName: The user defined display name for the parent of
+      this resource.
     resourceProject: The full resource name of the project the resource
       belongs to. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
+    resourceProjectDisplayName: The user defined display name for the project
+      of this resource.
     resourceType: The type of the GCP resource. Examples include: APPLICATION,
       PROJECT, and ORGANIZATION. This is a case insensitive field defined by
       Cloud SCC and/or the producer of the resource and is immutable after
       create time.
   """
 
-  resourceName = _messages.StringField(1)
-  resourceOwners = _messages.StringField(2, repeated=True)
-  resourceParent = _messages.StringField(3)
-  resourceProject = _messages.StringField(4)
-  resourceType = _messages.StringField(5)
+  resourceDisplayName = _messages.StringField(1)
+  resourceName = _messages.StringField(2)
+  resourceOwners = _messages.StringField(3, repeated=True)
+  resourceParent = _messages.StringField(4)
+  resourceParentDisplayName = _messages.StringField(5)
+  resourceProject = _messages.StringField(6)
+  resourceProjectDisplayName = _messages.StringField(7)
+  resourceType = _messages.StringField(8)
 
 
 class SecurityMarks(_messages.Message):
@@ -1201,9 +1216,12 @@ class SecuritycenterOrganizationsAssetsListRequest(_messages.Message):
       resource_properties: `=`, `:`, `>`, `<`, `>=`, `<=` *
       security_marks.marks: `=`, `:` *
       security_center_properties.resource_name: `=`, `:` *
+      security_center_properties.resource_display_name: `=`, `:` *
       security_center_properties.resource_type: `=`, `:` *
       security_center_properties.resource_parent: `=`, `:` *
+      security_center_properties.resource_parent_display_name: `=`, `:` *
       security_center_properties.resource_project: `=`, `:` *
+      security_center_properties.resource_project_display_name: `=`, `:` *
       security_center_properties.resource_owners: `=`, `:`  For example,
       `resource_properties.size = 100` is a valid filter string.
     orderBy: Expression that defines what fields and order to use for sorting.
@@ -1216,8 +1234,11 @@ class SecuritycenterOrganizationsAssetsListRequest(_messages.Message):
       " name     desc  ,   resource_properties.a_property  " are equivalent.
       The following fields are supported: name update_time resource_properties
       security_marks.marks security_center_properties.resource_name
+      security_center_properties.resource_display_name
       security_center_properties.resource_parent
+      security_center_properties.resource_parent_display_name
       security_center_properties.resource_project
+      security_center_properties.resource_project_display_name
       security_center_properties.resource_type
     pageSize: The maximum number of results to return in a single response.
       Default is 10, minimum is 1, maximum is 1000.

@@ -33,7 +33,10 @@ LIST_TRIGGERS = _EVENTS_PREFIX + 'list_triggers'
 # Time to delete a trigger
 DELETE_TRIGGER = _EVENTS_PREFIX + 'delete_trigger'
 
-# Time to create an source
+# Time to get a source
+GET_SOURCE = _EVENTS_PREFIX + 'get_source'
+
+# Time to create a source
 CREATE_SOURCE = _EVENTS_PREFIX + 'create_source'
 
 # Time to list source CRDs

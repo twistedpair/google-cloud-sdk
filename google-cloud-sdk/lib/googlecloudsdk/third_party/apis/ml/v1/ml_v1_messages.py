@@ -80,7 +80,7 @@ class GoogleCloudMlV1AblationAttribution(_messages.Message):
   delta per feature. The term "ablation" is in reference to running an
   "ablation study" to analyze input effects on the outcome of interest, which
   in this case is the model's output. This attribution method is supported for
-  Tensorflow and XGBoost models.
+  TensorFlow and XGBoost models.
 
   Fields:
     numFeatureInteractions: Number of feature interactions to account for in
@@ -264,6 +264,79 @@ class GoogleCloudMlV1Config(_messages.Message):
   tpuServiceAccount = _messages.StringField(1)
 
 
+class GoogleCloudMlV1ContainerPort(_messages.Message):
+  r"""ContainerPort represents a network port in a single container.
+
+  Fields:
+    containerPort: Number of port to expose on the pod's IP address. This must
+      be a valid port number, 0 < x < 65536.
+  """
+
+  containerPort = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudMlV1ContainerSpec(_messages.Message):
+  r"""Specify a custom container to deploy. Our ContainerSpec is a subset of
+  the Kubernetes Container specification.
+  https://kubernetes.io/docs/reference/generated/kubernetes-
+  api/v1.10/#container-v1-core
+
+  Fields:
+    args: Arguments to the entrypoint. The docker image's CMD is used if this
+      is not provided. Variable references $(VAR_NAME) are expanded using the
+      container's environment. If a variable cannot be resolved, the reference
+      in the input string will be unchanged. The $(VAR_NAME) syntax can be
+      escaped with a double $$, ie: $$(VAR_NAME). Escaped references will
+      never be expanded, regardless of whether the variable exists or not.
+      Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-
+      data-application/define-command-argument-container/#running-a-command-
+      in-a-shell
+    command: Entrypoint array. Not executed within a shell. The docker image's
+      ENTRYPOINT is used if this is not provided. Variable references
+      $(VAR_NAME) are expanded using the container's environment. If a
+      variable cannot be resolved, the reference in the input string will be
+      unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie:
+      $$(VAR_NAME). Escaped references will never be expanded, regardless of
+      whether the variable exists or not. Cannot be updated. More info:
+      https://kubernetes.io/docs/tasks/inject-data-application/define-command-
+      argument-container/#running-a-command-in-a-shell
+    env: List of environment variables to set in the container. Cannot be
+      updated.
+    image: Docker image name. More info:
+      https://kubernetes.io/docs/concepts/containers/images
+    ports: List of ports to expose from the container. Exposing a port here
+      gives the system additional information about the network connections a
+      container uses, but is primarily informational. Not specifying a port
+      here DOES NOT prevent that port from being exposed. Any port which is
+      listening on the default "0.0.0.0" address inside a container will be
+      accessible from the network. Cannot be updated.
+  """
+
+  args = _messages.StringField(1, repeated=True)
+  command = _messages.StringField(2, repeated=True)
+  env = _messages.MessageField('GoogleCloudMlV1EnvVar', 3, repeated=True)
+  image = _messages.StringField(4)
+  ports = _messages.MessageField('GoogleCloudMlV1ContainerPort', 5, repeated=True)
+
+
+class GoogleCloudMlV1EnvVar(_messages.Message):
+  r"""EnvVar represents an environment variable present in a Container.
+
+  Fields:
+    name: Name of the environment variable. Must be a C_IDENTIFIER.
+    value: Variable references $(VAR_NAME) are expanded using the previous
+      defined environment variables in the container and any service
+      environment variables. If a variable cannot be resolved, the reference
+      in the input string will be unchanged. The $(VAR_NAME) syntax can be
+      escaped with a double $$, ie: $$(VAR_NAME). Escaped references will
+      never be expanded, regardless of whether the variable exists or not.
+      Defaults to "".
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
 class GoogleCloudMlV1ExplainRequest(_messages.Message):
   r"""Request for explanations to be issued against a trained model.
 
@@ -281,7 +354,7 @@ class GoogleCloudMlV1ExplanationConfig(_messages.Message):
   explanations/overview">Learn more about feature attributions</a>.
 
   Fields:
-    ablationAttribution: Tensorflow framework explanation methods.
+    ablationAttribution: TensorFlow framework explanation methods.
     integratedGradientsAttribution: A
       GoogleCloudMlV1IntegratedGradientsAttribution attribute.
     saabasAttribution: A GoogleCloudMlV1SaabasAttribution attribute.
@@ -289,7 +362,8 @@ class GoogleCloudMlV1ExplanationConfig(_messages.Message):
       attribute.
     samplingShapAttribution: A GoogleCloudMlV1SamplingShapAttribution
       attribute.
-    treeShapAttribution: XGBoost Framework explanation methods.
+    treeShapAttribution: XGBoost framework explanation methods.
+    xraiAttribution: A GoogleCloudMlV1XraiAttribution attribute.
   """
 
   ablationAttribution = _messages.MessageField('GoogleCloudMlV1AblationAttribution', 1)
@@ -298,6 +372,7 @@ class GoogleCloudMlV1ExplanationConfig(_messages.Message):
   sampledShapleyAttribution = _messages.MessageField('GoogleCloudMlV1SampledShapleyAttribution', 4)
   samplingShapAttribution = _messages.MessageField('GoogleCloudMlV1SamplingShapAttribution', 5)
   treeShapAttribution = _messages.MessageField('GoogleCloudMlV1TreeShapAttribution', 6)
+  xraiAttribution = _messages.MessageField('GoogleCloudMlV1XraiAttribution', 7)
 
 
 class GoogleCloudMlV1ExplanationInput(_messages.Message):
@@ -1295,7 +1370,9 @@ class GoogleCloudMlV1PredictRequest(_messages.Message):
   r"""Request for predictions to be issued against a trained model.
 
   Fields:
-    httpBody:  Required. The prediction request body.
+    httpBody:  Required. The prediction request body. Refer to the [request
+      body details section](#request-body-details) for more information on how
+      to structure your request.
   """
 
   httpBody = _messages.MessageField('GoogleApiHttpBody', 1)
@@ -1558,7 +1635,7 @@ class GoogleCloudMlV1SampledShapleyAttribution(_messages.Message):
 
   Fields:
     numPaths: The number of feature permutations to consider when
-      approximating the shapley values.
+      approximating the Shapley values.
   """
 
   numPaths = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1657,18 +1734,26 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     pythonModule: Required. The Python module name to run after installing the
       packages.
     pythonVersion: Optional. The version of Python used in training. If not
-      set, the default version is '2.7'. Python '3.5' is available when
-      `runtime_version` is set to '1.4' and above. Python '2.7' works with all
-      supported <a href="/ml-engine/docs/runtime-version-list">runtime
-      versions</a>.
+      set, the default version is '2.7'. Starting [January 13, 2020](/ml-
+      engine/docs/release-notes#december_10_2019), this field is required.
+      The following Python versions are available:  * Python '3.7' is
+      available when `runtime_version` is set to '1.15' or   later. * Python
+      '3.5' is available when `runtime_version` is set to a version   from
+      '1.4' to '1.14'. * Python '2.7' is available when `runtime_version` is
+      set to '1.15' or   earlier. (Runtime versions released [after January 1,
+      2020](/ml-engine/docs/release-notes#december_10_2019) do not support
+      Python 2.7.)  Read more about the Python versions available for [each
+      runtime version](/ml-engine/docs/runtime-version-list).
     region: Required. The Google Compute Engine region to run the training job
       in. See the <a href="/ml-engine/docs/tensorflow/regions">available
       regions</a> for AI Platform services.
     runtimeVersion: Optional. The AI Platform runtime version to use for
       training. If not set, AI Platform uses the default stable version, 1.0.
-      For more information, see the <a href="/ml-engine/docs/runtime-version-
-      list">runtime version list</a> and <a href="/ml-
-      engine/docs/versioning">how to manage runtime versions</a>.
+      Starting [January 13, 2020](/ml-engine/docs/release-
+      notes#december_10_2019), this field is required.  For more information,
+      see the <a href="/ml-engine/docs/runtime-version-list">runtime version
+      list</a> and <a href="/ml-engine/docs/versioning">how to manage runtime
+      versions</a>.
     scaleTier: Required. Specifies the machine types, the number of replicas
       for workers and parameter servers.
     useChiefInTfConfig: Optional. Use 'chief' instead of 'master' in TF_CONFIG
@@ -1840,6 +1925,7 @@ class GoogleCloudMlV1Version(_messages.Message):
       that you cannot use AutoScaling if your version uses
       [GPUs](#Version.FIELDS.accelerator_config). Instead, you must use
       specify `manual_scaling`.
+    container: A GoogleCloudMlV1ContainerSpec attribute.
     createTime: Output only. The time the version was created.
     deploymentUri: Required. The Cloud Storage location of the trained model
       used to create the version. See the [guide to model deployment](/ml-
@@ -1948,18 +2034,26 @@ class GoogleCloudMlV1Version(_messages.Message):
       Predictor interface and custom prediction routines](/ml-
       engine/docs/tensorflow/custom-prediction-routines).
     pythonVersion: Optional. The version of Python used in prediction. If not
-      set, the default version is '2.7'. Python '3.5' is available when
-      `runtime_version` is set to '1.4' and above. Python '2.7' works with all
-      supported runtime versions.
+      set, the default version is '2.7'. Starting [January 13, 2020](/ml-
+      engine/docs/release-notes#december_10_2019), this field is required.
+      The following Python versions are available:  * Python '3.7' is
+      available when `runtime_version` is set to '1.15' or   later. * Python
+      '3.5' is available when `runtime_version` is set to a version   from
+      '1.4' to '1.14'. * Python '2.7' is available when `runtime_version` is
+      set to '1.15' or   earlier. (Runtime versions released [after January 1,
+      2020](/ml-engine/docs/release-notes#december_10_2019) do not support
+      Python 2.7.)  Read more about the Python versions available for [each
+      runtime version](/ml-engine/docs/runtime-version-list).
     requestLoggingConfig: Optional. *Only* specify this field in a
       projects.models.versions.patch request. Specifying it in a
       projects.models.versions.create request has no effect.  Configures the
       request-response pair logging on predictions from this Version.
     runtimeVersion: Optional. The AI Platform runtime version to use for this
       deployment. If not set, AI Platform uses the default stable version,
-      1.0. For more information, see the [runtime version list](/ml-
-      engine/docs/runtime-version-list) and [how to manage runtime versions
-      ](/ml-engine/docs/versioning).
+      1.0. Starting [January 13, 2020](/ml-engine/docs/release-
+      notes#december_10_2019), this field is required.  For more information,
+      see the [runtime version list](/ml-engine/docs/runtime-version-list) and
+      [how to manage runtime versions](/ml-engine/docs/versioning).
     serviceAccount: Optional. Specifies the service account for resource
       access control.
     state: Output only. The state of a version.
@@ -2044,28 +2138,44 @@ class GoogleCloudMlV1Version(_messages.Message):
 
   acceleratorConfig = _messages.MessageField('GoogleCloudMlV1AcceleratorConfig', 1)
   autoScaling = _messages.MessageField('GoogleCloudMlV1AutoScaling', 2)
-  createTime = _messages.StringField(3)
-  deploymentUri = _messages.StringField(4)
-  description = _messages.StringField(5)
-  errorMessage = _messages.StringField(6)
-  etag = _messages.BytesField(7)
-  explanationConfig = _messages.MessageField('GoogleCloudMlV1ExplanationConfig', 8)
-  framework = _messages.EnumField('FrameworkValueValuesEnum', 9)
-  imageUri = _messages.StringField(10)
-  isDefault = _messages.BooleanField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  lastUseTime = _messages.StringField(13)
-  machineType = _messages.StringField(14)
-  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 15)
-  modelClass = _messages.StringField(16)
-  name = _messages.StringField(17)
-  packageUris = _messages.StringField(18, repeated=True)
-  predictionClass = _messages.StringField(19)
-  pythonVersion = _messages.StringField(20)
-  requestLoggingConfig = _messages.MessageField('GoogleCloudMlV1RequestLoggingConfig', 21)
-  runtimeVersion = _messages.StringField(22)
-  serviceAccount = _messages.StringField(23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
+  container = _messages.MessageField('GoogleCloudMlV1ContainerSpec', 3)
+  createTime = _messages.StringField(4)
+  deploymentUri = _messages.StringField(5)
+  description = _messages.StringField(6)
+  errorMessage = _messages.StringField(7)
+  etag = _messages.BytesField(8)
+  explanationConfig = _messages.MessageField('GoogleCloudMlV1ExplanationConfig', 9)
+  framework = _messages.EnumField('FrameworkValueValuesEnum', 10)
+  imageUri = _messages.StringField(11)
+  isDefault = _messages.BooleanField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  lastUseTime = _messages.StringField(14)
+  machineType = _messages.StringField(15)
+  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 16)
+  modelClass = _messages.StringField(17)
+  name = _messages.StringField(18)
+  packageUris = _messages.StringField(19, repeated=True)
+  predictionClass = _messages.StringField(20)
+  pythonVersion = _messages.StringField(21)
+  requestLoggingConfig = _messages.MessageField('GoogleCloudMlV1RequestLoggingConfig', 22)
+  runtimeVersion = _messages.StringField(23)
+  serviceAccount = _messages.StringField(24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+
+
+class GoogleCloudMlV1XraiAttribution(_messages.Message):
+  r"""Attributes credit by computing the XRAI taking advantage of the model's
+  fully differentiable structure. Refer to this paper for more details:
+  https://arxiv.org/abs/1906.02825 Currently only implemented for models with
+  natural image inputs.
+
+  Fields:
+    numIntegralSteps: Number of steps for approximating the path integral. A
+      good value to start is 50 and gradually increase until the sum to diff
+      property is met within the desired error range.
+  """
+
+  numIntegralSteps = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):

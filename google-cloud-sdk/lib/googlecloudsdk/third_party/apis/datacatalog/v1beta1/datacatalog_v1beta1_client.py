@@ -578,7 +578,7 @@ identified by the `name` parameter (see [Data Catalog Resource Project]
         method_id=u'datacatalog.projects.locations.entryGroups.delete',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[],
+        query_params=[u'force'],
         relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'DatacatalogProjectsLocationsEntryGroupsDeleteRequest',

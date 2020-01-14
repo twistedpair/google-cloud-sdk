@@ -28,7 +28,15 @@ from googlecloudsdk.core import properties
 
 APP_ENGINE_RESOURCE_TYPE = 'app-engine'
 BACKEND_SERVICES_RESOURCE_TYPE = 'backend-services'
+WEB_RESOURCE_TYPE = 'iap_web'
+COMPUTE_RESOURCE_TYPE = 'compute'
+TUNNEL_RESOURCE_TYPE = 'iap_tunnel'
+ORG_RESOURCE_TYPE = 'organization'
+FOLDER_RESOURCE_TYPE = 'folder'
 RESOURCE_TYPE_ENUM = (APP_ENGINE_RESOURCE_TYPE, BACKEND_SERVICES_RESOURCE_TYPE)
+SETTING_RESOURCE_TYPE_ENUM = (APP_ENGINE_RESOURCE_TYPE, WEB_RESOURCE_TYPE,
+                              COMPUTE_RESOURCE_TYPE, TUNNEL_RESOURCE_TYPE,
+                              ORG_RESOURCE_TYPE, FOLDER_RESOURCE_TYPE)
 
 
 def AddIapIamResourceArgs(parser):
@@ -68,6 +76,35 @@ def AddIapResourceArgs(parser):
   group.add_argument(
       '--service',
       help='Service name. Required with `--resource-type=backend-services`.')
+
+
+def AddIapSettingArg(parser):
+  """Adds flags for an IAP settings resource.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in order to
+      capture some information, but behaves like an ArgumentParser.
+  """
+  group = parser.add_group()
+  group.add_argument('--organization', help='Organization ID.')
+  group.add_argument('--folder', help='Folder ID.')
+  group.add_argument('--project', help='Project ID.')
+  group.add_argument(
+      '--resource-type',
+      choices=SETTING_RESOURCE_TYPE_ENUM,
+      help='Resource type of the IAP resource.')
+  group.add_argument(
+      '--service',
+      help='Service name. Required when resource type is ``app-engine'', optional when resource type is ``compute''.'
+  )
+  group.add_argument(
+      '--version',
+      help='Version name. Optional when resource type is ``app-engine''.')
+  group.add_argument(
+      '--zone', help='Zone name. Optional when resource type is iap_tunnel')
+  group.add_argument(
+      '--instance',
+      help='Instance ID. Optional when resource type is iap_tunnel')
 
 
 def AddOauthClientArgs(parser):
@@ -111,6 +148,17 @@ def AddIAMPolicyFileArg(parser):
   """
   parser.add_argument(
       'policy_file', help='JSON or YAML file containing the IAM policy.')
+
+
+def AddIapSettingFileArg(parser):
+  """Add flags for the IAP setting file.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object. It is mocked out in order to
+      capture some information, but behaves like an ArgumentParser.
+  """
+  parser.add_argument(
+      'setting_file', help='JSON file containing the IAP resource settings')
 
 
 def ParseIapIamResource(release_track, args):
@@ -221,3 +269,91 @@ def ParseIapResource(release_track, args):
           args.service)
 
   raise iap_exc.InvalidIapIamResourceError('Could not parse IAP resource.')
+
+
+def ParseIapSettingsResource(release_track, args):
+  """Parse an IAP setting resource from the input arguments.
+
+  Args:
+    release_track: base.ReleaseTrack, release track of command.
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+
+  Raises:
+    calliope_exc.InvalidArgumentException: if `--version` was specified with
+        resource type 'backend-services'.
+
+  Returns:
+    The specified IapSettingsResource
+  """
+  if args.organization:
+    if args.resource_type:
+      raise calliope_exc.InvalidArgumentException(
+          '--resource-type',
+          '`--resource-type` should not be specified at organization level')
+    if args.project:
+      raise calliope_exc.InvalidArgumentException(
+          '--project',
+          '`--project` should not be specified at organization level')
+    return iap_api.IapSettingsResource(
+        release_track, 'organizations/{0}'.format(args.organization))
+  if args.folder:
+    if args.resource_type:
+      raise calliope_exc.InvalidArgumentException(
+          '--resource-type',
+          '`--resource-type` should not be specified at folder level')
+    if args.project:
+      raise calliope_exc.InvalidArgumentException(
+          '--project', '`--project` should not be specified at folder level')
+    return iap_api.IapSettingsResource(release_track,
+                                       'folders/{0}'.format(args.folder))
+  if args.project:
+    if not args.resource_type:
+      return iap_api.IapSettingsResource(release_track,
+                                         'projects/{0}'.format(args.project))
+    else:
+      if args.resource_type == WEB_RESOURCE_TYPE:
+        return iap_api.IapSettingsResource(
+            release_track, 'projects/{0}/iap_web'.format(args.project))
+      elif args.resource_type == APP_ENGINE_RESOURCE_TYPE:
+        if not args.service:
+          raise calliope_exc.RequiredArgumentException(
+              '--service', '`--service` must be specified for '
+              '`--resource-type=app-engine`.')
+        else:
+          if args.version:
+            return iap_api.IapSettingsResource(
+                release_track,
+                'projects/{0}/iap_web/appengine-{1}/services/{2}/versions/{3}'
+                .format(args.project, args.project, args.service, args.version))
+          else:
+            return iap_api.IapSettingsResource(
+                release_track,
+                'projects/{0}/iap_web/appengine-{1}/services/{2}'.format(
+                    args.project, args.project, args.service))
+      elif args.resource_type == COMPUTE_RESOURCE_TYPE:
+        if args.service:
+          return iap_api.IapSettingsResource(
+              release_track, 'projects/{0}/iap_web/compute/services/{1}'.format(
+                  args.project, args.service))
+        else:
+          return iap_api.IapSettingsResource(
+              release_track,
+              'projects/{0}/iap_web/compute'.format(args.project))
+      elif args.resource_type == TUNNEL_RESOURCE_TYPE:
+        if args.zone:
+          if args.instance:
+            return iap_api.IapSettingsResource(
+                release_track,
+                'projects/{0}/iap_tunnel/zones/{1}/instances/{2}'.format(
+                    args.project, args.zone, args.instance))
+          else:
+            return iap_api.IapSettingsResource(
+                release_track, 'projects/{0}/iap_tunnel/zones/{1}'.format(
+                    args.project, args.zone))
+        else:
+          return iap_api.IapSettingsResource(
+              release_track, 'projects/{0}/iap_tunnel'.format(args.project))
+
+  raise iap_exc.InvalidIapIamResourceError(
+      'Could not parse IAP settings resource.')

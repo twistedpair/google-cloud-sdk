@@ -80,6 +80,9 @@ class EventListenerError(Error):
       Error.__init__(self, str(cause))
     self.cause = cause
 
+  def __str__(self):
+    return str(self.cause)
+
 
 class EventListenerYAMLError(EventListenerError):
   """Generated specifically for yaml.error.YAMLError."""

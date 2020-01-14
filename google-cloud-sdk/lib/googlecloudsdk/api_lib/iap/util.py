@@ -34,6 +34,7 @@ from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import yaml
 import six
 
 IAP_API = 'iap'
@@ -48,7 +49,7 @@ IAP_WEB_SERVICES_VERSIONS_COLLECTION = 'iap.projects.iap_web.services.versions'
 
 def _ApiVersion(release_track):
   del release_track
-  return 'v1beta1'
+  return 'v1'
 
 
 def _GetRegistry(api_version):
@@ -414,3 +415,65 @@ def _MakeIAPKwargs(is_backend_service, existing_iap_settings, enabled,
   if oauth2_client_secret:
     kwargs['oauth2ClientSecret'] = oauth2_client_secret
   return kwargs
+
+
+class IapSettingsResource(object):
+  """Class for IAP settings resources."""
+
+  def __init__(self, release_track, resource_name):
+    """Constructor for IAP setting resource.
+
+    Args:
+      release_track: base.ReleaseTrack, release track of command.
+      resource_name: resource name for the iap settings.
+    """
+    self.release_track = release_track
+    self.resource_name = resource_name
+    self.api_version = _ApiVersion(release_track)
+    self.client = apis.GetClientInstance(IAP_API, self.api_version)
+    self.registry = _GetRegistry(self.api_version)
+
+  @property
+  def messages(self):
+    return self.client.MESSAGES_MODULE
+
+  @property
+  def service(self):
+    return getattr(self.client, self.api_version)
+
+  def _ParseIapSettingsFile(self, iap_settings_file_path,
+                            iap_settings_message_type):
+    """Create an iap settings message from a JSON formatted file.
+
+    Args:
+       iap_settings_file_path: Path to iap_setttings JSON file
+       iap_settings_message_type: iap settings message type to convert JSON to
+
+    Returns:
+       the iap_settings message filled from JSON file
+    Raises:
+       BadFileException if JSON file is malformed.
+    """
+    iap_settings_to_parse = yaml.load_path(iap_settings_file_path)
+    try:
+      iap_settings_message = encoding.PyValueToMessage(
+          iap_settings_message_type, iap_settings_to_parse)
+    except (AttributeError) as e:
+      raise calliope_exceptions.BadFileException(
+          'Iap settings file {0} does not contain properly formated JSON {1}'
+          .format(iap_settings_file_path, six.text_type(e)))
+    return iap_settings_message
+
+  def GetIapSetting(self):
+    """Get the setting for an IAP resource."""
+    request = self.messages.IapGetIapSettingsRequest(name=self.resource_name)
+    return self.service.GetIapSettings(request)
+
+  def SetIapSetting(self, setting_file):
+    """Set the setting for an IAP resource."""
+    iap_settings = self._ParseIapSettingsFile(setting_file,
+                                              self.messages.IapSettings)
+    iap_settings.name = self.resource_name
+    request = self.messages.IapUpdateIapSettingsRequest(
+        iapSettings=iap_settings, name=self.resource_name)
+    return self.service.UpdateIapSettings(request)

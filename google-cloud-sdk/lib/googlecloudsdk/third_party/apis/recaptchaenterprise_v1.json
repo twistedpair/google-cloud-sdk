@@ -246,13 +246,17 @@
           "enumDescriptions": [
             "Default unspecified type.",
             "Provides information that the event turned out to be legitimate.",
-            "Provides information that the event turned out to be fraudulent."
+            "Provides information that the event turned out to be fraudulent.",
+            "Provides information that the event was related to a login event in which\nthe user typed the correct password.",
+            "Provides information that the event was related to a login event in which\nthe user typed the incorrect password."
           ],
           "type": "string",
           "enum": [
             "ANNOTATION_UNSPECIFIED",
             "LEGITIMATE",
-            "FRAUDULENT"
+            "FRAUDULENT",
+            "PASSWORD_CORRECT",
+            "PASSWORD_INCORRECT"
           ]
         }
       }

@@ -2183,9 +2183,7 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesPatchRequest(_messag
       Assigned by the server.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask Only the `labels` field
-      is allowed to be updated. The labels in the request are merged with the
-      existing set of labels. Existing labels with the same keys are updated.
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   message = _messages.MessageField('Message', 1)

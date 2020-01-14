@@ -37,6 +37,8 @@ from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import registry
 from googlecloudsdk.core import metrics
+from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 
 
 _EVENT_SOURCES_LABEL_SELECTOR = 'duck.knative.dev/source=true'
@@ -161,8 +163,7 @@ class EventflowOperations(object):
       client: The API client for interacting with Kubernetes Cloud Run APIs.
       region: str, The region of the control plane if operating against
         hosted Cloud Run, else None.
-      crd_client: The API client for querying for CRDs. Or None if interacting
-        with managed Cloud Run.
+      crd_client: The API client for querying for CRDs.
       op_client: The API client for interacting with One Platform APIs. Or
         None if interacting with Cloud Run for Anthos.
     """
@@ -220,12 +221,12 @@ class EventflowOperations(object):
     request = self.messages.RunNamespacesTriggersCreateRequest(
         trigger=trigger_obj.Message(),
         parent=trigger_ref.Parent().RelativeName())
-    with metrics.RecordDuration(metric_names.CREATE_TRIGGER):
-      try:
+    try:
+      with metrics.RecordDuration(metric_names.CREATE_TRIGGER):
         response = self._client.namespaces_triggers.Create(request)
-      except api_exceptions.HttpConflictError:
-        raise exceptions.TriggerCreationError(
-            'Trigger [{}] already exists.'.format(trigger_obj.name))
+    except api_exceptions.HttpConflictError:
+      raise exceptions.TriggerCreationError(
+          'Trigger [{}] already exists.'.format(trigger_obj.name))
 
     return trigger.Trigger(response, self.messages)
 
@@ -282,7 +283,8 @@ class EventflowOperations(object):
     request_message_type = request_method.GetRequestType()
     request = request_message_type(name=source_ref.RelativeName())
     try:
-      response = request_method.Call(request, client=self._client)
+      with metrics.RecordDuration(metric_names.GET_SOURCE):
+        response = request_method.Call(request, client=self._client)
     except api_exceptions.HttpNotFoundError:
       return None
     return source.Source(response, self.messages, source_crd.source_kind)
@@ -321,12 +323,12 @@ class EventflowOperations(object):
     request = request_message_type(**{
         request_method.request_field: source_obj.Message(),
         'parent': namespace_ref.RelativeName()})
-    with metrics.RecordDuration(metric_names.CREATE_SOURCE):
-      try:
+    try:
+      with metrics.RecordDuration(metric_names.CREATE_SOURCE):
         response = request_method.Call(request, client=self._client)
-      except api_exceptions.HttpConflictError:
-        raise exceptions.SourceCreationError(
-            'Source [{}] already exists.'.format(source_obj.name))
+    except api_exceptions.HttpConflictError:
+      raise exceptions.SourceCreationError(
+          'Source [{}] already exists.'.format(source_obj.name))
 
     return source.Source(response, self.messages, source_crd.source_kind)
 
@@ -386,8 +388,14 @@ class EventflowOperations(object):
 
   def ListSourceCustomResourceDefinitions(self):
     """Returns a list of CRDs for event sources."""
+    # Passing the parent field is only needed for hosted, but shouldn't hurt
+    # against an actual cluster
+    namespace_ref = resources.REGISTRY.Parse(
+        properties.VALUES.core.project.Get(), collection='run.namespaces')
+
     messages = self._crd_client.MESSAGES_MODULE
     request = messages.RunCustomresourcedefinitionsListRequest(
+        parent=namespace_ref.RelativeName(),
         labelSelector=_EVENT_SOURCES_LABEL_SELECTOR)
     with metrics.RecordDuration(metric_names.LIST_SOURCE_CRDS):
       response = self._crd_client.customresourcedefinitions.List(request)

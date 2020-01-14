@@ -25,10 +25,9 @@ from googlecloudsdk.core.credentials import http
 from six.moves import urllib
 
 API_NAME = 'cloudidentity'
-API_VERSION = 'v1beta1'
 
 
-def GetClient(version=API_VERSION):
+def GetClient(version):
   """Import and return the appropriate Cloud Identity Groups client.
 
   Args:
@@ -40,7 +39,7 @@ def GetClient(version=API_VERSION):
   return apis.GetClientInstance(API_NAME, version)
 
 
-def GetMessages(version=API_VERSION):
+def GetMessages(version):
   """Import and return the appropriate Cloud Identity Groups messages module.
 
   Args:
@@ -52,10 +51,11 @@ def GetMessages(version=API_VERSION):
   return apis.GetMessagesModule(API_NAME, version)
 
 
-def LookupGroupName(email):
+def LookupGroupName(version, email):
   """Lookup Group Name for a specified group key id.
 
   Args:
+    version: Release track information
     email: str, group email
 
   Returns:
@@ -64,24 +64,24 @@ def LookupGroupName(email):
     'name: groups/{group_id}'
   """
 
-  # TODO(b/144289256): Pass API_VERSION info.
-  client = GetClient()
+  client = GetClient(version)
 
   # Following part is added to resolve the gcloud known issue described
   # in this bug: b/141658179
   query_params = [('groupKey.id', email)]
   base_url = client.url
   url = '{}{}/groups:lookup?{}'.format(
-      base_url, API_VERSION, urllib.parse.urlencode(query_params))
+      base_url, version, urllib.parse.urlencode(query_params))
   unused_response, raw_content = http.Http().request(uri=url)
 
   return json.loads(raw_content.decode('utf8'))
 
 
-def LookupMembershipName(group_id, member_email):
+def LookupMembershipName(version, group_id, member_email):
   """Lookup membership name for a specific pair of member key id and group email.
 
   Args:
+    version: Release track information
     group_id: str, group id (e.g. groups/03qco8b4452k99t)
     member_email: str, member email
   Returns:
@@ -91,15 +91,14 @@ def LookupMembershipName(group_id, member_email):
     'name: members/{member_id}'
   """
 
-  # TODO(b/144289256): Pass API_VERSION info.
-  client = GetClient()
+  client = GetClient(version)
 
   # Following part is added to resolve the gcloud known issue described
   # in this bug: b/141658179
   query_params = [('parent', group_id), ('memberKey.id', member_email)]
   base_url = client.url
   url = '{}{}/{}/memberships:lookup?{}'.format(
-      base_url, API_VERSION, group_id, urllib.parse.urlencode(query_params))
+      base_url, version, group_id, urllib.parse.urlencode(query_params))
   unused_response, raw_content = http.Http().request(uri=url)
 
   return json.loads(raw_content.decode('utf8'))

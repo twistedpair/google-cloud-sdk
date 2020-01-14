@@ -352,9 +352,6 @@ class Cluster(_messages.Message):
       cluster. * if left as an empty string,`logging.googleapis.com` will be
       used.
     maintenancePolicy: Configure the maintenance policy for this cluster.
-    managedPodIdentityConfig: Configuration for the use of GCP IAM Service
-      Accounts in applications in this cluster.  Deprecated, use
-      WorkloadIdentityConfig instead.
     masterAuth: The authentication information for accessing the master
       endpoint. If unspecified, the defaults are used: For clusters before
       v1.12, if master_auth is unspecified, `username` will be set to "admin",
@@ -536,38 +533,37 @@ class Cluster(_messages.Message):
   locations = _messages.StringField(28, repeated=True)
   loggingService = _messages.StringField(29)
   maintenancePolicy = _messages.MessageField('MaintenancePolicy', 30)
-  managedPodIdentityConfig = _messages.MessageField('ManagedPodIdentityConfig', 31)
-  masterAuth = _messages.MessageField('MasterAuth', 32)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 33)
-  masterIpv4CidrBlock = _messages.StringField(34)
-  monitoringService = _messages.StringField(35)
-  name = _messages.StringField(36)
-  network = _messages.StringField(37)
-  networkConfig = _messages.MessageField('NetworkConfig', 38)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 39)
-  nodeConfig = _messages.MessageField('NodeConfig', 40)
-  nodeIpv4CidrSize = _messages.IntegerField(41, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 42, repeated=True)
-  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 43)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 44)
-  privateCluster = _messages.BooleanField(45)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 46)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 47)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 48)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 49)
-  resourceVersion = _messages.StringField(50)
-  securityProfile = _messages.MessageField('SecurityProfile', 51)
-  selfLink = _messages.StringField(52)
-  servicesIpv4Cidr = _messages.StringField(53)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 54)
-  status = _messages.EnumField('StatusValueValuesEnum', 55)
-  statusMessage = _messages.StringField(56)
-  subnetwork = _messages.StringField(57)
-  tierSettings = _messages.MessageField('TierSettings', 58)
-  tpuIpv4CidrBlock = _messages.StringField(59)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 60)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 61)
-  zone = _messages.StringField(62)
+  masterAuth = _messages.MessageField('MasterAuth', 31)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 32)
+  masterIpv4CidrBlock = _messages.StringField(33)
+  monitoringService = _messages.StringField(34)
+  name = _messages.StringField(35)
+  network = _messages.StringField(36)
+  networkConfig = _messages.MessageField('NetworkConfig', 37)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 38)
+  nodeConfig = _messages.MessageField('NodeConfig', 39)
+  nodeIpv4CidrSize = _messages.IntegerField(40, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 41, repeated=True)
+  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 42)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 43)
+  privateCluster = _messages.BooleanField(44)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 45)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 46)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 47)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 48)
+  resourceVersion = _messages.StringField(49)
+  securityProfile = _messages.MessageField('SecurityProfile', 50)
+  selfLink = _messages.StringField(51)
+  servicesIpv4Cidr = _messages.StringField(52)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 53)
+  status = _messages.EnumField('StatusValueValuesEnum', 54)
+  statusMessage = _messages.StringField(55)
+  subnetwork = _messages.StringField(56)
+  tierSettings = _messages.MessageField('TierSettings', 57)
+  tpuIpv4CidrBlock = _messages.StringField(58)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 59)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 60)
+  zone = _messages.StringField(61)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -2061,22 +2057,6 @@ class MaintenanceWindow(_messages.Message):
   dailyMaintenanceWindow = _messages.MessageField('DailyMaintenanceWindow', 1)
   maintenanceExclusions = _messages.MessageField('MaintenanceExclusionsValue', 2)
   recurringWindow = _messages.MessageField('RecurringTimeWindow', 3)
-
-
-class ManagedPodIdentityConfig(_messages.Message):
-  r"""Configuration for the use of GCP IAM Service Accounts in applications in
-  this cluster.  Deprecated, use WorkloadIdentityConfig instead.
-
-  Fields:
-    enabled: [Output only] Deprecated. This field has no effect. To enable
-      Managed Pod Identity, specify a federating service account.
-    federatingServiceAccount: Email of the federating GCP SA that has
-      permission to act on behalf of customer SAs through Managed Pod
-      Identity.
-  """
-
-  enabled = _messages.BooleanField(1)
-  federatingServiceAccount = _messages.StringField(2)
 
 
 class MasterAuth(_messages.Message):
@@ -3644,7 +3624,8 @@ class StatusCondition(_messages.Message):
 
     Values:
       UNKNOWN: UNKNOWN indicates a generic condition.
-      GCE_STOCKOUT: GCE_STOCKOUT indicates a Google Compute Engine stockout.
+      GCE_STOCKOUT: GCE_STOCKOUT indicates that Google Compute Engine
+        resources are temporarily unavailable.
       GKE_SERVICE_ACCOUNT_DELETED: GKE_SERVICE_ACCOUNT_DELETED indicates that
         the user deleted their robot service account.
       GCE_QUOTA_EXCEEDED: Google Compute Engine quota was exceeded.

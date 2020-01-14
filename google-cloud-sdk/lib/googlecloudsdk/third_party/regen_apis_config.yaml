@@ -115,6 +115,8 @@ apis:
       resources:
         iamPolicies:
           path: iamPolicies
+    v1p1beta1:
+      discovery_doc: cloudasset_v1p1beta1.json
     v1p2beta1:
       discovery_doc: cloudasset_v1p2beta1.json
     v1p4alpha1:
@@ -482,6 +484,18 @@ apis:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}
         projects.iap_web.services.versions:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}/versions/{versionId}
+    v1:
+      discovery_doc: iap_v1.json
+      default: true
+      resources:
+        projects:
+          path: projects/{project}/iap_web
+        projects.iap_web:
+          path: projects/{project}/iap_web/{iapWebId}
+        projects.iap_web.services:
+          path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}
+        projects.iap_web.services.versions:
+          path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}/versions/{versionId}
   labelmanager:
     v1alpha1:
       discovery_doc: labelmanager_v1alpha1.json
@@ -573,6 +587,8 @@ apis:
     v1beta1:
       discovery_doc: secretmanager_v1beta1.json
       default: true
+    v1:
+      discovery_doc: secretmanager_v1.json
   securitycenter:
     v1beta1:
       discovery_doc: securitycenter_v1beta1.json

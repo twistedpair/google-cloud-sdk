@@ -985,20 +985,24 @@
     },
     "UpgradeOccurrence": {
       "id": "UpgradeOccurrence",
-      "description": "A Upgrade Occurrence represents that a specific resource_url could install a\nspecific upgrade. This presence is supplied via local sources (i.e. it is\npresent in the mirror and the running system has noticed its availability).",
+      "description": "An Upgrade Occurrence represents that a specific resource_url could install a\nspecific upgrade. This presence is supplied via local sources (i.e. it is\npresent in the mirror and the running system has noticed its availability).\nFor Windows, both distribution and windows_update contain information for the\nWindows update.",
       "type": "object",
       "properties": {
         "package": {
-          "description": "Required - The package this Upgrade is for.",
+          "description": "Required for non-Windows OS. The package this Upgrade is for.",
           "type": "string"
         },
         "parsedVersion": {
-          "description": "Required - The version of the package in a machine + human readable form.",
+          "description": "Required for non-Windows OS. The version of the package in a machine +\nhuman readable form.",
           "$ref": "Version"
         },
         "distribution": {
-          "description": "Metadata about the upgrade for avaiable for the specific operating system\nfor the resource_url. This allows efficient filtering, as well as\nmaking it easier to use the occurrence.",
+          "description": "Metadata about the upgrade for available for the specific operating system\nfor the resource_url. This allows efficient filtering, as well as\nmaking it easier to use the occurrence.",
           "$ref": "UpgradeDistribution"
+        },
+        "windowsUpdate": {
+          "description": "Required for Windows OS. Represents the metadata about the Windows update.",
+          "$ref": "WindowsUpdate"
         }
       }
     },
@@ -1025,6 +1029,79 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "WindowsUpdate": {
+      "id": "WindowsUpdate",
+      "description": "Windows Update represents the metadata about the update for the Windows\noperating system. The fields in this message come from the Windows Update API\ndocumented at\nhttps:\/\/docs.microsoft.com\/en-us\/windows\/win32\/api\/wuapi\/nn-wuapi-iupdate.",
+      "type": "object",
+      "properties": {
+        "identity": {
+          "description": "Required - The unique identifier for the update.",
+          "$ref": "Identity"
+        },
+        "title": {
+          "description": "The localized title of the update.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The localized description of the update.",
+          "type": "string"
+        },
+        "categories": {
+          "description": "The list of categories to which the update belongs.",
+          "type": "array",
+          "items": {
+            "$ref": "Category"
+          }
+        },
+        "kbArticleIds": {
+          "description": "The Microsoft Knowledge Base article IDs that are associated with the\nupdate.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "supportUrl": {
+          "description": "The hyperlink to the support information for the update.",
+          "type": "string"
+        },
+        "lastPublishedTimestamp": {
+          "description": "The last published timestamp of the update.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "Identity": {
+      "id": "Identity",
+      "description": "The unique identifier of the update.",
+      "type": "object",
+      "properties": {
+        "updateId": {
+          "description": "The revision independent identifier of the update.",
+          "type": "string"
+        },
+        "revision": {
+          "description": "The revision number of the update.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "Category": {
+      "id": "Category",
+      "description": "The category to which the update belongs.",
+      "type": "object",
+      "properties": {
+        "categoryId": {
+          "description": "The identifier of the category.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The localized name of the category.",
+          "type": "string"
         }
       }
     },
@@ -1630,15 +1707,15 @@
     },
     "UpgradeNote": {
       "id": "UpgradeNote",
-      "description": "A Upgrade Note represents a potential upgrade of a package to a given\nversion. For each package version combination (i.e. bash 4.0, bash 4.1,\nbash 4.1.2), there will be a Upgrade Note.",
+      "description": "An Upgrade Note represents a potential upgrade of a package to a given\nversion. For each package version combination (i.e. bash 4.0, bash 4.1,\nbash 4.1.2), there will be an Upgrade Note. For Windows, windows_update field\nrepresents the information related to the update.",
       "type": "object",
       "properties": {
         "package": {
-          "description": "Required - The package this Upgrade is for.",
+          "description": "Required for non-Windows OS. The package this Upgrade is for.",
           "type": "string"
         },
         "version": {
-          "description": "Required - The version of the package in machine + human readable form.",
+          "description": "Required for non-Windows OS. The version of the package in machine + human\nreadable form.",
           "$ref": "Version"
         },
         "distributions": {
@@ -1647,6 +1724,10 @@
           "items": {
             "$ref": "UpgradeDistribution"
           }
+        },
+        "windowsUpdate": {
+          "description": "Required for Windows OS. Represents the metadata about the Windows update.",
+          "$ref": "WindowsUpdate"
         }
       }
     },

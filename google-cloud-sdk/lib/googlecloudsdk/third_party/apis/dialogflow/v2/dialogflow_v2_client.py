@@ -89,6 +89,7 @@ Operation <response: google.protobuf.Empty>
     def BatchDelete(self, request, global_params=None):
       r"""Deletes entities in the specified entity type.
 
+
 Operation <response: google.protobuf.Empty>
 
       Args:
@@ -119,6 +120,7 @@ Operation <response: google.protobuf.Empty>
       r"""Updates or creates multiple entities in the specified entity type. This.
 method does not affect entities in the entity type that aren't explicitly
 specified in the request.
+
 
 Operation <response: google.protobuf.Empty>
 

@@ -180,16 +180,11 @@ class ConditionPoller(waiter.OperationPoller):
     self._dependencies = {k: set() for k in tracker}
     if dependencies is not None:
       for k in dependencies:
-        error_msg = 'Condition {} is not in the dependency tracker.'
-        if k not in tracker:
-          raise ValueError(error_msg.format(k))
-        for c in dependencies[k]:
-          if c not in tracker:
-            raise ValueError(error_msg.format(c))
-        # Add dependencies, only if they're still not complete
+        # Add dependencies, only if they're still not complete. If a stage isn't
+        # in the tracker. consider it "already complete".
         self._dependencies[k] = {
-            c for c in dependencies[k] if not tracker.IsComplete(c)
-        }
+            c for c in dependencies[k]
+            if c in tracker and not tracker.IsComplete(c)}
     self._resource_getter = resource_getter
     self._tracker = tracker
     self._resource_fail_type = exceptions.Error
@@ -271,8 +266,7 @@ class ConditionPoller(waiter.OperationPoller):
       conditions_message: str, The message from the conditions object we're
         displaying..
     """
-
-    if self._tracker.IsComplete(condition):
+    if condition not in self._tracker or self._tracker.IsComplete(condition):
       return
 
     if self._IsBlocked(condition):
@@ -303,7 +297,7 @@ class ConditionPoller(waiter.OperationPoller):
     Returns:
       bool: True if stage was completed, False if no action taken
     """
-    if self._tracker.IsComplete(condition):
+    if condition not in self._tracker or self._tracker.IsComplete(condition):
       return False
     # A blocked condition is likely to remain True (indicating the previous
     # operation concerning it was successful) until the blocking condition(s)
@@ -326,6 +320,8 @@ class ConditionPoller(waiter.OperationPoller):
     # The set of stages that aren't marked started and don't have unsatisfied
     # dependencies are newly unblocked.
     for c in self._dependencies:
+      if c not in self._tracker:
+        continue
       if self._tracker.IsWaiting(c) and not self._IsBlocked(c):
         self._tracker.StartStage(c)
     # TODO(b/120679874): Should not have to manually call Tick()
@@ -342,7 +338,7 @@ class ConditionPoller(waiter.OperationPoller):
       DeploymentFailedError: If the 'Ready' condition failed.
     """
     # Don't fail an already failed stage.
-    if self._tracker.IsComplete(condition):
+    if condition not in self._tracker or self._tracker.IsComplete(condition):
       return
 
     self._tracker.FailStage(
@@ -959,7 +955,8 @@ class ServerlessOperations(object):
     config_changes.insert(0, _NewRevisionForcingChange(revision_suffix))
 
   def ReleaseService(self, service_ref, config_changes, tracker=None,
-                     asyn=False, allow_unauthenticated=None, for_replace=False):
+                     asyn=False, allow_unauthenticated=None, for_replace=False,
+                     prefetch=False):
     """Change the given service in prod using the given config_changes.
 
     Ensures a new revision is always created, even if the spec of the revision
@@ -976,12 +973,18 @@ class ServerlessOperations(object):
         unauthenticated access from a service.
       for_replace: bool, If the change is for a replacing the service from a
         YAML specification.
+      prefetch: the service, pre-fetched for ReleaseService. `False` indicates
+        the caller did not perform a prefetch; `None` indicates a nonexistant
+        service.
     """
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
           stages.ServiceStages(allow_unauthenticated is not None),
           interruptable=True, aborted_message='aborted')
-    serv = self.GetService(service_ref)
+    if prefetch is None:
+      serv = None
+    else:
+      serv = prefetch or self.GetService(service_ref)
     if for_replace:
       with_image = True
     else:

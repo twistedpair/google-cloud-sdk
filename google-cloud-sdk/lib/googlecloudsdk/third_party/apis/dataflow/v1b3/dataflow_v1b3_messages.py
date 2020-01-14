@@ -3124,8 +3124,11 @@ class ListJobMessagesResponse(_messages.Message):
 
 
 class ListJobsResponse(_messages.Message):
-  r"""Response to a request to list Cloud Dataflow jobs.  This may be a
-  partial response, depending on the page size in the ListJobsRequest.
+  r"""Response to a request to list Cloud Dataflow jobs in a project. This
+  might be a partial response, depending on the page size in the
+  ListJobsRequest. However, if the project does not have any jobs, an instance
+  of ListJobsResponse is not returned and the requests's response body is
+  empty {}.
 
   Fields:
     failedLocation: Zero or more messages describing the [regional endpoints]

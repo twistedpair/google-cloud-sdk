@@ -18,11 +18,11 @@ class DlpInfoTypesListRequest(_messages.Message):
   r"""A DlpInfoTypesListRequest object.
 
   Fields:
-    filter: Optional filter to only return infoTypes supported by certain
-      parts of the API. Defaults to supported_by=INSPECT.
-    languageCode: Optional BCP-47 language code for localized infoType
-      friendly names. If omitted, or if localized strings are not available,
-      en-US strings will be returned.
+    filter: filter to only return infoTypes supported by certain parts of the
+      API. Defaults to supported_by=INSPECT.
+    languageCode: BCP-47 language code for localized infoType friendly names.
+      If omitted, or if localized strings are not available, en-US strings
+      will be returned.
     locationId: The geographic location to list info types. Reserved for
       future extensions.
   """
@@ -36,11 +36,11 @@ class DlpLocationsInfoTypesListRequest(_messages.Message):
   r"""A DlpLocationsInfoTypesListRequest object.
 
   Fields:
-    filter: Optional filter to only return infoTypes supported by certain
-      parts of the API. Defaults to supported_by=INSPECT.
-    languageCode: Optional BCP-47 language code for localized infoType
-      friendly names. If omitted, or if localized strings are not available,
-      en-US strings will be returned.
+    filter: filter to only return infoTypes supported by certain parts of the
+      API. Defaults to supported_by=INSPECT.
+    languageCode: BCP-47 language code for localized infoType friendly names.
+      If omitted, or if localized strings are not available, en-US strings
+      will be returned.
     locationId: The geographic location to list info types. Reserved for
       future extensions.
   """
@@ -98,18 +98,18 @@ class DlpOrganizationsDeidentifyTemplatesListRequest(_messages.Message):
     locationId: The geographic location where deidentifications templates will
       be retrieved from. Use `-` for all locations. Reserved for future
       extensions.
-    orderBy: Optional comma separated list of fields to order by, followed by
-      `asc` or `desc` postfix. This list is case-insensitive, default sorting
-      order is ascending, redundant space characters are insignificant.
-      Example: `name asc,update_time, create_time desc`  Supported fields are:
-      - `create_time`: corresponds to time the template was created. -
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case-insensitive, default sorting order is
+      ascending, redundant space characters are insignificant.  Example: `name
+      asc,update_time, create_time desc`  Supported fields are:  -
+      `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
       template's display name.
-    pageSize: Optional size of the page, can be limited by server. If zero
-      server returns a page of max size 100.
-    pageToken: Optional page token to continue retrieval. Comes from previous
-      call to `ListDeidentifyTemplates`.
+    pageSize: Size of the page, can be limited by server. If zero server
+      returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from previous call to
+      `ListDeidentifyTemplates`.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
@@ -186,18 +186,18 @@ class DlpOrganizationsInspectTemplatesListRequest(_messages.Message):
     locationId: The geographic location where inspection templates will be
       retrieved from. Use `-` for all locations. Reserved for future
       extensions.
-    orderBy: Optional comma separated list of fields to order by, followed by
-      `asc` or `desc` postfix. This list is case-insensitive, default sorting
-      order is ascending, redundant space characters are insignificant.
-      Example: `name asc,update_time, create_time desc`  Supported fields are:
-      - `create_time`: corresponds to time the template was created. -
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case-insensitive, default sorting order is
+      ascending, redundant space characters are insignificant.  Example: `name
+      asc,update_time, create_time desc`  Supported fields are:  -
+      `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
       template's display name.
-    pageSize: Optional size of the page, can be limited by server. If zero
-      server returns a page of max size 100.
-    pageToken: Optional page token to continue retrieval. Comes from previous
-      call to `ListInspectTemplates`.
+    pageSize: Size of the page, can be limited by server. If zero server
+      returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from previous call to
+      `ListInspectTemplates`.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
@@ -277,18 +277,18 @@ class DlpOrganizationsLocationsDeidentifyTemplatesListRequest(_messages.Message)
     locationId: The geographic location where deidentifications templates will
       be retrieved from. Use `-` for all locations. Reserved for future
       extensions.
-    orderBy: Optional comma separated list of fields to order by, followed by
-      `asc` or `desc` postfix. This list is case-insensitive, default sorting
-      order is ascending, redundant space characters are insignificant.
-      Example: `name asc,update_time, create_time desc`  Supported fields are:
-      - `create_time`: corresponds to time the template was created. -
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case-insensitive, default sorting order is
+      ascending, redundant space characters are insignificant.  Example: `name
+      asc,update_time, create_time desc`  Supported fields are:  -
+      `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
       template's display name.
-    pageSize: Optional size of the page, can be limited by server. If zero
-      server returns a page of max size 100.
-    pageToken: Optional page token to continue retrieval. Comes from previous
-      call to `ListDeidentifyTemplates`.
+    pageSize: Size of the page, can be limited by server. If zero server
+      returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from previous call to
+      `ListDeidentifyTemplates`.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
@@ -368,18 +368,18 @@ class DlpOrganizationsLocationsInspectTemplatesListRequest(_messages.Message):
     locationId: The geographic location where inspection templates will be
       retrieved from. Use `-` for all locations. Reserved for future
       extensions.
-    orderBy: Optional comma separated list of fields to order by, followed by
-      `asc` or `desc` postfix. This list is case-insensitive, default sorting
-      order is ascending, redundant space characters are insignificant.
-      Example: `name asc,update_time, create_time desc`  Supported fields are:
-      - `create_time`: corresponds to time the template was created. -
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case-insensitive, default sorting order is
+      ascending, redundant space characters are insignificant.  Example: `name
+      asc,update_time, create_time desc`  Supported fields are:  -
+      `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
       template's display name.
-    pageSize: Optional size of the page, can be limited by server. If zero
-      server returns a page of max size 100.
-    pageToken: Optional page token to continue retrieval. Comes from previous
-      call to `ListInspectTemplates`.
+    pageSize: Size of the page, can be limited by server. If zero server
+      returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from previous call to
+      `ListInspectTemplates`.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
@@ -457,18 +457,18 @@ class DlpOrganizationsLocationsStoredInfoTypesListRequest(_messages.Message):
     locationId: The geographic location where stored infoTypes will be
       retrieved from. Use `-` for all locations. Reserved for future
       extensions.
-    orderBy: Optional comma separated list of fields to order by, followed by
-      `asc` or `desc` postfix. This list is case-insensitive, default sorting
-      order is ascending, redundant space characters are insignificant.
-      Example: `name asc, display_name, create_time desc`  Supported fields
-      are:  - `create_time`: corresponds to time the most recent version of
-      the resource was created. - `state`: corresponds to the state of the
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case-insensitive, default sorting order is
+      ascending, redundant space characters are insignificant.  Example: `name
+      asc, display_name, create_time desc`  Supported fields are:  -
+      `create_time`: corresponds to time the most recent version of the
+      resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
       corresponds to info type's display name.
-    pageSize: Optional size of the page, can be limited by server. If zero
-      server returns a page of max size 100.
-    pageToken: Optional page token to continue retrieval. Comes from previous
-      call to `ListStoredInfoTypes`.
+    pageSize: Size of the page, can be limited by server. If zero server
+      returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from previous call to
+      `ListStoredInfoTypes`.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
@@ -542,18 +542,18 @@ class DlpOrganizationsStoredInfoTypesListRequest(_messages.Message):
     locationId: The geographic location where stored infoTypes will be
       retrieved from. Use `-` for all locations. Reserved for future
       extensions.
-    orderBy: Optional comma separated list of fields to order by, followed by
-      `asc` or `desc` postfix. This list is case-insensitive, default sorting
-      order is ascending, redundant space characters are insignificant.
-      Example: `name asc, display_name, create_time desc`  Supported fields
-      are:  - `create_time`: corresponds to time the most recent version of
-      the resource was created. - `state`: corresponds to the state of the
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case-insensitive, default sorting order is
+      ascending, redundant space characters are insignificant.  Example: `name
+      asc, display_name, create_time desc`  Supported fields are:  -
+      `create_time`: corresponds to time the most recent version of the
+      resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
       corresponds to info type's display name.
-    pageSize: Optional size of the page, can be limited by server. If zero
-      server returns a page of max size 100.
-    pageToken: Optional page token to continue retrieval. Comes from previous
-      call to `ListStoredInfoTypes`.
+    pageSize: Size of the page, can be limited by server. If zero server
+      returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from previous call to
+      `ListStoredInfoTypes`.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
@@ -671,18 +671,18 @@ class DlpProjectsDeidentifyTemplatesListRequest(_messages.Message):
     locationId: The geographic location where deidentifications templates will
       be retrieved from. Use `-` for all locations. Reserved for future
       extensions.
-    orderBy: Optional comma separated list of fields to order by, followed by
-      `asc` or `desc` postfix. This list is case-insensitive, default sorting
-      order is ascending, redundant space characters are insignificant.
-      Example: `name asc,update_time, create_time desc`  Supported fields are:
-      - `create_time`: corresponds to time the template was created. -
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case-insensitive, default sorting order is
+      ascending, redundant space characters are insignificant.  Example: `name
+      asc,update_time, create_time desc`  Supported fields are:  -
+      `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
       template's display name.
-    pageSize: Optional size of the page, can be limited by server. If zero
-      server returns a page of max size 100.
-    pageToken: Optional page token to continue retrieval. Comes from previous
-      call to `ListDeidentifyTemplates`.
+    pageSize: Size of the page, can be limited by server. If zero server
+      returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from previous call to
+      `ListDeidentifyTemplates`.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
@@ -767,33 +767,33 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
     TypeValueValuesEnum: The type of job. Defaults to `DlpJobType.INSPECT`
 
   Fields:
-    filter: Optional. Allows filtering.  Supported syntax:  * Filter
-      expressions are made up of one or more restrictions. * Restrictions can
-      be combined by `AND` or `OR` logical operators. A sequence of
-      restrictions implicitly uses `AND`. * A restriction has the form of
-      `<field> <operator> <value>`. * Supported fields/values for inspect
-      jobs:     - `state` - PENDING|RUNNING|CANCELED|FINISHED|FAILED     -
-      `inspected_storage` - DATASTORE|CLOUD_STORAGE|BIGQUERY     -
-      `trigger_name` - The resource name of the trigger that created job.
-      - 'end_time` - Corresponds to time the job finished.     - 'start_time`
-      - Corresponds to time the job finished. * Supported fields for risk
-      analysis jobs:     - `state` - RUNNING|CANCELED|FINISHED|FAILED     -
-      'end_time` - Corresponds to time the job finished.     - 'start_time` -
-      Corresponds to time the job finished. * The operator must be `=` or
-      `!=`.  Examples:  * inspected_storage = cloud_storage AND state = done *
-      inspected_storage = cloud_storage OR inspected_storage = bigquery *
-      inspected_storage = cloud_storage AND (state = done OR state = canceled)
-      * end_time > \"2017-12-12T00:00:00+00:00\"  The length of this field
-      should be no more than 500 characters.
+    filter: Allows filtering.  Supported syntax:  * Filter expressions are
+      made up of one or more restrictions. * Restrictions can be combined by
+      `AND` or `OR` logical operators. A sequence of restrictions implicitly
+      uses `AND`. * A restriction has the form of `{field} {operator}
+      {value}`. * Supported fields/values for inspect jobs:     - `state` -
+      PENDING|RUNNING|CANCELED|FINISHED|FAILED     - `inspected_storage` -
+      DATASTORE|CLOUD_STORAGE|BIGQUERY     - `trigger_name` - The resource
+      name of the trigger that created job.     - 'end_time` - Corresponds to
+      time the job finished.     - 'start_time` - Corresponds to time the job
+      finished. * Supported fields for risk analysis jobs:     - `state` -
+      RUNNING|CANCELED|FINISHED|FAILED     - 'end_time` - Corresponds to time
+      the job finished.     - 'start_time` - Corresponds to time the job
+      finished. * The operator must be `=` or `!=`.  Examples:  *
+      inspected_storage = cloud_storage AND state = done * inspected_storage =
+      cloud_storage OR inspected_storage = bigquery * inspected_storage =
+      cloud_storage AND (state = done OR state = canceled) * end_time >
+      \"2017-12-12T00:00:00+00:00\"  The length of this field should be no
+      more than 500 characters.
     locationId: The geographic location where jobs will be retrieved from. Use
       `-` for all locations. Reserved for future extensions.
-    orderBy: Optional comma separated list of fields to order by, followed by
-      `asc` or `desc` postfix. This list is case-insensitive, default sorting
-      order is ascending, redundant space characters are insignificant.
-      Example: `name asc, end_time asc, create_time desc`  Supported fields
-      are:  - `create_time`: corresponds to time the job was created. -
-      `end_time`: corresponds to time the job ended. - `name`: corresponds to
-      job's name. - `state`: corresponds to `state`
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case-insensitive, default sorting order is
+      ascending, redundant space characters are insignificant.  Example: `name
+      asc, end_time asc, create_time desc`  Supported fields are:  -
+      `create_time`: corresponds to time the job was created. - `end_time`:
+      corresponds to time the job ended. - `name`: corresponds to job's name.
+      - `state`: corresponds to `state`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
     parent: Required. The parent resource name, for example projects/my-
@@ -884,18 +884,18 @@ class DlpProjectsInspectTemplatesListRequest(_messages.Message):
     locationId: The geographic location where inspection templates will be
       retrieved from. Use `-` for all locations. Reserved for future
       extensions.
-    orderBy: Optional comma separated list of fields to order by, followed by
-      `asc` or `desc` postfix. This list is case-insensitive, default sorting
-      order is ascending, redundant space characters are insignificant.
-      Example: `name asc,update_time, create_time desc`  Supported fields are:
-      - `create_time`: corresponds to time the template was created. -
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case-insensitive, default sorting order is
+      ascending, redundant space characters are insignificant.  Example: `name
+      asc,update_time, create_time desc`  Supported fields are:  -
+      `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
       template's display name.
-    pageSize: Optional size of the page, can be limited by server. If zero
-      server returns a page of max size 100.
-    pageToken: Optional page token to continue retrieval. Comes from previous
-      call to `ListInspectTemplates`.
+    pageSize: Size of the page, can be limited by server. If zero server
+      returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from previous call to
+      `ListInspectTemplates`.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
@@ -980,27 +980,27 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
   r"""A DlpProjectsJobTriggersListRequest object.
 
   Fields:
-    filter: Optional. Allows filtering.  Supported syntax:  * Filter
-      expressions are made up of one or more restrictions. * Restrictions can
-      be combined by `AND` or `OR` logical operators. A sequence of
-      restrictions implicitly uses `AND`. * A restriction has the form of
-      `<field> <operator> <value>`. * Supported fields/values for inspect
-      jobs:     - `status` - HEALTHY|PAUSED|CANCELLED     -
-      `inspected_storage` - DATASTORE|CLOUD_STORAGE|BIGQUERY     -
-      'last_run_time` - RFC 3339 formatted timestamp, surrounded by
-      quotation marks. Nanoseconds are ignored.     - 'error_count' - Number
-      of errors that have occurred while running. * The operator must be `=`
-      or `!=` for status and inspected_storage.  Examples:  *
-      inspected_storage = cloud_storage AND status = HEALTHY *
-      inspected_storage = cloud_storage OR inspected_storage = bigquery *
-      inspected_storage = cloud_storage AND (state = PAUSED OR state =
-      HEALTHY) * last_run_time > \"2017-12-12T00:00:00+00:00\"  The length of
-      this field should be no more than 500 characters.
+    filter: Allows filtering.  Supported syntax:  * Filter expressions are
+      made up of one or more restrictions. * Restrictions can be combined by
+      `AND` or `OR` logical operators. A sequence of restrictions implicitly
+      uses `AND`. * A restriction has the form of `{field} {operator}
+      {value}`. * Supported fields/values for inspect jobs:     - `status` -
+      HEALTHY|PAUSED|CANCELLED     - `inspected_storage` -
+      DATASTORE|CLOUD_STORAGE|BIGQUERY     - 'last_run_time` - RFC 3339
+      formatted timestamp, surrounded by     quotation marks. Nanoseconds are
+      ignored.     - 'error_count' - Number of errors that have occurred while
+      running. * The operator must be `=` or `!=` for status and
+      inspected_storage.  Examples:  * inspected_storage = cloud_storage AND
+      status = HEALTHY * inspected_storage = cloud_storage OR
+      inspected_storage = bigquery * inspected_storage = cloud_storage AND
+      (state = PAUSED OR state = HEALTHY) * last_run_time >
+      \"2017-12-12T00:00:00+00:00\"  The length of this field should be no
+      more than 500 characters.
     locationId: The geographic location where job triggers will be retrieved
       from. Use `-` for all locations. Reserved for future extensions.
-    orderBy: Optional comma separated list of triggeredJob fields to order by,
-      followed by `asc` or `desc` postfix. This list is case-insensitive,
-      default sorting order is ascending, redundant space characters are
+    orderBy: Comma separated list of triggeredJob fields to order by, followed
+      by `asc` or `desc` postfix. This list is case-insensitive, default
+      sorting order is ascending, redundant space characters are
       insignificant.  Example: `name asc,update_time, create_time desc`
       Supported fields are:  - `create_time`: corresponds to time the
       JobTrigger was created. - `update_time`: corresponds to time the
@@ -1008,10 +1008,9 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
       time the JobTrigger ran. - `name`: corresponds to JobTrigger's name. -
       `display_name`: corresponds to JobTrigger's display name. - `status`:
       corresponds to JobTrigger's status.
-    pageSize: Optional size of the page, can be limited by a server.
-    pageToken: Optional page token to continue retrieval. Comes from previous
-      call to ListJobTriggers. `order_by` field must not change for subsequent
-      calls.
+    pageSize: Size of the page, can be limited by a server.
+    pageToken: Page token to continue retrieval. Comes from previous call to
+      ListJobTriggers. `order_by` field must not change for subsequent calls.
     parent: Required. The parent resource name, for example `projects/my-
       project-id`.
   """
@@ -1141,18 +1140,18 @@ class DlpProjectsLocationsDeidentifyTemplatesListRequest(_messages.Message):
     locationId: The geographic location where deidentifications templates will
       be retrieved from. Use `-` for all locations. Reserved for future
       extensions.
-    orderBy: Optional comma separated list of fields to order by, followed by
-      `asc` or `desc` postfix. This list is case-insensitive, default sorting
-      order is ascending, redundant space characters are insignificant.
-      Example: `name asc,update_time, create_time desc`  Supported fields are:
-      - `create_time`: corresponds to time the template was created. -
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case-insensitive, default sorting order is
+      ascending, redundant space characters are insignificant.  Example: `name
+      asc,update_time, create_time desc`  Supported fields are:  -
+      `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
       template's display name.
-    pageSize: Optional size of the page, can be limited by server. If zero
-      server returns a page of max size 100.
-    pageToken: Optional page token to continue retrieval. Comes from previous
-      call to `ListDeidentifyTemplates`.
+    pageSize: Size of the page, can be limited by server. If zero server
+      returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from previous call to
+      `ListDeidentifyTemplates`.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
@@ -1240,33 +1239,33 @@ class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
     TypeValueValuesEnum: The type of job. Defaults to `DlpJobType.INSPECT`
 
   Fields:
-    filter: Optional. Allows filtering.  Supported syntax:  * Filter
-      expressions are made up of one or more restrictions. * Restrictions can
-      be combined by `AND` or `OR` logical operators. A sequence of
-      restrictions implicitly uses `AND`. * A restriction has the form of
-      `<field> <operator> <value>`. * Supported fields/values for inspect
-      jobs:     - `state` - PENDING|RUNNING|CANCELED|FINISHED|FAILED     -
-      `inspected_storage` - DATASTORE|CLOUD_STORAGE|BIGQUERY     -
-      `trigger_name` - The resource name of the trigger that created job.
-      - 'end_time` - Corresponds to time the job finished.     - 'start_time`
-      - Corresponds to time the job finished. * Supported fields for risk
-      analysis jobs:     - `state` - RUNNING|CANCELED|FINISHED|FAILED     -
-      'end_time` - Corresponds to time the job finished.     - 'start_time` -
-      Corresponds to time the job finished. * The operator must be `=` or
-      `!=`.  Examples:  * inspected_storage = cloud_storage AND state = done *
-      inspected_storage = cloud_storage OR inspected_storage = bigquery *
-      inspected_storage = cloud_storage AND (state = done OR state = canceled)
-      * end_time > \"2017-12-12T00:00:00+00:00\"  The length of this field
-      should be no more than 500 characters.
+    filter: Allows filtering.  Supported syntax:  * Filter expressions are
+      made up of one or more restrictions. * Restrictions can be combined by
+      `AND` or `OR` logical operators. A sequence of restrictions implicitly
+      uses `AND`. * A restriction has the form of `{field} {operator}
+      {value}`. * Supported fields/values for inspect jobs:     - `state` -
+      PENDING|RUNNING|CANCELED|FINISHED|FAILED     - `inspected_storage` -
+      DATASTORE|CLOUD_STORAGE|BIGQUERY     - `trigger_name` - The resource
+      name of the trigger that created job.     - 'end_time` - Corresponds to
+      time the job finished.     - 'start_time` - Corresponds to time the job
+      finished. * Supported fields for risk analysis jobs:     - `state` -
+      RUNNING|CANCELED|FINISHED|FAILED     - 'end_time` - Corresponds to time
+      the job finished.     - 'start_time` - Corresponds to time the job
+      finished. * The operator must be `=` or `!=`.  Examples:  *
+      inspected_storage = cloud_storage AND state = done * inspected_storage =
+      cloud_storage OR inspected_storage = bigquery * inspected_storage =
+      cloud_storage AND (state = done OR state = canceled) * end_time >
+      \"2017-12-12T00:00:00+00:00\"  The length of this field should be no
+      more than 500 characters.
     locationId: The geographic location where jobs will be retrieved from. Use
       `-` for all locations. Reserved for future extensions.
-    orderBy: Optional comma separated list of fields to order by, followed by
-      `asc` or `desc` postfix. This list is case-insensitive, default sorting
-      order is ascending, redundant space characters are insignificant.
-      Example: `name asc, end_time asc, create_time desc`  Supported fields
-      are:  - `create_time`: corresponds to time the job was created. -
-      `end_time`: corresponds to time the job ended. - `name`: corresponds to
-      job's name. - `state`: corresponds to `state`
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case-insensitive, default sorting order is
+      ascending, redundant space characters are insignificant.  Example: `name
+      asc, end_time asc, create_time desc`  Supported fields are:  -
+      `create_time`: corresponds to time the job was created. - `end_time`:
+      corresponds to time the job ended. - `name`: corresponds to job's name.
+      - `state`: corresponds to `state`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
     parent: Required. The parent resource name, for example projects/my-
@@ -1363,18 +1362,18 @@ class DlpProjectsLocationsInspectTemplatesListRequest(_messages.Message):
     locationId: The geographic location where inspection templates will be
       retrieved from. Use `-` for all locations. Reserved for future
       extensions.
-    orderBy: Optional comma separated list of fields to order by, followed by
-      `asc` or `desc` postfix. This list is case-insensitive, default sorting
-      order is ascending, redundant space characters are insignificant.
-      Example: `name asc,update_time, create_time desc`  Supported fields are:
-      - `create_time`: corresponds to time the template was created. -
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case-insensitive, default sorting order is
+      ascending, redundant space characters are insignificant.  Example: `name
+      asc,update_time, create_time desc`  Supported fields are:  -
+      `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
       template's display name.
-    pageSize: Optional size of the page, can be limited by server. If zero
-      server returns a page of max size 100.
-    pageToken: Optional page token to continue retrieval. Comes from previous
-      call to `ListInspectTemplates`.
+    pageSize: Size of the page, can be limited by server. If zero server
+      returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from previous call to
+      `ListInspectTemplates`.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
@@ -1462,27 +1461,27 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
   r"""A DlpProjectsLocationsJobTriggersListRequest object.
 
   Fields:
-    filter: Optional. Allows filtering.  Supported syntax:  * Filter
-      expressions are made up of one or more restrictions. * Restrictions can
-      be combined by `AND` or `OR` logical operators. A sequence of
-      restrictions implicitly uses `AND`. * A restriction has the form of
-      `<field> <operator> <value>`. * Supported fields/values for inspect
-      jobs:     - `status` - HEALTHY|PAUSED|CANCELLED     -
-      `inspected_storage` - DATASTORE|CLOUD_STORAGE|BIGQUERY     -
-      'last_run_time` - RFC 3339 formatted timestamp, surrounded by
-      quotation marks. Nanoseconds are ignored.     - 'error_count' - Number
-      of errors that have occurred while running. * The operator must be `=`
-      or `!=` for status and inspected_storage.  Examples:  *
-      inspected_storage = cloud_storage AND status = HEALTHY *
-      inspected_storage = cloud_storage OR inspected_storage = bigquery *
-      inspected_storage = cloud_storage AND (state = PAUSED OR state =
-      HEALTHY) * last_run_time > \"2017-12-12T00:00:00+00:00\"  The length of
-      this field should be no more than 500 characters.
+    filter: Allows filtering.  Supported syntax:  * Filter expressions are
+      made up of one or more restrictions. * Restrictions can be combined by
+      `AND` or `OR` logical operators. A sequence of restrictions implicitly
+      uses `AND`. * A restriction has the form of `{field} {operator}
+      {value}`. * Supported fields/values for inspect jobs:     - `status` -
+      HEALTHY|PAUSED|CANCELLED     - `inspected_storage` -
+      DATASTORE|CLOUD_STORAGE|BIGQUERY     - 'last_run_time` - RFC 3339
+      formatted timestamp, surrounded by     quotation marks. Nanoseconds are
+      ignored.     - 'error_count' - Number of errors that have occurred while
+      running. * The operator must be `=` or `!=` for status and
+      inspected_storage.  Examples:  * inspected_storage = cloud_storage AND
+      status = HEALTHY * inspected_storage = cloud_storage OR
+      inspected_storage = bigquery * inspected_storage = cloud_storage AND
+      (state = PAUSED OR state = HEALTHY) * last_run_time >
+      \"2017-12-12T00:00:00+00:00\"  The length of this field should be no
+      more than 500 characters.
     locationId: The geographic location where job triggers will be retrieved
       from. Use `-` for all locations. Reserved for future extensions.
-    orderBy: Optional comma separated list of triggeredJob fields to order by,
-      followed by `asc` or `desc` postfix. This list is case-insensitive,
-      default sorting order is ascending, redundant space characters are
+    orderBy: Comma separated list of triggeredJob fields to order by, followed
+      by `asc` or `desc` postfix. This list is case-insensitive, default
+      sorting order is ascending, redundant space characters are
       insignificant.  Example: `name asc,update_time, create_time desc`
       Supported fields are:  - `create_time`: corresponds to time the
       JobTrigger was created. - `update_time`: corresponds to time the
@@ -1490,10 +1489,9 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
       time the JobTrigger ran. - `name`: corresponds to JobTrigger's name. -
       `display_name`: corresponds to JobTrigger's display name. - `status`:
       corresponds to JobTrigger's status.
-    pageSize: Optional size of the page, can be limited by a server.
-    pageToken: Optional page token to continue retrieval. Comes from previous
-      call to ListJobTriggers. `order_by` field must not change for subsequent
-      calls.
+    pageSize: Size of the page, can be limited by a server.
+    pageToken: Page token to continue retrieval. Comes from previous call to
+      ListJobTriggers. `order_by` field must not change for subsequent calls.
     parent: Required. The parent resource name, for example `projects/my-
       project-id`.
   """
@@ -1570,18 +1568,18 @@ class DlpProjectsLocationsStoredInfoTypesListRequest(_messages.Message):
     locationId: The geographic location where stored infoTypes will be
       retrieved from. Use `-` for all locations. Reserved for future
       extensions.
-    orderBy: Optional comma separated list of fields to order by, followed by
-      `asc` or `desc` postfix. This list is case-insensitive, default sorting
-      order is ascending, redundant space characters are insignificant.
-      Example: `name asc, display_name, create_time desc`  Supported fields
-      are:  - `create_time`: corresponds to time the most recent version of
-      the resource was created. - `state`: corresponds to the state of the
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case-insensitive, default sorting order is
+      ascending, redundant space characters are insignificant.  Example: `name
+      asc, display_name, create_time desc`  Supported fields are:  -
+      `create_time`: corresponds to time the most recent version of the
+      resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
       corresponds to info type's display name.
-    pageSize: Optional size of the page, can be limited by server. If zero
-      server returns a page of max size 100.
-    pageToken: Optional page token to continue retrieval. Comes from previous
-      call to `ListStoredInfoTypes`.
+    pageSize: Size of the page, can be limited by server. If zero server
+      returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from previous call to
+      `ListStoredInfoTypes`.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
@@ -1655,18 +1653,18 @@ class DlpProjectsStoredInfoTypesListRequest(_messages.Message):
     locationId: The geographic location where stored infoTypes will be
       retrieved from. Use `-` for all locations. Reserved for future
       extensions.
-    orderBy: Optional comma separated list of fields to order by, followed by
-      `asc` or `desc` postfix. This list is case-insensitive, default sorting
-      order is ascending, redundant space characters are insignificant.
-      Example: `name asc, display_name, create_time desc`  Supported fields
-      are:  - `create_time`: corresponds to time the most recent version of
-      the resource was created. - `state`: corresponds to the state of the
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case-insensitive, default sorting order is
+      ascending, redundant space characters are insignificant.  Example: `name
+      asc, display_name, create_time desc`  Supported fields are:  -
+      `create_time`: corresponds to time the most recent version of the
+      resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
       corresponds to info type's display name.
-    pageSize: Optional size of the page, can be limited by server. If zero
-      server returns a page of max size 100.
-    pageToken: Optional page token to continue retrieval. Comes from previous
-      call to `ListStoredInfoTypes`.
+    pageSize: Size of the page, can be limited by server. If zero server
+      returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from previous call to
+      `ListStoredInfoTypes`.
     parent: Required. The parent resource name, for example projects/my-
       project-id or organizations/my-org-id.
   """
@@ -1699,7 +1697,7 @@ class GooglePrivacyDlpV2Action(_messages.Message):
   https://cloud.google.com/dlp/docs/concepts-actions to learn more.
 
   Fields:
-    jobNotificationEmails: Enable email notification to project owners and
+    jobNotificationEmails: Enable email notification for project owners and
       editors on job's completion/failure.
     pubSub: Publish a notification to a pubsub topic.
     publishFindingsToCloudDataCatalog: Publish findings to Cloud Datahub.
@@ -1726,14 +1724,12 @@ class GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails(_messages.Message):
   r"""Result of a risk analysis operation request.
 
   Fields:
-    categoricalStatsResult: A GooglePrivacyDlpV2CategoricalStatsResult
-      attribute.
-    deltaPresenceEstimationResult: A
-      GooglePrivacyDlpV2DeltaPresenceEstimationResult attribute.
-    kAnonymityResult: A GooglePrivacyDlpV2KAnonymityResult attribute.
-    kMapEstimationResult: A GooglePrivacyDlpV2KMapEstimationResult attribute.
-    lDiversityResult: A GooglePrivacyDlpV2LDiversityResult attribute.
-    numericalStatsResult: A GooglePrivacyDlpV2NumericalStatsResult attribute.
+    categoricalStatsResult: Categorical stats result
+    deltaPresenceEstimationResult: Delta-presence result
+    kAnonymityResult: K-anonymity result
+    kMapEstimationResult: K-map result
+    lDiversityResult: L-divesity result
+    numericalStatsResult: Numerical stats result
     requestedPrivacyMetric: Privacy metric to compute.
     requestedSourceTable: Input dataset to compute metrics over.
   """
@@ -1757,11 +1753,11 @@ class GooglePrivacyDlpV2AuxiliaryTable(_messages.Message):
   assumed to be zero (and thus, the tuple is highly reidentifiable).
 
   Fields:
-    quasiIds: Quasi-identifier columns. [required]
-    relativeFrequency: The relative frequency column must contain a floating-
-      point number between 0 and 1 (inclusive). Null values are assumed to be
-      zero. [required]
-    table: Auxiliary table location. [required]
+    quasiIds: Required. Quasi-identifier columns.
+    relativeFrequency: Required. The relative frequency column must contain a
+      floating-point number between 0 and 1 (inclusive). Null values are
+      assumed to be zero.
+    table: Required. Auxiliary table location.
   """
 
   quasiIds = _messages.MessageField('GooglePrivacyDlpV2QuasiIdField', 1, repeated=True)
@@ -1928,14 +1924,14 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
     TEXT_UTF8.
 
     Values:
-      BYTES_TYPE_UNSPECIFIED: <no description>
-      IMAGE: <no description>
-      IMAGE_JPEG: <no description>
-      IMAGE_BMP: <no description>
-      IMAGE_PNG: <no description>
-      IMAGE_SVG: <no description>
-      TEXT_UTF8: <no description>
-      AVRO: <no description>
+      BYTES_TYPE_UNSPECIFIED: Unused
+      IMAGE: Any image type.
+      IMAGE_JPEG: jpeg
+      IMAGE_BMP: bmp
+      IMAGE_PNG: png
+      IMAGE_SVG: svg
+      TEXT_UTF8: plain text
+      AVRO: avro
     """
     BYTES_TYPE_UNSPECIFIED = 0
     IMAGE = 1
@@ -1969,7 +1965,7 @@ class GooglePrivacyDlpV2CategoricalStatsConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2CategoricalStatsHistogramBucket(_messages.Message):
-  r"""A GooglePrivacyDlpV2CategoricalStatsHistogramBucket object.
+  r"""Histogram of value frequencies in the column.
 
   Fields:
     bucketSize: Total number of values in this bucket.
@@ -2039,19 +2035,21 @@ class GooglePrivacyDlpV2CharsToIgnore(_messages.Message):
   left alone and skipped.
 
   Enums:
-    CommonCharactersToIgnoreValueValuesEnum:
+    CommonCharactersToIgnoreValueValuesEnum: Common characters to not
+      transform when masking. Useful to avoid removing punctuation.
 
   Fields:
-    charactersToSkip: A string attribute.
-    commonCharactersToIgnore: A CommonCharactersToIgnoreValueValuesEnum
-      attribute.
+    charactersToSkip: Characters to not transform when masking.
+    commonCharactersToIgnore: Common characters to not transform when masking.
+      Useful to avoid removing punctuation.
   """
 
   class CommonCharactersToIgnoreValueValuesEnum(_messages.Enum):
-    r"""CommonCharactersToIgnoreValueValuesEnum enum type.
+    r"""Common characters to not transform when masking. Useful to avoid
+    removing punctuation.
 
     Values:
-      COMMON_CHARS_TO_IGNORE_UNSPECIFIED: <no description>
+      COMMON_CHARS_TO_IGNORE_UNSPECIFIED: Unused.
       NUMERIC: 0-9
       ALPHA_UPPER_CASE: A-Z
       ALPHA_LOWER_CASE: a-z
@@ -2231,23 +2229,22 @@ class GooglePrivacyDlpV2Condition(_messages.Message):
   warning will be given and the condition will evaluate to false.
 
   Enums:
-    OperatorValueValuesEnum: Operator used to compare the field or infoType to
-      the value. [required]
+    OperatorValueValuesEnum: Required. Operator used to compare the field or
+      infoType to the value.
 
   Fields:
-    field: Field within the record this condition is evaluated against.
-      [required]
-    operator: Operator used to compare the field or infoType to the value.
-      [required]
-    value: Value to compare against. [Required, except for `EXISTS` tests.]
+    field: Required. Field within the record this condition is evaluated
+      against.
+    operator: Required. Operator used to compare the field or infoType to the
+      value.
+    value: Value to compare against. [Mandatory, except for `EXISTS` tests.]
   """
 
   class OperatorValueValuesEnum(_messages.Enum):
-    r"""Operator used to compare the field or infoType to the value.
-    [required]
+    r"""Required. Operator used to compare the field or infoType to the value.
 
     Values:
-      RELATIONAL_OPERATOR_UNSPECIFIED: <no description>
+      RELATIONAL_OPERATOR_UNSPECIFIED: Unused
       EQUAL_TO: Equal. Attempts to match even with incompatible types.
       NOT_EQUAL_TO: Not equal to. Attempts to match even with incompatible
         types.
@@ -2275,7 +2272,7 @@ class GooglePrivacyDlpV2Conditions(_messages.Message):
   r"""A collection of conditions.
 
   Fields:
-    conditions: A GooglePrivacyDlpV2Condition attribute.
+    conditions: A collection of conditions.
   """
 
   conditions = _messages.MessageField('GooglePrivacyDlpV2Condition', 1, repeated=True)
@@ -2304,8 +2301,8 @@ class GooglePrivacyDlpV2ContentLocation(_messages.Message):
     containerName: Name of the container where the finding is located. The top
       level name is the source file name or table name. Names of some common
       storage containers are formatted as follows:  * BigQuery tables:
-      `<project_id>:<dataset_id>.<table_id>` * Cloud Storage files:
-      `gs://<bucket>/<path>` * Datastore namespace: <namespace>  Nested names
+      `{project_id}:{dataset_id}.{table_id}` * Cloud Storage files:
+      `gs://{bucket}/{path}` * Datastore namespace: {namespace}  Nested names
       could be absent if the embedded object has no string identifier (for an
       example an image contained within a document).
     containerTimestamp: Findings container modification timestamp, if
@@ -2331,7 +2328,7 @@ class GooglePrivacyDlpV2CreateDeidentifyTemplateRequest(_messages.Message):
   r"""Request message for CreateDeidentifyTemplate.
 
   Fields:
-    deidentifyTemplate: The DeidentifyTemplate to create.
+    deidentifyTemplate: Required. The DeidentifyTemplate to create.
     locationId: The geographic location to store the deidentification
       template. Reserved for future extensions.
     templateId: The template id can contain uppercase and lowercase letters,
@@ -2350,14 +2347,14 @@ class GooglePrivacyDlpV2CreateDlpJobRequest(_messages.Message):
   jobs such as calculating risk metrics or inspecting Google Cloud Storage.
 
   Fields:
-    inspectJob: A GooglePrivacyDlpV2InspectJobConfig attribute.
+    inspectJob: Set to control what and how to inspect.
     jobId: The job id can contain uppercase and lowercase letters, numbers,
       and hyphens; that is, it must match the regular expression:
       `[a-zA-Z\\d-_]+`. The maximum length is 100 characters. Can be empty to
       allow the system to generate one.
     locationId: The geographic location to store and process the job. Reserved
       for future extensions.
-    riskJob: A GooglePrivacyDlpV2RiskAnalysisJobConfig attribute.
+    riskJob: Set to choose what metric to calculate.
   """
 
   inspectJob = _messages.MessageField('GooglePrivacyDlpV2InspectJobConfig', 1)
@@ -2370,7 +2367,7 @@ class GooglePrivacyDlpV2CreateInspectTemplateRequest(_messages.Message):
   r"""Request message for CreateInspectTemplate.
 
   Fields:
-    inspectTemplate: The InspectTemplate to create.
+    inspectTemplate: Required. The InspectTemplate to create.
     locationId: The geographic location to store the inspection template.
       Reserved for future extensions.
     templateId: The template id can contain uppercase and lowercase letters,
@@ -2388,7 +2385,7 @@ class GooglePrivacyDlpV2CreateJobTriggerRequest(_messages.Message):
   r"""Request message for CreateJobTrigger.
 
   Fields:
-    jobTrigger: The JobTrigger to create.
+    jobTrigger: Required. The JobTrigger to create.
     locationId: The geographic location to store the job trigger. Reserved for
       future extensions.
     triggerId: The trigger id can contain uppercase and lowercase letters,
@@ -2406,7 +2403,7 @@ class GooglePrivacyDlpV2CreateStoredInfoTypeRequest(_messages.Message):
   r"""Request message for CreateStoredInfoType.
 
   Fields:
-    config: Configuration of the storedInfoType to create.
+    config: Required. Configuration of the storedInfoType to create.
     locationId: The geographic location to store the stored infoType. Reserved
       for future extensions.
     storedInfoTypeId: The storedInfoType ID can contain uppercase and
@@ -2426,32 +2423,32 @@ class GooglePrivacyDlpV2CryptoDeterministicConfig(_messages.Message):
   output. Uses AES-SIV based on the RFC https://tools.ietf.org/html/rfc5297.
 
   Fields:
-    context: Optional. A context may be used for higher security and
-      maintaining referential integrity such that the same identifier in two
-      different contexts will be given a distinct surrogate. The context is
-      appended to plaintext value being encrypted. On decryption the provided
-      context is validated against the value used during encryption. If a
-      context was provided during encryption, same context must be provided
-      during decryption as well.  If the context is not set, plaintext would
-      be used as is for encryption. If the context is set but:  1. there is no
-      record present when transforming a given value or 2. the field is not
-      present when transforming a given value,  plaintext would be used as is
-      for encryption.  Note that case (1) is expected when an
+    context: A context may be used for higher security and maintaining
+      referential integrity such that the same identifier in two different
+      contexts will be given a distinct surrogate. The context is appended to
+      plaintext value being encrypted. On decryption the provided context is
+      validated against the value used during encryption. If a context was
+      provided during encryption, same context must be provided during
+      decryption as well.  If the context is not set, plaintext would be used
+      as is for encryption. If the context is set but:  1. there is no record
+      present when transforming a given value or 2. the field is not present
+      when transforming a given value,  plaintext would be used as is for
+      encryption.  Note that case (1) is expected when an
       `InfoTypeTransformation` is applied to both structured and non-
       structured `ContentItem`s.
     cryptoKey: The key used by the encryption function.
     surrogateInfoType: The custom info type to annotate the surrogate with.
       This annotation will be applied to the surrogate by prefixing it with
       the name of the custom info type followed by the number of characters
-      comprising the surrogate. The following scheme defines the format: <info
-      type name>(<surrogate character count>):<surrogate>  For example, if the
+      comprising the surrogate. The following scheme defines the format: {info
+      type name}({surrogate character count}):{surrogate}  For example, if the
       name of custom info type is 'MY_TOKEN_INFO_TYPE' and the surrogate is
       'abc', the full replacement value will be: 'MY_TOKEN_INFO_TYPE(3):abc'
       This annotation identifies the surrogate when inspecting content using
       the custom info type 'Surrogate'. This facilitates reversal of the
       surrogate when it occurs in free text.  Note: For record transformations
       where the entire cell in a table is being transformed, surrogates are
-      optional to use. Surrogates are used to denote the location of the token
+      not mandatory. Surrogates are used to denote the location of the token
       and are necessary for re-identification in free form text.  In order for
       inspection to work properly, the name of this info type must not occur
       naturally anywhere in your data; otherwise, inspection may either  -
@@ -2492,9 +2489,9 @@ class GooglePrivacyDlpV2CryptoKey(_messages.Message):
   cannot unwrap the data crypto key.
 
   Fields:
-    kmsWrapped: A GooglePrivacyDlpV2KmsWrappedCryptoKey attribute.
-    transient: A GooglePrivacyDlpV2TransientCryptoKey attribute.
-    unwrapped: A GooglePrivacyDlpV2UnwrappedCryptoKey attribute.
+    kmsWrapped: Kms wrapped key
+    transient: Transient crypto key
+    unwrapped: Unwrapped crypto key
   """
 
   kmsWrapped = _messages.MessageField('GooglePrivacyDlpV2KmsWrappedCryptoKey', 1)
@@ -2516,10 +2513,10 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
   plus warrant referential integrity.
 
   Enums:
-    CommonAlphabetValueValuesEnum:
+    CommonAlphabetValueValuesEnum: Common alphabets.
 
   Fields:
-    commonAlphabet: A CommonAlphabetValueValuesEnum attribute.
+    commonAlphabet: Common alphabets.
     context: The 'tweak', a context may be used for higher security since the
       same identifier in two different contexts won't be given the same
       surrogate. If the context is not set, a default tweak will be used.  If
@@ -2532,7 +2529,7 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
       bytes in big endian byte order such that:  - a 64 bit integer is encoded
       followed by a single byte of value 1 - a string is encoded in UTF-8
       format followed by a single byte of value 2
-    cryptoKey: The key used by the encryption algorithm. [required]
+    cryptoKey: Required. The key used by the encryption algorithm.
     customAlphabet: This is supported by mapping these to the alphanumeric
       characters that the FFX mode natively supports. This happens
       before/after encryption/decryption. Each character listed must appear
@@ -2563,10 +2560,10 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
   """
 
   class CommonAlphabetValueValuesEnum(_messages.Enum):
-    r"""CommonAlphabetValueValuesEnum enum type.
+    r"""Common alphabets.
 
     Values:
-      FFX_COMMON_NATIVE_ALPHABET_UNSPECIFIED: <no description>
+      FFX_COMMON_NATIVE_ALPHABET_UNSPECIFIED: Unused.
       NUMERIC: [0-9] (radix of 10)
       HEXADECIMAL: [0-9A-F] (radix of 16)
       UPPER_CASE_ALPHA_NUMERIC: [0-9A-Z] (radix of 36)
@@ -2702,13 +2699,13 @@ class GooglePrivacyDlpV2DateShiftConfig(_messages.Message):
       context. This results in the same shift for the same context and
       crypto_key. If set, must also set context. Can only be applied to table
       items.
-    lowerBoundDays: For example, -5 means shift date to at most 5 days back in
-      the past. [Required]
-    upperBoundDays: Range of shift in days. Actual shift will be selected at
-      random within this range (inclusive ends). Negative means shift to
-      earlier in time. Must not be more than 365250 days (1000 years) each
-      direction.  For example, 3 means shift date to at most 3 days into the
-      future. [Required]
+    lowerBoundDays: Required. For example, -5 means shift date to at most 5
+      days back in the past.
+    upperBoundDays: Required. Range of shift in days. Actual shift will be
+      selected at random within this range (inclusive ends). Negative means
+      shift to earlier in time. Must not be more than 365250 days (1000 years)
+      each direction.  For example, 3 means shift date to at most 3 days into
+      the future.
   """
 
   context = _messages.MessageField('GooglePrivacyDlpV2FieldId', 1)
@@ -2721,18 +2718,18 @@ class GooglePrivacyDlpV2DateTime(_messages.Message):
   r"""Message for a date time object. e.g. 2018-01-01, 5th August.
 
   Enums:
-    DayOfWeekValueValuesEnum:
+    DayOfWeekValueValuesEnum: Day of week
 
   Fields:
-    date: One or more of the following must be set. All fields are optional,
-      but when set must be valid date or time values.
-    dayOfWeek: A DayOfWeekValueValuesEnum attribute.
-    time: A GoogleTypeTimeOfDay attribute.
-    timeZone: A GooglePrivacyDlpV2TimeZone attribute.
+    date: One or more of the following must be set. Must be a valid date or
+      time value.
+    dayOfWeek: Day of week
+    time: Time of day
+    timeZone: Time zone
   """
 
   class DayOfWeekValueValuesEnum(_messages.Enum):
-    r"""DayOfWeekValueValuesEnum enum type.
+    r"""Day of week
 
     Values:
       DAY_OF_WEEK_UNSPECIFIED: The unspecified day-of-week.
@@ -2785,18 +2782,18 @@ class GooglePrivacyDlpV2DeidentifyContentRequest(_messages.Message):
     deidentifyConfig: Configuration for the de-identification of the content
       item. Items specified here will override the template referenced by the
       deidentify_template_name argument.
-    deidentifyTemplateName: Optional template to use. Any configuration
-      directly specified in deidentify_config will override those set in the
-      template. Singular fields that are set in this request will replace
-      their corresponding fields in the template. Repeated fields are
-      appended. Singular sub-messages and groups are recursively merged.
-    inspectConfig: Configuration for the inspector. Items specified here will
-      override the template referenced by the inspect_template_name argument.
-    inspectTemplateName: Optional template to use. Any configuration directly
-      specified in inspect_config will override those set in the template.
+    deidentifyTemplateName: Template to use. Any configuration directly
+      specified in deidentify_config will override those set in the template.
       Singular fields that are set in this request will replace their
       corresponding fields in the template. Repeated fields are appended.
       Singular sub-messages and groups are recursively merged.
+    inspectConfig: Configuration for the inspector. Items specified here will
+      override the template referenced by the inspect_template_name argument.
+    inspectTemplateName: Template to use. Any configuration directly specified
+      in inspect_config will override those set in the template. Singular
+      fields that are set in this request will replace their corresponding
+      fields in the template. Repeated fields are appended. Singular sub-
+      messages and groups are recursively merged.
     item: The item to de-identify. Will be treated as text.
     locationId: The geographic location to process de-identification. Reserved
       for future extensions.
@@ -2827,17 +2824,15 @@ class GooglePrivacyDlpV2DeidentifyTemplate(_messages.Message):
   See https://cloud.google.com/dlp/docs/concepts-templates to learn more.
 
   Fields:
-    createTime: The creation timestamp of an inspectTemplate, output only
-      field.
+    createTime: Output only. The creation timestamp of an inspectTemplate.
     deidentifyConfig: ///////////// // The core content of the template  //
       ///////////////
     description: Short description (max 256 chars).
     displayName: Display name (max 256 chars).
-    name: The template name. Output only.  The template will have one of the
+    name: Output only. The template name.  The template will have one of the
       following formats: `projects/PROJECT_ID/deidentifyTemplates/TEMPLATE_ID`
       OR `organizations/ORGANIZATION_ID/deidentifyTemplates/TEMPLATE_ID`
-    updateTime: The last update timestamp of an inspectTemplate, output only
-      field.
+    updateTime: Output only. The last update timestamp of an inspectTemplate.
   """
 
   createTime = _messages.StringField(1)
@@ -2859,11 +2854,11 @@ class GooglePrivacyDlpV2DeltaPresenceEstimationConfig(_messages.Message):
     auxiliaryTables: Several auxiliary tables can be used in the analysis.
       Each custom_tag used to tag a quasi-identifiers field must appear in
       exactly one field of one auxiliary table.
-    quasiIds: Fields considered to be quasi-identifiers. No two fields can
-      have the same tag. [required]
+    quasiIds: Required. Fields considered to be quasi-identifiers. No two
+      fields can have the same tag.
     regionCode: ISO 3166-1 alpha-2 region code to use in the statistical
-      modeling. Required if no column is tagged with a region-specific
-      InfoType (like US_ZIP_5) or a region code.
+      modeling. Set if no column is tagged with a region-specific InfoType
+      (like US_ZIP_5) or a region code.
   """
 
   auxiliaryTables = _messages.MessageField('GooglePrivacyDlpV2StatisticalTable', 1, repeated=True)
@@ -3001,7 +2996,7 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
     r"""State of a job.
 
     Values:
-      JOB_STATE_UNSPECIFIED: <no description>
+      JOB_STATE_UNSPECIFIED: Unused.
       PENDING: The job has not yet started.
       RUNNING: The job is currently running.
       DONE: The job is no longer running.
@@ -3019,7 +3014,7 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
     r"""The type of job.
 
     Values:
-      DLP_JOB_TYPE_UNSPECIFIED: <no description>
+      DLP_JOB_TYPE_UNSPECIFIED: Unused
       INSPECT_JOB: The job inspected Google Cloud for sensitive data.
       RISK_ANALYSIS_JOB: The job executed a Risk Analysis computation.
     """
@@ -3067,11 +3062,10 @@ class GooglePrivacyDlpV2EntityId(_messages.Message):
 
 class GooglePrivacyDlpV2Error(_messages.Message):
   r"""Details information about an error encountered during job execution or
-  the results of an unsuccessful activation of the JobTrigger. Output only
-  field.
+  the results of an unsuccessful activation of the JobTrigger.
 
   Fields:
-    details: A GoogleRpcStatus attribute.
+    details: Detailed error codes and messages.
     timestamps: The times the error occurred.
   """
 
@@ -3150,7 +3144,7 @@ class GooglePrivacyDlpV2Expressions(_messages.Message):
       conditions. Default and currently only supported value is `AND`.
 
   Fields:
-    conditions: A GooglePrivacyDlpV2Conditions attribute.
+    conditions: Conditions to apply to the expression.
     logicalOperator: The operator to apply to the result of conditions.
       Default and currently only supported value is `AND`.
   """
@@ -3160,8 +3154,8 @@ class GooglePrivacyDlpV2Expressions(_messages.Message):
     currently only supported value is `AND`.
 
     Values:
-      LOGICAL_OPERATOR_UNSPECIFIED: <no description>
-      AND: <no description>
+      LOGICAL_OPERATOR_UNSPECIFIED: Unused
+      AND: Conditional AND
     """
     LOGICAL_OPERATOR_UNSPECIFIED = 0
     AND = 1
@@ -3187,11 +3181,10 @@ class GooglePrivacyDlpV2FieldTransformation(_messages.Message):
     condition: Only apply the transformation if the condition evaluates to
       true for the given `RecordCondition`. The conditions are allowed to
       reference fields that are not used in the actual transformation.
-      [optional]  Example Use Cases:  - Apply a different bucket
-      transformation to an age column if the zip code column for the same
-      record is within a specific range. - Redact a field if the date of birth
-      field is greater than 85.
-    fields: Input field(s) to apply the transformation to. [required]
+      Example Use Cases:  - Apply a different bucket transformation to an age
+      column if the zip code column for the same record is within a specific
+      range. - Redact a field if the date of birth field is greater than 85.
+    fields: Required. Input field(s) to apply the transformation to.
     infoTypeTransformations: Treat the contents of the field as free text, and
       selectively transform content that matches an `InfoType`.
     primitiveTransformation: Apply the transformation to the entire field.
@@ -3274,7 +3267,7 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
 
 
 class GooglePrivacyDlpV2FindingLimits(_messages.Message):
-  r"""A GooglePrivacyDlpV2FindingLimits object.
+  r"""Configuration to control the number of findings returned.
 
   Fields:
     maxFindingsPerInfoType: Configuration of findings limit given for
@@ -3298,7 +3291,7 @@ class GooglePrivacyDlpV2FixedSizeBucketingConfig(_messages.Message):
   can provide all of this functionality, but requires more configuration. This
   message is provided as a convenience to the user for simple bucketing
   strategies.  The transformed value will be a hyphenated string of
-  <lower_bound>-<upper_bound>, i.e if lower_bound = 10 and upper_bound = 20
+  {lower_bound}-{upper_bound}, i.e if lower_bound = 10 and upper_bound = 20
   all values that are within this bucket will be replaced with "10-20".  This
   can be used on data of type: double, long.  If the bound Value type differs
   from the type of data being transformed, we will first attempt converting
@@ -3307,19 +3300,19 @@ class GooglePrivacyDlpV2FixedSizeBucketingConfig(_messages.Message):
   learn more.
 
   Fields:
-    bucketSize: Size of each bucket (except for minimum and maximum buckets).
-      So if `lower_bound` = 10, `upper_bound` = 89, and `bucket_size` = 10,
-      then the following buckets would be used: -10, 10-20, 20-30, 30-40,
-      40-50, 50-60, 60-70, 70-80, 80-89, 89+. Precision up to 2 decimals
-      works. [Required].
-    lowerBound: Lower bound value of buckets. All values less than
+    bucketSize: Required. Size of each bucket (except for minimum and maximum
+      buckets). So if `lower_bound` = 10, `upper_bound` = 89, and
+      `bucket_size` = 10, then the following buckets would be used: -10,
+      10-20, 20-30, 30-40, 40-50, 50-60, 60-70, 70-80, 80-89, 89+. Precision
+      up to 2 decimals works.
+    lowerBound: Required. Lower bound value of buckets. All values less than
       `lower_bound` are grouped together into a single bucket; for example if
       `lower_bound` = 10, then all values less than 10 are replaced with the
-      value "-10". [Required].
-    upperBound: Upper bound value of buckets. All values greater than
-      upper_bound are grouped together into a single bucket; for example if
-      `upper_bound` = 89, then all values greater than 89 are replaced with
-      the value "89+". [Required].
+      value "-10".
+    upperBound: Required. Upper bound value of buckets. All values greater
+      than upper_bound are grouped together into a single bucket; for example
+      if `upper_bound` = 89, then all values greater than 89 are replaced with
+      the value "89+".
   """
 
   bucketSize = _messages.FloatField(1)
@@ -3463,8 +3456,8 @@ class GooglePrivacyDlpV2InfoTypeTransformation(_messages.Message):
     infoTypes: InfoTypes to apply the transformation to. An empty list will
       cause this transformation to apply to all findings that correspond to
       infoTypes that were requested in `InspectConfig`.
-    primitiveTransformation: Primitive transformation to apply to the
-      infoType. [required]
+    primitiveTransformation: Required. Primitive transformation to apply to
+      the infoType.
   """
 
   infoTypes = _messages.MessageField('GooglePrivacyDlpV2InfoType', 1, repeated=True)
@@ -3477,8 +3470,8 @@ class GooglePrivacyDlpV2InfoTypeTransformations(_messages.Message):
   is applied to only values that were identified as a specific info_type.
 
   Fields:
-    transformations: Transformation for each infoType. Cannot specify more
-      than one for a given infoType. [required]
+    transformations: Required. Transformation for each infoType. Cannot
+      specify more than one for a given infoType.
   """
 
   transformations = _messages.MessageField('GooglePrivacyDlpV2InfoTypeTransformation', 1, repeated=True)
@@ -3512,7 +3505,7 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
       precise control and predictability as to what detectors are run you
       should specify specific InfoTypes listed in the reference, otherwise a
       default list will be used, which may change over time.
-    limits: A GooglePrivacyDlpV2FindingLimits attribute.
+    limits: Configuration to control the number of findings returned.
     minLikelihood: Only returns findings equal or above this threshold. The
       default is POSSIBLE. See https://cloud.google.com/dlp/docs/likelihood to
       learn more.
@@ -3568,11 +3561,11 @@ class GooglePrivacyDlpV2InspectContentRequest(_messages.Message):
   Fields:
     inspectConfig: Configuration for the inspector. What specified here will
       override the template referenced by the inspect_template_name argument.
-    inspectTemplateName: Optional template to use. Any configuration directly
-      specified in inspect_config will override those set in the template.
-      Singular fields that are set in this request will replace their
-      corresponding fields in the template. Repeated fields are appended.
-      Singular sub-messages and groups are recursively merged.
+    inspectTemplateName: Template to use. Any configuration directly specified
+      in inspect_config will override those set in the template. Singular
+      fields that are set in this request will replace their corresponding
+      fields in the template. Repeated fields are appended. Singular sub-
+      messages and groups are recursively merged.
     item: The item to inspect.
     locationId: The geographic location to process content inspection.
       Reserved for future extensions.
@@ -3607,7 +3600,7 @@ class GooglePrivacyDlpV2InspectDataSourceDetails(_messages.Message):
 
 
 class GooglePrivacyDlpV2InspectJobConfig(_messages.Message):
-  r"""A GooglePrivacyDlpV2InspectJobConfig object.
+  r"""Controls what and how to inspect for findings.
 
   Fields:
     actions: Actions to execute at the completion of the job.
@@ -3648,17 +3641,15 @@ class GooglePrivacyDlpV2InspectTemplate(_messages.Message):
   templates to learn more.
 
   Fields:
-    createTime: The creation timestamp of an inspectTemplate, output only
-      field.
+    createTime: Output only. The creation timestamp of an inspectTemplate.
     description: Short description (max 256 chars).
     displayName: Display name (max 256 chars).
     inspectConfig: The core content of the template. Configuration of the
       scanning process.
-    name: The template name. Output only.  The template will have one of the
+    name: Output only. The template name.  The template will have one of the
       following formats: `projects/PROJECT_ID/inspectTemplates/TEMPLATE_ID` OR
-      `organizations/ORGANIZATION_ID/inspectTemplates/TEMPLATE_ID`
-    updateTime: The last update timestamp of an inspectTemplate, output only
-      field.
+      `organizations/ORGANIZATION_ID/inspectTemplates/TEMPLATE_ID`;
+    updateTime: Output only. The last update timestamp of an inspectTemplate.
   """
 
   createTime = _messages.StringField(1)
@@ -3709,35 +3700,34 @@ class GooglePrivacyDlpV2JobTrigger(_messages.Message):
   https://cloud.google.com/dlp/docs/concepts-job-triggers to learn more.
 
   Enums:
-    StatusValueValuesEnum: A status for this trigger. [required]
+    StatusValueValuesEnum: Required. A status for this trigger.
 
   Fields:
-    createTime: The creation timestamp of a triggeredJob, output only field.
+    createTime: Output only. The creation timestamp of a triggeredJob.
     description: User provided description (max 256 chars)
     displayName: Display name (max 100 chars)
-    errors: A stream of errors encountered when the trigger was activated.
-      Repeated errors may result in the JobTrigger automatically being paused.
-      Will return the last 100 errors. Whenever the JobTrigger is modified
-      this list will be cleared. Output only field.
-    inspectJob: A GooglePrivacyDlpV2InspectJobConfig attribute.
-    lastRunTime: The timestamp of the last time this trigger executed, output
-      only field.
+    errors: Output only. A stream of errors encountered when the trigger was
+      activated. Repeated errors may result in the JobTrigger automatically
+      being paused. Will return the last 100 errors. Whenever the JobTrigger
+      is modified this list will be cleared.
+    inspectJob: For inspect jobs, a snapshot of the configuration.
+    lastRunTime: Output only. The timestamp of the last time this trigger
+      executed.
     name: Unique resource name for the triggeredJob, assigned by the service
       when the triggeredJob is created, for example `projects/dlp-test-
       project/jobTriggers/53234423`.
-    status: A status for this trigger. [required]
+    status: Required. A status for this trigger.
     triggers: A list of triggers which will be OR'ed together. Only one in the
       list needs to trigger for a job to be started. The list may contain only
       a single Schedule trigger and must have at least one object.
-    updateTime: The last update timestamp of a triggeredJob, output only
-      field.
+    updateTime: Output only. The last update timestamp of a triggeredJob.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""A status for this trigger. [required]
+    r"""Required. A status for this trigger.
 
     Values:
-      STATUS_UNSPECIFIED: <no description>
+      STATUS_UNSPECIFIED: Unused.
       HEALTHY: Trigger is healthy.
       PAUSED: Trigger is temporarily paused.
       CANCELLED: Trigger is cancelled and can not be resumed.
@@ -3763,12 +3753,12 @@ class GooglePrivacyDlpV2KAnonymityConfig(_messages.Message):
   r"""k-anonymity metric, used for analysis of reidentification risk.
 
   Fields:
-    entityId: Optional message indicating that multiple rows might be
-      associated to a single individual. If the same entity_id is associated
-      to multiple quasi-identifier tuples over distinct rows, we consider the
-      entire collection of tuples as the composite quasi-identifier. This
-      collection is a multiset: the order in which the different tuples appear
-      in the dataset is ignored, but their frequency is taken into account.
+    entityId: Message indicating that multiple rows might be associated to a
+      single individual. If the same entity_id is associated to multiple
+      quasi-identifier tuples over distinct rows, we consider the entire
+      collection of tuples as the composite quasi-identifier. This collection
+      is a multiset: the order in which the different tuples appear in the
+      dataset is ignored, but their frequency is taken into account.
       Important note: a maximum of 1000 rows can be associated to a single
       entity ID. If more rows are associated with the same entity ID, some
       might be ignored.
@@ -3799,7 +3789,7 @@ class GooglePrivacyDlpV2KAnonymityEquivalenceClass(_messages.Message):
 
 
 class GooglePrivacyDlpV2KAnonymityHistogramBucket(_messages.Message):
-  r"""A GooglePrivacyDlpV2KAnonymityHistogramBucket object.
+  r"""Histogram of k-anonymity equivalence classes.
 
   Fields:
     bucketSize: Total number of equivalence classes in this bucket.
@@ -3837,18 +3827,17 @@ class GooglePrivacyDlpV2KMapEstimationConfig(_messages.Message):
   dataset is statistically modeled instead of being perfectly known. This can
   be done using publicly available data (like the US Census), or using a
   custom statistical model (indicated as one or several BigQuery tables), or
-  by extrapolating from the distribution of values in the input dataset. A
-  column with a semantic tag attached.
+  by extrapolating from the distribution of values in the input dataset.
 
   Fields:
     auxiliaryTables: Several auxiliary tables can be used in the analysis.
       Each custom_tag used to tag a quasi-identifiers column must appear in
       exactly one column of one auxiliary table.
-    quasiIds: Fields considered to be quasi-identifiers. No two columns can
-      have the same tag. [required]
+    quasiIds: Required. Fields considered to be quasi-identifiers. No two
+      columns can have the same tag.
     regionCode: ISO 3166-1 alpha-2 region code to use in the statistical
-      modeling. Required if no column is tagged with a region-specific
-      InfoType (like US_ZIP_5) or a region code.
+      modeling. Set if no column is tagged with a region-specific InfoType
+      (like US_ZIP_5) or a region code.
   """
 
   auxiliaryTables = _messages.MessageField('GooglePrivacyDlpV2AuxiliaryTable', 1, repeated=True)
@@ -3952,9 +3941,9 @@ class GooglePrivacyDlpV2KmsWrappedCryptoKey(_messages.Message):
   a kms-wrapped crypto key: dlp.kms.encrypt
 
   Fields:
-    cryptoKeyName: The resource name of the KMS CryptoKey to use for
-      unwrapping. [required]
-    wrappedKey: The wrapped data crypto key. [required]
+    cryptoKeyName: Required. The resource name of the KMS CryptoKey to use for
+      unwrapping.
+    wrappedKey: Required. The wrapped data crypto key.
   """
 
   cryptoKeyName = _messages.StringField(1)
@@ -3994,7 +3983,7 @@ class GooglePrivacyDlpV2LDiversityEquivalenceClass(_messages.Message):
 
 
 class GooglePrivacyDlpV2LDiversityHistogramBucket(_messages.Message):
-  r"""A GooglePrivacyDlpV2LDiversityHistogramBucket object.
+  r"""Histogram of l-diversity equivalence class sensitive value frequencies.
 
   Fields:
     bucketSize: Total number of equivalence classes in this bucket.
@@ -4284,7 +4273,7 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
     schema.
 
     Values:
-      OUTPUT_SCHEMA_UNSPECIFIED: <no description>
+      OUTPUT_SCHEMA_UNSPECIFIED: Unused.
       BASIC_COLUMNS: Basic schema including only `info_type`, `quote`,
         `certainty`, and `timestamp`.
       GCS_COLUMNS: Schema tailored to findings from scanning Google Cloud
@@ -4347,21 +4336,17 @@ class GooglePrivacyDlpV2PrimitiveTransformation(_messages.Message):
   r"""A rule for transforming a value.
 
   Fields:
-    bucketingConfig: A GooglePrivacyDlpV2BucketingConfig attribute.
-    characterMaskConfig: A GooglePrivacyDlpV2CharacterMaskConfig attribute.
-    cryptoDeterministicConfig: A GooglePrivacyDlpV2CryptoDeterministicConfig
-      attribute.
-    cryptoHashConfig: A GooglePrivacyDlpV2CryptoHashConfig attribute.
-    cryptoReplaceFfxFpeConfig: A GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig
-      attribute.
-    dateShiftConfig: A GooglePrivacyDlpV2DateShiftConfig attribute.
-    fixedSizeBucketingConfig: A GooglePrivacyDlpV2FixedSizeBucketingConfig
-      attribute.
-    redactConfig: A GooglePrivacyDlpV2RedactConfig attribute.
-    replaceConfig: A GooglePrivacyDlpV2ReplaceValueConfig attribute.
-    replaceWithInfoTypeConfig: A GooglePrivacyDlpV2ReplaceWithInfoTypeConfig
-      attribute.
-    timePartConfig: A GooglePrivacyDlpV2TimePartConfig attribute.
+    bucketingConfig: Bucketing
+    characterMaskConfig: Mask
+    cryptoDeterministicConfig: Deterministic Crypto
+    cryptoHashConfig: Crypto
+    cryptoReplaceFfxFpeConfig: Ffx-Fpe
+    dateShiftConfig: Date Shift
+    fixedSizeBucketingConfig: Fixed size bucketing
+    redactConfig: Redact
+    replaceConfig: Replace
+    replaceWithInfoTypeConfig: Replace with infotype
+    timePartConfig: Time extraction
   """
 
   bucketingConfig = _messages.MessageField('GooglePrivacyDlpV2BucketingConfig', 1)
@@ -4381,14 +4366,12 @@ class GooglePrivacyDlpV2PrivacyMetric(_messages.Message):
   r"""Privacy metric to compute for reidentification risk analysis.
 
   Fields:
-    categoricalStatsConfig: A GooglePrivacyDlpV2CategoricalStatsConfig
-      attribute.
-    deltaPresenceEstimationConfig: A
-      GooglePrivacyDlpV2DeltaPresenceEstimationConfig attribute.
-    kAnonymityConfig: A GooglePrivacyDlpV2KAnonymityConfig attribute.
-    kMapEstimationConfig: A GooglePrivacyDlpV2KMapEstimationConfig attribute.
-    lDiversityConfig: A GooglePrivacyDlpV2LDiversityConfig attribute.
-    numericalStatsConfig: A GooglePrivacyDlpV2NumericalStatsConfig attribute.
+    categoricalStatsConfig: Categorical stats
+    deltaPresenceEstimationConfig: delta-presence
+    kAnonymityConfig: K-anonymity
+    kMapEstimationConfig: k-map
+    lDiversityConfig: l-diversity
+    numericalStatsConfig: Numerical stats
   """
 
   categoricalStatsConfig = _messages.MessageField('GooglePrivacyDlpV2CategoricalStatsConfig', 1)
@@ -4472,7 +4455,7 @@ class GooglePrivacyDlpV2QuasiId(_messages.Message):
     customTag: A column can be tagged with a custom tag. In this case, the
       user must indicate an auxiliary table that contains statistical
       information on the possible values of this column (below).
-    field: Identifies the column. [required]
+    field: Required. Identifies the column.
     inferred: If no semantic tag is indicated, we infer the statistical model
       from the distribution of values in the input data
     infoType: A column can be tagged with a InfoType to use the relevant
@@ -4493,8 +4476,8 @@ class GooglePrivacyDlpV2QuasiIdField(_messages.Message):
   the data corresponds to which column in the statistical model.
 
   Fields:
-    customTag: A string attribute.
-    field: A GooglePrivacyDlpV2FieldId attribute.
+    customTag: A auxiliary field.
+    field: Identifies the column.
   """
 
   customTag = _messages.StringField(1)
@@ -4506,8 +4489,10 @@ class GooglePrivacyDlpV2QuasiIdentifierField(_messages.Message):
   the data corresponds to which column in the statistical model.
 
   Fields:
-    customTag: A string attribute.
-    field: A GooglePrivacyDlpV2FieldId attribute.
+    customTag: A column can be tagged with a custom tag. In this case, the
+      user must indicate an auxiliary table that contains statistical
+      information on the possible values of this column (below).
+    field: Identifies the column.
   """
 
   customTag = _messages.StringField(1)
@@ -4598,7 +4583,7 @@ class GooglePrivacyDlpV2RecordTransformations(_messages.Message):
       transformations.
     recordSuppressions: Configuration defining which records get suppressed
       entirely. Records that match any suppression rule are omitted from the
-      output [optional].
+      output.
   """
 
   fieldTransformations = _messages.MessageField('GooglePrivacyDlpV2FieldTransformation', 1, repeated=True)
@@ -4673,11 +4658,11 @@ class GooglePrivacyDlpV2ReidentifyContentRequest(_messages.Message):
 
   Fields:
     inspectConfig: Configuration for the inspector.
-    inspectTemplateName: Optional template to use. Any configuration directly
-      specified in `inspect_config` will override those set in the template.
-      Singular fields that are set in this request will replace their
-      corresponding fields in the template. Repeated fields are appended.
-      Singular sub-messages and groups are recursively merged.
+    inspectTemplateName: Template to use. Any configuration directly specified
+      in `inspect_config` will override those set in the template. Singular
+      fields that are set in this request will replace their corresponding
+      fields in the template. Repeated fields are appended. Singular sub-
+      messages and groups are recursively merged.
     item: The item to re-identify. Will be treated as text.
     locationId: The geographic location to process content reidentification.
       Reserved for future extensions.
@@ -4689,8 +4674,8 @@ class GooglePrivacyDlpV2ReidentifyContentRequest(_messages.Message):
       reverse. This requires that only reversible transformations be provided
       here. The reversible transformations are:   -
       `CryptoDeterministicConfig`  - `CryptoReplaceFfxFpeConfig`
-    reidentifyTemplateName: Optional template to use. References an instance
-      of `DeidentifyTemplate`. Any configuration directly specified in
+    reidentifyTemplateName: Template to use. References an instance of
+      `DeidentifyTemplate`. Any configuration directly specified in
       `reidentify_config` or `inspect_config` will override those set in the
       template. Singular fields that are set in this request will replace
       their corresponding fields in the template. Repeated fields are
@@ -4732,10 +4717,10 @@ class GooglePrivacyDlpV2ReplaceWithInfoTypeConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2RequestedOptions(_messages.Message):
-  r"""A GooglePrivacyDlpV2RequestedOptions object.
+  r"""Snapshot of the inspection configuration.
 
   Fields:
-    jobConfig: A GooglePrivacyDlpV2InspectJobConfig attribute.
+    jobConfig: Inspect config.
     snapshotInspectTemplate: If run with an InspectTemplate, a snapshot of its
       state at the time of this run.
   """
@@ -4777,10 +4762,10 @@ class GooglePrivacyDlpV2RiskAnalysisJobConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2Row(_messages.Message):
-  r"""A GooglePrivacyDlpV2Row object.
+  r"""Values of the row.
 
   Fields:
-    values: A GooglePrivacyDlpV2Value attribute.
+    values: Individual cells.
   """
 
   values = _messages.MessageField('GooglePrivacyDlpV2Value', 1, repeated=True)
@@ -4792,7 +4777,7 @@ class GooglePrivacyDlpV2SaveFindings(_messages.Message):
   Compatible with: Inspect, Risk
 
   Fields:
-    outputConfig: A GooglePrivacyDlpV2OutputStorageConfig attribute.
+    outputConfig: Location to store findings outside of DLP.
   """
 
   outputConfig = _messages.MessageField('GooglePrivacyDlpV2OutputStorageConfig', 1)
@@ -4821,11 +4806,11 @@ class GooglePrivacyDlpV2StatisticalTable(_messages.Message):
   assumed to be zero (and thus, the tuple is highly reidentifiable).
 
   Fields:
-    quasiIds: Quasi-identifier columns. [required]
-    relativeFrequency: The relative frequency column must contain a floating-
-      point number between 0 and 1 (inclusive). Null values are assumed to be
-      zero. [required]
-    table: Auxiliary table location. [required]
+    quasiIds: Required. Quasi-identifier columns.
+    relativeFrequency: Required. The relative frequency column must contain a
+      floating-point number between 0 and 1 (inclusive). Null values are
+      assumed to be zero.
+    table: Required. Auxiliary table location.
   """
 
   quasiIds = _messages.MessageField('GooglePrivacyDlpV2QuasiIdentifierField', 1, repeated=True)
@@ -4908,10 +4893,10 @@ class GooglePrivacyDlpV2StoredInfoTypeVersion(_messages.Message):
     errors: Errors that occurred when creating this storedInfoType version, or
       anomalies detected in the storedInfoType data that render it unusable.
       Only the five most recent errors will be displayed, with the most recent
-      error appearing first. <p>For example, some of the data for stored
-      custom dictionaries is put in the user's Google Cloud Storage bucket,
-      and if this data is modified or deleted by the user or another system,
-      the dictionary becomes invalid. <p>If any errors occur, fix the problem
+      error appearing first.  For example, some of the data for stored custom
+      dictionaries is put in the user's Google Cloud Storage bucket, and if
+      this data is modified or deleted by the user or another system, the
+      dictionary becomes invalid.  If any errors occur, fix the problem
       indicated by the error message and use the UpdateStoredInfoType API
       method to create another version of the storedInfoType to continue using
       it, reusing the same `config` if it was not the source of the error.
@@ -4925,7 +4910,7 @@ class GooglePrivacyDlpV2StoredInfoTypeVersion(_messages.Message):
     during dictionary creation.
 
     Values:
-      STORED_INFO_TYPE_STATE_UNSPECIFIED: <no description>
+      STORED_INFO_TYPE_STATE_UNSPECIFIED: Unused
       PENDING: StoredInfoType version is being created.
       READY: StoredInfoType version is ready for use.
       FAILED: StoredInfoType creation failed. All relevant error messages are
@@ -4969,22 +4954,22 @@ class GooglePrivacyDlpV2SummaryResult(_messages.Message):
   `TransformationResultCode` and error details occurred.
 
   Enums:
-    CodeValueValuesEnum:
+    CodeValueValuesEnum: Outcome of the transformation.
 
   Fields:
-    code: A CodeValueValuesEnum attribute.
-    count: A string attribute.
+    code: Outcome of the transformation.
+    count: Number of transformations counted by this result.
     details: A place for warnings or errors to show up if a transformation
       didn't work as expected.
   """
 
   class CodeValueValuesEnum(_messages.Enum):
-    r"""CodeValueValuesEnum enum type.
+    r"""Outcome of the transformation.
 
     Values:
-      TRANSFORMATION_RESULT_CODE_UNSPECIFIED: <no description>
-      SUCCESS: <no description>
-      ERROR: <no description>
+      TRANSFORMATION_RESULT_CODE_UNSPECIFIED: Unused
+      SUCCESS: Transformation completed without an error.
+      ERROR: Transformation had an error.
     """
     TRANSFORMATION_RESULT_CODE_UNSPECIFIED = 0
     SUCCESS = 1
@@ -5013,8 +4998,8 @@ class GooglePrivacyDlpV2Table(_messages.Message):
   text#inspecting_a_table to learn more.
 
   Fields:
-    headers: A GooglePrivacyDlpV2FieldId attribute.
-    rows: A GooglePrivacyDlpV2Row attribute.
+    headers: Headers of the table.
+    rows: Rows of the table.
   """
 
   headers = _messages.MessageField('GooglePrivacyDlpV2FieldId', 1, repeated=True)
@@ -5032,13 +5017,13 @@ class GooglePrivacyDlpV2TableLocation(_messages.Message):
 
 
 class GooglePrivacyDlpV2TaggedField(_messages.Message):
-  r"""A GooglePrivacyDlpV2TaggedField object.
+  r"""A column with a semantic tag attached.
 
   Fields:
     customTag: A column can be tagged with a custom tag. In this case, the
       user must indicate an auxiliary table that contains statistical
       information on the possible values of this column (below).
-    field: Identifies the column. [required]
+    field: Required. Identifies the column.
     inferred: If no semantic tag is indicated, we infer the statistical model
       from the distribution of values in the input data
     infoType: A column can be tagged with a InfoType to use the relevant
@@ -5065,17 +5050,17 @@ class GooglePrivacyDlpV2TimePartConfig(_messages.Message):
   portion of the value.
 
   Enums:
-    PartToExtractValueValuesEnum:
+    PartToExtractValueValuesEnum: The part of the time to keep.
 
   Fields:
-    partToExtract: A PartToExtractValueValuesEnum attribute.
+    partToExtract: The part of the time to keep.
   """
 
   class PartToExtractValueValuesEnum(_messages.Enum):
-    r"""PartToExtractValueValuesEnum enum type.
+    r"""The part of the time to keep.
 
     Values:
-      TIME_PART_UNSPECIFIED: <no description>
+      TIME_PART_UNSPECIFIED: Unused
       YEAR: [0-9999]
       MONTH: [1-12]
       DAY_OF_MONTH: [1-31]
@@ -5095,7 +5080,7 @@ class GooglePrivacyDlpV2TimePartConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2TimeZone(_messages.Message):
-  r"""A GooglePrivacyDlpV2TimeZone object.
+  r"""Time zone of the date time object.
 
   Fields:
     offsetMinutes: Set only if the offset can be determined. Positive for time
@@ -5145,8 +5130,8 @@ class GooglePrivacyDlpV2TransformationErrorHandling(_messages.Message):
   the response as part of the `TransformationOverviews`.
 
   Fields:
-    leaveUntransformed: A GooglePrivacyDlpV2LeaveUntransformed attribute.
-    throwError: A GooglePrivacyDlpV2ThrowError attribute.
+    leaveUntransformed: Ignore errors
+    throwError: Throw an error
   """
 
   leaveUntransformed = _messages.MessageField('GooglePrivacyDlpV2LeaveUntransformed', 1)
@@ -5176,7 +5161,8 @@ class GooglePrivacyDlpV2TransformationSummary(_messages.Message):
       list will contain all of them; otherwise, only one is supplied.
     infoType: Set if the transformation was limited to a specific InfoType.
     recordSuppress: The specific suppression option these stats apply to.
-    results: A GooglePrivacyDlpV2SummaryResult attribute.
+    results: Collection of all transformations that took place or had an
+      error.
     transformation: The specific transformation these stats apply to.
     transformedBytes: Total size in bytes that were transformed in some way.
   """
@@ -5195,7 +5181,7 @@ class GooglePrivacyDlpV2TransientCryptoKey(_messages.Message):
   discarded after the request finishes.
 
   Fields:
-    name: Name of the key. [required] This is an arbitrary string used to
+    name: Required. Name of the key. This is an arbitrary string used to
       differentiate different keys. A unique key is generated per name: two
       separate `TransientCryptoKey` protos share the same generated key if
       their names are the same. When the data crypto key is generated, this
@@ -5221,7 +5207,7 @@ class GooglePrivacyDlpV2UnwrappedCryptoKey(_messages.Message):
   the key. Choose another type of key if possible.
 
   Fields:
-    key: A 128/192/256 bit key. [required]
+    key: Required. A 128/192/256 bit key.
   """
 
   key = _messages.BytesField(1)
@@ -5286,21 +5272,21 @@ class GooglePrivacyDlpV2Value(_messages.Message):
   data.
 
   Enums:
-    DayOfWeekValueValueValuesEnum:
+    DayOfWeekValueValueValuesEnum: day of week
 
   Fields:
-    booleanValue: A boolean attribute.
-    dateValue: A GoogleTypeDate attribute.
-    dayOfWeekValue: A DayOfWeekValueValueValuesEnum attribute.
-    floatValue: A number attribute.
-    integerValue: A string attribute.
-    stringValue: A string attribute.
-    timeValue: A GoogleTypeTimeOfDay attribute.
-    timestampValue: A string attribute.
+    booleanValue: boolean
+    dateValue: date
+    dayOfWeekValue: day of week
+    floatValue: float
+    integerValue: integer
+    stringValue: string
+    timeValue: time of day
+    timestampValue: timestamp
   """
 
   class DayOfWeekValueValueValuesEnum(_messages.Enum):
-    r"""DayOfWeekValueValueValuesEnum enum type.
+    r"""day of week
 
     Values:
       DAY_OF_WEEK_UNSPECIFIED: The unspecified day-of-week.

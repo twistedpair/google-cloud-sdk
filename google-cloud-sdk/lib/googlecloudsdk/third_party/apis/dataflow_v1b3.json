@@ -1446,7 +1446,7 @@
     },
     "ListJobsResponse": {
       "id": "ListJobsResponse",
-      "description": "Response to a request to list Cloud Dataflow jobs.  This may be a partial\nresponse, depending on the page size in the ListJobsRequest.",
+      "description": "Response to a request to list Cloud Dataflow jobs in a project. This might\nbe a partial response, depending on the page size in the ListJobsRequest.\nHowever, if the project does not have any jobs, an instance of\nListJobsResponse is not returned and the requests's response\nbody is empty {}.",
       "type": "object",
       "properties": {
         "jobs": {

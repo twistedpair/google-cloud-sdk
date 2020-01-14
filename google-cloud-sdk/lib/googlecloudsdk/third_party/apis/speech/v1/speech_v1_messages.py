@@ -387,8 +387,6 @@ class RecognitionMetadata(_messages.Message):
       be recognized.
     microphoneDistance: The audio type that most closely describes the audio
       being recognized.
-    obfuscatedId: Obfuscated (privacy-protected) ID of the user, to identify
-      number of unique users using the service.
     originalMediaType: The original media the speech was recorded on.
     originalMimeType: Mime type of the original audio file.  For example
       `audio/m4a`, `audio/x-alaw-basic`, `audio/mp3`, `audio/3gpp`. A list of
@@ -486,11 +484,10 @@ class RecognitionMetadata(_messages.Message):
   industryNaicsCodeOfAudio = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
   interactionType = _messages.EnumField('InteractionTypeValueValuesEnum', 3)
   microphoneDistance = _messages.EnumField('MicrophoneDistanceValueValuesEnum', 4)
-  obfuscatedId = _messages.IntegerField(5)
-  originalMediaType = _messages.EnumField('OriginalMediaTypeValueValuesEnum', 6)
-  originalMimeType = _messages.StringField(7)
-  recordingDeviceName = _messages.StringField(8)
-  recordingDeviceType = _messages.EnumField('RecordingDeviceTypeValueValuesEnum', 9)
+  originalMediaType = _messages.EnumField('OriginalMediaTypeValueValuesEnum', 5)
+  originalMimeType = _messages.StringField(6)
+  recordingDeviceName = _messages.StringField(7)
+  recordingDeviceType = _messages.EnumField('RecordingDeviceTypeValueValuesEnum', 8)
 
 
 class RecognizeRequest(_messages.Message):
@@ -778,9 +775,9 @@ class WordInfo(_messages.Message):
       corresponding to the end of the spoken word. This field is only set if
       `enable_word_time_offsets=true` and only in the top hypothesis. This is
       an experimental feature and the accuracy of the time offset can vary.
-    speakerTag: A distinct integer value is assigned for every speaker within
-      the audio. This field specifies which one of those speakers was detected
-      to have spoken this word. Value ranges from '1' to
+    speakerTag: Output only. A distinct integer value is assigned for every
+      speaker within the audio. This field specifies which one of those
+      speakers was detected to have spoken this word. Value ranges from '1' to
       diarization_speaker_count. speaker_tag is set if
       enable_speaker_diarization = 'true' and only in the top alternative.
     startTime: Time offset relative to the beginning of the audio, and

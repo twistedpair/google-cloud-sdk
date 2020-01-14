@@ -203,11 +203,11 @@ class CapabilityConfigList(ProtocolBuffer.ProtocolMessage):
 class CapabilityConfig(ProtocolBuffer.ProtocolMessage):
 
   # Status values
-  DEFAULT      =    0
-  ENABLED      =    1
-  SCHEDULED    =    2
-  DISABLED     =    3
-  UNKNOWN      =    4
+  DEFAULT      =    0 
+  ENABLED      =    1 
+  SCHEDULED    =    2 
+  DISABLED     =    3 
+  UNKNOWN      =    4 
 
   _Status_NAMES = {
     0: "DEFAULT",

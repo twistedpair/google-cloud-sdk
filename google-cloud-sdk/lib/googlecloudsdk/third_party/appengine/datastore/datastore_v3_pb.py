@@ -119,7 +119,7 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
     return self.composite_index_[i]
 
   def add_composite_index(self):
-    x = CompositeIndex()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.CompositeIndex()
     self.composite_index_.append(x)
     return x
 
@@ -306,14 +306,15 @@ class Transaction(ProtocolBuffer.ProtocolMessage):
 class Query_Filter(ProtocolBuffer.ProtocolMessage):
 
   # Operator values
-  LESS_THAN    =    1
-  LESS_THAN_OR_EQUAL =    2
-  GREATER_THAN =    3
-  GREATER_THAN_OR_EQUAL =    4
-  EQUAL        =    5
-  IN           =    6
-  EXISTS       =    7
-  CONTAINED_IN_REGION =    8
+  LESS_THAN    =    1 
+  LESS_THAN_OR_EQUAL =    2 
+  GREATER_THAN =    3 
+  GREATER_THAN_OR_EQUAL =    4 
+  EQUAL        =    5 
+  IN           =    6 
+  EXISTS       =    7 
+  CONTAINED_IN_REGION =    8 
+  NOT_EQUAL    =    9 
 
   _Operator_NAMES = {
     1: "LESS_THAN",
@@ -324,6 +325,7 @@ class Query_Filter(ProtocolBuffer.ProtocolMessage):
     6: "IN",
     7: "EXISTS",
     8: "CONTAINED_IN_REGION",
+    9: "NOT_EQUAL",
   }
 
   def Operator_Name(cls, x): return cls._Operator_NAMES.get(x, "")
@@ -362,7 +364,7 @@ class Query_Filter(ProtocolBuffer.ProtocolMessage):
     return self.property_[i]
 
   def add_property(self):
-    x = Property()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.Property()
     self.property_.append(x)
     return x
 
@@ -509,8 +511,8 @@ class Query_Filter(ProtocolBuffer.ProtocolMessage):
 class Query_Order(ProtocolBuffer.ProtocolMessage):
 
   # Direction values
-  ASCENDING    =    1
-  DESCENDING   =    2
+  ASCENDING    =    1 
+  DESCENDING   =    2 
 
   _Direction_NAMES = {
     1: "ASCENDING",
@@ -634,9 +636,9 @@ class Query_Order(ProtocolBuffer.ProtocolMessage):
 class Query(ProtocolBuffer.ProtocolMessage):
 
   # Hint values
-  ORDER_FIRST  =    1
-  ANCESTOR_FIRST =    2
-  FILTER_FIRST =    3
+  ORDER_FIRST  =    1 
+  ANCESTOR_FIRST =    2 
+  FILTER_FIRST =    3 
 
   _Hint_NAMES = {
     1: "ORDER_FIRST",
@@ -691,6 +693,8 @@ class Query(ProtocolBuffer.ProtocolMessage):
   min_safe_time_seconds_ = 0
   has_persist_offset_ = 0
   persist_offset_ = 1
+  has_read_time_us_ = 0
+  read_time_us_ = 0
 
   def __init__(self, contents=None):
     self.filter_ = []
@@ -758,7 +762,7 @@ class Query(ProtocolBuffer.ProtocolMessage):
     if self.ancestor_ is None:
       self.lazy_init_lock_.acquire()
       try:
-        if self.ancestor_ is None: self.ancestor_ = Reference()
+        if self.ancestor_ is None: self.ancestor_ = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.Reference()
       finally:
         self.lazy_init_lock_.release()
     return self.ancestor_
@@ -931,7 +935,7 @@ class Query(ProtocolBuffer.ProtocolMessage):
     return self.composite_index_[i]
 
   def add_composite_index(self):
-    x = CompositeIndex()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.CompositeIndex()
     self.composite_index_.append(x)
     return x
 
@@ -1105,6 +1109,19 @@ class Query(ProtocolBuffer.ProtocolMessage):
 
   def has_persist_offset(self): return self.has_persist_offset_
 
+  def read_time_us(self): return self.read_time_us_
+
+  def set_read_time_us(self, x):
+    self.has_read_time_us_ = 1
+    self.read_time_us_ = x
+
+  def clear_read_time_us(self):
+    if self.has_read_time_us_:
+      self.has_read_time_us_ = 0
+      self.read_time_us_ = 0
+
+  def has_read_time_us(self): return self.has_read_time_us_
+
 
   def MergeFrom(self, x):
     assert x is not self
@@ -1136,6 +1153,7 @@ class Query(ProtocolBuffer.ProtocolMessage):
     if (x.has_min_safe_time_seconds()): self.set_min_safe_time_seconds(x.min_safe_time_seconds())
     for i in range(x.safe_replica_name_size()): self.add_safe_replica_name(x.safe_replica_name(i))
     if (x.has_persist_offset()): self.set_persist_offset(x.persist_offset())
+    if (x.has_read_time_us()): self.set_read_time_us(x.read_time_us())
 
   def Equals(self, x):
     if x is self: return 1
@@ -1201,6 +1219,8 @@ class Query(ProtocolBuffer.ProtocolMessage):
       if e1 != e2: return 0
     if self.has_persist_offset_ != x.has_persist_offset_: return 0
     if self.has_persist_offset_ and self.persist_offset_ != x.persist_offset_: return 0
+    if self.has_read_time_us_ != x.has_read_time_us_: return 0
+    if self.has_read_time_us_ and self.read_time_us_ != x.read_time_us_: return 0
     return 1
 
   def IsInitialized(self, debug_strs=None):
@@ -1257,6 +1277,7 @@ class Query(ProtocolBuffer.ProtocolMessage):
     n += 2 * len(self.safe_replica_name_)
     for i in range(len(self.safe_replica_name_)): n += self.lengthString(len(self.safe_replica_name_[i]))
     if (self.has_persist_offset_): n += 3
+    if (self.has_read_time_us_): n += 2 + self.lengthVarInt64(self.read_time_us_)
     return n + 1
 
   def ByteSizePartial(self):
@@ -1297,6 +1318,7 @@ class Query(ProtocolBuffer.ProtocolMessage):
     n += 2 * len(self.safe_replica_name_)
     for i in range(len(self.safe_replica_name_)): n += self.lengthString(len(self.safe_replica_name_[i]))
     if (self.has_persist_offset_): n += 3
+    if (self.has_read_time_us_): n += 2 + self.lengthVarInt64(self.read_time_us_)
     return n
 
   def Clear(self):
@@ -1328,6 +1350,7 @@ class Query(ProtocolBuffer.ProtocolMessage):
     self.clear_min_safe_time_seconds()
     self.clear_safe_replica_name()
     self.clear_persist_offset()
+    self.clear_read_time_us()
 
   def OutputUnchecked(self, out):
     out.putVarInt32(10)
@@ -1420,6 +1443,9 @@ class Query(ProtocolBuffer.ProtocolMessage):
     if (self.has_shallow_):
       out.putVarInt32(344)
       out.putBoolean(self.shallow_)
+    if (self.has_read_time_us_):
+      out.putVarInt32(352)
+      out.putVarInt64(self.read_time_us_)
 
   def OutputPartial(self, out):
     if (self.has_app_):
@@ -1513,6 +1539,9 @@ class Query(ProtocolBuffer.ProtocolMessage):
     if (self.has_shallow_):
       out.putVarInt32(344)
       out.putBoolean(self.shallow_)
+    if (self.has_read_time_us_):
+      out.putVarInt32(352)
+      out.putVarInt64(self.read_time_us_)
 
   def TryMerge(self, d):
     while d.avail() > 0:
@@ -1616,6 +1645,9 @@ class Query(ProtocolBuffer.ProtocolMessage):
       if tt == 344:
         self.set_shallow(d.getBoolean())
         continue
+      if tt == 352:
+        self.set_read_time_us(d.getVarInt64())
+        continue
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
       if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError()
@@ -1700,6 +1732,7 @@ class Query(ProtocolBuffer.ProtocolMessage):
       res+=prefix+("safe_replica_name%s: %s\n" % (elm, self.DebugFormatString(e)))
       cnt+=1
     if self.has_persist_offset_: res+=prefix+("persist_offset: %s\n" % self.DebugFormatBool(self.persist_offset_))
+    if self.has_read_time_us_: res+=prefix+("read_time_us: %s\n" % self.DebugFormatInt64(self.read_time_us_))
     return res
 
 
@@ -1739,6 +1772,7 @@ class Query(ProtocolBuffer.ProtocolMessage):
   kmin_safe_time_seconds = 35
   ksafe_replica_name = 36
   kpersist_offset = 37
+  kread_time_us = 44
 
   _TEXT = _BuildTagLookupTable({
     0: "ErrorCode",
@@ -1775,7 +1809,8 @@ class Query(ProtocolBuffer.ProtocolMessage):
     40: "geo_region",
     42: "database_id",
     43: "shallow",
-  }, 43)
+    44: "read_time_us",
+  }, 44)
 
   _TYPES = _BuildTagLookupTable({
     0: ProtocolBuffer.Encoder.NUMERIC,
@@ -1812,7 +1847,8 @@ class Query(ProtocolBuffer.ProtocolMessage):
     40: ProtocolBuffer.Encoder.STRING,
     42: ProtocolBuffer.Encoder.STRING,
     43: ProtocolBuffer.Encoder.NUMERIC,
-  }, 43, ProtocolBuffer.Encoder.MAX_TYPE)
+    44: ProtocolBuffer.Encoder.NUMERIC,
+  }, 44, ProtocolBuffer.Encoder.MAX_TYPE)
 
   # stylesheet for XML output
   _STYLE = \
@@ -2916,7 +2952,7 @@ class CompiledQuery_EntityFilter(ProtocolBuffer.ProtocolMessage):
     if self.ancestor_ is None:
       self.lazy_init_lock_.acquire()
       try:
-        if self.ancestor_ is None: self.ancestor_ = Reference()
+        if self.ancestor_ is None: self.ancestor_ = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.Reference()
       finally:
         self.lazy_init_lock_.release()
     return self.ancestor_
@@ -3082,7 +3118,7 @@ class CompiledQuery(ProtocolBuffer.ProtocolMessage):
     if self.index_def_ is None:
       self.lazy_init_lock_.acquire()
       try:
-        if self.index_def_ is None: self.index_def_ = Index()
+        if self.index_def_ is None: self.index_def_ = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.Index()
       finally:
         self.lazy_init_lock_.release()
     return self.index_def_
@@ -3575,7 +3611,7 @@ class CompiledCursor_PositionIndexValue(ProtocolBuffer.ProtocolMessage):
   has_value_ = 0
 
   def __init__(self, contents=None):
-    self.value_ = PropertyValue()
+    self.value_ = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.PropertyValue()
     if contents is not None: self.MergeFromString(contents)
 
   def property(self): return self.property_
@@ -3733,7 +3769,7 @@ class CompiledCursor_Position(ProtocolBuffer.ProtocolMessage):
     if self.key_ is None:
       self.lazy_init_lock_.acquire()
       try:
-        if self.key_ is None: self.key_ = Reference()
+        if self.key_ is None: self.key_ = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.Reference()
       finally:
         self.lazy_init_lock_.release()
     return self.key_
@@ -3952,7 +3988,7 @@ class CompiledCursor(ProtocolBuffer.ProtocolMessage):
     if self.postfix_position_ is None:
       self.lazy_init_lock_.acquire()
       try:
-        if self.postfix_position_ is None: self.postfix_position_ = IndexPostfix()
+        if self.postfix_position_ is None: self.postfix_position_ = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.IndexPostfix()
       finally:
         self.lazy_init_lock_.release()
     return self.postfix_position_
@@ -3971,7 +4007,7 @@ class CompiledCursor(ProtocolBuffer.ProtocolMessage):
     if self.absolute_position_ is None:
       self.lazy_init_lock_.acquire()
       try:
-        if self.absolute_position_ is None: self.absolute_position_ = IndexPosition()
+        if self.absolute_position_ is None: self.absolute_position_ = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.IndexPosition()
       finally:
         self.lazy_init_lock_.release()
     return self.absolute_position_
@@ -4317,23 +4353,23 @@ class Cursor(ProtocolBuffer.ProtocolMessage):
 class Error(ProtocolBuffer.ProtocolMessage):
 
   # ErrorCode values
-  BAD_REQUEST  =    1
-  CONCURRENT_TRANSACTION =    2
-  INTERNAL_ERROR =    3
-  NEED_INDEX   =    4
-  TIMEOUT      =    5
-  PERMISSION_DENIED =    6
-  BIGTABLE_ERROR =    7
-  COMMITTED_BUT_STILL_APPLYING =    8
-  CAPABILITY_DISABLED =    9
-  TRY_ALTERNATE_BACKEND =   10
-  SAFE_TIME_TOO_OLD =   11
-  RESOURCE_EXHAUSTED =   12
-  NOT_FOUND    =   13
-  ALREADY_EXISTS =   14
-  FAILED_PRECONDITION =   15
-  UNAUTHENTICATED =   16
-  ABORTED      =   17
+  BAD_REQUEST  =    1 
+  CONCURRENT_TRANSACTION =    2 
+  INTERNAL_ERROR =    3 
+  NEED_INDEX   =    4 
+  TIMEOUT      =    5 
+  PERMISSION_DENIED =    6 
+  BIGTABLE_ERROR =    7 
+  COMMITTED_BUT_STILL_APPLYING =    8 
+  CAPABILITY_DISABLED =    9 
+  TRY_ALTERNATE_BACKEND =   10 
+  SAFE_TIME_TOO_OLD =   11 
+  RESOURCE_EXHAUSTED =   12 
+  NOT_FOUND    =   13 
+  ALREADY_EXISTS =   14 
+  FAILED_PRECONDITION =   15 
+  UNAUTHENTICATED =   16 
+  ABORTED      =   17 
 
   _ErrorCode_NAMES = {
     1: "BAD_REQUEST",
@@ -4876,7 +4912,7 @@ class GetRequest(ProtocolBuffer.ProtocolMessage):
     return self.key_[i]
 
   def add_key(self):
-    x = Reference()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.Reference()
     self.key_.append(x)
     return x
 
@@ -5135,7 +5171,7 @@ class GetResponse_Entity(ProtocolBuffer.ProtocolMessage):
     if self.entity_ is None:
       self.lazy_init_lock_.acquire()
       try:
-        if self.entity_ is None: self.entity_ = EntityProto()
+        if self.entity_ is None: self.entity_ = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.EntityProto()
       finally:
         self.lazy_init_lock_.release()
     return self.entity_
@@ -5154,7 +5190,7 @@ class GetResponse_Entity(ProtocolBuffer.ProtocolMessage):
     if self.key_ is None:
       self.lazy_init_lock_.acquire()
       try:
-        if self.key_ is None: self.key_ = Reference()
+        if self.key_ is None: self.key_ = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.Reference()
       finally:
         self.lazy_init_lock_.release()
     return self.key_
@@ -5323,7 +5359,7 @@ class GetResponse(ProtocolBuffer.ProtocolMessage):
     return self.deferred_[i]
 
   def add_deferred(self):
-    x = Reference()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.Reference()
     self.deferred_.append(x)
     return x
 
@@ -5500,8 +5536,8 @@ class GetResponse(ProtocolBuffer.ProtocolMessage):
 class PutRequest(ProtocolBuffer.ProtocolMessage):
 
   # AutoIdPolicy values
-  CURRENT      =    0
-  SEQUENTIAL   =    1
+  CURRENT      =    0 
+  SEQUENTIAL   =    1 
 
   _AutoIdPolicy_NAMES = {
     0: "CURRENT",
@@ -5521,6 +5557,8 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
   mark_changes_ = 0
   has_auto_id_policy_ = 0
   auto_id_policy_ = 0
+  has_sequence_number_ = 0
+  sequence_number_ = 0
 
   def __init__(self, contents=None):
     self.entity_ = []
@@ -5539,7 +5577,7 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
     return self.entity_[i]
 
   def add_entity(self):
-    x = EntityProto()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.EntityProto()
     self.entity_.append(x)
     return x
 
@@ -5574,7 +5612,7 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
     return self.composite_index_[i]
 
   def add_composite_index(self):
-    x = CompositeIndex()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.CompositeIndex()
     self.composite_index_.append(x)
     return x
 
@@ -5629,7 +5667,7 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
     return self.snapshot_[i]
 
   def add_snapshot(self):
-    x = Snapshot()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.snapshot_pb.Snapshot()
     self.snapshot_.append(x)
     return x
 
@@ -5648,6 +5686,19 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
 
   def has_auto_id_policy(self): return self.has_auto_id_policy_
 
+  def sequence_number(self): return self.sequence_number_
+
+  def set_sequence_number(self, x):
+    self.has_sequence_number_ = 1
+    self.sequence_number_ = x
+
+  def clear_sequence_number(self):
+    if self.has_sequence_number_:
+      self.has_sequence_number_ = 0
+      self.sequence_number_ = 0
+
+  def has_sequence_number(self): return self.has_sequence_number_
+
 
   def MergeFrom(self, x):
     assert x is not self
@@ -5659,6 +5710,7 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
     if (x.has_mark_changes()): self.set_mark_changes(x.mark_changes())
     for i in range(x.snapshot_size()): self.add_snapshot().CopyFrom(x.snapshot(i))
     if (x.has_auto_id_policy()): self.set_auto_id_policy(x.auto_id_policy())
+    if (x.has_sequence_number()): self.set_sequence_number(x.sequence_number())
 
   def Equals(self, x):
     if x is self: return 1
@@ -5681,6 +5733,8 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
       if e1 != e2: return 0
     if self.has_auto_id_policy_ != x.has_auto_id_policy_: return 0
     if self.has_auto_id_policy_ and self.auto_id_policy_ != x.auto_id_policy_: return 0
+    if self.has_sequence_number_ != x.has_sequence_number_: return 0
+    if self.has_sequence_number_ and self.sequence_number_ != x.sequence_number_: return 0
     return 1
 
   def IsInitialized(self, debug_strs=None):
@@ -5707,6 +5761,7 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
     n += 1 * len(self.snapshot_)
     for i in range(len(self.snapshot_)): n += self.lengthString(self.snapshot_[i].ByteSize())
     if (self.has_auto_id_policy_): n += 1 + self.lengthVarInt64(self.auto_id_policy_)
+    if (self.has_sequence_number_): n += 1 + self.lengthVarInt64(self.sequence_number_)
     return n
 
   def ByteSizePartial(self):
@@ -5722,6 +5777,7 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
     n += 1 * len(self.snapshot_)
     for i in range(len(self.snapshot_)): n += self.lengthString(self.snapshot_[i].ByteSizePartial())
     if (self.has_auto_id_policy_): n += 1 + self.lengthVarInt64(self.auto_id_policy_)
+    if (self.has_sequence_number_): n += 1 + self.lengthVarInt64(self.sequence_number_)
     return n
 
   def Clear(self):
@@ -5733,6 +5789,7 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
     self.clear_mark_changes()
     self.clear_snapshot()
     self.clear_auto_id_policy()
+    self.clear_sequence_number()
 
   def OutputUnchecked(self, out):
     for i in range(len(self.entity_)):
@@ -5763,6 +5820,9 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
     if (self.has_auto_id_policy_):
       out.putVarInt32(80)
       out.putVarInt32(self.auto_id_policy_)
+    if (self.has_sequence_number_):
+      out.putVarInt32(96)
+      out.putVarInt64(self.sequence_number_)
 
   def OutputPartial(self, out):
     for i in range(len(self.entity_)):
@@ -5793,6 +5853,9 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
     if (self.has_auto_id_policy_):
       out.putVarInt32(80)
       out.putVarInt32(self.auto_id_policy_)
+    if (self.has_sequence_number_):
+      out.putVarInt32(96)
+      out.putVarInt64(self.sequence_number_)
 
   def TryMerge(self, d):
     while d.avail() > 0:
@@ -5832,6 +5895,9 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
         continue
       if tt == 80:
         self.set_auto_id_policy(d.getVarInt32())
+        continue
+      if tt == 96:
+        self.set_sequence_number(d.getVarInt64())
         continue
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
@@ -5873,6 +5939,7 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
       res+=prefix+">\n"
       cnt+=1
     if self.has_auto_id_policy_: res+=prefix+("auto_id_policy: %s\n" % self.DebugFormatInt32(self.auto_id_policy_))
+    if self.has_sequence_number_: res+=prefix+("sequence_number: %s\n" % self.DebugFormatInt64(self.sequence_number_))
     return res
 
 
@@ -5887,6 +5954,7 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
   kmark_changes = 8
   ksnapshot = 9
   kauto_id_policy = 10
+  ksequence_number = 12
 
   _TEXT = _BuildTagLookupTable({
     0: "ErrorCode",
@@ -5898,7 +5966,8 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
     8: "mark_changes",
     9: "snapshot",
     10: "auto_id_policy",
-  }, 10)
+    12: "sequence_number",
+  }, 12)
 
   _TYPES = _BuildTagLookupTable({
     0: ProtocolBuffer.Encoder.NUMERIC,
@@ -5910,7 +5979,8 @@ class PutRequest(ProtocolBuffer.ProtocolMessage):
     8: ProtocolBuffer.Encoder.NUMERIC,
     9: ProtocolBuffer.Encoder.STRING,
     10: ProtocolBuffer.Encoder.NUMERIC,
-  }, 10, ProtocolBuffer.Encoder.MAX_TYPE)
+    12: ProtocolBuffer.Encoder.NUMERIC,
+  }, 12, ProtocolBuffer.Encoder.MAX_TYPE)
 
   # stylesheet for XML output
   _STYLE = \
@@ -5938,7 +6008,7 @@ class PutResponse(ProtocolBuffer.ProtocolMessage):
     return self.key_[i]
 
   def add_key(self):
-    x = Reference()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.Reference()
     self.key_.append(x)
     return x
 
@@ -6147,7 +6217,7 @@ class TouchRequest(ProtocolBuffer.ProtocolMessage):
     return self.key_[i]
 
   def add_key(self):
-    x = Reference()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.Reference()
     self.key_.append(x)
     return x
 
@@ -6163,7 +6233,7 @@ class TouchRequest(ProtocolBuffer.ProtocolMessage):
     return self.composite_index_[i]
 
   def add_composite_index(self):
-    x = CompositeIndex()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.CompositeIndex()
     self.composite_index_.append(x)
     return x
 
@@ -6192,7 +6262,7 @@ class TouchRequest(ProtocolBuffer.ProtocolMessage):
     return self.snapshot_[i]
 
   def add_snapshot(self):
-    x = Snapshot()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.snapshot_pb.Snapshot()
     self.snapshot_.append(x)
     return x
 
@@ -6505,6 +6575,8 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
   force_ = 0
   has_mark_changes_ = 0
   mark_changes_ = 0
+  has_sequence_number_ = 0
+  sequence_number_ = 0
 
   def __init__(self, contents=None):
     self.key_ = []
@@ -6523,7 +6595,7 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
     return self.key_[i]
 
   def add_key(self):
-    x = Reference()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.Reference()
     self.key_.append(x)
     return x
 
@@ -6558,7 +6630,7 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
     return self.composite_index_[i]
 
   def add_composite_index(self):
-    x = CompositeIndex()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.CompositeIndex()
     self.composite_index_.append(x)
     return x
 
@@ -6613,12 +6685,25 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
     return self.snapshot_[i]
 
   def add_snapshot(self):
-    x = Snapshot()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.snapshot_pb.Snapshot()
     self.snapshot_.append(x)
     return x
 
   def clear_snapshot(self):
     self.snapshot_ = []
+  def sequence_number(self): return self.sequence_number_
+
+  def set_sequence_number(self, x):
+    self.has_sequence_number_ = 1
+    self.sequence_number_ = x
+
+  def clear_sequence_number(self):
+    if self.has_sequence_number_:
+      self.has_sequence_number_ = 0
+      self.sequence_number_ = 0
+
+  def has_sequence_number(self): return self.has_sequence_number_
+
 
   def MergeFrom(self, x):
     assert x is not self
@@ -6629,6 +6714,7 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
     if (x.has_force()): self.set_force(x.force())
     if (x.has_mark_changes()): self.set_mark_changes(x.mark_changes())
     for i in range(x.snapshot_size()): self.add_snapshot().CopyFrom(x.snapshot(i))
+    if (x.has_sequence_number()): self.set_sequence_number(x.sequence_number())
 
   def Equals(self, x):
     if x is self: return 1
@@ -6649,6 +6735,8 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
     if len(self.snapshot_) != len(x.snapshot_): return 0
     for e1, e2 in zip(self.snapshot_, x.snapshot_):
       if e1 != e2: return 0
+    if self.has_sequence_number_ != x.has_sequence_number_: return 0
+    if self.has_sequence_number_ and self.sequence_number_ != x.sequence_number_: return 0
     return 1
 
   def IsInitialized(self, debug_strs=None):
@@ -6674,6 +6762,7 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
     if (self.has_mark_changes_): n += 2
     n += 1 * len(self.snapshot_)
     for i in range(len(self.snapshot_)): n += self.lengthString(self.snapshot_[i].ByteSize())
+    if (self.has_sequence_number_): n += 1 + self.lengthVarInt64(self.sequence_number_)
     return n
 
   def ByteSizePartial(self):
@@ -6688,6 +6777,7 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
     if (self.has_mark_changes_): n += 2
     n += 1 * len(self.snapshot_)
     for i in range(len(self.snapshot_)): n += self.lengthString(self.snapshot_[i].ByteSizePartial())
+    if (self.has_sequence_number_): n += 1 + self.lengthVarInt64(self.sequence_number_)
     return n
 
   def Clear(self):
@@ -6698,6 +6788,7 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
     self.clear_force()
     self.clear_mark_changes()
     self.clear_snapshot()
+    self.clear_sequence_number()
 
   def OutputUnchecked(self, out):
     if (self.has_trusted_):
@@ -6725,6 +6816,9 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
       out.putVarInt32(90)
       out.putVarInt32(self.composite_index_[i].ByteSize())
       self.composite_index_[i].OutputUnchecked(out)
+    if (self.has_sequence_number_):
+      out.putVarInt32(96)
+      out.putVarInt64(self.sequence_number_)
 
   def OutputPartial(self, out):
     if (self.has_trusted_):
@@ -6752,6 +6846,9 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
       out.putVarInt32(90)
       out.putVarInt32(self.composite_index_[i].ByteSizePartial())
       self.composite_index_[i].OutputPartial(out)
+    if (self.has_sequence_number_):
+      out.putVarInt32(96)
+      out.putVarInt64(self.sequence_number_)
 
   def TryMerge(self, d):
     while d.avail() > 0:
@@ -6788,6 +6885,9 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
         tmp = ProtocolBuffer.Decoder(d.buffer(), d.pos(), d.pos() + length)
         d.skip(length)
         self.add_composite_index().TryMerge(tmp)
+        continue
+      if tt == 96:
+        self.set_sequence_number(d.getVarInt64())
         continue
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
@@ -6828,6 +6928,7 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
       res+=e.__str__(prefix + "  ", printElemNumber)
       res+=prefix+">\n"
       cnt+=1
+    if self.has_sequence_number_: res+=prefix+("sequence_number: %s\n" % self.DebugFormatInt64(self.sequence_number_))
     return res
 
 
@@ -6841,6 +6942,7 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
   kforce = 7
   kmark_changes = 8
   ksnapshot = 9
+  ksequence_number = 12
 
   _TEXT = _BuildTagLookupTable({
     0: "ErrorCode",
@@ -6851,7 +6953,8 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
     8: "mark_changes",
     9: "snapshot",
     11: "composite_index",
-  }, 11)
+    12: "sequence_number",
+  }, 12)
 
   _TYPES = _BuildTagLookupTable({
     0: ProtocolBuffer.Encoder.NUMERIC,
@@ -6862,7 +6965,8 @@ class DeleteRequest(ProtocolBuffer.ProtocolMessage):
     8: ProtocolBuffer.Encoder.NUMERIC,
     9: ProtocolBuffer.Encoder.STRING,
     11: ProtocolBuffer.Encoder.STRING,
-  }, 11, ProtocolBuffer.Encoder.MAX_TYPE)
+    12: ProtocolBuffer.Encoder.NUMERIC,
+  }, 12, ProtocolBuffer.Encoder.MAX_TYPE)
 
   # stylesheet for XML output
   _STYLE = \
@@ -7291,7 +7395,7 @@ class QueryResult(ProtocolBuffer.ProtocolMessage):
     return self.result_[i]
 
   def add_result(self):
-    x = EntityProto()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.EntityProto()
     self.result_.append(x)
     return x
 
@@ -7410,7 +7514,7 @@ class QueryResult(ProtocolBuffer.ProtocolMessage):
     return self.index_[i]
 
   def add_index(self):
-    x = CompositeIndex()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.CompositeIndex()
     self.index_.append(x)
     return x
 
@@ -7888,7 +7992,7 @@ class AllocateIdsRequest(ProtocolBuffer.ProtocolMessage):
     if self.model_key_ is None:
       self.lazy_init_lock_.acquire()
       try:
-        if self.model_key_ is None: self.model_key_ = Reference()
+        if self.model_key_ is None: self.model_key_ = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.Reference()
       finally:
         self.lazy_init_lock_.release()
     return self.model_key_
@@ -7939,7 +8043,7 @@ class AllocateIdsRequest(ProtocolBuffer.ProtocolMessage):
     return self.reserve_[i]
 
   def add_reserve(self):
-    x = Reference()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.Reference()
     self.reserve_.append(x)
     return x
 
@@ -8344,7 +8448,7 @@ class CompositeIndices(ProtocolBuffer.ProtocolMessage):
     return self.index_[i]
 
   def add_index(self):
-    x = CompositeIndex()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.CompositeIndex()
     self.index_.append(x)
     return x
 
@@ -8470,7 +8574,7 @@ class AddActionsRequest(ProtocolBuffer.ProtocolMessage):
     return self.action_[i]
 
   def add_action(self):
-    x = Action()
+    x = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.action_pb.Action()
     self.action_.append(x)
     return x
 
@@ -8673,9 +8777,9 @@ class AddActionsResponse(ProtocolBuffer.ProtocolMessage):
 class BeginTransactionRequest(ProtocolBuffer.ProtocolMessage):
 
   # TransactionMode values
-  UNKNOWN      =    0
-  READ_ONLY    =    1
-  READ_WRITE   =    2
+  UNKNOWN      =    0 
+  READ_ONLY    =    1 
+  READ_WRITE   =    2 
 
   _TransactionMode_NAMES = {
     0: "UNKNOWN",
@@ -8945,7 +9049,7 @@ class CommitResponse_Version(ProtocolBuffer.ProtocolMessage):
   version_ = 0
 
   def __init__(self, contents=None):
-    self.root_entity_key_ = Reference()
+    self.root_entity_key_ = googlecloudsdk.third_party.appengine.googlestorage.onestore.v3.entity_pb.Reference()
     if contents is not None: self.MergeFromString(contents)
 
   def root_entity_key(self): return self.root_entity_key_
@@ -9365,25 +9469,156 @@ class GetIndicesRequest(ProtocolBuffer.ProtocolMessage):
   _STYLE_CONTENT_TYPE = \
    """"""
   _PROTO_DESCRIPTOR_NAME = 'apphosting_datastore_v3.GetIndicesRequest'
+class UpdateIndexResponse(ProtocolBuffer.ProtocolMessage):
+  has_type_url_ = 0
+  type_url_ = ""
+  has_value_ = 0
+  value_ = ""
+
+  def __init__(self, contents=None):
+    if contents is not None: self.MergeFromString(contents)
+
+  def type_url(self): return self.type_url_
+
+  def set_type_url(self, x):
+    self.has_type_url_ = 1
+    self.type_url_ = x
+
+  def clear_type_url(self):
+    if self.has_type_url_:
+      self.has_type_url_ = 0
+      self.type_url_ = ""
+
+  def has_type_url(self): return self.has_type_url_
+
+  def value(self): return self.value_
+
+  def set_value(self, x):
+    self.has_value_ = 1
+    self.value_ = x
+
+  def clear_value(self):
+    if self.has_value_:
+      self.has_value_ = 0
+      self.value_ = ""
+
+  def has_value(self): return self.has_value_
+
+
+  def MergeFrom(self, x):
+    assert x is not self
+    if (x.has_type_url()): self.set_type_url(x.type_url())
+    if (x.has_value()): self.set_value(x.value())
+
+  def Equals(self, x):
+    if x is self: return 1
+    if self.has_type_url_ != x.has_type_url_: return 0
+    if self.has_type_url_ and self.type_url_ != x.type_url_: return 0
+    if self.has_value_ != x.has_value_: return 0
+    if self.has_value_ and self.value_ != x.value_: return 0
+    return 1
+
+  def IsInitialized(self, debug_strs=None):
+    initialized = 1
+    return initialized
+
+  def ByteSize(self):
+    n = 0
+    if (self.has_type_url_): n += 1 + self.lengthString(len(self.type_url_))
+    if (self.has_value_): n += 1 + self.lengthString(len(self.value_))
+    return n
+
+  def ByteSizePartial(self):
+    n = 0
+    if (self.has_type_url_): n += 1 + self.lengthString(len(self.type_url_))
+    if (self.has_value_): n += 1 + self.lengthString(len(self.value_))
+    return n
+
+  def Clear(self):
+    self.clear_type_url()
+    self.clear_value()
+
+  def OutputUnchecked(self, out):
+    if (self.has_type_url_):
+      out.putVarInt32(10)
+      out.putPrefixedString(self.type_url_)
+    if (self.has_value_):
+      out.putVarInt32(18)
+      out.putPrefixedString(self.value_)
+
+  def OutputPartial(self, out):
+    if (self.has_type_url_):
+      out.putVarInt32(10)
+      out.putPrefixedString(self.type_url_)
+    if (self.has_value_):
+      out.putVarInt32(18)
+      out.putPrefixedString(self.value_)
+
+  def TryMerge(self, d):
+    while d.avail() > 0:
+      tt = d.getVarInt32()
+      if tt == 10:
+        self.set_type_url(d.getPrefixedString())
+        continue
+      if tt == 18:
+        self.set_value(d.getPrefixedString())
+        continue
+      # tag 0 is special: it's used to indicate an error.
+      # so if we see it we raise an exception.
+      if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError()
+      d.skipData(tt)
+
+
+  def __str__(self, prefix="", printElemNumber=0):
+    res=""
+    if self.has_type_url_: res+=prefix+("type_url: %s\n" % self.DebugFormatString(self.type_url_))
+    if self.has_value_: res+=prefix+("value: %s\n" % self.DebugFormatString(self.value_))
+    return res
+
+
+  def _BuildTagLookupTable(sparse, maxtag, default=None):
+    return tuple([sparse.get(i, default) for i in range(0, 1+maxtag)])
+
+  ktype_url = 1
+  kvalue = 2
+
+  _TEXT = _BuildTagLookupTable({
+    0: "ErrorCode",
+    1: "type_url",
+    2: "value",
+  }, 2)
+
+  _TYPES = _BuildTagLookupTable({
+    0: ProtocolBuffer.Encoder.NUMERIC,
+    1: ProtocolBuffer.Encoder.STRING,
+    2: ProtocolBuffer.Encoder.STRING,
+  }, 2, ProtocolBuffer.Encoder.MAX_TYPE)
+
+  # stylesheet for XML output
+  _STYLE = \
+   """"""
+  _STYLE_CONTENT_TYPE = \
+   """"""
+  _PROTO_DESCRIPTOR_NAME = 'apphosting_datastore_v3.UpdateIndexResponse'
 class DatastoreService_3(ProtocolBuffer.ProtocolMessage):
 
   # Method values
-  Get          =    1
-  Put          =    2
-  Touch        =    3
-  Delete       =    4
-  RunQuery     =    5
-  AddActions   =    6
-  Next         =    7
-  DeleteCursor =    8
-  BeginTransaction =    9
-  Commit       =   10
-  Rollback     =   11
-  AllocateIds  =   12
-  CreateIndex  =   13
-  UpdateIndex  =   14
-  GetIndices   =   15
-  DeleteIndex  =   16
+  Get          =    1 
+  Put          =    2 
+  Touch        =    3 
+  Delete       =    4 
+  RunQuery     =    5 
+  AddActions   =    6 
+  Next         =    7 
+  DeleteCursor =    8 
+  BeginTransaction =    9 
+  Commit       =   10 
+  Rollback     =   11 
+  AllocateIds  =   12 
+  CreateIndex  =   13 
+  UpdateIndex  =   14 
+  GetIndices   =   15 
+  DeleteIndex  =   16 
 
   _Method_NAMES = {
     1: "Get",
@@ -9476,4 +9711,4 @@ class DatastoreService_3(ProtocolBuffer.ProtocolMessage):
 if _extension_runtime:
   pass
 
-__all__ = ['Transaction','Query','Query_Filter','Query_Order','RegionPoint','CircleRegion','RectangleRegion','GeoRegion','CompiledQuery','CompiledQuery_PrimaryScan','CompiledQuery_MergeJoinScan','CompiledQuery_EntityFilter','CompiledCursor','CompiledCursor_PositionIndexValue','CompiledCursor_Position','Cursor','Error','Cost','Cost_CommitCost','GetRequest','GetResponse','GetResponse_Entity','PutRequest','PutResponse','TouchRequest','TouchResponse','DeleteRequest','DeleteResponse','NextRequest','QueryResult','AllocateIdsRequest','AllocateIdsResponse','CompositeIndices','AddActionsRequest','AddActionsResponse','BeginTransactionRequest','CommitResponse','CommitResponse_Version','GetIndicesRequest','DatastoreService_3']
+__all__ = ['Transaction','Query','Query_Filter','Query_Order','RegionPoint','CircleRegion','RectangleRegion','GeoRegion','CompiledQuery','CompiledQuery_PrimaryScan','CompiledQuery_MergeJoinScan','CompiledQuery_EntityFilter','CompiledCursor','CompiledCursor_PositionIndexValue','CompiledCursor_Position','Cursor','Error','Cost','Cost_CommitCost','GetRequest','GetResponse','GetResponse_Entity','PutRequest','PutResponse','TouchRequest','TouchResponse','DeleteRequest','DeleteResponse','NextRequest','QueryResult','AllocateIdsRequest','AllocateIdsResponse','CompositeIndices','AddActionsRequest','AddActionsResponse','BeginTransactionRequest','CommitResponse','CommitResponse_Version','GetIndicesRequest','UpdateIndexResponse','DatastoreService_3']

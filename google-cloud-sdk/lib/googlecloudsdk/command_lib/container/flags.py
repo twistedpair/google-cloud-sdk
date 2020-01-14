@@ -437,9 +437,9 @@ Minimum is the minimum allowed amount with the unit of the resource.
 
 Identity default contains at most one of the below fields:
 serviceAccount: The Google Cloud Platform Service Account to be used by node VMs in
-autoprovisioined node pools. If not specified, the project's default service account
+autoprovisioned node pools. If not specified, the project's default service account
 is used.
-scopes: A list of scopes to be used by node instances in autoprovisioined node pools.
+scopes: A list of scopes to be used by node instances in autoprovisioned node pools.
 Multiple scopes can be specified, separated by commas. For information on defaults,
 look at:
 https://cloud.google.com/sdk/gcloud/reference/container/clusters/create#--scopes
@@ -556,7 +556,7 @@ to which the cluster can be scaled.
       hidden=hidden,
       help="""\
 The Google Cloud Platform Service Account to be used by node VMs in
-autoprovisioined node pools. If not specified, the project default
+autoprovisioned node pools. If not specified, the project default
 service account is used.
 """)
   identity_group.add_argument(
@@ -565,7 +565,7 @@ service account is used.
       metavar='SCOPE',
       hidden=hidden,
       help="""\
-The scopes be used by node instances in autoprovisioined node pools.
+The scopes be used by node instances in autoprovisioned node pools.
 Multiple scopes can be specified, separated by commas. For information
 on defaults, look at:
 https://cloud.google.com/sdk/gcloud/reference/container/clusters/create#--scopes

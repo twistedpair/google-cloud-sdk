@@ -173,7 +173,7 @@ class ValidatedBase(object):
   """Base class for all validated objects."""
 
   @classmethod
-  def GetValidator(self, key):
+  def GetValidator(cls, key):
     """Safely get the Validator corresponding to the given key.
 
     This function should be overridden by subclasses
@@ -530,14 +530,14 @@ class ValidatedDict(ValidatedBase, dict):
     self.update(kwds)
 
   @classmethod
-  def GetValidator(self, key):
+  def GetValidator(cls, key):
     """Check the key for validity and return a corresponding value validator.
 
     Args:
       key: The key that will correspond to the validator we are returning.
     """
-    key = AsValidator(self.KEY_VALIDATOR)(key, 'key in %s' % self.__name__)
-    return AsValidator(self.VALUE_VALIDATOR)
+    key = AsValidator(cls.KEY_VALIDATOR)(key, 'key in %s' % cls.__name__)
+    return AsValidator(cls.VALUE_VALIDATOR)
 
   def __setitem__(self, key, value):
     """Set an item.
@@ -1162,8 +1162,11 @@ class _RegexStrValue(object):
     """Compiled regular expression as described by underlying value."""
     return self.__Compile()
 
-  def match(self, value):
+  def match(self, value):  # pylint: disable=invalid-name
     """Match against internal regular expression.
+
+    Args:
+      value: String to match against regular expression.
 
     Returns:
       Regular expression object built from underlying value.

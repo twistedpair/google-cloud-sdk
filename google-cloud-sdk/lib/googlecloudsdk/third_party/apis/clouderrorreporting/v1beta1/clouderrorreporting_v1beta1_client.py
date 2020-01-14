@@ -86,7 +86,7 @@ for authentication. To use an API key, append it to the URL as the value of
 a `key` parameter. For example:
 
 `POST
-https://clouderrorreporting.googleapis.com/v1beta1/projects/example-project/events:report?key=123ABC456`
+https://clouderrorreporting.googleapis.com/v1beta1/{projectName}/events:report?key=123ABC456`
 
       Args:
         request: (ClouderrorreportingProjectsEventsReportRequest) input message

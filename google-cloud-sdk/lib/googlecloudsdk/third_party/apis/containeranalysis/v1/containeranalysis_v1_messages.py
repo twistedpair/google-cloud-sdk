@@ -478,6 +478,18 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class Category(_messages.Message):
+  r"""The category to which the update belongs.
+
+  Fields:
+    categoryId: The identifier of the category.
+    name: The localized name of the category.
+  """
+
+  categoryId = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class CloudRepoSourceContext(_messages.Message):
   r"""A CloudRepoSourceContext denotes a particular revision in a Google Cloud
   Source Repo.
@@ -1259,6 +1271,18 @@ class Hint(_messages.Message):
   """
 
   humanReadableName = _messages.StringField(1)
+
+
+class Identity(_messages.Message):
+  r"""The unique identifier of the update.
+
+  Fields:
+    revision: The revision number of the update.
+    updateId: The revision independent identifier of the update.
+  """
+
+  revision = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  updateId = _messages.StringField(2)
 
 
 class ImageNote(_messages.Message):
@@ -2153,41 +2177,49 @@ class UpgradeDistribution(_messages.Message):
 
 
 class UpgradeNote(_messages.Message):
-  r"""A Upgrade Note represents a potential upgrade of a package to a given
+  r"""An Upgrade Note represents a potential upgrade of a package to a given
   version. For each package version combination (i.e. bash 4.0, bash 4.1, bash
-  4.1.2), there will be a Upgrade Note.
+  4.1.2), there will be an Upgrade Note. For Windows, windows_update field
+  represents the information related to the update.
 
   Fields:
     distributions: Metadata about the upgrade for each specific operating
       system.
-    package: Required - The package this Upgrade is for.
-    version: Required - The version of the package in machine + human readable
-      form.
+    package: Required for non-Windows OS. The package this Upgrade is for.
+    version: Required for non-Windows OS. The version of the package in
+      machine + human readable form.
+    windowsUpdate: Required for Windows OS. Represents the metadata about the
+      Windows update.
   """
 
   distributions = _messages.MessageField('UpgradeDistribution', 1, repeated=True)
   package = _messages.StringField(2)
   version = _messages.MessageField('Version', 3)
+  windowsUpdate = _messages.MessageField('WindowsUpdate', 4)
 
 
 class UpgradeOccurrence(_messages.Message):
-  r"""A Upgrade Occurrence represents that a specific resource_url could
+  r"""An Upgrade Occurrence represents that a specific resource_url could
   install a specific upgrade. This presence is supplied via local sources
   (i.e. it is present in the mirror and the running system has noticed its
-  availability).
+  availability). For Windows, both distribution and windows_update contain
+  information for the Windows update.
 
   Fields:
-    distribution: Metadata about the upgrade for avaiable for the specific
+    distribution: Metadata about the upgrade for available for the specific
       operating system for the resource_url. This allows efficient filtering,
       as well as making it easier to use the occurrence.
-    package: Required - The package this Upgrade is for.
-    parsedVersion: Required - The version of the package in a machine + human
-      readable form.
+    package: Required for non-Windows OS. The package this Upgrade is for.
+    parsedVersion: Required for non-Windows OS. The version of the package in
+      a machine + human readable form.
+    windowsUpdate: Required for Windows OS. Represents the metadata about the
+      Windows update.
   """
 
   distribution = _messages.MessageField('UpgradeDistribution', 1)
   package = _messages.StringField(2)
   parsedVersion = _messages.MessageField('Version', 3)
+  windowsUpdate = _messages.MessageField('WindowsUpdate', 4)
 
 
 class Version(_messages.Message):
@@ -2379,6 +2411,32 @@ class WindowsDetail(_messages.Message):
   description = _messages.StringField(2)
   fixingKbs = _messages.MessageField('KnowledgeBase', 3, repeated=True)
   name = _messages.StringField(4)
+
+
+class WindowsUpdate(_messages.Message):
+  r"""Windows Update represents the metadata about the update for the Windows
+  operating system. The fields in this message come from the Windows Update
+  API documented at https://docs.microsoft.com/en-us/windows/win32/api/wuapi
+  /nn-wuapi-iupdate.
+
+  Fields:
+    categories: The list of categories to which the update belongs.
+    description: The localized description of the update.
+    identity: Required - The unique identifier for the update.
+    kbArticleIds: The Microsoft Knowledge Base article IDs that are associated
+      with the update.
+    lastPublishedTimestamp: The last published timestamp of the update.
+    supportUrl: The hyperlink to the support information for the update.
+    title: The localized title of the update.
+  """
+
+  categories = _messages.MessageField('Category', 1, repeated=True)
+  description = _messages.StringField(2)
+  identity = _messages.MessageField('Identity', 3)
+  kbArticleIds = _messages.StringField(4, repeated=True)
+  lastPublishedTimestamp = _messages.StringField(5)
+  supportUrl = _messages.StringField(6)
+  title = _messages.StringField(7)
 
 
 encoding.AddCustomJsonFieldMapping(

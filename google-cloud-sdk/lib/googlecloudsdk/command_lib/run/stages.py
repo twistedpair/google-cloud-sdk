@@ -39,12 +39,12 @@ def UpdateTrafficStages():
 # Because some terminals cannot update multiple lines of output simultaneously,
 # the order of conditions in this dictionary should match the order in which we
 # expect cloud run resources to complete deployment.
-def ServiceStages(include_iam_policy_set=False):
+def ServiceStages(include_iam_policy_set=False, include_route=True):
   """Return the progress tracker Stages for conditions of a Service."""
-  stages = [
-      progress_tracker.Stage(
-          'Creating Revision...', key=SERVICE_CONFIGURATIONS_READY),
-      _NewRoutingTrafficStage()]
+  stages = [progress_tracker.Stage(
+      'Creating Revision...', key=SERVICE_CONFIGURATIONS_READY)]
+  if include_route:
+    stages.append(_NewRoutingTrafficStage())
   if include_iam_policy_set:
     stages.append(progress_tracker.Stage(
         'Setting IAM Policy...', key=SERVICE_IAM_POLICY_SET))

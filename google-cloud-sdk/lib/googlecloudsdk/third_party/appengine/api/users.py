@@ -64,6 +64,7 @@ class User(object):
   not be used.
   """
 
+  # For more information, go to http://g3doc/apphosting/g3doc/wiki-grandfathered/unified_theory_of_users.md
 
   # If any new properties are added to the object, also add them as class
   # properties here for backwards compat with pickled instances.
@@ -152,7 +153,7 @@ class User(object):
 
     Returns:
       A permanent unique identifying string or `None`. If the email address was
-      set explicity, this will return `None`.
+      set explicitly, this will return `None`.
     """
     return self.__user_id
 

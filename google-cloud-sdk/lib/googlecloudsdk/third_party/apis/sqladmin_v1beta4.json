@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20191206",
+ "revision": "20200102",
  "title": "Cloud SQL Admin API",
  "description": "Creates and manages Cloud SQL instances, which provide fully managed MySQL or PostgreSQL databases.",
  "ownerDomain": "google.com",
@@ -1698,6 +1698,10 @@
     "project": {
      "type": "string",
      "description": "The project ID of the project containing the Cloud SQL database. The Google apps domain is prefixed if applicable. Can be omitted for update since it is already specified on the URL."
+    },
+    "type": {
+     "type": "string",
+     "description": "The user type. It determines the method to authenticate the user during login."
     }
    }
   },

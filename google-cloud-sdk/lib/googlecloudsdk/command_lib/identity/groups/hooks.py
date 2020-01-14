@@ -24,6 +24,7 @@ from apitools.base.py import encoding
 
 from googlecloudsdk.api_lib.cloudresourcemanager import organizations
 from googlecloudsdk.api_lib.identity import cloudidentity_client as ci_client
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 
 
@@ -61,9 +62,26 @@ def SetEntityKey(unused_ref, args, request):
   """
 
   if hasattr(args, 'email'):
-    # TODO(b/144289256): Pass API_VERSION info.
-    messages = ci_client.GetMessages()
+    version = GetApiVersion(args)
+    messages = ci_client.GetMessages(version)
     request.group.groupKey = messages.EntityKey(id=args.email)
+
+  return request
+
+
+def SetLabels(unused_ref, args, request):
+  """Set Labels to request.group.labels.
+
+  Args:
+    unused_ref: unused.
+    args: The argparse namespace.
+    request: The request to modify.
+  Returns:
+    The updated request.
+  """
+
+  if hasattr(args, 'labels') and args.IsSpecified('labels'):
+    request.group.labels = ReformatLabels(args, args.labels)
 
   return request
 
@@ -80,7 +98,8 @@ def SetResourceName(unused_ref, args, request):
   """
 
   if hasattr(args, 'email') and args.IsSpecified('email'):
-    request.name = ConvertEmailToResourceName(args.email, 'email')
+    version = GetApiVersion(args)
+    request.name = ConvertEmailToResourceName(version, args.email, 'email')
 
   return request
 
@@ -146,7 +165,7 @@ def GenerateQuery(unused_ref, args, request):
     The updated request.
   """
   customer_id = ConvertOrgIdToObfuscatedCustomerId(args.organization)
-  labels = FilterLabels(args.labels.split(','))
+  labels = FilterLabels(args.labels)
   labels_str = ','.join(labels)
   request.query = 'parent==\"customerId/{0}\" && \"{1}\" in labels'.format(
       customer_id, labels_str)
@@ -207,7 +226,8 @@ def AddDynamicGroupUserQuery(arg_list):
   if arg_list:
     dg_user_query = ','.join(arg_list)
 
-    messages = ci_client.GetMessages()
+    # TODO(b/147011481): Remove hard coded version info if necessary.
+    messages = ci_client.GetMessages('v1alpha1')
     resource_type = messages.DynamicGroupQuery.ResourceTypeValueValuesEnum
     new_dynamic_group_query = messages.DynamicGroupQuery(
         resourceType=resource_type.USER, query=dg_user_query)
@@ -216,7 +236,7 @@ def AddDynamicGroupUserQuery(arg_list):
   return queries
 
 
-def ReformatLabels(labels):
+def ReformatLabels(args, labels):
   """Reformat label list to encoded labels message.
 
   Reformatting labels will be done within following two steps,
@@ -225,9 +245,10 @@ def ReformatLabels(labels):
   3. Encode the OrderedDict format of labels to group.labels message.
 
   Args:
+    args: The argparse namespace.
     labels: list of label strings.
     e.g. ["cloudidentity.googleapis.com/security=",
-          "cloudidentity.googleapis.com/discussion_forum"]
+          "cloudidentity.googleapis.com/groups.discussion_forum"]
   Returns:
     Encoded labels message.
 
@@ -248,8 +269,8 @@ def ReformatLabels(labels):
       labels_dict[label] = ''
 
   # Encode the OrderedDict format of labels to group.labels message.
-  # TODO(b/144289256): Pass API_VERSION info.
-  messages = ci_client.GetMessages()
+  version = GetApiVersion(args)
+  messages = ci_client.GetMessages(version)
   return encoding.DictToMessage(labels_dict, messages.Group.LabelsValue)
 
 
@@ -277,10 +298,11 @@ def ConvertOrgIdToObfuscatedCustomerId(org_id):
   return organization_obj.owner.directoryCustomerId
 
 
-def ConvertEmailToResourceName(email, arg_name):
+def ConvertEmailToResourceName(version, email, arg_name):
   """Convert email to resource name.
 
   Args:
+    version: Release track information
     email: group email
     arg_name: argument/parameter name
 
@@ -288,8 +310,8 @@ def ConvertEmailToResourceName(email, arg_name):
     Group Id (e.g. groups/11zu0gzc3tkdgn2)
 
   """
-  # TODO(b/144289256): Pass API_VERSION info.
-  lookup_group_name_resp = ci_client.LookupGroupName(email)
+
+  lookup_group_name_resp = ci_client.LookupGroupName(version, email)
 
   if 'name' in lookup_group_name_resp:
     return lookup_group_name_resp['name']
@@ -321,22 +343,53 @@ def FilterLabels(labels):
     InvalidArgumentException: If invalid labels string is input.
   """
 
+  # Convert a comma separated string to a list of strings.
+  label_list = labels.split(',')
+
   filtered_labels = []
-  for label in labels:
+  for label in label_list:
     if '=' in label:
       split_label = label.split('=')
 
+      # Catch invalid format like 'key=value1=value2'
       if len(split_label) > 2:
         raise exceptions.InvalidArgumentException(
             'labels', 'Invalid format of label string has been input. Label: '
             + label)
 
       if split_label[1]:
-        filtered_labels.append(label)
+        filtered_labels.append(label)           # Valid format #1: 'key=value'
       else:
-        filtered_labels.append(split_label[0])
+        filtered_labels.append(split_label[0])  # Valid format #2: 'key'
 
     else:
       filtered_labels.append(label)
 
   return filtered_labels
+
+
+def GetApiVersion(args):
+  """Return release track information.
+
+  Args:
+    args: The argparse namespace.
+
+  Returns:
+    Release track (e.g. ALPHA or BETA)
+
+  Raises:
+    UnsupportedReleaseTrackError: If invalid release track is input.
+  """
+
+  release_track = args.calliope_command.ReleaseTrack()
+
+  if release_track == base.ReleaseTrack.ALPHA:
+    return 'v1alpha1'
+  elif release_track == base.ReleaseTrack.BETA:
+    return 'v1beta1'
+  else:
+    raise UnsupportedReleaseTrackError(release_track)
+
+
+class UnsupportedReleaseTrackError(Exception):
+  """Raised when requesting an api for an unsupported release track."""

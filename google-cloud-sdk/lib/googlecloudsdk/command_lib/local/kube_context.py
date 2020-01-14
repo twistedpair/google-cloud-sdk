@@ -20,12 +20,13 @@ from __future__ import unicode_literals
 import os.path
 import subprocess
 from googlecloudsdk.core import config
+from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files as file_utils
 import six
 
 
-def _FindComponent(component_name):
-  """Finds the path to a component.
+def _FindOrInstallComponent(component_name):
+  """Finds the path to a component or install it.
 
   Args:
     component_name: Name of the component.
@@ -33,8 +34,10 @@ def _FindComponent(component_name):
   Returns:
     Path to the component. Returns None if the component can't be found.
   """
-  if config.Paths().sdk_root:
+  if (config.Paths().sdk_root and
+      update_manager.EnsureInstalledAndRestart([component_name])):
     return os.path.join(config.Paths().sdk_root, 'bin', component_name)
+
   return None
 
 
@@ -49,7 +52,7 @@ def _FindExecutable(exe):
   Raises:
     EnvironmentError: The exeuctable can't be found.
   """
-  path = file_utils.FindExecutableOnPath(exe) or _FindComponent(exe)
+  path = file_utils.FindExecutableOnPath(exe) or _FindOrInstallComponent(exe)
   if not path:
     raise EnvironmentError('Unable to locate %s.' % exe)
   return path

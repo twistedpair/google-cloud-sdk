@@ -508,7 +508,7 @@ class _ScaleValue(object):
 
 def AddMinInstancesFlag(parser):
   """Add min scaling flag."""
-  GetClusterArgGroup(parser).add_argument(
+  parser.add_argument(
       '--min-instances',
       type=_ScaleValue,
       help=('The minimum number of container instances of the Service to run '
@@ -1030,13 +1030,6 @@ def VerifyOnePlatformFlags(args, release_track):
                'version of Cloud Run. Specify `--platform {platform}` or run '
                '`gcloud config set run/platform {platform}` to work with '
                '{platform_desc}.')
-
-  if _FlagIsExplicitlySet(args, 'min_instances'):
-    raise serverless_exceptions.ConfigurationError(
-        error_msg.format(
-            flag='--min-instances',
-            platform=PLATFORM_GKE,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
 
   if _FlagIsExplicitlySet(args, 'connectivity'):
     raise serverless_exceptions.ConfigurationError(

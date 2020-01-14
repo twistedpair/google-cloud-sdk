@@ -168,6 +168,14 @@ class TrafficTargets(collections.MutableMapping):
     else:
       self._m.append(new_target)
 
+  def SetPercent(self, key, percent):
+    """Set the given percent in the traffic targets."""
+    existing = self.get(key)
+    if existing:
+      existing.percent = percent
+    else:
+      self[key] = NewTrafficTarget(self._messages, key, percent)
+
   def __delitem__(self, key):
     """Implements evaluation of `del self[key]`."""
     index_to_delete = 0

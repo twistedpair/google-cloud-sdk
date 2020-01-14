@@ -46,6 +46,10 @@ class AccessPolicy(_messages.Message):
 
   Fields:
     createTime: Output only. Time the `AccessPolicy` was created in UTC.
+    etag: Output only. An opaque identifier for the current version of the
+      `AccessPolicy`. This will always be a strongly validated etag, meaning
+      that two Access Polices will be identical if and only if their etags are
+      identical. Clients should not expect this to be in any specific format.
     name: Output only. Resource name of the `AccessPolicy`. Format:
       `accessPolicies/{policy_id}`
     parent: Required. The parent of this `AccessPolicy` in the Cloud Resource
@@ -56,10 +60,11 @@ class AccessPolicy(_messages.Message):
   """
 
   createTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  parent = _messages.StringField(3)
-  title = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  title = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest(_messages.Message):
@@ -256,6 +261,22 @@ class AccesscontextmanagerAccessPoliciesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class AccesscontextmanagerAccessPoliciesServicePerimetersCommitRequest(_messages.Message):
+  r"""A AccesscontextmanagerAccessPoliciesServicePerimetersCommitRequest
+  object.
+
+  Fields:
+    commitServicePerimetersRequest: A CommitServicePerimetersRequest resource
+      to be passed as the request body.
+    parent: Required. Resource name for the parent Access Policy which owns
+      all Service Perimeters in scope for the commit operation.  Format:
+      `accessPolicies/{policy_id}`
+  """
+
+  commitServicePerimetersRequest = _messages.MessageField('CommitServicePerimetersRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class AccesscontextmanagerAccessPoliciesServicePerimetersCreateRequest(_messages.Message):
   r"""A AccesscontextmanagerAccessPoliciesServicePerimetersCreateRequest
   object.
@@ -393,6 +414,35 @@ class BasicLevel(_messages.Message):
 
   combiningFunction = _messages.EnumField('CombiningFunctionValueValuesEnum', 1)
   conditions = _messages.MessageField('Condition', 2, repeated=True)
+
+
+class CommitServicePerimetersRequest(_messages.Message):
+  r"""A request to commit dry-run specs in all Service Perimeters belonging to
+  an Access Policy.
+
+  Fields:
+    etag: Optional. The etag for the version of the Access Policy that this
+      commit operation is to be performed on. If, at the time of commit, the
+      etag for the Access Policy stored in Access Context Manager is different
+      from the specified etag, then the commit operation will not be performed
+      and the call will fail. This field is not required. If etag is not
+      provided, the operation will be performed as if a valid etag is
+      provided.
+  """
+
+  etag = _messages.StringField(1)
+
+
+class CommitServicePerimetersResponse(_messages.Message):
+  r"""A response to CommitServicePerimetersRequest. This will be put inside of
+  Operation.response field.
+
+  Fields:
+    servicePerimeters: List of all the Service Perimeter instances in the
+      Access Policy.
+  """
+
+  servicePerimeters = _messages.MessageField('ServicePerimeter', 1, repeated=True)
 
 
 class Condition(_messages.Message):

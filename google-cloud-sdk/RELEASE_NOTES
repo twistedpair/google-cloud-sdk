@@ -5,14 +5,77 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 276.0.0 (2020-01-14)
+
+### Breaking Changes
+
+*   **(Cloud Dataproc)** Modified `gcloud beta clusters create` command replacing `--reservation-label`
+  with `--reservation` which accepts the name of the reservation when
+  `--reservation-affinity` is `specific`, matching `gcloud compute instances
+   create`.
+
+
+### Cloud SDK
+
+* Modified `gcloud auth configure-docker` to take a `--registries` flag.
+  * Use this flag to provide a comma-separated list of registries to add to the
+    Docker credential configuration. If the flag is not set, the command adds
+    all gcr.io registries.
+  * Changes to the docker credential configuration are now merged in to the
+    existing configuration instead of replacing all existing entries.
+  * Added support for `*.pkg.dev` domains.
+
+### App Engine
+
+* Updated appengine libraries to pick up fix using now-invalid project ids
+  with VPC connectors.
+* Fixed an issue where response headers were not usable due to python3 bytes
+  regex use.
+
+### BigQuery
+
+* Fixed delimiter specification issues in Python3.
+* Fixed proxy authentication issues in Python3.
+
+### Cloud Dataproc
+
+* Promoted `--reservation` and `--reservation-affinity` flags of `gcloud
+  dataproc clusters create` to GA.
+
+### Cloud Storage
+
+* 
+* Updated gsutil component to 4.47.
+
+### Compute Engine
+
+* Promoted `--mode` flag of `gcloud compute instance-groups managed
+  set-autoscaling` command to GA.
+* Promoted `gcloud compute instance-groups managed update-autoscaling` command
+  to GA.
+* Promoted `instance-configs create`, `instance-configs list`, `instance-configs update`, `instance-configs delete` commands to beta.
+
+### Kubernetes Engine
+
+* Adds kubectl version 1.16.4 for the rapid channel.
+* Additional kubectl versions:
+  * kubectl.1.13 (1.13.12)
+  * kubectl.1.14 (1.14.10)
+  * kubectl.1.15 (1.15.7)
+  * kubectl.1.16 (1.16.4)
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 275.0.0 (2020-01-07)
 
 ### Breaking Changes
 
-*   **(Firebase Test Lab)** Modified `--other-files` to allow the specification of a list of
-  device-path=file-path instead of a list of file-path=device-directory.
-  Additionally, the flag can no longer be specified multiple times. Use a
-  comma-separated list to push multiple files to a device.
+*   **(Firebase Test Lab)** Modified `--other-files` to allow the specification
+    of a list of device-path=file-path instead of a list of file-path=device-directory.
+    Additionally, the flag can no longer be specified multiple times. Use a
+    comma-separated list to push multiple files to a device.
 
 
 ### Cloud SDK
@@ -31,7 +94,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### App Engine
 
-* 
 * Updated the Python SDK to version 1.9.88.
   Please visit the following release notes for details:
   <https://cloud.google.com/appengine/docs/python/release-notes>.
@@ -117,6 +179,10 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
      * List of tools in the Cloud SDK that still require a Python 2.7
        interpreter.
      * List of known issues with Python 3 support.
+* For Windows installer-installed Cloud SDK version 274.0.0, if the Cloud SDK
+  fails to run, upgrade to version 274.0.1 or higher. Refer to this
+  [tracking bug](https://issuetracker.google.com/issues/146458519)
+  for details.
 
 ### BigQuery
 

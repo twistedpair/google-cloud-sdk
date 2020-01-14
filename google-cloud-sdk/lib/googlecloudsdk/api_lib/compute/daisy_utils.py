@@ -31,6 +31,7 @@ from googlecloudsdk.api_lib.services import enable_api as services_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.cloudbuild import execution
 from googlecloudsdk.command_lib.compute.sole_tenancy import util as sole_tenancy_util
 from googlecloudsdk.command_lib.projects import util as projects_util
@@ -780,3 +781,27 @@ def MakeGcsObjectUri(uri):
     return 'gs://{0}/{1}'.format(obj_ref.bucket, obj_ref.object)
   else:
     raise storage_util.InvalidObjectNameError(uri, 'Missing object name')
+
+
+def ValidateZone(args, compute_client):
+  """Validate Compute Engine zone from args.zone.
+
+  If not present in args, returns early.
+  Args:
+    args: CLI args dictionary
+    compute_client: Compute Client
+
+  Raises:
+    InvalidArgumentException: when args.zone is an invalid GCE zone
+  """
+  if not args.zone:
+    return
+
+  requests = [(compute_client.apitools_client.zones, 'Get',
+               compute_client.messages.ComputeZonesGetRequest(
+                   project=properties.VALUES.core.project.GetOrFail(),
+                   zone=args.zone))]
+  try:
+    compute_client.MakeRequests(requests)
+  except calliope_exceptions.ToolException:
+    raise calliope_exceptions.InvalidArgumentException('--zone', args.zone)

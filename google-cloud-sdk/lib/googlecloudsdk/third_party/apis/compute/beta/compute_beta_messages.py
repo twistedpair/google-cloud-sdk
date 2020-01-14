@@ -536,20 +536,20 @@ class AccessConfig(_messages.Message):
 
 
 class Address(_messages.Message):
-  r"""Represents an IP Address resource.  An address resource represents a
-  regional internal IP address. Regional internal IP addresses are RFC 1918
-  addresses that come from either a primary or secondary IP range of a subnet
-  in a VPC network. Regional external IP addresses can be assigned to GCP VM
-  instances, Cloud VPN gateways, regional external forwarding rules for
-  network load balancers (in either Standard or Premium Tier), and regional
-  external forwarding rules for HTTP(S), SSL Proxy, and TCP Proxy load
-  balancers in Standard Tier. For more information, read IP addresses.  A
-  globalAddresses resource represent a global external IP address. Global
-  external IP addresses are IPv4 or IPv6 addresses. They can only be assigned
-  to global forwarding rules for HTTP(S), SSL Proxy, or TCP Proxy load
-  balancers in Premium Tier. For more information, read Global resources. (==
-  resource_for {$api_version}.addresses ==) (== resource_for
-  {$api_version}.globalAddresses ==)
+  r"""Use global external addresses for GFE-based external HTTP(S) load
+  balancers in Premium Tier.  Use global internal addresses for reserved
+  peering network range.  Use regional external addresses for the following
+  resources:  - External IP addresses for VM instances - Regional external
+  forwarding rules - Cloud NAT external IP addresses - GFE based LBs in
+  Standard Tier - Network LBs in Premium or Standard Tier - Cloud VPN gateways
+  (both Classic and HA)  Use regional internal IP addresses for subnet IP
+  ranges (primary and secondary). This includes:  - Internal IP addresses for
+  VM instances - Alias IP ranges of VM instances (/32 only) - Regional
+  internal forwarding rules - Internal TCP/UDP load balancer addresses -
+  Internal HTTP(S) load balancer addresses - Cloud DNS inbound forwarding IP
+  addresses  For more information, read reserved IP address.  (== resource_for
+  {$api_version}.addresses ==) (== resource_for {$api_version}.globalAddresses
+  ==)
 
   Enums:
     AddressTypeValueValuesEnum: The type of address to reserve, either
@@ -1600,12 +1600,16 @@ class AuthorizationLoggingOptions(_messages.Message):
 
 
 class Autoscaler(_messages.Message):
-  r"""Represents an Autoscaler resource.    Use autoscalers to automatically
-  add or delete instances from a managed instance group according to your
-  defined autoscaling policy. For more information, read Autoscaling Groups of
-  Instances.  For zonal managed instance groups resource, use the autoscaler
-  resource.  For regional managed instance groups, use the regionAutoscalers
-  resource. (== resource_for {$api_version}.autoscalers ==) (== resource_for
+  r"""Represents an Autoscaler resource.  Google Compute Engine has two
+  Autoscaler resources:  *
+  [Global](/compute/docs/reference/rest/latest/autoscalers) *
+  [Regional](/compute/docs/reference/rest/latest/regionAutoscalers)  Use
+  autoscalers to automatically add or delete instances from a managed instance
+  group according to your defined autoscaling policy. For more information,
+  read Autoscaling Groups of Instances.  For zonal managed instance groups
+  resource, use the autoscaler resource.  For regional managed instance
+  groups, use the regionAutoscalers resource. (== resource_for
+  {$api_version}.autoscalers ==) (== resource_for
   {$api_version}.regionAutoscalers ==)
 
   Enums:
@@ -2275,6 +2279,7 @@ class AutoscalingPolicy(_messages.Message):
       will choose a default value depending on maximum number of instances
       allowed.
     mode: Defines operating mode for this policy.
+    scaleDownControl: A AutoscalingPolicyScaleDownControl attribute.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
@@ -2296,6 +2301,7 @@ class AutoscalingPolicy(_messages.Message):
   maxNumReplicas = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   minNumReplicas = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   mode = _messages.EnumField('ModeValueValuesEnum', 7)
+  scaleDownControl = _messages.MessageField('AutoscalingPolicyScaleDownControl', 8)
 
 
 class AutoscalingPolicyCpuUtilization(_messages.Message):
@@ -2406,6 +2412,26 @@ class AutoscalingPolicyLoadBalancingUtilization(_messages.Message):
   """
 
   utilizationTarget = _messages.FloatField(1)
+
+
+class AutoscalingPolicyScaleDownControl(_messages.Message):
+  r"""Configuration that allows for slower scale down so that even if
+  Autoscaler recommends an abrupt scale down of a MIG, it will be throttled as
+  specified by the parameters below.
+
+  Fields:
+    maxScaledDownReplicas: Maximum allowed number (or %) of VMs that can be
+      deducted from the peak recommendation during the window autoscaler looks
+      at when computing recommendations. Possibly all these VMs can be deleted
+      at once so user service needs to be prepared to lose that many VMs in
+      one step.
+    timeWindow: How long back autoscaling should look when computing
+      recommendations to include directives regarding slower scale down, as
+      described above.
+  """
+
+  maxScaledDownReplicas = _messages.MessageField('FixedOrPercent', 1)
+  timeWindow = _messages.MessageField('GoogleDuration', 2)
 
 
 class Backend(_messages.Message):
@@ -2770,7 +2796,11 @@ class BackendBucketList(_messages.Message):
 
 class BackendService(_messages.Message):
   r"""Represents a Backend Service resource.  A backend service contains
-  configuration values for Google Cloud Platform load balancing services.  For
+  configuration values for Google Cloud Platform load balancing services.
+  Backend services in Google Compute Engine can be either regionally or
+  globally scoped.  *
+  [Global](/compute/docs/reference/rest/latest/backendServices) *
+  [Regional](/compute/docs/reference/rest/latest/regionBackendServices)  For
   more information, read Backend Services.  (== resource_for
   {$api_version}.backendService ==)
 
@@ -2865,9 +2895,11 @@ class BackendService(_messages.Message):
       BackendService.
     healthChecks: The list of URLs to the HttpHealthCheck or HttpsHealthCheck
       resource for health checking this BackendService. Currently at most one
-      health check can be specified, and a health check is required for
-      Compute Engine backend services. A health check must not be specified
-      for App Engine backend and Cloud Function backend.  For internal load
+      health check can be specified. Health check is optional for Compute
+      Engine backend services if there is no backend. A health check must not
+      be specified when adding Internet Network Endpoint Group or Serverless
+      Network Endpoint Group as backends. In all other cases, a health check
+      is required for Compute Engine backend services.  For internal load
       balancing, a URL to a HealthCheck resource must be specified instead.
     iap: A BackendServiceIAP attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -6891,6 +6923,221 @@ class ComputeGlobalForwardingRulesTestIamPermissionsRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   resource = _messages.StringField(2, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
+class ComputeGlobalNetworkEndpointGroupsAttachNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeGlobalNetworkEndpointGroupsAttachNetworkEndpointsRequest
+  object.
+
+  Fields:
+    globalNetworkEndpointGroupsAttachEndpointsRequest: A
+      GlobalNetworkEndpointGroupsAttachEndpointsRequest resource to be passed
+      as the request body.
+    networkEndpointGroup: The name of the network endpoint group where you are
+      attaching network endpoints to. It should comply with RFC1035.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  globalNetworkEndpointGroupsAttachEndpointsRequest = _messages.MessageField('GlobalNetworkEndpointGroupsAttachEndpointsRequest', 1)
+  networkEndpointGroup = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeGlobalNetworkEndpointGroupsDeleteRequest(_messages.Message):
+  r"""A ComputeGlobalNetworkEndpointGroupsDeleteRequest object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group to delete. It
+      should comply with RFC1035.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ComputeGlobalNetworkEndpointGroupsDetachNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeGlobalNetworkEndpointGroupsDetachNetworkEndpointsRequest
+  object.
+
+  Fields:
+    globalNetworkEndpointGroupsDetachEndpointsRequest: A
+      GlobalNetworkEndpointGroupsDetachEndpointsRequest resource to be passed
+      as the request body.
+    networkEndpointGroup: The name of the network endpoint group where you are
+      removing network endpoints. It should comply with RFC1035.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  globalNetworkEndpointGroupsDetachEndpointsRequest = _messages.MessageField('GlobalNetworkEndpointGroupsDetachEndpointsRequest', 1)
+  networkEndpointGroup = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeGlobalNetworkEndpointGroupsGetRequest(_messages.Message):
+  r"""A ComputeGlobalNetworkEndpointGroupsGetRequest object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group. It should
+      comply with RFC1035.
+    project: Project ID for this request.
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeGlobalNetworkEndpointGroupsInsertRequest(_messages.Message):
+  r"""A ComputeGlobalNetworkEndpointGroupsInsertRequest object.
+
+  Fields:
+    networkEndpointGroup: A NetworkEndpointGroup resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  networkEndpointGroup = _messages.MessageField('NetworkEndpointGroup', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ComputeGlobalNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeGlobalNetworkEndpointGroupsListNetworkEndpointsRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    networkEndpointGroup: The name of the network endpoint group from which
+      you want to generate a list of included network endpoints. It should
+      comply with RFC1035.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  networkEndpointGroup = _messages.StringField(3, required=True)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+
+
+class ComputeGlobalNetworkEndpointGroupsListRequest(_messages.Message):
+  r"""A ComputeGlobalNetworkEndpointGroupsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
 
 
 class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
@@ -20043,9 +20290,8 @@ class CorsPolicy(_messages.Message):
       value of false, which indicates that the CORS policy is in effect.
     exposeHeaders: Specifies the content for the Access-Control-Expose-Headers
       header.
-    maxAge: Specifies how long the results of a preflight request can be
-      cached. This translates to the content for the Access-Control-Max-Age
-      header.
+    maxAge: Specifies how long results of a preflight request can be cached in
+      seconds. This translates to the Access-Control-Max-Age header.
   """
 
   allowCredentials = _messages.BooleanField(1)
@@ -20166,14 +20412,16 @@ class DeprecationStatus(_messages.Message):
 
 
 class Disk(_messages.Message):
-  r"""Represents a Persistent Disk resource.  Persistent disks are required
-  for running your VM instances. Create both boot and non-boot (data)
-  persistent disks. For more information, read Persistent Disks. For more
-  storage options, read Storage options.  The disks resource represents a
-  zonal persistent disk. For more information, read Zonal persistent disks.
-  The regionDisks resource represents a regional persistent disk. For more
-  information, read  Regional resources. (== resource_for {$api_version}.disks
-  ==) (== resource_for {$api_version}.regionDisks ==)
+  r"""Represents a Persistent Disk resource.  Google Compute Engine has two
+  Disk resources:  * [Global](/compute/docs/reference/rest/latest/disks) *
+  [Regional](/compute/docs/reference/rest/latest/regionDisks)  Persistent
+  disks are required for running your VM instances. Create both boot and non-
+  boot (data) persistent disks. For more information, read Persistent Disks.
+  For more storage options, read Storage options.  The disks resource
+  represents a zonal persistent disk. For more information, read Zonal
+  persistent disks.  The regionDisks resource represents a regional persistent
+  disk. For more information, read  Regional resources. (== resource_for
+  {$api_version}.disks ==) (== resource_for {$api_version}.regionDisks ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of disk creation.
@@ -20766,13 +21014,16 @@ class DiskMoveRequest(_messages.Message):
 
 
 class DiskType(_messages.Message):
-  r"""Represents a Disk Type resource.  You can choose from a variety of disk
-  types based on your needs. For more information, read Storage options.  The
-  diskTypes resource represents disk types for a zonal persistent disk. For
-  more information, read Zonal persistent disks.  The regionDiskTypes resource
-  represents disk types for a regional persistent disk. For more information,
-  read Regional persistent disks. (== resource_for {$api_version}.diskTypes
-  ==) (== resource_for {$api_version}.regionDiskTypes ==)
+  r"""Represents a Disk Type resource.  Google Compute Engine has two Disk
+  Type resources:  * [Global](/compute/docs/reference/rest/latest/diskTypes) *
+  [Regional](/compute/docs/reference/rest/latest/regionDiskTypes)  You can
+  choose from a variety of disk types based on your needs. For more
+  information, read Storage options.  The diskTypes resource represents disk
+  types for a zonal persistent disk. For more information, read Zonal
+  persistent disks.  The regionDiskTypes resource represents disk types for a
+  regional persistent disk. For more information, read Regional persistent
+  disks. (== resource_for {$api_version}.diskTypes ==) (== resource_for
+  {$api_version}.regionDiskTypes ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -21586,7 +21837,7 @@ class Expr(_messages.Message):
 
 class ExternalVpnGateway(_messages.Message):
   r"""External VPN gateway is the on-premises VPN gateway(s) or another cloud
-  provider?s VPN gateway that connects to your Google Cloud VPN gateway. To
+  provider's VPN gateway that connects to your Google Cloud VPN gateway. To
   create a highly available VPN from Google Cloud to your on-premises side or
   another Cloud provider's VPN gateway, you must create a external VPN gateway
   resource in GCP, which provides the information to GCP about your external
@@ -21695,7 +21946,7 @@ class ExternalVpnGatewayInterface(_messages.Message):
       FOUR_IPS_REDUNDANCY - 0, 1, 2, 3
     ipAddress: IP address of the interface in the external VPN gateway. Only
       IPv4 is supported. This IP address can be either from your on-premise
-      gateway or another Cloud provider?s VPN gateway, it cannot be an IP
+      gateway or another Cloud provider's VPN gateway, it cannot be an IP
       address from Google Compute Engine.
   """
 
@@ -22198,14 +22449,17 @@ class FixedOrPercent(_messages.Message):
 
 
 class ForwardingRule(_messages.Message):
-  r"""Represents a Forwarding Rule resource.  A forwarding rule and its
-  corresponding IP address represent the frontend configuration of a Google
-  Cloud Platform load balancer. Forwarding rules can also reference target
-  instances and Cloud VPN Classic gateways (targetVpnGateway).  For more
-  information, read Forwarding rule concepts and Using protocol forwarding.
-  (== resource_for {$api_version}.forwardingRules ==) (== resource_for
-  {$api_version}.globalForwardingRules ==) (== resource_for
-  {$api_version}.regionForwardingRules ==)
+  r"""Represents a Forwarding Rule resource.  Forwarding rule resources in GCP
+  can be either regional or global in scope:  *
+  [Global](/compute/docs/reference/rest/latest/globalForwardingRules) *
+  [Regional](/compute/docs/reference/rest/latest/forwardingRules)  A
+  forwarding rule and its corresponding IP address represent the frontend
+  configuration of a Google Cloud Platform load balancer. Forwarding rules can
+  also reference target instances and Cloud VPN Classic gateways
+  (targetVpnGateway).  For more information, read Forwarding rule concepts and
+  Using protocol forwarding.  (== resource_for {$api_version}.forwardingRules
+  ==) (== resource_for {$api_version}.globalForwardingRules ==) (==
+  resource_for {$api_version}.regionForwardingRules ==)
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies. For
@@ -22222,14 +22476,14 @@ class ForwardingRule(_messages.Message):
       forwarding rule. Valid options are IPV4 or IPV6. This can only be
       specified for an external global forwarding rule.
     LoadBalancingSchemeValueValuesEnum: Specifies the forwarding rule type.
-      EXTERNAL is used for: - Classic Cloud VPN gateways - Protocol forwarding
-      to VMs from an external IP address - The following load balancers:
-      HTTP(S), SSL Proxy, TCP Proxy, and Network TCP/UDP.  INTERNAL is used
-      for: - Protocol forwarding to VMs from an internal IP address - Internal
-      TCP/UDP load balancers  INTERNAL_MANAGED is used for: - Internal HTTP(S)
-      load balancers  INTERNAL_SELF_MANAGED is used for: - Traffic Director
-      For more information about forwarding rules, refer to Forwarding rule
-      concepts.
+      - EXTERNAL is used for:   - Classic Cloud VPN gateways  - Protocol
+      forwarding to VMs from an external IP address  - The following load
+      balancers: HTTP(S), SSL Proxy, TCP Proxy, and Network TCP/UDP     -
+      INTERNAL is used for:   - Protocol forwarding to VMs from an internal IP
+      address  - Internal TCP/UDP load balancers    - INTERNAL_MANAGED is used
+      for:   - Internal HTTP(S) load balancers    - >INTERNAL_SELF_MANAGED is
+      used for:   - Traffic Director      For more information about
+      forwarding rules, refer to Forwarding rule concepts.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this load balancer and can only take the following values:
       PREMIUM , STANDARD.  For regional ForwardingRule, the valid values are
@@ -22316,15 +22570,15 @@ class ForwardingRule(_messages.Message):
     labels: Labels to apply to this resource. These can be later modified by
       the setLabels method. Each label key/value pair must comply with
       RFC1035. Label values may be empty.
-    loadBalancingScheme: Specifies the forwarding rule type. EXTERNAL is used
-      for: - Classic Cloud VPN gateways - Protocol forwarding to VMs from an
-      external IP address - The following load balancers: HTTP(S), SSL Proxy,
-      TCP Proxy, and Network TCP/UDP.  INTERNAL is used for: - Protocol
-      forwarding to VMs from an internal IP address - Internal TCP/UDP load
-      balancers  INTERNAL_MANAGED is used for: - Internal HTTP(S) load
-      balancers  INTERNAL_SELF_MANAGED is used for: - Traffic Director  For
-      more information about forwarding rules, refer to Forwarding rule
-      concepts.
+    loadBalancingScheme: Specifies the forwarding rule type.    - EXTERNAL is
+      used for:   - Classic Cloud VPN gateways  - Protocol forwarding to VMs
+      from an external IP address  - The following load balancers: HTTP(S),
+      SSL Proxy, TCP Proxy, and Network TCP/UDP     - INTERNAL is used for:
+      - Protocol forwarding to VMs from an internal IP address  - Internal
+      TCP/UDP load balancers    - INTERNAL_MANAGED is used for:   - Internal
+      HTTP(S) load balancers    - >INTERNAL_SELF_MANAGED is used for:   -
+      Traffic Director      For more information about forwarding rules, refer
+      to Forwarding rule concepts.
     metadataFilters: Opaque filter criteria used by Loadbalancer to restrict
       routing configuration to a limited set of xDS compliant clients. In
       their xDS requests to Loadbalancer, xDS clients present node metadata.
@@ -22409,7 +22663,7 @@ class ForwardingRule(_messages.Message):
       the forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
       appropriate to the target object. For INTERNAL_SELF_MANAGED load
-      balancing, only HTTP and HTTPS targets are valid.
+      balancing, only targetHttpProxy is valid, not targetHttpsProxy.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -22454,14 +22708,14 @@ class ForwardingRule(_messages.Message):
     UNSPECIFIED_VERSION = 2
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
-    r"""Specifies the forwarding rule type. EXTERNAL is used for: - Classic
-    Cloud VPN gateways - Protocol forwarding to VMs from an external IP
-    address - The following load balancers: HTTP(S), SSL Proxy, TCP Proxy, and
-    Network TCP/UDP.  INTERNAL is used for: - Protocol forwarding to VMs from
-    an internal IP address - Internal TCP/UDP load balancers  INTERNAL_MANAGED
-    is used for: - Internal HTTP(S) load balancers  INTERNAL_SELF_MANAGED is
-    used for: - Traffic Director  For more information about forwarding rules,
-    refer to Forwarding rule concepts.
+    r"""Specifies the forwarding rule type.    - EXTERNAL is used for:   -
+    Classic Cloud VPN gateways  - Protocol forwarding to VMs from an external
+    IP address  - The following load balancers: HTTP(S), SSL Proxy, TCP Proxy,
+    and Network TCP/UDP     - INTERNAL is used for:   - Protocol forwarding to
+    VMs from an internal IP address  - Internal TCP/UDP load balancers    -
+    INTERNAL_MANAGED is used for:   - Internal HTTP(S) load balancers    -
+    >INTERNAL_SELF_MANAGED is used for:   - Traffic Director      For more
+    information about forwarding rules, refer to Forwarding rule concepts.
 
     Values:
       EXTERNAL: <no description>
@@ -22945,6 +23199,26 @@ class ForwardingRulesScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class GlobalNetworkEndpointGroupsAttachEndpointsRequest(_messages.Message):
+  r"""A GlobalNetworkEndpointGroupsAttachEndpointsRequest object.
+
+  Fields:
+    networkEndpoints: The list of network endpoints to be attached.
+  """
+
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 1, repeated=True)
+
+
+class GlobalNetworkEndpointGroupsDetachEndpointsRequest(_messages.Message):
+  r"""A GlobalNetworkEndpointGroupsDetachEndpointsRequest object.
+
+  Fields:
+    networkEndpoints: The list of network endpoints to be detached.
+  """
+
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 1, repeated=True)
+
+
 class GlobalSetLabelsRequest(_messages.Message):
   r"""A GlobalSetLabelsRequest object.
 
@@ -23027,6 +23301,49 @@ class GlobalSetPolicyRequest(_messages.Message):
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
   policy = _messages.MessageField('Policy', 3)
+
+
+class GoogleDuration(_messages.Message):
+  r"""A Duration represents a signed, fixed-length span of time represented as
+  a count of seconds and fractions of seconds at nanosecond resolution. It is
+  independent of any calendar and concepts like "day" or "month". It is
+  related to Timestamp in that the difference between two Timestamp values is
+  a Duration and it can be added or subtracted from a Timestamp. Range is
+  approximately +-10,000 years.  # Examples  Example 1: Compute Duration from
+  two Timestamps in pseudo code.  Timestamp start = ...; Timestamp end = ...;
+  Duration duration = ...;  duration.seconds = end.seconds - start.seconds;
+  duration.nanos = end.nanos - start.nanos;  if (duration.seconds  0) {
+  duration.seconds += 1; duration.nanos -= 1000000000; } else if
+  (duration.seconds > 0 && duration.nanos < 0) { duration.seconds -= 1;
+  duration.nanos += 1000000000; }  Example 2: Compute Timestamp from Timestamp
+  + Duration in pseudo code.  Timestamp start = ...; Duration duration = ...;
+  Timestamp end = ...;  end.seconds = start.seconds + duration.seconds;
+  end.nanos = start.nanos + duration.nanos;  if (end.nanos = 1000000000) {
+  end.seconds += 1; end.nanos -= 1000000000; }  Example 3: Compute Duration
+  from datetime.timedelta in Python.  td = datetime.timedelta(days=3,
+  minutes=10) duration = Duration() duration.FromTimedelta(td)  # JSON Mapping
+  In JSON format, the Duration type is encoded as a string rather than an
+  object, where the string ends in the suffix "s" (indicating seconds) and is
+  preceded by the number of seconds, with nanoseconds expressed as fractional
+  seconds. For example, 3 seconds with 0 nanoseconds should be encoded in JSON
+  format as "3s", while 3 seconds and 1 nanosecond should be expressed in JSON
+  format as "3.000000001s", and 3 seconds and 1 microsecond should be
+  expressed in JSON format as "3.000001s".
+
+  Fields:
+    nanos: Signed fractions of a second at nanosecond resolution of the span
+      of time. Durations less than one second are represented with a 0
+      `seconds` field and a positive or negative `nanos` field. For durations
+      of one second or more, a non-zero value for the `nanos` field must be of
+      the same sign as the `seconds` field. Must be from -999,999,999 to
+      +999,999,999 inclusive.
+    seconds: Signed seconds of the span of time. Must be from -315,576,000,000
+      to +315,576,000,000 inclusive. Note: these bounds are computed from: 60
+      sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years
+  """
+
+  nanos = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(2)
 
 
 class GuestAttributes(_messages.Message):
@@ -23355,10 +23672,14 @@ class HTTPSHealthCheck(_messages.Message):
 
 
 class HealthCheck(_messages.Message):
-  r"""Represents a Health Check resource.  Health checks are used for most GCP
-  load balancers and managed instance group auto-healing. For more
-  information, read Health Check Concepts.  To perform health checks on
-  network load balancers, you must use either httpHealthChecks or
+  r"""Represents a Health Check resource.  Google Compute Engine has two
+  Health Check resources:  *
+  [Global](/compute/docs/reference/rest/latest/healthChecks) *
+  [Regional](/compute/docs/reference/rest/latest/regionHealthChecks)  Internal
+  HTTP(S) load balancers use regional health checks. All other types of GCP
+  load balancers and managed instance group auto-healing use global health
+  checks. For more information, read Health Check Concepts.  To perform health
+  checks on network load balancers, you must use either httpHealthChecks or
   httpsHealthChecks.
 
   Enums:
@@ -24302,12 +24623,16 @@ class HttpRedirectAction(_messages.Message):
       UrlMaps used in TargetHttpProxys. Setting this true for TargetHttpsProxy
       is not permitted. The default is set to false.
     pathRedirect: The path that will be used in the redirect response instead
-      of the one that was supplied in the request. Only one of pathRedirect or
-      prefixRedirect must be specified. The value must be between 1 and 1024
-      characters.
+      of the one that was supplied in the request. pathRedirect cannot be
+      supplied together with prefixRedirect. Supply one alone or neither. If
+      neither is supplied, the path of the original request will be used for
+      the redirect. The value must be between 1 and 1024 characters.
     prefixRedirect: The prefix that replaces the prefixMatch specified in the
       HttpRouteRuleMatch, retaining the remaining portion of the URL before
-      redirecting the request.
+      redirecting the request. prefixRedirect cannot be supplied together with
+      pathRedirect. Supply one alone or neither. If neither is supplied, the
+      path of the original request will be used for the redirect. The value
+      must be between 1 and 1024 characters.
     redirectResponseCode: The HTTP Status code to use for this RedirectAction.
       Supported values are:   - MOVED_PERMANENTLY_DEFAULT, which is the
       default value and corresponds to 301.  - FOUND, which corresponds to
@@ -25155,6 +25480,7 @@ class Instance(_messages.Message):
       interfaces are supported per instance.
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
+    resourcePolicies: Resource policies applied to this instance.
     scheduling: Sets the scheduling options for this instance.
     selfLink: [Output Only] Server-defined URL for this resource.
     serviceAccounts: A list of service accounts, with their specified scopes,
@@ -25258,20 +25584,21 @@ class Instance(_messages.Message):
   name = _messages.StringField(18)
   networkInterfaces = _messages.MessageField('NetworkInterface', 19, repeated=True)
   reservationAffinity = _messages.MessageField('ReservationAffinity', 20)
-  scheduling = _messages.MessageField('Scheduling', 21)
-  selfLink = _messages.StringField(22)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 23, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 24)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 25)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 26)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 27)
-  sourceMachineImage = _messages.StringField(28)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 29)
-  startRestricted = _messages.BooleanField(30)
-  status = _messages.EnumField('StatusValueValuesEnum', 31)
-  statusMessage = _messages.StringField(32)
-  tags = _messages.MessageField('Tags', 33)
-  zone = _messages.StringField(34)
+  resourcePolicies = _messages.StringField(21, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 22)
+  selfLink = _messages.StringField(23)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 24, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 25)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 26)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 27)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 28)
+  sourceMachineImage = _messages.StringField(29)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 30)
+  startRestricted = _messages.BooleanField(31)
+  status = _messages.EnumField('StatusValueValuesEnum', 32)
+  statusMessage = _messages.StringField(33)
+  tags = _messages.MessageField('Tags', 34)
+  zone = _messages.StringField(35)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -28514,7 +28841,7 @@ class InterconnectAttachment(_messages.Message):
       this attachment. All prefixes must be within link-local address space
       (169.254.0.0/16) and must be /29 or shorter (/28, /27, etc). Google will
       attempt to select an unused /29 from the supplied candidate prefix(es).
-      The request will fail if all possible /29s are in use on Google?s edge.
+      The request will fail if all possible /29s are in use on Google's edge.
       If not supplied, Google will randomly select an unused /29 from all of
       link-local space.
     cloudRouterIpAddress: [Output Only] IPv4 address + prefix length to be
@@ -29076,12 +29403,12 @@ class InterconnectAttachmentPartnerMetadata(_messages.Message):
 
   Fields:
     interconnectName: Plain text name of the Interconnect this attachment is
-      connected to, as displayed in the Partner?s portal. For instance
+      connected to, as displayed in the Partner's portal. For instance
       "Chicago 1". This value may be validated to match approved Partner
       values.
     partnerName: Plain text name of the Partner providing this attachment.
       This value may be validated to match approved Partner values.
-    portalUrl: URL of the Partner?s portal for this Attachment. Partners may
+    portalUrl: URL of the Partner's portal for this Attachment. Partners may
       customise this to be a deep link to the specific resource on the Partner
       portal. This value may be validated to match approved Partner values.
   """
@@ -29239,7 +29566,7 @@ class InterconnectCircuitInfo(_messages.Message):
 
 class InterconnectDiagnostics(_messages.Message):
   r"""Diagnostics information about interconnect, contains detailed and
-  current technical information about Google?s side of the connection.
+  current technical information about Google's side of the connection.
 
   Fields:
     arpCaches: A list of InterconnectDiagnostics.ARPEntry objects, describing
@@ -29278,9 +29605,9 @@ class InterconnectDiagnosticsLinkLACPStatus(_messages.Message):
       This means that the rest of the object should be empty.
 
   Fields:
-    googleSystemId: System ID of the port on Google?s side of the LACP
+    googleSystemId: System ID of the port on Google's side of the LACP
       exchange.
-    neighborSystemId: System ID of the port on the neighbor?s side of the LACP
+    neighborSystemId: System ID of the port on the neighbor's side of the LACP
       exchange.
     state: The state of a LACP link, which can take one of the following
       values:  - ACTIVE: The link is configured and active within the bundle.
@@ -31330,6 +31657,9 @@ class NetworkEndpoint(_messages.Message):
   r"""The network endpoint. Next ID: 7
 
   Fields:
+    fqdn: Optional fully qualified domain name of network endpoint. This can
+      only be specified when NetworkEndpointGroup.network_endpoint_type is
+      NON_GCP_FQDN_PORT.
     instance: The name for a specific VM instance that the IP address belongs
       to. This is required for network endpoints of type GCE_VM_IP_PORT. The
       instance must be in the same zone of network endpoint group.  The name
@@ -31344,9 +31674,10 @@ class NetworkEndpoint(_messages.Message):
       defaultPort for the network endpoint group will be used.
   """
 
-  instance = _messages.StringField(1)
-  ipAddress = _messages.StringField(2)
-  port = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  fqdn = _messages.StringField(1)
+  instance = _messages.StringField(2)
+  ipAddress = _messages.StringField(3)
+  port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class NetworkEndpointGroup(_messages.Message):
@@ -31398,8 +31729,12 @@ class NetworkEndpointGroup(_messages.Message):
 
     Values:
       GCE_VM_IP_PORT: <no description>
+      INTERNET_FQDN_PORT: <no description>
+      INTERNET_IP_PORT: <no description>
     """
     GCE_VM_IP_PORT = 0
+    INTERNET_FQDN_PORT = 1
+    INTERNET_IP_PORT = 2
 
   creationTimestamp = _messages.StringField(1)
   defaultPort = _messages.IntegerField(2, variant=_messages.Variant.INT32)
@@ -33050,7 +33385,7 @@ class NodeTemplate(_messages.Message):
   r"""Represent a sole-tenant Node Template resource.  You can use a template
   to define properties for nodes in a node group. For more information, read
   Creating node groups and instances. (== resource_for
-  {$api_version}.nodeTemplates ==)
+  {$api_version}.nodeTemplates ==) (== NextID: 18 ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the node template. One
@@ -33998,14 +34333,19 @@ class NodeTypesScopedList(_messages.Message):
 
 
 class Operation(_messages.Message):
-  r"""Represents an Operation resource.  You can use an operation resource to
-  manage asynchronous API requests. For more information, read Handling API
-  responses.  Operations can be global, regional or zonal.   - For global
-  operations, use the globalOperations resource.  - For regional operations,
-  use the regionOperations resource.  - For zonal operations, use the
-  zonalOperations resource.    For more information, read  Global, Regional,
-  and Zonal Resources. (== resource_for {$api_version}.globalOperations ==)
-  (== resource_for {$api_version}.regionOperations ==) (== resource_for
+  r"""Represents an Operation resource.  Google Compute Engine has three
+  Operation resources:  *
+  [Global](/compute/docs/reference/rest/latest/globalOperations) *
+  [Regional](/compute/docs/reference/rest/latest/regionOperations) *
+  [Zonal](/compute/docs/reference/rest/latest/zoneOperations)  You can use an
+  operation resource to manage asynchronous API requests. For more
+  information, read Handling API responses.  Operations can be global,
+  regional or zonal.   - For global operations, use the globalOperations
+  resource.  - For regional operations, use the regionOperations resource.  -
+  For zonal operations, use the zonalOperations resource.    For more
+  information, read  Global, Regional, and Zonal Resources. (== resource_for
+  {$api_version}.globalOperations ==) (== resource_for
+  {$api_version}.regionOperations ==) (== resource_for
   {$api_version}.zoneOperations ==)
 
   Enums:
@@ -35816,6 +36156,7 @@ class Quota(_messages.Message):
       COMMITTED_C2_CPUS: <no description>
       COMMITTED_CPUS: <no description>
       COMMITTED_LOCAL_SSD_TOTAL_GB: <no description>
+      COMMITTED_N2D_CPUS: <no description>
       COMMITTED_N2_CPUS: <no description>
       COMMITTED_NVIDIA_K80_GPUS: <no description>
       COMMITTED_NVIDIA_P100_GPUS: <no description>
@@ -35846,6 +36187,7 @@ class Quota(_messages.Message):
       IN_USE_SNAPSHOT_SCHEDULES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
       MACHINE_IMAGES: <no description>
+      N2D_CPUS: <no description>
       N2_CPUS: <no description>
       NETWORKS: <no description>
       NETWORK_ENDPOINT_GROUPS: <no description>
@@ -35857,6 +36199,7 @@ class Quota(_messages.Message):
       NVIDIA_T4_GPUS: <no description>
       NVIDIA_T4_VWS_GPUS: <no description>
       NVIDIA_V100_GPUS: <no description>
+      PACKET_MIRRORINGS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
       PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
@@ -35901,82 +36244,85 @@ class Quota(_messages.Message):
     COMMITTED_C2_CPUS = 5
     COMMITTED_CPUS = 6
     COMMITTED_LOCAL_SSD_TOTAL_GB = 7
-    COMMITTED_N2_CPUS = 8
-    COMMITTED_NVIDIA_K80_GPUS = 9
-    COMMITTED_NVIDIA_P100_GPUS = 10
-    COMMITTED_NVIDIA_P4_GPUS = 11
-    COMMITTED_NVIDIA_T4_GPUS = 12
-    COMMITTED_NVIDIA_V100_GPUS = 13
-    CPUS = 14
-    CPUS_ALL_REGIONS = 15
-    DISKS_TOTAL_GB = 16
-    EXTERNAL_VPN_GATEWAYS = 17
-    FIREWALLS = 18
-    FORWARDING_RULES = 19
-    GLOBAL_INTERNAL_ADDRESSES = 20
-    GPUS_ALL_REGIONS = 21
-    HEALTH_CHECKS = 22
-    IMAGES = 23
-    INSTANCES = 24
-    INSTANCE_GROUPS = 25
-    INSTANCE_GROUP_MANAGERS = 26
-    INSTANCE_TEMPLATES = 27
-    INTERCONNECTS = 28
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 29
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 30
-    INTERCONNECT_TOTAL_GBPS = 31
-    INTERNAL_ADDRESSES = 32
-    IN_USE_ADDRESSES = 33
-    IN_USE_BACKUP_SCHEDULES = 34
-    IN_USE_SNAPSHOT_SCHEDULES = 35
-    LOCAL_SSD_TOTAL_GB = 36
-    MACHINE_IMAGES = 37
-    N2_CPUS = 38
-    NETWORKS = 39
-    NETWORK_ENDPOINT_GROUPS = 40
-    NVIDIA_K80_GPUS = 41
-    NVIDIA_P100_GPUS = 42
-    NVIDIA_P100_VWS_GPUS = 43
-    NVIDIA_P4_GPUS = 44
-    NVIDIA_P4_VWS_GPUS = 45
-    NVIDIA_T4_GPUS = 46
-    NVIDIA_T4_VWS_GPUS = 47
-    NVIDIA_V100_GPUS = 48
-    PREEMPTIBLE_CPUS = 49
-    PREEMPTIBLE_LOCAL_SSD_GB = 50
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 51
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 52
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 53
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 54
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 55
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 56
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 57
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 58
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 59
-    REGIONAL_AUTOSCALERS = 60
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 61
-    RESERVATIONS = 62
-    RESOURCE_POLICIES = 63
-    ROUTERS = 64
-    ROUTES = 65
-    SECURITY_POLICIES = 66
-    SECURITY_POLICY_CEVAL_RULES = 67
-    SECURITY_POLICY_RULES = 68
-    SNAPSHOTS = 69
-    SSD_TOTAL_GB = 70
-    SSL_CERTIFICATES = 71
-    STATIC_ADDRESSES = 72
-    SUBNETWORKS = 73
-    TARGET_HTTPS_PROXIES = 74
-    TARGET_HTTP_PROXIES = 75
-    TARGET_INSTANCES = 76
-    TARGET_POOLS = 77
-    TARGET_SSL_PROXIES = 78
-    TARGET_TCP_PROXIES = 79
-    TARGET_VPN_GATEWAYS = 80
-    URL_MAPS = 81
-    VPN_GATEWAYS = 82
-    VPN_TUNNELS = 83
+    COMMITTED_N2D_CPUS = 8
+    COMMITTED_N2_CPUS = 9
+    COMMITTED_NVIDIA_K80_GPUS = 10
+    COMMITTED_NVIDIA_P100_GPUS = 11
+    COMMITTED_NVIDIA_P4_GPUS = 12
+    COMMITTED_NVIDIA_T4_GPUS = 13
+    COMMITTED_NVIDIA_V100_GPUS = 14
+    CPUS = 15
+    CPUS_ALL_REGIONS = 16
+    DISKS_TOTAL_GB = 17
+    EXTERNAL_VPN_GATEWAYS = 18
+    FIREWALLS = 19
+    FORWARDING_RULES = 20
+    GLOBAL_INTERNAL_ADDRESSES = 21
+    GPUS_ALL_REGIONS = 22
+    HEALTH_CHECKS = 23
+    IMAGES = 24
+    INSTANCES = 25
+    INSTANCE_GROUPS = 26
+    INSTANCE_GROUP_MANAGERS = 27
+    INSTANCE_TEMPLATES = 28
+    INTERCONNECTS = 29
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 30
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 31
+    INTERCONNECT_TOTAL_GBPS = 32
+    INTERNAL_ADDRESSES = 33
+    IN_USE_ADDRESSES = 34
+    IN_USE_BACKUP_SCHEDULES = 35
+    IN_USE_SNAPSHOT_SCHEDULES = 36
+    LOCAL_SSD_TOTAL_GB = 37
+    MACHINE_IMAGES = 38
+    N2D_CPUS = 39
+    N2_CPUS = 40
+    NETWORKS = 41
+    NETWORK_ENDPOINT_GROUPS = 42
+    NVIDIA_K80_GPUS = 43
+    NVIDIA_P100_GPUS = 44
+    NVIDIA_P100_VWS_GPUS = 45
+    NVIDIA_P4_GPUS = 46
+    NVIDIA_P4_VWS_GPUS = 47
+    NVIDIA_T4_GPUS = 48
+    NVIDIA_T4_VWS_GPUS = 49
+    NVIDIA_V100_GPUS = 50
+    PACKET_MIRRORINGS = 51
+    PREEMPTIBLE_CPUS = 52
+    PREEMPTIBLE_LOCAL_SSD_GB = 53
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 54
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 55
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 56
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 57
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 58
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 59
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 60
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 61
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 62
+    REGIONAL_AUTOSCALERS = 63
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 64
+    RESERVATIONS = 65
+    RESOURCE_POLICIES = 66
+    ROUTERS = 67
+    ROUTES = 68
+    SECURITY_POLICIES = 69
+    SECURITY_POLICY_CEVAL_RULES = 70
+    SECURITY_POLICY_RULES = 71
+    SNAPSHOTS = 72
+    SSD_TOTAL_GB = 73
+    SSL_CERTIFICATES = 74
+    STATIC_ADDRESSES = 75
+    SUBNETWORKS = 76
+    TARGET_HTTPS_PROXIES = 77
+    TARGET_HTTP_PROXIES = 78
+    TARGET_INSTANCES = 79
+    TARGET_POOLS = 80
+    TARGET_SSL_PROXIES = 81
+    TARGET_TCP_PROXIES = 82
+    TARGET_VPN_GATEWAYS = 83
+    URL_MAPS = 84
+    VPN_GATEWAYS = 85
+    VPN_TUNNELS = 86
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -38485,7 +38831,7 @@ class ResourcePolicySnapshotSchedulePolicySnapshotProperties(_messages.Message):
       modified by the setLabels method. Label values may be empty.
 
   Fields:
-    guestFlush: Indication to perform a ?guest aware? snapshot.
+    guestFlush: Indication to perform a 'guest aware' snapshot.
     labels: Labels to apply to scheduled snapshots. These can be later
       modified by the setLabels method. Label values may be empty.
     storageLocations: Cloud Storage bucket storage location of the auto
@@ -39121,7 +39467,7 @@ class RouterBgp(_messages.Message):
       which keepalive messages are sent, and the hold time is the maximum
       number of seconds allowed to elapse between successive keepalive
       messages that BGP receives from a peer. BGP will use the smaller of
-      either the local hold time value or the peer?s hold time value as the
+      either the local hold time value or the peer's hold time value as the
       hold time for the BGP connection between the two peers. If set, this
       value must be between 1 and 120. The default is 20.
   """
@@ -40533,7 +40879,7 @@ class SecurityPolicyRule(_messages.Message):
     kind: [Output only] Type of the resource. Always
       compute#securityPolicyRule for security policy rules
     match: A match condition that incoming traffic is evaluated against. If it
-      evaluates to true, the corresponding ?action? is enforced.
+      evaluates to true, the corresponding 'action' is enforced.
     preview: If set to true, the specified action is not enforced.
     priority: An integer indicating the priority of a rule in the list. The
       priority must be a positive value between 0 and 2147483647. Rules are
@@ -40813,6 +41159,8 @@ class Snapshot(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     diskSizeGb: [Output Only] Size of the source disk, specified in GB.
+    downloadBytes: [Output Only] Number of bytes downloaded to restore a
+      snapshot to a disk.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#snapshot for
@@ -40929,22 +41277,23 @@ class Snapshot(_messages.Message):
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   diskSizeGb = _messages.IntegerField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#snapshot')
-  labelFingerprint = _messages.BytesField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  licenseCodes = _messages.IntegerField(9, repeated=True)
-  licenses = _messages.StringField(10, repeated=True)
-  name = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 13)
-  sourceDisk = _messages.StringField(14)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
-  sourceDiskId = _messages.StringField(16)
-  status = _messages.EnumField('StatusValueValuesEnum', 17)
-  storageBytes = _messages.IntegerField(18)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 19)
-  storageLocations = _messages.StringField(20, repeated=True)
+  downloadBytes = _messages.IntegerField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#snapshot')
+  labelFingerprint = _messages.BytesField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  licenseCodes = _messages.IntegerField(10, repeated=True)
+  licenses = _messages.StringField(11, repeated=True)
+  name = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
+  sourceDisk = _messages.StringField(15)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
+  sourceDiskId = _messages.StringField(17)
+  status = _messages.EnumField('StatusValueValuesEnum', 18)
+  storageBytes = _messages.IntegerField(19)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 20)
+  storageLocations = _messages.StringField(21, repeated=True)
 
 
 class SnapshotList(_messages.Message):
@@ -41193,11 +41542,17 @@ class SourceInstanceProperties(_messages.Message):
 
 
 class SslCertificate(_messages.Message):
-  r"""Represents an SSL Certificate resource.  This SSL certificate resource
-  also contains a private key. You can use SSL keys and certificates to secure
-  connections to a load balancer. For more information, read  Creating and
-  Using SSL Certificates. (== resource_for {$api_version}.sslCertificates ==)
-  (== resource_for {$api_version}.regionSslCertificates ==) Next ID: 17
+  r"""Represents an SSL Certificate resource.  Google Compute Engine has two
+  SSL Certificate resources:  *
+  [Global](/compute/docs/reference/rest/latest/sslCertificates) *
+  [Regional](/compute/docs/reference/rest/latest/regionSslCertificates)  -
+  sslCertificates are used by: - external HTTPS load balancers - SSL proxy
+  load balancers  - regionSslCertificates are used by: - internal HTTPS load
+  balancers  This SSL certificate resource also contains a private key. You
+  can use SSL keys and certificates to secure connections to a load balancer.
+  For more information, read  Creating and Using SSL Certificates. (==
+  resource_for {$api_version}.sslCertificates ==) (== resource_for
+  {$api_version}.regionSslCertificates ==) Next ID: 17
 
   Enums:
     TypeValueValuesEnum: (Optional) Specifies the type of SSL certificate,
@@ -43164,11 +43519,17 @@ class TargetHttpProxiesScopedList(_messages.Message):
 
 
 class TargetHttpProxy(_messages.Message):
-  r"""Represents a Target HTTP Proxy resource.  A target HTTP proxy is a
-  component of GCP HTTP load balancers. Forwarding rules reference a target
-  HTTP proxy, and the target proxy then references a URL map. For more
-  information, read Using Target Proxies and  Forwarding rule concepts. (==
-  resource_for {$api_version}.targetHttpProxies ==) (== resource_for
+  r"""Represents a Target HTTP Proxy resource.  Google Compute Engine has two
+  Target HTTP Proxy resources:  *
+  [Global](/compute/docs/reference/rest/latest/targetHttpProxies) *
+  [Regional](/compute/docs/reference/rest/latest/regionTargetHttpProxies)  A
+  target HTTP proxy is a component of GCP HTTP load balancers.  *
+  targetHttpProxies are used by external HTTP load balancers and Traffic
+  Director. * regionTargetHttpProxies are used by internal HTTP load
+  balancers.  Forwarding rules reference a target HTTP proxy, and the target
+  proxy then references a URL map. For more information, read Using Target
+  Proxies and  Forwarding rule concepts. (== resource_for
+  {$api_version}.targetHttpProxies ==) (== resource_for
   {$api_version}.regionTargetHttpProxies ==)
 
   Fields:
@@ -43634,12 +43995,17 @@ class TargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
 
 
 class TargetHttpsProxy(_messages.Message):
-  r"""Represents a Target HTTPS Proxy resource.  A target HTTPS proxy is a
-  component of GCP HTTPS load balancers. Forwarding rules reference a target
-  HTTPS proxy, and the target proxy then references a URL map. For more
-  information, read Using Target Proxies and  Forwarding rule concepts. (==
-  resource_for {$api_version}.targetHttpsProxies ==) (== resource_for
-  {$api_version}.regionTargetHttpsProxies ==)
+  r"""Represents a Target HTTPS Proxy resource.  Google Compute Engine has two
+  Target HTTPS Proxy resources:  *
+  [Global](/compute/docs/reference/rest/latest/targetHttpsProxies) *
+  [Regional](/compute/docs/reference/rest/latest/regionTargetHttpsProxies)  A
+  target HTTPS proxy is a component of GCP HTTPS load balancers.  *
+  targetHttpsProxies are used by external HTTPS load balancers. *
+  regionTargetHttpsProxies are used by internal HTTPS load balancers.
+  Forwarding rules reference a target HTTPS proxy, and the target proxy then
+  references a URL map. For more information, read Using Target Proxies and
+  Forwarding rule concepts. (== resource_for {$api_version}.targetHttpsProxies
+  ==) (== resource_for {$api_version}.regionTargetHttpsProxies ==)
 
   Enums:
     QuicOverrideValueValuesEnum: Specifies the QUIC override policy for this
@@ -46022,12 +46388,18 @@ class TestPermissionsResponse(_messages.Message):
 
 
 class UrlMap(_messages.Message):
-  r"""Represents a URL Map resource.  A URL map resource is a component of
-  certain types of load balancers. This resource defines mappings from host
-  names and URL paths to either a backend service or a backend bucket.  To use
-  this resource, the backend service must have a loadBalancingScheme of either
-  EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED For more information,
-  read URL Map Concepts.
+  r"""Represents a URL Map resource.  Google Compute Engine has two URL Map
+  resources:  * [Global](/compute/docs/reference/rest/latest/urlMaps) *
+  [Regional](/compute/docs/reference/rest/latest/regionUrlMaps)  A URL map
+  resource is a component of certain types of GCP load balancers and Traffic
+  Director.  * urlMaps are used by external HTTP(S) load balancers and Traffic
+  Director. * regionUrlMaps are used by internal HTTP(S) load balancers.  This
+  resource defines mappings from host names and URL paths to either a backend
+  service or a backend bucket.  To use the global urlMaps resource, the
+  backend service must have a loadBalancingScheme of either EXTERNAL or
+  INTERNAL_SELF_MANAGED. To use the regionUrlMaps resource, the backend
+  service must have a loadBalancingScheme of INTERNAL_MANAGED. For more
+  information, read URL Map Concepts.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text

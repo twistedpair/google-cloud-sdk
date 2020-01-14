@@ -151,10 +151,7 @@ SCHEMA = s.Message(
         name=s.Value(converter=c.ToJsonString),
         subnetwork_name=s.Value(converter=c.ToJsonString),
         forwarded_ports=s.RepeatedField(element=s.Value(converter=
-                                                        c.ToJsonString)),
-        session_affinity=s.Value()
-    ),
-    zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)),
+                                                        c.ToJsonString))),
     nobuild_files=s.Value('nobuild_files_regex', converter=c.ToJsonString),
     resources=s.Message(
         memory_gb=s.Value(),

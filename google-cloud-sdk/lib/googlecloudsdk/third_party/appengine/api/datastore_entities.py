@@ -18,7 +18,7 @@
 
 Most of these kinds are based on the gd namespace "kinds" from GData:
 
-  http://code.google.com/apis/gdata/common-elements.html
+  https://developers.google.com/gdata/docs/1.0/elements
 """
 
 
@@ -182,7 +182,7 @@ class Message(GdKind):
   Includes the message title, contents, participants, and other properties.
 
   This is the gd Message kind. See:
-  http://code.google.com/apis/gdata/common-elements.html#gdMessageKind
+  https://developers.google.com/gdata/docs/1.0/elements#gdMessageKind
 
   These properties are meaningful. They are all optional.
 
@@ -220,7 +220,7 @@ class Event(GdKind):
   time, and other details.
 
   This is the gd Event kind. See:
-  http://code.google.com/apis/gdata/common-elements.html#gdEventKind
+  https://developers.google.com/gdata/docs/1.0/elements#gdEventKind
 
   These properties are meaningful. They are all optional.
 
@@ -302,7 +302,7 @@ class Contact(GdKind):
   organization.
 
   This is the gd Contact kind. See:
-  http://code.google.com/apis/gdata/common-elements.html#gdContactKind
+  https://developers.google.com/gdata/docs/1.0/elements#gdContactKind
 
   Most of the information about the contact is in the <gd:contactSection>
   element; see the reference section for that element for details.

@@ -312,6 +312,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       UPDATING: Instance is being updated.
       REPAIRING: Instance is unheathy and under repair.
       DELETING: Instance is being deleted.
+      ERROR: Instance encountered an error and is in indeterministic state.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -319,6 +320,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     UPDATING = 3
     REPAIRING = 4
     DELETING = 5
+    ERROR = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

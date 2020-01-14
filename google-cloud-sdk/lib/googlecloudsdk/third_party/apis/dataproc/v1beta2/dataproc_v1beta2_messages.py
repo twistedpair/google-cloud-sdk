@@ -25,7 +25,7 @@ class AcceleratorConfig(_messages.Message):
       https://www.googleapis.com/compute/beta/projects/[project_id]/zones/us-
       east1-a/acceleratorTypes/nvidia-tesla-k80 * projects/[project_id]/zones
       /us-east1-a/acceleratorTypes/nvidia-tesla-k80 * nvidia-tesla-k80Auto
-      Zone Exception: If you are using the Cloud Dataproc Auto Zone Placement
+      Zone Exception: If you are using the Dataproc Auto Zone Placement
       feature, you must use the short name of the accelerator type resource,
       for example, nvidia-tesla-k80.
   """
@@ -43,7 +43,7 @@ class AutoscalingConfig(_messages.Message):
       Examples: https://www.googleapis.com/compute/v1/projects/[project_id]/lo
       cations/[dataproc_region]/autoscalingPolicies/[policy_id] projects/[proj
       ect_id]/locations/[dataproc_region]/autoscalingPolicies/[policy_id]Note
-      that the policy must be in the same project and Cloud Dataproc region.
+      that the policy must be in the same project and Dataproc region.
   """
 
   policyUri = _messages.StringField(1)
@@ -154,13 +154,12 @@ class Binding(_messages.Message):
       group:{emailid}: An email address that represents a Google group.  For
       example, admins@example.com. deleted:user:{emailid}?uid={uniqueid}: An
       email address (plus unique  identifier) representing a user that has
-      been recently deleted. For
-      example,alice@example.com?uid=123456789012345678901. If the user is
-      recovered, this value reverts to user:{emailid} and the recovered user
-      retains the role in the binding.
-      deleted:serviceAccount:{emailid}?uid={uniqueid}: An email address (plus
-      unique identifier) representing a service account that has been recently
-      deleted. For example,  my-other-
+      been recently deleted. For  example,
+      alice@example.com?uid=123456789012345678901. If the user is  recovered,
+      this value reverts to user:{emailid} and the recovered user  retains the
+      role in the binding. deleted:serviceAccount:{emailid}?uid={uniqueid}: An
+      email address (plus  unique identifier) representing a service account
+      that has been recently  deleted. For example,  my-other-
       app@appspot.gserviceaccount.com?uid=123456789012345678901.  If the
       service account is undeleted, this value reverts to
       serviceAccount:{emailid} and the undeleted service account retains the
@@ -201,9 +200,9 @@ class Cluster(_messages.Message):
     clusterName: Required. The cluster name. Cluster names within a project
       must be unique. Names of deleted clusters can be reused.
     clusterUuid: Output only. A cluster UUID (Unique Universal Identifier).
-      Cloud Dataproc generates this value when it creates the cluster.
-    config: Required. The cluster config. Note that Cloud Dataproc may set
-      default values, and values may change when clusters are updated.
+      Dataproc generates this value when it creates the cluster.
+    config: Required. The cluster config. Note that Dataproc may set default
+      values, and values may change when clusters are updated.
     labels: Optional. The labels to associate with this cluster. Label keys
       must contain 1 to 63 characters, and must conform to RFC 1035
       (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
@@ -264,13 +263,13 @@ class ClusterConfig(_messages.Message):
   Fields:
     autoscalingConfig: Optional. Autoscaling config for the policy associated
       with the cluster. Cluster does not autoscale if this field is unset.
-    configBucket: Optional. A Google Cloud Storage bucket used to stage job
+    configBucket: Optional. A Cloud Storage bucket used to stage job
       dependencies, config files, and job driver console output. If you do not
       specify a staging bucket, Cloud Dataproc will determine a Cloud Storage
       location (US, ASIA, or EU) for your cluster's staging bucket according
-      to the Google Compute Engine zone where your cluster is deployed, and
-      then create and manage this project-level, per-location bucket (see
-      Cloud Dataproc staging bucket).
+      to the Compute Engine zone where your cluster is deployed, and then
+      create and manage this project-level, per-location bucket (see Dataproc
+      staging bucket).
     encryptionConfig: Optional. Encryption settings for the cluster.
     endpointConfig: Optional. Port/endpoint configuration for this cluster
     gceClusterConfig: Optional. The shared Compute Engine config settings for
@@ -533,7 +532,9 @@ class ClusterStatus(_messages.Message):
   Fields:
     detail: Output only. Optional details of cluster's state.
     state: Output only. The cluster's state.
-    stateStartTime: Output only. Time when this state was entered.
+    stateStartTime: Output only. Time when this state was entered (see JSON
+      representation of Timestamp (https://developers.google.com/protocol-
+      buffers/docs/proto3#json)).
     substate: Output only. Additional state information that includes status
       reported by the agent.
   """
@@ -575,8 +576,7 @@ class ClusterStatus(_messages.Message):
         example, critical daemons are not running or HDFS capacity is
         exhausted).Applies to RUNNING state.
       STALE_STATUS: The agent-reported status is out of date (may occur if
-        Cloud Dataproc loses communication with Agent).Applies to RUNNING
-        state.
+        Dataproc loses communication with Agent).Applies to RUNNING state.
     """
     UNSPECIFIED = 0
     UNHEALTHY = 1
@@ -1022,12 +1022,21 @@ class DataprocProjectsRegionsAutoscalingPoliciesTestIamPermissionsRequest(_messa
 class DataprocProjectsRegionsClustersCreateRequest(_messages.Message):
   r"""A DataprocProjectsRegionsClustersCreateRequest object.
 
+  Enums:
+    DeleteOnFailureValueValuesEnum: Optional. The target to delete on cluster
+      creation failure.
+    DiagnoseOnFailureValueValuesEnum: Optional. The diagnose action to run on
+      cluster creation failure.
+
   Fields:
     cluster: A Cluster resource to be passed as the request body.
+    deleteOnFailure: Optional. The target to delete on cluster creation
+      failure.
+    diagnoseOnFailure: Optional. The diagnose action to run on cluster
+      creation failure.
     projectId: Required. The ID of the Google Cloud Platform project that the
       cluster belongs to.
-    region: Required. The Cloud Dataproc region in which to handle the
-      request.
+    region: Required. The Dataproc region in which to handle the request.
     requestId: Optional. A unique id used to identify the request. If the
       server receives two CreateClusterRequest requests with the same id, then
       the second request will be ignored and the first
@@ -1038,10 +1047,38 @@ class DataprocProjectsRegionsClustersCreateRequest(_messages.Message):
       and hyphens (-). The maximum length is 40 characters.
   """
 
+  class DeleteOnFailureValueValuesEnum(_messages.Enum):
+    r"""Optional. The target to delete on cluster creation failure.
+
+    Values:
+      DELETE_TARGET_UNSPECIFIED: <no description>
+      NOTHING: <no description>
+      RESOURCES: <no description>
+      CLUSTER: <no description>
+    """
+    DELETE_TARGET_UNSPECIFIED = 0
+    NOTHING = 1
+    RESOURCES = 2
+    CLUSTER = 3
+
+  class DiagnoseOnFailureValueValuesEnum(_messages.Enum):
+    r"""Optional. The diagnose action to run on cluster creation failure.
+
+    Values:
+      DIAGNOSE_ACTION_UNSPECIFIED: <no description>
+      NONE: <no description>
+      DIAGNOSE_CLUSTER: <no description>
+    """
+    DIAGNOSE_ACTION_UNSPECIFIED = 0
+    NONE = 1
+    DIAGNOSE_CLUSTER = 2
+
   cluster = _messages.MessageField('Cluster', 1)
-  projectId = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
+  deleteOnFailure = _messages.EnumField('DeleteOnFailureValueValuesEnum', 2)
+  diagnoseOnFailure = _messages.EnumField('DiagnoseOnFailureValueValuesEnum', 3)
+  projectId = _messages.StringField(4, required=True)
+  region = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(6)
 
 
 class DataprocProjectsRegionsClustersDeleteRequest(_messages.Message):
@@ -1054,8 +1091,7 @@ class DataprocProjectsRegionsClustersDeleteRequest(_messages.Message):
       exist.
     projectId: Required. The ID of the Google Cloud Platform project that the
       cluster belongs to.
-    region: Required. The Cloud Dataproc region in which to handle the
-      request.
+    region: Required. The Dataproc region in which to handle the request.
     requestId: Optional. A unique id used to identify the request. If the
       server receives two DeleteClusterRequest requests with the same id, then
       the second request will be ignored and the first
@@ -1082,8 +1118,7 @@ class DataprocProjectsRegionsClustersDiagnoseRequest(_messages.Message):
       the request body.
     projectId: Required. The ID of the Google Cloud Platform project that the
       cluster belongs to.
-    region: Required. The Cloud Dataproc region in which to handle the
-      request.
+    region: Required. The Dataproc region in which to handle the request.
   """
 
   clusterName = _messages.StringField(1, required=True)
@@ -1117,8 +1152,7 @@ class DataprocProjectsRegionsClustersGetRequest(_messages.Message):
     clusterName: Required. The cluster name.
     projectId: Required. The ID of the Google Cloud Platform project that the
       cluster belongs to.
-    region: Required. The Cloud Dataproc region in which to handle the
-      request.
+    region: Required. The Dataproc region in which to handle the request.
   """
 
   clusterName = _messages.StringField(1, required=True)
@@ -1146,8 +1180,7 @@ class DataprocProjectsRegionsClustersListRequest(_messages.Message):
     pageToken: Optional. The standard List page token.
     projectId: Required. The ID of the Google Cloud Platform project that the
       cluster belongs to.
-    region: Required. The Cloud Dataproc region in which to handle the
-      request.
+    region: Required. The Dataproc region in which to handle the request.
   """
 
   filter = _messages.StringField(1)
@@ -1168,12 +1201,13 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
       cluster without interrupting jobs in progress. Timeout specifies how
       long to wait for jobs in progress to finish before forcefully removing
       nodes (and potentially interrupting jobs). Default timeout is 0 (for
-      forceful decommission), and the maximum allowed timeout is 1 day.Only
-      supported on Dataproc image versions 1.2 and higher.
+      forceful decommission), and the maximum allowed timeout is 1 day (see
+      JSON representation of Duration (https://developers.google.com/protocol-
+      buffers/docs/proto3#json)).Only supported on Dataproc image versions 1.2
+      and higher.
     projectId: Required. The ID of the Google Cloud Platform project the
       cluster belongs to.
-    region: Required. The Cloud Dataproc region in which to handle the
-      request.
+    region: Required. The Dataproc region in which to handle the request.
     requestId: Optional. A unique id used to identify the request. If the
       server receives two UpdateClusterRequest requests with the same id, then
       the second request will be ignored and the first
@@ -1244,8 +1278,7 @@ class DataprocProjectsRegionsClustersStartRequest(_messages.Message):
       exist.
     projectId: Required. The ID of the Google Cloud Platform project the
       cluster belongs to.
-    region: Required. The Cloud Dataproc region in which to handle the
-      request.
+    region: Required. The Dataproc region in which to handle the request.
     requestId: Optional. A unique id used to identify the request. If the
       server receives two StartClusterRequest requests with the same id, then
       the second request will be ignored and the first
@@ -1273,8 +1306,7 @@ class DataprocProjectsRegionsClustersStopRequest(_messages.Message):
       exist.
     projectId: Required. The ID of the Google Cloud Platform project the
       cluster belongs to.
-    region: Required. The Cloud Dataproc region in which to handle the
-      request.
+    region: Required. The Dataproc region in which to handle the request.
     requestId: Optional. A unique id used to identify the request. If the
       server receives two StopClusterRequest requests with the same id, then
       the second request will be ignored and the first
@@ -1316,8 +1348,7 @@ class DataprocProjectsRegionsJobsCancelRequest(_messages.Message):
     jobId: Required. The job ID.
     projectId: Required. The ID of the Google Cloud Platform project that the
       job belongs to.
-    region: Required. The Cloud Dataproc region in which to handle the
-      request.
+    region: Required. The Dataproc region in which to handle the request.
   """
 
   cancelJobRequest = _messages.MessageField('CancelJobRequest', 1)
@@ -1333,8 +1364,7 @@ class DataprocProjectsRegionsJobsDeleteRequest(_messages.Message):
     jobId: Required. The job ID.
     projectId: Required. The ID of the Google Cloud Platform project that the
       job belongs to.
-    region: Required. The Cloud Dataproc region in which to handle the
-      request.
+    region: Required. The Dataproc region in which to handle the request.
   """
 
   jobId = _messages.StringField(1, required=True)
@@ -1367,8 +1397,7 @@ class DataprocProjectsRegionsJobsGetRequest(_messages.Message):
     jobId: Required. The job ID.
     projectId: Required. The ID of the Google Cloud Platform project that the
       job belongs to.
-    region: Required. The Cloud Dataproc region in which to handle the
-      request.
+    region: Required. The Dataproc region in which to handle the request.
   """
 
   jobId = _messages.StringField(1, required=True)
@@ -1403,8 +1432,7 @@ class DataprocProjectsRegionsJobsListRequest(_messages.Message):
       request the next page of results.
     projectId: Required. The ID of the Google Cloud Platform project that the
       job belongs to.
-    region: Required. The Cloud Dataproc region in which to handle the
-      request.
+    region: Required. The Dataproc region in which to handle the request.
   """
 
   class JobStateMatcherValueValuesEnum(_messages.Enum):
@@ -1437,8 +1465,7 @@ class DataprocProjectsRegionsJobsPatchRequest(_messages.Message):
     jobId: Required. The job ID.
     projectId: Required. The ID of the Google Cloud Platform project that the
       job belongs to.
-    region: Required. The Cloud Dataproc region in which to handle the
-      request.
+    region: Required. The Dataproc region in which to handle the request.
     updateMask: Required. Specifies the path, relative to <code>Job</code>, of
       the field to update. For example, to update the labels of a Job the
       <code>update_mask</code> parameter would be specified as
@@ -1475,8 +1502,7 @@ class DataprocProjectsRegionsJobsSubmitRequest(_messages.Message):
   Fields:
     projectId: Required. The ID of the Google Cloud Platform project that the
       job belongs to.
-    region: Required. The Cloud Dataproc region in which to handle the
-      request.
+    region: Required. The Dataproc region in which to handle the request.
     submitJobRequest: A SubmitJobRequest resource to be passed as the request
       body.
   """
@@ -1934,13 +1960,10 @@ class GceClusterConfig(_messages.Message):
       projects/[project_id]/regions/global/default default
     reservationAffinity: Optional. Reservation Affinity for consuming Zonal
       reservation.
-    serviceAccount: Optional. The service account of the instances. Defaults
-      to the default Compute Engine service account. Custom service accounts
-      need permissions equivalent to the following IAM roles:
-      roles/logging.logWriter roles/storage.objectAdmin(see
-      https://cloud.google.com/compute/docs/access/service-
-      accounts#custom_service_accounts for more information). Example:
-      [account_id]@[project_id].iam.gserviceaccount.com
+    serviceAccount: Optional. The Dataproc service account (also see VM Data
+      Plane identity) used by Dataproc cluster VM instances to access Google
+      Cloud Platform services.If not specified, the Compute Engine default
+      service account is used.
     serviceAccountScopes: Optional. The URIs of service account scopes to be
       included in Compute Engine instances. The following base set of scopes
       is always included:
@@ -1962,9 +1985,9 @@ class GceClusterConfig(_messages.Message):
       instances).
     zoneUri: Optional. The zone where the Compute Engine cluster will be
       located. On a create request, it is required in the "global" region. If
-      omitted in a non-global Cloud Dataproc region, the service will pick a
-      zone in the corresponding Compute Engine region. On a get request, zone
-      will always be present.A full URL, partial URI, or short name are valid.
+      omitted in a non-global Dataproc region, the service will pick a zone in
+      the corresponding Compute Engine region. On a get request, zone will
+      always be present.A full URL, partial URI, or short name are valid.
       Examples:
       https://www.googleapis.com/compute/v1/projects/[project_id]/zones/[zone]
       projects/[project_id]/zones/[zone] us-central1-f
@@ -2033,7 +2056,7 @@ class GetPolicyOptions(_messages.Message):
 
 
 class HadoopJob(_messages.Message):
-  r"""A Cloud Dataproc job for running Apache Hadoop MapReduce
+  r"""A Dataproc job for running Apache Hadoop MapReduce
   (https://hadoop.apache.org/docs/current/hadoop-mapreduce-client/hadoop-
   mapreduce-client-core/MapReduceTutorial.html) jobs on Apache Hadoop YARN
   (https://hadoop.apache.org/docs/r2.7.1/hadoop-yarn/hadoop-yarn-
@@ -2041,7 +2064,7 @@ class HadoopJob(_messages.Message):
 
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
-      configure Hadoop. Properties that conflict with values set by the Cloud
+      configure Hadoop. Properties that conflict with values set by the
       Dataproc API may be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site and classes in user code.
 
@@ -2067,7 +2090,7 @@ class HadoopJob(_messages.Message):
       mr.jar'  'hdfs:/tmp/test-samples/custom-wordcount.jar'
       'file:///home/usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples.jar'
     properties: Optional. A mapping of property names to values, used to
-      configure Hadoop. Properties that conflict with values set by the Cloud
+      configure Hadoop. Properties that conflict with values set by the
       Dataproc API may be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site and classes in user code.
   """
@@ -2075,9 +2098,9 @@ class HadoopJob(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names to values, used to configure
-    Hadoop. Properties that conflict with values set by the Cloud Dataproc API
-    may be overwritten. Can include properties set in /etc/hadoop/conf/*-site
-    and classes in user code.
+    Hadoop. Properties that conflict with values set by the Dataproc API may
+    be overwritten. Can include properties set in /etc/hadoop/conf/*-site and
+    classes in user code.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.
@@ -2110,13 +2133,13 @@ class HadoopJob(_messages.Message):
 
 
 class HiveJob(_messages.Message):
-  r"""A Cloud Dataproc job for running Apache Hive (https://hive.apache.org/)
+  r"""A Dataproc job for running Apache Hive (https://hive.apache.org/)
   queries on YARN.
 
   Messages:
     PropertiesValue: Optional. A mapping of property names and values, used to
-      configure Hive. Properties that conflict with values set by the Cloud
-      Dataproc API may be overwritten. Can include properties set in
+      configure Hive. Properties that conflict with values set by the Dataproc
+      API may be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site.xml, /etc/hive/conf/hive-site.xml, and classes
       in user code.
     ScriptVariablesValue: Optional. Mapping of query variable names to values
@@ -2130,8 +2153,8 @@ class HiveJob(_messages.Message):
       the Hive server and Hadoop MapReduce (MR) tasks. Can contain Hive SerDes
       and UDFs.
     properties: Optional. A mapping of property names and values, used to
-      configure Hive. Properties that conflict with values set by the Cloud
-      Dataproc API may be overwritten. Can include properties set in
+      configure Hive. Properties that conflict with values set by the Dataproc
+      API may be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site.xml, /etc/hive/conf/hive-site.xml, and classes
       in user code.
     queryFileUri: The HCFS URI of the script that contains Hive queries.
@@ -2143,10 +2166,9 @@ class HiveJob(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names and values, used to configure
-    Hive. Properties that conflict with values set by the Cloud Dataproc API
-    may be overwritten. Can include properties set in
-    /etc/hadoop/conf/*-site.xml, /etc/hive/conf/hive-site.xml, and classes in
-    user code.
+    Hive. Properties that conflict with values set by the Dataproc API may be
+    overwritten. Can include properties set in /etc/hadoop/conf/*-site.xml,
+    /etc/hive/conf/hive-site.xml, and classes in user code.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.
@@ -2248,9 +2270,8 @@ class InstanceGroupConfig(_messages.Message):
     imageUri: Optional. The Compute Engine image resource used for cluster
       instances. It can be specified or may be inferred from
       SoftwareConfig.image_version.
-    instanceNames: Output only. The list of instance names. Cloud Dataproc
-      derives the names from cluster_name, num_instances, and the instance
-      group.
+    instanceNames: Output only. The list of instance names. Dataproc derives
+      the names from cluster_name, num_instances, and the instance group.
     isPreemptible: Optional. Specifies that this instance group contains
       preemptible instances.
     machineTypeUri: Optional. The Compute Engine machine type used for cluster
@@ -2258,14 +2279,13 @@ class InstanceGroupConfig(_messages.Message):
       https://www.googleapis.com/compute/v1/projects/[project_id]/zones/us-
       east1-a/machineTypes/n1-standard-2 projects/[project_id]/zones/us-
       east1-a/machineTypes/n1-standard-2 n1-standard-2Auto Zone Exception: If
-      you are using the Cloud Dataproc Auto Zone Placement feature, you must
-      use the short name of the machine type resource, for example,
-      n1-standard-2.
+      you are using the Dataproc Auto Zone Placement feature, you must use the
+      short name of the machine type resource, for example, n1-standard-2.
     managedGroupConfig: Output only. The config for Compute Engine Instance
       Group Manager that manages this group. This is only used for preemptible
       instance groups.
     minCpuPlatform: Specifies the minimum cpu platform for the Instance Group.
-      See Cloud Dataproc&rarr;Minimum CPU Platform.
+      See Dataproc&rarr;Minimum CPU Platform.
     numInstances: Optional. The number of VM instances in the instance group.
       For master instance groups, must be set to 1.
   """
@@ -2337,7 +2357,7 @@ class InstantiateWorkflowTemplateRequest(_messages.Message):
 
 
 class Job(_messages.Message):
-  r"""A Cloud Dataproc job resource.
+  r"""A Dataproc job resource.
 
   Messages:
     LabelsValue: Optional. The labels to associate with this job. Label keys
@@ -2354,8 +2374,8 @@ class Job(_messages.Message):
       location as driver_output_uri.
     driverOutputResourceUri: Output only. A URI pointing to the location of
       the stdout of the job's driver program.
-    hadoopJob: Job is a Hadoop job.
-    hiveJob: Job is a Hive job.
+    hadoopJob: A HadoopJob attribute.
+    hiveJob: A HiveJob attribute.
     jobUuid: Output only. A UUID that uniquely identifies a job within the
       project over time. This is in contrast to a user-settable
       reference.job_id that may be reused over time.
@@ -2365,19 +2385,19 @@ class Job(_messages.Message):
       if present, must contain 1 to 63 characters, and must conform to RFC
       1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
       be associated with a job.
-    pigJob: Job is a Pig job.
+    pigJob: A PigJob attribute.
     placement: Required. Job information, including how, when, and where to
       run the job.
-    prestoJob: Job is a Presto job
-    pysparkJob: Job is a Pyspark job.
+    prestoJob: A PrestoJob attribute.
+    pysparkJob: A PySparkJob attribute.
     reference: Optional. The fully qualified reference to the job, which can
       be used to obtain the equivalent REST path of the job resource. If this
       property is not specified when a job is created, the server generates a
       <code>job_id</code>.
     scheduling: Optional. Job scheduling configuration.
-    sparkJob: Job is a Spark job.
-    sparkRJob: Job is a SparkR job.
-    sparkSqlJob: Job is a SparkSql job.
+    sparkJob: A SparkJob attribute.
+    sparkRJob: A SparkRJob attribute.
+    sparkSqlJob: A SparkSqlJob attribute.
     status: Output only. The job status. Additional application-specific
       status information may be contained in the <code>type_job</code> and
       <code>yarn_applications</code> fields.
@@ -2441,13 +2461,13 @@ class Job(_messages.Message):
 
 
 class JobPlacement(_messages.Message):
-  r"""Cloud Dataproc job config.
+  r"""Dataproc job config.
 
   Fields:
     clusterName: Required. The name of the cluster where the job will be
       submitted.
-    clusterUuid: Output only. A cluster UUID generated by the Cloud Dataproc
-      service when the job is submitted.
+    clusterUuid: Output only. A cluster UUID generated by the Dataproc service
+      when the job is submitted.
   """
 
   clusterName = _messages.StringField(1)
@@ -2458,7 +2478,7 @@ class JobReference(_messages.Message):
   r"""Encapsulates the full scoping used to reference a job.
 
   Fields:
-    jobId: Optional. The job ID, which must be unique within the project.The
+    jobId: Optional. The job ID, which must be unique within the project. The
       ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       or hyphens (-). The maximum length is 100 characters.If not specified by
       the caller, the job ID will be provided by the server.
@@ -2485,7 +2505,7 @@ class JobScheduling(_messages.Message):
 
 
 class JobStatus(_messages.Message):
-  r"""Cloud Dataproc job status.
+  r"""Dataproc job status.
 
   Enums:
     StateValueValuesEnum: Output only. A state message specifying the overall
@@ -2494,7 +2514,7 @@ class JobStatus(_messages.Message):
       includes status reported by the agent.
 
   Fields:
-    details: Output only. Optional job state details, such as an error
+    details: Output only. Optional Job state details, such as an error
       description if the state is <code>ERROR</code>.
     state: Output only. A state message specifying the overall job state.
     stateStartTime: Output only. The time when this state was entered.
@@ -2543,9 +2563,9 @@ class JobStatus(_messages.Message):
         waiting for a condition to be met). See the "details" field for the
         reason for the delay.Applies to RUNNING state.
       STALE_STATUS: The agent-reported status is out of date, which may be
-        caused by a loss of communication between the agent and Cloud
-        Dataproc. If the agent does not send a timely update, the job will
-        fail.Applies to RUNNING state.
+        caused by a loss of communication between the agent and Dataproc. If
+        the agent does not send a timely update, the job will fail.Applies to
+        RUNNING state.
     """
     UNSPECIFIED = 0
     SUBMITTED = 1
@@ -2623,16 +2643,22 @@ class LifecycleConfig(_messages.Message):
   r"""Specifies the cluster auto-delete schedule configuration.
 
   Fields:
-    autoDeleteTime: Optional. The time when cluster will be auto-deleted.
+    autoDeleteTime: Optional. The time when cluster will be auto-deleted. (see
+      JSON representation of Timestamp (https://developers.google.com
+      /protocol-buffers/docs/proto3#json)).
     autoDeleteTtl: Optional. The lifetime duration of cluster. The cluster
-      will be auto-deleted at the end of this period. Valid range: 10m,
-      14d.Example: "1d", to delete the cluster 1 day after its creation..
+      will be auto-deleted at the end of this period. Minimum value is 10
+      minutes; maximum value is 14 days (see JSON representation of Duration
+      (https://developers.google.com/protocol-buffers/docs/proto3#json)).
     idleDeleteTtl: Optional. The duration to keep the cluster alive while
-      idling. Passing this threshold will cause the cluster to be deleted.
-      Valid range: 10m, 14d.Example: "10m", the minimum value, to delete the
-      cluster when it has had no jobs running for 10 minutes.
+      idling (when no jobs are running). Passing this threshold will cause the
+      cluster to be deleted. Minimum value is 10 minutes; maximum value is 14
+      days (see JSON representation of Duration (https://developers.google.com
+      /protocol-buffers/docs/proto3#json).
     idleStartTime: Output only. The time when cluster became idle (most recent
-      job finished) and became eligible for deletion due to idleness.
+      job finished) and became eligible for deletion due to idleness (see JSON
+      representation of Timestamp (https://developers.google.com/protocol-
+      buffers/docs/proto3#json)).
   """
 
   autoDeleteTime = _messages.StringField(1)
@@ -2863,8 +2889,10 @@ class NodeInitializationAction(_messages.Message):
   Fields:
     executableFile: Required. Cloud Storage URI of executable file.
     executionTimeout: Optional. Amount of time executable has to complete.
-      Default is 10 minutes. Cluster creation fails with an explanatory error
-      message (the name of the executable that caused the error and the
+      Default is 10 minutes (see JSON representation of Duration
+      (https://developers.google.com/protocol-
+      buffers/docs/proto3#json)).Cluster creation fails with an explanatory
+      error message (the name of the executable that caused the error and the
       exceeded timeout period) if the executable is not completed at end of
       the timeout period.
   """
@@ -2992,24 +3020,24 @@ class OrderedJob(_messages.Message):
       be associated with a given job.
 
   Fields:
-    hadoopJob: Job is a Hadoop job.
-    hiveJob: Job is a Hive job.
+    hadoopJob: A HadoopJob attribute.
+    hiveJob: A HiveJob attribute.
     labels: Optional. The labels to associate with this job.Label keys must be
       between 1 and 63 characters long, and must conform to the following
       regular expression: \p{Ll}\p{Lo}{0,62}Label values must be between 1 and
       63 characters long, and must conform to the following regular
       expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 32 labels can be
       associated with a given job.
-    pigJob: Job is a Pig job.
+    pigJob: A PigJob attribute.
     prerequisiteStepIds: Optional. The optional list of prerequisite job
       step_ids. If not specified, the job will start at the beginning of
       workflow.
-    prestoJob: Job is a Presto job.
-    pysparkJob: Job is a Pyspark job.
+    prestoJob: A PrestoJob attribute.
+    pysparkJob: A PySparkJob attribute.
     scheduling: Optional. Job scheduling configuration.
-    sparkJob: Job is a Spark job.
-    sparkRJob: Job is a SparkR job.
-    sparkSqlJob: Job is a SparkSql job.
+    sparkJob: A SparkJob attribute.
+    sparkRJob: A SparkRJob attribute.
+    sparkSqlJob: A SparkSqlJob attribute.
     stepId: Required. The step id. The id must be unique among all jobs within
       the template.The step id is used as prefix for job id, as job goog-
       dataproc-workflow-step-id label, and in prerequisiteStepIds field from
@@ -3074,13 +3102,13 @@ class ParameterValidation(_messages.Message):
 
 
 class PigJob(_messages.Message):
-  r"""A Cloud Dataproc job for running Apache Pig (https://pig.apache.org/)
-  queries on YARN.
+  r"""A Dataproc job for running Apache Pig (https://pig.apache.org/) queries
+  on YARN.
 
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
-      configure Pig. Properties that conflict with values set by the Cloud
-      Dataproc API may be overwritten. Can include properties set in
+      configure Pig. Properties that conflict with values set by the Dataproc
+      API may be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site.xml, /etc/pig/conf/pig.properties, and classes
       in user code.
     ScriptVariablesValue: Optional. Mapping of query variable names to values
@@ -3094,8 +3122,8 @@ class PigJob(_messages.Message):
       the Pig Client and Hadoop MapReduce (MR) tasks. Can contain Pig UDFs.
     loggingConfig: Optional. The runtime log config for job execution.
     properties: Optional. A mapping of property names to values, used to
-      configure Pig. Properties that conflict with values set by the Cloud
-      Dataproc API may be overwritten. Can include properties set in
+      configure Pig. Properties that conflict with values set by the Dataproc
+      API may be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site.xml, /etc/pig/conf/pig.properties, and classes
       in user code.
     queryFileUri: The HCFS URI of the script that contains the Pig queries.
@@ -3107,10 +3135,9 @@ class PigJob(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names to values, used to configure
-    Pig. Properties that conflict with values set by the Cloud Dataproc API
-    may be overwritten. Can include properties set in
-    /etc/hadoop/conf/*-site.xml, /etc/pig/conf/pig.properties, and classes in
-    user code.
+    Pig. Properties that conflict with values set by the Dataproc API may be
+    overwritten. Can include properties set in /etc/hadoop/conf/*-site.xml,
+    /etc/pig/conf/pig.properties, and classes in user code.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.
@@ -3168,14 +3195,15 @@ class PigJob(_messages.Message):
 
 
 class Policy(_messages.Message):
-  r"""Defines an Identity and Access Management (IAM) policy. It is used to
-  specify access control policies for Cloud Platform resources.A Policy is a
-  collection of bindings. A binding binds one or more members to a single
-  role. Members can be user accounts, service accounts, Google groups, and
-  domains (such as G Suite). A role is a named list of permissions (defined by
-  IAM or configured by users). A binding can optionally specify a condition,
-  which is a logic expression that further constrains the role binding based
-  on attributes about the request and/or target resource.JSON Example {
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources.A Policy is a collection of bindings. A
+  binding binds one or more members to a single role. Members can be user
+  accounts, service accounts, Google groups, and domains (such as G Suite). A
+  role is a named list of permissions; each role can be an IAM predefined role
+  or a user-created custom role.Optionally, a binding can specify a condition,
+  which is a logical expression that allows access to a resource only if the
+  expression evaluates to true. A condition can add constraints based on
+  attributes of the request, the resource, or both.JSON example: {
   "bindings": [     {       "role": "roles/resourcemanager.organizationAdmin",
   "members": [         "user:mike@example.com",
   "group:admins@example.com",         "domain:google.com",
@@ -3183,22 +3211,22 @@ class Policy(_messages.Message):
   {       "role": "roles/resourcemanager.organizationViewer",       "members":
   ["user:eve@example.com"],       "condition": {         "title": "expirable
   access",         "description": "Does not grant access after Sep 2020",
-  "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",       }     }   ] } YAML Example
+  "expression": "request.time < timestamp('2020-10-01T00:00:00.000Z')",
+  }     }   ],   "etag": "BwWWja0YfJA=",   "version": 3 } YAML example:
   bindings: - members:   - user:mike@example.com   - group:admins@example.com
   - domain:google.com   - serviceAccount:my-project-
   id@appspot.gserviceaccount.com   role:
   roles/resourcemanager.organizationAdmin - members:   - user:eve@example.com
   role: roles/resourcemanager.organizationViewer   condition:     title:
   expirable access     description: Does not grant access after Sep 2020
-  expression: request.time < timestamp('2020-10-01T00:00:00.000Z') For a
-  description of IAM and its features, see the IAM developer's guide
-  (https://cloud.google.com/iam/docs).
+  expression: request.time < timestamp('2020-10-01T00:00:00.000Z') - etag:
+  BwWWja0YfJA= - version: 3 For a description of IAM and its features, see the
+  IAM documentation (https://cloud.google.com/iam/docs/).
 
   Fields:
-    bindings: Associates a list of members to a role. Optionally may specify a
-      condition that determines when binding is in effect. bindings with no
-      members will result in an error.
+    bindings: Associates a list of members to a role. Optionally, may specify
+      a condition that determines how and when the bindings are applied. Each
+      of the bindings must contain at least one member.
     etag: etag is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the etag in the read-
@@ -3206,19 +3234,23 @@ class Policy(_messages.Message):
       conditions: An etag is returned in the response to getIamPolicy, and
       systems are expected to put that etag in the request to setIamPolicy to
       ensure that their change will be applied to the same version of the
-      policy.If no etag is provided in the call to setIamPolicy, then the
-      existing policy is overwritten. Due to blind-set semantics of an etag-
-      less policy, 'setIamPolicy' will not fail even if either of incoming or
-      stored policy does not meet the version requirements.
+      policy.Important: If you use IAM Conditions, you must include the etag
+      field whenever you call setIamPolicy. If you omit this field, then IAM
+      allows you to overwrite a version 3 policy with a version 1 policy, and
+      all of the conditions in the version 3 policy are lost.
     version: Specifies the format of the policy.Valid values are 0, 1, and 3.
-      Requests specifying an invalid value will be rejected.Operations
-      affecting conditional bindings must specify version 3. This can be
-      either setting a conditional policy, modifying a conditional binding, or
-      removing a conditional binding from the stored conditional policy.
-      Operations on non-conditional policies may specify any valid value or
-      leave the field unset.If no etag is provided in the call to
-      setIamPolicy, any version compliance checks on the incoming and/or
-      stored policy is skipped.
+      Requests that specify an invalid value are rejected.Any operation that
+      affects conditional role bindings must specify version 3. This
+      requirement applies to the following operations: Getting a policy that
+      includes a conditional role binding Adding a conditional role binding to
+      a policy Changing a conditional role binding in a policy Removing any
+      role binding, with or without a condition, from a policy  that includes
+      conditionsImportant: If you use IAM Conditions, you must include the
+      etag field whenever you call setIamPolicy. If you omit this field, then
+      IAM allows you to overwrite a version 3 policy with a version 1 policy,
+      and all of the conditions in the version 3 policy are lost.If a policy
+      does not include any conditions, operations on that policy may specify
+      any valid version or leave the field unset.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)
@@ -3227,7 +3259,7 @@ class Policy(_messages.Message):
 
 
 class PrestoJob(_messages.Message):
-  r"""A Cloud Dataproc job for running Presto (https://prestosql.io/) queries
+  r"""A Dataproc job for running Presto (https://prestosql.io/) queries
 
   Messages:
     PropertiesValue: Optional. A mapping of property names to values. Used to
@@ -3285,13 +3317,13 @@ class PrestoJob(_messages.Message):
 
 
 class PySparkJob(_messages.Message):
-  r"""A Cloud Dataproc job for running Apache PySpark
+  r"""A Dataproc job for running Apache PySpark
   (https://spark.apache.org/docs/0.9.0/python-programming-guide.html)
   applications on YARN.
 
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
-      configure PySpark. Properties that conflict with values set by the Cloud
+      configure PySpark. Properties that conflict with values set by the
       Dataproc API may be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
 
@@ -3310,7 +3342,7 @@ class PySparkJob(_messages.Message):
     mainPythonFileUri: Required. The HCFS URI of the main Python file to use
       as the driver. Must be a .py file.
     properties: Optional. A mapping of property names to values, used to
-      configure PySpark. Properties that conflict with values set by the Cloud
+      configure PySpark. Properties that conflict with values set by the
       Dataproc API may be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
     pythonFileUris: Optional. HCFS file URIs of Python files to pass to the
@@ -3320,9 +3352,9 @@ class PySparkJob(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names to values, used to configure
-    PySpark. Properties that conflict with values set by the Cloud Dataproc
-    API may be overwritten. Can include properties set in /etc/spark/conf
-    /spark-defaults.conf and classes in user code.
+    PySpark. Properties that conflict with values set by the Dataproc API may
+    be overwritten. Can include properties set in /etc/spark/conf/spark-
+    defaults.conf and classes in user code.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.
@@ -3454,9 +3486,9 @@ class SoftwareConfig(_messages.Message):
 
   Fields:
     imageVersion: Optional. The version of software inside the cluster. It
-      must be one of the supported Cloud Dataproc Versions, such as "1.2"
-      (including a subminor version, such as "1.2.29"), or the "preview"
-      version. If unspecified, it defaults to the latest Debian version.
+      must be one of the supported Dataproc Versions, such as "1.2" (including
+      a subminor version, such as "1.2.29"), or the "preview" version. If
+      unspecified, it defaults to the latest Debian version.
     optionalComponents: The set of optional components to activate on the
       cluster.
     properties: Optional. The properties to set on daemon config
@@ -3534,7 +3566,7 @@ class SoftwareConfig(_messages.Message):
 
 
 class SparkJob(_messages.Message):
-  r"""A Cloud Dataproc job for running Apache Spark (http://spark.apache.org/)
+  r"""A Dataproc job for running Apache Spark (http://spark.apache.org/)
   applications on YARN. The specification of the main method to call to drive
   the job. Specify either the jar file that contains the main class or the
   main class name. To pass both a main jar and a main class in that jar, add
@@ -3543,7 +3575,7 @@ class SparkJob(_messages.Message):
 
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
-      configure Spark. Properties that conflict with values set by the Cloud
+      configure Spark. Properties that conflict with values set by the
       Dataproc API may be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
 
@@ -3565,7 +3597,7 @@ class SparkJob(_messages.Message):
       jar_file_uris.
     mainJarFileUri: The HCFS URI of the jar file that contains the main class.
     properties: Optional. A mapping of property names to values, used to
-      configure Spark. Properties that conflict with values set by the Cloud
+      configure Spark. Properties that conflict with values set by the
       Dataproc API may be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
   """
@@ -3573,8 +3605,8 @@ class SparkJob(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names to values, used to configure
-    Spark. Properties that conflict with values set by the Cloud Dataproc API
-    may be overwritten. Can include properties set in /etc/spark/conf/spark-
+    Spark. Properties that conflict with values set by the Dataproc API may be
+    overwritten. Can include properties set in /etc/spark/conf/spark-
     defaults.conf and classes in user code.
 
     Messages:
@@ -3608,12 +3640,12 @@ class SparkJob(_messages.Message):
 
 
 class SparkRJob(_messages.Message):
-  r"""A Cloud Dataproc job for running Apache SparkR
+  r"""A Dataproc job for running Apache SparkR
   (https://spark.apache.org/docs/latest/sparkr.html) applications on YARN.
 
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
-      configure SparkR. Properties that conflict with values set by the Cloud
+      configure SparkR. Properties that conflict with values set by the
       Dataproc API may be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
 
@@ -3631,7 +3663,7 @@ class SparkRJob(_messages.Message):
     mainRFileUri: Required. The HCFS URI of the main R file to use as the
       driver. Must be a .R file.
     properties: Optional. A mapping of property names to values, used to
-      configure SparkR. Properties that conflict with values set by the Cloud
+      configure SparkR. Properties that conflict with values set by the
       Dataproc API may be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
   """
@@ -3639,8 +3671,8 @@ class SparkRJob(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names to values, used to configure
-    SparkR. Properties that conflict with values set by the Cloud Dataproc API
-    may be overwritten. Can include properties set in /etc/spark/conf/spark-
+    SparkR. Properties that conflict with values set by the Dataproc API may
+    be overwritten. Can include properties set in /etc/spark/conf/spark-
     defaults.conf and classes in user code.
 
     Messages:
@@ -3672,13 +3704,13 @@ class SparkRJob(_messages.Message):
 
 
 class SparkSqlJob(_messages.Message):
-  r"""A Cloud Dataproc job for running Apache Spark SQL
+  r"""A Dataproc job for running Apache Spark SQL
   (http://spark.apache.org/sql/) queries.
 
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
       configure Spark SQL's SparkConf. Properties that conflict with values
-      set by the Cloud Dataproc API may be overwritten.
+      set by the Dataproc API may be overwritten.
     ScriptVariablesValue: Optional. Mapping of query variable names to values
       (equivalent to the Spark SQL command: SET name="value";).
 
@@ -3688,7 +3720,7 @@ class SparkSqlJob(_messages.Message):
     loggingConfig: Optional. The runtime log config for job execution.
     properties: Optional. A mapping of property names to values, used to
       configure Spark SQL's SparkConf. Properties that conflict with values
-      set by the Cloud Dataproc API may be overwritten.
+      set by the Dataproc API may be overwritten.
     queryFileUri: The HCFS URI of the script that contains SQL queries.
     queryList: A list of queries.
     scriptVariables: Optional. Mapping of query variable names to values
@@ -3699,7 +3731,7 @@ class SparkSqlJob(_messages.Message):
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names to values, used to configure
     Spark SQL's SparkConf. Properties that conflict with values set by the
-    Cloud Dataproc API may be overwritten.
+    Dataproc API may be overwritten.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.
@@ -3980,7 +4012,7 @@ class WorkflowGraph(_messages.Message):
 
 
 class WorkflowMetadata(_messages.Message):
-  r"""A Cloud Dataproc workflow template resource.
+  r"""A Dataproc workflow template resource.
 
   Enums:
     StateValueValuesEnum: Output only. The workflow state.
@@ -4106,7 +4138,7 @@ class WorkflowNode(_messages.Message):
 
 
 class WorkflowTemplate(_messages.Message):
-  r"""A Cloud Dataproc workflow template resource.
+  r"""A Dataproc workflow template resource.
 
   Messages:
     LabelsValue: Optional. The labels to associate with this template. These
@@ -4223,7 +4255,7 @@ class YarnApplication(_messages.Message):
     progress: Output only. The numerical progress of the application, from 1
       to 100.
     state: Output only. The application state.
-    trackingUrl: Optional. Output only. The HTTP URL of the ApplicationMaster,
+    trackingUrl: Output only. The HTTP URL of the ApplicationMaster,
       HistoryServer, or TimelineServer that provides application-specific
       information. The URL uses the internal hostname, and requires a proxy
       server for resolution and, possibly, access.

@@ -131,9 +131,26 @@ class Binding(_messages.Message):
       `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
       that represents a service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.
-      * `domain:{domain}`: The G Suite domain (primary) that represents all
-      the    users of that domain. For example, `google.com` or `example.com`.
+      that represents a Google group.    For example, `admins@example.com`.  *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding.  *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus    unique identifier) representing a service account that has been
+      recently    deleted. For example,    `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique    identifier) representing a Google group
+      that has been recently    deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If    the group is
+      recovered, this value reverts to `group:{emailid}` and the    recovered
+      group retains the role in the binding.   * `domain:{domain}`: The G
+      Suite domain (primary) that represents all the    users of that domain.
+      For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -141,23 +158,6 @@ class Binding(_messages.Message):
   condition = _messages.MessageField('Expr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
-
-
-class ClientConfig(_messages.Message):
-  r"""A ClientConfig object.
-
-  Fields:
-    configId: Optional client config ID.  If clients would like to report on
-      which config they are on, or if a specific config does not work for
-      them.  Example: GRPC-Service-Config canarying per go/grpc-service-
-      config-error-handling
-    grpcServiceConfigFile: Optional GRPC Service Config File
-    serverAuthorization: Optional Server Authorization
-  """
-
-  configId = _messages.StringField(1)
-  grpcServiceConfigFile = _messages.BytesField(2)
-  serverAuthorization = _messages.MessageField('ServerAuthorization', 3)
 
 
 class CloudAuditOptions(_messages.Message):
@@ -187,6 +187,24 @@ class CloudAuditOptions(_messages.Message):
 
   authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
   logName = _messages.EnumField('LogNameValueValuesEnum', 2)
+
+
+class CloudDnsZone(_messages.Message):
+  r"""Information on the Cloud DNS Managed Zone whose complete and
+  authoritative source of information is a Service Directory Namespace. This
+  is an optional association; some Namespaces may not have an associated
+  CloudDnsZone.
+  https://cloud.google.com/dns/docs/reference/v1/managedZones#resource
+
+  Fields:
+    dnsName: Output only. The Cloud DNS zone name. Example: `example.com.`
+    managedZoneUri: Output only. The resource URI of the Cloud DNS Managed
+      Zone. Example: `https://www.googleapis.com/dns/v1/projects/myproject/man
+      agedZones/myzone`
+  """
+
+  dnsName = _messages.StringField(1)
+  managedZoneUri = _messages.StringField(2)
 
 
 class Condition(_messages.Message):
@@ -395,20 +413,18 @@ class Endpoint(_messages.Message):
 
   Messages:
     MetadataValue: Optional. Metadata for the endpoint. This data can be
-      consumed by service clients.  Metadata keys are limited to 128
-      characters and values are limited to 1024 characters. Metadata is
-      limited to 10 key/value pairs. Metadata that goes beyond any these
-      limits will be rejected.
+      consumed by service clients.  The entire metadata dictionary may contain
+      up to 512 characters, spread accoss all key-value pairs. Metadata that
+      goes beyond any these limits will be rejected.
 
   Fields:
     address: Optional. An IPv4 or IPv6 address. Service Directory will reject
       bad addresses like:   "8.8.8"   "8.8.8.8:53"   "test:bad:address"
       "[::1]"   "[::1]:8080" Limited to 45 characters.
     metadata: Optional. Metadata for the endpoint. This data can be consumed
-      by service clients.  Metadata keys are limited to 128 characters and
-      values are limited to 1024 characters. Metadata is limited to 10
-      key/value pairs. Metadata that goes beyond any these limits will be
-      rejected.
+      by service clients.  The entire metadata dictionary may contain up to
+      512 characters, spread accoss all key-value pairs. Metadata that goes
+      beyond any these limits will be rejected.
     name: Output only. The resource name for the endpoint in the format
       'projects/*/locations/*/namespaces/*/services/*/endpoints/*'.
     port: Optional. Service Directory will reject values outside of [0,
@@ -418,9 +434,9 @@ class Endpoint(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
     r"""Optional. Metadata for the endpoint. This data can be consumed by
-    service clients.  Metadata keys are limited to 128 characters and values
-    are limited to 1024 characters. Metadata is limited to 10 key/value pairs.
-    Metadata that goes beyond any these limits will be rejected.
+    service clients.  The entire metadata dictionary may contain up to 512
+    characters, spread accoss all key-value pairs. Metadata that goes beyond
+    any these limits will be rejected.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -560,6 +576,8 @@ class Namespace(_messages.Message):
       keys and values can be no longer than 63 characters.
 
   Fields:
+    cloudDnsZones: Output only. Cloud DNS Zone information associated with
+      this Namespace.
     labels: Optional. Resource labels associated with this Namespace. No more
       than 64 user labels can be associated with a given resource.  Label keys
       and values can be no longer than 63 characters.
@@ -593,20 +611,22 @@ class Namespace(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  labels = _messages.MessageField('LabelsValue', 1)
-  name = _messages.StringField(2)
+  cloudDnsZones = _messages.MessageField('CloudDnsZone', 1, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
 
 
 class Policy(_messages.Message):
-  r"""Defines an Identity and Access Management (IAM) policy. It is used to
-  specify access control policies for Cloud Platform resources.   A `Policy`
-  is a collection of `bindings`. A `binding` binds one or more `members` to a
-  single `role`. Members can be user accounts, service accounts, Google
-  groups, and domains (such as G Suite). A `role` is a named list of
-  permissions (defined by IAM or configured by users). A `binding` can
-  optionally specify a `condition`, which is a logic expression that further
-  constrains the role binding based on attributes about the request and/or
-  target resource.  **JSON Example**      {       "bindings": [         {
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources.   A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members` to a single `role`.
+  Members can be user accounts, service accounts, Google groups, and domains
+  (such as G Suite). A `role` is a named list of permissions; each `role` can
+  be an IAM predefined role or a user-created custom role.  Optionally, a
+  `binding` can specify a `condition`, which is a logical expression that
+  allows access to a resource only if the expression evaluates to `true`. A
+  condition can add constraints based on attributes of the request, the
+  resource, or both.  **JSON example:**      {       "bindings": [         {
   "role": "roles/resourcemanager.organizationAdmin",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-project-
@@ -615,23 +635,24 @@ class Policy(_messages.Message):
   ["user:eve@example.com"],           "condition": {             "title":
   "expirable access",             "description": "Does not grant access after
   Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ]     }
-  **YAML Example**      bindings:     - members:       - user:mike@example.com
-  - group:admins@example.com       - domain:google.com       - serviceAccount
+  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
+  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
+  bindings:     - members:       - user:mike@example.com       -
+  group:admins@example.com       - domain:google.com       - serviceAccount
   :my-project-id@appspot.gserviceaccount.com       role:
   roles/resourcemanager.organizationAdmin     - members:       -
   user:eve@example.com       role: roles/resourcemanager.organizationViewer
   condition:         title: expirable access         description: Does not
   grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')  For a description of IAM and its
-  features, see the [IAM developer's
-  guide](https://cloud.google.com/iam/docs).
+  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
+  version: 3  For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally may
-      specify a `condition` that determines when binding is in effect.
-      `bindings` with no members will result in an error.
+    bindings: Associates a list of `members` to a `role`. Optionally, may
+      specify a `condition` that determines how and when the `bindings` are
+      applied. Each of the `bindings` must contain at least one member.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -639,10 +660,10 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
-      the existing policy is overwritten. Due to blind-set semantics of an
-      etag-less policy, 'setIamPolicy' will not fail even if either of
-      incoming or stored policy does not meet the version requirements.
+      policy.  **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
     iamOwned: A boolean attribute.
     rules: If more than one rule is specified, the rules are applied in the
       following manner: - All matching LOG rules are always applied. - If any
@@ -651,15 +672,20 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
       Logging will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Specifies the format of the policy.  Valid values are 0, 1, and
-      3. Requests specifying an invalid value will be rejected.  Operations
-      affecting conditional bindings must specify version 3. This can be
-      either setting a conditional policy, modifying a conditional binding, or
-      removing a conditional binding from the stored conditional policy.
-      Operations on non-conditional policies may specify any valid value or
-      leave the field unset.  If no etag is provided in the call to
-      `setIamPolicy`, any version compliance checks on the incoming and/or
-      stored policy is skipped.
+    version: Specifies the format of the policy.  Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected.  Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations:  * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy   that includes conditions  **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost.  If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -734,48 +760,45 @@ class Rule(_messages.Message):
   permissions = _messages.StringField(7, repeated=True)
 
 
-class ServerAuthorization(_messages.Message):
-  r"""Specifies the allowable Server Authorization.  If provided, the Client
-  may use this information to determine whether the Service provider is
-  genuine.
-
-  Fields:
-    serviceAccounts: Allowable Service Accounts of Service providers.
-  """
-
-  serviceAccounts = _messages.MessageField('ServiceAccount', 1, repeated=True)
-
-
 class Service(_messages.Message):
   r"""An individual service. A service contains a name and optional metadata.
   A service must exist before endpoints can be added to it.
 
   Messages:
     MetadataValue: Optional. Metadata for the service. This data can be
-      consumed by service clients.  Metadata keys are limited to 128
-      characters and values are limited to 1024 characters. Metadata is
-      limited to 10 key/value pairs. Metadata that goes beyond any these
-      limits will be rejected.
+      consumed by service clients.  The entire metadata dictionary may contain
+      up to 2000 characters, spread across all key-value pairs. Metadata that
+      goes beyond any these limits will be rejected.
 
   Fields:
-    clientConfig: A ClientConfig attribute.
     endpoints: Output only. Endpoints associated with this service. Returned
       on LookupService.Resolve. Control plane clients should use
       RegistrationService.ListEndpoints.
+    hostname: Optional. Hostname. Service consumer may use for: 1) HTTP
+      parameter for Host (HTTP/1.1) or Authority (HTTP/2, HTTP/3) 2) TLS SNI
+      Hostname parameter (most commonly used for HTTPS) 3) TLS Hostname
+      Authorization against the x509 SAN DNS entries (necessary    for HTTPS)
+      Example: `service.example.com` Limits: Field limited to 255 ASCII
+      characters per https://www.ietf.org/rfc/rfc1035.txt
     metadata: Optional. Metadata for the service. This data can be consumed by
-      service clients.  Metadata keys are limited to 128 characters and values
-      are limited to 1024 characters. Metadata is limited to 10 key/value
-      pairs. Metadata that goes beyond any these limits will be rejected.
+      service clients.  The entire metadata dictionary may contain up to 2000
+      characters, spread across all key-value pairs. Metadata that goes beyond
+      any these limits will be rejected.
     name: Output only. The resource name for the service in the format
       'projects/*/locations/*/namespaces/*/services/*'.
+    serviceIdentities: Optional. Authorized Service Identities. If provided,
+      the consumer may use this information to determine whether the service
+      provider is authorized. Examples:  `spiffe_id:spiffe://example.org/my-
+      service`  `service_account:my-service@iam.gserviceaccount.com` Limits:
+      service_identities list is limited to 10 items.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
     r"""Optional. Metadata for the service. This data can be consumed by
-    service clients.  Metadata keys are limited to 128 characters and values
-    are limited to 1024 characters. Metadata is limited to 10 key/value pairs.
-    Metadata that goes beyond any these limits will be rejected.
+    service clients.  The entire metadata dictionary may contain up to 2000
+    characters, spread across all key-value pairs. Metadata that goes beyond
+    any these limits will be rejected.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -797,21 +820,29 @@ class Service(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  clientConfig = _messages.MessageField('ClientConfig', 1)
-  endpoints = _messages.MessageField('Endpoint', 2, repeated=True)
+  endpoints = _messages.MessageField('Endpoint', 1, repeated=True)
+  hostname = _messages.StringField(2)
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
+  serviceIdentities = _messages.MessageField('ServiceIdentity', 5, repeated=True)
 
 
-class ServiceAccount(_messages.Message):
-  r"""Specifies the Service Account of the authorized server.
+class ServiceIdentity(_messages.Message):
+  r"""Specifies the Service Identity of the authorized server.
 
   Fields:
-    altsServiceAccount: ALTS service_account.  Example: my-
-      service@iam.gserviceaccount.com
+    serviceAccount: service_account: gcp service account, usable with ALTS.
+      Example: `my-service@iam.gserviceaccount.com` Limits: Limited to 320
+      characters. https://tools.ietf.org/html/rfc3696
+    spiffeId: spiffe_id as works with x509 certs with Subject Alternative Name
+      (SAN) specified as uniformResourceIdentifier:*spiffe_id* Example:
+      `spiffe://example.org/my-service` Limits: 2048 ASCII Characters
+      https://github.com/spiffe/spiffe/blob/master/standards/SPIFFE-ID.md#23
+      -maximum-spiffe-id-length
   """
 
-  altsServiceAccount = _messages.StringField(1)
+  serviceAccount = _messages.StringField(1)
+  spiffeId = _messages.StringField(2)
 
 
 class ServicedirectoryProjectsLocationsNamespacesCreateRequest(_messages.Message):
@@ -819,8 +850,14 @@ class ServicedirectoryProjectsLocationsNamespacesCreateRequest(_messages.Message
 
   Fields:
     namespace: A Namespace resource to be passed as the request body.
-    namespaceId: Required. It must be unique within a location and match the
-      regular expression `a-z{0,61}[a-z0-9]`
+    namespaceId: Required. The Resource ID must be 1-63 characters long, and
+      comply with <a href="https://www.ietf.org/rfc/rfc1035.txt"
+      target="_blank">RFC1035</a>. Specifically, the name must be 1-63
+      characters long and match the regular expression
+      `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the first character must
+      be a lowercase letter, and all following characters must be a dash,
+      lowercase letter, or digit, except the last character, which cannot be a
+      dash.
     parent: Required. The resource name of the project and location the
       namespace will be created in.
   """
@@ -928,8 +965,14 @@ class ServicedirectoryProjectsLocationsNamespacesServicesCreateRequest(_messages
     parent: Required. The resource name of the namespace this service will
       belong to.
     service: A Service resource to be passed as the request body.
-    serviceId: Required. It must be unique within a namespace and match the
-      regular expression `a-z{0,61}[a-z0-9]`
+    serviceId: Required. The Resource ID must be 1-63 characters long, and
+      comply with <a href="https://www.ietf.org/rfc/rfc1035.txt"
+      target="_blank">RFC1035</a>. Specifically, the name must be 1-63
+      characters long and match the regular expression
+      `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the first character must
+      be a lowercase letter, and all following characters must be a dash,
+      lowercase letter, or digit, except the last character, which cannot be a
+      dash.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -955,8 +998,14 @@ class ServicedirectoryProjectsLocationsNamespacesServicesEndpointsCreateRequest(
 
   Fields:
     endpoint: A Endpoint resource to be passed as the request body.
-    endpointId: Required. Must be unique within a service and match the
-      regular expression `a-z{0,61}[a-z0-9]`.
+    endpointId: Required. The Resource ID must be 1-63 characters long, and
+      comply with <a href="https://www.ietf.org/rfc/rfc1035.txt"
+      target="_blank">RFC1035</a>. Specifically, the name must be 1-63
+      characters long and match the regular expression
+      `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the first character must
+      be a lowercase letter, and all following characters must be a dash,
+      lowercase letter, or digit, except the last character, which cannot be a
+      dash.
     parent: Required. The resource name of the service that this endpoint
       provides.
   """
@@ -1130,11 +1179,15 @@ class ServicedirectoryProjectsLocationsNamespacesServicesResolveRequest(_message
   object.
 
   Fields:
-    name: Required. The name of the service for which to fetch all runtime
-      data.
+    maxEndpoints: Optional. The maximum number of endpoints to return.
+      Defaults to 25. Maximum is 100. If a value less than one is specified,
+      the Default is used. If a value greater than the Maximum is specified,
+      the Maximum is used.
+    name: Required. The name of the service to resolve.
   """
 
-  name = _messages.StringField(1, required=True)
+  maxEndpoints = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  name = _messages.StringField(2, required=True)
 
 
 class ServicedirectoryProjectsLocationsNamespacesServicesSetIamPolicyRequest(_messages.Message):

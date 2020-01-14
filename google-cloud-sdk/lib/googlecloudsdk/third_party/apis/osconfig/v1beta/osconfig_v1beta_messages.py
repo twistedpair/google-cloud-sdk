@@ -269,8 +269,8 @@ class ExecStepConfig(_messages.Message):
   Enums:
     InterpreterValueValuesEnum: The script interpreter to use to run the
       script. If no interpreter is specified the script will be executed
-      directly, which will likely only succeed for scripts with shebang lines.
-      [Wikipedia shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+      directly, which will likely only succeed for scripts with [shebang
+      lines] (https://en.wikipedia.org/wiki/Shebang_\(Unix\)).
 
   Fields:
     allowedSuccessCodes: Defaults to [0]. A list of possible return values
@@ -278,16 +278,16 @@ class ExecStepConfig(_messages.Message):
     gcsObject: A GCS object containing the executable.
     interpreter: The script interpreter to use to run the script. If no
       interpreter is specified the script will be executed directly, which
-      will likely only succeed for scripts with shebang lines. [Wikipedia
-      shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+      will likely only succeed for scripts with [shebang lines]
+      (https://en.wikipedia.org/wiki/Shebang_\(Unix\)).
     localPath: An absolute path to the executable on the VM.
   """
 
   class InterpreterValueValuesEnum(_messages.Enum):
     r"""The script interpreter to use to run the script. If no interpreter is
     specified the script will be executed directly, which will likely only
-    succeed for scripts with shebang lines. [Wikipedia
-    shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+    succeed for scripts with [shebang lines]
+    (https://en.wikipedia.org/wiki/Shebang_\(Unix\)).
 
     Values:
       INTERPRETER_UNSPECIFIED: Invalid for a Windows ExecStepConfig. For a
@@ -378,10 +378,8 @@ class GuestPolicy(_messages.Message):
       policy. This allows you to target sets or groups of VM instances by
       different parameters such as labels, names, OS, or zones.  If left
       empty, all VM instances underneath this policy are targeted.   Conflict
-      Management  Policies that exist higher up in the resource hierarchy
-      (closer to the organization) override those lower down if there is a
-      conflict.  At the same level in the resource hierarchy (that is within a
-      project), the service prevents the creation of multiple policies that
+      Management  At the same level in the resource hierarchy (that is within
+      a project), the service prevents the creation of multiple policies that
       conflict with each other. If there are multiple policies that specify
       the same config (eg. package, software recipe, repository, etc.), the
       service ensures that no VM instance could potentially receive
@@ -404,8 +402,6 @@ class GuestPolicy(_messages.Message):
     name: Required. Unique name of the resource in this project using one of
       the following forms:
       `projects/{project_number}/guestPolicies/{guest_policy_id}`.
-      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
-      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
     packageRepositories: A list of package repositories to configure on the VM
       instance. This is done before any other configs are applied so they can
       use these repos. Package repositories are only configured if the
@@ -484,13 +480,13 @@ class LookupEffectiveGuestPolicyRequest(_messages.Message):
 
   Fields:
     osArchitecture: Architecture of OS running on the instance. The OS Config
-      agent only provide this field for targeting if OS Inventory is enabled
+      agent only provides this field for targeting if OS Inventory is enabled
       for that instance.
     osShortName: Short name of the OS running on the instance. The OS Config
-      agent only provideS this field for targeting if OS Inventory is enabled
+      agent only provides this field for targeting if OS Inventory is enabled
       for that instance.
     osVersion: Version of the OS running on the instance. The OS Config agent
-      only provide this field for targeting if OS Inventory is enabled for
+      only provides this field for targeting if OS Inventory is enabled for
       that VM instance.
   """
 
@@ -527,176 +523,6 @@ class OneTimeSchedule(_messages.Message):
   executeTime = _messages.StringField(1)
 
 
-class OsconfigFoldersGuestPoliciesCreateRequest(_messages.Message):
-  r"""A OsconfigFoldersGuestPoliciesCreateRequest object.
-
-  Fields:
-    guestPolicy: A GuestPolicy resource to be passed as the request body.
-    guestPolicyId: Required. The logical name of the guest policy in the
-      project with the following restrictions:  * Must contain only lowercase
-      letters, numbers, and hyphens. * Must start with a letter. * Must be
-      between 1-63 characters. * Must end with a number or a letter. * Must be
-      unique within the project.
-    parent: Required. The resource name of the parent using one of the
-      following forms: `projects/{project_number}`. `folders/{folder_id}`.
-      `organizations/{organization_id}`.
-  """
-
-  guestPolicy = _messages.MessageField('GuestPolicy', 1)
-  guestPolicyId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class OsconfigFoldersGuestPoliciesDeleteRequest(_messages.Message):
-  r"""A OsconfigFoldersGuestPoliciesDeleteRequest object.
-
-  Fields:
-    name: Required. The resource name of the guest policy  using one of the
-      following forms:
-      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
-      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
-      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class OsconfigFoldersGuestPoliciesGetRequest(_messages.Message):
-  r"""A OsconfigFoldersGuestPoliciesGetRequest object.
-
-  Fields:
-    name: Required. The resource name of the guest policy using one of the
-      following forms:
-      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
-      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
-      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class OsconfigFoldersGuestPoliciesListRequest(_messages.Message):
-  r"""A OsconfigFoldersGuestPoliciesListRequest object.
-
-  Fields:
-    pageSize: The maximum number of guest policies to return.
-    pageToken: A pagination token returned from a previous call to
-      `ListGuestPolicies` that indicates where this listing should continue
-      from.
-    parent: Required. The resource name of the parent using one of the
-      following forms: `projects/{project_number}`. `folders/{folder_id}`.
-      `organizations/{organization_id}`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class OsconfigFoldersGuestPoliciesPatchRequest(_messages.Message):
-  r"""A OsconfigFoldersGuestPoliciesPatchRequest object.
-
-  Fields:
-    guestPolicy: A GuestPolicy resource to be passed as the request body.
-    name: Required. Unique name of the resource in this project using one of
-      the following forms:
-      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
-      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
-      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
-    updateMask: Field mask that controls which fields of the guest policy
-      should be updated.
-  """
-
-  guestPolicy = _messages.MessageField('GuestPolicy', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-
-
-class OsconfigOrganizationsGuestPoliciesCreateRequest(_messages.Message):
-  r"""A OsconfigOrganizationsGuestPoliciesCreateRequest object.
-
-  Fields:
-    guestPolicy: A GuestPolicy resource to be passed as the request body.
-    guestPolicyId: Required. The logical name of the guest policy in the
-      project with the following restrictions:  * Must contain only lowercase
-      letters, numbers, and hyphens. * Must start with a letter. * Must be
-      between 1-63 characters. * Must end with a number or a letter. * Must be
-      unique within the project.
-    parent: Required. The resource name of the parent using one of the
-      following forms: `projects/{project_number}`. `folders/{folder_id}`.
-      `organizations/{organization_id}`.
-  """
-
-  guestPolicy = _messages.MessageField('GuestPolicy', 1)
-  guestPolicyId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class OsconfigOrganizationsGuestPoliciesDeleteRequest(_messages.Message):
-  r"""A OsconfigOrganizationsGuestPoliciesDeleteRequest object.
-
-  Fields:
-    name: Required. The resource name of the guest policy  using one of the
-      following forms:
-      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
-      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
-      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class OsconfigOrganizationsGuestPoliciesGetRequest(_messages.Message):
-  r"""A OsconfigOrganizationsGuestPoliciesGetRequest object.
-
-  Fields:
-    name: Required. The resource name of the guest policy using one of the
-      following forms:
-      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
-      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
-      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class OsconfigOrganizationsGuestPoliciesListRequest(_messages.Message):
-  r"""A OsconfigOrganizationsGuestPoliciesListRequest object.
-
-  Fields:
-    pageSize: The maximum number of guest policies to return.
-    pageToken: A pagination token returned from a previous call to
-      `ListGuestPolicies` that indicates where this listing should continue
-      from.
-    parent: Required. The resource name of the parent using one of the
-      following forms: `projects/{project_number}`. `folders/{folder_id}`.
-      `organizations/{organization_id}`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class OsconfigOrganizationsGuestPoliciesPatchRequest(_messages.Message):
-  r"""A OsconfigOrganizationsGuestPoliciesPatchRequest object.
-
-  Fields:
-    guestPolicy: A GuestPolicy resource to be passed as the request body.
-    name: Required. Unique name of the resource in this project using one of
-      the following forms:
-      `projects/{project_number}/guestPolicies/{guest_policy_id}`.
-      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
-      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
-    updateMask: Field mask that controls which fields of the guest policy
-      should be updated.
-  """
-
-  guestPolicy = _messages.MessageField('GuestPolicy', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-
-
 class OsconfigProjectsGuestPoliciesCreateRequest(_messages.Message):
   r"""A OsconfigProjectsGuestPoliciesCreateRequest object.
 
@@ -708,8 +534,7 @@ class OsconfigProjectsGuestPoliciesCreateRequest(_messages.Message):
       between 1-63 characters. * Must end with a number or a letter. * Must be
       unique within the project.
     parent: Required. The resource name of the parent using one of the
-      following forms: `projects/{project_number}`. `folders/{folder_id}`.
-      `organizations/{organization_id}`.
+      following forms: `projects/{project_number}`.
   """
 
   guestPolicy = _messages.MessageField('GuestPolicy', 1)
@@ -724,8 +549,6 @@ class OsconfigProjectsGuestPoliciesDeleteRequest(_messages.Message):
     name: Required. The resource name of the guest policy  using one of the
       following forms:
       `projects/{project_number}/guestPolicies/{guest_policy_id}`.
-      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
-      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -738,8 +561,6 @@ class OsconfigProjectsGuestPoliciesGetRequest(_messages.Message):
     name: Required. The resource name of the guest policy using one of the
       following forms:
       `projects/{project_number}/guestPolicies/{guest_policy_id}`.
-      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
-      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -754,8 +575,7 @@ class OsconfigProjectsGuestPoliciesListRequest(_messages.Message):
       `ListGuestPolicies` that indicates where this listing should continue
       from.
     parent: Required. The resource name of the parent using one of the
-      following forms: `projects/{project_number}`. `folders/{folder_id}`.
-      `organizations/{organization_id}`.
+      following forms: `projects/{project_number}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -771,8 +591,6 @@ class OsconfigProjectsGuestPoliciesPatchRequest(_messages.Message):
     name: Required. Unique name of the resource in this project using one of
       the following forms:
       `projects/{project_number}/guestPolicies/{guest_policy_id}`.
-      `folders/{folder_id}/guestPolicies/{guest_policy_id}`.
-      `organizations/{organization_id}/guestPolicies/{guest_policy_id}`.
     updateMask: Field mask that controls which fields of the guest policy
       should be updated.
   """
@@ -1729,7 +1547,7 @@ class SoftwareRecipeStepRunScript(_messages.Message):
     InterpreterValueValuesEnum: The script interpreter to use to run the
       script. If no interpreter is specified the script is executed directly,
       which likely only succeed for scripts with [shebang
-      lines](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+      lines](https://en.wikipedia.org/wiki/Shebang_\(Unix\)).
 
   Fields:
     allowedExitCodes: Return codes that indicate that the software installed
@@ -1737,7 +1555,7 @@ class SoftwareRecipeStepRunScript(_messages.Message):
     interpreter: The script interpreter to use to run the script. If no
       interpreter is specified the script is executed directly, which likely
       only succeed for scripts with [shebang
-      lines](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+      lines](https://en.wikipedia.org/wiki/Shebang_\(Unix\)).
     script: Required. The shell script to be executed.
   """
 
@@ -1745,7 +1563,7 @@ class SoftwareRecipeStepRunScript(_messages.Message):
     r"""The script interpreter to use to run the script. If no interpreter is
     specified the script is executed directly, which likely only succeed for
     scripts with [shebang
-    lines](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+    lines](https://en.wikipedia.org/wiki/Shebang_\(Unix\)).
 
     Values:
       INTERPRETER_UNSPECIFIED: Default value for ScriptType.

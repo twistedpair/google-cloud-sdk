@@ -26,8 +26,8 @@ from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.credentials import http as http_creds
-
 from oauth2client import client
+from google.oauth2 import credentials
 
 
 def GenerateAccessToken(service_account_id, scopes):
@@ -120,7 +120,7 @@ class ImpersonationCredentials(client.OAuth2Credentials):
         access_token, None, None, None, token_expiry, None, None, scopes=scopes)
 
   def _refresh(self, http):
-    # client.Oauth2Credentials converts scopes into a set, so we need to convert
+    # client.OAuth2Credentials converts scopes into a set, so we need to convert
     # back to a list before making the API request.
     response = GenerateAccessToken(self._service_account_id, list(self.scopes))
     self.access_token = response.accessToken
@@ -129,3 +129,56 @@ class ImpersonationCredentials(client.OAuth2Credentials):
   def _ConvertExpiryTime(self, value):
     return datetime.datetime.strptime(value,
                                       ImpersonationCredentials._EXPIRY_FORMAT)
+
+
+# TODO(b/147098689): Deprecate this class and have credentials store returns
+# the impersonate credentails provided by GUAC in the phase 2 of the
+# 'gcloud & GUAC' work.
+class ImpersonationCredentialsGoogleAuth(credentials.Credentials):
+  """Implementation of impersonation credentials based on google-auth library.
+
+  This class serves as a short term quick solution for impersonate service
+  account credentials for phase 1 of the 'gcloud & GUAC' work (go/gcloud-guac)
+  and provides a straightforward field-to-field copy conversion from the
+  oauth2client credentials to GUAC credentials.
+
+  For the long run, credentials store should be refactored to return the
+  impersonated credentials provided by GUAC (http://shortn/_RUMVYrRIoc).
+  The conversion from ImpersonationCredentials to the GUAC impersonated
+  credentials is not trivial as the interfaces of the two classes and the ways
+  they achieve tokens refresh are significantly different.
+  """
+  _EXPIRY_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
+  def refresh(self, request):
+    response = GenerateAccessToken(self._service_account_id, self._scopes)
+    self.token = response.accessToken
+    self.expiry = self._ConvertExpiryTime(response.expireTime)
+
+  def _ConvertExpiryTime(self, value):
+    return datetime.datetime.strptime(
+        value, ImpersonationCredentialsGoogleAuth._EXPIRY_FORMAT)
+
+  @classmethod
+  def from_impersonation_credentials(cls, creds):
+    """Create from an ImpersonationCredentials instance.
+
+    Args:
+      creds: ImpersonationCredentials, credentials of ImpersonationCredentials.
+
+    Returns:
+      ImpersonationCredentialsGoogleAuth, the converted credentials.
+    """
+    google_auth_creds = cls(
+        creds.access_token,
+        None,
+        None,
+        None,
+        None,
+        None,
+        # client.OAuth2Credentials converts scopes into a set, so we need to
+        # convert back to a list before making the API request.
+        list(creds.scopes))
+    google_auth_creds._service_account_id = creds._service_account_id  # pylint: disable=protected-access
+    google_auth_creds.expiry = creds.token_expiry
+    return google_auth_creds

@@ -8426,7 +8426,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Resource name of the ProductSet to get.\n\nFormat is:\n`projects\/PROJECT_ID\/locations\/LOG_ID\/productSets\/PRODUCT_SET_ID`",
+                      "description": "Required. Resource name of the ProductSet to get.\n\nFormat is:\n`projects\/PROJECT_ID\/locations\/LOC_ID\/productSets\/PRODUCT_SET_ID`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/productSets\/[^\/]+$",

@@ -230,7 +230,7 @@
           "type": "string"
         },
         "userOwnedGrafeasNote": {
-          "description": "A Grafeas Attestation.Authority Note, created by the user.",
+          "description": "This specifies how an attestation will be read, and how it will be used\nduring policy enforcement.",
           "$ref": "UserOwnedGrafeasNote"
         },
         "updateTime": {

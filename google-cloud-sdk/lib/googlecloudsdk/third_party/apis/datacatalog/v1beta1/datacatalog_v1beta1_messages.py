@@ -108,12 +108,14 @@ class DatacatalogProjectsLocationsEntryGroupsDeleteRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsEntryGroupsDeleteRequest object.
 
   Fields:
+    force: Optional. If true, deletes all entries in the entry group.
     name: Required. The name of the entry group. For example,
       `projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
       `.
   """
 
-  name = _messages.StringField(1, required=True)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class DatacatalogProjectsLocationsEntryGroupsEntriesCreateRequest(_messages.Message):
@@ -1580,10 +1582,12 @@ class GoogleCloudDatacatalogV1beta1TagFieldEnumValue(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1beta1TagTemplate(_messages.Message):
-  r"""A tag template defines the schema of the tags used to attach to Data
-  Catalog resources. It defines the mapping of accepted field names and types
-  that can be used within the tag. The tag template also controls the access
-  to the tag.
+  r"""A tag template defines a tag, which can have one or more typed fields.
+  The template is used to create and attach the tag to GCP resources. [Tag
+  template roles](/iam/docs/understanding-roles#data-catalog-roles) provide
+  permissions to create, edit, and use the template (see, for example, the
+  [TagTemplate User](/data-catalog/docs/how-to/template-user) role, which
+  includes permission to use the tag template to tag resources.
 
   Messages:
     FieldsValue: Required. Map of tag template field IDs to the settings for

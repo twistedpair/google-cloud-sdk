@@ -429,11 +429,6 @@
           "description": "Mime type of the original audio file.  For example `audio\/m4a`,\n`audio\/x-alaw-basic`, `audio\/mp3`, `audio\/3gpp`.\nA list of possible audio mime types is maintained at\nhttp:\/\/www.iana.org\/assignments\/media-types\/media-types.xhtml#audio",
           "type": "string"
         },
-        "obfuscatedId": {
-          "description": "Obfuscated (privacy-protected) ID of the user, to identify number of\nunique users using the service.",
-          "type": "string",
-          "format": "int64"
-        },
         "audioTopic": {
           "description": "Description of the content. Eg. \"Recordings of federal supreme court\nhearings from 2012\".",
           "type": "string"
@@ -532,7 +527,7 @@
           "type": "string"
         },
         "speakerTag": {
-          "description": "A distinct integer value is assigned for every speaker within\nthe audio. This field specifies which one of those speakers was detected to\nhave spoken this word. Value ranges from '1' to diarization_speaker_count.\nspeaker_tag is set if enable_speaker_diarization = 'true' and only in the\ntop alternative.",
+          "description": "Output only. A distinct integer value is assigned for every speaker within\nthe audio. This field specifies which one of those speakers was detected to\nhave spoken this word. Value ranges from '1' to diarization_speaker_count.\nspeaker_tag is set if enable_speaker_diarization = 'true' and only in the\ntop alternative.",
           "type": "integer",
           "format": "int32"
         }
