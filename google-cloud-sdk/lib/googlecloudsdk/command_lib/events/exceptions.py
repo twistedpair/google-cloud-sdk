@@ -51,12 +51,20 @@ class EventTypeNotFound(exceptions.Error):
   """When a specified event type is not found."""
 
 
+class MultipleEventTypesFound(exceptions.Error):
+  """When multiple event types match but only 1 was expected."""
+
+
 class TriggerNotFound(exceptions.Error):
   """When a specified trigger is not found."""
 
 
 class TriggerCreationError(exceptions.Error):
   """When trigger creation fails."""
+
+
+class SourceNotFound(exceptions.Error):
+  """When a specified source is not found."""
 
 
 class SourceCreationError(exceptions.Error):

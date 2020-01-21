@@ -627,7 +627,7 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
                       description, labels, machine_type, network, network_tier,
                       subnet, private_network_ip, no_restart_on_failure, os,
                       tags, zone, project, output_filter,
-                      compute_release_track):
+                      compute_release_track, hostname):
   """Run a OVF import build on Google Cloud Builder.
 
   Args:
@@ -661,6 +661,7 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
       will be displayed.
     compute_release_track: release track to be used for Compute API calls. One
       of - "alpha", "beta" or ""
+    hostname: hostname of the instance to be imported
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -710,6 +711,7 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
   _AppendNodeAffinityLabelArgs(ovf_importer_args, args, compute_client.messages)
   if compute_release_track:
     AppendArg(ovf_importer_args, 'release-track', compute_release_track)
+  AppendArg(ovf_importer_args, 'hostname', hostname)
 
   build_tags = ['gce-ovf-import']
 

@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
+from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.command_lib.artifacts import util as ar_util
 from googlecloudsdk.core import properties
 
@@ -59,8 +60,25 @@ def _GetRequiredLocationValue(args):
   return ar_util.GetLocation(args)
 
 
-def _GetRepoPath(args):
-  return _GetRequiredProjectValue(args) + "/" + _GetRequiredRepoValue(args)
+def _GetLocationAndRepoPath(args, repo_format):
+  """Get resource values and validate user input."""
+  repo = _GetRequiredRepoValue(args)
+  project = _GetRequiredProjectValue(args)
+  location = _GetRequiredLocationValue(args)
+  repo_path = project + "/" + repo
+  location_list = ar_requests.ListLocations(project)
+  if location.lower() not in location_list:
+    raise ar_exceptions.UnsupportedLocationError(
+        "{} is not a valid location. Valid locations are [{}].".format(
+            location, ", ".join(location_list)))
+  repo = ar_requests.GetRepository(
+      "projects/{}/locations/{}/repositories/{}".format(project, location,
+                                                        repo))
+  if repo.format != repo_format:
+    raise ar_exceptions.InvalidInputValueError(
+        "Invalid repository type {}. Valid type is {}.".format(
+            repo.format, repo_format))
+  return location, repo_path
 
 
 def GetNpmSettingsSnippet(args):
@@ -73,9 +91,11 @@ def GetNpmSettingsSnippet(args):
   Returns:
     An npm settings snippet.
   """
-  repo_path = _GetRepoPath(args)
+  messages = ar_requests.GetMessages()
+  location, repo_path = _GetLocationAndRepoPath(
+      args, messages.Repository.FormatValueValuesEnum.NPM)
   registry_path = "{location}-npm.pkg.dev/{repo_path}/".format(**{
-      "location": _GetRequiredLocationValue(args),
+      "location": location,
       "repo_path": repo_path
   })
   configured_registry = "registry"
@@ -115,8 +135,9 @@ def GetMavenSnippet(args):
   Returns:
     A maven snippet.
   """
-
-  repo_path = _GetRepoPath(args)
+  messages = ar_requests.GetMessages()
+  location, repo_path = _GetLocationAndRepoPath(
+      args, messages.Repository.FormatValueValuesEnum.MAVEN)
   mvn_template = """\
 Please insert following snippet into your pom.xml
 
@@ -160,9 +181,9 @@ Please insert following snippet into your pom.xml
 """
 
   data = {
-      "location": _GetRequiredLocationValue(args),
+      "location": location,
       "server_id": "artifact-registry",
-      "extension_version": "1.2.1",
+      "extension_version": "2.0.0",
       "repo_path": repo_path,
   }
   return mvn_template.format(**data)
@@ -178,8 +199,10 @@ def GetGradleSnippet(args):
   Returns:
     A gradle snippet.
   """
+  messages = ar_requests.GetMessages()
+  location, repo_path = _GetLocationAndRepoPath(
+      args, messages.Repository.FormatValueValuesEnum.MAVEN)
 
-  repo_path = _GetRepoPath(args)
   gradle_template = """\
 Please insert following snippet into your build.gradle
 see docs.gradle.org/current/userguide/publishing_maven.html
@@ -187,7 +210,7 @@ see docs.gradle.org/current/userguide/publishing_maven.html
 ======================================================
 plugins {{
   id "maven-publish"
-  id "com.google.cloud.artifactregistry.gradle-plugin" version "1.2.1"
+  id "com.google.cloud.artifactregistry.gradle-plugin" version "{extension_version}"
 }}
 
 publishing {{
@@ -207,7 +230,8 @@ repositories {{
 """
 
   data = {
-      "location": _GetRequiredLocationValue(args),
+      "location": location,
       "repo_path": repo_path,
+      "extension_version": "2.0.0",
   }
   return gradle_template.format(**data)

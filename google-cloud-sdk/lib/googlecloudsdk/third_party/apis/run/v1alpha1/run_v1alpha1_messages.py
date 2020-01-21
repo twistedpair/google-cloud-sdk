@@ -1823,6 +1823,11 @@ class PubSubSpec(_messages.Message):
     secret: Secret is the credential to use to create the Scheduler Job. If
       not specified, defaults to: Name: google-cloud-key Key: key.json
       +optional
+    serviceAccountName: Email address of the IAM service account associated
+      with the source. The service account represents the identity of the
+      source, and determines what permissions the source has. If not provided,
+      the source will use the project's Compute Engine default service
+      account. +optional
     sink: Sink is a reference to an object that will resolve to a domain name
       or a URI directly to use as the sink.
     topic: Topic is the ID of the PubSub Topic to Subscribe to. It must be in
@@ -1837,8 +1842,9 @@ class PubSubSpec(_messages.Message):
   retainAckedMessages = _messages.BooleanField(5)
   retentionDuration = _messages.StringField(6)
   secret = _messages.MessageField('SecretKeySelector', 7)
-  sink = _messages.MessageField('Destination', 8)
-  topic = _messages.StringField(9)
+  serviceAccountName = _messages.StringField(8)
+  sink = _messages.MessageField('Destination', 9)
+  topic = _messages.StringField(10)
 
 
 class PubSubStatus(_messages.Message):
@@ -3057,7 +3063,7 @@ class RunNamespacesTriggersListRequest(_messages.Message):
   r"""A RunNamespacesTriggersListRequest object.
 
   Fields:
-    continue_: Optional encoded string to continue paging.
+    continue_: Optional. Encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. Send this in a query string format. i.e.
       'metadata.name%3Dlorem'. Not currently used by Cloud Run.
@@ -3843,7 +3849,7 @@ class RunProjectsLocationsTriggersListRequest(_messages.Message):
   r"""A RunProjectsLocationsTriggersListRequest object.
 
   Fields:
-    continue_: Optional encoded string to continue paging.
+    continue_: Optional. Encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. Send this in a query string format. i.e.
       'metadata.name%3Dlorem'. Not currently used by Cloud Run.
@@ -4372,21 +4378,6 @@ class StorageStatus(_messages.Message):
   observedGeneration = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
-class SubscriberSpec(_messages.Message):
-  r"""A SubscriberSpec object.
-
-  Fields:
-    ref: Reference to an object that will be used to find the target endpoint,
-      which should implement the Addressable duck type. For example, this
-      could be a reference to a Route resource or a Knative Service resource.
-    uri: Reference to a 'known' endpoint where no resolving is done. http
-      ://k8s-service for example http://myexternalhandler.example.com/foo/bar
-  """
-
-  ref = _messages.MessageField('ObjectReference', 1)
-  uri = _messages.StringField(2)
-
-
 class TCPSocketAction(_messages.Message):
   r"""TCPSocketAction describes an action based on opening a socket
 
@@ -4477,8 +4468,8 @@ class Trigger(_messages.Message):
     kind: The kind of resource, in this case "Trigger".
     metadata: Metadata associated with this Trigger.
     spec: Spec defines the desired state of the Trigger.
-    status: Status represents the current state of the Trigger. This data may
-      be out of date. +optional
+    status: Optional. Status represents the current state of the Trigger. This
+      data may be out of date.
   """
 
   apiVersion = _messages.StringField(1)
@@ -4492,14 +4483,14 @@ class TriggerCondition(_messages.Message):
   r"""TriggerCondition contains state information for an Trigger.
 
   Fields:
-    lastTransitionTime: Last time the condition transitioned from one status
-      to another. +optional
-    message: Human readable message indicating details about the current
-      status. +optional
-    reason: One-word CamelCase reason for the condition's current status.
-      +optional
-    severity: How to interpret failures of this condition, one of Error,
-      Warning, Info +optional
+    lastTransitionTime: Optional. Last time the condition transitioned from
+      one status to another.
+    message: Optional. Human readable message indicating details about the
+      current status.
+    reason: Optional. One-word CamelCase reason for the condition's current
+      status.
+    severity: Optional. How to interpret failures of this condition, one of
+      Error, Warning, Info
     status: Status of the condition, one of True, False, Unknown.
     type: Type of Trigger condition.
   """
@@ -4516,32 +4507,30 @@ class TriggerFilter(_messages.Message):
   r"""A TriggerFilter object.
 
   Messages:
-    AttributesValue: Cloud Run fully managed: not supported  Cloud Run on GKE:
-      supported  Attributes filters events by exact match on event context
-      attributes. Each key in the map is compared with the equivalent key in
-      the event context. An event passes the filter if all values are equal to
-      the specified values.  Nested context attributes are not supported as
-      keys. Only string values are supported.  +optional
+    AttributesValue: Optional. Cloud Run fully managed: not supported  Cloud
+      Run on GKE: supported  Attributes filters events by exact match on event
+      context attributes. Each key in the map is compared with the equivalent
+      key in the event context. An event passes the filter if all values are
+      equal to the specified values.  Nested context attributes are not
+      supported as keys. Only string values are supported.
 
   Fields:
-    attributes: Cloud Run fully managed: not supported  Cloud Run on GKE:
-      supported  Attributes filters events by exact match on event context
-      attributes. Each key in the map is compared with the equivalent key in
-      the event context. An event passes the filter if all values are equal to
-      the specified values.  Nested context attributes are not supported as
-      keys. Only string values are supported.  +optional
-    sourceAndType: SourceAndType is DEPRECATED and replaced by the Attributes
-      field.
+    attributes: Optional. Cloud Run fully managed: not supported  Cloud Run on
+      GKE: supported  Attributes filters events by exact match on event
+      context attributes. Each key in the map is compared with the equivalent
+      key in the event context. An event passes the filter if all values are
+      equal to the specified values.  Nested context attributes are not
+      supported as keys. Only string values are supported.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributesValue(_messages.Message):
-    r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
-    Attributes filters events by exact match on event context attributes. Each
-    key in the map is compared with the equivalent key in the event context.
-    An event passes the filter if all values are equal to the specified
-    values.  Nested context attributes are not supported as keys. Only string
-    values are supported.  +optional
+    r"""Optional. Cloud Run fully managed: not supported  Cloud Run on GKE:
+    supported  Attributes filters events by exact match on event context
+    attributes. Each key in the map is compared with the equivalent key in the
+    event context. An event passes the filter if all values are equal to the
+    specified values.  Nested context attributes are not supported as keys.
+    Only string values are supported.
 
     Messages:
       AdditionalProperty: An additional property for a AttributesValue object.
@@ -4564,62 +4553,6 @@ class TriggerFilter(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   attributes = _messages.MessageField('AttributesValue', 1)
-  sourceAndType = _messages.MessageField('TriggerFilterSourceAndType', 2)
-
-
-class TriggerFilterSourceAndType(_messages.Message):
-  r"""TriggerFilterSourceAndType is DEPRECATED. Filters are now contained in
-  the map of attributes in TriggerFilter proto.
-
-  Fields:
-    source: A string attribute.
-    type: A string attribute.
-  """
-
-  source = _messages.StringField(1)
-  type = _messages.StringField(2)
-
-
-class TriggerImporterSpec(_messages.Message):
-  r"""Deprecated, importer specification will be available via GcpImporterDao.
-
-  Messages:
-    ArgumentsValue: Arguments to use for the importer. These must match the
-      parameters in the EventType's importer.
-
-  Fields:
-    arguments: Arguments to use for the importer. These must match the
-      parameters in the EventType's importer.
-    eventTypeName: Name of the EventType that this importer provides.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ArgumentsValue(_messages.Message):
-    r"""Arguments to use for the importer. These must match the parameters in
-    the EventType's importer.
-
-    Messages:
-      AdditionalProperty: An additional property for a ArgumentsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type ArgumentsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ArgumentsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  arguments = _messages.MessageField('ArgumentsValue', 1)
-  eventTypeName = _messages.StringField(2)
 
 
 class TriggerSpec(_messages.Message):
@@ -4631,21 +4564,12 @@ class TriggerSpec(_messages.Message):
       Cloud Run.
     filter: Filter is the filter to apply against all events from the Broker.
       Only events that pass this filter will be sent to the Subscriber.
-    importers: Deprecated, importer specification will be replaced by
-      information stored in GcpImporterDao.
-    sink: Sink is the addressable that will receive events.
-    subscriber: Deprecated, sink will be represented by Destination.
-      Subscriber is the addressable that receives events from the Broker that
-      pass the Filter. It is required.  E.g. https://us-
-      central1-myproject.cloudfunctions.net/myfunction or /namespaces/my-
-      project/services/my-service.
+    subscriber: Sink is the addressable that will receive events.
   """
 
   broker = _messages.StringField(1)
   filter = _messages.MessageField('TriggerFilter', 2)
-  importers = _messages.MessageField('TriggerImporterSpec', 3, repeated=True)
-  sink = _messages.MessageField('Destination', 4)
-  subscriber = _messages.MessageField('SubscriberSpec', 5)
+  subscriber = _messages.MessageField('Destination', 3)
 
 
 class TriggerStatus(_messages.Message):

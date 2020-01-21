@@ -98,6 +98,14 @@ MAP = {
                 messages_modulepath='admin_v1_messages',
                 default_version=True),
     },
+    'apikeys': {
+        'v2alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.apikeys.v2alpha1',
+                client_classpath='apikeys_v2alpha1_client.ApikeysV2alpha1',
+                messages_modulepath='apikeys_v2alpha1_messages',
+                default_version=True),
+    },
     'appengine': {
         'v1':
             APIDef(
@@ -715,6 +723,12 @@ MAP = {
                 default_version=False),
     },
     'gkehub': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.gkehub.v1',
+                client_classpath='gkehub_v1_client.GkehubV1',
+                messages_modulepath='gkehub_v1_messages',
+                default_version=False),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.gkehub.v1alpha1',
@@ -847,11 +861,25 @@ MAP = {
                 default_version=True),
     },
     'monitoring': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.monitoring.v1',
+                client_classpath='monitoring_v1_client.MonitoringV1',
+                messages_modulepath='monitoring_v1_messages',
+                default_version=False),
         'v3':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.monitoring.v3',
                 client_classpath='monitoring_v3_client.MonitoringV3',
                 messages_modulepath='monitoring_v3_messages',
+                default_version=True),
+    },
+    'networkmanagement': {
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.networkmanagement.v1beta1',
+                client_classpath='networkmanagement_v1beta1_client.NetworkmanagementV1beta1',
+                messages_modulepath='networkmanagement_v1beta1_messages',
                 default_version=True),
     },
     'orgpolicy': {
@@ -1146,19 +1174,13 @@ MAP = {
                 messages_modulepath='speech_v1p1beta1_messages',
                 default_version=False),
     },
-    'sqladmin': {
-        'v1beta3':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.sqladmin.v1beta3',
-                client_classpath='sqladmin_v1beta3_client.SqladminV1beta3',
-                messages_modulepath='sqladmin_v1beta3_messages',
-                default_version=True),
+    'sql': {
         'v1beta4':
             APIDef(
-                class_path='googlecloudsdk.third_party.apis.sqladmin.v1beta4',
-                client_classpath='sqladmin_v1beta4_client.SqladminV1beta4',
-                messages_modulepath='sqladmin_v1beta4_messages',
-                default_version=False),
+                class_path='googlecloudsdk.third_party.apis.sql.v1beta4',
+                client_classpath='sql_v1beta4_client.SqlV1beta4',
+                messages_modulepath='sql_v1beta4_messages',
+                default_version=True),
     },
     'storage': {
         'v1':

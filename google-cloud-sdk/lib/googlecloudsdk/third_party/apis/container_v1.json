@@ -807,6 +807,10 @@
           "description": "[Output only] The pod CIDR block size per node in this node pool.",
           "type": "integer",
           "format": "int32"
+        },
+        "upgradeSettings": {
+          "description": "Upgrade settings control disruption and speed of the upgrade.",
+          "$ref": "UpgradeSettings"
         }
       }
     },
@@ -909,6 +913,23 @@
         "message": {
           "description": "Human-friendly representation of the condition",
           "type": "string"
+        }
+      }
+    },
+    "UpgradeSettings": {
+      "id": "UpgradeSettings",
+      "description": "These upgrade settings control the level of parallelism and the level of\ndisruption caused by an upgrade.\n\nmaxUnavailable controls the number of nodes that can be simultaneously\nunavailable.\n\nmaxSurge controls the number of additional nodes that can be added to the\nnode pool temporarily for the time of the upgrade to increase the number of\navailable nodes.\n\n(maxUnavailable + maxSurge) determines the level of parallelism (how many\nnodes are being upgraded at the same time).\n\nNote: upgrades inevitably introduce some disruption since workloads need to\nbe moved from old nodes to new, upgraded ones. Even if maxUnavailable=0,\nthis holds true. (Disruption stays within the limits of\nPodDisruptionBudget, if it is configured.)\n\nConsider a hypothetical node pool with 5 nodes having maxSurge=2,\nmaxUnavailable=1. This means the upgrade process upgrades 3 nodes\nsimultaneously. It creates 2 additional (upgraded) nodes, then it brings\ndown 3 old (not yet upgraded) nodes at the same time. This ensures that\nthere are always at least 4 nodes available.",
+      "type": "object",
+      "properties": {
+        "maxSurge": {
+          "description": "The maximum number of nodes that can be created beyond the current size\nof the node pool during the upgrade process.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxUnavailable": {
+          "description": "The maximum number of nodes that can be simultaneously unavailable during\nthe upgrade process. A node is considered available if its status is\nReady.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1654,6 +1675,10 @@
         "name": {
           "description": "The name (project, location, cluster, node pool) of the node pool to\nupdate. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
           "type": "string"
+        },
+        "upgradeSettings": {
+          "description": "Upgrade settings control disruption and speed of the upgrade.",
+          "$ref": "UpgradeSettings"
         }
       }
     },

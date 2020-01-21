@@ -36,16 +36,17 @@ description:
 network:
   api_field: node.network
   arg_name: network
-  required: true
+  required: false
   help_text: |
     Specifies the network that this TPU will be a part of.
+  default: 'default'
 
 version:
   api_field: node.tensorflowVersion
   arg_name: version
   required: true
   help_text: |
-    TensorFlow version for the TPU, such as `1.6`. For a list of available
+    TensorFlow version for the TPU, such as `1.14`. For a list of available
     TensorFlow versions please see https://www.tensorflow.org/versions/.
 
 range: &range

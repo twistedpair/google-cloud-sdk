@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/quickstart-cloud-asset-inventory",
+  "documentationLink": "https://cloud.google.com/asset-inventory/docs/quickstart",
   "protocol": "rest",
   "rootUrl": "https://cloudasset.googleapis.com/",
   "servicePath": "",
@@ -665,6 +665,10 @@
           "description": "A `BasicLevel` composed of `Conditions`.",
           "$ref": "GoogleIdentityAccesscontextmanagerV1BasicLevel"
         },
+        "custom": {
+          "description": "A `CustomLevel` written in the Common Expression Language.",
+          "$ref": "GoogleIdentityAccesscontextmanagerV1CustomLevel"
+        },
         "createTime": {
           "description": "Output only. Time the `AccessLevel` was created in UTC.",
           "type": "string",
@@ -843,6 +847,17 @@
         }
       }
     },
+    "GoogleIdentityAccesscontextmanagerV1CustomLevel": {
+      "id": "GoogleIdentityAccesscontextmanagerV1CustomLevel",
+      "description": "`CustomLevel` is an `AccessLevel` using the Cloud Common Expression Language\nto represent the necessary conditions for the level to apply to a request.\nSee CEL spec at: https:\/\/github.com\/google\/cel-spec",
+      "type": "object",
+      "properties": {
+        "expr": {
+          "description": "Required. A Cloud CEL expression evaluating to a boolean.",
+          "$ref": "Expr"
+        }
+      }
+    },
     "GoogleIdentityAccesscontextmanagerV1ServicePerimeter": {
       "id": "GoogleIdentityAccesscontextmanagerV1ServicePerimeter",
       "description": "`ServicePerimeter` describes a set of GCP resources which can freely import\nand export data amongst themselves, but not export outside of the\n`ServicePerimeter`. If a request with a source within this `ServicePerimeter`\nhas a target outside of the `ServicePerimeter`, the request will be blocked.\nOtherwise the request is allowed. There are two types of Service Perimeter -\nRegular and Bridge. Regular Service Perimeters cannot overlap, a single GCP\nproject can only belong to a single regular Service Perimeter. Service\nPerimeter Bridges can contain only GCP projects as members, a single GCP\nproject may belong to multiple Service Perimeter Bridges.",
@@ -948,7 +963,7 @@
           }
         },
         "assetTypes": {
-          "description": "A list of types of the assets to receive updates. You must specify either\nor both of asset_names and asset_types. Only asset updates matching\nspecified asset_names and asset_types are exported to the feed.\nFor example:\n\"compute.googleapis.com\/Disk\" See [Introduction to Cloud Asset\nInventory](https:\/\/cloud.google.com\/resource-manager\/docs\/cloud-asset-inventory\/overview)\nfor all supported asset types.",
+          "description": "A list of types of the assets to receive updates. You must specify either\nor both of asset_names and asset_types. Only asset updates matching\nspecified asset_names and asset_types are exported to the feed.\nFor example: `\"compute.googleapis.com\/Disk\"`\n\nSee [this\ntopic](https:\/\/cloud.google.com\/asset-inventory\/docs\/supported-asset-types)\nfor a list of all supported asset types.",
           "type": "array",
           "items": {
             "type": "string"

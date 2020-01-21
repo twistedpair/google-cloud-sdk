@@ -337,7 +337,7 @@
     },
     "ListGroupsResponse": {
       "id": "ListGroupsResponse",
-      "description": "The response message for GroupsService.SearchGroups.",
+      "description": "The response message for GroupsService.ListGroups.",
       "type": "object",
       "properties": {
         "groups": {
@@ -769,7 +769,7 @@
             "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "List the `Group`s within a customer or namespace."
+          "description": "Lists the `Group`s within a customer or namespace."
         }
       }
       ,
@@ -976,7 +976,7 @@
                 "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "List the `Membership`s within a `Group`."
+              "description": "Lists the `Membership`s within a `Group`."
             },
             "modifyMembershipRoles": {
               "id": "cloudidentity.groups.memberships.modifyMembershipRoles",
@@ -985,7 +985,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "name": {
-                  "description": "The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe looked-up `Membership`.\n\nMust be of the form `groups\/{group_id}\/memberships\/{membership_id}`.",
+                  "description": "The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe `Membership` whose roles are to be modified.\n\nMust be of the form `groups\/{group_id}\/memberships\/{membership_id}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^groups\/[^\/]+\/memberships\/[^\/]+$",

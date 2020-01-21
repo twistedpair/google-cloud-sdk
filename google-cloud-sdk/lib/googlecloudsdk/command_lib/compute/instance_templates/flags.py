@@ -68,7 +68,8 @@ def AddMeshModeConfigArgs(parser):
           },
           required_keys=['mode']),
       help="""\
-      Enables mesh and specifies mesh-level configuration.
+      Enables mesh and specifies mesh-level configuration. "cloud-platform" scope will be enabled to allow connection to Traffic Director API.
+      Therefore --no-scopes flag should not be present.
 
       *mode*::: If ON, the mesh software will be installed on the instance when created.
       It will be configured to work with TrafficDirector. Allowed values of the flags are:
@@ -100,26 +101,38 @@ def AddMeshModeConfigArgs(parser):
 
 def ValidateMeshModeFlags(args):
   """Validates the values of all mesh-mode related flags."""
-  if 'startup-script' in args.metadata:
-    # Extending startup-script is a temporary solution.
-    # After b/143457772 is implemented,
-    # we will switch to separate 'google-software-declaration' metadata key.
-    if args.metadata[
-        'startup-script'][:mesh_mode_aux_data
-                          .shebang_len] != mesh_mode_aux_data.shebang:
-      raise exceptions.InvalidArgumentException(
-          'startup-script',
-          'Only a bash startup-script can be used with mesh mode.')
 
-  if 'workload-ports' in args.mesh:
-    try:
-      workload_ports = list(map(int, args.mesh['workload-ports'].split(';')))
-      for port in workload_ports:
-        if port < 1 or port > 65535:
-          # valid port range is 1 - 65535
-          raise ValueError
-    except ValueError:
-      # an invalid port is present in the list of workload ports.
-      raise exceptions.InvalidArgumentException(
-          'workload-ports',
-          'List of ports can only contain numbers between 1 and 65535.')
+  if getattr(args, 'mesh', False):
+    if 'startup-script' in args.metadata and args.mesh[
+        'mode'] == mesh_mode_aux_data.MeshModes.ON:
+      # Extending startup-script is a temporary solution.
+      # After b/143457772 is implemented,
+      # we will switch to separate 'google-software-declaration' metadata key.
+      if args.metadata[
+          'startup-script'][:mesh_mode_aux_data
+                            .shebang_len] != mesh_mode_aux_data.shebang:
+        raise exceptions.InvalidArgumentException(
+            'startup-script',
+            'Only a bash startup-script can be used with mesh mode.')
+
+    if args.no_scopes and args.mesh[
+        'mode'] == mesh_mode_aux_data.MeshModes.ON:
+      # --no-scopes flag needs to be removed for adding cloud-platform scope.
+      # This is required for TrafficDirector to work properly.
+      raise exceptions.ConflictingArgumentsException(
+          '--mesh',
+          '--no-scopes'
+          )
+
+    if 'workload-ports' in args.mesh:
+      try:
+        workload_ports = list(map(int, args.mesh['workload-ports'].split(';')))
+        for port in workload_ports:
+          if port < 1 or port > 65535:
+            # valid port range is 1 - 65535
+            raise ValueError
+      except ValueError:
+        # an invalid port is present in the list of workload ports.
+        raise exceptions.InvalidArgumentException(
+            'workload-ports',
+            'List of ports can only contain numbers between 1 and 65535.')

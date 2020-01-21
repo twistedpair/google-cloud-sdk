@@ -583,7 +583,8 @@ class _Section(object):
   def __le__(self, other):
     return self.name <= other.name
 
-  def _Add(self,  # pylint: disable=missing-docstring
+  #  pylint: disable=missing-docstring
+  def _Add(self,
            name,
            help_text=None,
            internal=False,
@@ -762,12 +763,11 @@ class _SectionSecrets(_Section):
         help_text='The type of replication policy to apply to secrets. Allowed '
         'values are "automatic" and "user-managed". If user-managed then '
         'locations must also be provided.',
-        )
+    )
     self.locations = self._Add(
         'locations',
         help_text='A comma separated list of the locations to replicate '
-        'secrets to. Only applies to secrets with a user-managed policy.'
-        )
+        'secrets to. Only applies to secrets with a user-managed policy.')
 
 
 class _SectionSpanner(_Section):
@@ -805,7 +805,15 @@ class _SectionCompute(_Section):
         completer=('googlecloudsdk.command_lib.compute.completers:'
                    'RegionsCompleter'))
     self.gce_metadata_read_timeout_sec = self._Add(
-        'gce_metadata_read_timeout_sec', default=3, hidden=True)
+        'gce_metadata_read_timeout_sec',
+        default=20,
+        help_text='Timeout of requesting data from gce metadata endpoints.',
+        hidden=True)
+    self.gce_metadata_check_timeout_sec = self._Add(
+        'gce_metadata_check_timeout_sec',
+        default=3,
+        help_text='Timeout of checking if it is on gce environment.',
+        hidden=True)
     self.use_new_list_usable_subnets_api = self._AddBool(
         'use_new_list_usable_subnets_api',
         default=False,

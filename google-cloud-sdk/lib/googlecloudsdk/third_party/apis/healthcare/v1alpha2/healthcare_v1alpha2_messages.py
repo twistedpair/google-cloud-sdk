@@ -2690,11 +2690,23 @@ class StreamConfig(_messages.Message):
 
   Fields:
     bigqueryDestination: The destination BigQuery structure that contains both
-      the dataset location and corresponding schema config. The output is
-      organized in one table per resource type. The server inspects the given
-      BigQuery dataset and creates new tables if they don't exist. Results are
-      appended to the corresponding BigQuery tables. The views of the latest
-      snapshot are also automatically created in the dataset.
+      the dataset location and corresponding schema config.  The output is
+      organized in one table per resource type. The server reuses the existing
+      tables (if any) that are named after the resource types, e.g. "Patient",
+      "Observation". When there is no existing table for a given resource
+      type, the server attempts to create one.  When a table schema doesn't
+      align with the schema config, either because of existing incompatible
+      schema or out of band incompatible modification, the server does not
+      stream in new data.  One resolution in this case is to delete the
+      incompatible table and let the server recreate one, though the newly
+      created table only contains data after the table recreation.  Results
+      are appended to the corresponding BigQuery tables. Different versions of
+      the same resource are distinguishable by the meta.versionId and
+      meta.lastUpdated columns. The operation (CREATE/UPDATE/DELETE) that
+      results in the new version is recorded in the meta.tag.  The tables
+      contain all historical resource versions since streaming was enabled.
+      For query convenience, the server also creates one view per table of the
+      same name containing only the current resource version.
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an

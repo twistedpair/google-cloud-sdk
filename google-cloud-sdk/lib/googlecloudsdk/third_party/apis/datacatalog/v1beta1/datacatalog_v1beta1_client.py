@@ -433,47 +433,6 @@ the `entry.name` parameter (see [Data Catalog Resource Project]
         supports_download=False,
     )
 
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy for a resource. Replaces any existing.
-policy.
-Supported resources are:
-  - Tag templates.
-  - Entries.
-  - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Cloud
-Pub/Sub and any external Google Cloud Platform resources synced to Cloud
-Data Catalog.
-
-Callers must have following Google IAM permission
-  - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag
-    templates.
-  - `datacatalog.entries.setIamPolicy` to set policies on entries.
-  - `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.
-
-      Args:
-        request: (DatacatalogProjectsLocationsEntryGroupsEntriesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'datacatalog.projects.locations.entryGroups.entries.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesSetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns the caller's permissions on a resource.
 If the resource does not exist, an empty set of permissions is returned

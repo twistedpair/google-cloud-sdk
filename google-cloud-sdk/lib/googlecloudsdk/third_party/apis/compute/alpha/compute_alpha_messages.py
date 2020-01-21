@@ -27473,14 +27473,18 @@ class HttpHeaderMatch(_messages.Message):
       integer, number or is empty, the match fails. For example for a range
       [-5, 0]   - -3 will match.  - 0 will not match.  - 0.25 will not match.
       - -3someString will not match.   Only one of exactMatch, prefixMatch,
-      suffixMatch, regexMatch, presentMatch or rangeMatch must be set.
-    regexMatch: The value of the header must match the regualar expression
+      suffixMatch, regexMatch, presentMatch or rangeMatch must be set. Note
+      that rangeMatch is not supported for Loadbalancers that have their
+      loadBalancingScheme set to EXTERNAL.
+    regexMatch: The value of the header must match the regular expression
       specified in regexMatch. For regular expression grammar, please see:
       en.cppreference.com/w/cpp/regex/ecmascript  For matching against a port
       specified in the HTTP request, use a headerMatch with headerName set to
       PORT and a regular expression that satisfies the RFC2616 Host header's
       port specifier. Only one of exactMatch, prefixMatch, suffixMatch,
-      regexMatch, presentMatch or rangeMatch must be set.
+      regexMatch, presentMatch or rangeMatch must be set. Note that regexMatch
+      only applies to Loadbalancers that have their loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED.
     suffixMatch: The value of the header must end with the contents of
       suffixMatch. Only one of exactMatch, prefixMatch, suffixMatch,
       regexMatch, presentMatch or rangeMatch must be set.
@@ -27713,7 +27717,8 @@ class HttpQueryParameterMatch(_messages.Message):
       matches the regular expression specified by regexMatch. For the regular
       expression grammar, please see
       en.cppreference.com/w/cpp/regex/ecmascript  Only one of presentMatch,
-      exactMatch or regexMatch must be set.
+      exactMatch or regexMatch must be set. Note that regexMatch only applies
+      when the loadBalancingScheme is set to INTERNAL_SELF_MANAGED.
   """
 
   exactMatch = _messages.StringField(1)
@@ -27976,7 +27981,9 @@ class HttpRouteRuleMatch(_messages.Message):
       after removing any query parameters and anchor supplied with the
       original URL. For regular expression grammar please see
       en.cppreference.com/w/cpp/regex/ecmascript  Only one of prefixMatch,
-      fullPathMatch or regexMatch must be specified.
+      fullPathMatch or regexMatch must be specified. Note that regexMatch only
+      applies to Loadbalancers that have their loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED.
   """
 
   fullPathMatch = _messages.StringField(1)
@@ -28554,6 +28561,9 @@ class Instance(_messages.Message):
   Enums:
     PostKeyRevocationActionTypeValueValuesEnum: Specifies whether this
       instance will be shut down on key revocation.
+    PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
+      type for the VM. If not specified, use  INHERIT_FROM_SUBNETWORK as
+      default.
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
       the following values: PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED,
       SUSPENDING, SUSPENDED, and TERMINATED.
@@ -28651,6 +28661,8 @@ class Instance(_messages.Message):
       down on key revocation.
     preservedStateSizeGb: Total amount of preserved state for SUSPENDED
       instances. Read-only in the api.
+    privateIpv6GoogleAccess: The private IPv6 google access type for the VM.
+      If not specified, use  INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
     resourcePolicies: Resource policies applied to this instance.
@@ -28699,6 +28711,19 @@ class Instance(_messages.Message):
     NOOP = 0
     SHUTDOWN = 1
     UNSPECIFIED = 2
+
+  class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
+    r"""The private IPv6 google access type for the VM. If not specified, use
+    INHERIT_FROM_SUBNETWORK as default.
+
+    Values:
+      ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE: <no description>
+      ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE: <no description>
+      INHERIT_FROM_SUBNETWORK: <no description>
+    """
+    ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE = 0
+    ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE = 1
+    INHERIT_FROM_SUBNETWORK = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the instance. One of the following values:
@@ -28775,23 +28800,24 @@ class Instance(_messages.Message):
   networkInterfaces = _messages.MessageField('NetworkInterface', 22, repeated=True)
   postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 23)
   preservedStateSizeGb = _messages.IntegerField(24)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 25)
-  resourcePolicies = _messages.StringField(26, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 27)
-  selfLink = _messages.StringField(28)
-  selfLinkWithId = _messages.StringField(29)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 30, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 31)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 32)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 33)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 34)
-  sourceMachineImage = _messages.StringField(35)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 36)
-  startRestricted = _messages.BooleanField(37)
-  status = _messages.EnumField('StatusValueValuesEnum', 38)
-  statusMessage = _messages.StringField(39)
-  tags = _messages.MessageField('Tags', 40)
-  zone = _messages.StringField(41)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 25)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 26)
+  resourcePolicies = _messages.StringField(27, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 28)
+  selfLink = _messages.StringField(29)
+  selfLinkWithId = _messages.StringField(30)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 31, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 32)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 33)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 34)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 35)
+  sourceMachineImage = _messages.StringField(36)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 37)
+  startRestricted = _messages.BooleanField(38)
+  status = _messages.EnumField('StatusValueValuesEnum', 39)
+  statusMessage = _messages.StringField(40)
+  tags = _messages.MessageField('Tags', 41)
+  zone = _messages.StringField(42)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -31201,6 +31227,9 @@ class InstanceProperties(_messages.Message):
   Enums:
     PostKeyRevocationActionTypeValueValuesEnum: Specifies whether this
       instance will be shut down on key revocation.
+    PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
+      type for the VM. If not specified, use  INHERIT_FROM_SUBNETWORK as
+      default.
 
   Messages:
     LabelsValue: Labels to apply to instances that are created from this
@@ -31238,6 +31267,8 @@ class InstanceProperties(_messages.Message):
       interface.
     postKeyRevocationActionType: Specifies whether this instance will be shut
       down on key revocation.
+    privateIpv6GoogleAccess: The private IPv6 google access type for the VM.
+      If not specified, use  INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
     resourcePolicies: Resource policies (names, not ULRs) applied to instances
@@ -31268,6 +31299,19 @@ class InstanceProperties(_messages.Message):
     NOOP = 0
     SHUTDOWN = 1
     UNSPECIFIED = 2
+
+  class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
+    r"""The private IPv6 google access type for the VM. If not specified, use
+    INHERIT_FROM_SUBNETWORK as default.
+
+    Values:
+      ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE: <no description>
+      ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE: <no description>
+      INHERIT_FROM_SUBNETWORK: <no description>
+    """
+    ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE = 0
+    ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE = 1
+    INHERIT_FROM_SUBNETWORK = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -31305,13 +31349,14 @@ class InstanceProperties(_messages.Message):
   minCpuPlatform = _messages.StringField(10)
   networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
   postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 12)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 13)
-  resourcePolicies = _messages.StringField(14, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 15)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 16, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 17)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 18)
-  tags = _messages.MessageField('Tags', 19)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 13)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 14)
+  resourcePolicies = _messages.StringField(15, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 16)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 17, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 18)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 19)
+  tags = _messages.MessageField('Tags', 20)
 
 
 class InstanceReference(_messages.Message):
@@ -40020,9 +40065,8 @@ class PathMatcher(_messages.Message):
     routeRules: The list of HTTP route rules. Use this list instead of
       pathRules when advanced route matching and routing actions are desired.
       routeRules are evaluated in order of priority, from the lowest to
-      highest number. Within a given pathMatcher, only one of pathRules or
-      routeRules must be set. routeRules are not supported in UrlMaps intended
-      for External Load balancers.
+      highest number. Within a given pathMatcher, you can set only one of
+      pathRules or routeRules.
   """
 
   defaultRouteAction = _messages.MessageField('HttpRouteAction', 1)

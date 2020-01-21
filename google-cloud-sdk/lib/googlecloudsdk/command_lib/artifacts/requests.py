@@ -139,12 +139,34 @@ def ListVersions(client, messages, pkg, version_view):
   return list_vers_res.versions
 
 
-def ListRepositories(client, messages, project):
+def ListRepositories(project):
   """Lists all repositories under a project."""
+  client = GetClient()
+  messages = GetMessages()
   list_repos_req = messages.ArtifactregistryProjectsLocationsRepositoriesListRequest(
       parent=project)
   list_repos_res = client.projects_locations_repositories.List(list_repos_req)
   return list_repos_res.repositories
+
+
+def GetRepository(repo):
+  """Gets the repository given its name."""
+  client = GetClient()
+  messages = GetMessages()
+  get_repo_req = messages.ArtifactregistryProjectsLocationsRepositoriesGetRequest(
+      name=repo)
+  get_repo_res = client.projects_locations_repositories.Get(get_repo_req)
+  return get_repo_res
+
+
+def ListLocations(project_id):
+  """Lists all locations for a given project."""
+  client = GetClient()
+  messages = GetMessages()
+  list_locs_req = messages.ArtifactregistryProjectsLocationsListRequest(
+      name="projects/"+ project_id)
+  list_locs_res = client.projects_locations.List(list_locs_req)
+  return sorted([loc.locationId for loc in list_locs_res.locations])
 
 
 def TestStorageIAMPermission(bucket, project):

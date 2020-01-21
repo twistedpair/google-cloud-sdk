@@ -32,7 +32,11 @@ def SqlImportContext(sql_messages, uri, database=None, user=None):
     ImportContext, for use in InstancesImportRequest.importContext.
   """
   return sql_messages.ImportContext(
-      uri=uri, database=database, fileType='SQL', importUser=user)
+      kind='sql#importContext',
+      uri=uri,
+      database=database,
+      fileType=sql_messages.ImportContext.FileTypeValueValuesEnum.SQL,
+      importUser=user)
 
 
 def CsvImportContext(sql_messages,
@@ -55,11 +59,12 @@ def CsvImportContext(sql_messages,
     ImportContext, for use in InstancesImportRequest.importContext.
   """
   return sql_messages.ImportContext(
+      kind='sql#importContext',
       csvImportOptions=sql_messages.ImportContext.CsvImportOptionsValue(
           columns=columns or [], table=table),
       uri=uri,
       database=database,
-      fileType='CSV',
+      fileType=sql_messages.ImportContext.FileTypeValueValuesEnum.CSV,
       importUser=user)
 
 
@@ -89,7 +94,8 @@ def BakImportContext(sql_messages, uri, database, cert_path, pvk_path,
             certPath=cert_path, pvkPath=pvk_path, pvkPassword=pvk_password))
 
   return sql_messages.ImportContext(
+      kind='sql#importContext',
       uri=uri,
       database=database,
-      fileType='BAK',
+      fileType=sql_messages.ImportContext.FileTypeValueValuesEnum.BAK,
       bakImportOptions=bak_import_options)

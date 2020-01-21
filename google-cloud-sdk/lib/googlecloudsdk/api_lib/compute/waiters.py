@@ -175,6 +175,11 @@ class OperationData(object):
     """
     self.operation = operation
 
+  def IsGAOperation(self):
+    self_link = self.operation.selfLink
+    return (self_link.startswith('https://www.googleapis.com/compute/v1') or
+            self_link.startswith('https://compute.googleapis.com/compute/v1/'))
+
   def IsDone(self):
     """Returns true if the operation is done."""
     operation_type = self.operation_service.GetResponseType('Get')
@@ -358,7 +363,7 @@ def WaitForOperations(
   sleep_sec = 0
   # There is only one type of operation in compute API.
   # We pick the type of the first operation in the list.
-  operation_type = operations_data[0].operation_service.GetResponseType('Get')
+  operation_type = operations_data[0].operation_service.GetResponseType('Wait')
 
   while unprocessed_operations:
     if progress_tracker:
@@ -412,10 +417,15 @@ def WaitForOperations(
                   operation.operationType).capitalize(), operation.targetLink))
 
       else:
-        # The operation has not reached the DONE state, so we add a
-        # get request to poll the operation.
-        request = data.OperationGetRequest()
-        operation_requests.append((operation_service, 'Get', request))
+        # The operation has not reached the DONE state, so we add a request
+        # to poll the operation.
+        # TODO(b/112841455): Move GA to "Wait" API.
+        if data.IsGAOperation():
+          request = data.OperationGetRequest()
+          operation_requests.append((operation_service, 'Get', request))
+        else:
+          request = data.OperationWaitRequest()
+          operation_requests.append((operation_service, 'Wait', request))
 
     requests = resource_requests + operation_requests
     if not requests:

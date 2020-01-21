@@ -24,7 +24,7 @@ from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
-from googlecloudsdk.command_lib.artifacts import util
+from googlecloudsdk.command_lib.artifacts import util as ar_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -89,6 +89,7 @@ def _GetDefaultResources():
   """Gets default config values for project, location, and repository."""
   project = properties.VALUES.core.project.Get()
   location = properties.VALUES.artifacts.location.Get()
+  ar_util.ValidateLocation(location, project)
   repo = properties.VALUES.artifacts.repository.Get()
   if not project or not location or not repo:
     raise ar_exceptions.InvalidInputValueError(
@@ -117,11 +118,8 @@ def _ParseInput(input_str):
   if not matches:
     raise ar_exceptions.InvalidInputValueError()
   location = matches.group("location")
-  if not util.IsValidLocation(location):
-    raise ar_exceptions.UnsupportedLocationError(
-        "{} is not a valid location. Valid locations are [{}].".format(
-            location, ", ".join(util.GetLocationList())))
-  return DockerRepo(matches.group("project"), location, matches.group("repo"))
+  project_id = matches.group("project")
+  return DockerRepo(project_id, location, matches.group("repo"))
 
 
 def _ParseDockerImagePath(img_path):
@@ -134,6 +132,8 @@ def _ParseDockerImagePath(img_path):
     docker_repo = _ParseInput(img_path)
   except ar_exceptions.InvalidInputValueError:
     raise ar_exceptions.InvalidInputValueError(_INVALID_IMAGE_PATH_ERROR)
+
+  ar_util.ValidateLocation(docker_repo.location, docker_repo.project)
 
   if len(resource_val_list) == 3:
     return docker_repo
@@ -160,6 +160,8 @@ def _ParseDockerImage(img_str, err_msg):
     docker_repo = _ParseInput(img_str)
   except ar_exceptions.InvalidInputValueError:
     raise ar_exceptions.InvalidInputValueError(_INVALID_DOCKER_IMAGE_ERROR)
+
+  ar_util.ValidateLocation(docker_repo.location, docker_repo.project)
 
   img_by_digest_match = re.match(DOCKER_IMG_BY_DIGEST_REGEX, img_str)
   if img_by_digest_match:
@@ -488,14 +490,22 @@ def DeleteDockerImage(args):
           ar_requests.GetVersionFromTag(client, messages,
                                         version_or_tag.GetTagName()))
       tags_to_delete.append(version_or_tag)
+    existing_tags = _GetDockerVersionTags(client, messages, docker_version)
     if args.delete_tags:
-      tags_to_delete.extend(
-          _GetDockerVersionTags(client, messages, docker_version))
+      tags_to_delete.extend(existing_tags)
+
+    if len(existing_tags) != len(tags_to_delete):
+      raise ar_exceptions.ArtifactRegistryError(
+          "Cannot delete image {} because it is tagged. "
+          "Existing tags are:\n- {}".format(
+              args.IMAGE,
+              "\n- ".join(tag.GetDockerString() for tag in existing_tags)))
 
     _LogResourcesToDelete(docker_version, tags_to_delete)
     console_io.PromptContinue(
         message="\nThis operation will delete the above resources.",
         cancel_on_no=True)
+
     for tag in tags_to_delete:
       ar_requests.DeleteTag(client, messages, tag.GetTagName())
     return ar_requests.DeleteVersion(client, messages,
@@ -539,7 +549,9 @@ def AddDockerTag(args):
 
 def DeleteDockerTag(args):
   """Deletes a Docker tag."""
-  _, tag = _ParseDockerTag(args.DOCKER_TAG)
+  img, tag = _ParseDockerTag(args.DOCKER_TAG)
+
+  ar_util.ValidateLocation(img.docker_repo.location, img.docker_repo.project)
 
   console_io.PromptContinue(
       message="You are about to delete tag [{}]".format(tag.GetDockerString()),

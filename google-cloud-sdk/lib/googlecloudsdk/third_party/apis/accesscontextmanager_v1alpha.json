@@ -261,6 +261,10 @@
           "description": "A `BasicLevel` composed of `Conditions`.",
           "$ref": "BasicLevel"
         },
+        "custom": {
+          "description": "A `CustomLevel` written in the Common Expression Language.",
+          "$ref": "CustomLevel"
+        },
         "createTime": {
           "description": "Output only. Time the `AccessLevel` was created in UTC.",
           "type": "string",
@@ -439,6 +443,40 @@
         }
       }
     },
+    "CustomLevel": {
+      "id": "CustomLevel",
+      "description": "`CustomLevel` is an `AccessLevel` using the Cloud Common Expression Language\nto represent the necessary conditions for the level to apply to a request.\nSee CEL spec at: https:\/\/github.com\/google\/cel-spec",
+      "type": "object",
+      "properties": {
+        "expr": {
+          "description": "Required. A Cloud CEL expression evaluating to a boolean.",
+          "$ref": "Expr"
+        }
+      }
+    },
+    "Expr": {
+      "id": "Expr",
+      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
+      "type": "object",
+      "properties": {
+        "expression": {
+          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
+          "type": "string"
+        },
+        "title": {
+          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
+          "type": "string"
+        },
+        "description": {
+          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
+          "type": "string"
+        },
+        "location": {
+          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
+          "type": "string"
+        }
+      }
+    },
     "ListServicePerimetersResponse": {
       "id": "ListServicePerimetersResponse",
       "description": "A response to `ListServicePerimetersRequest`.",
@@ -571,6 +609,10 @@
           "items": {
             "$ref": "AccessLevel"
           }
+        },
+        "etag": {
+          "description": "Optional. The etag for the version of the Access Policy that this\nreplace operation is to be performed on. If, at the time of replace, the\netag for the Access Policy stored in Access Context Manager is different\nfrom the specified etag, then the replace operation will not be performed\nand the call will fail. This field is not required. If etag is not\nprovided, the operation will be performed as if a valid etag is provided.",
+          "type": "string"
         }
       }
     },

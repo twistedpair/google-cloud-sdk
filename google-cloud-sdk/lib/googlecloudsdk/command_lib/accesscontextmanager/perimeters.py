@@ -19,9 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import encoding
-
 from googlecloudsdk.api_lib.accesscontextmanager import util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.accesscontextmanager import common
@@ -35,14 +35,8 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 import six
 
+
 REGISTRY = resources.REGISTRY
-
-
-class ParseResponseError(exceptions.Error):
-
-  def __init__(self, reason):
-    super(ParseResponseError,
-          self).__init__('Issue parsing response: {}'.format(reason))
 
 
 class ParseError(exceptions.Error):
@@ -503,10 +497,6 @@ def ParseReplaceServicePerimetersResponseAlpha(lro, unused_args):
   return ParseReplaceServicePerimetersResponseBase(lro, version='v1alpha')
 
 
-def ParseReplaceServicePerimetersResponseBeta(lro, unused_args):
-  return ParseReplaceServicePerimetersResponseBase(lro, version='v1beta')
-
-
 def ParseReplaceServicePerimetersResponseBase(lro, version):
   """Parse the Long Running Operation response of the ReplaceServicePerimeters call.
 
@@ -522,10 +512,13 @@ def ParseReplaceServicePerimetersResponseBase(lro, version):
     ParseResponseError: if the response could not be parsed into the proper
     object.
   """
-  messages = util.GetMessages(version)
-  message_class = messages.ReplaceServicePerimetersResponse
-  try:
-    return encoding.DictToMessage(
-        encoding.MessageToDict(lro.response), message_class).servicePerimeters
-  except Exception as err:
-    raise ParseResponseError(six.text_type(err))
+  client = util.GetClient(version=version)
+  operation_ref = resources.REGISTRY.Parse(
+      lro.name, collection='accesscontextmanager.operations')
+  poller = common.BulkAPIOperationPoller(
+      client.accessPolicies_servicePerimeters, client.operations, operation_ref)
+
+  return waiter.WaitFor(
+      poller, operation_ref,
+      'Waiting for Replace Service Perimeters operation [{}]'.format(
+          operation_ref.Name()))

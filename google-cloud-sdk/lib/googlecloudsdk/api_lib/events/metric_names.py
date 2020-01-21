@@ -39,5 +39,8 @@ GET_SOURCE = _EVENTS_PREFIX + 'get_source'
 # Time to create a source
 CREATE_SOURCE = _EVENTS_PREFIX + 'create_source'
 
+# Time to delete a source
+DELETE_SOURCE = _EVENTS_PREFIX + 'delete_source'
+
 # Time to list source CRDs
 LIST_SOURCE_CRDS = _EVENTS_PREFIX + 'list_source_crds'

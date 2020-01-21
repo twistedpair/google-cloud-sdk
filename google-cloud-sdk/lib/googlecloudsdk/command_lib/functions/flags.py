@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Helpers for flags in commands working with Google Cloud Functions."""
 
 from __future__ import absolute_import
@@ -29,7 +28,6 @@ from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-
 
 API = 'cloudfunctions'
 API_VERSION = 'v1'
@@ -54,8 +52,7 @@ def AddMinLogLevelFlag(parser):
   min_log_arg = base.ChoiceArgument(
       '--min-log-level',
       choices=[x.lower() for x in SEVERITIES],
-      help_str='Minimum level of logs to be fetched.'
-  )
+      help_str='Minimum level of logs to be fetched.')
   min_log_arg.AddToParser(parser)
 
 
@@ -144,8 +141,8 @@ def ShouldEnsureAllUsersInvoke(args):
 
 
 def ShouldDenyAllUsersInvoke(args):
-  if (args.IsSpecified('allow_unauthenticated')
-      and not args.allow_unauthenticated):
+  if (args.IsSpecified('allow_unauthenticated') and
+      not args.allow_unauthenticated):
     return True
   else:
     return False
@@ -259,7 +256,7 @@ def AddRuntimeFlag(parser):
 
 
 def AddVPCConnectorMutexGroup(parser):
-  """Add flag for specyfying VPC connector to the parser."""
+  """Add flag for specifying VPC connector to the parser."""
   mutex_group = parser.add_group(mutex=True)
   mutex_group.add_argument(
       '--vpc-connector',
@@ -280,6 +277,26 @@ def AddVPCConnectorMutexGroup(parser):
       """)
 
 
+def AddBuildWorkerPoolMutexGroup(parser):
+  """Add flag for specifying Build Worker Pool to the parser."""
+  mutex_group = parser.add_group(mutex=True)
+  mutex_group.add_argument(
+      '--build-worker-pool',
+      help="""\
+        Name of the Cloud Build Custom Worker Pool that should be used to build
+        the function. The format of this field is
+        `projects/${PROJECT}/workerPools/${WORKERPOOL}` where ${PROJECT} is the
+        project id where the worker pool is defined and ${WORKERPOOL} is the
+        short name of the worker pool.
+      """)
+  mutex_group.add_argument(
+      '--clear-build-worker-pool',
+      action='store_true',
+      help="""\
+        Clears the Cloud Build Custom Worker Pool field.
+      """)
+
+
 def AddEntryPointFlag(parser):
   """Add flag for specifying entry point to the parser."""
   parser.add_argument(
@@ -292,8 +309,7 @@ def AddEntryPointFlag(parser):
       the system will try to use function named "function". For Node.js this
       is name of a function exported by the module specified in
       `source_location`.
-"""
-  )
+""")
 
 
 def AddMaxInstancesFlag(parser):
@@ -305,15 +321,13 @@ def AddMaxInstancesFlag(parser):
       help="""\
         Sets the maximum number of instances for the function. A function
         execution that would exceed max-instances times out.
-      """
-  )
+      """)
   mutex_group.add_argument(
       '--clear-max-instances',
       action='store_true',
       help="""\
         Clears the maximum instances setting for the function.
-      """
-  )
+      """)
 
 
 def AddTriggerFlagGroup(parser):
@@ -339,7 +353,8 @@ def AddTriggerFlagGroup(parser):
             'bucket will trigger function execution.'),
       type=api_util.ValidateAndStandarizeBucketUriOrRaise)
   trigger_group.add_argument(
-      '--trigger-http', action='store_true',
+      '--trigger-http',
+      action='store_true',
       help="""\
       Function will be assigned an endpoint, which you can view by using
       the `describe` command. Any HTTP request (of a supported type) to the
@@ -353,8 +368,7 @@ def AddTriggerFlagGroup(parser):
       metavar='EVENT_TYPE',
       help=('Specifies which action should trigger the function. For a '
             'list of acceptable values, call '
-            '`gcloud functions event-types list`.')
-  )
+            '`gcloud functions event-types list`.'))
   trigger_provider_spec_group.add_argument(
       '--trigger-resource',
       metavar='RESOURCE',
@@ -446,8 +460,7 @@ def AddServiceAccountFlag(parser):
 
       If not provided, the function will use the project's default service
       account.
-      """
-  )
+      """)
 
 
 def AddIAMPolicyFileArg(parser):
@@ -462,4 +475,4 @@ def AddIgnoreFileFlag(parser):
   parser.add_argument(
       '--ignore-file',
       help='Override the .gcloudignore file and use the specified file instead.'
-      )
+  )

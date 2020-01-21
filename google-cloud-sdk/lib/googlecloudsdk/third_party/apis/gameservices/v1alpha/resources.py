@@ -41,17 +41,6 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
-  PROJECTS_LOCATIONS_ALLOCATIONPOLICIES = (
-      'projects.locations.allocationPolicies',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'allocationPolicies/{allocationPoliciesId}',
-      },
-      [u'name'],
-      True
-  )
   PROJECTS_LOCATIONS_GAMESERVERDEPLOYMENTS = (
       'projects.locations.gameServerDeployments',
       '{+name}',
@@ -104,17 +93,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/realms/'
               '{realmsId}/gameServerClusters/{gameServerClustersId}',
-      },
-      [u'name'],
-      True
-  )
-  PROJECTS_LOCATIONS_SCALINGPOLICIES = (
-      'projects.locations.scalingPolicies',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/scalingPolicies/'
-              '{scalingPoliciesId}',
       },
       [u'name'],
       True

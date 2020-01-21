@@ -193,7 +193,6 @@ class Feature(_messages.Message):
       cluster service discovery.
     name: Output only. The unique name of this feature resource in the format:
       `projects/[project_id]/locations/global/features/[feature_id]`.
-    servicemeshFeatureSpec: A ServiceMeshFeatureSpec attribute.
     updateTime: Output only. Timestamp for when the Feature was last updated.
   """
 
@@ -231,8 +230,7 @@ class Feature(_messages.Message):
   multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 8)
   multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 9)
   name = _messages.StringField(10)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 11)
-  updateTime = _messages.StringField(12)
+  updateTime = _messages.StringField(11)
 
 
 class FeatureState(_messages.Message):
@@ -326,7 +324,6 @@ class FeatureStateDetails(_messages.Message):
       attribute.
     multiclusterservicediscoveryFeatureState: A
       MultiClusterServiceDiscoveryFeatureState attribute.
-    servicemeshFeatureState: A ServiceMeshFeatureState attribute.
     updateTime: The last update time of this status by the controllers
   """
 
@@ -349,8 +346,7 @@ class FeatureStateDetails(_messages.Message):
   meteringFeatureState = _messages.MessageField('MeteringFeatureState', 4)
   multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 5)
   multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 6)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 7)
-  updateTime = _messages.StringField(8)
+  updateTime = _messages.StringField(7)
 
 
 class GenerateConnectAgentManifestResponse(_messages.Message):
@@ -1012,35 +1008,6 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-
-
-class ServiceMeshFeatureSpec(_messages.Message):
-  r"""ServiceMeshFeatureSpec contains the input for the service mesh feature.
-  Only those fields that qualify as user inputs are eligible to be in a
-  feature spec. These feature spec messages are per-feature, meaning each
-  feature is expected to have its own set of fields. Auto-filled fields and
-  statues do not belong to a spec and must be included in the details field of
-  the feature's status. Spec fields could be of any type: primitive or non-
-  primitive types. These types could be simple or complex types and complex
-  types could be nested. There is no restriction on nesting depth.
-
-  Fields:
-    mtls: Mesh should have mtls enabled.
-  """
-
-  mtls = _messages.BooleanField(1)
-
-
-class ServiceMeshFeatureState(_messages.Message):
-  r"""ServiceMeshFeatureState contains the status fields specific to the
-  service mesh feature. Only those fields that reflect the state of the
-  feature are eligible to be in a feature's state message. These fields are
-  expected to be updated only by the automation and that's usually the
-  controllers operating on this feature.  This is currently just a placeholder
-  and more fields will be added when we have more state information to report
-  for this feature.
-  """
-
 
 
 class SetIamPolicyRequest(_messages.Message):

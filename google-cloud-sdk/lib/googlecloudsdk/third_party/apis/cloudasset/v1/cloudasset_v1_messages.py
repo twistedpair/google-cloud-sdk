@@ -465,9 +465,9 @@ class Feed(_messages.Message):
     assetTypes: A list of types of the assets to receive updates. You must
       specify either or both of asset_names and asset_types. Only asset
       updates matching specified asset_names and asset_types are exported to
-      the feed. For example: "compute.googleapis.com/Disk" See [Introduction
-      to Cloud Asset Inventory](https://cloud.google.com/resource-manager/docs
-      /cloud-asset-inventory/overview) for all supported asset types.
+      the feed. For example: `"compute.googleapis.com/Disk"`  See [this
+      topic](https://cloud.google.com/asset-inventory/docs/supported-asset-
+      types) for a list of all supported asset types.
     contentType: Asset content type. If not specified, no content but the
       asset name and type will be returned.
     feedOutputConfig: Required. Feed output configuration defining where the
@@ -755,6 +755,7 @@ class GoogleIdentityAccesscontextmanagerV1AccessLevel(_messages.Message):
   Fields:
     basic: A `BasicLevel` composed of `Conditions`.
     createTime: Output only. Time the `AccessLevel` was created in UTC.
+    custom: A `CustomLevel` written in the Common Expression Language.
     description: Description of the `AccessLevel` and its use. Does not affect
       behavior.
     name: Required. Resource name for the Access Level. The `short_name`
@@ -766,10 +767,11 @@ class GoogleIdentityAccesscontextmanagerV1AccessLevel(_messages.Message):
 
   basic = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1BasicLevel', 1)
   createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  name = _messages.StringField(4)
-  title = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  custom = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1CustomLevel', 3)
+  description = _messages.StringField(4)
+  name = _messages.StringField(5)
+  title = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class GoogleIdentityAccesscontextmanagerV1AccessPolicy(_messages.Message):
@@ -877,6 +879,18 @@ class GoogleIdentityAccesscontextmanagerV1Condition(_messages.Message):
   negate = _messages.BooleanField(4)
   regions = _messages.StringField(5, repeated=True)
   requiredAccessLevels = _messages.StringField(6, repeated=True)
+
+
+class GoogleIdentityAccesscontextmanagerV1CustomLevel(_messages.Message):
+  r"""`CustomLevel` is an `AccessLevel` using the Cloud Common Expression
+  Language to represent the necessary conditions for the level to apply to a
+  request. See CEL spec at: https://github.com/google/cel-spec
+
+  Fields:
+    expr: Required. A Cloud CEL expression evaluating to a boolean.
+  """
+
+  expr = _messages.MessageField('Expr', 1)
 
 
 class GoogleIdentityAccesscontextmanagerV1DevicePolicy(_messages.Message):

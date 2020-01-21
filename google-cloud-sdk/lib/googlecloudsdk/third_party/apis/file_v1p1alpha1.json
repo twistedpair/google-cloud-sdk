@@ -282,7 +282,6 @@
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_HDD is an alias for STANDARD Tier, offering economical\nperformance backed by Persistent Disk HDD.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_SSD is an alias for PREMIUM Tier, and offers improved\nperformance backed by Persistent Disk SSD.",
             "ADVANCED_HDD instances offer larger capacity and scalable\nperformance backed by Persistent Disk HDD",
-            "ADVANCED instances offer larger capacity and professional\nperformance backed by Persistent Disk SSD.",
             "HIGH_SCALE instances offer larger capacity and professional\nperformance backed by Persistent Disk SSD."
           ],
           "type": "string",
@@ -294,7 +293,6 @@
             "BASIC_HDD",
             "BASIC_SSD",
             "ADVANCED_HDD",
-            "ADVANCED_SSD",
             "HIGH_SCALE_SSD"
           ]
         },
@@ -589,7 +587,6 @@
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_HDD is an alias for STANDARD Tier, offering economical\nperformance backed by Persistent Disk HDD.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_SSD is an alias for PREMIUM Tier, and offers improved\nperformance backed by Persistent Disk SSD.",
             "ADVANCED_HDD instances offer larger capacity and scalable\nperformance backed by Persistent Disk HDD",
-            "ADVANCED instances offer larger capacity and professional\nperformance backed by Persistent Disk SSD.",
             "HIGH_SCALE instances offer larger capacity and professional\nperformance backed by Persistent Disk SSD."
           ],
           "type": "string",
@@ -601,7 +598,6 @@
             "BASIC_HDD",
             "BASIC_SSD",
             "ADVANCED_HDD",
-            "ADVANCED_SSD",
             "HIGH_SCALE_SSD"
           ]
         },
@@ -719,7 +715,6 @@
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_HDD is an alias for STANDARD Tier, offering economical\nperformance backed by Persistent Disk HDD.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_SSD is an alias for PREMIUM Tier, and offers improved\nperformance backed by Persistent Disk SSD.",
             "ADVANCED_HDD instances offer larger capacity and scalable\nperformance backed by Persistent Disk HDD",
-            "ADVANCED instances offer larger capacity and professional\nperformance backed by Persistent Disk SSD.",
             "HIGH_SCALE instances offer larger capacity and professional\nperformance backed by Persistent Disk SSD."
           ],
           "type": "string",
@@ -731,7 +726,6 @@
             "BASIC_HDD",
             "BASIC_SSD",
             "ADVANCED_HDD",
-            "ADVANCED_SSD",
             "HIGH_SCALE_SSD"
           ]
         }

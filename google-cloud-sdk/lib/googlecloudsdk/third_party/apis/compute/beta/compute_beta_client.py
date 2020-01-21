@@ -76,9 +76,11 @@ class ComputeBeta(base_api.BaseApiClient):
     self.regionCommitments = self.RegionCommitmentsService(self)
     self.regionDiskTypes = self.RegionDiskTypesService(self)
     self.regionDisks = self.RegionDisksService(self)
+    self.regionHealthCheckServices = self.RegionHealthCheckServicesService(self)
     self.regionHealthChecks = self.RegionHealthChecksService(self)
     self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
+    self.regionNotificationEndpoints = self.RegionNotificationEndpointsService(self)
     self.regionOperations = self.RegionOperationsService(self)
     self.regionSslCertificates = self.RegionSslCertificatesService(self)
     self.regionTargetHttpProxies = self.RegionTargetHttpProxiesService(self)
@@ -9625,6 +9627,146 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+  class RegionHealthCheckServicesService(base_api.BaseApiService):
+    """Service class for the regionHealthCheckServices resource."""
+
+    _NAME = u'regionHealthCheckServices'
+
+    def __init__(self, client):
+      super(ComputeBeta.RegionHealthCheckServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified regional HealthCheckService.
+
+      Args:
+        request: (ComputeRegionHealthCheckServicesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.regionHealthCheckServices.delete',
+        ordered_params=[u'project', u'region', u'healthCheckService'],
+        path_params=[u'healthCheckService', u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/healthCheckServices/{healthCheckService}',
+        request_field='',
+        request_type_name=u'ComputeRegionHealthCheckServicesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified regional HealthCheckService resource.
+
+      Args:
+        request: (ComputeRegionHealthCheckServicesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HealthCheckService) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionHealthCheckServices.get',
+        ordered_params=[u'project', u'region', u'healthCheckService'],
+        path_params=[u'healthCheckService', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/healthCheckServices/{healthCheckService}',
+        request_field='',
+        request_type_name=u'ComputeRegionHealthCheckServicesGetRequest',
+        response_type_name=u'HealthCheckService',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a regional HealthCheckService resource in the specified project and region using the data included in the request.
+
+      Args:
+        request: (ComputeRegionHealthCheckServicesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionHealthCheckServices.insert',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/healthCheckServices',
+        request_field=u'healthCheckService',
+        request_type_name=u'ComputeRegionHealthCheckServicesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the HealthCheckService resources that have been configured for the specified project in the given region.
+
+      Args:
+        request: (ComputeRegionHealthCheckServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HealthCheckServicesList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionHealthCheckServices.list',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/healthCheckServices',
+        request_field='',
+        request_type_name=u'ComputeRegionHealthCheckServicesListRequest',
+        response_type_name=u'HealthCheckServicesList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified regional HealthCheckService resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeRegionHealthCheckServicesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.regionHealthCheckServices.patch',
+        ordered_params=[u'project', u'region', u'healthCheckService'],
+        path_params=[u'healthCheckService', u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/healthCheckServices/{healthCheckService}',
+        request_field=u'healthCheckServiceResource',
+        request_type_name=u'ComputeRegionHealthCheckServicesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class RegionHealthChecksService(base_api.BaseApiService):
     """Service class for the regionHealthChecks resource."""
 
@@ -10528,6 +10670,120 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field=u'testPermissionsRequest',
         request_type_name=u'ComputeRegionInstanceGroupsTestIamPermissionsRequest',
         response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class RegionNotificationEndpointsService(base_api.BaseApiService):
+    """Service class for the regionNotificationEndpoints resource."""
+
+    _NAME = u'regionNotificationEndpoints'
+
+    def __init__(self, client):
+      super(ComputeBeta.RegionNotificationEndpointsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified NotificationEndpoint in the given region.
+
+      Args:
+        request: (ComputeRegionNotificationEndpointsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.regionNotificationEndpoints.delete',
+        ordered_params=[u'project', u'region', u'notificationEndpoint'],
+        path_params=[u'notificationEndpoint', u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/notificationEndpoints/{notificationEndpoint}',
+        request_field='',
+        request_type_name=u'ComputeRegionNotificationEndpointsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified NotificationEndpoint resource in the given region.
+
+      Args:
+        request: (ComputeRegionNotificationEndpointsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NotificationEndpoint) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionNotificationEndpoints.get',
+        ordered_params=[u'project', u'region', u'notificationEndpoint'],
+        path_params=[u'notificationEndpoint', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/notificationEndpoints/{notificationEndpoint}',
+        request_field='',
+        request_type_name=u'ComputeRegionNotificationEndpointsGetRequest',
+        response_type_name=u'NotificationEndpoint',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Create a NotificationEndpoint in the specified project in the given region using the parameters that are included in the request.
+
+      Args:
+        request: (ComputeRegionNotificationEndpointsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionNotificationEndpoints.insert',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/notificationEndpoints',
+        request_field=u'notificationEndpoint',
+        request_type_name=u'ComputeRegionNotificationEndpointsInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the NotificationEndpoints for a project in the given region.
+
+      Args:
+        request: (ComputeRegionNotificationEndpointsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NotificationEndpointList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionNotificationEndpoints.list',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/notificationEndpoints',
+        request_field='',
+        request_type_name=u'ComputeRegionNotificationEndpointsListRequest',
+        response_type_name=u'NotificationEndpointList',
         supports_download=False,
     )
 

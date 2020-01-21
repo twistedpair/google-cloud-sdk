@@ -33,16 +33,6 @@ def GetDescriptionFlag():
       help='Specifies a text description of the TPU.')
 
 
-def GetNetworkFlag():
-  """Set argument for choosing the TPU Network."""
-  return base.Argument(
-      '--network',
-      help="""\
-      Specifies the network that this TPU will be a part of.
-       If not specified, this defaults to the `default` network.
-      """)
-
-
 def GetAcceleratorTypeFlag():
   """Set argument for choosing the TPU Accelerator type."""
   return base.Argument(
@@ -71,7 +61,7 @@ def GetRangeFlag():
   """Set Cidr Range for Cloud TPU."""
   return base.Argument(
       '--range',
-      required=True,
+      required=False,
       help="""\
       CIDR Range for the TPU.
        The IP range that the TPU will select an IP address from.

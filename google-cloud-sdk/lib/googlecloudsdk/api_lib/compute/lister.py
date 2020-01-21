@@ -1039,13 +1039,22 @@ class MultiScopeLister(object):
     else:
       # scopeSet is AllScopes
       # generate AggregatedList
+      request_message = self.aggregation_service.GetRequestType(
+          'AggregatedList')
       for project_ref in sorted(list(scope_set.projects)):
-        requests.append(
-            (self.aggregation_service, 'AggregatedList',
-             self.aggregation_service.GetRequestType('AggregatedList')(
-                 filter=frontend.filter,
-                 maxResults=frontend.max_results,
-                 project=project_ref.project)))
+        if hasattr(request_message, 'includeAllScopes'):
+          requests.append((self.aggregation_service, 'AggregatedList',
+                           request_message(
+                               filter=frontend.filter,
+                               maxResults=frontend.max_results,
+                               project=project_ref.project,
+                               includeAllScopes=True)))
+        else:
+          requests.append((self.aggregation_service, 'AggregatedList',
+                           request_message(
+                               filter=frontend.filter,
+                               maxResults=frontend.max_results,
+                               project=project_ref.project)))
 
     errors = []
     response_count = 0

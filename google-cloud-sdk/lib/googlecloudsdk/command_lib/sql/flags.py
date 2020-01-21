@@ -32,10 +32,13 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.compute import utils as compute_utils
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
+
+messages = apis.GetMessagesModule('sql', 'v1beta4')
 
 _IP_ADDRESS_PART = r'(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})'  # Match decimal 0-255
 _CIDR_PREFIX_PART = r'([0-9]|[1-2][0-9]|3[0-2])'  # Match decimal 0-32
@@ -666,6 +669,36 @@ def AddEncryptedBakFlags(parser):
           'Prompt for the private key password associated with the BAK file '
           'with character echo disabled. The password is all typed characters '
           'up to but not including the RETURN or ENTER key.'))
+
+
+def AddRescheduleType(parser):
+  """Add the flag to specify reschedule type.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  choices = [
+      messages.Reschedule.RescheduleTypeValueValuesEnum.IMMEDIATE.name,
+      messages.Reschedule.RescheduleTypeValueValuesEnum.NEXT_AVAILABLE_WINDOW
+      .name,
+      messages.Reschedule.RescheduleTypeValueValuesEnum.SPECIFIC_TIME.name,
+  ]
+  help_text = 'The type of reschedule operation to perform.'
+  parser.add_argument(
+      '--reschedule-type', choices=choices, required=True, help=help_text)
+
+
+def AddScheduleTime(parser):
+  """Add the flag for maintenance reschedule schedule time.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--schedule-time',
+      type=arg_parsers.Datetime.Parse,
+      help=('When specifying SPECIFIC_TIME, the date and time at which to '
+            'schedule the maintenance in ISO 8601 format.'))
 
 
 INSTANCES_USERLABELS_FORMAT = ':(settings.userLabels:alias=labels:label=LABELS)'

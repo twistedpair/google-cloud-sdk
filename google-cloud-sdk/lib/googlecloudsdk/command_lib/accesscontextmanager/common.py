@@ -18,7 +18,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import exceptions
+
+
+class ParseResponseError(exceptions.Error):
+
+  def __init__(self, reason):
+    super(ParseResponseError,
+          self).__init__('Issue parsing response: {}'.format(reason))
 
 
 def GetDescriptionArg(noun):
@@ -33,3 +44,33 @@ def GetTitleArg(noun):
       '--title',
       help='Short human-readable title of the {}.'.format(noun),
   )
+
+
+class BulkAPIOperationPoller(waiter.CloudOperationPoller):
+  """A Poller used by the Bulk API.
+  Polls ACM Operations endpoint then calls LIST instead of GET.
+
+  Attributes:
+    policy_number: The Access Policy ID that the Poller needs in order to call
+      LIST.
+  """
+
+  def __init__(self, result_service, operation_service, operation_ref):
+    super(BulkAPIOperationPoller, self).__init__(result_service,
+                                                 operation_service)
+
+    # Because policy id *could be* looked up automatically based on the set
+    # organization id config, policy might not be present in command line
+    # argument or set properties. We have to reply on the response to know what
+    # it is for sure.
+    policy_id = re.search(r'^accessPolicies/\d+', operation_ref.Name())
+    if policy_id:
+      self.policy_number = policy_id.group()
+    else:
+      raise ParseResponseError('Could not determine Access Policy ID from '
+                               'operation response.')
+
+  def GetResult(self, operation):
+    del operation  # Unused by BulkAPIOperationPoller.
+    request_type = self.result_service.GetRequestType('List')
+    return self.result_service.List(request_type(parent=self.policy_number))

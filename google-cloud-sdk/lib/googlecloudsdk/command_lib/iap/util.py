@@ -30,13 +30,12 @@ APP_ENGINE_RESOURCE_TYPE = 'app-engine'
 BACKEND_SERVICES_RESOURCE_TYPE = 'backend-services'
 WEB_RESOURCE_TYPE = 'iap_web'
 COMPUTE_RESOURCE_TYPE = 'compute'
-TUNNEL_RESOURCE_TYPE = 'iap_tunnel'
 ORG_RESOURCE_TYPE = 'organization'
 FOLDER_RESOURCE_TYPE = 'folder'
 RESOURCE_TYPE_ENUM = (APP_ENGINE_RESOURCE_TYPE, BACKEND_SERVICES_RESOURCE_TYPE)
 SETTING_RESOURCE_TYPE_ENUM = (APP_ENGINE_RESOURCE_TYPE, WEB_RESOURCE_TYPE,
-                              COMPUTE_RESOURCE_TYPE, TUNNEL_RESOURCE_TYPE,
-                              ORG_RESOURCE_TYPE, FOLDER_RESOURCE_TYPE)
+                              COMPUTE_RESOURCE_TYPE, ORG_RESOURCE_TYPE,
+                              FOLDER_RESOURCE_TYPE)
 
 
 def AddIapIamResourceArgs(parser):
@@ -100,11 +99,6 @@ def AddIapSettingArg(parser):
   group.add_argument(
       '--version',
       help='Version name. Optional when resource type is ``app-engine''.')
-  group.add_argument(
-      '--zone', help='Zone name. Optional when resource type is iap_tunnel')
-  group.add_argument(
-      '--instance',
-      help='Instance ID. Optional when resource type is iap_tunnel')
 
 
 def AddOauthClientArgs(parser):
@@ -340,20 +334,9 @@ def ParseIapSettingsResource(release_track, args):
           return iap_api.IapSettingsResource(
               release_track,
               'projects/{0}/iap_web/compute'.format(args.project))
-      elif args.resource_type == TUNNEL_RESOURCE_TYPE:
-        if args.zone:
-          if args.instance:
-            return iap_api.IapSettingsResource(
-                release_track,
-                'projects/{0}/iap_tunnel/zones/{1}/instances/{2}'.format(
-                    args.project, args.zone, args.instance))
-          else:
-            return iap_api.IapSettingsResource(
-                release_track, 'projects/{0}/iap_tunnel/zones/{1}'.format(
-                    args.project, args.zone))
-        else:
-          return iap_api.IapSettingsResource(
-              release_track, 'projects/{0}/iap_tunnel'.format(args.project))
+      else:
+        raise iap_exc.InvalidIapIamResourceError(
+            'Unsupported IAP settings resource type.')
 
   raise iap_exc.InvalidIapIamResourceError(
       'Could not parse IAP settings resource.')

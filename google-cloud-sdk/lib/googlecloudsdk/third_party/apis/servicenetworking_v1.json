@@ -1124,6 +1124,10 @@
           "items": {
             "$ref": "HttpRule"
           }
+        },
+        "allowHalfDuplex": {
+          "description": "When this flag is set to true, HTTP requests will be allowed to invoke a\nhalf-duplex streaming method.",
+          "type": "boolean"
         }
       }
     },

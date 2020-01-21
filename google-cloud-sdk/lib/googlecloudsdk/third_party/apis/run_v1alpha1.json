@@ -2345,7 +2345,7 @@
           "$ref": "TriggerSpec"
         },
         "status": {
-          "description": "Status represents the current state of the Trigger. This data may be out of\ndate.\n+optional",
+          "description": "Optional. Status represents the current state of the Trigger. This data may be out of\ndate.",
           "$ref": "TriggerStatus"
         }
       }
@@ -2363,18 +2363,7 @@
           "description": "Filter is the filter to apply against all events from the Broker. Only\nevents that pass this filter will be sent to the Subscriber.",
           "$ref": "TriggerFilter"
         },
-        "importers": {
-          "description": "Deprecated, importer specification will be replaced by information stored\nin GcpImporterDao.",
-          "type": "array",
-          "items": {
-            "$ref": "TriggerImporterSpec"
-          }
-        },
         "subscriber": {
-          "description": "Deprecated, sink will be represented by Destination.\nSubscriber is the addressable that receives events from the Broker that\npass the Filter. It is required.\n\nE.g. https:\/\/us-central1-myproject.cloudfunctions.net\/myfunction or\n\/namespaces\/my-project\/services\/my-service.",
-          "$ref": "SubscriberSpec"
-        },
-        "sink": {
           "description": "Sink is the addressable that will receive events.",
           "$ref": "Destination"
         }
@@ -2384,12 +2373,8 @@
       "id": "TriggerFilter",
       "type": "object",
       "properties": {
-        "sourceAndType": {
-          "description": "SourceAndType is DEPRECATED and replaced by the Attributes field.",
-          "$ref": "TriggerFilterSourceAndType"
-        },
         "attributes": {
-          "description": "Cloud Run fully managed: not supported\n\nCloud Run on GKE: supported\n\nAttributes filters events by exact match on event context attributes.\nEach key in the map is compared with the equivalent key in the event\ncontext. An event passes the filter if all values are equal to the\nspecified values.\n\nNested context attributes are not supported as keys.\nOnly string values are supported.\n\n+optional",
+          "description": "Optional. Cloud Run fully managed: not supported\n\nCloud Run on GKE: supported\n\nAttributes filters events by exact match on event context attributes.\nEach key in the map is compared with the equivalent key in the event\ncontext. An event passes the filter if all values are equal to the\nspecified values.\n\nNested context attributes are not supported as keys.\nOnly string values are supported.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -2397,47 +2382,16 @@
         }
       }
     },
-    "TriggerFilterSourceAndType": {
-      "id": "TriggerFilterSourceAndType",
-      "description": "TriggerFilterSourceAndType is DEPRECATED. Filters are now contained in the\nmap of attributes in TriggerFilter proto.",
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string"
-        },
-        "source": {
-          "type": "string"
-        }
-      }
-    },
-    "TriggerImporterSpec": {
-      "id": "TriggerImporterSpec",
-      "description": "Deprecated, importer specification will be available via GcpImporterDao.",
-      "type": "object",
-      "properties": {
-        "eventTypeName": {
-          "description": "Name of the EventType that this importer provides.",
-          "type": "string"
-        },
-        "arguments": {
-          "description": "Arguments to use for the importer. These must match the parameters in the\nEventType's importer.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "SubscriberSpec": {
-      "id": "SubscriberSpec",
+    "Destination": {
+      "id": "Destination",
       "type": "object",
       "properties": {
         "ref": {
-          "description": "Reference to an object that will be used to find the target\nendpoint, which should implement the Addressable duck type.\nFor example, this could be a reference to a Route resource\nor a Knative Service resource.",
+          "description": "ObjectReference points to an Addressable.\n+ optional",
           "$ref": "ObjectReference"
         },
         "uri": {
-          "description": "Reference to a 'known' endpoint where no resolving is done.\nhttp:\/\/k8s-service for example\nhttp:\/\/myexternalhandler.example.com\/foo\/bar",
+          "description": "URI is for direct URI Designations or used with the resulting URL from\nAddressable ObjectReference. If used with an ObjectReference, will be\nappended to the path of the resulting URL from the Addressable.\n+ optional",
           "type": "string"
         }
       }
@@ -2473,20 +2427,6 @@
         },
         "fieldPath": {
           "description": "If referring to a piece of an object instead of an entire object, this\nstring should contain a valid JSON\/Go field access statement, such as\ndesiredState.manifest.containers[2]. For example, if the object reference\nis to a container within a pod, this would take on a value like:\n\"spec.containers{name}\" (where \"name\" refers to the name of the container\nthat triggered the event) or if no container name is specified\n\"spec.containers[2]\" (container with index 2 in this pod). This syntax is\nchosen only to have some well-defined way of referencing a part of an\nobject.",
-          "type": "string"
-        }
-      }
-    },
-    "Destination": {
-      "id": "Destination",
-      "type": "object",
-      "properties": {
-        "ref": {
-          "description": "ObjectReference points to an Addressable.\n+ optional",
-          "$ref": "ObjectReference"
-        },
-        "uri": {
-          "description": "URI is for direct URI Designations or used with the resulting URL from\nAddressable ObjectReference. If used with an ObjectReference, will be\nappended to the path of the resulting URL from the Addressable.\n+ optional",
           "type": "string"
         }
       }
@@ -2528,20 +2468,20 @@
           "type": "string"
         },
         "reason": {
-          "description": "One-word CamelCase reason for the condition's current status.\n+optional",
+          "description": "Optional. One-word CamelCase reason for the condition's current status.",
           "type": "string"
         },
         "message": {
-          "description": "Human readable message indicating details about the current status.\n+optional",
+          "description": "Optional. Human readable message indicating details about the current status.",
           "type": "string"
         },
         "lastTransitionTime": {
-          "description": "Last time the condition transitioned from one status to another.\n+optional",
+          "description": "Optional. Last time the condition transitioned from one status to another.",
           "type": "string",
           "format": "google-datetime"
         },
         "severity": {
-          "description": "How to interpret failures of this condition, one of Error, Warning, Info\n+optional",
+          "description": "Optional. How to interpret failures of this condition, one of Error, Warning, Info",
           "type": "string"
         }
       }
@@ -2815,6 +2755,10 @@
         },
         "retentionDuration": {
           "description": "RetentionDuration defines how long to retain messages in backlog, from\nthe time of publish. If RetainAckedMessages is true, this duration\naffects the retention of acknowledged messages, otherwise only\nunacknowledged messages are retained. Cannot be longer than 7 days or\nshorter than 10 minutes. Defaults to 7 days ('7d').\n+optional",
+          "type": "string"
+        },
+        "serviceAccountName": {
+          "description": "Email address of the IAM service account associated with the source. The\nservice account represents the identity of the source, and determines what\npermissions the source has. If not provided, the source will use the\nproject's Compute Engine default service account.\n+optional",
           "type": "string"
         }
       }
@@ -4014,7 +3958,7 @@
                       "type": "boolean"
                     },
                     "continue": {
-                      "description": "Optional encoded string to continue paging.",
+                      "description": "Optional. Encoded string to continue paging.",
                       "location": "query",
                       "type": "string"
                     }
@@ -5563,7 +5507,7 @@
                   "type": "boolean"
                 },
                 "continue": {
-                  "description": "Optional encoded string to continue paging.",
+                  "description": "Optional. Encoded string to continue paging.",
                   "location": "query",
                   "type": "string"
                 }

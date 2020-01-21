@@ -5,6 +5,66 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 277.0.0 (2020-01-21)
+
+### Breaking Changes
+
+*   **(App Engine)** Fixed longstanding issue where `/path*` in dispatch.yaml was silently
+  converted to `/path/*`.
+*   **(Cloud Dataproc)** 
+*   **(Cloud Dataproc)** Modified `--region` flag to be mandatory.
+  * To use Cloud Dataproc commands, pass `--region` flag on every invocation,
+    or set `dataproc/region` configuration variable via `gcloud config set
+    dataproc/region`.
+
+
+### Cloud SDK
+
+* Added `--update-adc` to `gcloud auth login` to update the credentials in ADC
+  at the end of authentication.
+* Promote REGISTRIES positional argument in `gcloud auth configure-docker` to
+  GA.
+
+### AI Platform
+
+* Added Tensorflow version check for local train. For version 1.x, 'master' is
+  used as primary node. For version 2.x, 'chief' is used as primary node.
+
+### Artifact Registry
+
+* Promoted `gcloud artifacts` to beta.
+* Following operations will be supported in beta:
+    * Repository creation, deletion, and listing.
+    * Printing settings for supported native tools (e.g. mvn, npm, gradle).
+    * Setting and getting permission/IAM policies on repositories.
+    * Listing and deleting packages inside a repository.
+    * Listing and deleting versions inside a package.
+    * Creating, updating, deleting, and listing tags.
+    * Listing and deleting docker images or specific image digests.
+    * Adding, listing, and deleting docker image tags.
+    * Listing Artifact Registry supported locations.
+
+### Cloud Machine Learning Engine
+
+* Added Tensorflow version check for local train. For version 1.x, 'master' is
+  used as primary node. For version 2.x, 'chief' is used as primary node.
+
+### Compute Engine
+
+* Added `--hostname` to `gcloud beta compute instances import`.
+* Promoted `--instance-redistribution-type` flag of `compute instance-groups managed create` to GA.
+* Promoted `--instance-redistribution-type` flag of `compute instance-groups managed update` to GA.
+* Promoted `gcloud compute diagnose export-logs` to beta.
+* Promoted `--replacement-mode` flag of command `gcloud compute instance-groups managed rolling-action start-update` and `gcloud compute instance-groups managed rolling-action replace` to beta.
+
+### Kubernetes Engine
+
+* Increased default Operation timeout in `gcloud container clusters` command group to 1 hour.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 276.0.0 (2020-01-14)
 
 ### Breaking Changes

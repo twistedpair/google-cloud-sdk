@@ -23,7 +23,6 @@ from googlecloudsdk.core import resources
 
 # API version constants
 API_VERSION_DEFAULT = 'v1beta4'
-API_VERSION_FALLBACK = 'v1beta3'
 
 
 class SqlClient(object):

@@ -11,37 +11,37 @@ package = 'dns'
 
 
 class Change(_messages.Message):
-  r"""! A Change represents a set of ResourceRecordSet additions and deletions
-  ! applied atomically to a ManagedZone. ResourceRecordSets within a !
-  ManagedZone are modified by creating a new Change element in the Changes !
-  collection. In turn the Changes collection also records the past !
-  modifications to the ResourceRecordSets in a ManagedZone. The current !
-  state of the ManagedZone is the sum effect of applying all Change ! elements
-  in the Changes collection in sequence.
+  r"""A Change represents a set of ResourceRecordSet additions and deletions
+  applied atomically to a ManagedZone. ResourceRecordSets within a ManagedZone
+  are modified by creating a new Change element in the Changes collection. In
+  turn the Changes collection also records the past modifications to the
+  ResourceRecordSets in a ManagedZone. The current state of the ManagedZone is
+  the sum effect of applying all Change elements in the Changes collection in
+  sequence.
 
   Enums:
-    StatusValueValuesEnum: ! Status of the operation (output only). A status
-      of "done" means that the ! request to update the authoritative servers
-      has been sent, but the ! servers might not be updated yet.
+    StatusValueValuesEnum: Status of the operation (output only). A status of
+      "done" means that the request to update the authoritative servers has
+      been sent, but the servers might not be updated yet.
 
   Fields:
-    additions: ! Which ResourceRecordSets to add?
-    deletions: ! Which ResourceRecordSets to remove? Must match existing data
+    additions: Which ResourceRecordSets to add?
+    deletions: Which ResourceRecordSets to remove? Must match existing data
       exactly.
-    id: ! Unique identifier for the resource; defined by the server (output
+    id: Unique identifier for the resource; defined by the server (output
       only).
-    isServing: ! If the DNS queries for the zone will be served.
+    isServing: If the DNS queries for the zone will be served.
     kind: A string attribute.
-    startTime: ! The time that this operation was started by the server
-      (output only). This ! is in RFC3339 text format.
-    status: ! Status of the operation (output only). A status of "done" means
-      that the ! request to update the authoritative servers has been sent,
-      but the ! servers might not be updated yet.
+    startTime: The time that this operation was started by the server (output
+      only). This is in RFC3339 text format.
+    status: Status of the operation (output only). A status of "done" means
+      that the request to update the authoritative servers has been sent, but
+      the servers might not be updated yet.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""! Status of the operation (output only). A status of "done" means that
-    the ! request to update the authoritative servers has been sent, but the !
+    r"""Status of the operation (output only). A status of "done" means that
+    the request to update the authoritative servers has been sent, but the
     servers might not be updated yet.
 
     Values:
@@ -61,22 +61,22 @@ class Change(_messages.Message):
 
 
 class ChangesListResponse(_messages.Message):
-  r"""! The response to a request to enumerate Changes to a ResourceRecordSets
-  ! collection.
+  r"""The response to a request to enumerate Changes to a ResourceRecordSets
+  collection.
 
   Fields:
-    changes: ! The requested changes.
+    changes: The requested changes.
     header: A ResponseHeader attribute.
     kind: Type of resource.
-    nextPageToken: ! The presence of this field indicates that there exist
-      more results ! following your last page of results in pagination order.
-      To fetch them, ! make another list request using this value as your
-      pagination token. ! ! In this way you can retrieve the complete contents
-      of even very large ! collections one page at a time. However, if the
-      contents of the collection ! change between the first and last paginated
-      list request, the set of all ! elements returned will be an inconsistent
-      view of the collection. There is ! no way to retrieve a "snapshot" of
-      collections larger than the maximum ! page size.
+    nextPageToken: The presence of this field indicates that there exist more
+      results following your last page of results in pagination order. To
+      fetch them, make another list request using this value as your
+      pagination token.  In this way you can retrieve the complete contents of
+      even very large collections one page at a time. However, if the contents
+      of the collection change between the first and last paginated list
+      request, the set of all elements returned will be an inconsistent view
+      of the collection. There is no way to retrieve a "snapshot" of
+      collections larger than the maximum page size.
   """
 
   changes = _messages.MessageField('Change', 1, repeated=True)
@@ -89,13 +89,13 @@ class DnsActivePeeringZonesDeactivateRequest(_messages.Message):
   r"""A DnsActivePeeringZonesDeactivateRequest object.
 
   Fields:
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
-    peeringZoneId: ! The unique peering zone id of the consumer peering zone
-      to be deactivated.
-    project: ! The project ID for the producer project targeted by the
-      consumer ! peering zone to be deactivated.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    peeringZoneId: The unique peering zone id of the consumer peering zone to
+      be deactivated.
+    project: The project ID for the producer project targeted by the consumer
+      peering zone to be deactivated.
   """
 
   clientOperationId = _messages.StringField(1)
@@ -107,12 +107,12 @@ class DnsActivePeeringZonesGetPeeringZoneInfoRequest(_messages.Message):
   r"""A DnsActivePeeringZonesGetPeeringZoneInfoRequest object.
 
   Fields:
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
-    peeringZoneId: ! ManagedZoneId addressed by this request
-    project: ! Identifies the producer project targeted by the peering zone in
-      this ! request.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    peeringZoneId: ManagedZoneId addressed by this request
+    project: Identifies the producer project targeted by the peering zone in
+      this request.
   """
 
   clientOperationId = _messages.StringField(1)
@@ -124,13 +124,13 @@ class DnsActivePeeringZonesListRequest(_messages.Message):
   r"""A DnsActivePeeringZonesListRequest object.
 
   Fields:
-    maxResults: ! Optional. Maximum number of results to be returned. If
-      unspecified, the ! server will decide how many results to return.
-    pageToken: ! Optional. A tag returned by a previous list request that was
-      truncated. ! Use this parameter to continue a previous list request.
-    project: ! Identifies the producer project addressed by this request.
-    targetNetwork: ! Identifies the target network addressed by this request
-      by network name.
+    maxResults: Optional. Maximum number of results to be returned. If
+      unspecified, the server will decide how many results to return.
+    pageToken: Optional. A tag returned by a previous list request that was
+      truncated. Use this parameter to continue a previous list request.
+    project: Identifies the producer project addressed by this request.
+    targetNetwork: Identifies the target network addressed by this request by
+      network name.
   """
 
   maxResults = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -144,12 +144,12 @@ class DnsChangesCreateRequest(_messages.Message):
 
   Fields:
     change: A Change resource to be passed as the request body.
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
-    managedZone: ! Identifies the managed zone addressed by this request. Can
-      be the managed ! zone name or id.
-    project: ! Identifies the project addressed by this request.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    managedZone: Identifies the managed zone addressed by this request. Can be
+      the managed zone name or id.
+    project: Identifies the project addressed by this request.
   """
 
   change = _messages.MessageField('Change', 1)
@@ -162,14 +162,14 @@ class DnsChangesGetRequest(_messages.Message):
   r"""A DnsChangesGetRequest object.
 
   Fields:
-    changeId: ! The identifier of the requested change, from a previous !
+    changeId: The identifier of the requested change, from a previous
       ResourceRecordSetsChangeResponse.
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
-    managedZone: ! Identifies the managed zone addressed by this request. Can
-      be the managed ! zone name or id.
-    project: ! Identifies the project addressed by this request.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    managedZone: Identifies the managed zone addressed by this request. Can be
+      the managed zone name or id.
+    project: Identifies the project addressed by this request.
   """
 
   changeId = _messages.StringField(1, required=True)
@@ -182,23 +182,23 @@ class DnsChangesListRequest(_messages.Message):
   r"""A DnsChangesListRequest object.
 
   Enums:
-    SortByValueValuesEnum: ! Sorting criterion. The only supported value is
+    SortByValueValuesEnum: Sorting criterion. The only supported value is
       change sequence.
 
   Fields:
-    managedZone: ! Identifies the managed zone addressed by this request. Can
-      be the managed ! zone name or id.
-    maxResults: ! Optional. Maximum number of results to be returned. If
-      unspecified, the ! server will decide how many results to return.
-    pageToken: ! Optional. A tag returned by a previous list request that was
-      truncated. ! Use this parameter to continue a previous list request.
-    project: ! Identifies the project addressed by this request.
-    sortBy: ! Sorting criterion. The only supported value is change sequence.
-    sortOrder: ! Sorting order direction: 'ascending' or 'descending'.
+    managedZone: Identifies the managed zone addressed by this request. Can be
+      the managed zone name or id.
+    maxResults: Optional. Maximum number of results to be returned. If
+      unspecified, the server will decide how many results to return.
+    pageToken: Optional. A tag returned by a previous list request that was
+      truncated. Use this parameter to continue a previous list request.
+    project: Identifies the project addressed by this request.
+    sortBy: Sorting criterion. The only supported value is change sequence.
+    sortOrder: Sorting order direction: 'ascending' or 'descending'.
   """
 
   class SortByValueValuesEnum(_messages.Enum):
-    r"""! Sorting criterion. The only supported value is change sequence.
+    r"""Sorting criterion. The only supported value is change sequence.
 
     Values:
       changeSequence: <no description>
@@ -217,16 +217,16 @@ class DnsDnsKeysGetRequest(_messages.Message):
   r"""A DnsDnsKeysGetRequest object.
 
   Fields:
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
-    digestType: ! An optional comma-separated list of digest types to compute
-      and display ! for key signing keys. If omitted, the recommended digest
-      type will be ! computed and displayed.
-    dnsKeyId: ! The identifier of the requested DnsKey.
-    managedZone: ! Identifies the managed zone addressed by this request. Can
-      be the managed ! zone name or id.
-    project: ! Identifies the project addressed by this request.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    digestType: An optional comma-separated list of digest types to compute
+      and display for key signing keys. If omitted, the recommended digest
+      type will be computed and displayed.
+    dnsKeyId: The identifier of the requested DnsKey.
+    managedZone: Identifies the managed zone addressed by this request. Can be
+      the managed zone name or id.
+    project: Identifies the project addressed by this request.
   """
 
   clientOperationId = _messages.StringField(1)
@@ -240,16 +240,16 @@ class DnsDnsKeysListRequest(_messages.Message):
   r"""A DnsDnsKeysListRequest object.
 
   Fields:
-    digestType: ! An optional comma-separated list of digest types to compute
-      and display ! for key signing keys. If omitted, the recommended digest
-      type will be ! computed and displayed.
-    managedZone: ! Identifies the managed zone addressed by this request. Can
-      be the managed ! zone name or id.
-    maxResults: ! Optional. Maximum number of results to be returned. If
-      unspecified, the ! server will decide how many results to return.
-    pageToken: ! Optional. A tag returned by a previous list request that was
-      truncated. ! Use this parameter to continue a previous list request.
-    project: ! Identifies the project addressed by this request.
+    digestType: An optional comma-separated list of digest types to compute
+      and display for key signing keys. If omitted, the recommended digest
+      type will be computed and displayed.
+    managedZone: Identifies the managed zone addressed by this request. Can be
+      the managed zone name or id.
+    maxResults: Optional. Maximum number of results to be returned. If
+      unspecified, the server will decide how many results to return.
+    pageToken: Optional. A tag returned by a previous list request that was
+      truncated. Use this parameter to continue a previous list request.
+    project: Identifies the project addressed by this request.
   """
 
   digestType = _messages.StringField(1)
@@ -260,56 +260,55 @@ class DnsDnsKeysListRequest(_messages.Message):
 
 
 class DnsKey(_messages.Message):
-  r"""! A DNSSEC key pair.
+  r"""A DNSSEC key pair.
 
   Enums:
-    AlgorithmValueValuesEnum: ! String mnemonic specifying the DNSSEC
-      algorithm of this key. Immutable ! after creation time.
-    TypeValueValuesEnum: ! One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of
-      type KEY_SIGNING have the ! Secure Entry Point flag set and, when
-      active, will be used to sign only ! resource record sets of type DNSKEY.
-      Otherwise, the Secure Entry Point ! flag will be cleared and this key
-      will be used to sign only resource ! record sets of other types.
-      Immutable after creation time.
+    AlgorithmValueValuesEnum: String mnemonic specifying the DNSSEC algorithm
+      of this key. Immutable after creation time.
+    TypeValueValuesEnum: One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of type
+      KEY_SIGNING have the Secure Entry Point flag set and, when active, will
+      be used to sign only resource record sets of type DNSKEY. Otherwise, the
+      Secure Entry Point flag will be cleared and this key will be used to
+      sign only resource record sets of other types. Immutable after creation
+      time.
 
   Fields:
-    algorithm: ! String mnemonic specifying the DNSSEC algorithm of this key.
-      Immutable ! after creation time.
-    creationTime: ! The time that this resource was created in the control
-      plane. This is in ! RFC3339 text format. Output only.
-    description: ! A mutable string of at most 1024 characters associated with
-      this resource ! for the user's convenience. Has no effect on the
+    algorithm: String mnemonic specifying the DNSSEC algorithm of this key.
+      Immutable after creation time.
+    creationTime: The time that this resource was created in the control
+      plane. This is in RFC3339 text format. Output only.
+    description: A mutable string of at most 1024 characters associated with
+      this resource for the user's convenience. Has no effect on the
       resource's function.
-    digests: ! Cryptographic hashes of the DNSKEY resource record associated
-      with this ! DnsKey. These digests are needed to construct a DS record
-      that points at ! this DNS key. Output only.
-    id: ! Unique identifier for the resource; defined by the server (output
+    digests: Cryptographic hashes of the DNSKEY resource record associated
+      with this DnsKey. These digests are needed to construct a DS record that
+      points at this DNS key. Output only.
+    id: Unique identifier for the resource; defined by the server (output
       only).
-    isActive: ! Active keys will be used to sign subsequent changes to the
-      ManagedZone. ! Inactive keys will still be present as DNSKEY Resource
-      Records for the use ! of resolvers validating existing signatures.
-    keyLength: ! Length of the key in bits. Specified at creation time then
+    isActive: Active keys will be used to sign subsequent changes to the
+      ManagedZone. Inactive keys will still be present as DNSKEY Resource
+      Records for the use of resolvers validating existing signatures.
+    keyLength: Length of the key in bits. Specified at creation time then
       immutable.
-    keyTag: ! The key tag is a non-cryptographic hash of the a DNSKEY resource
-      record ! associated with this DnsKey. The key tag can be used to
-      identify a DNSKEY ! more quickly (but it is not a unique identifier). In
-      particular, the key ! tag is used in a parent zone's DS record to point
-      at the DNSKEY in this ! child ManagedZone. The key tag is a number in
-      the range [0, 65535] and the ! algorithm to calculate it is specified in
+    keyTag: The key tag is a non-cryptographic hash of the a DNSKEY resource
+      record associated with this DnsKey. The key tag can be used to identify
+      a DNSKEY more quickly (but it is not a unique identifier). In
+      particular, the key tag is used in a parent zone's DS record to point at
+      the DNSKEY in this child ManagedZone. The key tag is a number in the
+      range [0, 65535] and the algorithm to calculate it is specified in
       RFC4034 Appendix B. Output only.
     kind: A string attribute.
-    publicKey: ! Base64 encoded public half of this key. Output only.
-    type: ! One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of type KEY_SIGNING
-      have the ! Secure Entry Point flag set and, when active, will be used to
-      sign only ! resource record sets of type DNSKEY. Otherwise, the Secure
-      Entry Point ! flag will be cleared and this key will be used to sign
-      only resource ! record sets of other types. Immutable after creation
-      time.
+    publicKey: Base64 encoded public half of this key. Output only.
+    type: One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of type KEY_SIGNING
+      have the Secure Entry Point flag set and, when active, will be used to
+      sign only resource record sets of type DNSKEY. Otherwise, the Secure
+      Entry Point flag will be cleared and this key will be used to sign only
+      resource record sets of other types. Immutable after creation time.
   """
 
   class AlgorithmValueValuesEnum(_messages.Enum):
-    r"""! String mnemonic specifying the DNSSEC algorithm of this key.
-    Immutable ! after creation time.
+    r"""String mnemonic specifying the DNSSEC algorithm of this key. Immutable
+    after creation time.
 
     Values:
       rsasha1: <no description>
@@ -325,11 +324,11 @@ class DnsKey(_messages.Message):
     ecdsap384sha384 = 4
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""! One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of type KEY_SIGNING
-    have the ! Secure Entry Point flag set and, when active, will be used to
-    sign only ! resource record sets of type DNSKEY. Otherwise, the Secure
-    Entry Point ! flag will be cleared and this key will be used to sign only
-    resource ! record sets of other types. Immutable after creation time.
+    r"""One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of type KEY_SIGNING have
+    the Secure Entry Point flag set and, when active, will be used to sign
+    only resource record sets of type DNSKEY. Otherwise, the Secure Entry
+    Point flag will be cleared and this key will be used to sign only resource
+    record sets of other types. Immutable after creation time.
 
     Values:
       keySigning: <no description>
@@ -355,17 +354,17 @@ class DnsKeyDigest(_messages.Message):
   r"""A DnsKeyDigest object.
 
   Enums:
-    TypeValueValuesEnum: ! Specifies the algorithm used to calculate this
+    TypeValueValuesEnum: Specifies the algorithm used to calculate this
       digest.
 
   Fields:
-    digest: ! The base-16 encoded bytes of this digest. Suitable for use in a
-      DS ! resource record.
-    type: ! Specifies the algorithm used to calculate this digest.
+    digest: The base-16 encoded bytes of this digest. Suitable for use in a DS
+      resource record.
+    type: Specifies the algorithm used to calculate this digest.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""! Specifies the algorithm used to calculate this digest.
+    r"""Specifies the algorithm used to calculate this digest.
 
     Values:
       sha1: <no description>
@@ -381,33 +380,32 @@ class DnsKeyDigest(_messages.Message):
 
 
 class DnsKeySpec(_messages.Message):
-  r"""! Parameters for DnsKey key generation. Used for generating initial keys
-  ! for a new ManagedZone and as default when adding a new DnsKey.
+  r"""Parameters for DnsKey key generation. Used for generating initial keys
+  for a new ManagedZone and as default when adding a new DnsKey.
 
   Enums:
-    AlgorithmValueValuesEnum: ! String mnemonic specifying the DNSSEC
-      algorithm of this key.
-    KeyTypeValueValuesEnum: ! Specifies whether this is a key signing key
-      (KSK) or a zone signing key ! (ZSK). Key signing keys have the Secure
-      Entry Point flag set and, when ! active, will only be used to sign
-      resource record sets of type DNSKEY. ! Zone signing keys do not have the
-      Secure Entry Point flag set and will be ! used to sign all other types
-      of resource record sets.
+    AlgorithmValueValuesEnum: String mnemonic specifying the DNSSEC algorithm
+      of this key.
+    KeyTypeValueValuesEnum: Specifies whether this is a key signing key (KSK)
+      or a zone signing key (ZSK). Key signing keys have the Secure Entry
+      Point flag set and, when active, will only be used to sign resource
+      record sets of type DNSKEY. Zone signing keys do not have the Secure
+      Entry Point flag set and will be used to sign all other types of
+      resource record sets.
 
   Fields:
-    algorithm: ! String mnemonic specifying the DNSSEC algorithm of this key.
-    keyLength: ! Length of the keys in bits.
-    keyType: ! Specifies whether this is a key signing key (KSK) or a zone
-      signing key ! (ZSK). Key signing keys have the Secure Entry Point flag
-      set and, when ! active, will only be used to sign resource record sets
-      of type DNSKEY. ! Zone signing keys do not have the Secure Entry Point
-      flag set and will be ! used to sign all other types of resource record
-      sets.
+    algorithm: String mnemonic specifying the DNSSEC algorithm of this key.
+    keyLength: Length of the keys in bits.
+    keyType: Specifies whether this is a key signing key (KSK) or a zone
+      signing key (ZSK). Key signing keys have the Secure Entry Point flag set
+      and, when active, will only be used to sign resource record sets of type
+      DNSKEY. Zone signing keys do not have the Secure Entry Point flag set
+      and will be used to sign all other types of resource record sets.
     kind: A string attribute.
   """
 
   class AlgorithmValueValuesEnum(_messages.Enum):
-    r"""! String mnemonic specifying the DNSSEC algorithm of this key.
+    r"""String mnemonic specifying the DNSSEC algorithm of this key.
 
     Values:
       rsasha1: <no description>
@@ -423,11 +421,11 @@ class DnsKeySpec(_messages.Message):
     ecdsap384sha384 = 4
 
   class KeyTypeValueValuesEnum(_messages.Enum):
-    r"""! Specifies whether this is a key signing key (KSK) or a zone signing
-    key ! (ZSK). Key signing keys have the Secure Entry Point flag set and,
-    when ! active, will only be used to sign resource record sets of type
-    DNSKEY. ! Zone signing keys do not have the Secure Entry Point flag set
-    and will be ! used to sign all other types of resource record sets.
+    r"""Specifies whether this is a key signing key (KSK) or a zone signing
+    key (ZSK). Key signing keys have the Secure Entry Point flag set and, when
+    active, will only be used to sign resource record sets of type DNSKEY.
+    Zone signing keys do not have the Secure Entry Point flag set and will be
+    used to sign all other types of resource record sets.
 
     Values:
       keySigning: <no description>
@@ -443,21 +441,21 @@ class DnsKeySpec(_messages.Message):
 
 
 class DnsKeysListResponse(_messages.Message):
-  r"""! The response to a request to enumerate DnsKeys in a ManagedZone.
+  r"""The response to a request to enumerate DnsKeys in a ManagedZone.
 
   Fields:
-    dnsKeys: ! The requested resources.
+    dnsKeys: The requested resources.
     header: A ResponseHeader attribute.
     kind: Type of resource.
-    nextPageToken: ! The presence of this field indicates that there exist
-      more results ! following your last page of results in pagination order.
-      To fetch them, ! make another list request using this value as your
-      pagination token. ! ! In this way you can retrieve the complete contents
-      of even very large ! collections one page at a time. However, if the
-      contents of the collection ! change between the first and last paginated
-      list request, the set of all ! elements returned will be an inconsistent
-      view of the collection. There is ! no way to retrieve a "snapshot" of
-      collections larger than the maximum ! page size.
+    nextPageToken: The presence of this field indicates that there exist more
+      results following your last page of results in pagination order. To
+      fetch them, make another list request using this value as your
+      pagination token.  In this way you can retrieve the complete contents of
+      even very large collections one page at a time. However, if the contents
+      of the collection change between the first and last paginated list
+      request, the set of all elements returned will be an inconsistent view
+      of the collection. There is no way to retrieve a "snapshot" of
+      collections larger than the maximum page size.
   """
 
   dnsKeys = _messages.MessageField('DnsKey', 1, repeated=True)
@@ -470,12 +468,12 @@ class DnsManagedZoneOperationsGetRequest(_messages.Message):
   r"""A DnsManagedZoneOperationsGetRequest object.
 
   Fields:
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
-    managedZone: ! Identifies the managed zone addressed by this request.
-    operation: ! Identifies the operation addressed by this request.
-    project: ! Identifies the project addressed by this request.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    managedZone: Identifies the managed zone addressed by this request.
+    operation: Identifies the operation addressed by this request.
+    project: Identifies the project addressed by this request.
   """
 
   clientOperationId = _messages.StringField(1)
@@ -488,22 +486,22 @@ class DnsManagedZoneOperationsListRequest(_messages.Message):
   r"""A DnsManagedZoneOperationsListRequest object.
 
   Enums:
-    SortByValueValuesEnum: ! Sorting criterion. The only supported values are
+    SortByValueValuesEnum: Sorting criterion. The only supported values are
       START_TIME and ID.
 
   Fields:
-    managedZone: ! Identifies the managed zone addressed by this request.
-    maxResults: ! Optional. Maximum number of results to be returned. If
-      unspecified, the ! server will decide how many results to return.
-    pageToken: ! Optional. A tag returned by a previous list request that was
-      truncated. ! Use this parameter to continue a previous list request.
-    project: ! Identifies the project addressed by this request.
-    sortBy: ! Sorting criterion. The only supported values are START_TIME and
+    managedZone: Identifies the managed zone addressed by this request.
+    maxResults: Optional. Maximum number of results to be returned. If
+      unspecified, the server will decide how many results to return.
+    pageToken: Optional. A tag returned by a previous list request that was
+      truncated. Use this parameter to continue a previous list request.
+    project: Identifies the project addressed by this request.
+    sortBy: Sorting criterion. The only supported values are START_TIME and
       ID.
   """
 
   class SortByValueValuesEnum(_messages.Enum):
-    r"""! Sorting criterion. The only supported values are START_TIME and ID.
+    r"""Sorting criterion. The only supported values are START_TIME and ID.
 
     Values:
       startTime: <no description>
@@ -523,11 +521,11 @@ class DnsManagedZonesCreateRequest(_messages.Message):
   r"""A DnsManagedZonesCreateRequest object.
 
   Fields:
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
     managedZone: A ManagedZone resource to be passed as the request body.
-    project: ! Identifies the project addressed by this request.
+    project: Identifies the project addressed by this request.
   """
 
   clientOperationId = _messages.StringField(1)
@@ -539,12 +537,12 @@ class DnsManagedZonesDeleteRequest(_messages.Message):
   r"""A DnsManagedZonesDeleteRequest object.
 
   Fields:
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
-    managedZone: ! Identifies the managed zone addressed by this request. Can
-      be the managed ! zone name or id.
-    project: ! Identifies the project addressed by this request.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    managedZone: Identifies the managed zone addressed by this request. Can be
+      the managed zone name or id.
+    project: Identifies the project addressed by this request.
   """
 
   clientOperationId = _messages.StringField(1)
@@ -560,12 +558,12 @@ class DnsManagedZonesGetRequest(_messages.Message):
   r"""A DnsManagedZonesGetRequest object.
 
   Fields:
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
-    managedZone: ! Identifies the managed zone addressed by this request. Can
-      be the managed ! zone name or id.
-    project: ! Identifies the project addressed by this request.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    managedZone: Identifies the managed zone addressed by this request. Can be
+      the managed zone name or id.
+    project: Identifies the project addressed by this request.
   """
 
   clientOperationId = _messages.StringField(1)
@@ -577,12 +575,12 @@ class DnsManagedZonesListRequest(_messages.Message):
   r"""A DnsManagedZonesListRequest object.
 
   Fields:
-    dnsName: ! Restricts the list to return only zones with this domain name.
-    maxResults: ! Optional. Maximum number of results to be returned. If
-      unspecified, the ! server will decide how many results to return.
-    pageToken: ! Optional. A tag returned by a previous list request that was
-      truncated. ! Use this parameter to continue a previous list request.
-    project: ! Identifies the project addressed by this request.
+    dnsName: Restricts the list to return only zones with this domain name.
+    maxResults: Optional. Maximum number of results to be returned. If
+      unspecified, the server will decide how many results to return.
+    pageToken: Optional. A tag returned by a previous list request that was
+      truncated. Use this parameter to continue a previous list request.
+    project: Identifies the project addressed by this request.
   """
 
   dnsName = _messages.StringField(1)
@@ -595,14 +593,14 @@ class DnsManagedZonesPatchRequest(_messages.Message):
   r"""A DnsManagedZonesPatchRequest object.
 
   Fields:
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
-    managedZone: ! Identifies the managed zone addressed by this request. Can
-      be the managed ! zone name or id.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    managedZone: Identifies the managed zone addressed by this request. Can be
+      the managed zone name or id.
     managedZoneResource: A ManagedZone resource to be passed as the request
       body.
-    project: ! Identifies the project addressed by this request.
+    project: Identifies the project addressed by this request.
   """
 
   clientOperationId = _messages.StringField(1)
@@ -615,14 +613,14 @@ class DnsManagedZonesUpdateRequest(_messages.Message):
   r"""A DnsManagedZonesUpdateRequest object.
 
   Fields:
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
-    managedZone: ! Identifies the managed zone addressed by this request. Can
-      be the managed ! zone name or id.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    managedZone: Identifies the managed zone addressed by this request. Can be
+      the managed zone name or id.
     managedZoneResource: A ManagedZone resource to be passed as the request
       body.
-    project: ! Identifies the project addressed by this request.
+    project: Identifies the project addressed by this request.
   """
 
   clientOperationId = _messages.StringField(1)
@@ -635,11 +633,11 @@ class DnsPoliciesCreateRequest(_messages.Message):
   r"""A DnsPoliciesCreateRequest object.
 
   Fields:
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
     policy: A Policy resource to be passed as the request body.
-    project: ! Identifies the project addressed by this request.
+    project: Identifies the project addressed by this request.
   """
 
   clientOperationId = _messages.StringField(1)
@@ -651,12 +649,11 @@ class DnsPoliciesDeleteRequest(_messages.Message):
   r"""A DnsPoliciesDeleteRequest object.
 
   Fields:
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
-    policy: ! User given friendly name of the policy addressed by this
-      request.
-    project: ! Identifies the project addressed by this request.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    policy: User given friendly name of the policy addressed by this request.
+    project: Identifies the project addressed by this request.
   """
 
   clientOperationId = _messages.StringField(1)
@@ -668,12 +665,11 @@ class DnsPoliciesGetRequest(_messages.Message):
   r"""A DnsPoliciesGetRequest object.
 
   Fields:
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
-    policy: ! User given friendly name of the policy addressed by this
-      request.
-    project: ! Identifies the project addressed by this request.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    policy: User given friendly name of the policy addressed by this request.
+    project: Identifies the project addressed by this request.
   """
 
   clientOperationId = _messages.StringField(1)
@@ -685,11 +681,11 @@ class DnsPoliciesListRequest(_messages.Message):
   r"""A DnsPoliciesListRequest object.
 
   Fields:
-    maxResults: ! Optional. Maximum number of results to be returned. If
-      unspecified, the ! server will decide how many results to return.
-    pageToken: ! Optional. A tag returned by a previous list request that was
-      truncated. ! Use this parameter to continue a previous list request.
-    project: ! Identifies the project addressed by this request.
+    maxResults: Optional. Maximum number of results to be returned. If
+      unspecified, the server will decide how many results to return.
+    pageToken: Optional. A tag returned by a previous list request that was
+      truncated. Use this parameter to continue a previous list request.
+    project: Identifies the project addressed by this request.
   """
 
   maxResults = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -701,13 +697,12 @@ class DnsPoliciesPatchRequest(_messages.Message):
   r"""A DnsPoliciesPatchRequest object.
 
   Fields:
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
-    policy: ! User given friendly name of the policy addressed by this
-      request.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    policy: User given friendly name of the policy addressed by this request.
     policyResource: A Policy resource to be passed as the request body.
-    project: ! Identifies the project addressed by this request.
+    project: Identifies the project addressed by this request.
   """
 
   clientOperationId = _messages.StringField(1)
@@ -720,13 +715,12 @@ class DnsPoliciesUpdateRequest(_messages.Message):
   r"""A DnsPoliciesUpdateRequest object.
 
   Fields:
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
-    policy: ! User given friendly name of the policy addressed by this
-      request.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    policy: User given friendly name of the policy addressed by this request.
     policyResource: A Policy resource to be passed as the request body.
-    project: ! Identifies the project addressed by this request.
+    project: Identifies the project addressed by this request.
   """
 
   clientOperationId = _messages.StringField(1)
@@ -739,10 +733,10 @@ class DnsProjectsGetRequest(_messages.Message):
   r"""A DnsProjectsGetRequest object.
 
   Fields:
-    clientOperationId: ! For mutating operation requests only. An optional
-      identifier ! specified by the client. Must be unique for operation
-      resources in the ! Operations collection.
-    project: ! Identifies the project addressed by this request.
+    clientOperationId: For mutating operation requests only. An optional
+      identifier specified by the client. Must be unique for operation
+      resources in the Operations collection.
+    project: Identifies the project addressed by this request.
   """
 
   clientOperationId = _messages.StringField(1)
@@ -753,17 +747,17 @@ class DnsResourceRecordSetsListRequest(_messages.Message):
   r"""A DnsResourceRecordSetsListRequest object.
 
   Fields:
-    managedZone: ! Identifies the managed zone addressed by this request. Can
-      be the managed ! zone name or id.
-    maxResults: ! Optional. Maximum number of results to be returned. If
-      unspecified, the ! server will decide how many results to return.
-    name: ! Restricts the list to return only records with this fully
-      qualified domain ! name.
-    pageToken: ! Optional. A tag returned by a previous list request that was
-      truncated. ! Use this parameter to continue a previous list request.
-    project: ! Identifies the project addressed by this request.
-    type: ! Restricts the list to return only records of this type. If
-      present, the ! "name" parameter must also be present.
+    managedZone: Identifies the managed zone addressed by this request. Can be
+      the managed zone name or id.
+    maxResults: Optional. Maximum number of results to be returned. If
+      unspecified, the server will decide how many results to return.
+    name: Restricts the list to return only records with this fully qualified
+      domain name.
+    pageToken: Optional. A tag returned by a previous list request that was
+      truncated. Use this parameter to continue a previous list request.
+    project: Identifies the project addressed by this request.
+    type: Restricts the list to return only records of this type. If present,
+      the "name" parameter must also be present.
   """
 
   managedZone = _messages.StringField(1, required=True)
@@ -775,68 +769,62 @@ class DnsResourceRecordSetsListRequest(_messages.Message):
 
 
 class ManagedZone(_messages.Message):
-  r"""! A zone is a subtree of the DNS namespace under one administrative !
-  responsibility. A ManagedZone is a resource that represents a DNS zone !
+  r"""A zone is a subtree of the DNS namespace under one administrative
+  responsibility. A ManagedZone is a resource that represents a DNS zone
   hosted by the Cloud DNS service.
 
   Enums:
-    VisibilityValueValuesEnum: ! The zone's visibility: public zones are
-      exposed to the Internet, while ! private zones are visible only to
-      Virtual Private Cloud resources.
+    VisibilityValueValuesEnum: The zone's visibility: public zones are exposed
+      to the Internet, while private zones are visible only to Virtual Private
+      Cloud resources.
 
   Messages:
-    LabelsValue: ! User labels.  Refer to go/unified-cloud-labels-proposal
+    LabelsValue: User labels.
 
   Fields:
-    creationTime: ! The time that this resource was created on the server.
-      This is in RFC3339 ! text format. Output only.
-    description: ! A mutable string of at most 1024 characters associated with
-      this resource ! for the user's convenience. Has no effect on the managed
+    creationTime: The time that this resource was created on the server. This
+      is in RFC3339 text format. Output only.
+    description: A mutable string of at most 1024 characters associated with
+      this resource for the user's convenience. Has no effect on the managed
       zone's function.
-    dnsName: ! The DNS name of this managed zone, for instance "example.com.".
-    dnssecConfig: ! DNSSEC configuration.
-    forwardingConfig: ! The presence for this field indicates that outbound
-      forwarding is enabled ! for this zone.  The value of this field contains
-      the set of destinations ! to forward to.
-    id: ! Unique identifier for the resource; defined by the server (output
+    dnsName: The DNS name of this managed zone, for instance "example.com.".
+    dnssecConfig: DNSSEC configuration.
+    forwardingConfig: The presence for this field indicates that outbound
+      forwarding is enabled for this zone.  The value of this field contains
+      the set of destinations to forward to.
+    id: Unique identifier for the resource; defined by the server (output
       only)
     kind: A string attribute.
-    labels: ! User labels.  Refer to go/unified-cloud-labels-proposal
-    name: ! User assigned name for this resource. Must be unique within the
-      project. ! The name must be 1-63 characters long, must begin with a
-      letter, end with ! a letter or digit, and only contain lowercase
-      letters, digits or dashes.
-    nameServerSet: INTERNAL ONLY: nameServerSet is non-public functionality
-      that enables customers to select the DNS name server for their zone e.g.
-      ns-cloud-a[1-4].googledomains.com vs. ns-cloud-b[1-4].googledomains.com.
-      Usage of this feature requires specific whitelisting and is only
-      available to customers on a case-by-case basis. Please contact cloud-
-      dns-team@ if you think you need this functionality. ! Optionally
-      specifies the NameServerSet for this ManagedZone. A ! NameServerSet is a
-      set of DNS name servers that all host the same ! ManagedZones. Most
-      users will leave this field unset.
-    nameServers: ! Delegate your managed_zone to these virtual name servers;
-      defined by the ! server (output only)
-    peeringConfig: ! The presence of this field indicates that DNS Peering is
-      enabled for this ! zone. The value of this field contains the network to
+    labels: User labels.
+    name: User assigned name for this resource. Must be unique within the
+      project. The name must be 1-63 characters long, must begin with a
+      letter, end with a letter or digit, and only contain lowercase letters,
+      digits or dashes.
+    nameServerSet: Optionally specifies the NameServerSet for this
+      ManagedZone. A NameServerSet is a set of DNS name servers that all host
+      the same ManagedZones. Most users will leave this field unset.
+    nameServers: Delegate your managed_zone to these virtual name servers;
+      defined by the server (output only)
+    peeringConfig: The presence of this field indicates that DNS Peering is
+      enabled for this zone. The value of this field contains the network to
       peer with.
-    privateVisibilityConfig: ! For privately visible zones, the set of Virtual
-      Private Cloud resources ! that the zone is visible from.
-    reverseLookupConfig: ! The presence of this field indicates that this is a
-      managed reverse ! lookup zone and Cloud DNS will resolve reverse lookup
-      queries using ! automatically configured records for VPC resources. This
-      only applies ! to networks listed under private_visibility_config.
-    serviceDiscoveryConfig: ! This field links to the associated service
-      registry. This field should ! not be set for public zones or forwarding
+    privateVisibilityConfig: For privately visible zones, the set of Virtual
+      Private Cloud resources that the zone is visible from.
+    reverseLookupConfig: The presence of this field indicates that this is a
+      managed reverse lookup zone and Cloud DNS will resolve reverse lookup
+      queries using automatically configured records for VPC resources. This
+      only applies to networks listed under private_visibility_config.
+    serviceDiscoveryConfig: This field links to the associated service
+      registry. This field should not be set for public zones or forwarding
       zones.
-    visibility: ! The zone's visibility: public zones are exposed to the
-      Internet, while ! private zones are visible only to Virtual Private
-      Cloud resources.
+    visibility: The zone's visibility: public zones are exposed to the
+      Internet, while private zones are visible only to Virtual Private Cloud
+      resources.
   """
 
   class VisibilityValueValuesEnum(_messages.Enum):
-    r"""! The zone's visibility: public zones are exposed to the Internet,
-    while ! private zones are visible only to Virtual Private Cloud resources.
+    r"""The zone's visibility: public zones are exposed to the Internet, while
+    private zones are visible only to Virtual Private Cloud resources.
 
     Values:
       public: <no description>
@@ -847,7 +835,7 @@ class ManagedZone(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""! User labels.  Refer to go/unified-cloud-labels-proposal
+    r"""User labels.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -891,24 +879,24 @@ class ManagedZoneDnsSecConfig(_messages.Message):
   r"""A ManagedZoneDnsSecConfig object.
 
   Enums:
-    NonExistenceValueValuesEnum: ! Specifies the mechanism for authenticated
-      denial-of-existence responses. ! Can only be changed while the state is
+    NonExistenceValueValuesEnum: Specifies the mechanism for authenticated
+      denial-of-existence responses. Can only be changed while the state is
       OFF.
-    StateValueValuesEnum: ! Specifies whether DNSSEC is enabled, and what mode
+    StateValueValuesEnum: Specifies whether DNSSEC is enabled, and what mode
       it is in.
 
   Fields:
-    defaultKeySpecs: ! Specifies parameters for generating initial DnsKeys for
-      this ! ManagedZone. Can only be changed while the state is OFF.
+    defaultKeySpecs: Specifies parameters for generating initial DnsKeys for
+      this ManagedZone. Can only be changed while the state is OFF.
     kind: A string attribute.
-    nonExistence: ! Specifies the mechanism for authenticated denial-of-
-      existence responses. ! Can only be changed while the state is OFF.
-    state: ! Specifies whether DNSSEC is enabled, and what mode it is in.
+    nonExistence: Specifies the mechanism for authenticated denial-of-
+      existence responses. Can only be changed while the state is OFF.
+    state: Specifies whether DNSSEC is enabled, and what mode it is in.
   """
 
   class NonExistenceValueValuesEnum(_messages.Enum):
-    r"""! Specifies the mechanism for authenticated denial-of-existence
-    responses. ! Can only be changed while the state is OFF.
+    r"""Specifies the mechanism for authenticated denial-of-existence
+    responses. Can only be changed while the state is OFF.
 
     Values:
       nsec: <no description>
@@ -918,7 +906,7 @@ class ManagedZoneDnsSecConfig(_messages.Message):
     nsec3 = 1
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""! Specifies whether DNSSEC is enabled, and what mode it is in.
+    r"""Specifies whether DNSSEC is enabled, and what mode it is in.
 
     Values:
       off: DNSSEC is disabled; the zone is not signed.
@@ -940,9 +928,9 @@ class ManagedZoneForwardingConfig(_messages.Message):
 
   Fields:
     kind: A string attribute.
-    targetNameServers: ! List of target name servers to forward to. ! Cloud
-      DNS will select the best available name server if more than one ! target
-      is given.
+    targetNameServers: List of target name servers to forward to. Cloud DNS
+      will select the best available name server if more than one target is
+      given.
   """
 
   kind = _messages.StringField(1, default=u'dns#managedZoneForwardingConfig')
@@ -953,34 +941,33 @@ class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
   r"""A ManagedZoneForwardingConfigNameServerTarget object.
 
   Enums:
-    ForwardingPathValueValuesEnum: ! Forwarding path for this
-      NameServerTarget, if unset or set to DEFAULT, ! Cloud DNS will make
-      forwarding decision based on address ranges, ! i.e. RFC1918 addresses go
-      to the VPC, Non-RFC1918 addresses go to the ! Internet. When set to
-      PRIVATE, Cloud DNS will always send queries ! through VPC for this
-      target
+    ForwardingPathValueValuesEnum: Forwarding path for this NameServerTarget,
+      if unset or set to DEFAULT, Cloud DNS will make forwarding decision
+      based on address ranges, i.e. RFC1918 addresses go to the VPC, Non-
+      RFC1918 addresses go to the Internet. When set to PRIVATE, Cloud DNS
+      will always send queries through VPC for this target
 
   Fields:
-    forwardingPath: ! Forwarding path for this NameServerTarget, if unset or
-      set to DEFAULT, ! Cloud DNS will make forwarding decision based on
-      address ranges, ! i.e. RFC1918 addresses go to the VPC, Non-RFC1918
-      addresses go to the ! Internet. When set to PRIVATE, Cloud DNS will
-      always send queries ! through VPC for this target
-    ipv4Address: ! IPv4 address of a target name server.
+    forwardingPath: Forwarding path for this NameServerTarget, if unset or set
+      to DEFAULT, Cloud DNS will make forwarding decision based on address
+      ranges, i.e. RFC1918 addresses go to the VPC, Non-RFC1918 addresses go
+      to the Internet. When set to PRIVATE, Cloud DNS will always send queries
+      through VPC for this target
+    ipv4Address: IPv4 address of a target name server.
     kind: A string attribute.
   """
 
   class ForwardingPathValueValuesEnum(_messages.Enum):
-    r"""! Forwarding path for this NameServerTarget, if unset or set to
-    DEFAULT, ! Cloud DNS will make forwarding decision based on address
-    ranges, ! i.e. RFC1918 addresses go to the VPC, Non-RFC1918 addresses go
-    to the ! Internet. When set to PRIVATE, Cloud DNS will always send queries
-    ! through VPC for this target
+    r"""Forwarding path for this NameServerTarget, if unset or set to DEFAULT,
+    Cloud DNS will make forwarding decision based on address ranges, i.e.
+    RFC1918 addresses go to the VPC, Non-RFC1918 addresses go to the Internet.
+    When set to PRIVATE, Cloud DNS will always send queries through VPC for
+    this target
 
     Values:
-      default: ! Cloud DNS will make forwarding decision based on address
-        ranges, ! i.e. RFC1918 addresses forward to the target through the VPC
-        and ! Non-RFC1918 addresses will forward to the target through the !
+      default: Cloud DNS will make forwarding decision based on address
+        ranges, i.e. RFC1918 addresses forward to the target through the VPC
+        and Non-RFC1918 addresses will forward to the target through the
         Internet
       private: Cloud DNS will always forward to this target through the VPC.
     """
@@ -998,16 +985,16 @@ class ManagedZoneOperationsListResponse(_messages.Message):
   Fields:
     header: A ResponseHeader attribute.
     kind: A string attribute.
-    nextPageToken: ! The presence of this field indicates that there exist
-      more results ! following your last page of results in pagination order.
-      To fetch them, ! make another list request using this value as your page
-      token. ! ! In this way you can retrieve the complete contents of even
-      very large ! collections one page at a time. However, if the contents of
-      the collection ! change between the first and last paginated list
-      request, the set of all ! elements returned will be an inconsistent view
-      of the collection. There is ! no way to retrieve a consistent snapshot
-      of a collection larger than the ! maximum page size.
-    operations: ! The operation resources.
+    nextPageToken: The presence of this field indicates that there exist more
+      results following your last page of results in pagination order. To
+      fetch them, make another list request using this value as your page
+      token.  In this way you can retrieve the complete contents of even very
+      large collections one page at a time. However, if the contents of the
+      collection change between the first and last paginated list request, the
+      set of all elements returned will be an inconsistent view of the
+      collection. There is no way to retrieve a consistent snapshot of a
+      collection larger than the maximum page size.
+    operations: The operation resources.
   """
 
   header = _messages.MessageField('ResponseHeader', 1)
@@ -1021,7 +1008,7 @@ class ManagedZonePeeringConfig(_messages.Message):
 
   Fields:
     kind: A string attribute.
-    targetNetwork: ! The network with which to peer.
+    targetNetwork: The network with which to peer.
   """
 
   kind = _messages.StringField(1, default=u'dns#managedZonePeeringConfig')
@@ -1032,15 +1019,15 @@ class ManagedZonePeeringConfigTargetNetwork(_messages.Message):
   r"""A ManagedZonePeeringConfigTargetNetwork object.
 
   Fields:
-    deactivateTime: ! The time at which the zone was deactivated, in RFC 3339
-      date-time ! format. An empty string indicates that the peering
-      connection is ! active. The producer network can deactivate a zone. The
-      zone is ! automatically deactivated if the producer network that the
-      zone ! targeted is deleted. Output only.
+    deactivateTime: The time at which the zone was deactivated, in RFC 3339
+      date-time format. An empty string indicates that the peering connection
+      is active. The producer network can deactivate a zone. The zone is
+      automatically deactivated if the producer network that the zone targeted
+      is deleted. Output only.
     kind: A string attribute.
-    networkUrl: ! The fully qualified URL of the VPC network to forward
-      queries to. ! This should be formatted like ! https://www.googleapis.com
-      /compute/v1/projects/{project}/global/networks/{network}
+    networkUrl: The fully qualified URL of the VPC network to forward queries
+      to. This should be formatted like https://www.googleapis.com/compute/v1/
+      projects/{project}/global/networks/{network}
   """
 
   deactivateTime = _messages.StringField(1)
@@ -1053,7 +1040,7 @@ class ManagedZonePrivateVisibilityConfig(_messages.Message):
 
   Fields:
     kind: A string attribute.
-    networks: ! The list of VPC networks that can see this zone.
+    networks: The list of VPC networks that can see this zone.
   """
 
   kind = _messages.StringField(1, default=u'dns#managedZonePrivateVisibilityConfig')
@@ -1065,9 +1052,9 @@ class ManagedZonePrivateVisibilityConfigNetwork(_messages.Message):
 
   Fields:
     kind: A string attribute.
-    networkUrl: ! The fully qualified URL of the VPC network to bind to. !
-      This should be formatted like ! https://www.googleapis.com/compute/v1/pr
-      ojects/{project}/global/networks/{network}
+    networkUrl: The fully qualified URL of the VPC network to bind to. This
+      should be formatted like https://www.googleapis.com/compute/v1/projects/
+      {project}/global/networks/{network}
   """
 
   kind = _messages.StringField(1, default=u'dns#managedZonePrivateVisibilityConfigNetwork')
@@ -1085,11 +1072,11 @@ class ManagedZoneReverseLookupConfig(_messages.Message):
 
 
 class ManagedZoneServiceDiscoveryConfig(_messages.Message):
-  r"""! Contains information about Service Discovery-backed zones.
+  r"""Contains information about Service Discovery-backed zones.
 
   Fields:
     kind: A string attribute.
-    serviceRegistry: ! Contains information about the registry associated with
+    serviceRegistry: Contains information about the registry associated with
       the zone.
   """
 
@@ -1101,14 +1088,13 @@ class ManagedZoneServiceDiscoveryConfigServiceRegistry(_messages.Message):
   r"""A ManagedZoneServiceDiscoveryConfigServiceRegistry object.
 
   Fields:
-    deletionTime: ! The time that the registry backing this zone was deleted,
-      empty string ! if it still exists. This is in RFC3339 text format.
-      Output only.
+    deletionTime: The time that the registry backing this zone was deleted,
+      empty string if it still exists. This is in RFC3339 text format. Output
+      only.
     kind: A string attribute.
-    registryUrl: ! The fully qualified URL of the registry associated with the
-      zone. This ! should be formatted like ! https://www.servicediscovery.goo
-      gleapis.com/v1/projects/{project}/locations/{location}/registries/{regis
-      try}
+    registryUrl: The fully qualified URL of the registry associated with the
+      zone. This should be formatted like https://www.servicediscovery.googlea
+      pis.com/v1/projects/{project}/locations/{location}/registries/{registry}
   """
 
   deletionTime = _messages.StringField(1)
@@ -1122,16 +1108,16 @@ class ManagedZonesListResponse(_messages.Message):
   Fields:
     header: A ResponseHeader attribute.
     kind: Type of resource.
-    managedZones: ! The managed zone resources.
-    nextPageToken: ! The presence of this field indicates that there exist
-      more results ! following your last page of results in pagination order.
-      To fetch them, ! make another list request using this value as your page
-      token. ! ! In this way you can retrieve the complete contents of even
-      very large ! collections one page at a time. However, if the contents of
-      the collection ! change between the first and last paginated list
-      request, the set of all ! elements returned will be an inconsistent view
-      of the collection. There is ! no way to retrieve a consistent snapshot
-      of a collection larger than the ! maximum page size.
+    managedZones: The managed zone resources.
+    nextPageToken: The presence of this field indicates that there exist more
+      results following your last page of results in pagination order. To
+      fetch them, make another list request using this value as your page
+      token.  In this way you can retrieve the complete contents of even very
+      large collections one page at a time. However, if the contents of the
+      collection change between the first and last paginated list request, the
+      set of all elements returned will be an inconsistent view of the
+      collection. There is no way to retrieve a consistent snapshot of a
+      collection larger than the maximum page size.
   """
 
   header = _messages.MessageField('ResponseHeader', 1)
@@ -1141,46 +1127,45 @@ class ManagedZonesListResponse(_messages.Message):
 
 
 class Operation(_messages.Message):
-  r"""! An operation represents a successful mutation performed on a Cloud DNS
-  ! resource. ! Operations provide: ! - An audit log of server resource
-  mutations. ! - A way to recover/retry API calls in the case where the
-  response is never !   received by the caller. Use the caller specified
-  client_operation_id.
+  r"""An operation represents a successful mutation performed on a Cloud DNS
+  resource. Operations provide: - An audit log of server resource mutations. -
+  A way to recover/retry API calls in the case where the response is never
+  received by the caller. Use the caller specified client_operation_id.
 
   Enums:
-    StatusValueValuesEnum: ! Status of the operation. Can be one of the
-      following: "PENDING" or "DONE" ! (output only). A status of "DONE" means
-      that the ! request to update the authoritative servers has been sent,
-      but the ! servers might not be updated yet.
+    StatusValueValuesEnum: Status of the operation. Can be one of the
+      following: "PENDING" or "DONE" (output only). A status of "DONE" means
+      that the request to update the authoritative servers has been sent, but
+      the servers might not be updated yet.
 
   Fields:
-    dnsKeyContext: ! Only populated if the operation targeted a DnsKey (output
+    dnsKeyContext: Only populated if the operation targeted a DnsKey (output
       only).
-    id: ! Unique identifier for the resource. This is the client_operation_id
-      if ! the client specified it when the mutation was initiated, otherwise,
-      ! it is generated by the server. The name must be 1-63 characters long !
-      and match the regular expression [-a-z0-9]? (output only)
+    id: Unique identifier for the resource. This is the client_operation_id if
+      the client specified it when the mutation was initiated, otherwise, it
+      is generated by the server. The name must be 1-63 characters long and
+      match the regular expression [-a-z0-9]? (output only)
     kind: A string attribute.
-    startTime: ! The time that this operation was started by the server. This
-      is in RFC3339 ! text format (output only).
-    status: ! Status of the operation. Can be one of the following: "PENDING"
-      or "DONE" ! (output only). A status of "DONE" means that the ! request
-      to update the authoritative servers has been sent, but the ! servers
-      might not be updated yet.
-    type: ! Type of the operation. Operations include insert, update, and
-      delete ! (output only).
-    user: ! User who requested the operation, for example: user@example.com. !
-      cloud-dns-system for operations automatically done by the system. !
+    startTime: The time that this operation was started by the server. This is
+      in RFC3339 text format (output only).
+    status: Status of the operation. Can be one of the following: "PENDING" or
+      "DONE" (output only). A status of "DONE" means that the request to
+      update the authoritative servers has been sent, but the servers might
+      not be updated yet.
+    type: Type of the operation. Operations include insert, update, and delete
+      (output only).
+    user: User who requested the operation, for example: user@example.com.
+      cloud-dns-system for operations automatically done by the system.
       (output only)
-    zoneContext: ! Only populated if the operation targeted a ManagedZone
+    zoneContext: Only populated if the operation targeted a ManagedZone
       (output only).
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""! Status of the operation. Can be one of the following: "PENDING" or
-    "DONE" ! (output only). A status of "DONE" means that the ! request to
-    update the authoritative servers has been sent, but the ! servers might
-    not be updated yet.
+    r"""Status of the operation. Can be one of the following: "PENDING" or
+    "DONE" (output only). A status of "DONE" means that the request to update
+    the authoritative servers has been sent, but the servers might not be
+    updated yet.
 
     Values:
       pending: <no description>
@@ -1203,8 +1188,8 @@ class OperationDnsKeyContext(_messages.Message):
   r"""A OperationDnsKeyContext object.
 
   Fields:
-    newValue: ! The post-operation DnsKey resource.
-    oldValue: ! The pre-operation DnsKey resource.
+    newValue: The post-operation DnsKey resource.
+    oldValue: The pre-operation DnsKey resource.
   """
 
   newValue = _messages.MessageField('DnsKey', 1)
@@ -1215,8 +1200,8 @@ class OperationManagedZoneContext(_messages.Message):
   r"""A OperationManagedZoneContext object.
 
   Fields:
-    newValue: ! The post-operation ManagedZone resource.
-    oldValue: ! The pre-operation ManagedZone resource.
+    newValue: The post-operation ManagedZone resource.
+    oldValue: The pre-operation ManagedZone resource.
   """
 
   newValue = _messages.MessageField('ManagedZone', 1)
@@ -1243,17 +1228,17 @@ class PeeringZonesListResponse(_messages.Message):
   Fields:
     header: A ResponseHeader attribute.
     kind: A string attribute.
-    nextPageToken: ! The presence of this field indicates that there exist
-      more results ! following your last page of results in pagination order.
-      To fetch them, ! make another list request using this value as your page
-      token. ! ! In this way you can retrieve the complete contents of even
-      very large ! collections one page at a time. However, if the contents of
-      the collection ! change between the first and last paginated list
-      request, the set of all ! elements returned will be an inconsistent view
-      of the collection. There is ! no way to retrieve a consistent snapshot
-      of a collection larger than the ! maximum page size.
-    peeringZones: ! The active peering zone resources matching the request. !
-      Each ManagedZone has only the id field set.
+    nextPageToken: The presence of this field indicates that there exist more
+      results following your last page of results in pagination order. To
+      fetch them, make another list request using this value as your page
+      token.  In this way you can retrieve the complete contents of even very
+      large collections one page at a time. However, if the contents of the
+      collection change between the first and last paginated list request, the
+      set of all elements returned will be an inconsistent view of the
+      collection. There is no way to retrieve a consistent snapshot of a
+      collection larger than the maximum page size.
+    peeringZones: The active peering zone resources matching the request. Each
+      ManagedZone has only the id field set.
   """
 
   header = _messages.MessageField('ResponseHeader', 1)
@@ -1272,16 +1257,16 @@ class PoliciesListResponse(_messages.Message):
   Fields:
     header: A ResponseHeader attribute.
     kind: Type of resource.
-    nextPageToken: ! The presence of this field indicates that there exist
-      more results ! following your last page of results in pagination order.
-      To fetch them, ! make another list request using this value as your page
-      token. ! ! In this way you can retrieve the complete contents of even
-      very large ! collections one page at a time. However, if the contents of
-      the collection ! change between the first and last paginated list
-      request, the set of all ! elements returned will be an inconsistent view
-      of the collection. There is ! no way to retrieve a consistent snapshot
-      of a collection larger than the ! maximum page size.
-    policies: ! The policy resources.
+    nextPageToken: The presence of this field indicates that there exist more
+      results following your last page of results in pagination order. To
+      fetch them, make another list request using this value as your page
+      token.  In this way you can retrieve the complete contents of even very
+      large collections one page at a time. However, if the contents of the
+      collection change between the first and last paginated list request, the
+      set of all elements returned will be an inconsistent view of the
+      collection. There is no way to retrieve a consistent snapshot of a
+      collection larger than the maximum page size.
+    policies: The policy resources.
   """
 
   header = _messages.MessageField('ResponseHeader', 1)
@@ -1315,28 +1300,28 @@ class PoliciesUpdateResponse(_messages.Message):
 
 
 class Policy(_messages.Message):
-  r"""! A policy is a collection of DNS rules applied to one or more Virtual
-  Private ! Cloud resources.
+  r"""A policy is a collection of DNS rules applied to one or more Virtual
+  Private Cloud resources.
 
   Fields:
-    alternativeNameServerConfig: ! Sets an alternative name server for the
-      associated networks. When ! specified, all DNS queries are forwarded to
-      a name server that you ! choose. Names such as .internal are not
-      available when an alternative ! name server is specified.
-    description: ! A mutable string of at most 1024 characters associated with
-      this resource ! for the user's convenience. Has no effect on the
-      policy's function.
-    enableInboundForwarding: ! Allows networks bound to this policy to receive
-      DNS queries sent by VMs or ! applications over VPN connections. When
-      enabled, a virtual IP address will ! be allocated from each of the sub-
+    alternativeNameServerConfig: Sets an alternative name server for the
+      associated networks. When specified, all DNS queries are forwarded to a
+      name server that you choose. Names such as .internal are not available
+      when an alternative name server is specified.
+    description: A mutable string of at most 1024 characters associated with
+      this resource for the user's convenience. Has no effect on the policy's
+      function.
+    enableInboundForwarding: Allows networks bound to this policy to receive
+      DNS queries sent by VMs or applications over VPN connections. When
+      enabled, a virtual IP address will be allocated from each of the sub-
       networks that are bound to this policy.
-    enableLogging: ! Controls whether logging is enabled for the networks
-      bound to this policy. ! Defaults to no logging if not set.
-    id: ! Unique identifier for the resource; defined by the server (output
+    enableLogging: Controls whether logging is enabled for the networks bound
+      to this policy. Defaults to no logging if not set.
+    id: Unique identifier for the resource; defined by the server (output
       only).
     kind: A string attribute.
-    name: ! User assigned name for this policy.
-    networks: ! List of network names specifying networks to which this policy
+    name: User assigned name for this policy.
+    networks: List of network names specifying networks to which this policy
       is applied.
   """
 
@@ -1351,14 +1336,14 @@ class Policy(_messages.Message):
 
 
 class PolicyAlternativeNameServerConfig(_messages.Message):
-  r"""LINT.IfChange
+  r"""A PolicyAlternativeNameServerConfig object.
 
   Fields:
     kind: A string attribute.
-    targetNameServers: ! Sets an alternative name server for the associated
-      networks. When ! specified, all DNS queries are forwarded to a name
-      server that you ! choose. Names such as .internal are not available when
-      an alternative ! name server is specified.
+    targetNameServers: Sets an alternative name server for the associated
+      networks. When specified, all DNS queries are forwarded to a name server
+      that you choose. Names such as .internal are not available when an
+      alternative name server is specified.
   """
 
   kind = _messages.StringField(1, default=u'dns#policyAlternativeNameServerConfig')
@@ -1369,34 +1354,33 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
   r"""A PolicyAlternativeNameServerConfigTargetNameServer object.
 
   Enums:
-    ForwardingPathValueValuesEnum: ! Forwarding path for this
-      TargetNameServer, if unset or set to DEFAULT, ! Cloud DNS will make
-      forwarding decision based on address ranges, ! i.e. RFC1918 addresses go
-      to the VPC, Non-RFC1918 addresses go to the ! Internet. When set to
-      PRIVATE, Cloud DNS will always send queries ! through VPC for this
-      target
+    ForwardingPathValueValuesEnum: Forwarding path for this TargetNameServer,
+      if unset or set to DEFAULT, Cloud DNS will make forwarding decision
+      based on address ranges, i.e. RFC1918 addresses go to the VPC, Non-
+      RFC1918 addresses go to the Internet. When set to PRIVATE, Cloud DNS
+      will always send queries through VPC for this target
 
   Fields:
-    forwardingPath: ! Forwarding path for this TargetNameServer, if unset or
-      set to DEFAULT, ! Cloud DNS will make forwarding decision based on
-      address ranges, ! i.e. RFC1918 addresses go to the VPC, Non-RFC1918
-      addresses go to the ! Internet. When set to PRIVATE, Cloud DNS will
-      always send queries ! through VPC for this target
-    ipv4Address: ! IPv4 address to forward to.
+    forwardingPath: Forwarding path for this TargetNameServer, if unset or set
+      to DEFAULT, Cloud DNS will make forwarding decision based on address
+      ranges, i.e. RFC1918 addresses go to the VPC, Non-RFC1918 addresses go
+      to the Internet. When set to PRIVATE, Cloud DNS will always send queries
+      through VPC for this target
+    ipv4Address: IPv4 address to forward to.
     kind: A string attribute.
   """
 
   class ForwardingPathValueValuesEnum(_messages.Enum):
-    r"""! Forwarding path for this TargetNameServer, if unset or set to
-    DEFAULT, ! Cloud DNS will make forwarding decision based on address
-    ranges, ! i.e. RFC1918 addresses go to the VPC, Non-RFC1918 addresses go
-    to the ! Internet. When set to PRIVATE, Cloud DNS will always send queries
-    ! through VPC for this target
+    r"""Forwarding path for this TargetNameServer, if unset or set to DEFAULT,
+    Cloud DNS will make forwarding decision based on address ranges, i.e.
+    RFC1918 addresses go to the VPC, Non-RFC1918 addresses go to the Internet.
+    When set to PRIVATE, Cloud DNS will always send queries through VPC for
+    this target
 
     Values:
-      default: ! Cloud DNS will make forwarding decision based on address
-        ranges, ! i.e. RFC1918 addresses forward to the target through the VPC
-        and ! Non-RFC1918 addresses will forward to the target through the !
+      default: Cloud DNS will make forwarding decision based on address
+        ranges, i.e. RFC1918 addresses forward to the target through the VPC
+        and Non-RFC1918 addresses will forward to the target through the
         Internet
       private: Cloud DNS will always forward to this target through the VPC.
     """
@@ -1413,9 +1397,9 @@ class PolicyNetwork(_messages.Message):
 
   Fields:
     kind: A string attribute.
-    networkUrl: ! The fully qualified URL of the VPC network to bind to. !
-      This should be formatted like ! https://www.googleapis.com/compute/v1/pr
-      ojects/{project}/global/networks/{network}
+    networkUrl: The fully qualified URL of the VPC network to bind to. This
+      should be formatted like https://www.googleapis.com/compute/v1/projects/
+      {project}/global/networks/{network}
   """
 
   kind = _messages.StringField(1, default=u'dns#policyNetwork')
@@ -1423,18 +1407,18 @@ class PolicyNetwork(_messages.Message):
 
 
 class Project(_messages.Message):
-  r"""! A project resource. The project is a top level container for resources
-  ! including Cloud DNS ManagedZones. Projects can be created only in the APIs
-  ! console.
+  r"""A project resource. The project is a top level container for resources
+  including Cloud DNS ManagedZones. Projects can be created only in the APIs
+  console.
 
   Fields:
-    id: ! User assigned unique identifier for the resource (output only).
+    id: User assigned unique identifier for the resource (output only).
     kind: A string attribute.
-    number: ! Unique numeric identifier for the resource; defined by the
-      server (output ! only).
-    quota: ! Quotas assigned to this project (output only).
-    whitelistedFeatures: ! A list of alpha/temporary/experimental features
-      enabled for this project ! (output only).
+    number: Unique numeric identifier for the resource; defined by the server
+      (output only).
+    quota: Quotas assigned to this project (output only).
+    whitelistedFeatures: A list of alpha/temporary/experimental features
+      enabled for this project (output only).
   """
 
   id = _messages.StringField(1)
@@ -1445,34 +1429,33 @@ class Project(_messages.Message):
 
 
 class Quota(_messages.Message):
-  r"""! Limits associated with a Project.
+  r"""Limits associated with a Project.
 
   Fields:
-    dnsKeysPerManagedZone: ! Maximum allowed number of DnsKeys per
-      ManagedZone.
+    dnsKeysPerManagedZone: Maximum allowed number of DnsKeys per ManagedZone.
     kind: A string attribute.
-    managedZones: ! Maximum allowed number of managed zones in the project.
-    managedZonesPerNetwork: ! Maximum allowed number of managed zones which
-      can be attached to a ! network.
-    networksPerManagedZone: ! Maximum allowed number of networks to which a
-      privately scoped zone can be ! attached.
-    networksPerPolicy: ! Maximum allowed number of networks per policy.
-    policies: ! Maximum allowed number of policies per project.
-    resourceRecordsPerRrset: ! Maximum allowed number of ResourceRecords per
+    managedZones: Maximum allowed number of managed zones in the project.
+    managedZonesPerNetwork: Maximum allowed number of managed zones which can
+      be attached to a network.
+    networksPerManagedZone: Maximum allowed number of networks to which a
+      privately scoped zone can be attached.
+    networksPerPolicy: Maximum allowed number of networks per policy.
+    policies: Maximum allowed number of policies per project.
+    resourceRecordsPerRrset: Maximum allowed number of ResourceRecords per
       ResourceRecordSet.
-    rrsetAdditionsPerChange: ! Maximum allowed number of ResourceRecordSets to
-      add per ! ChangesCreateRequest.
-    rrsetDeletionsPerChange: ! Maximum allowed number of ResourceRecordSets to
-      delete per ! ChangesCreateRequest.
-    rrsetsPerManagedZone: ! Maximum allowed number of ResourceRecordSets per
+    rrsetAdditionsPerChange: Maximum allowed number of ResourceRecordSets to
+      add per ChangesCreateRequest.
+    rrsetDeletionsPerChange: Maximum allowed number of ResourceRecordSets to
+      delete per ChangesCreateRequest.
+    rrsetsPerManagedZone: Maximum allowed number of ResourceRecordSets per
       zone in the project.
-    targetNameServersPerManagedZone: ! Maximum allowed number of target name
+    targetNameServersPerManagedZone: Maximum allowed number of target name
       servers per managed forwarding zone.
-    targetNameServersPerPolicy: ! Maximum allowed number of alternative target
+    targetNameServersPerPolicy: Maximum allowed number of alternative target
       name servers per policy.
-    totalRrdataSizePerChange: ! Maximum allowed size for total rrdata in one
-      ChangesCreateRequest in ! bytes.
-    whitelistedKeySpecs: ! DNSSEC algorithm and key length types that can be
+    totalRrdataSizePerChange: Maximum allowed size for total rrdata in one
+      ChangesCreateRequest in bytes.
+    whitelistedKeySpecs: DNSSEC algorithm and key length types that can be
       used for DnsKeys.
   """
 
@@ -1494,18 +1477,18 @@ class Quota(_messages.Message):
 
 
 class ResourceRecordSet(_messages.Message):
-  r"""! A unit of data that will be returned by the DNS servers.
+  r"""A unit of data that will be returned by the DNS servers.
 
   Fields:
     kind: A string attribute.
-    name: ! For example, www.example.com.
-    rrdatas: ! As defined in RFC 1035 (section 5) and RFC 1034 (section 3.6.1)
-      -- see ! <a href="/dns/records/json-record">examples</a>.
-    signatureRrdatas: ! As defined in RFC 4034 (section 3.2).
-    ttl: ! Number of seconds that this ResourceRecordSet can be cached by
+    name: For example, www.example.com.
+    rrdatas: As defined in RFC 1035 (section 5) and RFC 1034 (section 3.6.1)
+      -- see <a href="/dns/records/json-record">examples</a>.
+    signatureRrdatas: As defined in RFC 4034 (section 3.2).
+    ttl: Number of seconds that this ResourceRecordSet can be cached by
       resolvers.
-    type: ! The identifier of a supported record type. See the list of ! <a
-      href="/dns/docs/overview#supported_dns_record_types">Supported ! DNS
+    type: The identifier of a supported record type. See the list of <a
+      href="/dns/docs/overview#supported_dns_record_types">Supported DNS
       record types</a>.
   """
 
@@ -1523,16 +1506,16 @@ class ResourceRecordSetsListResponse(_messages.Message):
   Fields:
     header: A ResponseHeader attribute.
     kind: A string attribute.
-    nextPageToken: ! The presence of this field indicates that there exist
-      more results ! following your last page of results in pagination order.
-      To fetch them, ! make another list request using this value as your
-      pagination token. ! ! In this way you can retrieve the complete contents
-      of even very large ! collections one page at a time. However, if the
-      contents of the collection ! change between the first and last paginated
-      list request, the set of all ! elements returned will be an inconsistent
-      view of the collection. There is ! no way to retrieve a consistent
-      snapshot of a collection larger than the ! maximum page size.
-    rrsets: ! The resource record set resources.
+    nextPageToken: The presence of this field indicates that there exist more
+      results following your last page of results in pagination order. To
+      fetch them, make another list request using this value as your
+      pagination token.  In this way you can retrieve the complete contents of
+      even very large collections one page at a time. However, if the contents
+      of the collection change between the first and last paginated list
+      request, the set of all elements returned will be an inconsistent view
+      of the collection. There is no way to retrieve a consistent snapshot of
+      a collection larger than the maximum page size.
+    rrsets: The resource record set resources.
   """
 
   header = _messages.MessageField('ResponseHeader', 1)
@@ -1542,12 +1525,12 @@ class ResourceRecordSetsListResponse(_messages.Message):
 
 
 class ResponseHeader(_messages.Message):
-  r"""! Elements common to every response.
+  r"""Elements common to every response.
 
   Fields:
-    operationId: ! For mutating operation requests that completed
-      successfully. ! This is the client_operation_id if the client specified
-      it, ! otherwise it is generated by the server (output only).
+    operationId: For mutating operation requests that completed successfully.
+      This is the client_operation_id if the client specified it, otherwise it
+      is generated by the server (output only).
   """
 
   operationId = _messages.StringField(1)

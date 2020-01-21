@@ -25,6 +25,55 @@ from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.core.util import files
 
 
+def AddUnRegisterCommonArgs(parser):
+  """Adds the flags shared between '(un)register' subcommands to parser.
+
+  Args:
+    parser: an argparse.ArgumentParser, to which the common flags will be added
+  """
+  parser.add_argument(
+      '--kubeconfig',
+      type=str,
+      help=textwrap.dedent("""\
+            The kubeconfig file containing an entry for the cluster. Defaults to
+            $KUBECONFIG if it is set in the environment, otherwise defaults to
+            to $HOME/.kube/config.
+          """),
+  )
+  # A top level Cluster identifier mutually exclusive group.
+  group = parser.add_group(
+      mutex=True, required=True, help='Cluster identifier.')
+  group.add_argument(
+      '--context',
+      type=str,
+      help=textwrap.dedent("""\
+        The context in the kubeconfig file that specifies the cluster.
+      """)
+  )
+  group.add_argument(
+      '--gke-uri',
+      type=str,
+      help=textwrap.dedent("""\
+          The URI of the GKE cluster; for example,
+          'https://container.googleapis.com/projects/my-project/locations/us-central1-a/clusters/my-cluster'
+          The URI can obtain by calling:
+              gcloud container clusters list --uri
+          This is only valid if the represented cluster is a GKE cluster. The
+          provided URI will be validated to confirm that it maps to the valid
+          GKE cluster.
+        """),
+  )
+  group.add_argument(
+      '--gke-cluster',
+      type=str,
+      metavar='LOCATION/CLUSTER_NAME',
+      help=textwrap.dedent("""\
+          The location/name of the GKE cluster. The location can be a zone or
+          a region for e.g `us-central1-a/my-cluster`.
+        """),
+  )
+
+
 def AddCommonArgs(parser):
   """Adds the flags shared between 'hub' subcommands to parser.
 

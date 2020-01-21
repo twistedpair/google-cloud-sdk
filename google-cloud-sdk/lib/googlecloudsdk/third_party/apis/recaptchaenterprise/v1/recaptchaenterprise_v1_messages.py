@@ -116,20 +116,52 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
   r"""A key used to identify and configure applications (web and/or mobile)
   that use reCAPTCHA Enterprise.
 
+  Messages:
+    LabelsValue: Optional. See <a href="https://cloud.google.com/recaptcha-
+      enterprise/docs/labels"> Creating and managing labels</a>.
+
   Fields:
     androidSettings: Settings for keys that can be used by Android apps.
     displayName: Human-readable display name of this key. Modifiable by user.
     iosSettings: Settings for keys that can be used by iOS apps.
+    labels: Optional. See <a href="https://cloud.google.com/recaptcha-
+      enterprise/docs/labels"> Creating and managing labels</a>.
     name: The resource name for the Key in the format
       "projects/{project_number}/keys/{key_id}".
     webSettings: Settings for keys that can be used by websites.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. See <a href="https://cloud.google.com/recaptcha-
+    enterprise/docs/labels"> Creating and managing labels</a>.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   androidSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AndroidKeySettings', 1)
   displayName = _messages.StringField(2)
   iosSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1IOSKeySettings', 3)
-  name = _messages.StringField(4)
-  webSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettings', 5)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  webSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettings', 6)
 
 
 class GoogleCloudRecaptchaenterpriseV1ListKeysResponse(_messages.Message):

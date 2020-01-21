@@ -31,6 +31,36 @@ from googlecloudsdk.core.util import files
 from six.moves import range
 
 
+def _GetPrimaryNodeName():
+  """Get the primary node name.
+
+  Returns:
+    str, the name of the primary node. If running in tensorflow 1.x,
+    return 'master'. If running in tensorflow 2.x, return 'chief'.
+    If tensorflow is not installed in local envrionment, it will return
+    the default name 'master'.
+  Raises:
+    RuntimeError: if there is no python executable on the user system.
+  """
+  exe_override = properties.VALUES.ml_engine.local_python.Get()
+  python_executable = exe_override or files.FindExecutableOnPath('python')
+  if not python_executable:
+    raise RuntimeError('No python interpreter found on local machine')
+  cmd = [python_executable,
+         '-c',
+         'import tensorflow as tf; print(tf.version.VERSION)']
+  proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  tf_version = proc.stdout.read()
+  if tf_version.startswith('1.'):
+    return 'master'
+  elif tf_version.startswith('2.'):
+    return 'chief'
+  log.warning(
+      'Unexpected tensorflow version {}, using the default primary'
+      ' node name, aka "master" for cluster settings'.format(tf_version))
+  return 'chief'
+
+
 def MakeProcess(module_name,
                 package_root,
                 args=None,
@@ -40,7 +70,7 @@ def MakeProcess(module_name,
                 **extra_popen_args):
   """Make a Popen object that runs the module, with the correct env.
 
-  If task_type is 'master' instead replaces the current process with the
+  If task_type is primary instead replaces the current process with the
   subprocess via execution_utils.Exec
   Args:
     module_name: str. Name of the module to run, e.g. trainer.task
@@ -56,7 +86,7 @@ def MakeProcess(module_name,
   Returns:
     a subprocess.Popen object corresponding to the subprocesses or an int
     corresponding to the return value of the subprocess
-    (if task_type is 'master')
+    (if task_type is primary)
   Raises:
     RuntimeError: if there is no python executable on the user system
   """
@@ -83,7 +113,7 @@ def MakeProcess(module_name,
   # configuration options to the training module. the module specific
   # arguments are passed as command line arguments.
   env['TF_CONFIG'] = json.dumps(config)
-  if task_type == 'master':
+  if task_type == _GetPrimaryNodeName():
     return execution_utils.Exec(
         cmd, env=env, no_exit=True, cwd=package_root, **extra_popen_args)
   else:
@@ -116,18 +146,18 @@ def RunDistributed(module_name,
     user_args: [str]. Additional user args for the task. Any relative paths will
       not work.
   Returns:
-    int. the retval of 'master' subprocess
+    int. the retval of primary subprocess
   """
   ports = list(range(start_port, start_port + num_ps + num_workers + 1))
   cluster = {
-      'master': ['localhost:{port}'.format(port=ports[0])],
+      _GetPrimaryNodeName(): ['localhost:{port}'.format(port=ports[0])],
       'ps': ['localhost:{port}'.format(port=p)
              for p in ports[1:num_ps + 1]],
       'worker': ['localhost:{port}'.format(port=p)
                  for p in ports[num_ps + 1:]]
   }
   for task_type, addresses in cluster.items():
-    if task_type != 'master':
+    if task_type != _GetPrimaryNodeName():
       for i in range(len(addresses)):
         MakeProcess(module_name,
                     package_root,
@@ -138,6 +168,6 @@ def RunDistributed(module_name,
   return MakeProcess(module_name,
                      package_root,
                      args=user_args,
-                     task_type='master',
+                     task_type=_GetPrimaryNodeName(),
                      index=0,
                      cluster=cluster)

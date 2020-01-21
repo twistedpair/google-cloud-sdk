@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Common utility functions for sql instances using v1beta3 API."""
+"""Common cert utility functions for sql instances."""
 
 
 from __future__ import absolute_import
@@ -54,11 +54,11 @@ def GetCertRefFromName(sql_client, sql_messages, resources, instance_ref,
 def GetCertFromName(sql_client, sql_messages, instance_ref, common_name):
   """Get a cert for a particular instance, given its common name.
 
-  In versions of the SQL API up to at least v1beta3, the last parameter of the
-  URL is the sha1fingerprint, which is not something writeable or readable by
-  humans. Instead, the CLI will ask for the common name. To allow this, we first
-  query all the ssl certs for the instance, and iterate through them to find the
-  one with the correct common name.
+  In the SQL API, the last parameter of the URL is the sha1fingerprint, which is
+  not something writeable or readable by humans. Instead, the CLI will ask for
+  the common name. To allow this, we first query all the ssl certs for the
+  instance, and iterate through them to find the one with the correct common
+  name.
 
   Args:
     sql_client: apitools.BaseApiClient, A working client for the sql version to

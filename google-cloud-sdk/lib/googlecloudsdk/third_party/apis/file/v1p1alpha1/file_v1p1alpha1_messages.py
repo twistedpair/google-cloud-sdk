@@ -64,8 +64,6 @@ class Backup(_messages.Message):
         performance backed by Persistent Disk SSD.
       ADVANCED_HDD: ADVANCED_HDD instances offer larger capacity and scalable
         performance backed by Persistent Disk HDD
-      ADVANCED_SSD: ADVANCED instances offer larger capacity and professional
-        performance backed by Persistent Disk SSD.
       HIGH_SCALE_SSD: HIGH_SCALE instances offer larger capacity and
         professional performance backed by Persistent Disk SSD.
     """
@@ -76,8 +74,7 @@ class Backup(_messages.Message):
     BASIC_HDD = 4
     BASIC_SSD = 5
     ADVANCED_HDD = 6
-    ADVANCED_SSD = 7
-    HIGH_SCALE_SSD = 8
+    HIGH_SCALE_SSD = 7
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The backup state.
@@ -1079,8 +1076,6 @@ class Instance(_messages.Message):
         performance backed by Persistent Disk SSD.
       ADVANCED_HDD: ADVANCED_HDD instances offer larger capacity and scalable
         performance backed by Persistent Disk HDD
-      ADVANCED_SSD: ADVANCED instances offer larger capacity and professional
-        performance backed by Persistent Disk SSD.
       HIGH_SCALE_SSD: HIGH_SCALE instances offer larger capacity and
         professional performance backed by Persistent Disk SSD.
     """
@@ -1091,8 +1086,7 @@ class Instance(_messages.Message):
     BASIC_HDD = 4
     BASIC_SSD = 5
     ADVANCED_HDD = 6
-    ADVANCED_SSD = 7
-    HIGH_SCALE_SSD = 8
+    HIGH_SCALE_SSD = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1615,8 +1609,6 @@ class Snapshot(_messages.Message):
         performance backed by Persistent Disk SSD.
       ADVANCED_HDD: ADVANCED_HDD instances offer larger capacity and scalable
         performance backed by Persistent Disk HDD
-      ADVANCED_SSD: ADVANCED instances offer larger capacity and professional
-        performance backed by Persistent Disk SSD.
       HIGH_SCALE_SSD: HIGH_SCALE instances offer larger capacity and
         professional performance backed by Persistent Disk SSD.
     """
@@ -1627,8 +1619,7 @@ class Snapshot(_messages.Message):
     BASIC_HDD = 4
     BASIC_SSD = 5
     ADVANCED_HDD = 6
-    ADVANCED_SSD = 7
-    HIGH_SCALE_SSD = 8
+    HIGH_SCALE_SSD = 7
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The snapshot state.

@@ -269,13 +269,17 @@ class EventflowOperations(object):
         util.SOURCE_COLLECTION_NAME.format(
             plural_kind=source_crd.source_kind_plural), method_name)
 
+  def SourceGetMethod(self, source_crd):
+    """Returns the request method for a Get request of this source."""
+    return self._FindSourceMethod(source_crd, 'get')
+
   def SourceCreateMethod(self, source_crd):
     """Returns the request method for a Create request of this source."""
     return self._FindSourceMethod(source_crd, 'create')
 
-  def SourceGetMethod(self, source_crd):
-    """Returns the request method for a Get request of this source."""
-    return self._FindSourceMethod(source_crd, 'get')
+  def SourceDeleteMethod(self, source_crd):
+    """Returns the request method for a Delete request of this source."""
+    return self._FindSourceMethod(source_crd, 'delete')
 
   def GetSource(self, source_ref, source_crd):
     """Returns the referenced source."""
@@ -331,6 +335,19 @@ class EventflowOperations(object):
           'Source [{}] already exists.'.format(source_obj.name))
 
     return source.Source(response, self.messages, source_crd.source_kind)
+
+  def DeleteSource(self, source_ref, source_crd):
+    """Deletes the referenced source."""
+    request_method = self.SourceDeleteMethod(source_crd)
+    request_message_type = request_method.GetRequestType()
+    request = request_message_type(name=source_ref.RelativeName())
+    try:
+      with metrics.RecordDuration(metric_names.DELETE_SOURCE):
+        request_method.Call(request, client=self._client)
+    except api_exceptions.HttpNotFoundError:
+      raise exceptions.SourceNotFound(
+          '{} events source [{}] not found.'.format(
+              source_crd.source_kind, source_ref.Name()))
 
   def CreateTriggerAndSource(self, trigger_obj, trigger_ref, namespace_ref,
                              source_obj, event_type, parameters, broker,

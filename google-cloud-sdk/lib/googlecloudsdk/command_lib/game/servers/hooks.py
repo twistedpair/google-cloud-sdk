@@ -209,14 +209,28 @@ def ProcessScalingConfigsFile(scaling_configs_file):
     for sc in scaling_configs:
       s = messages.ScalingConfig()
       if 'selectors' in sc:
-        s.selectors = sc['selectors']
+        if not isinstance(sc['selectors'], list):
+          raise InvalidSchemaError('Invalid schema: selectors must be a list')
+        s.selectors = []
+        for lab in sc['selectors']:
+          labels = []
+          for (key, val) in lab['labels'].items():
+            labels.append(utils.ParseClusters(None, key, val, messages))
+          s.selectors.append(utils.ParseLabels(None, labels, messages))
       else:
         # Add default selector if not set
         s.selectors = [selector]
       if 'name' in sc:
         s.name = sc['name']
       if 'schedules' in sc:
-        s.schedules = sc['schedules']
+        s.schedules = []
+        if not isinstance(sc['schedules'], list):
+          raise InvalidSchemaError('Invalid schema: schedules must be a list')
+        for sh in sc['schedules']:
+          schedule = messages.Schedule()
+          schedule.cronJobDuration = sh['cronJobDuration']
+          schedule.cronSpec = sh['cronSpec']
+          s.schedules.append(schedule)
       if 'fleetAutoscalerSpec' not in sc:
         raise InvalidSchemaError(
             'Invalid schema: expected proper scaling configs')

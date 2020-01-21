@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Fetching GCE metadata."""
 
 from __future__ import absolute_import
@@ -21,6 +20,7 @@ from __future__ import unicode_literals
 
 import threading
 
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import gce_cache
 from googlecloudsdk.core.credentials import gce_read
 from googlecloudsdk.core.util import retry
@@ -45,10 +45,13 @@ class MissingAudienceForIdTokenError(Error):
 
 
 @retry.RetryOnException(max_retrials=3)
-def _ReadNoProxyWithCleanFailures(uri, http_errors_to_ignore=()):
+def _ReadNoProxyWithCleanFailures(
+    uri,
+    http_errors_to_ignore=(),
+    timeout=properties.VALUES.compute.gce_metadata_read_timeout_sec.GetInt()):
   """Reads data from a URI with no proxy, yielding cloud-sdk exceptions."""
   try:
-    return gce_read.ReadNoProxy(uri)
+    return gce_read.ReadNoProxy(uri, timeout)
   except urllib.error.HTTPError as e:
     if e.code in http_errors_to_ignore:
       return None
@@ -76,7 +79,10 @@ def _HandleMissingMetadataServer(return_list=False):
   Returns:
     The value the underlying method would return.
   """
+
+  #  pylint: disable=missing-docstring
   def _Wrapper(f):
+
     def Inner(self, *args, **kwargs):
       try:
         return f(self, *args, **kwargs)
@@ -84,7 +90,9 @@ def _HandleMissingMetadataServer(return_list=False):
         with _metadata_lock:
           self.connected = gce_cache.ForceCacheRefresh()
         return [] if return_list else None
+
     return Inner
+
   return _Wrapper
 
 
@@ -268,6 +276,7 @@ class _GCEMetadata(object):
         gce_read.GOOGLE_GCE_METADATA_ID_TOKEN_URI.format(
             audience=audience, format=token_format, licenses=include_license),
         http_errors_to_ignore=(404,))
+
 
 _metadata = None
 _metadata_lock = threading.Lock()

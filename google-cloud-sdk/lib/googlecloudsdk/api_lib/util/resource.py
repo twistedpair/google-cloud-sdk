@@ -31,11 +31,10 @@ class CollectionInfo(object):
       api_version: str, version id for this api.
       path: str, Atomic URI template for this resource.
       flat_paths: {name->path}, Named detailed URI templates for this resource.
-          If there is an entry ''->path it replaces path and corresponding param
-          attributes for resources parsing. path and params are not used
-          in this case.
-          Also note that key in this dictionary is referred as subcollection,
-          as it extends 'name' attribute.
+        If there is an entry ''->path it replaces path and corresponding param
+        attributes for resources parsing. path and params are not used in this
+        case. Also note that key in this dictionary is referred as
+        subcollection, as it extends 'name' attribute.
       params: list(str), description of parameters in the path.
       name: str, collection name for this resource without leading api_name.
       base_url: str, URL for service providing these resources.
@@ -64,7 +63,7 @@ class CollectionInfo(object):
 
   @property
   def full_name(self):
-    return self.api_name + '.'  + self.name
+    return self.api_name + '.' + self.name
 
   def GetSubcollection(self, collection_name):
     name = self.full_name
@@ -94,8 +93,9 @@ class CollectionInfo(object):
 
     Args:
       subcollection: str, key name for flat_paths. If self.flat_paths is empty
-          use '' (or any other falsy value) for subcollection to get default
-          path parameters.
+        use '' (or any other falsy value) for subcollection to get default path
+        parameters.
+
     Returns:
       Paramaters present in specified subcollection path.
     Raises:
@@ -115,8 +115,7 @@ class CollectionInfo(object):
 
   def __eq__(self, other):
     return (self.api_name == other.api_name and
-            self.api_version == other.api_version and
-            self.name == other.name)
+            self.api_version == other.api_version and self.name == other.name)
 
   def __ne__(self, other):
     return not self == other
@@ -191,12 +190,9 @@ def SplitDefaultEndpointUrl(url):
     return _ExtractApiNameFromDomain(domain), version, resource_path
 
   if version_index > 1:
-    if _IsKubernetesApi(_ExtractApiNameFromDomain(domain)):
-      # run-domain/apis/{kube-api.name}/{version}/{resource-path}
-      api_name = _ExtractApiNameFromDomain(domain)
-    else:
-      # domain/{api}/{version}/{resource-path}
-      api_name = tokens[version_index - 1]
+    # If domain is not a kubernetes api name, use
+    # domain/{api}/{version}/{resource-path}
+    api_name = _FindKubernetesApiName(domain) or tokens[version_index - 1]
     return api_name, version, resource_path
 
   raise InvalidEndpointException(url)
@@ -210,6 +206,7 @@ def GetParamsFromPath(path):
 
   Args:
     path: str, uri template path.
+
   Returns:
     list(str), list of parameters in the template path.
   """
@@ -249,11 +246,30 @@ def _GetApiVersionIndex(tokens):
   return -1
 
 
-def _IsKubernetesApi(api_name):
-  k8s_api_names = ('run')
-  return api_name in k8s_api_names
-
-
 def _ExtractApiNameFromDomain(domain):
   # Example: sql.googleapis.com -> sql
   return domain.split('.')[0]
+
+
+def _FindKubernetesApiName(domain):
+  """Find the name of the kubernetes api.
+
+  Determines the kubernetes api name from the domain of the resource uri.
+  The domain may from a global resource or a regionalized resource.
+
+  Args:
+    domain: Domain from the resource uri.
+
+  Returns:
+    Api name. Returns None if the domain is not a kubernetes api domain.
+  """
+  # Examples:
+  # sql.googleapis.com -> sql
+  # us-central1-run.googleapis.com - > run
+  k8s_api_names = ('run',)
+  domain_first_part = domain.split('.')[0]
+  for api_name in k8s_api_names:
+    if (api_name == domain_first_part or
+        domain_first_part.endswith('-' + api_name)):
+      return api_name
+  return None

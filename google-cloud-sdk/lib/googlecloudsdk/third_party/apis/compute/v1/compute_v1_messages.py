@@ -7201,6 +7201,26 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group, should
+      conform to RFC1035.
+    instanceGroupManagersApplyUpdatesRequest: A
+      InstanceGroupManagersApplyUpdatesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    zone: The name of the zone where the managed instance group is located.
+      Should conform to RFC1035.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersApplyUpdatesRequest = _messages.MessageField('InstanceGroupManagersApplyUpdatesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstanceGroupManagersCreateInstancesRequest(_messages.Message):
   r"""A ComputeInstanceGroupManagersCreateInstancesRequest object.
 
@@ -12466,6 +12486,27 @@ class ComputeRegionInstanceGroupManagersAbandonInstancesRequest(_messages.Messag
   region = _messages.StringField(3, required=True)
   regionInstanceGroupManagersAbandonInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersAbandonInstancesRequest', 4)
   requestId = _messages.StringField(5)
+
+
+class ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest
+  object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group, should
+      conform to RFC1035.
+    project: Project ID for this request.
+    region: Name of the region scoping this request, should conform to
+      RFC1035.
+    regionInstanceGroupManagersApplyUpdatesRequest: A
+      RegionInstanceGroupManagersApplyUpdatesRequest resource to be passed as
+      the request body.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersApplyUpdatesRequest = _messages.MessageField('RegionInstanceGroupManagersApplyUpdatesRequest', 4)
 
 
 class ComputeRegionInstanceGroupManagersCreateInstancesRequest(_messages.Message):
@@ -21825,14 +21866,18 @@ class HttpHeaderMatch(_messages.Message):
       integer, number or is empty, the match fails. For example for a range
       [-5, 0]   - -3 will match.  - 0 will not match.  - 0.25 will not match.
       - -3someString will not match.   Only one of exactMatch, prefixMatch,
-      suffixMatch, regexMatch, presentMatch or rangeMatch must be set.
-    regexMatch: The value of the header must match the regualar expression
+      suffixMatch, regexMatch, presentMatch or rangeMatch must be set. Note
+      that rangeMatch is not supported for Loadbalancers that have their
+      loadBalancingScheme set to EXTERNAL.
+    regexMatch: The value of the header must match the regular expression
       specified in regexMatch. For regular expression grammar, please see:
       en.cppreference.com/w/cpp/regex/ecmascript  For matching against a port
       specified in the HTTP request, use a headerMatch with headerName set to
       PORT and a regular expression that satisfies the RFC2616 Host header's
       port specifier. Only one of exactMatch, prefixMatch, suffixMatch,
-      regexMatch, presentMatch or rangeMatch must be set.
+      regexMatch, presentMatch or rangeMatch must be set. Note that regexMatch
+      only applies to Loadbalancers that have their loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED.
     suffixMatch: The value of the header must end with the contents of
       suffixMatch. Only one of exactMatch, prefixMatch, suffixMatch,
       regexMatch, presentMatch or rangeMatch must be set.
@@ -22062,7 +22107,8 @@ class HttpQueryParameterMatch(_messages.Message):
       matches the regular expression specified by regexMatch. For the regular
       expression grammar, please see
       en.cppreference.com/w/cpp/regex/ecmascript  Only one of presentMatch,
-      exactMatch or regexMatch must be set.
+      exactMatch or regexMatch must be set. Note that regexMatch only applies
+      when the loadBalancingScheme is set to INTERNAL_SELF_MANAGED.
   """
 
   exactMatch = _messages.StringField(1)
@@ -22325,7 +22371,9 @@ class HttpRouteRuleMatch(_messages.Message):
       after removing any query parameters and anchor supplied with the
       original URL. For regular expression grammar please see
       en.cppreference.com/w/cpp/regex/ecmascript  Only one of prefixMatch,
-      fullPathMatch or regexMatch must be specified.
+      fullPathMatch or regexMatch must be specified. Note that regexMatch only
+      applies to Loadbalancers that have their loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED.
   """
 
   fullPathMatch = _messages.StringField(1)
@@ -24156,6 +24204,83 @@ class InstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   """
 
   instances = _messages.StringField(1, repeated=True)
+
+
+class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
+  r"""InstanceGroupManagers.applyUpdatesToInstances
+
+  Enums:
+    MinimalActionValueValuesEnum: The minimal action that you want to perform
+      on each instance during the update:   - REPLACE: At minimum, delete the
+      instance and create it again.  - RESTART: Stop the instance and start it
+      again.  - REFRESH: Do not stop the instance.  - NONE: Do not disrupt the
+      instance at all.  By default, the minimum action is NONE. If your update
+      requires a more disruptive action than you set with this flag, the
+      necessary action is performed to execute the update.
+    MostDisruptiveAllowedActionValueValuesEnum: The most disruptive action
+      that you want to perform on each instance during the update:   -
+      REPLACE: Delete the instance and create it again.  - RESTART: Stop the
+      instance and start it again.  - REFRESH: Do not stop the instance.  -
+      NONE: Do not disrupt the instance at all.  By default, the most
+      disruptive allowed action is REPLACE. If your update requires a more
+      disruptive action than you set with this flag, the update request will
+      fail.
+
+  Fields:
+    instances: The list of URLs of one or more instances for which you want to
+      apply updates. Each URL can be a full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
+    minimalAction: The minimal action that you want to perform on each
+      instance during the update:   - REPLACE: At minimum, delete the instance
+      and create it again.  - RESTART: Stop the instance and start it again.
+      - REFRESH: Do not stop the instance.  - NONE: Do not disrupt the
+      instance at all.  By default, the minimum action is NONE. If your update
+      requires a more disruptive action than you set with this flag, the
+      necessary action is performed to execute the update.
+    mostDisruptiveAllowedAction: The most disruptive action that you want to
+      perform on each instance during the update:   - REPLACE: Delete the
+      instance and create it again.  - RESTART: Stop the instance and start it
+      again.  - REFRESH: Do not stop the instance.  - NONE: Do not disrupt the
+      instance at all.  By default, the most disruptive allowed action is
+      REPLACE. If your update requires a more disruptive action than you set
+      with this flag, the update request will fail.
+  """
+
+  class MinimalActionValueValuesEnum(_messages.Enum):
+    r"""The minimal action that you want to perform on each instance during
+    the update:   - REPLACE: At minimum, delete the instance and create it
+    again.  - RESTART: Stop the instance and start it again.  - REFRESH: Do
+    not stop the instance.  - NONE: Do not disrupt the instance at all.  By
+    default, the minimum action is NONE. If your update requires a more
+    disruptive action than you set with this flag, the necessary action is
+    performed to execute the update.
+
+    Values:
+      REPLACE: <no description>
+      RESTART: <no description>
+    """
+    REPLACE = 0
+    RESTART = 1
+
+  class MostDisruptiveAllowedActionValueValuesEnum(_messages.Enum):
+    r"""The most disruptive action that you want to perform on each instance
+    during the update:   - REPLACE: Delete the instance and create it again.
+    - RESTART: Stop the instance and start it again.  - REFRESH: Do not stop
+    the instance.  - NONE: Do not disrupt the instance at all.  By default,
+    the most disruptive allowed action is REPLACE. If your update requires a
+    more disruptive action than you set with this flag, the update request
+    will fail.
+
+    Values:
+      REPLACE: <no description>
+      RESTART: <no description>
+    """
+    REPLACE = 0
+    RESTART = 1
+
+  instances = _messages.StringField(1, repeated=True)
+  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 2)
+  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 3)
 
 
 class InstanceGroupManagersCreateInstancesRequest(_messages.Message):
@@ -32198,9 +32323,8 @@ class PathMatcher(_messages.Message):
     routeRules: The list of HTTP route rules. Use this list instead of
       pathRules when advanced route matching and routing actions are desired.
       routeRules are evaluated in order of priority, from the lowest to
-      highest number. Within a given pathMatcher, only one of pathRules or
-      routeRules must be set. routeRules are not supported in UrlMaps intended
-      for External Load balancers.
+      highest number. Within a given pathMatcher, you can set only one of
+      pathRules or routeRules.
   """
 
   defaultRouteAction = _messages.MessageField('HttpRouteAction', 1)
@@ -33307,6 +33431,83 @@ class RegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
   """
 
   instances = _messages.StringField(1, repeated=True)
+
+
+class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
+  r"""InstanceGroupManagers.applyUpdatesToInstances
+
+  Enums:
+    MinimalActionValueValuesEnum: The minimal action that you want to perform
+      on each instance during the update:   - REPLACE: At minimum, delete the
+      instance and create it again.  - RESTART: Stop the instance and start it
+      again.  - REFRESH: Do not stop the instance.  - NONE: Do not disrupt the
+      instance at all.  By default, the minimum action is NONE. If your update
+      requires a more disruptive action than you set with this flag, the
+      necessary action is performed to execute the update.
+    MostDisruptiveAllowedActionValueValuesEnum: The most disruptive action
+      that you want to perform on each instance during the update:   -
+      REPLACE: Delete the instance and create it again.  - RESTART: Stop the
+      instance and start it again.  - REFRESH: Do not stop the instance.  -
+      NONE: Do not disrupt the instance at all.  By default, the most
+      disruptive allowed action is REPLACE. If your update requires a more
+      disruptive action than you set with this flag, the update request will
+      fail.
+
+  Fields:
+    instances: The list of URLs of one or more instances for which you want to
+      apply updates. Each URL can be a full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
+    minimalAction: The minimal action that you want to perform on each
+      instance during the update:   - REPLACE: At minimum, delete the instance
+      and create it again.  - RESTART: Stop the instance and start it again.
+      - REFRESH: Do not stop the instance.  - NONE: Do not disrupt the
+      instance at all.  By default, the minimum action is NONE. If your update
+      requires a more disruptive action than you set with this flag, the
+      necessary action is performed to execute the update.
+    mostDisruptiveAllowedAction: The most disruptive action that you want to
+      perform on each instance during the update:   - REPLACE: Delete the
+      instance and create it again.  - RESTART: Stop the instance and start it
+      again.  - REFRESH: Do not stop the instance.  - NONE: Do not disrupt the
+      instance at all.  By default, the most disruptive allowed action is
+      REPLACE. If your update requires a more disruptive action than you set
+      with this flag, the update request will fail.
+  """
+
+  class MinimalActionValueValuesEnum(_messages.Enum):
+    r"""The minimal action that you want to perform on each instance during
+    the update:   - REPLACE: At minimum, delete the instance and create it
+    again.  - RESTART: Stop the instance and start it again.  - REFRESH: Do
+    not stop the instance.  - NONE: Do not disrupt the instance at all.  By
+    default, the minimum action is NONE. If your update requires a more
+    disruptive action than you set with this flag, the necessary action is
+    performed to execute the update.
+
+    Values:
+      REPLACE: <no description>
+      RESTART: <no description>
+    """
+    REPLACE = 0
+    RESTART = 1
+
+  class MostDisruptiveAllowedActionValueValuesEnum(_messages.Enum):
+    r"""The most disruptive action that you want to perform on each instance
+    during the update:   - REPLACE: Delete the instance and create it again.
+    - RESTART: Stop the instance and start it again.  - REFRESH: Do not stop
+    the instance.  - NONE: Do not disrupt the instance at all.  By default,
+    the most disruptive allowed action is REPLACE. If your update requires a
+    more disruptive action than you set with this flag, the update request
+    will fail.
+
+    Values:
+      REPLACE: <no description>
+      RESTART: <no description>
+    """
+    REPLACE = 0
+    RESTART = 1
+
+  instances = _messages.StringField(1, repeated=True)
+  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 2)
+  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 3)
 
 
 class RegionInstanceGroupManagersCreateInstancesRequest(_messages.Message):

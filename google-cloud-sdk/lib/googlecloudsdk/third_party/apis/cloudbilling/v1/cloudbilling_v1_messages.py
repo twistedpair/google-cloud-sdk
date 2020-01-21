@@ -140,10 +140,10 @@ class BillingAccount(_messages.Message):
       form `billingAccounts/{billing_account_id}`. For example,
       `billingAccounts/012345-567890-ABCDEF` would be the resource name for
       billing account `012345-567890-ABCDEF`.
-    open: True if the billing account is open, and will therefore be charged
-      for any usage on associated projects. False if the billing account is
-      closed, and therefore projects associated with it will be unable to use
-      paid services.
+    open: Output only. True if the billing account is open, and will therefore
+      be charged for any usage on associated projects. False if the billing
+      account is closed, and therefore projects associated with it will be
+      unable to use paid services.
   """
 
   displayName = _messages.StringField(1)
@@ -240,8 +240,8 @@ class CloudbillingBillingAccountsGetRequest(_messages.Message):
   r"""A CloudbillingBillingAccountsGetRequest object.
 
   Fields:
-    name: The resource name of the billing account to retrieve. For example,
-      `billingAccounts/012345-567890-ABCDEF`.
+    name: Required. The resource name of the billing account to retrieve. For
+      example, `billingAccounts/012345-567890-ABCDEF`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -275,7 +275,7 @@ class CloudbillingBillingAccountsPatchRequest(_messages.Message):
   Fields:
     billingAccount: A BillingAccount resource to be passed as the request
       body.
-    name: The name of the billing account resource to be updated.
+    name: Required. The name of the billing account resource to be updated.
     updateMask: The update mask applied to the resource. Only "display_name"
       is currently supported.
   """
@@ -289,8 +289,8 @@ class CloudbillingBillingAccountsProjectsListRequest(_messages.Message):
   r"""A CloudbillingBillingAccountsProjectsListRequest object.
 
   Fields:
-    name: The resource name of the billing account associated with the
-      projects that you want to list. For example,
+    name: Required. The resource name of the billing account associated with
+      the projects that you want to list. For example,
       `billingAccounts/012345-567890-ABCDEF`.
     pageSize: Requested page size. The maximum page size is 100; this is also
       the default.
@@ -339,8 +339,8 @@ class CloudbillingProjectsGetBillingInfoRequest(_messages.Message):
   r"""A CloudbillingProjectsGetBillingInfoRequest object.
 
   Fields:
-    name: The resource name of the project for which billing information is
-      retrieved. For example, `projects/tokyo-rain-123`.
+    name: Required. The resource name of the project for which billing
+      information is retrieved. For example, `projects/tokyo-rain-123`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -350,9 +350,9 @@ class CloudbillingProjectsUpdateBillingInfoRequest(_messages.Message):
   r"""A CloudbillingProjectsUpdateBillingInfoRequest object.
 
   Fields:
-    name: The resource name of the project associated with the billing
-      information that you want to update. For example, `projects/tokyo-
-      rain-123`.
+    name: Required. The resource name of the project associated with the
+      billing information that you want to update. For example, `projects
+      /tokyo-rain-123`.
     projectBillingInfo: A ProjectBillingInfo resource to be passed as the
       request body.
   """

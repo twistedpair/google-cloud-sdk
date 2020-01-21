@@ -151,23 +151,17 @@ def StartCloudSqlProxy(instance, port, seconds_to_timeout=10):
   return _WaitForProxyToStart(proxy_process, port, seconds_to_timeout)
 
 
-def IsInstanceV1(instance):
+def IsInstanceV1(sql_messages, instance):
   """Returns a boolean indicating if the database instance is first gen."""
-  return (instance.backendType == 'FIRST_GEN' or
+  return (instance.backendType ==
+          sql_messages.DatabaseInstance.BackendTypeValueValuesEnum.FIRST_GEN or
           (instance.settings and instance.settings.tier and
            instance.settings.tier.startswith('D')))
 
 
-def IsInstanceV2(instance):
+def IsInstanceV2(sql_messages, instance):
   """Returns a boolean indicating if the database instance is second gen."""
-  return instance.backendType == 'SECOND_GEN'
-
-
-def GetInstanceState(instance):
-  """Return the default state string unless the instance is stopped."""
-  if instance.settings and instance.settings.activationPolicy == 'NEVER':
-    return 'STOPPED'
-  return instance.state
+  return instance.backendType == sql_messages.DatabaseInstance.BackendTypeValueValuesEnum.SECOND_GEN
 
 
 # TODO(b/73648377): Factor out static methods into module-level functions.
@@ -205,10 +199,9 @@ class _BaseInstances(object):
         sql_client.instances,
         sql_messages.SqlInstancesListRequest(project=project_id), **params)
 
+    # TODO(b/145617559): this def might be extraneous now
     def YieldInstancesWithAModifiedState():
       for result in yielded:
-        # TODO(b/63139112): Investigate impact of instances without settings.
-        result.state = GetInstanceState(result)
         yield result
 
     return YieldInstancesWithAModifiedState()
@@ -225,25 +218,12 @@ class _BaseInstances(object):
   @staticmethod
   def IsPostgresDatabaseVersion(database_version):
     """Returns a boolean indicating if the database version is Postgres."""
-    return _POSTGRES_DATABASE_VERSION_PREFIX in database_version
+    return _POSTGRES_DATABASE_VERSION_PREFIX in database_version.name
 
   @staticmethod
   def IsSqlServerDatabaseVersion(database_version):
     """Returns a boolean indicating if the database version is SQL Server."""
-    return _SQLSERVER_DATABASE_VERSION_PREFIX in database_version
-
-
-class InstancesV1Beta3(_BaseInstances):
-  """Common utility functions for sql instances V1Beta3."""
-
-  @staticmethod
-  def SetProjectAndInstanceFromRef(instance_resource, instance_ref):
-    instance_resource.project = instance_ref.project
-    instance_resource.instance = instance_ref.instance
-
-  @staticmethod
-  def AddBackupConfigToSettings(settings, backup_config):
-    settings.backupConfiguration = [backup_config]
+    return _SQLSERVER_DATABASE_VERSION_PREFIX in database_version.name
 
 
 class InstancesV1Beta4(_BaseInstances):

@@ -11,7 +11,7 @@ class OsconfigV1alpha2(base_api.BaseApiClient):
   BASE_URL = u'https://osconfig.googleapis.com/'
 
   _PACKAGE = u'osconfig'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/compute']
+  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
   _VERSION = u'v1alpha2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'

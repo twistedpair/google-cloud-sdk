@@ -235,6 +235,7 @@ class DispatchConfigYamlInfo(ConfigYamlInfo):
   """Provides methods for getting 1p-ready representation."""
 
   def _HandlerToDict(self, handler):
+    """Converst a dispatchinfo handler into a 1p-ready dict."""
     parsed_url = dispatchinfo.ParsedURL(handler.url)
     dispatch_domain = parsed_url.host
     if not parsed_url.host_exact:
@@ -242,7 +243,8 @@ class DispatchConfigYamlInfo(ConfigYamlInfo):
 
     dispatch_path = parsed_url.path
     if not parsed_url.path_exact:
-      dispatch_path = dispatch_path.rstrip('/') + '/*'
+      trailing_matcher = '/*' if dispatch_path.endswith('/') else '*'
+      dispatch_path = dispatch_path.rstrip('/') + trailing_matcher
     return {
         'domain': dispatch_domain,
         'path': dispatch_path,

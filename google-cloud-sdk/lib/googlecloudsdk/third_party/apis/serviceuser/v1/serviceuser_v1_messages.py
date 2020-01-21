@@ -850,6 +850,8 @@ class HttpRule(_messages.Message):
     additionalBindings: Additional HTTP bindings for the selector. Nested
       bindings must not contain an `additional_bindings` field themselves
       (that is, the nesting may only be one level deep).
+    allowHalfDuplex: When this flag is set to true, HTTP requests will be
+      allowed to invoke a half-duplex streaming method.
     body: The name of the request field whose value is mapped to the HTTP
       request body, or `*` for mapping all request fields not captured by the
       path pattern to the HTTP body, or omitted for not having any HTTP
@@ -875,15 +877,16 @@ class HttpRule(_messages.Message):
   """
 
   additionalBindings = _messages.MessageField('HttpRule', 1, repeated=True)
-  body = _messages.StringField(2)
-  custom = _messages.MessageField('CustomHttpPattern', 3)
-  delete = _messages.StringField(4)
-  get = _messages.StringField(5)
-  patch = _messages.StringField(6)
-  post = _messages.StringField(7)
-  put = _messages.StringField(8)
-  responseBody = _messages.StringField(9)
-  selector = _messages.StringField(10)
+  allowHalfDuplex = _messages.BooleanField(2)
+  body = _messages.StringField(3)
+  custom = _messages.MessageField('CustomHttpPattern', 4)
+  delete = _messages.StringField(5)
+  get = _messages.StringField(6)
+  patch = _messages.StringField(7)
+  post = _messages.StringField(8)
+  put = _messages.StringField(9)
+  responseBody = _messages.StringField(10)
+  selector = _messages.StringField(11)
 
 
 class LabelDescriptor(_messages.Message):

@@ -74,8 +74,8 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
       ``pubsub.project_id.`topic.id.with.dots` ``   *
       `bigquery.table.project_id.dataset_id.table_id`   *
       `bigquery.dataset.project_id.dataset_id`   *
-      `datacatalog.project_id.location_id.entry_group_id.entry_id`  `*_id`s
-      shoud satisfy the standard SQL rules for identifiers.
+      `datacatalog.entry.project_id.location_id.entry_group_id.entry_id`
+      `*_id`s shoud satisfy the standard SQL rules for identifiers.
       https://cloud.google.com/bigquery/docs/reference/standard-sql/lexical.
   """
 
@@ -199,22 +199,6 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Messa
   googleCloudDatacatalogV1beta1Entry = _messages.MessageField('GoogleCloudDatacatalogV1beta1Entry', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class DatacatalogProjectsLocationsEntryGroupsEntriesSetIamPolicyRequest(_messages.Message):
-  r"""A DatacatalogProjectsLocationsEntryGroupsEntriesSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
 class DatacatalogProjectsLocationsEntryGroupsEntriesTagsCreateRequest(_messages.Message):

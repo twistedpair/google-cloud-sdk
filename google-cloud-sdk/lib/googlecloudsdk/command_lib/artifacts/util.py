@@ -18,6 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+# TODO(b/142489773) Required because of thread-safety issue with loading python
+# modules in the presence of threads.
+import encodings.idna  # pylint: disable=unused-import
 import os
 import re
 
@@ -27,36 +30,11 @@ from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import parallel
 
 _INVALID_REPO_NAME_ERROR = (
     "Names may only contain lowercase letters, numbers, and hyphens, and must "
     "begin with a letter and end with a letter or number.")
-
-_VALID_LOCATIONS = [
-    "northamerica-northeast1",
-    "us-central1",
-    "us-east1",
-    "us-east4",
-    "us-west1",
-    "us-west2",
-    "southamerica-east1",
-    "europe-north1",
-    "europe-west1",
-    "europe-west2",
-    "europe-west3",
-    "europe-west4",
-    "europe-west6",
-    "asia-east1",
-    "asia-east2",
-    "asia-northeast1",
-    "asia-northeast2",
-    "asia-south1",
-    "asia-southeast1",
-    "australia-southeast1",
-    "asia",
-    "europe",
-    "us",
-]
 
 _GCR_BUCKETS = {
     "us": {
@@ -96,29 +74,6 @@ def _IsValidRepoName(repo_name):
   return re.match(_REPO_REGEX, repo_name) is not None
 
 
-def _GetGCRRepos(buckets, project):
-  """Gets a list of GCR repositories given a list of GCR bucket names."""
-  messages = ar_requests.GetMessages()
-  repos = []
-
-  project_id_for_bucket = project
-  if ":" in project:
-    domain, project_id = project.split(":")
-    project_id_for_bucket = "{}.{}.a".format(project_id, domain)
-  for bucket in buckets:
-    try:
-      ar_requests.TestStorageIAMPermission(
-          bucket["bucket"].format(project_id_for_bucket), project)
-      repo = messages.Repository(
-          name="projects/{}/locations/{}/repositories/{}".format(
-              project, bucket["location"], bucket["repository"]),
-          format=messages.Repository.FormatValueValuesEnum.DOCKER)
-      repos.append(repo)
-    except api_exceptions.HttpNotFoundError:
-      continue
-  return repos
-
-
 def GetProject(args):
   """Gets project resource from either argument flag or attribute."""
   return args.project or properties.VALUES.core.project.GetOrFail()
@@ -134,13 +89,8 @@ def GetLocation(args):
   return args.location or properties.VALUES.artifacts.location.GetOrFail()
 
 
-def GetLocationList():
-  """Gets a list of all supported locations."""
-  return _VALID_LOCATIONS
-
-
-def IsValidLocation(location):
-  return location.lower() in _VALID_LOCATIONS
+def GetLocationList(args):
+  return ar_requests.ListLocations(GetProject(args))
 
 
 def AppendRepoDataToRequest(repo_ref, repo_args, request):
@@ -259,6 +209,29 @@ def AppendParentInfoToListVersionsAndTagsResponse(response, args):
   return response
 
 
+def GetGCRRepos(buckets, project):
+  """Gets a list of GCR repositories given a list of GCR bucket names."""
+  messages = ar_requests.GetMessages()
+  repos = []
+
+  project_id_for_bucket = project
+  if ":" in project:
+    domain, project_id = project.split(":")
+    project_id_for_bucket = "{}.{}.a".format(project_id, domain)
+  for bucket in buckets:
+    try:
+      ar_requests.TestStorageIAMPermission(
+          bucket["bucket"].format(project_id_for_bucket), project)
+      repo = messages.Repository(
+          name="projects/{}/locations/{}/repositories/{}".format(
+              project, bucket["location"], bucket["repository"]),
+          format=messages.Repository.FormatValueValuesEnum.DOCKER)
+      repos.append(repo)
+    except api_exceptions.HttpNotFoundError:
+      continue
+  return repos
+
+
 def ListRepositories(args):
   """List repositories in a given project.
 
@@ -272,10 +245,11 @@ def ListRepositories(args):
   """
   project = GetProject(args)
   location = args.location or properties.VALUES.artifacts.location.Get()
-  if location and not IsValidLocation(location) and location != "all":
+  location_list = ar_requests.ListLocations(project)
+  if location and location.lower() not in location_list and location != "all":
     raise ar_exceptions.UnsupportedLocationError(
         "{} is not a valid location. Valid locations are [{}].".format(
-            location, ", ".join(_VALID_LOCATIONS)))
+            location, ", ".join(location_list)))
 
   loc_paths = []
   if location and location != "all":
@@ -288,29 +262,38 @@ def ListRepositories(args):
         "Listing items under project {}, across all locations.\n".format(
             project))
     loc_paths.extend([
-        "projects/{}/locations/{}".format(project, loc)
-        for loc in _VALID_LOCATIONS
+        "projects/{}/locations/{}".format(project, loc) for loc in location_list
     ])
     buckets = _GCR_BUCKETS.values()
 
-  client = ar_requests.GetClient()
-  messages = ar_requests.GetMessages()
+  pool_size = len(loc_paths) if loc_paths else 1
+  pool = parallel.GetPool(pool_size)
+  try:
+    pool.Start()
+    results = pool.Map(ar_requests.ListRepositories, loc_paths)
+  except parallel.MultiError as e:
+    error_set = set(err.content for err in e.errors)
+    msg = "\n".join(error_set)
+    raise ar_exceptions.ArtifactRegistryError(msg)
+  finally:
+    pool.Join()
+
   repos = []
-  for loc in loc_paths:
-    repos.extend(ar_requests.ListRepositories(client, messages, loc))
-  gcr_repos = _GetGCRRepos(buckets, project)
-  if gcr_repos:
-    repos.extend(gcr_repos)
-    log.status.Print(
-        "Note: To perform actions on the Container Registry repositories "
-        "listed below please use 'gcloud container images'.\n")
+  for sublist in results:
+    repos.extend([repo for repo in sublist])
+  repos.sort(key=lambda x: x.name.split("/")[-1])
 
-  return repos
+  return repos, buckets, project
 
 
-def ValidateLocation(unused_ref, args, req):
-  if not IsValidLocation(GetLocation(args)):
+def ValidateLocation(location, project_id):
+  location_list = ar_requests.ListLocations(project_id)
+  if location.lower() not in location_list:
     raise ar_exceptions.UnsupportedLocationError(
         "{} is not a valid location. Valid locations are [{}].".format(
-            args.location, ", ".join(_VALID_LOCATIONS)))
+            location, ", ".join(location_list)))
+
+
+def ValidateLocationHook(unused_ref, args, req):
+  ValidateLocation(GetLocation(args), GetProject(args))
   return req

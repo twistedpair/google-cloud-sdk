@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Caching logic for checking if we're on GCE."""
 
 from __future__ import absolute_import
@@ -25,6 +24,7 @@ import threading
 import time
 
 from googlecloudsdk.core import config
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import gce_read
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import retry
@@ -33,8 +33,7 @@ import six
 from six.moves import http_client
 from six.moves import urllib_error
 
-
-_GCE_CACHE_MAX_AGE = 10*60  # 10 minutes
+_GCE_CACHE_MAX_AGE = 10 * 60  # 10 minutes
 
 # Depending on how a firewall/ NAT behaves, we can have different
 # exceptions at different levels in the networking stack when trying to
@@ -93,7 +92,7 @@ class _OnGCECache(object):
 
     Args:
       check_age: bool, determines if the cache should be refreshed if more than
-          _GCE_CACHE_MAX_AGE time passed since last update.
+        _GCE_CACHE_MAX_AGE time passed since last update.
 
     Returns:
       bool, if we are on GCE or not.
@@ -168,7 +167,10 @@ class _OnGCECache(object):
       max_retrials=3, should_retry_if=_ShouldRetryMetadataServerConnection)
   def _CheckServer(self):
     return gce_read.ReadNoProxy(
-        gce_read.GOOGLE_GCE_METADATA_NUMERIC_PROJECT_URI).isdigit()
+        gce_read.GOOGLE_GCE_METADATA_NUMERIC_PROJECT_URI,
+        properties.VALUES.compute.gce_metadata_check_timeout_sec.GetInt(),
+    ).isdigit()
+
 
 # Since a module is initialized only once, this is effective a singleton
 _SINGLETON_ON_GCE_CACHE = _OnGCECache()

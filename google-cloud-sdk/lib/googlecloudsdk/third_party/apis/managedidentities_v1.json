@@ -704,8 +704,8 @@
         }
       }
     },
-    "Instance": {
-      "id": "Instance",
+    "GoogleCloudSaasacceleratorManagementProvidersV1Instance": {
+      "id": "GoogleCloudSaasacceleratorManagementProvidersV1Instance",
       "description": "Instance represents the interface for SLM services to actuate the state\nof control plane resources.\n\nExample Instance in JSON, where\n  consumer-project=snapchat,\n  producer-project=cloud-sql:\n\n```json\nInstance:\n{\n  \"name\":\n  \"projects\/snapchat\/locations\/us-east1\/instances\/prod-instance\",\n  \"create_time\": {\n    \"seconds\": 1526406431,\n  },\n  \"labels\": {\n    \"env\": \"prod\",\n    \"foo\": \"bar\"\n  },\n  \"state\": READY,\n  \"software_versions\": {\n    \"software_update\": \"cloud-sql-09-28-2018\",\n  },\n  \"maintenance_policy_names\": {\n    \"UpdatePolicy\":\n    \"projects\/snapchat\/locations\/us-east1\/maintenancePolicies\/prod-update-policy\",\n  }\n  \"rollout_metadata\": {\n    \"projects\/cloud-sql\/locations\/global\/rolloutTypes\/software_update\": {\n      \"release\":\n      \"projects\/cloud-sql\/locations\/global\/releases\/cloud-sql-09-28-2018\",\n      \"rollout\":\n      \"projects\/cloud-sql\/locations\/us-east1\/rollouts\/cloud-sql-09-28-2018-canary\",\n    },\n    \"projects\/cloud-sql\/locations\/global\/rolloutTypes\/instance_restart\": {\n      \"release\":\n      \"projects\/cloud-sql\/locations\/global\/releases\/cloud-sql-09-20-repair\",\n      \"rollout\":\n      \"projects\/cloud-sql\/locations\/us-east1\/rollouts\/cloud-sql-09-20-repair-100-percent\",\n    }\n  }\n  \"tenant_project_id\": \"cloud-sql-test-tenant\",\n  \"producer_metadata\": {\n    \"cloud-sql-tier\": \"basic\",\n    \"cloud-sql-instance-size\": \"1G\",\n  },\n  \"provisioned_resources\": [\n    {\n      \"resource-type\": \"compute-instance\",\n      \"resource-url\":\n      \"https:\/\/www.googleapis.com\/compute\/v1\/projects\/cloud-sql\/zones\/us-east1-b\/instances\/vm-1\",\n    }\n  ],\n  \"maintenance_schedules\": {\n    \"csa_rollout\": {\n       \"start_time\": {\n          \"seconds\": 1526406431,\n       },\n       \"end_time\": {\n          \"seconds\": 1535406431,\n       },\n    },\n    \"ncsa_rollout\": {\n       \"start_time\": {\n          \"seconds\": 1526406431,\n       },\n       \"end_time\": {\n          \"seconds\": 1535406431,\n       },\n    }\n  },\n  \"consumer_defined_name\": \"my-sql-instance1\",\n}\n```",
       "type": "object",
       "properties": {
@@ -770,7 +770,7 @@
           "description": "The map between RolloutType and the corresponding RolloutMetadata.\nThis is only mutated by rollout service. For actuation implementation,\nthis information is pass-through for Rollout management. Producer shall\nnot modify by itself.\nFor update of a single entry in this map, the update field mask shall\nfollow this sementics: go\/advanced-field-masks",
           "type": "object",
           "additionalProperties": {
-            "$ref": "RolloutMetadata"
+            "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1RolloutMetadata"
           }
         },
         "tenantProjectId": {
@@ -788,18 +788,18 @@
           "description": "Output only. The list of data plane resources provisioned for this\ninstance, e.g. compute VMs. See go\/get-instance-metadata.",
           "type": "array",
           "items": {
-            "$ref": "ProvisionedResource"
+            "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource"
           }
         },
         "sloMetadata": {
           "description": "Output only. SLO metadata for instance classification in the\nStandardized dataplane SLO platform.\nSee go\/cloud-ssa-standard-slo for feature description.",
-          "$ref": "SloMetadata"
+          "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata"
         },
         "maintenanceSchedules": {
           "description": "The MaintenanceSchedule contains the scheduling information of published\nmaintenance schedule.",
           "type": "object",
           "additionalProperties": {
-            "$ref": "MaintenanceSchedule"
+            "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule"
           }
         },
         "consumerDefinedName": {
@@ -812,8 +812,8 @@
         }
       }
     },
-    "RolloutMetadata": {
-      "id": "RolloutMetadata",
+    "GoogleCloudSaasacceleratorManagementProvidersV1RolloutMetadata": {
+      "id": "GoogleCloudSaasacceleratorManagementProvidersV1RolloutMetadata",
       "description": "RolloutMetadata for an actuation instance. It maps to a single RolloutType.",
       "type": "object",
       "properties": {
@@ -827,12 +827,12 @@
         },
         "notification": {
           "description": "Instance level notification metadata.",
-          "$ref": "NotificationMetadata"
+          "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1NotificationMetadata"
         }
       }
     },
-    "NotificationMetadata": {
-      "id": "NotificationMetadata",
+    "GoogleCloudSaasacceleratorManagementProvidersV1NotificationMetadata": {
+      "id": "GoogleCloudSaasacceleratorManagementProvidersV1NotificationMetadata",
       "description": "NotificationMetadata is the notification state for an instance.",
       "type": "object",
       "properties": {
@@ -856,8 +856,8 @@
         }
       }
     },
-    "ProvisionedResource": {
-      "id": "ProvisionedResource",
+    "GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource": {
+      "id": "GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource",
       "description": "Describes provisioned dataplane resources.",
       "type": "object",
       "properties": {
@@ -871,8 +871,8 @@
         }
       }
     },
-    "SloMetadata": {
-      "id": "SloMetadata",
+    "GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata": {
+      "id": "GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata",
       "description": "SloMetadata contains resources required for proper SLO classification of the\ninstance.",
       "type": "object",
       "properties": {
@@ -884,24 +884,24 @@
           "description": "List of SLO exclusion windows. When multiple entries in the list match\n(matching the exclusion time-window against current time point)\nthe exclusion reason used in the first matching entry will be published.\n\nIt is not needed to include expired exclusion in this list, as only the\ncurrently applicable exclusions are taken into account by the eligibility\nexporting subsystem (the historical state of exclusions will be reflected\nin the historically produced timeseries regardless of the current state).\n\nThis field can be used to mark the instance as temporary ineligible\nfor the purpose of SLO calculation. For permanent instance SLO exclusion,\nuse of custom instance eligibility is recommended. See 'eligibility' field\nbelow.",
           "type": "array",
           "items": {
-            "$ref": "SloExclusion"
+            "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion"
           }
         },
         "nodes": {
           "description": "Optional: list of nodes.\nSome producers need to use per-node metadata to calculate SLO.\nThis field allows such producers to publish per-node SLO meta data,\nwhich will be consumed by SSA Eligibility Exporter and published in the\nform of per node metric to Monarch.",
           "type": "array",
           "items": {
-            "$ref": "NodeSloMetadata"
+            "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata"
           }
         },
         "eligibility": {
           "description": "Optional: user-defined instance eligibility.",
-          "$ref": "SloEligibility"
+          "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility"
         }
       }
     },
-    "SloExclusion": {
-      "id": "SloExclusion",
+    "GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion": {
+      "id": "GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion",
       "description": "SloExclusion represents an exclusion in SLI calculation applies to all SLOs.",
       "type": "object",
       "properties": {
@@ -925,8 +925,8 @@
         }
       }
     },
-    "NodeSloMetadata": {
-      "id": "NodeSloMetadata",
+    "GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata": {
+      "id": "GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata",
       "description": "Node information for custom per-node SLO implementations.\nSSA does not support per-node SLO, but producers can populate per-node\ninformation in SloMetadata for custom precomputations.\nSSA Eligibility Exporter will emit per-node metric based on this information.",
       "type": "object",
       "properties": {
@@ -942,13 +942,13 @@
           "description": "By default node is eligible if instance is eligible.\nBut individual node might be excluded from SLO by adding entry here.\nFor semantic see SloMetadata.exclusions.\nIf both instance and node level exclusions are present for time period,\nthe node level's reason will be reported by Eligibility Exporter.",
           "type": "array",
           "items": {
-            "$ref": "SloExclusion"
+            "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion"
           }
         }
       }
     },
-    "SloEligibility": {
-      "id": "SloEligibility",
+    "GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility": {
+      "id": "GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility",
       "description": "SloEligibility is a tuple containing eligibility value: true if an instance\nis eligible for SLO calculation or false if it should be excluded from all\nSLO-related calculations along with a user-defined reason.",
       "type": "object",
       "properties": {
@@ -962,8 +962,8 @@
         }
       }
     },
-    "MaintenanceSchedule": {
-      "id": "MaintenanceSchedule",
+    "GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule": {
+      "id": "GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule",
       "description": "Maintenance schedule which is exposed to customer and potentially end user,\nindicating published upcoming future maintenance schedule",
       "type": "object",
       "properties": {

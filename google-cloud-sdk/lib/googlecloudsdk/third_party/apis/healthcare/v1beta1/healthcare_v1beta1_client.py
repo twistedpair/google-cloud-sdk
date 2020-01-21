@@ -690,7 +690,7 @@ http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_10.5.
     )
 
     def Deidentify(self, request, global_params=None):
-      r"""Creates a new DICOM store containing de-identified data from the source.
+      r"""De-identifies data from the source store and writes it to the destination.
 store. The metadata field type
 is OperationMetadata.
 If the request is successful, the
@@ -1903,7 +1903,7 @@ GCP error might be returned instead.
     )
 
     def Deidentify(self, request, global_params=None):
-      r"""Creates a new FHIR store containing de-identified data from the source.
+      r"""De-identifies data from the source store and writes it to the destination.
 store. The metadata field type
 is OperationMetadata.
 If the request is successful, the

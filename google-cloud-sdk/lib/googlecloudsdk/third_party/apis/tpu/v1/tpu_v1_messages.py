@@ -214,7 +214,7 @@ class Node(_messages.Message):
       the CIDR block has already been used for a currently existing TPU node,
       the CIDR block conflicts with any subnetworks in the user's provided
       network, or the provided network is peered with another network that is
-      using that CIDR block. Required.
+      using that CIDR block.
     createTime: Output only. The time when the node was created.
     description: The user-supplied description of the TPU. Maximum of 512
       characters.

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import encoding
 
 from googlecloudsdk.api_lib.accesscontextmanager import util
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.accesscontextmanager import common
@@ -28,6 +29,7 @@ from googlecloudsdk.command_lib.accesscontextmanager import policies
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 import six
 
@@ -113,12 +115,16 @@ def ParseBasicLevelConditionsBeta(path):
   return ParseBasicLevelConditionsBase(path, version='v1beta')
 
 
+def ParseBasicAccessLevelsAlpha(path):
+  return ParseBasicAccessLevelsBase(path, version='v1alpha')
+
+
 def ParseBasicAccessLevelsBeta(path):
   return ParseBasicAccessLevelsBase(path, version='v1beta')
 
 
-def ParseReplaceAccessLevelsResponseBeta(lro, unused_args):
-  return ParseReplaceAccessLevelsResponseBase(lro, version='v1beta')
+def ParseReplaceAccessLevelsResponseAlpha(lro, unused_args):
+  return ParseReplaceAccessLevelsResponseBase(lro, version='v1alpha')
 
 
 def ParseReplaceAccessLevelsResponseBase(lro, version):
@@ -135,13 +141,16 @@ def ParseReplaceAccessLevelsResponseBase(lro, version):
     ParseResponseError: if the response could not be parsed into the proper
     object.
   """
-  messages = util.GetMessages(version)
-  message_class = messages.ReplaceAccessLevelsResponse
-  try:
-    return encoding.DictToMessage(
-        encoding.MessageToDict(lro.response), message_class).accessLevels
-  except Exception as err:
-    raise ParseResponseError(six.text_type(err))
+  client = util.GetClient(version=version)
+  operation_ref = resources.REGISTRY.Parse(
+      lro.name, collection='accesscontextmanager.operations')
+  poller = common.BulkAPIOperationPoller(client.accessPolicies_accessLevels,
+                                         client.operations, operation_ref)
+
+  return waiter.WaitFor(
+      poller, operation_ref,
+      'Waiting for Replace Access Levels operation [{}]'.format(
+          operation_ref.Name()))
 
 
 def ParseBasicLevelConditionsBase(path, version=None):

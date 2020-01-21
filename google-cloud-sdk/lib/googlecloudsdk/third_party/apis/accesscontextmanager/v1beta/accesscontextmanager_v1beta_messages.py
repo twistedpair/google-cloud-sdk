@@ -20,6 +20,7 @@ class AccessLevel(_messages.Message):
   Fields:
     basic: A `BasicLevel` composed of `Conditions`.
     createTime: Output only. Time the `AccessLevel` was created in UTC.
+    custom: A `CustomLevel` written in the Common Expression Language.
     description: Description of the `AccessLevel` and its use. Does not affect
       behavior.
     name: Required. Resource name for the Access Level. The `short_name`
@@ -31,10 +32,11 @@ class AccessLevel(_messages.Message):
 
   basic = _messages.MessageField('BasicLevel', 1)
   createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  name = _messages.StringField(4)
-  title = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  custom = _messages.MessageField('CustomLevel', 3)
+  description = _messages.StringField(4)
+  name = _messages.StringField(5)
+  title = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class AccessPolicy(_messages.Message):
@@ -437,6 +439,18 @@ class Condition(_messages.Message):
   requiredAccessLevels = _messages.StringField(6, repeated=True)
 
 
+class CustomLevel(_messages.Message):
+  r"""`CustomLevel` is an `AccessLevel` using the Cloud Common Expression
+  Language to represent the necessary conditions for the level to apply to a
+  request. See CEL spec at: https://github.com/google/cel-spec
+
+  Fields:
+    expr: Required. A Cloud CEL expression evaluating to a boolean.
+  """
+
+  expr = _messages.MessageField('Expr', 1)
+
+
 class DevicePolicy(_messages.Message):
   r"""`DevicePolicy` specifies device specific restrictions necessary to
   acquire a given access level. A `DevicePolicy` specifies requirements for
@@ -500,6 +514,30 @@ class DevicePolicy(_messages.Message):
   requireAdminApproval = _messages.BooleanField(4)
   requireCorpOwned = _messages.BooleanField(5)
   requireScreenlock = _messages.BooleanField(6)
+
+
+class Expr(_messages.Message):
+  r"""Represents an expression text. Example:      title: "User account
+  presence"     description: "Determines whether the request has a user
+  account"     expression: "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.  The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
 
 
 class ListAccessLevelsResponse(_messages.Message):

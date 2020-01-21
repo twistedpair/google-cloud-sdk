@@ -56,3 +56,7 @@ class UpdateError(Error):
 
 class CloudSqlProxyError(Error):
   """An error raised when the Cloud SQL Proxy fails to start."""
+
+
+class InvalidStateError(Error):
+  """An error raised when a Cloud SQL resource is in an invalid state."""

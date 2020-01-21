@@ -47,6 +47,9 @@ from oauth2client.contrib import gce as oauth2client_gce
 from oauth2client.contrib import reauth_errors
 import six
 from six.moves import urllib
+from google.auth import _oauth2client as oauth2client_helper
+from google.auth import compute_engine
+from google.oauth2 import service_account as google_auth_service_account
 
 
 GOOGLE_OAUTH2_PROVIDER_AUTHORIZATION_URI = (
@@ -435,6 +438,49 @@ def _Load(account, scopes, prevent_refresh):
     Refresh(cred)
 
   return cred
+
+
+# TODO(b/147098689): Deprecate this method once credentials store is ready
+# to produce credentials of google-auth directly.
+def ConvertToGoogleAuthCredentials(credentials):
+  """Converts credentials of oauth2lient to credentials of google-auth.
+
+  This conversion will be used in the phase 1 of the 'GUAC on gcloud' project.
+  More details in go/gcloud-guac.
+
+  Args:
+    credentials: oauth2client.client.Credentials, Credentials of the
+      oauth2client library.
+
+  Returns:
+    google.auth.credentials.Credentials, Credentials of the google-auth library.
+  """
+  # pylint: disable=g-import-not-at-top
+  # To work around the circular dependency between this the util and the store
+  # modules.
+  from googlecloudsdk.api_lib.iamcredentials import util
+
+  if isinstance(credentials, c_devshell.DevshellCredentials):
+    google_auth_creds = c_devshell.DevShellCredentialsGoogleAuth
+    return google_auth_creds.from_devshell_credentials(credentials)
+  if isinstance(credentials, util.ImpersonationCredentials):
+    google_auth_creds = util.ImpersonationCredentialsGoogleAuth
+    return google_auth_creds.from_impersonation_credentials(credentials)
+
+  google_auth_creds = oauth2client_helper.convert(credentials)
+  # token expiry is lost in the conversion.
+  google_auth_creds.expiry = getattr(credentials, 'token_expiry', None)
+  if (isinstance(google_auth_creds, google_auth_service_account.Credentials) or
+      isinstance(google_auth_creds, compute_engine.Credentials)):
+    # Access token and scopes are lost in the conversions of service acccount
+    # and GCE credentials.
+    google_auth_creds.token = getattr(credentials, 'access_token', None)
+    scopes = getattr(credentials, 'scopes', [])
+    scopes = scopes if scopes else config.CLOUDSDK_SCOPES
+    # client.OAuth2Credentials converts scopes into a set. google-auth requires
+    # scopes to be of a Sequence type.
+    google_auth_creds._scopes = list(scopes)  # pylint: disable=protected-access
+  return google_auth_creds
 
 
 def Refresh(credentials,

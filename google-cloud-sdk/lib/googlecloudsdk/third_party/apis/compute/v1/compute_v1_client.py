@@ -3285,6 +3285,32 @@ You can specify a maximum of 1000 instances with this method per request.
         supports_download=False,
     )
 
+    def ApplyUpdatesToInstances(self, request, global_params=None):
+      r"""Apply changes to selected instances on the managed instance group. This method can be used to apply new overrides and/or new versions.
+
+      Args:
+        request: (ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ApplyUpdatesToInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ApplyUpdatesToInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instanceGroupManagers.applyUpdatesToInstances',
+        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/applyUpdatesToInstances',
+        request_field=u'instanceGroupManagersApplyUpdatesRequest',
+        request_type_name=u'ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def CreateInstances(self, request, global_params=None):
       r"""Creates instances with per-instance configs in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
 
@@ -8423,6 +8449,32 @@ You can specify a maximum of 1000 instances with this method per request.
         relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/abandonInstances',
         request_field=u'regionInstanceGroupManagersAbandonInstancesRequest',
         request_type_name=u'ComputeRegionInstanceGroupManagersAbandonInstancesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def ApplyUpdatesToInstances(self, request, global_params=None):
+      r"""Apply updates to selected instances the managed instance group.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ApplyUpdatesToInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ApplyUpdatesToInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionInstanceGroupManagers.applyUpdatesToInstances',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/applyUpdatesToInstances',
+        request_field=u'regionInstanceGroupManagersApplyUpdatesRequest',
+        request_type_name=u'ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

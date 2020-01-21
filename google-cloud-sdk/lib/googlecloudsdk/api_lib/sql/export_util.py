@@ -26,16 +26,17 @@ def SqlExportContext(sql_messages, uri, database=None, table=None):
     sql_messages: module, The messages module that should be used.
     uri: The URI of the bucket to export to; the output of the 'uri' arg.
     database: The list of databases to export from; the output of the
-        '--database' flag.
+      '--database' flag.
     table: The list of tables to export from; the output of the '--table' flag.
 
   Returns:
     ExportContext, for use in InstancesExportRequest.exportContext.
   """
   return sql_messages.ExportContext(
+      kind='sql#exportContext',
       uri=uri,
       databases=database or [],
-      fileType='SQL',
+      fileType=sql_messages.ExportContext.FileTypeValueValuesEnum.SQL,
       sqlExportOptions=sql_messages.ExportContext.SqlExportOptionsValue(
           tables=table or []))
 
@@ -47,17 +48,18 @@ def CsvExportContext(sql_messages, uri, database=None, query=None):
     sql_messages: module, The messages module that should be used.
     uri: The URI of the bucket to export to; the output of the 'uri' arg.
     database: The list of databases to export from; the output of the
-        '--database' flag.
+      '--database' flag.
     query: The query string to use to generate the table; the output of the
-        '--query' flag.
+      '--query' flag.
 
   Returns:
     ExportContext, for use in InstancesExportRequest.exportContext.
   """
   return sql_messages.ExportContext(
+      kind='sql#exportContext',
       uri=uri,
       databases=database or [],
-      fileType='CSV',
+      fileType=sql_messages.ExportContext.FileTypeValueValuesEnum.CSV,
       csvExportOptions=sql_messages.ExportContext.CsvExportOptionsValue(
           selectQuery=query))
 
@@ -74,4 +76,8 @@ def BakExportContext(sql_messages, uri, database):
   Returns:
     ExportContext, for use in InstancesExportRequest.exportContext.
   """
-  return sql_messages.ExportContext(uri=uri, databases=database, fileType='BAK')
+  return sql_messages.ExportContext(
+      kind='sql#exportContext',
+      uri=uri,
+      databases=database,
+      fileType=sql_messages.ExportContext.FileTypeValueValuesEnum.BAK)

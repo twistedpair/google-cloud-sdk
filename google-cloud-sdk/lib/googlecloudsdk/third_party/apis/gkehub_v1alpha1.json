@@ -241,9 +241,6 @@
           "description": "An optional description of the feature, limited to 2048 characters.",
           "type": "string"
         },
-        "servicemeshFeatureSpec": {
-          "$ref": "ServiceMeshFeatureSpec"
-        },
         "authorizerFeatureSpec": {
           "$ref": "AuthorizerFeatureSpec"
         },
@@ -275,17 +272,6 @@
           "description": "Output only. Timestamp for when the Feature was deleted.",
           "type": "string",
           "format": "google-datetime"
-        }
-      }
-    },
-    "ServiceMeshFeatureSpec": {
-      "id": "ServiceMeshFeatureSpec",
-      "description": "ServiceMeshFeatureSpec contains the input for the service mesh\nfeature. Only those fields that qualify as user inputs are eligible to be\nin a feature spec. These feature spec messages are per-feature, meaning each\nfeature is expected to have its own set of fields. Auto-filled fields and\nstatues do not belong to a spec and must be included in the details field\nof the feature's status. Spec fields could be of any type: primitive or\nnon-primitive types. These types could be simple or complex types and\ncomplex types could be nested. There is no restriction on nesting depth.",
-      "type": "object",
-      "properties": {
-        "mtls": {
-          "description": "Mesh should have mtls enabled.",
-          "type": "boolean"
         }
       }
     },
@@ -378,9 +364,6 @@
           "description": "Human readable description of the issue.",
           "type": "string"
         },
-        "servicemeshFeatureState": {
-          "$ref": "ServiceMeshFeatureState"
-        },
         "authorizerFeatureState": {
           "$ref": "AuthorizerFeatureState"
         },
@@ -398,13 +381,6 @@
           "type": "string",
           "format": "google-datetime"
         }
-      }
-    },
-    "ServiceMeshFeatureState": {
-      "id": "ServiceMeshFeatureState",
-      "description": "ServiceMeshFeatureState contains the status fields specific to the\nservice mesh feature. Only those fields that reflect the state of the\nfeature are eligible to be in a feature's state message. These fields are\nexpected to be updated only by the automation and that's usually the\ncontrollers operating on this feature.\n\nThis is currently just a placeholder and more fields will be added when we\nhave more state information to report for this feature.",
-      "type": "object",
-      "properties": {
       }
     },
     "AuthorizerFeatureState": {

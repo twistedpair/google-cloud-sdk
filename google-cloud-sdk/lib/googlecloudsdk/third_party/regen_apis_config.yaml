@@ -52,6 +52,10 @@ apis:
       resources:
         customer:
           path: customer/{customerId}
+  apikeys:
+    v2alpha1:
+      discovery_doc: apikeys_v2alpha1.json
+      default: true
   appengine:
     v1alpha:
       discovery_doc: appengine_v1alpha.json
@@ -117,6 +121,11 @@ apis:
           path: iamPolicies
     v1p1beta1:
       discovery_doc: cloudasset_v1p1beta1.json
+      resources:
+        iamPolicies:
+          path: iamPolicies
+        resources:
+          path: resources
     v1p2beta1:
       discovery_doc: cloudasset_v1p2beta1.json
     v1p4alpha1:
@@ -419,7 +428,10 @@ apis:
       discovery_doc: gkehub_v1alpha1.json
     v1beta1:
       discovery_doc: gkehub_v1beta1.json
+      # TODO(b/144528144): Make v1 as default api at GA launch.
       default: true
+    v1:
+      discovery_doc: gkehub_v1.json
       resources:
         projects.locations.memberships:
           path: projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}
@@ -533,12 +545,23 @@ apis:
   monitoring:
     v3:
       discovery_doc: monitoring_v3.json
+      default: true
       resources:
         projects.alertPolicies.conditions:
           path: projects/{projectsId}/alertPolicies/{alertPoliciesId}/conditions/{conditionsId}
       unelidable_request_methods:
         - monitoring.projects.alertPolicies.create
         - monitoring.projects.notificationChannels.create
+    v1:
+      discovery_doc: monitoring_v1.json
+      default: false
+      unelidable_request_methods:
+        # This is required in order to properly generate a PatchRequest message. Without this, the
+        # generated client will simply use the Dashboard message as the request message for PATCH.
+        - monitoring.projects.dashboards.patch
+  networkmanagement:
+    v1beta1:
+      discovery_doc: networkmanagement_v1beta1.json
   orgpolicy:
     v2alpha1:
       discovery_doc: orgpolicy_v2alpha1.json
@@ -654,12 +677,9 @@ apis:
       resources:
         speech:
           path: speech
-  sqladmin:
-    v1beta3:
-      discovery_doc: sqladmin_v1beta3.json
-      default: true
+  sql:
     v1beta4:
-      discovery_doc: sqladmin_v1beta4.json
+      discovery_doc: sql_v1beta4.json
   storage:
     v1:
       discovery_doc: storage_v1.json

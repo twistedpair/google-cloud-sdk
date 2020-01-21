@@ -3,7 +3,7 @@
   "discoveryVersion": "v1",
   "id": "osconfig:v1beta",
   "name": "osconfig",
-  "canonicalName": "Cloud OS Config",
+  "canonicalName": "Systems Management",
   "version": "v1beta",
   "revision": "0",
   "title": "Cloud OS Config API",
@@ -104,9 +104,6 @@
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
           "description": "View and manage your data across Google Cloud Platform services"
-        },
-        "https://www.googleapis.com/auth/compute": {
-          "description": "View and manage your Google Compute Engine resources"
         }
       }
     }
@@ -114,7 +111,7 @@
   "schemas": {
     "ExecutePatchJobRequest": {
       "id": "ExecutePatchJobRequest",
-      "description": "A request message to initiate patching across GCE instances.",
+      "description": "A request message to initiate patching across Google Compute Engine\ninstances.",
       "type": "object",
       "properties": {
         "description": {
@@ -175,7 +172,7 @@
           }
         },
         "instanceNamePrefixes": {
-          "description": "Targets VMs whose name starts with one of these prefixes. Similar to\nlabels, this is another way to group VMs when targeting configs, for\nexample prefix=\u201Dprod-\u201D.",
+          "description": "Targets VMs whose name starts with one of these prefixes. Similar to\nlabels, this is another way to group VMs when targeting configs, for\nexample prefix=\"prod-\".",
           "type": "array",
           "items": {
             "type": "string"
@@ -189,7 +186,7 @@
       "type": "object",
       "properties": {
         "labels": {
-          "description": "GCE instance labels that must be present for a VM instance to be targeted\nby this filter.",
+          "description": "Google Compute Engine instance labels that must be present for a VM\ninstance to be targeted by this filter.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -373,7 +370,7 @@
             "Invalid. If classifications are included, they must be specified.",
             "\"A widely released fix for a specific problem that addresses a critical,\nnon-security-related bug.\" [1]",
             "\"A widely released fix for a product-specific, security-related\nvulnerability. Security vulnerabilities are rated by their severity. The\nseverity rating is indicated in the Microsoft security bulletin as\ncritical, important, moderate, or low.\" [1]",
-            "\"A widely released and frequent software update that contains additions\nto a product\u2019s definition database. Definition databases are often used\nto detect objects that have specific attributes, such as malicious code,\nphishing websites, or junk mail.\" [1]",
+            "\"A widely released and frequent software update that contains additions\nto a product's definition database. Definition databases are often used\nto detect objects that have specific attributes, such as malicious code,\nphishing websites, or junk mail.\" [1]",
             "\"Software that controls the input and output of a device.\" [1]",
             "\"New product functionality that is first distributed outside the context\nof a product release and that is typically included in the next full\nproduct release.\" [1]",
             "\"A tested, cumulative set of all hotfixes, security updates, critical\nupdates, and updates. Additionally, service packs may contain additional\nfixes for problems that are found internally since the release of the\nproduct. Service packs my also contain a limited number of\ncustomer-requested design changes or features.\" [1]",
@@ -439,7 +436,7 @@
           "type": "string"
         },
         "gcsObject": {
-          "description": "A GCS object containing the executable.",
+          "description": "A Google Cloud Storage object containing the executable.",
           "$ref": "GcsObject"
         },
         "allowedSuccessCodes": {
@@ -468,19 +465,19 @@
     },
     "GcsObject": {
       "id": "GcsObject",
-      "description": "GCS object representation.",
+      "description": "Google Cloud Storage object representation.",
       "type": "object",
       "properties": {
         "bucket": {
-          "description": "Required. Bucket of the GCS object.",
+          "description": "Required. Bucket of the Google Cloud Storage object.",
           "type": "string"
         },
         "object": {
-          "description": "Required. Name of the GCS object.",
+          "description": "Required. Name of the Google Cloud Storage object.",
           "type": "string"
         },
         "generationNumber": {
-          "description": "Required. Generation number of the GCS object. This is used to ensure that the\nExecStep specified by this PatchJob does not change.",
+          "description": "Required. Generation number of the Google Cloud Storage object. This is used to\nensure that the ExecStep specified by this PatchJob does not change.",
           "type": "string",
           "format": "int64"
         }
@@ -1056,7 +1053,7 @@
           "format": "google-datetime"
         },
         "assignment": {
-          "description": "Required. Specifies the VM instances that are assigned to this policy. This allows\nyou to target sets or groups of VM instances by different parameters such\nas labels, names, OS, or zones.\n\nIf left empty, all VM instances underneath this policy are targeted.\n\n\nConflict Management\n\nAt the same level in the resource hierarchy (that is within a project), the\nservice prevents the creation of multiple policies that conflict with\neach other. If there are multiple policies that specify the same config\n(eg. package, software recipe, repository, etc.), the service ensures\nthat no VM instance could potentially receive instructions from both\npolicies. To create multiple policies that specify different versions of a\npackage or different configs for different operating systems, each policy\nmust be mutually exclusive in their targeting according to labels, OS, or\nother criteria.\n\nDifferent configs are identified for conflicts in different ways. Packages\nare identified by their name and the package manager(s) they target.\nPackage repositories are identified by their unique id where applicable.\nSome package managers don't have a unique identifier for repositories and\nwhere that's the case, no uniqueness is validated by the service.\n\nNote that if OS Inventory is disabled, a VM instance cannot assign a policy\nthat targets by OS because the service sees the OS as unknown.",
+          "description": "Required. Specifies the VM instances that are assigned to this policy. This allows\nyou to target sets or groups of VM instances by different parameters such\nas labels, names, OS, or zones.\n\nIf left empty, all VM instances underneath this policy are targeted.\n\nAt the same level in the resource hierarchy (that is within a project), the\nservice prevents the creation of multiple policies that conflict with\neach other. For more information, see how the service [handles assignment\nconflicts](\/compute\/docs\/os-config-management\/create-guest-policy#handle-conflicts).",
           "$ref": "Assignment"
         },
         "packages": {
@@ -1113,7 +1110,7 @@
           }
         },
         "instanceNamePrefixes": {
-          "description": "Targets VM instances whose name starts with one of these prefixes.\n\nLike labels, this is another way to group VM instances when targeting\nconfigs, for example prefix=\u201Dprod-\u201D.\n\nOnly supported for project-level policies.",
+          "description": "Targets VM instances whose name starts with one of these prefixes.\n\nLike labels, this is another way to group VM instances when targeting\nconfigs, for example prefix=\"prod-\".\n\nOnly supported for project-level policies.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1134,7 +1131,7 @@
       "type": "object",
       "properties": {
         "labels": {
-          "description": "GCE instance labels that must be present for an instance to be included\nin this assignment group.",
+          "description": "Google Compute Engine instance labels that must be present for an\ninstance to be included in this assignment group.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1404,11 +1401,11 @@
           "$ref": "SoftwareRecipeArtifactRemote"
         },
         "gcs": {
-          "description": "A Cloud Storage artifact.",
+          "description": "A Google Cloud Storage artifact.",
           "$ref": "SoftwareRecipeArtifactGcs"
         },
         "allowInsecure": {
-          "description": "Defaults to false. When false, recipes are subject to validations\nbased on the artifact type:\n\nRemote: A checksum must be specified, and only protocols with\n        transport-layer security are permitted.\nGCS:    An object generation number must be specified.",
+          "description": "Defaults to false. When false, recipes are subject to validations\nbased on the artifact type:\n\nRemote: A checksum must be specified, and only protocols with\ntransport-layer security are permitted.\nGCS:    An object generation number must be specified.",
           "type": "boolean"
         }
       }
@@ -1430,19 +1427,19 @@
     },
     "SoftwareRecipeArtifactGcs": {
       "id": "SoftwareRecipeArtifactGcs",
-      "description": "Specifies an artifact available as a Cloud Storage object.",
+      "description": "Specifies an artifact available as a Google Cloud Storage object.",
       "type": "object",
       "properties": {
         "bucket": {
-          "description": "Bucket of the Cloud Storage object.\nGiven an example URL:\n`https:\/\/storage.googleapis.com\/my-bucket\/foo\/bar#1234567`\nthis value would be `my-bucket`.",
+          "description": "Bucket of the Google Cloud Storage object.\nGiven an example URL:\n`https:\/\/storage.googleapis.com\/my-bucket\/foo\/bar#1234567`\nthis value would be `my-bucket`.",
           "type": "string"
         },
         "object": {
-          "description": "Name of the Cloud Storage object.\nAs specified [here]\n(https:\/\/cloud.google.com\/storage\/docs\/naming#objectnames)\nGiven an example URL:\n`https:\/\/storage.googleapis.com\/my-bucket\/foo\/bar#1234567`\nthis value would be `foo\/bar`.",
+          "description": "Name of the Google Cloud Storage object.\nAs specified [here]\n(https:\/\/cloud.google.com\/storage\/docs\/naming#objectnames)\nGiven an example URL:\n`https:\/\/storage.googleapis.com\/my-bucket\/foo\/bar#1234567`\nthis value would be `foo\/bar`.",
           "type": "string"
         },
         "generation": {
-          "description": "Must be provided if allow_insecure is false.\nGeneration number of the Cloud Storage object.\n`https:\/\/storage.googleapis.com\/my-bucket\/foo\/bar#1234567`\nthis value would be `1234567`.",
+          "description": "Must be provided if allow_insecure is false.\nGeneration number of the Google Cloud Storage object.\n`https:\/\/storage.googleapis.com\/my-bucket\/foo\/bar#1234567`\nthis value would be `1234567`.",
           "type": "string",
           "format": "int64"
         }
@@ -1794,8 +1791,7 @@
                 "$ref": "PatchJob"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Patch VM instances by creating and running a patch job."
             },
@@ -1820,8 +1816,7 @@
                 "$ref": "PatchJob"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get the patch job. This can be used to track the progress of an\nongoing patch job or review the details of completed jobs."
             },
@@ -1849,8 +1844,7 @@
                 "$ref": "PatchJob"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Cancel a patch job. The patch job must be active. Canceled patch jobs\ncannot be restarted."
             },
@@ -1891,8 +1885,7 @@
                 "$ref": "ListPatchJobsResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get a list of patch jobs."
             }
@@ -1938,8 +1931,7 @@
                     "$ref": "ListPatchJobInstanceDetailsResponse"
                   },
                   "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/compute"
+                    "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Get a list of instance details for a given patch job."
                 }
@@ -1978,8 +1970,7 @@
                 "$ref": "PatchDeployment"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Create an OS Config patch deployment."
             },
@@ -2004,8 +1995,7 @@
                 "$ref": "PatchDeployment"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get an OS Config patch deployment."
             },
@@ -2041,8 +2031,7 @@
                 "$ref": "ListPatchDeploymentsResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get a page of OS Config patch deployments."
             },
@@ -2067,8 +2056,7 @@
                 "$ref": "Empty"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Delete an OS Config patch deployment."
             }
@@ -2105,8 +2093,7 @@
                 "$ref": "GuestPolicy"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Create an OS Config guest policy."
             },
@@ -2131,8 +2118,7 @@
                 "$ref": "GuestPolicy"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get an OS Config guest policy."
             },
@@ -2168,8 +2154,7 @@
                 "$ref": "ListGuestPoliciesResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get a page of OS Config guest policies."
             },
@@ -2203,8 +2188,7 @@
                 "$ref": "GuestPolicy"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Update an OS Config guest policy."
             },
@@ -2229,8 +2213,7 @@
                 "$ref": "Empty"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Delete an OS Config guest policy."
             }
@@ -2264,8 +2247,7 @@
                     "$ref": "EffectiveGuestPolicy"
                   },
                   "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/compute"
+                    "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Lookup the effective guest policy that applies to a VM instance. This\nlookup merges all policies that are assigned to the instance ancestry."
                 }

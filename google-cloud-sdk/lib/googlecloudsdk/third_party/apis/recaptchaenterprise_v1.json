@@ -292,6 +292,13 @@
         "iosSettings": {
           "description": "Settings for keys that can be used by iOS apps.",
           "$ref": "GoogleCloudRecaptchaenterpriseV1IOSKeySettings"
+        },
+        "labels": {
+          "description": "Optional. See <a href=\"https:\/\/cloud.google.com\/recaptcha-enterprise\/docs\/labels\">\nCreating and managing labels<\/a>.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

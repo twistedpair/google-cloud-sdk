@@ -32,3 +32,12 @@ notification_channel:
   - parameter_name: notificationChannelsId
     attribute_name: channel
     help: The name of the notification channel.
+
+dashboard:
+  name: dashboard
+  collection: monitoring.projects.dashboards
+  request_id_field: name
+  attributes:
+  - parameter_name: dashboardsId
+    attribute_name: dashboard
+    help: The ID of the dashboard.

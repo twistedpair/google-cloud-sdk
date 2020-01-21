@@ -2026,7 +2026,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new DICOM store containing de-identified data from the source\nstore. The metadata field type\nis OperationMetadata.\nIf the request is successful, the\nresponse field type is\nDeidentifyDicomStoreSummary. If errors occur,\nerror\ndetails field type is\nDeidentifyErrorDetails.\nErrors are also logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging))."
+                      "description": "De-identifies data from the source store and writes it to the destination\nstore. The metadata field type\nis OperationMetadata.\nIf the request is successful, the\nresponse field type is\nDeidentifyDicomStoreSummary. If errors occur,\nerror\ndetails field type is\nDeidentifyErrorDetails.\nErrors are also logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging))."
                     },
                     "create": {
                       "id": "healthcare.projects.locations.datasets.dicomStores.create",
@@ -3505,7 +3505,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new FHIR store containing de-identified data from the source\nstore. The metadata field type\nis OperationMetadata.\nIf the request is successful, the\nresponse field type is\nDeidentifyFhirStoreSummary. If errors occur,\nerror\ndetails field type is\nDeidentifyErrorDetails.\nErrors are also logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging))."
+                      "description": "De-identifies data from the source store and writes it to the destination\nstore. The metadata field type\nis OperationMetadata.\nIf the request is successful, the\nresponse field type is\nDeidentifyFhirStoreSummary. If errors occur,\nerror\ndetails field type is\nDeidentifyErrorDetails.\nErrors are also logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging))."
                     },
                     "import": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.import",

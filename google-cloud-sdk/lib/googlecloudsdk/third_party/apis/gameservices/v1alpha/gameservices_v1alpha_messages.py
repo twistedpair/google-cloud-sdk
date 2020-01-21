@@ -11,68 +11,6 @@ from apitools.base.py import extra_types
 package = 'gameservices'
 
 
-class AllocationPolicy(_messages.Message):
-  r"""An allocation policy resource.
-
-  Messages:
-    LabelsValue: The labels associated with the allocation policy. Each label
-      is a key-value pair.
-
-  Fields:
-    clusterSelectors: The cluster labels are used to identify the clusters
-      that a policy is applied to.
-    createTime: Output only. The creation time.
-    labels: The labels associated with the allocation policy. Each label is a
-      key-value pair.
-    name: The resource name of the allocation policy, using the form:  `projec
-      ts/{project}/locations/{location}/allocationPolicies/{allocation_policy_
-      id}`. For example, `projects/my-
-      project/locations/{location}/allocationPolicies/my-policy`.
-    priority: Required. The priority of the policy for allocation. A smaller
-      value indicates a higher priority.
-    schedules: The event schedules - If specified, the policy is time based
-      and when the schedule is effective overrides the default policy.
-    updateTime: Output only. The last-modified time.
-    weight: The relative weight of the policy based on its priority - If there
-      are multiple policies with the same priority, the probability of using a
-      policy is based on its weight.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""The labels associated with the allocation policy. Each label is a key-
-    value pair.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  clusterSelectors = _messages.MessageField('LabelSelector', 1, repeated=True)
-  createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  priority = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  schedules = _messages.MessageField('Schedule', 6, repeated=True)
-  updateTime = _messages.StringField(7)
-  weight = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-
-
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -266,26 +204,6 @@ class CloudAuditOptions(_messages.Message):
 
   authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
   logName = _messages.EnumField('LogNameValueValuesEnum', 2)
-
-
-class ClusterPercentageSelector(_messages.Message):
-  r"""The percentage of game servers running this game server template in the
-  selected clusters.
-
-  Fields:
-    clusterSelector: Labels used to identify the clusters to which this game
-      server template applies.
-    percent: The percentage of game servers running this game server
-      depolyment. The percentage is applied to game server clusters which
-      contain all of the labels in the cluster selector field.
-  """
-
-  clusterSelector = _messages.MessageField('LabelSelector', 1)
-  percent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
-class CommitRolloutRequest(_messages.Message):
-  r"""Request message for GameServerDeploymentsService.CommitRollout."""
 
 
 class Condition(_messages.Message):
@@ -591,27 +509,6 @@ class FleetAutoscaler(_messages.Message):
   specSource = _messages.MessageField('SpecSource', 3)
 
 
-class FleetAutoscalerSettings(_messages.Message):
-  r"""Fleet autoscaling parameters.
-
-  Fields:
-    bufferSizeAbsolute: The size of a buffer of ready game server instances in
-      absolute number. As game server instances get allocated or terminated,
-      the fleet will be scaled up and down so that this buffer is maintained.
-    bufferSizePercentage: The size of a buffer of ready game server instances
-      in percentage. Value must be in range [1, 99]. As game server instances
-      get allocated or terminated, the fleet will be scaled up and down so
-      that this buffer is maintained.
-    maxReplicas: The maximum fleet size.
-    minReplicas: The minimum fleet size.
-  """
-
-  bufferSizeAbsolute = _messages.IntegerField(1)
-  bufferSizePercentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  maxReplicas = _messages.IntegerField(3)
-  minReplicas = _messages.IntegerField(4)
-
-
 class FleetConfig(_messages.Message):
   r"""Fleet configs for Agones.
 
@@ -726,10 +623,9 @@ class GameServerClusterConnectionInfo(_messages.Message):
   Fields:
     gkeClusterReference: Reference to the GKE cluster where the game servers
       are installed.
-    gkeHubClusterReference: Reference to an external (non-GKE) cluster
-      registered with GKE Hub using the GKE connect agent. See
-      https://cloud.google.com/anthos/multicluster-management/ for more
-      information about registering non-GKE clusters.
+    gkeHubClusterReference: Reference to a Kubernetes cluster registered
+      through GKE Hub. See https://cloud.google.com/anthos/multicluster-
+      management/ for more information about registering Kubernetes clusters.
     namespace: Namespace designated on the game server cluster where the game
       server instances will be created. The namespace existence will be
       validated during creation.
@@ -826,9 +722,6 @@ class GameServerDeployment(_messages.Message):
       rojects/{project}/locations/{location}/gameServerDeployments/{deployment
       }`. For example,  `projects/my-
       project/locations/{location}/gameServerDeployments/my-deployment`.
-    newGameServerTemplate: The GameServerTemplate whose rollout is ongoing.
-    stableGameServerTemplate: Output only. The GameServerTemplate whose
-      rollout was completed.
     updateTime: Output only. The last-modified time.
   """
 
@@ -862,9 +755,7 @@ class GameServerDeployment(_messages.Message):
   etag = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  newGameServerTemplate = _messages.MessageField('GameServerTemplate', 6)
-  stableGameServerTemplate = _messages.MessageField('GameServerTemplate', 7)
-  updateTime = _messages.StringField(8)
+  updateTime = _messages.StringField(6)
 
 
 class GameServerDeploymentRollout(_messages.Message):
@@ -894,126 +785,6 @@ class GameServerDeploymentRollout(_messages.Message):
   gameServerConfigOverrides = _messages.MessageField('GameServerConfigOverride', 4, repeated=True)
   name = _messages.StringField(5)
   updateTime = _messages.StringField(6)
-
-
-class GameServerTemplate(_messages.Message):
-  r"""The game server spec sent to Agones and the rollout target.
-
-  Fields:
-    clusterPercentageSelectors: Output only. The percentage of game servers
-      running this game server template in the selected clusters.
-    description: The description of the game server template.
-    spec: The game server spec, which is sent to Agones.
-    templateId: The ID of the game server template, specified by the user.
-  """
-
-  clusterPercentageSelectors = _messages.MessageField('ClusterPercentageSelector', 1, repeated=True)
-  description = _messages.StringField(2)
-  spec = _messages.StringField(3)
-  templateId = _messages.StringField(4)
-
-
-class GameservicesProjectsLocationsAllocationPoliciesCreateRequest(_messages.Message):
-  r"""A GameservicesProjectsLocationsAllocationPoliciesCreateRequest object.
-
-  Fields:
-    allocationPolicy: A AllocationPolicy resource to be passed as the request
-      body.
-    allocationPolicyId: Required. The ID of the allocation policy resource to
-      be created.
-    parent: Required. The parent resource name, using the form:
-      `projects/{project}/locations/{location}`.
-  """
-
-  allocationPolicy = _messages.MessageField('AllocationPolicy', 1)
-  allocationPolicyId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class GameservicesProjectsLocationsAllocationPoliciesDeleteRequest(_messages.Message):
-  r"""A GameservicesProjectsLocationsAllocationPoliciesDeleteRequest object.
-
-  Fields:
-    name: Required. The name of the allocation policy to delete, using the
-      form:  `projects/{project}/locations/{location}/allocationPolicies/{allo
-      cation_policy_id}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class GameservicesProjectsLocationsAllocationPoliciesGetRequest(_messages.Message):
-  r"""A GameservicesProjectsLocationsAllocationPoliciesGetRequest object.
-
-  Fields:
-    name: Required. The name of the allocation policy to retrieve, using the
-      form:  `projects/{project}/locations/{location}/allocationPolicies/{allo
-      cation_policy_id}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class GameservicesProjectsLocationsAllocationPoliciesListRequest(_messages.Message):
-  r"""A GameservicesProjectsLocationsAllocationPoliciesListRequest object.
-
-  Fields:
-    filter: Optional. The filter to apply to list results.
-    orderBy: Optional. Specifies the ordering of results following syntax at
-      https://cloud.google.com/apis/design/design_patterns#sorting_order.
-    pageSize: Optional. The maximum number of items to return.  If
-      unspecified, server will pick an appropriate default. Server may return
-      fewer items than requested. A caller should only rely on response's
-      next_page_token to determine if there are more AllocationPolicies left
-      to be queried.
-    pageToken: Optional. The next_page_token value returned from a previous
-      List request, if any.
-    parent: Required. The parent resource name, using the form:
-      `projects/{project}/locations/{location}`.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class GameservicesProjectsLocationsAllocationPoliciesPatchRequest(_messages.Message):
-  r"""A GameservicesProjectsLocationsAllocationPoliciesPatchRequest object.
-
-  Fields:
-    allocationPolicy: A AllocationPolicy resource to be passed as the request
-      body.
-    name: The resource name of the allocation policy, using the form:  `projec
-      ts/{project}/locations/{location}/allocationPolicies/{allocation_policy_
-      id}`. For example, `projects/my-
-      project/locations/{location}/allocationPolicies/my-policy`.
-    updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see  https:
-      //developers.google.com/protocol-buffers //
-      /docs/reference/google.protobuf#fieldmask
-  """
-
-  allocationPolicy = _messages.MessageField('AllocationPolicy', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-
-
-class GameservicesProjectsLocationsGameServerDeploymentsCommitRolloutRequest(_messages.Message):
-  r"""A GameservicesProjectsLocationsGameServerDeploymentsCommitRolloutRequest
-  object.
-
-  Fields:
-    commitRolloutRequest: A CommitRolloutRequest resource to be passed as the
-      request body.
-    name: Required. The name of the game server deployment, using the form:  `
-      projects/{project}/locations/{location}/gameServerDeployments/{deploymen
-      t}`
-  """
-
-  commitRolloutRequest = _messages.MessageField('CommitRolloutRequest', 1)
-  name = _messages.StringField(2, required=True)
 
 
 class GameservicesProjectsLocationsGameServerDeploymentsConfigsCreateRequest(_messages.Message):
@@ -1252,22 +1023,6 @@ class GameservicesProjectsLocationsGameServerDeploymentsPreviewRolloutRequest(_m
   updateMask = _messages.StringField(4)
 
 
-class GameservicesProjectsLocationsGameServerDeploymentsRevertRolloutRequest(_messages.Message):
-  r"""A GameservicesProjectsLocationsGameServerDeploymentsRevertRolloutRequest
-  object.
-
-  Fields:
-    name: Required. The name of the game server deployment to deploy, using
-      the form:  `projects/{project}/locations/{location}/gameServerDeployment
-      s/{deployment}`
-    revertRolloutRequest: A RevertRolloutRequest resource to be passed as the
-      request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  revertRolloutRequest = _messages.MessageField('RevertRolloutRequest', 2)
-
-
 class GameservicesProjectsLocationsGameServerDeploymentsSetIamPolicyRequest(_messages.Message):
   r"""A GameservicesProjectsLocationsGameServerDeploymentsSetIamPolicyRequest
   object.
@@ -1282,39 +1037,6 @@ class GameservicesProjectsLocationsGameServerDeploymentsSetIamPolicyRequest(_mes
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class GameservicesProjectsLocationsGameServerDeploymentsSetRolloutTargetRequest(_messages.Message):
-  r"""A
-  GameservicesProjectsLocationsGameServerDeploymentsSetRolloutTargetRequest
-  object.
-
-  Fields:
-    name: Required. The name of the game server deployment, using the form:  `
-      projects/{project}/locations/{location}/gameServerDeployments/{deploymen
-      t}`
-    setRolloutTargetRequest: A SetRolloutTargetRequest resource to be passed
-      as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  setRolloutTargetRequest = _messages.MessageField('SetRolloutTargetRequest', 2)
-
-
-class GameservicesProjectsLocationsGameServerDeploymentsStartRolloutRequest(_messages.Message):
-  r"""A GameservicesProjectsLocationsGameServerDeploymentsStartRolloutRequest
-  object.
-
-  Fields:
-    name: Required. The name of the game server deployment, using the form:  `
-      projects/{project}/locations/{location}/gameServerDeployments/{deploymen
-      t}`
-    startRolloutRequest: A StartRolloutRequest resource to be passed as the
-      request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  startRolloutRequest = _messages.MessageField('StartRolloutRequest', 2)
 
 
 class GameservicesProjectsLocationsGameServerDeploymentsTestIamPermissionsRequest(_messages.Message):
@@ -1695,91 +1417,6 @@ class GameservicesProjectsLocationsRealmsPreviewUpdateRequest(_messages.Message)
   updateMask = _messages.StringField(4)
 
 
-class GameservicesProjectsLocationsScalingPoliciesCreateRequest(_messages.Message):
-  r"""A GameservicesProjectsLocationsScalingPoliciesCreateRequest object.
-
-  Fields:
-    parent: Required. The parent resource name, using the form:
-      `projects/{project}/locations/{location}`.
-    scalingPolicy: A ScalingPolicy resource to be passed as the request body.
-    scalingPolicyId: Required. The ID of the scaling policy resource to be
-      created.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  scalingPolicy = _messages.MessageField('ScalingPolicy', 2)
-  scalingPolicyId = _messages.StringField(3)
-
-
-class GameservicesProjectsLocationsScalingPoliciesDeleteRequest(_messages.Message):
-  r"""A GameservicesProjectsLocationsScalingPoliciesDeleteRequest object.
-
-  Fields:
-    name: Required. The name of the scaling policy to delete, using the form:
-      `projects/{project}/locations/{location}/scalingPolicies/{scaling_policy
-      _id}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class GameservicesProjectsLocationsScalingPoliciesGetRequest(_messages.Message):
-  r"""A GameservicesProjectsLocationsScalingPoliciesGetRequest object.
-
-  Fields:
-    name: Required. The name of the scaling policy to retrieve, using the
-      form:  `projects/{project}/locations/{location}/scalingPolicies/{scaling
-      _policy_id}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class GameservicesProjectsLocationsScalingPoliciesListRequest(_messages.Message):
-  r"""A GameservicesProjectsLocationsScalingPoliciesListRequest object.
-
-  Fields:
-    filter: Optional. The filter to apply to list results.
-    orderBy: Optional. Specifies the ordering of results following syntax at
-      https://cloud.google.com/apis/design/design_patterns#sorting_order.
-    pageSize: / Optional. The maximum number of items to return.  If
-      unspecified, server will pick an appropriate default. Server may return
-      fewer items than requested. A caller should only rely on response's
-      next_page_token to determine if there are more ScalingPolicies left to
-      be queried.
-    pageToken: Optional. The next_page_token value returned from a previous
-      List request, if any.
-    parent: Required. The parent resource name, using the form:
-      `projects/{project}/locations/{location}`.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class GameservicesProjectsLocationsScalingPoliciesPatchRequest(_messages.Message):
-  r"""A GameservicesProjectsLocationsScalingPoliciesPatchRequest object.
-
-  Fields:
-    name: The resource name of the scaling policy, using the form:  `projects/
-      {project}/locations/{location}/scalingPolicies/{scaling_policy_id}`. For
-      example, `projects/my-project/locations/{location}/scalingPolicies/my-
-      policy`.
-    scalingPolicy: A ScalingPolicy resource to be passed as the request body.
-    updateMask: Required. Mask of fields to update. At least one path must be
-      supplied in this field. For the `FieldMask` definition, see  https:
-      //developers.google.com/protocol-buffers //
-      /docs/reference/google.protobuf#fieldmask
-  """
-
-  name = _messages.StringField(1, required=True)
-  scalingPolicy = _messages.MessageField('ScalingPolicy', 2)
-  updateMask = _messages.StringField(3)
-
-
 class GkeClusterReference(_messages.Message):
   r"""GkeClusterReference represents a reference to a GKE cluster.
 
@@ -1848,21 +1485,6 @@ class LabelSelector(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   labels = _messages.MessageField('LabelsValue', 1)
-
-
-class ListAllocationPoliciesResponse(_messages.Message):
-  r"""Response message for AllocationPoliciesService.ListAllocationPolicies.
-
-  Fields:
-    allocationPolicies: The list of allocation policies.
-    nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-    unreachableLocations: List of locations that could not be reached.
-  """
-
-  allocationPolicies = _messages.MessageField('AllocationPolicy', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachableLocations = _messages.StringField(3, repeated=True)
 
 
 class ListGameServerClustersResponse(_messages.Message):
@@ -1956,21 +1578,6 @@ class ListRealmsResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   realms = _messages.MessageField('Realm', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListScalingPoliciesResponse(_messages.Message):
-  r"""Response message for ScalingPoliciesService.ListScalingPolicies.
-
-  Fields:
-    nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-    scalingPolicies: The list of scaling policies.
-    unreachableLocations: List of locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  scalingPolicies = _messages.MessageField('ScalingPolicy', 2, repeated=True)
-  unreachableLocations = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -2495,10 +2102,6 @@ class RealmSelector(_messages.Message):
   realms = _messages.StringField(1, repeated=True)
 
 
-class RevertRolloutRequest(_messages.Message):
-  r"""Request message for GameServerDeploymentsService.RevertRollout."""
-
-
 class Rule(_messages.Message):
   r"""A rule to be applied in a Policy.
 
@@ -2573,70 +2176,6 @@ class ScalingConfig(_messages.Message):
   selectors = _messages.MessageField('LabelSelector', 4, repeated=True)
 
 
-class ScalingPolicy(_messages.Message):
-  r"""A scaling policy resource.
-
-  Messages:
-    LabelsValue: The labels associated with this scaling policy. Each label is
-      a key-value pair.
-
-  Fields:
-    clusterSelectors: Labels used to identify the clusters to which this
-      scaling policy applies. A cluster is subject to this scaling policy if
-      its labels match any of the cluster selector entries.
-    createTime: Output only. The creation time.
-    fleetAutoscalerSettings: Fleet autoscaler parameters.
-    gameServerDeployment: The game server deployment for this scaling policy.
-      For example,  "projects/my-
-      project/locations/{location}/gameServerDeployments/my-deployment".
-    labels: The labels associated with this scaling policy. Each label is a
-      key-value pair.
-    name: The resource name of the scaling policy, using the form:  `projects/
-      {project}/locations/{location}/scalingPolicies/{scaling_policy_id}`. For
-      example, `projects/my-project/locations/{location}/scalingPolicies/my-
-      policy`.
-    priority: Required. The priority of the policy. A smaller value indicates
-      a higher priority.
-    schedules: The schedules to which this scaling policy applies.
-    updateTime: Output only. The last-modified time.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""The labels associated with this scaling policy. Each label is a key-
-    value pair.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  clusterSelectors = _messages.MessageField('LabelSelector', 1, repeated=True)
-  createTime = _messages.StringField(2)
-  fleetAutoscalerSettings = _messages.MessageField('FleetAutoscalerSettings', 3)
-  gameServerDeployment = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  priority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  schedules = _messages.MessageField('Schedule', 8, repeated=True)
-  updateTime = _messages.StringField(9)
-
-
 class Schedule(_messages.Message):
   r"""The schedule of an event - the event can be recurring or one time.  The
   event's time span is specified by start_time and end_time. If the scheduled
@@ -2678,18 +2217,6 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
-
-
-class SetRolloutTargetRequest(_messages.Message):
-  r"""Request message for GameServerDeploymentsService.SetRolloutTarget.
-
-  Fields:
-    clusterPercentageSelector: Required. The percentage of game servers that
-      should run the new game server template in the specified clusters.
-      Default is 0.
-  """
-
-  clusterPercentageSelector = _messages.MessageField('ClusterPercentageSelector', 1, repeated=True)
 
 
 class SpecSource(_messages.Message):
@@ -2768,17 +2295,6 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
-
-
-class StartRolloutRequest(_messages.Message):
-  r"""Request message for GameServerDeploymentsService.StartRollout.
-
-  Fields:
-    newGameServerTemplate: Required. The game server template for the new
-      rollout.
-  """
-
-  newGameServerTemplate = _messages.MessageField('GameServerTemplate', 1)
 
 
 class Status(_messages.Message):

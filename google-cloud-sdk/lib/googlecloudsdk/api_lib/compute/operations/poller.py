@@ -38,6 +38,13 @@ class OperationErrors(Error):
     super(OperationErrors, self).__init__(', '.join(messages))
 
 
+def _IsGAOperation(operation_ref):
+  return (operation_ref.SelfLink().startswith(
+      'https://www.googleapis.com/compute/v1') or
+          operation_ref.SelfLink().startswith(
+              'https://compute.googleapis.com/compute/v1/'))
+
+
 class Poller(waiter.OperationPoller):
   """Compute operations poller."""
 
@@ -71,9 +78,13 @@ class Poller(waiter.OperationPoller):
       service = self.client.regionOperations
     else:
       service = self.client.globalOperations
-
-    return service.Get(service.GetRequestType('Get')(
-        **operation_ref.AsDict()))
+    # TODO(b/112841455) Switch GA to Wait
+    if _IsGAOperation(operation_ref):
+      return service.Get(
+          service.GetRequestType('Get')(**operation_ref.AsDict()))
+    else:
+      return service.Wait(
+          service.GetRequestType('Wait')(**operation_ref.AsDict()))
 
   def GetResult(self, operation):
     """Overrides."""
@@ -153,10 +164,15 @@ class BatchPoller(waiter.OperationPoller):
       else:
         service = self._client.globalOperations
 
-      request_type = service.GetRequestType('Get')
-      requests.append((service,
-                       'Get',
-                       request_type(**operation_ref.AsDict())))
+      # TODO(b/112841455) Switch GA to Wait
+      if _IsGAOperation(operation_ref):
+        request_type = service.GetRequestType('Get')
+        requests.append((service, 'Get',
+                         request_type(**operation_ref.AsDict())))
+      else:
+        request_type = service.GetRequestType('Wait')
+        requests.append((service, 'Wait',
+                         request_type(**operation_ref.AsDict())))
 
     errors_to_collect = []
     responses = self._compute_adapter.BatchRequests(

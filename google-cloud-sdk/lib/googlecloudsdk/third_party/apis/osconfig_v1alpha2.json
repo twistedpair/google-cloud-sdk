@@ -3,7 +3,7 @@
   "discoveryVersion": "v1",
   "id": "osconfig:v1alpha2",
   "name": "osconfig",
-  "canonicalName": "Cloud OS Config",
+  "canonicalName": "Systems Management",
   "version": "v1alpha2",
   "revision": "0",
   "title": "Cloud OS Config API",
@@ -104,9 +104,6 @@
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
           "description": "View and manage your data across Google Cloud Platform services"
-        },
-        "https://www.googleapis.com/auth/compute": {
-          "description": "View and manage your Google Compute Engine resources"
         }
       }
     }
@@ -1924,8 +1921,7 @@
                 "$ref": "PatchJob"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Patch GCE instances by creating and running a PatchJob."
             },
@@ -1950,8 +1946,7 @@
                 "$ref": "PatchJob"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get the patch job. This can be used to track the progress of an\nongoing patch job or review the details of completed jobs."
             },
@@ -1979,8 +1974,7 @@
                 "$ref": "PatchJob"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Cancel a patch job. The patch job must be active. Canceled patch jobs\ncannot be restarted."
             },
@@ -2021,8 +2015,7 @@
                 "$ref": "ListPatchJobsResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get a page of patch jobs."
             }
@@ -2068,8 +2061,7 @@
                     "$ref": "ListPatchJobInstanceDetailsResponse"
                   },
                   "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/compute"
+                    "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Get a page of instances' details for a given patch job."
                 }
@@ -2105,8 +2097,7 @@
                     "$ref": "ReportPatchJobInstanceDetailsResponse"
                   },
                   "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/compute"
+                    "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deprecated:  Should use AgentEndpoint API going forward.  Will be removed\nin v1beta.\n\nEndpoint used by the agent to report back its state during a patch\njob. This endpoint will also return the patch job's state and\nconfigurations that the agent needs to know in order to run or stop\npatching.\n\nThis endpoint is only used by the agent. Using it in other ways may\naffect the state of the active patch job and prevent the patches from\nbeing correctly applied to this instance."
                 },
@@ -2134,8 +2125,7 @@
                     "$ref": "LookupEffectiveGuestPoliciesResponse"
                   },
                   "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/compute"
+                    "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Lookup the guest policies that are assigned to a GCE VM instance. This\nlookup will merge all policies that are assigned to the instance. This is\nusually called by the agent running on the instance, but it can also be\ncalled by users to see what configs are assigned to this instance."
                 }
@@ -2174,8 +2164,7 @@
                 "$ref": "PatchDeployment"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Create an OS Config Patch Deployment."
             },
@@ -2200,8 +2189,7 @@
                 "$ref": "PatchDeployment"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get an OS Config Patch Deployment."
             },
@@ -2237,8 +2225,7 @@
                 "$ref": "ListPatchDeploymentsResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get a page of OS Config Patch Deployments."
             },
@@ -2263,8 +2250,7 @@
                 "$ref": "Empty"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Delete an OS Config Patch Deployment."
             }
@@ -2301,8 +2287,7 @@
                 "$ref": "GuestPolicy"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Create an OS Config Guest Policy."
             },
@@ -2327,8 +2312,7 @@
                 "$ref": "GuestPolicy"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get an OS Config GuestPolicy."
             },
@@ -2364,8 +2348,7 @@
                 "$ref": "ListGuestPoliciesResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get a page of OS Config GuestPolicies."
             },
@@ -2399,8 +2382,7 @@
                 "$ref": "GuestPolicy"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Update an OS Config GuestPolicy."
             },
@@ -2425,8 +2407,7 @@
                 "$ref": "Empty"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Delete an OS Config GuestPolicy."
             }
@@ -2467,8 +2448,7 @@
                 "$ref": "GuestPolicy"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Create an OS Config Guest Policy."
             },
@@ -2493,8 +2473,7 @@
                 "$ref": "GuestPolicy"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get an OS Config GuestPolicy."
             },
@@ -2530,8 +2509,7 @@
                 "$ref": "ListGuestPoliciesResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get a page of OS Config GuestPolicies."
             },
@@ -2565,8 +2543,7 @@
                 "$ref": "GuestPolicy"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Update an OS Config GuestPolicy."
             },
@@ -2591,8 +2568,7 @@
                 "$ref": "Empty"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Delete an OS Config GuestPolicy."
             }
@@ -2633,8 +2609,7 @@
                 "$ref": "GuestPolicy"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Create an OS Config Guest Policy."
             },
@@ -2659,8 +2634,7 @@
                 "$ref": "GuestPolicy"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get an OS Config GuestPolicy."
             },
@@ -2696,8 +2670,7 @@
                 "$ref": "ListGuestPoliciesResponse"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Get a page of OS Config GuestPolicies."
             },
@@ -2731,8 +2704,7 @@
                 "$ref": "GuestPolicy"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Update an OS Config GuestPolicy."
             },
@@ -2757,8 +2729,7 @@
                 "$ref": "Empty"
               },
               "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/compute"
+                "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Delete an OS Config GuestPolicy."
             }

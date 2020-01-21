@@ -105,53 +105,6 @@ class _BaseOperations(object):
                  operation_ref, cls.GetOperationWaitCommand(operation_ref)))
 
 
-class OperationsV1Beta3(_BaseOperations):
-  """Common utility functions for sql operations V1Beta3."""
-
-  @staticmethod
-  def GetOperationStatus(sql_client, operation_ref, progress_tracker=None):
-    """Helper function for getting the status of an operation for V1Beta3 API.
-
-    Args:
-      sql_client: apitools.BaseApiClient, The client used to make requests.
-      operation_ref: resources.Resource, A reference for the operation to poll.
-      progress_tracker: progress_tracker.ProgressTracker, A reference for the
-          progress tracker to tick, in case this function is used in a Retryer.
-
-    Returns:
-      True: if the operation succeeded without error.
-      False: if the operation is not yet done.
-      OperationError: If the operation has an error code or is in UNKNOWN state.
-      Exception: Any other exception that can occur when calling Get
-    """
-
-    if progress_tracker:
-      progress_tracker.Tick()
-    try:
-      op = sql_client.operations.Get(
-          sql_client.MESSAGES_MODULE.SqlOperationsGetRequest(
-              project=operation_ref.project,
-              instance=operation_ref.instance,
-              operation=operation_ref.operation))
-    except Exception as e:  # pylint:disable=broad-except
-      # Since we use this function in a retryer.RetryOnResult block, where we
-      # retry for different exceptions up to different amounts of time, we
-      # have to catch all exceptions here and return them.
-      return e
-    if op.error:
-      return exceptions.OperationError(op.error[0].code)
-    if op.state == 'UNKNOWN':
-      return exceptions.OperationError(op.state)
-    if op.state == 'DONE':
-      return True
-    return False
-
-  @staticmethod
-  def GetOperationWaitCommand(operation_ref):
-    return 'gcloud sql operations wait -i {0} --project {1} {2}'.format(
-        operation_ref.instance, operation_ref.project, operation_ref.operation)
-
-
 class OperationsV1Beta4(_BaseOperations):
   """Common utility functions for sql operations V1Beta4."""
 
@@ -190,9 +143,9 @@ class OperationsV1Beta4(_BaseOperations):
       if error_object.message:
         error += ' ' + error_object.message
       return exceptions.OperationError(error)
-    if op.status == 'UNKNOWN':
+    if op.status == sql_client.MESSAGES_MODULE.Operation.StatusValueValuesEnum.SQL_OPERATION_STATUS_UNSPECIFIED:
       return exceptions.OperationError(op.status)
-    if op.status == 'DONE':
+    if op.status == sql_client.MESSAGES_MODULE.Operation.StatusValueValuesEnum.DONE:
       return True
     return False
 

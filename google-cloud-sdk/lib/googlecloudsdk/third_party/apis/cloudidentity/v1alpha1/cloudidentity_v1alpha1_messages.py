@@ -237,7 +237,7 @@ class CloudidentityGroupsMembershipsModifyMembershipRolesRequest(_messages.Messa
       be passed as the request body.
     name: The [resource
       name](https://cloud.google.com/apis/design/resource_names) of the
-      looked-up `Membership`.  Must be of the form
+      `Membership` whose roles are to be modified.  Must be of the form
       `groups/{group_id}/memberships/{membership_id}`.
   """
 
@@ -499,7 +499,7 @@ class Group(_messages.Message):
 
 
 class ListGroupsResponse(_messages.Message):
-  r"""The response message for GroupsService.SearchGroups.
+  r"""The response message for GroupsService.ListGroups.
 
   Fields:
     groups: The `Group`s under the specified `parent`.

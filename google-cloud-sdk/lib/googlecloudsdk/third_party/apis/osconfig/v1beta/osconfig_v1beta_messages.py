@@ -130,18 +130,18 @@ class AssignmentGroupLabel(_messages.Message):
   these labels, for example "env=prod and app=web".
 
   Messages:
-    LabelsValue: GCE instance labels that must be present for an instance to
-      be included in this assignment group.
+    LabelsValue: Google Compute Engine instance labels that must be present
+      for an instance to be included in this assignment group.
 
   Fields:
-    labels: GCE instance labels that must be present for an instance to be
-      included in this assignment group.
+    labels: Google Compute Engine instance labels that must be present for an
+      instance to be included in this assignment group.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""GCE instance labels that must be present for an instance to be
-    included in this assignment group.
+    r"""Google Compute Engine instance labels that must be present for an
+    instance to be included in this assignment group.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -275,7 +275,7 @@ class ExecStepConfig(_messages.Message):
   Fields:
     allowedSuccessCodes: Defaults to [0]. A list of possible return values
       that the execution can return to indicate a success.
-    gcsObject: A GCS object containing the executable.
+    gcsObject: A Google Cloud Storage object containing the executable.
     interpreter: The script interpreter to use to run the script. If no
       interpreter is specified the script will be executed directly, which
       will likely only succeed for scripts with [shebang lines]
@@ -309,7 +309,8 @@ class ExecStepConfig(_messages.Message):
 
 
 class ExecutePatchJobRequest(_messages.Message):
-  r"""A request message to initiate patching across GCE instances.
+  r"""A request message to initiate patching across Google Compute Engine
+  instances.
 
   Fields:
     description: Description of the patch job. Length of the description is
@@ -335,14 +336,14 @@ class ExecutePatchJobRequest(_messages.Message):
 
 
 class GcsObject(_messages.Message):
-  r"""GCS object representation.
+  r"""Google Cloud Storage object representation.
 
   Fields:
-    bucket: Required. Bucket of the GCS object.
-    generationNumber: Required. Generation number of the GCS object. This is
-      used to ensure that the ExecStep specified by this PatchJob does not
-      change.
-    object: Required. Name of the GCS object.
+    bucket: Required. Bucket of the Google Cloud Storage object.
+    generationNumber: Required. Generation number of the Google Cloud Storage
+      object. This is used to ensure that the ExecStep specified by this
+      PatchJob does not change.
+    object: Required. Name of the Google Cloud Storage object.
   """
 
   bucket = _messages.StringField(1)
@@ -377,23 +378,12 @@ class GuestPolicy(_messages.Message):
     assignment: Required. Specifies the VM instances that are assigned to this
       policy. This allows you to target sets or groups of VM instances by
       different parameters such as labels, names, OS, or zones.  If left
-      empty, all VM instances underneath this policy are targeted.   Conflict
-      Management  At the same level in the resource hierarchy (that is within
-      a project), the service prevents the creation of multiple policies that
-      conflict with each other. If there are multiple policies that specify
-      the same config (eg. package, software recipe, repository, etc.), the
-      service ensures that no VM instance could potentially receive
-      instructions from both policies. To create multiple policies that
-      specify different versions of a package or different configs for
-      different operating systems, each policy must be mutually exclusive in
-      their targeting according to labels, OS, or other criteria.  Different
-      configs are identified for conflicts in different ways. Packages are
-      identified by their name and the package manager(s) they target. Package
-      repositories are identified by their unique id where applicable. Some
-      package managers don't have a unique identifier for repositories and
-      where that's the case, no uniqueness is validated by the service.  Note
-      that if OS Inventory is disabled, a VM instance cannot assign a policy
-      that targets by OS because the service sees the OS as unknown.
+      empty, all VM instances underneath this policy are targeted.  At the
+      same level in the resource hierarchy (that is within a project), the
+      service prevents the creation of multiple policies that conflict with
+      each other. For more information, see how the service [handles
+      assignment conflicts](/compute/docs/os-config-management/create-guest-
+      policy#handle-conflicts).
     createTime: Output only. Time this guest policy was created.
     description: Description of the guest policy. Length of the description is
       limited to 1024 characters.
@@ -981,18 +971,18 @@ class PatchInstanceFilterGroupLabel(_messages.Message):
   labels, for example "env=prod and app=web".
 
   Messages:
-    LabelsValue: GCE instance labels that must be present for a VM instance to
-      be targeted by this filter.
+    LabelsValue: Google Compute Engine instance labels that must be present
+      for a VM instance to be targeted by this filter.
 
   Fields:
-    labels: GCE instance labels that must be present for a VM instance to be
-      targeted by this filter.
+    labels: Google Compute Engine instance labels that must be present for a
+      VM instance to be targeted by this filter.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""GCE instance labels that must be present for a VM instance to be
-    targeted by this filter.
+    r"""Google Compute Engine instance labels that must be present for a VM
+    instance to be targeted by this filter.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1346,9 +1336,9 @@ class SoftwareRecipeArtifact(_messages.Message):
   Fields:
     allowInsecure: Defaults to false. When false, recipes are subject to
       validations based on the artifact type:  Remote: A checksum must be
-      specified, and only protocols with         transport-layer security are
+      specified, and only protocols with transport-layer security are
       permitted. GCS:    An object generation number must be specified.
-    gcs: A Cloud Storage artifact.
+    gcs: A Google Cloud Storage artifact.
     id: Required. Id of the artifact, which the installation and update steps
       of this recipe can reference. Artifacts in a recipe cannot have the same
       id.
@@ -1362,16 +1352,16 @@ class SoftwareRecipeArtifact(_messages.Message):
 
 
 class SoftwareRecipeArtifactGcs(_messages.Message):
-  r"""Specifies an artifact available as a Cloud Storage object.
+  r"""Specifies an artifact available as a Google Cloud Storage object.
 
   Fields:
-    bucket: Bucket of the Cloud Storage object. Given an example URL:
+    bucket: Bucket of the Google Cloud Storage object. Given an example URL:
       `https://storage.googleapis.com/my-bucket/foo/bar#1234567` this value
       would be `my-bucket`.
     generation: Must be provided if allow_insecure is false. Generation number
-      of the Cloud Storage object. `https://storage.googleapis.com/my-
+      of the Google Cloud Storage object. `https://storage.googleapis.com/my-
       bucket/foo/bar#1234567` this value would be `1234567`.
-    object: Name of the Cloud Storage object. As specified [here]
+    object: Name of the Google Cloud Storage object. As specified [here]
       (https://cloud.google.com/storage/docs/naming#objectnames) Given an
       example URL: `https://storage.googleapis.com/my-bucket/foo/bar#1234567`
       this value would be `foo/bar`.

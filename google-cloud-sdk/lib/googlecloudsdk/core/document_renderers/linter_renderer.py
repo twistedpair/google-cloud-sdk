@@ -119,7 +119,7 @@ class LinterRenderer(text_renderer.TextRenderer):
       # if previous line ended in a backslash, it is not the last line of the
       # command so append new line of command to command_text
       if self.command_text and self.command_text.endswith("\\"):
-        self.command_text += line.strip()
+        self.command_text = self.command_text.rstrip("\\") + line.strip()
       # This is the first line of the command and ignore the `$ ` in it.
       else:
         self.command_text = line.replace("$ ", "")
