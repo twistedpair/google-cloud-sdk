@@ -692,7 +692,7 @@ class Instance(_messages.Message):
 
   Fields:
     createTime: Output only. The time when the instance was created.
-    description: Optional. A description of the instance (2048 characters or
+    description: Optional. The description of the instance (2048 characters or
       less).
     etag: Server-specified ETag for the instance resource to prevent
       simultaneous updates from overwriting each other.
@@ -735,12 +735,23 @@ class Instance(_messages.Message):
 
     Values:
       TIER_UNSPECIFIED: Not set.
-      STANDARD: STANDARD tier.
-      PREMIUM: PREMIUM tier.
+      STANDARD: STANDARD tier. BASIC_HDD is the preferred term for this tier.
+      PREMIUM: PREMIUM tier. BASIC_SSD is the preferred term for this tier.
+      BASIC_HDD: BASIC instances offer a maximum capacity of 63.9 TB.
+        BASIC_HDD is an alias for STANDARD Tier, offering economical
+        performance backed by Persistent Disk HDD.
+      BASIC_SSD: BASIC instances offer a maximum capacity of 63.9 TB.
+        BASIC_SSD is an alias for PREMIUM Tier, and offers improved
+        performance backed by Persistent Disk SSD.
+      HIGH_SCALE_SSD: HIGH_SCALE instances offer larger capacity and
+        professional performance backed by Persistent Disk SSD.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
     PREMIUM = 2
+    BASIC_HDD = 3
+    BASIC_SSD = 4
+    HIGH_SCALE_SSD = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

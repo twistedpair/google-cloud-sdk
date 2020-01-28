@@ -337,6 +337,11 @@
         "accelerator": {
           "description": "The accelerator card attached to each VM.",
           "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaAcceleratorConfig"
+        },
+        "maxConcurrentActions": {
+          "description": "The maximum number of actions a worker can execute concurrently.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

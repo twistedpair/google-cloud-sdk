@@ -644,6 +644,9 @@ zones.
 
     def SetLocations(self, request, global_params=None):
       r"""Sets the locations for a specific cluster.
+Deprecated. Use
+[projects.locations.clusters.update](/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters.update)
+instead.
 
       Args:
         request: (SetLocationsRequest) input message
@@ -1529,6 +1532,9 @@ zones.
 
     def Locations(self, request, global_params=None):
       r"""Sets the locations for a specific cluster.
+Deprecated. Use
+[projects.locations.clusters.update](/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters.update)
+instead.
 
       Args:
         request: (SetLocationsRequest) input message

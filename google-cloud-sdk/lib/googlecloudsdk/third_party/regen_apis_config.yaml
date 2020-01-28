@@ -562,6 +562,10 @@ apis:
   networkmanagement:
     v1beta1:
       discovery_doc: networkmanagement_v1beta1.json
+  notebooks:
+    v1beta1:
+      discovery_doc: notebooks_v1beta1.json
+      default: true
   orgpolicy:
     v2alpha1:
       discovery_doc: orgpolicy_v2alpha1.json

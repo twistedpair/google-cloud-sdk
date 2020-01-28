@@ -24,39 +24,32 @@ DOCS_URL = 'https://cloud.google.com/iap'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  OAUTH_PROJECTS = (
-      'oauth.projects',
-      'oauth/projects/{projectsId}',
-      {},
-      [u'projectsId'],
-      True
-  )
-  OAUTH_PROJECTS_BRANDS = (
-      'oauth.projects.brands',
-      'oauth/{+name}',
-      {
-          '':
-              'oauth/projects/{projectsId}/brands/{brandsId}',
-      },
-      [u'name'],
-      True
-  )
-  OAUTH_PROJECTS_BRANDS_IDENTITYAWAREPROXYCLIENTS = (
-      'oauth.projects.brands.identityAwareProxyClients',
-      'oauth/{+name}',
-      {
-          '':
-              'oauth/projects/{projectsId}/brands/{brandsId}/'
-              'identityAwareProxyClients/{identityAwareProxyClientsId}',
-      },
-      [u'name'],
-      True
-  )
   PROJECTS = (
       'projects',
       'projects/{project}/iap_web',
       {},
       [u'project'],
+      True
+  )
+  PROJECTS_BRANDS = (
+      'projects.brands',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/brands/{brandsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_BRANDS_IDENTITYAWAREPROXYCLIENTS = (
+      'projects.brands.identityAwareProxyClients',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/brands/{brandsId}/'
+              'identityAwareProxyClients/{identityAwareProxyClientsId}',
+      },
+      [u'name'],
       True
   )
   PROJECTS_IAP_WEB = (

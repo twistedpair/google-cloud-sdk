@@ -37,7 +37,7 @@ def AddEventTypePositionalArg(parser):
   """Adds event type positional arg."""
   parser.add_argument(
       'event_type',
-      help='Type of event (e.g. com.google.gc.object.finalize).')
+      help='Type of event (e.g. com.google.cloud.auditlog.event).')
 
 
 def AddTargetServiceFlag(parser, required=False):
@@ -54,7 +54,7 @@ def AddEventTypeFlagArg(parser):
   parser.add_argument(
       '--type',
       required=True,
-      help='Type of event (e.g. com.google.gc.object.finalize).')
+      help='Type of event (e.g. com.google.cloud.auditlog.event).')
 
 
 def AddBrokerFlag(parser):
@@ -134,13 +134,11 @@ def _CheckUnknownParameters(event_type, known_params, given_params):
         unknown_parameters, event_type)
 
 
-def _CheckMissingRequiredParameters(event_type,
-                                    required_params,
-                                    given_params=None):
+def _CheckMissingRequiredParameters(event_type, required_params, given_params):
   """Raises an error if any required params are missing."""
   missing_parameters = (
       set(required_params) -
-      set(given_params if given_params is not None else {}))
+      set(given_params))
   if missing_parameters:
     raise exceptions.MissingRequiredEventTypeParameters(
         missing_parameters, event_type)
@@ -161,24 +159,19 @@ def _ValidateParameters(event_type, parameters, properties='properties'):
 
 def GetAndValidateParameters(args, event_type):
   """Validates all source parameters and returns a dict of values."""
-  parameters = {}
-
   # Check the passed parameters for unknown keys or missing required keys
+  parameters = {}
   from_file_flag = '{}_from_file'.format(_PARAMETERS_FLAG_NAME)
   if args.IsSpecified(from_file_flag):
-    _ValidateParameters(event_type, getattr(args, from_file_flag))
     parameters.update(getattr(args, from_file_flag))
-  elif args.IsSpecified(_PARAMETERS_FLAG_NAME):
-    _ValidateParameters(event_type, getattr(args, _PARAMETERS_FLAG_NAME))
+  if args.IsSpecified(_PARAMETERS_FLAG_NAME):
     parameters.update(getattr(args, _PARAMETERS_FLAG_NAME))
-  else:
-    _CheckMissingRequiredParameters(
-        event_type, [p.name for p in event_type.crd.properties if p.required])
+  _ValidateParameters(event_type, parameters)
 
   # Check the passed secret parameters for unknown keys or missing required keys
   secret_parameters = _ParseSecretParameters(args)
   _ValidateParameters(
       event_type, secret_parameters, properties='secret_properties')
-  parameters.update(secret_parameters)
 
+  parameters.update(secret_parameters)
   return parameters

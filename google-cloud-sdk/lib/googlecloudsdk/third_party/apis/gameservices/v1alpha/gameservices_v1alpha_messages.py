@@ -396,16 +396,82 @@ class DataAccessOptions(_messages.Message):
   logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
+class DeployedClusterState(_messages.Message):
+  r"""The cluster level changes made by the deployment.
+
+  Fields:
+    cluster: The name of the cluster.
+    fleetDetails: The details about the fleets and autoscalers created in the
+      cluster.
+  """
+
+  cluster = _messages.StringField(1)
+  fleetDetails = _messages.MessageField('DeployedFleetDetails', 2, repeated=True)
+
+
+class DeployedFleet(_messages.Message):
+  r"""Fleet specification and details.
+
+  Fields:
+    fleet: The name of the Agones game server fleet.
+    fleetSpec: The fleet spec retrieved from the Agones fleet.
+    specSource: The source spec that is used to create the fleet. The
+      GameServerConfig resource may no longer exist in the system.
+    status: The current status of the fleet. Includes count of game servers in
+      various states.
+  """
+
+  fleet = _messages.StringField(1)
+  fleetSpec = _messages.StringField(2)
+  specSource = _messages.MessageField('SpecSource', 3)
+  status = _messages.MessageField('DeployedFleetStatus', 4)
+
+
+class DeployedFleetAutoscaler(_messages.Message):
+  r"""Details about the autoscaler.
+
+  Fields:
+    autoscaler: The name of the Agones autoscaler.
+    fleetAutoscalerSpec: The autoscaler spec retrieved from Agones.
+    specSource: The source spec that is used to create the autoscaler. The
+      GameServerConfig resource may no longer exist in the system.
+  """
+
+  autoscaler = _messages.StringField(1)
+  fleetAutoscalerSpec = _messages.StringField(2)
+  specSource = _messages.MessageField('SpecSource', 3)
+
+
 class DeployedFleetDetails(_messages.Message):
   r"""Details of the deployed fleet.
 
   Fields:
-    autoscaler: Information about the agones autoscaler for that fleet.
-    fleet: Information about the agones fleet.
+    deployedAutoscaler: Information about the agones autoscaler for that
+      fleet.
+    deployedFleet: Information about the agones fleet.
   """
 
-  autoscaler = _messages.MessageField('FleetAutoscaler', 1)
-  fleet = _messages.MessageField('Fleet', 2)
+  deployedAutoscaler = _messages.MessageField('DeployedFleetAutoscaler', 1)
+  deployedFleet = _messages.MessageField('DeployedFleet', 2)
+
+
+class DeployedFleetStatus(_messages.Message):
+  r"""DeployedFleetStatus has details about the fleets such as how many are
+  running, how many allocated and so on.
+
+  Fields:
+    allocatedReplicas: The number of Allocated GameServer replicas.
+    readyReplicas: The number of Ready GameServer replicas.
+    replicas: The total number of current GameServer replicas.
+    reservedReplicas: The total number of Reserved GameServer replicas in this
+      fleet. Reserved instances won't be deleted on scale down, but won't
+      cause an autoscaler to scale up.
+  """
+
+  allocatedReplicas = _messages.IntegerField(1)
+  readyReplicas = _messages.IntegerField(2)
+  replicas = _messages.IntegerField(3)
+  reservedReplicas = _messages.IntegerField(4)
 
 
 class DeployedState(_messages.Message):
@@ -429,21 +495,33 @@ class Empty(_messages.Message):
 
 
 class Expr(_messages.Message):
-  r"""Represents an expression text. Example:      title: "User account
-  presence"     description: "Determines whether the request has a user
-  account"     expression: "size(request.user) > 0"
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec.  Example (Comparison):
+  title: "Summary size limit"     description: "Determines if a summary is
+  less than 100 chars"     expression: "document.summary.size() < 100"
+  Example (Equality):      title: "Requestor is owner"     description:
+  "Determines if requestor is the document owner"     expression:
+  "document.owner == request.auth.claims.email"  Example (Logic):      title:
+  "Public documents"     description: "Determine whether the document should
+  be publicly visible"     expression: "document.type != 'private' &&
+  document.type != 'internal'"  Example (Data Manipulation):      title:
+  "Notification string"     description: "Create a notification string with a
+  timestamp."     expression: "'New message received at ' +
+  string(document.create_time)"  The exact variables and functions that may be
+  referenced within an expression are determined by the service that evaluates
+  it. See the service documentation for additional information.
 
   Fields:
-    description: An optional description of the expression. This is a longer
+    description: Optional. Description of the expression. This is a longer
       text which describes the expression, e.g. when hovered over it in a UI.
     expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
       error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
   """
 
   description = _messages.StringField(1)
@@ -462,51 +540,12 @@ class FetchDeploymentStateResponse(_messages.Message):
   r"""Response message for GameServerDeploymentsService.FetchDeploymentState.
 
   Fields:
-    details: The details of a deployment in a given location.
+    clusterState: The state of the deployment in each cluster.
     unavailable: List of locations that could not be reached.
   """
 
-  details = _messages.MessageField('DeployedFleetDetails', 1, repeated=True)
+  clusterState = _messages.MessageField('DeployedClusterState', 1, repeated=True)
   unavailable = _messages.StringField(2, repeated=True)
-
-
-class Fleet(_messages.Message):
-  r"""Fleet specification and details.
-
-  Fields:
-    agonesSpec: The Agones fleet spec. This is sent because it is possible
-      that we may no longer have the corresponding game server config in our
-      systems.
-    cluster: The cluster name.
-    name: The name of the Agones game server fleet.
-    specSource: The source spec that is used to create the fleet. The game
-      server config and fleet config may no longer exist in the system.
-    status: The current status of the fleet. Includes count of game servers in
-      various states.
-  """
-
-  agonesSpec = _messages.StringField(1)
-  cluster = _messages.StringField(2)
-  name = _messages.StringField(3)
-  specSource = _messages.MessageField('SpecSource', 4)
-  status = _messages.MessageField('FleetStatus', 5)
-
-
-class FleetAutoscaler(_messages.Message):
-  r"""Details about the autoscaler.
-
-  Fields:
-    autoscalerName: The name of the Agones autoscaler.
-    fleetAutoscalerSpec: The autoscaler spec. This is sent because it is
-      possible that we may no longer have the corresponding game server config
-      in our systems.
-    specSource: The source spec that is used to create the autoscaler. The
-      game server config and scaling config may no longer exist in the system.
-  """
-
-  autoscalerName = _messages.StringField(1)
-  fleetAutoscalerSpec = _messages.StringField(2)
-  specSource = _messages.MessageField('SpecSource', 3)
 
 
 class FleetConfig(_messages.Message):
@@ -538,26 +577,6 @@ class FleetDetails(_messages.Message):
   fleetName = _messages.StringField(2)
   gameServerClusterName = _messages.StringField(3)
   gameServerConfigName = _messages.StringField(4)
-
-
-class FleetStatus(_messages.Message):
-  r"""FleetStatus has details about the fleets like how many are running, how
-  many allocated and so on.
-
-  Fields:
-    allocatedCount: The number of allocated servers. These are servers
-      allocated to game sessions.
-    availableCount: The number of available servers. The are no players
-      connected to this servers.
-    replicaCount: The total number of current GameServer replicas.
-    reservedCount: The number of reserved servers. Reserved instances won't be
-      deleted on scale down, but won't cause an autoscaler to scale up.
-  """
-
-  allocatedCount = _messages.IntegerField(1)
-  availableCount = _messages.IntegerField(2)
-  replicaCount = _messages.IntegerField(3)
-  reservedCount = _messages.IntegerField(4)
 
 
 class GameServerCluster(_messages.Message):

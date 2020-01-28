@@ -31,6 +31,3 @@ sudo adduser --system --disabled-login envoy
 sudo gsutil cp gs://gce-mesh/mesh-agent/releases/mesh-agent-0.1.tgz /home/envoy
 sudo tar -xzf /home/envoy/mesh-agent-0.1.tgz -C /home/envoy
 sudo /home/envoy/mesh-agent/mesh-agent-bootstrap.sh"""
-
-shebang = '#! /bin/bash\n'
-shebang_len = len(shebang)

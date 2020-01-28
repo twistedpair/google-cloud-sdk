@@ -140,6 +140,11 @@ WORKERS = base.Argument(
     type=int,
     help=('Number of workers with which to run. '
           'Ignored if --distributed is not specified. Default: 2'))
+EVALUATORS = base.Argument(
+    '--evaluator-count',
+    type=int,
+    help=('Number of evaluators with which to run. '
+          'Ignored if --distributed is not specified. Default: 0'))
 START_PORT = base.Argument(
     '--start-port',
     type=int,

@@ -180,6 +180,13 @@ class OperationData(object):
     return (self_link.startswith('https://www.googleapis.com/compute/v1') or
             self_link.startswith('https://compute.googleapis.com/compute/v1/'))
 
+  def IsGlobalOrganizationOperation(self):
+    if not hasattr(self.operation_service.client,
+                   'globalOrganizationOperations'):
+      return False
+    return (self.operation_service ==
+            self.operation_service.client.globalOrganizationOperations)
+
   def IsDone(self):
     """Returns true if the operation is done."""
     operation_type = self.operation_service.GetResponseType('Get')
@@ -420,7 +427,8 @@ def WaitForOperations(
         # The operation has not reached the DONE state, so we add a request
         # to poll the operation.
         # TODO(b/112841455): Move GA to "Wait" API.
-        if data.IsGAOperation():
+        # TODO(b/129413862): Global org operation service supports wait API.
+        if data.IsGAOperation() or data.IsGlobalOrganizationOperation():
           request = data.OperationGetRequest()
           operation_requests.append((operation_service, 'Get', request))
         else:

@@ -31,12 +31,24 @@ class Collections(enum.Enum):
       [u'namespacesId'],
       True
   )
-  NAMESPACES_CLOUDAUDITLOGS = (
-      'namespaces.cloudauditlogs',
+  NAMESPACES_CLOUDAUDITLOGSSOURCES = (
+      'namespaces.cloudauditlogssources',
       '{+name}',
       {
           '':
-              'namespaces/{namespacesId}/cloudauditlogs/{cloudauditlogsId}',
+              'namespaces/{namespacesId}/cloudauditlogssources/'
+              '{cloudauditlogssourcesId}',
+      },
+      [u'name'],
+      True
+  )
+  NAMESPACES_CLOUDPUBSUBSOURCES = (
+      'namespaces.cloudpubsubsources',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/cloudpubsubsources/'
+              '{cloudpubsubsourcesId}',
       },
       [u'name'],
       True
@@ -67,16 +79,6 @@ class Collections(enum.Enum):
       {
           '':
               'namespaces/{namespacesId}/eventtypes/{eventtypesId}',
-      },
-      [u'name'],
-      True
-  )
-  NAMESPACES_PUBSUBS = (
-      'namespaces.pubsubs',
-      '{+name}',
-      {
-          '':
-              'namespaces/{namespacesId}/pubsubs/{pubsubsId}',
       },
       [u'name'],
       True
@@ -145,13 +147,24 @@ class Collections(enum.Enum):
       [u'projectsId', u'locationsId'],
       True
   )
-  PROJECTS_LOCATIONS_CLOUDAUDITLOGS = (
-      'projects.locations.cloudauditlogs',
+  PROJECTS_LOCATIONS_CLOUDAUDITLOGSSOURCES = (
+      'projects.locations.cloudauditlogssources',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}/cloudauditlogs/'
-              '{cloudauditlogsId}',
+              'projects/{projectsId}/locations/{locationsId}/'
+              'cloudauditlogssources/{cloudauditlogssourcesId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CLOUDPUBSUBSOURCES = (
+      'projects.locations.cloudpubsubsources',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'cloudpubsubsources/{cloudpubsubsourcesId}',
       },
       [u'name'],
       True
@@ -185,17 +198,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/eventtypes/'
               '{eventtypesId}',
-      },
-      [u'name'],
-      True
-  )
-  PROJECTS_LOCATIONS_PUBSUBS = (
-      'projects.locations.pubsubs',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/pubsubs/'
-              '{pubsubsId}',
       },
       [u'name'],
       True

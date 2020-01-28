@@ -232,23 +232,23 @@
     },
     "Expr": {
       "id": "Expr",
-      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
+      "description": "Represents a textual expression in the Common Expression Language (CEL)\nsyntax. CEL is a C-like expression language. The syntax and semantics of CEL\nare documented at https:\/\/github.com\/google\/cel-spec.\n\nExample (Comparison):\n\n    title: \"Summary size limit\"\n    description: \"Determines if a summary is less than 100 chars\"\n    expression: \"document.summary.size() < 100\"\n\nExample (Equality):\n\n    title: \"Requestor is owner\"\n    description: \"Determines if requestor is the document owner\"\n    expression: \"document.owner == request.auth.claims.email\"\n\nExample (Logic):\n\n    title: \"Public documents\"\n    description: \"Determine whether the document should be publicly visible\"\n    expression: \"document.type != 'private' && document.type != 'internal'\"\n\nExample (Data Manipulation):\n\n    title: \"Notification string\"\n    description: \"Create a notification string with a timestamp.\"\n    expression: \"'New message received at ' + string(document.create_time)\"\n\nThe exact variables and functions that may be referenced within an expression\nare determined by the service that evaluates it. See the service\ndocumentation for additional information.",
       "type": "object",
       "properties": {
         "expression": {
-          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
+          "description": "Textual representation of an expression in Common Expression Language\nsyntax.",
           "type": "string"
         },
         "title": {
-          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
+          "description": "Optional. Title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
           "type": "string"
         },
         "description": {
-          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
+          "description": "Optional. Description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
           "type": "string"
         },
         "location": {
-          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
+          "description": "Optional. String indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
           "type": "string"
         }
       }
@@ -665,7 +665,7 @@
       "type": "object",
       "properties": {
         "fieldMetadataList": {
-          "description": "Specifies FHIR paths to match and how to transform them. Any field that\nis not matched by a FieldMetadata is passed through to the output\ndataset unmodified. All extensions are removed in the output.",
+          "description": "Specifies FHIR paths to match and how to transform them. Any field that\nis not matched by a FieldMetadata is passed through to the output\ndataset unmodified. All extensions are removed in the output.\nIf a field can be matched by more than one FieldMetadata, the first\nFieldMetadata.Action is applied.",
           "type": "array",
           "items": {
             "$ref": "FieldMetadata"
@@ -679,7 +679,7 @@
       "type": "object",
       "properties": {
         "paths": {
-          "description": "List of paths to FHIR fields to redact. Each path is a\nperiod-separated list where each component is either a field name or\nFHIR type name. For example: Patient, HumanName.\nFor \"choice\" types (those defined in the FHIR spec with the form:\nfield[x]), use two separate components. For example,\n\"deceasedAge.unit\" is matched by \"Deceased.Age.unit\".\nSupported types are: AdministrativeGenderCode, Code, Date, DateTime,\nDecimal, HumanName, Id, LanguageCode, Markdown, Oid, String, Uri, Uuid,\nXhtml.",
+          "description": "List of paths to FHIR fields to redact. Each path is a\nperiod-separated list where each component is either a field name or\nFHIR type name. All types begin with an upper case letter. For example,\nthe resource field \"Patient.Address.city\", which uses a string type,\ncan be matched by \"Patient.Address.String\". Path also supports partial\nmatching. For example, \"Patient.Address.city\" can be matched by\n\"Address.city\" (Patient omitted). Partial matching and type matching\ncan be combined, for example \"Patient.Address.city\" can be matched by\n\"Address.String\". For \"choice\" types (those defined in the FHIR spec\nwith the form: field[x]), use two separate components. For example,\n\"deceasedAge.unit\" is matched by \"Deceased.Age.unit\". Supported types\nare: AdministrativeGenderCode, Code, Date, DateTime, Decimal,\nHumanName, Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml.\nThe sub-type for HumanName(for example HumanName.given,\nHumanName.family) can be omitted.",
           "type": "array",
           "items": {
             "type": "string"
@@ -689,7 +689,7 @@
           "description": "Deidentify action for one field.",
           "enumDescriptions": [
             "No action specified.",
-            "Transform the entire field.",
+            "Transform the entire field based on transformations specified in\nTextConfig. When the specified transformation cannot be applied to a\nfield (for example, a Crypto Hash transformation cannot be applied\nto a FHIR Date field), RedactConfig is used.",
             "Inspect and transform any found PHI. When `AnnotationConfig` is\nprovided, annotations of PHI are generated, except for Date and Datetime.",
             "Do not transform."
           ],
@@ -745,7 +745,7 @@
       "type": "object",
       "properties": {
         "infoTypes": {
-          "description": "InfoTypes to apply this transformation to. If this is not specified, the\ntransformation applies to any info_type.",
+          "description": "InfoTypes to apply this transformation to. If this is not specified, this\ntransformation becomes the default transformation, and is used for any\ninfo_type that is not specified in another transformation.",
           "type": "array",
           "items": {
             "type": "string"
@@ -920,7 +920,7 @@
           "type": "string"
         },
         "mimeType": {
-          "description": "MIME types supported by DICOM spec.\nEach file is written in the following format:\n`...\/{study_id}\/{series_id}\/{instance_id}[\/{frame_number}].{extension}`\nThe frame_number component exists only for multi-frame instances.\n\nRefer to the DICOM conformance statement for permissible MIME types:\nhttps:\/\/cloud.google.com\/healthcare\/docs\/dicom#wado-rs\n\nThe following extensions are used for output files:\n  application\/dicom -> .dcm\n  image\/jpeg -> .jpg\n  image\/png -> .png\n\nIf unspecified, the instances are exported in their original\nDICOM format.",
+          "description": "MIME types supported by DICOM spec.\nEach file is written in the following format:\n`...\/{study_id}\/{series_id}\/{instance_id}[\/{frame_number}].{extension}`\nThe frame_number component exists only for multi-frame instances.\n\nRefer to the DICOM conformance statement for permissible MIME types:\nhttps:\/\/cloud.google.com\/healthcare\/docs\/dicom#retrieve_transaction\n\nThe following extensions are used for output files:\n  application\/dicom -> .dcm\n  image\/jpeg -> .jpg\n  image\/png -> .png\n\nIf unspecified, the instances are exported in their original\nDICOM format.",
           "type": "string"
         }
       }

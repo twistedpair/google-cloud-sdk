@@ -2819,6 +2819,9 @@ class BackendService(_messages.Message):
       load_balancing_scheme set to INTERNAL_SELF_MANAGED.    If
       sessionAffinity is not NONE, and this field is not set to >MAGLEV or
       RING_HASH, session affinity settings will not take effect.
+    logConfig: This field denotes the logging options for the load balancer
+      traffic served by this backend service. If logging is enabled, logs will
+      be exported to Stackdriver.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -2826,6 +2829,9 @@ class BackendService(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    network: The URL of the network to which this backend service belongs.
+      This field can only be spcified when the load balancing scheme is set to
+      INTERNAL.
     outlierDetection: Settings controlling the eviction of unhealthy hosts
       from the load balancing pool for the backend service. If not set, this
       feature is considered disabled.  This field is applicable to either:   -
@@ -2998,16 +3004,18 @@ class BackendService(_messages.Message):
   kind = _messages.StringField(15, default=u'compute#backendService')
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 16)
   localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 17)
-  name = _messages.StringField(18)
-  outlierDetection = _messages.MessageField('OutlierDetection', 19)
-  port = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(21)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 22)
-  region = _messages.StringField(23)
-  securityPolicy = _messages.StringField(24)
-  selfLink = _messages.StringField(25)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 26)
-  timeoutSec = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('BackendServiceLogConfig', 18)
+  name = _messages.StringField(19)
+  network = _messages.StringField(20)
+  outlierDetection = _messages.MessageField('OutlierDetection', 21)
+  port = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(23)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 24)
+  region = _messages.StringField(25)
+  securityPolicy = _messages.StringField(26)
+  selfLink = _messages.StringField(27)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 28)
+  timeoutSec = _messages.IntegerField(29, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -3337,6 +3345,24 @@ class BackendServiceList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class BackendServiceLogConfig(_messages.Message):
+  r"""The available logging options for the load balancer traffic served by
+  this backend service.
+
+  Fields:
+    enable: This field denotes whether to enable logging for the load balancer
+      traffic served by this backend service.
+    sampleRate: This field can only be specified if logging is enabled for
+      this backend service. The value of the field must be in [0, 1]. This
+      configures the sampling rate of requests to the load balancer where 1.0
+      means all logged requests are reported and 0.0 means no logged requests
+      are reported. The default value is 1.0.
+  """
+
+  enable = _messages.BooleanField(1)
+  sampleRate = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class BackendServiceReference(_messages.Message):
@@ -19457,21 +19483,33 @@ class ExchangedPeeringRoutesList(_messages.Message):
 
 
 class Expr(_messages.Message):
-  r"""Represents an expression text. Example:  title: "User account presence"
-  description: "Determines whether the request has a user account" expression:
-  "size(request.user) > 0"
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec.  Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100"  Example
+  (Equality):  title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email"  Example (Logic):  title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation):  title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)"  The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
-    description: An optional description of the expression. This is a longer
+    description: Optional. Description of the expression. This is a longer
       text which describes the expression, e.g. when hovered over it in a UI.
     expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
       error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
   """
 
   description = _messages.StringField(1)
@@ -21688,8 +21726,9 @@ class HealthStatus(_messages.Message):
   Fields:
     healthState: Health state of the instance.
     instance: URL of the instance resource.
-    ipAddress: The IP address represented by this resource.
-    port: The port on the instance.
+    ipAddress: A forwarding rule IP address assigned to this instance.
+    port: The named port of the instance group, not necessarily the port that
+      is health-checked.
   """
 
   class HealthStateValueValuesEnum(_messages.Enum):
@@ -23644,8 +23683,9 @@ class InstanceGroupManager(_messages.Message):
       the instanceGroup field are added. The target pools automatically apply
       to all of the instances in the managed instance group.
     targetSize: The target number of running instances for this managed
-      instance group. Deleting or abandoning instances reduces this number.
-      Resizing the group changes this number.
+      instance group. You can reduce this number by using the
+      instanceGroupManager deleteInstances or abandonInstances methods.
+      Resizing the group also changes this number.
     updatePolicy: The update policy for this managed instance group.
     versions: Specifies the instance templates used by this managed instance
       group to create instances.  Each version is defined by an
@@ -32651,6 +32691,7 @@ class Quota(_messages.Message):
       COMMITMENTS: <no description>
       COMMITTED_C2_CPUS: <no description>
       COMMITTED_CPUS: <no description>
+      COMMITTED_LICENSES: <no description>
       COMMITTED_LOCAL_SSD_TOTAL_GB: <no description>
       COMMITTED_N2D_CPUS: <no description>
       COMMITTED_N2_CPUS: <no description>
@@ -32738,85 +32779,86 @@ class Quota(_messages.Message):
     COMMITMENTS = 4
     COMMITTED_C2_CPUS = 5
     COMMITTED_CPUS = 6
-    COMMITTED_LOCAL_SSD_TOTAL_GB = 7
-    COMMITTED_N2D_CPUS = 8
-    COMMITTED_N2_CPUS = 9
-    COMMITTED_NVIDIA_K80_GPUS = 10
-    COMMITTED_NVIDIA_P100_GPUS = 11
-    COMMITTED_NVIDIA_P4_GPUS = 12
-    COMMITTED_NVIDIA_T4_GPUS = 13
-    COMMITTED_NVIDIA_V100_GPUS = 14
-    CPUS = 15
-    CPUS_ALL_REGIONS = 16
-    DISKS_TOTAL_GB = 17
-    EXTERNAL_VPN_GATEWAYS = 18
-    FIREWALLS = 19
-    FORWARDING_RULES = 20
-    GLOBAL_INTERNAL_ADDRESSES = 21
-    GPUS_ALL_REGIONS = 22
-    HEALTH_CHECKS = 23
-    IMAGES = 24
-    INSTANCES = 25
-    INSTANCE_GROUPS = 26
-    INSTANCE_GROUP_MANAGERS = 27
-    INSTANCE_TEMPLATES = 28
-    INTERCONNECTS = 29
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 30
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 31
-    INTERCONNECT_TOTAL_GBPS = 32
-    INTERNAL_ADDRESSES = 33
-    IN_USE_ADDRESSES = 34
-    IN_USE_BACKUP_SCHEDULES = 35
-    IN_USE_SNAPSHOT_SCHEDULES = 36
-    LOCAL_SSD_TOTAL_GB = 37
-    MACHINE_IMAGES = 38
-    N2D_CPUS = 39
-    N2_CPUS = 40
-    NETWORKS = 41
-    NETWORK_ENDPOINT_GROUPS = 42
-    NVIDIA_K80_GPUS = 43
-    NVIDIA_P100_GPUS = 44
-    NVIDIA_P100_VWS_GPUS = 45
-    NVIDIA_P4_GPUS = 46
-    NVIDIA_P4_VWS_GPUS = 47
-    NVIDIA_T4_GPUS = 48
-    NVIDIA_T4_VWS_GPUS = 49
-    NVIDIA_V100_GPUS = 50
-    PACKET_MIRRORINGS = 51
-    PREEMPTIBLE_CPUS = 52
-    PREEMPTIBLE_LOCAL_SSD_GB = 53
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 54
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 55
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 56
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 57
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 58
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 59
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 60
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 61
-    REGIONAL_AUTOSCALERS = 62
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 63
-    RESERVATIONS = 64
-    RESOURCE_POLICIES = 65
-    ROUTERS = 66
-    ROUTES = 67
-    SECURITY_POLICIES = 68
-    SECURITY_POLICY_CEVAL_RULES = 69
-    SECURITY_POLICY_RULES = 70
-    SNAPSHOTS = 71
-    SSD_TOTAL_GB = 72
-    SSL_CERTIFICATES = 73
-    STATIC_ADDRESSES = 74
-    SUBNETWORKS = 75
-    TARGET_HTTPS_PROXIES = 76
-    TARGET_HTTP_PROXIES = 77
-    TARGET_INSTANCES = 78
-    TARGET_POOLS = 79
-    TARGET_SSL_PROXIES = 80
-    TARGET_TCP_PROXIES = 81
-    TARGET_VPN_GATEWAYS = 82
-    URL_MAPS = 83
-    VPN_GATEWAYS = 84
-    VPN_TUNNELS = 85
+    COMMITTED_LICENSES = 7
+    COMMITTED_LOCAL_SSD_TOTAL_GB = 8
+    COMMITTED_N2D_CPUS = 9
+    COMMITTED_N2_CPUS = 10
+    COMMITTED_NVIDIA_K80_GPUS = 11
+    COMMITTED_NVIDIA_P100_GPUS = 12
+    COMMITTED_NVIDIA_P4_GPUS = 13
+    COMMITTED_NVIDIA_T4_GPUS = 14
+    COMMITTED_NVIDIA_V100_GPUS = 15
+    CPUS = 16
+    CPUS_ALL_REGIONS = 17
+    DISKS_TOTAL_GB = 18
+    EXTERNAL_VPN_GATEWAYS = 19
+    FIREWALLS = 20
+    FORWARDING_RULES = 21
+    GLOBAL_INTERNAL_ADDRESSES = 22
+    GPUS_ALL_REGIONS = 23
+    HEALTH_CHECKS = 24
+    IMAGES = 25
+    INSTANCES = 26
+    INSTANCE_GROUPS = 27
+    INSTANCE_GROUP_MANAGERS = 28
+    INSTANCE_TEMPLATES = 29
+    INTERCONNECTS = 30
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 31
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 32
+    INTERCONNECT_TOTAL_GBPS = 33
+    INTERNAL_ADDRESSES = 34
+    IN_USE_ADDRESSES = 35
+    IN_USE_BACKUP_SCHEDULES = 36
+    IN_USE_SNAPSHOT_SCHEDULES = 37
+    LOCAL_SSD_TOTAL_GB = 38
+    MACHINE_IMAGES = 39
+    N2D_CPUS = 40
+    N2_CPUS = 41
+    NETWORKS = 42
+    NETWORK_ENDPOINT_GROUPS = 43
+    NVIDIA_K80_GPUS = 44
+    NVIDIA_P100_GPUS = 45
+    NVIDIA_P100_VWS_GPUS = 46
+    NVIDIA_P4_GPUS = 47
+    NVIDIA_P4_VWS_GPUS = 48
+    NVIDIA_T4_GPUS = 49
+    NVIDIA_T4_VWS_GPUS = 50
+    NVIDIA_V100_GPUS = 51
+    PACKET_MIRRORINGS = 52
+    PREEMPTIBLE_CPUS = 53
+    PREEMPTIBLE_LOCAL_SSD_GB = 54
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 55
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 56
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 57
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 58
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 59
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 60
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 61
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 62
+    REGIONAL_AUTOSCALERS = 63
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 64
+    RESERVATIONS = 65
+    RESOURCE_POLICIES = 66
+    ROUTERS = 67
+    ROUTES = 68
+    SECURITY_POLICIES = 69
+    SECURITY_POLICY_CEVAL_RULES = 70
+    SECURITY_POLICY_RULES = 71
+    SNAPSHOTS = 72
+    SSD_TOTAL_GB = 73
+    SSL_CERTIFICATES = 74
+    STATIC_ADDRESSES = 75
+    SUBNETWORKS = 76
+    TARGET_HTTPS_PROXIES = 77
+    TARGET_HTTP_PROXIES = 78
+    TARGET_INSTANCES = 79
+    TARGET_POOLS = 80
+    TARGET_SSL_PROXIES = 81
+    TARGET_TCP_PROXIES = 82
+    TARGET_VPN_GATEWAYS = 83
+    URL_MAPS = 84
+    VPN_GATEWAYS = 85
+    VPN_TUNNELS = 86
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -36893,6 +36935,9 @@ class SecurityPolicyRuleMatcher(_messages.Message):
     config: The configuration options available when specifying
       versioned_expr. This field must be specified if versioned_expr is
       specified and cannot be specified if versioned_expr is not specified.
+    expr: User defined CEVAL expression. A CEVAL expression is used to specify
+      match criteria such as origin.ip, source.region_code and contents in the
+      request header.
     versionedExpr: Preconfigured versioned expression. If this field is
       specified, config must also be specified. Available preconfigured
       expressions along with their requirements are: SRC_IPS_V1 - must specify
@@ -36911,7 +36956,8 @@ class SecurityPolicyRuleMatcher(_messages.Message):
     SRC_IPS_V1 = 0
 
   config = _messages.MessageField('SecurityPolicyRuleMatcherConfig', 1)
-  versionedExpr = _messages.EnumField('VersionedExprValueValuesEnum', 2)
+  expr = _messages.MessageField('Expr', 2)
+  versionedExpr = _messages.EnumField('VersionedExprValueValuesEnum', 3)
 
 
 class SecurityPolicyRuleMatcherConfig(_messages.Message):

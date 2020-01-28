@@ -860,10 +860,10 @@ def GetConfigurationChanges(args):
   if 'args' in args and args.args is not None:
     # Allow passing an empty string here to reset the field
     changes.append(config_changes.ContainerArgsChange(args.args))
-  if (_FlagIsExplicitlySet(args, 'port') or
-      _FlagIsExplicitlySet(args, 'use_http2')):
-    changes.append(
-        config_changes.ContainerPortChange(args.port, args.use_http2))
+  if _FlagIsExplicitlySet(args, 'port'):
+    changes.append(config_changes.ContainerPortChange(port=args.port))
+  if _FlagIsExplicitlySet(args, 'use_http2'):
+    changes.append(config_changes.ContainerPortChange(use_http2=args.use_http2))
   return changes
 
 
@@ -1085,6 +1085,13 @@ def VerifyOnePlatformFlags(args, release_track):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--[no-]-use-http2',
+            platform=PLATFORM_GKE,
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+
+  if _FlagIsExplicitlySet(args, 'broker'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--broker',
             platform=PLATFORM_GKE,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
 

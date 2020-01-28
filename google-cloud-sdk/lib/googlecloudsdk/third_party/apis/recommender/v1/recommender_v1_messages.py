@@ -82,7 +82,8 @@ class GoogleCloudRecommenderV1MarkRecommendationClaimedRequest(_messages.Message
       /^[a-zA-Z0-9_./-]{0,255}$/.
 
   Fields:
-    etag: Fingerprint of the Recommendation. Provides optimistic locking.
+    etag: Required. Fingerprint of the Recommendation. Provides optimistic
+      locking.
     stateMetadata: State properties to include with this state. Overwrites any
       existing `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/.
       Values must match the regex /^[a-zA-Z0-9_./-]{0,255}$/.
@@ -129,7 +130,8 @@ class GoogleCloudRecommenderV1MarkRecommendationFailedRequest(_messages.Message)
       /^[a-zA-Z0-9_./-]{0,255}$/.
 
   Fields:
-    etag: Fingerprint of the Recommendation. Provides optimistic locking.
+    etag: Required. Fingerprint of the Recommendation. Provides optimistic
+      locking.
     stateMetadata: State properties to include with this state. Overwrites any
       existing `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/.
       Values must match the regex /^[a-zA-Z0-9_./-]{0,255}$/.
@@ -176,7 +178,8 @@ class GoogleCloudRecommenderV1MarkRecommendationSucceededRequest(_messages.Messa
       /^[a-zA-Z0-9_./-]{0,255}$/.
 
   Fields:
-    etag: Fingerprint of the Recommendation. Provides optimistic locking.
+    etag: Required. Fingerprint of the Recommendation. Provides optimistic
+      locking.
     stateMetadata: State properties to include with this state. Overwrites any
       existing `state_metadata`. Keys must match the regex /^a-z0-9{0,62}$/.
       Values must match the regex /^[a-zA-Z0-9_./-]{0,255}$/.
@@ -386,9 +389,7 @@ class GoogleCloudRecommenderV1Recommendation(_messages.Message):
       updating states.
     lastRefreshTime: Last time this recommendation was refreshed by the system
       that created it in the first place.
-    name: Name of recommendation.  A project recommendation is represented as
-      projects/[PROJECT_NUMBER]/locations/[LOCATION]/recommenders/[RECOMMENDER
-      _ID]/recommendations/[RECOMMENDATION_ID]
+    name: Name of recommendation.
     primaryImpact: The primary impact that this recommendation can have while
       trying to optimize for one category.
     recommenderSubtype: Contains an identifier for a subtype of
@@ -538,7 +539,7 @@ class RecommenderProjectsLocationsRecommendersRecommendationsGetRequest(_message
   object.
 
   Fields:
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   name = _messages.StringField(1, required=True)
@@ -553,7 +554,7 @@ class RecommenderProjectsLocationsRecommendersRecommendationsListRequest(_messag
       Supported filter fields: state_info.state Eg:
       `state_info.state:"DISMISSED" or state_info.state:"FAILED"
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. If not specified, the server
+      request.  Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
     pageToken: Optional. If present, retrieves the next batch of results from
       the preceding call to this method. `page_token` must be the value of
@@ -580,7 +581,7 @@ class RecommenderProjectsLocationsRecommendersRecommendationsMarkClaimedRequest(
     googleCloudRecommenderV1MarkRecommendationClaimedRequest: A
       GoogleCloudRecommenderV1MarkRecommendationClaimedRequest resource to be
       passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1MarkRecommendationClaimedRequest = _messages.MessageField('GoogleCloudRecommenderV1MarkRecommendationClaimedRequest', 1)
@@ -596,7 +597,7 @@ class RecommenderProjectsLocationsRecommendersRecommendationsMarkFailedRequest(_
     googleCloudRecommenderV1MarkRecommendationFailedRequest: A
       GoogleCloudRecommenderV1MarkRecommendationFailedRequest resource to be
       passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1MarkRecommendationFailedRequest = _messages.MessageField('GoogleCloudRecommenderV1MarkRecommendationFailedRequest', 1)
@@ -612,7 +613,7 @@ class RecommenderProjectsLocationsRecommendersRecommendationsMarkSucceededReques
     googleCloudRecommenderV1MarkRecommendationSucceededRequest: A
       GoogleCloudRecommenderV1MarkRecommendationSucceededRequest resource to
       be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1MarkRecommendationSucceededRequest = _messages.MessageField('GoogleCloudRecommenderV1MarkRecommendationSucceededRequest', 1)

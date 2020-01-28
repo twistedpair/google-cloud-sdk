@@ -882,6 +882,14 @@ MAP = {
                 messages_modulepath='networkmanagement_v1beta1_messages',
                 default_version=True),
     },
+    'notebooks': {
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.notebooks.v1beta1',
+                client_classpath='notebooks_v1beta1_client.NotebooksV1beta1',
+                messages_modulepath='notebooks_v1beta1_messages',
+                default_version=True),
+    },
     'orgpolicy': {
         'v2alpha1':
             APIDef(

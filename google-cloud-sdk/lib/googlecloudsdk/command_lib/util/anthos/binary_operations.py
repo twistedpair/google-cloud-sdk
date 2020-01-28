@@ -38,9 +38,17 @@ import six
 
 
 _DEFAULT_FAILURE_ERROR_MESSAGE = (
-    'Error executing command [{}]. Process exited with code {}')
+    'Error executing command [{command}] (with context [{context}]). '
+    'Process exited with code {exit_code}')
 
 _DEFAULT_MISSING_EXEC_MESSAGE = 'Executable [{}] not found.'
+
+
+def _LogDefaultFailure(result_object):
+  log.error(_DEFAULT_FAILURE_ERROR_MESSAGE.format(
+      command=result_object.executed_command,
+      context=result_object.context,
+      exit_code=result_object.exit_code))
 
 
 class BinaryOperationError(core_exceptions.Error):
@@ -69,7 +77,16 @@ class ExecutionError(BinaryOperationError):
 
   def __init__(self, command, error):
     super(ExecutionError, self).__init__(
-        'Error executing command [{}]: [{}]'.format(command, error))
+        'Error executing command on [{}]: [{}]'.format(command, error))
+
+
+class InvalidWorkingDirectoryError(BinaryOperationError):
+  """Raised when an invalid path is passed for binary working directory."""
+
+  def __init__(self, command, path):
+    super(InvalidWorkingDirectoryError, self).__init__(
+        'Error executing command on [{}]. Invalid Path [{}]'.format(
+            command, path))
 
 
 class ArgumentError(BinaryOperationError):
@@ -99,8 +116,7 @@ def DefaultFailureHandler(result_holder, show_exec_error=False):
   if result_holder.exit_code != 0:
     result_holder.failed = True
   if show_exec_error and result_holder.failed:
-    log.error(_DEFAULT_FAILURE_ERROR_MESSAGE.format(
-        result_holder.executed_command, result_holder.exit_code))
+    _LogDefaultFailure(result_holder)
 
 
 # Some golang binary commands (e.g. kubectl diff) behave this way
@@ -125,8 +141,7 @@ def NonZeroSuccessFailureHandler(result_holder, show_exec_error=False):
   if result_holder.exit_code != 0 and not result_holder.stdout:
     result_holder.failed = True
   if show_exec_error and result_holder.failed:
-    log.error(_DEFAULT_FAILURE_ERROR_MESSAGE.format(
-        result_holder.executed_command, result_holder.exit_code))
+    _LogDefaultFailure(result_holder)
 
 
 def CheckBinaryComponentInstalled(component_name):
@@ -179,11 +194,13 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
                  output=None,
                  errors=None,
                  status=0,
-                 failed=False):
+                 failed=False,
+                 execution_context=None):
       self.executed_command = command_str
       self.stdout = output
       self.stderr = errors
       self.exit_code = status
+      self.context = execution_context
       self.failed = failed
 
     def __str__(self):
@@ -193,6 +210,7 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
       output['stderr'] = self.stderr
       output['exit_code'] = self.exit_code
       output['failed'] = self.failed
+      output['execution_context'] = self.context
       return yaml.dump(output)
 
     def __eq__(self, other):
@@ -201,7 +219,8 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
                 self.stdout == other.stdout and
                 self.stderr == other.stderr and
                 self.exit_code == other.exit_code and
-                self.failed == other.failed)
+                self.failed == other.failed and
+                self.context == other.context)
       return False
 
   def __init__(self, binary, binary_version=None, std_out_func=None,
@@ -247,7 +266,7 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
   def defaults(self):
     return self._default_args
 
-  def _Execute(self, cmd, **kwargs):
+  def _Execute(self, cmd, stdin=None, env=None, **kwargs):
     """Execute binary and return operation result.
 
      Will parse args from kwargs into a list of args to pass to underlying
@@ -256,6 +275,8 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
 
     Args:
       cmd: [str], command to be executed with args
+      stdin: str, data to send to binary on stdin
+      env: {str, str}, environment vars to send to binary.
       **kwargs: mapping of additional arguments to pass to the underlying
         executor.
 
@@ -266,23 +287,32 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
       ArgumentError, if there is an error parsing the supplied arguments.
       BinaryOperationError, if there is an error executing the binary.
     """
-    result_holder = self.OperationResult(cmd)
+    op_context = {'env': env, 'stdin': stdin,
+                  'exec_dir': kwargs.get('execution_dir')}
+    result_holder = self.OperationResult(command_str=cmd,
+                                         execution_context=op_context)
+
     std_out_handler = (self.std_out_handler or
                        DefaultStdOutHandler(result_holder))
     std_err_handler = (self.std_out_handler or
                        DefaultStdErrHandler(result_holder))
     failure_handler = (self.set_failure_status or DefaultFailureHandler)
+    short_cmd_name = os.path.basename(cmd[0])  # useful for error messages
 
     try:
+      working_dir = kwargs.get('execution_dir')
+      if working_dir and not os.path.isdir(working_dir):
+        raise InvalidWorkingDirectoryError(short_cmd_name, working_dir)
+
       exit_code = exec_utils.Exec(args=cmd,
                                   no_exit=True,
                                   out_func=std_out_handler,
                                   err_func=std_err_handler,
-                                  in_str=kwargs.get('stdin'),
-                                  cwd=kwargs.get('execution_dir'),
-                                  env=kwargs.get('env'))
+                                  in_str=stdin,
+                                  cwd=working_dir,
+                                  env=env)
     except (exec_utils.PermissionError, exec_utils.InvalidCommandError) as e:
-      raise ExecutionError(cmd, e)
+      raise ExecutionError(short_cmd_name, e)
     result_holder.exit_code = exit_code
     failure_handler(result_holder, kwargs.get('show_exec_error', False))
     return result_holder

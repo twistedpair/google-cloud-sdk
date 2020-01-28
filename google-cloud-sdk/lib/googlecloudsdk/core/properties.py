@@ -1396,6 +1396,8 @@ class _SectionAuth(_Section):
         'for the service account. The roles/iam.serviceAccountTokenCreator '
         'role has this permission or you may create a custom role.')
     self.pkce_code_verifier = self._Add('pkce_code_verifier', hidden=True)
+    self.disable_google_auth = self._AddBool(
+        'disable_google_auth', default=False, hidden=True)
 
 
 class _SectionBilling(_Section):
@@ -1544,6 +1546,11 @@ class _SectionDataflow(_Section):
         'disable_public_ips',
         help_text='Specifies that Cloud Dataflow workers '
         'must not use public IP addresses.',
+        default=False)
+    self.flex_template = self._AddBool(
+        'flex_template',
+        help_text='Specifies whether job templates accepted by the run '
+        'command are flex templates.',
         default=False)
 
 

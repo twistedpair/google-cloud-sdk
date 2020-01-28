@@ -575,21 +575,33 @@ class ExportResourcesRequest(_messages.Message):
 
 
 class Expr(_messages.Message):
-  r"""Represents an expression text. Example:      title: "User account
-  presence"     description: "Determines whether the request has a user
-  account"     expression: "size(request.user) > 0"
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec.  Example (Comparison):
+  title: "Summary size limit"     description: "Determines if a summary is
+  less than 100 chars"     expression: "document.summary.size() < 100"
+  Example (Equality):      title: "Requestor is owner"     description:
+  "Determines if requestor is the document owner"     expression:
+  "document.owner == request.auth.claims.email"  Example (Logic):      title:
+  "Public documents"     description: "Determine whether the document should
+  be publicly visible"     expression: "document.type != 'private' &&
+  document.type != 'internal'"  Example (Data Manipulation):      title:
+  "Notification string"     description: "Create a notification string with a
+  timestamp."     expression: "'New message received at ' +
+  string(document.create_time)"  The exact variables and functions that may be
+  referenced within an expression are determined by the service that evaluates
+  it. See the service documentation for additional information.
 
   Fields:
-    description: An optional description of the expression. This is a longer
+    description: Optional. Description of the expression. This is a longer
       text which describes the expression, e.g. when hovered over it in a UI.
     expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
       error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
   """
 
   description = _messages.StringField(1)
@@ -605,7 +617,8 @@ class FhirConfig(_messages.Message):
     fieldMetadataList: Specifies FHIR paths to match and how to transform
       them. Any field that is not matched by a FieldMetadata is passed through
       to the output dataset unmodified. All extensions are removed in the
-      output.
+      output. If a field can be matched by more than one FieldMetadata, the
+      first FieldMetadata.Action is applied.
   """
 
   fieldMetadataList = _messages.MessageField('FieldMetadata', 1, repeated=True)
@@ -738,12 +751,19 @@ class FieldMetadata(_messages.Message):
     action: Deidentify action for one field.
     paths: List of paths to FHIR fields to redact. Each path is a period-
       separated list where each component is either a field name or FHIR type
-      name. For example: Patient, HumanName. For "choice" types (those defined
-      in the FHIR spec with the form: field[x]), use two separate components.
-      For example, "deceasedAge.unit" is matched by "Deceased.Age.unit".
-      Supported types are: AdministrativeGenderCode, Code, Date, DateTime,
-      Decimal, HumanName, Id, LanguageCode, Markdown, Oid, String, Uri, Uuid,
-      Xhtml.
+      name. All types begin with an upper case letter. For example, the
+      resource field "Patient.Address.city", which uses a string type, can be
+      matched by "Patient.Address.String". Path also supports partial
+      matching. For example, "Patient.Address.city" can be matched by
+      "Address.city" (Patient omitted). Partial matching and type matching can
+      be combined, for example "Patient.Address.city" can be matched by
+      "Address.String". For "choice" types (those defined in the FHIR spec
+      with the form: field[x]), use two separate components. For example,
+      "deceasedAge.unit" is matched by "Deceased.Age.unit". Supported types
+      are: AdministrativeGenderCode, Code, Date, DateTime, Decimal, HumanName,
+      Id, LanguageCode, Markdown, Oid, String, Uri, Uuid, Xhtml. The sub-type
+      for HumanName(for example HumanName.given, HumanName.family) can be
+      omitted.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
@@ -751,7 +771,10 @@ class FieldMetadata(_messages.Message):
 
     Values:
       ACTION_UNSPECIFIED: No action specified.
-      TRANSFORM: Transform the entire field.
+      TRANSFORM: Transform the entire field based on transformations specified
+        in TextConfig. When the specified transformation cannot be applied to
+        a field (for example, a Crypto Hash transformation cannot be applied
+        to a FHIR Date field), RedactConfig is used.
       INSPECT_AND_TRANSFORM: Inspect and transform any found PHI. When
         `AnnotationConfig` is provided, annotations of PHI are generated,
         except for Date and Datetime.
@@ -861,10 +884,10 @@ class GoogleCloudHealthcareV1alpha2DicomGcsDestination(_messages.Message):
       `.../{study_id}/{series_id}/{instance_id}[/{frame_number}].{extension}`
       The frame_number component exists only for multi-frame instances.  Refer
       to the DICOM conformance statement for permissible MIME types:
-      https://cloud.google.com/healthcare/docs/dicom#wado-rs  The following
-      extensions are used for output files:   application/dicom -> .dcm
-      image/jpeg -> .jpg   image/png -> .png  If unspecified, the instances
-      are exported in their original DICOM format.
+      https://cloud.google.com/healthcare/docs/dicom#retrieve_transaction  The
+      following extensions are used for output files:   application/dicom ->
+      .dcm   image/jpeg -> .jpg   image/png -> .png  If unspecified, the
+      instances are exported in their original DICOM format.
     uriPrefix: The Cloud Storage destination to export to.  URI for a Cloud
       Storage directory where the server writes the result files, in the
       format `gs://{bucket-id}/{path/to/destination/dir}`). If there is no
@@ -2067,7 +2090,9 @@ class InfoTypeTransformation(_messages.Message):
     cryptoHashConfig: Config for crypto hash.
     dateShiftConfig: Config for date shift.
     infoTypes: InfoTypes to apply this transformation to. If this is not
-      specified, the transformation applies to any info_type.
+      specified, this transformation becomes the default transformation, and
+      is used for any info_type that is not specified in another
+      transformation.
     redactConfig: Config for text redaction.
     replaceWithInfoTypeConfig: Config for replace with InfoType.
   """

@@ -1938,7 +1938,7 @@
           ]
         },
         "scheduleTime": {
-          "description": "Optional. Timestamp when the maintenance shall be rescheduled to if\nreschedule_type=SPECIFIC_TIME.",
+          "description": "Optional. Timestamp when the maintenance shall be rescheduled to if\nreschedule_type=SPECIFIC_TIME, in <a\nhref=\"https:\/\/tools.ietf.org\/html\/rfc3339\">RFC 3339<\/a> format, for\nexample <code>2012-11-15T16:19:00.094Z<\/code>.",
           "type": "string",
           "format": "google-datetime"
         }

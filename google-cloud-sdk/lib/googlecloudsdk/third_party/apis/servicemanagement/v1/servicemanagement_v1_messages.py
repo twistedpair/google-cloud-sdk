@@ -1151,21 +1151,33 @@ class EnumValue(_messages.Message):
 
 
 class Expr(_messages.Message):
-  r"""Represents an expression text. Example:      title: "User account
-  presence"     description: "Determines whether the request has a user
-  account"     expression: "size(request.user) > 0"
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec.  Example (Comparison):
+  title: "Summary size limit"     description: "Determines if a summary is
+  less than 100 chars"     expression: "document.summary.size() < 100"
+  Example (Equality):      title: "Requestor is owner"     description:
+  "Determines if requestor is the document owner"     expression:
+  "document.owner == request.auth.claims.email"  Example (Logic):      title:
+  "Public documents"     description: "Determine whether the document should
+  be publicly visible"     expression: "document.type != 'private' &&
+  document.type != 'internal'"  Example (Data Manipulation):      title:
+  "Notification string"     description: "Create a notification string with a
+  timestamp."     expression: "'New message received at ' +
+  string(document.create_time)"  The exact variables and functions that may be
+  referenced within an expression are determined by the service that evaluates
+  it. See the service documentation for additional information.
 
   Fields:
-    description: An optional description of the expression. This is a longer
+    description: Optional. Description of the expression. This is a longer
       text which describes the expression, e.g. when hovered over it in a UI.
     expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
       error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
   """
 
   description = _messages.StringField(1)
@@ -3391,6 +3403,28 @@ class Service(_messages.Message):
   usage = _messages.MessageField('Usage', 27)
 
 
+class ServiceIdentity(_messages.Message):
+  r"""The per-product per-project service identity for a service.   Use this
+  field to configure per-product per-project service identity. Example of a
+  service identity configuration.      usage:       service_identity:       -
+  service_account_parent: "projects/123456789"         display_name: "Cloud
+  XXX Service Agent"         description: "Used as the identity of Cloud XXX
+  to access resources"
+
+  Fields:
+    description: Optional. A user-specified opaque description of the service
+      account. Must be less than or equal to 256 UTF-8 bytes.
+    displayName: Optional. A user-specified name for the service account. Must
+      be less than or equal to 100 UTF-8 bytes.
+    serviceAccountParent: A service account project that hosts the service
+      accounts.  An example name would be: `projects/123456789`
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  serviceAccountParent = _messages.StringField(3)
+
+
 class ServicemanagementOperationsGetRequest(_messages.Message):
   r"""A ServicemanagementOperationsGetRequest object.
 
@@ -4408,11 +4442,14 @@ class Usage(_messages.Message):
       'serviceusage.googleapis.com/billing-enabled'.
     rules: A list of usage rules that apply to individual API methods.
       **NOTE:** All service configuration rules follow "last one wins" order.
+    serviceIdentity: The configuration of a per-product per-project service
+      identity.
   """
 
   producerNotificationChannel = _messages.StringField(1)
   requirements = _messages.StringField(2, repeated=True)
   rules = _messages.MessageField('UsageRule', 3, repeated=True)
+  serviceIdentity = _messages.MessageField('ServiceIdentity', 4)
 
 
 class UsageRule(_messages.Message):

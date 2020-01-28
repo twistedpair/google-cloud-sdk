@@ -27,7 +27,8 @@ starting_urls:
   is_positional: false
   help_text: |
     URLs the scan starts scanning from. These URLs must be 'owned' by the project in some way
-    (resolve to a reserved IP address, or be the default *.appspot.com).
+    (resolve to a reserved IP address, or be the default
+    `https://<PROJECT-ID>.<REGION-ID>.r.appspot.com`).
 
 max_qps:
   arg_name: max-qps

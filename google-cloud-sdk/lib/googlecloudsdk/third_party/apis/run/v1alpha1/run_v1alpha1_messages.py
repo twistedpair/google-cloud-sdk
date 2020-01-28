@@ -168,28 +168,28 @@ class Capabilities(_messages.Message):
   drop = _messages.StringField(2, repeated=True)
 
 
-class CloudAuditLog(_messages.Message):
-  r"""A CloudAuditLog object.
+class CloudAuditLogsSource(_messages.Message):
+  r"""A CloudAuditLogsSource object.
 
   Fields:
     apiVersion: The API version for this call such as
       "events.cloud.google.com/v1alpha1".
-    kind: The kind of resource, in this case "CloudAuditLog".
-    metadata: Metadata associated with this CloudAuditLog.
-    spec: Spec defines the desired state of the CloudAuditLog.
-    status: Status represents the current state of the CloudAuditLog. This
-      data may be out of date. +optional
+    kind: The kind of resource, in this case "CloudAuditLogsSource".
+    metadata: Metadata associated with this CloudAuditLogsSource.
+    spec: Spec defines the desired state of the CloudAuditLogsSource.
+    status: Status represents the current state of the CloudAuditLogsSource.
+      This data may be out of date. +optional
   """
 
   apiVersion = _messages.StringField(1)
   kind = _messages.StringField(2)
   metadata = _messages.MessageField('ObjectMeta', 3)
-  spec = _messages.MessageField('CloudAuditLogSpec', 4)
-  status = _messages.MessageField('CloudAuditLogStatus', 5)
+  spec = _messages.MessageField('CloudAuditLogsSourceSpec', 4)
+  status = _messages.MessageField('CloudAuditLogsSourceStatus', 5)
 
 
-class CloudAuditLogSpec(_messages.Message):
-  r"""The desired state of the CloudAuditLog.
+class CloudAuditLogsSourceSpec(_messages.Message):
+  r"""The desired state of the CloudAuditLogsSource.
 
   Fields:
     ceOverrides: CloudEventOverrides defines overrides to control the output
@@ -197,20 +197,13 @@ class CloudAuditLogSpec(_messages.Message):
     methodName: Required. The method name at the service API. This must match
       "methodName" in Cloud Audit Logs. Regex or Wildcards (*) are not
       supported. Example: "google.cloud.bigquery.job.create".
-    project: Project is the ID of the Google Cloud Project that the PubSub
-      Topic exists in. If omitted, defaults to same as the cluster. +optional
-    pubsubSecret: PubSubSecret is the credential to use to create Topic /
-      PullSubscription resources. If omitted, uses Secret.
     resourceName: Optional. The resource specification. This must match
       "methodName" in Cloud Audit Logs. Regex or Wildcards (*) are not
       supported. Example: "projects/my-project/jobs/foo".
-    secret: Secret is the credential to use to create the Scheduler Job. If
-      not specified, defaults to: Name: google-cloud-key Key: key.json
-      +optional
-    serviceAccountName: Email address of the IAM service account associated
-      with the source. The service account represents the identity of the
-      source, and determines what permissions the source has. If not provided,
-      the source will use the project's default service account. +optional
+    serviceAccountName: Optional. Email address of the IAM service account
+      associated with the source. The service account represents the identity
+      of the source, and determines what permissions the source has. If not
+      provided, the source will use the project's default service account.
     serviceName: Required. The GCP service name. This must match "serviceName"
       in Cloud Audit Logs. Regex or Wildcards (*) are not supported. Example:
       "bigquery.googleapis.com".
@@ -220,23 +213,21 @@ class CloudAuditLogSpec(_messages.Message):
 
   ceOverrides = _messages.MessageField('CloudEventOverrides', 1)
   methodName = _messages.StringField(2)
-  project = _messages.StringField(3)
-  pubsubSecret = _messages.MessageField('SecretKeySelector', 4)
-  resourceName = _messages.StringField(5)
-  secret = _messages.MessageField('SecretKeySelector', 6)
-  serviceAccountName = _messages.StringField(7)
-  serviceName = _messages.StringField(8)
-  sink = _messages.MessageField('Destination', 9)
+  resourceName = _messages.StringField(3)
+  serviceAccountName = _messages.StringField(4)
+  serviceName = _messages.StringField(5)
+  sink = _messages.MessageField('Destination', 6)
 
 
-class CloudAuditLogStatus(_messages.Message):
-  r"""CloudAuditLogStatus represents the current state of a CloudAuditLog.
+class CloudAuditLogsSourceStatus(_messages.Message):
+  r"""CloudAuditLogsSourceStatus represents the current state of a
+  CloudAuditLogsSource.
 
   Fields:
-    conditions: Array of observed CloudAuditLogConditions, indicating the
-      current state of the CloudAuditLog.
+    conditions: Array of observed CloudAuditLogsSourceConditions, indicating
+      the current state of the CloudAuditLogsSource.
     observedGeneration: ObservedGeneration is the 'Generation' of the
-      CloudAuditLog that was last processed by the controller.
+      CloudAuditLogsSource that was last processed by the controller.
     sinkUri: SinkURI is the current active sink URI that has been configured
       for the Source. +optional
   """
@@ -288,6 +279,88 @@ class CloudEventOverrides(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   extensions = _messages.MessageField('ExtensionsValue', 1)
+
+
+class CloudPubSubSource(_messages.Message):
+  r"""A CloudPubSubSource object.
+
+  Fields:
+    apiVersion: The API version for this call such as
+      "events.cloud.google.com/v1alpha1".
+    kind: The kind of resource, in this case "CloudPubSubSource".
+    metadata: Metadata associated with this CloudPubSubSource.
+    spec: Spec defines the desired state of the CloudPubSubSource.
+    status: Status represents the current state of the CloudPubSubSource. This
+      data may be out of date. +optional
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('CloudPubSubSourceSpec', 4)
+  status = _messages.MessageField('CloudPubSubSourceStatus', 5)
+
+
+class CloudPubSubSourceSpec(_messages.Message):
+  r"""The desired state of the CloudPubSubSource.
+
+  Fields:
+    ackDeadline: AckDeadline is the default maximum time after a subscriber
+      receives a message before the subscriber should acknowledge the message.
+      Defaults to 30 seconds ('30s'). +optional
+    ceOverrides: CloudEventOverrides defines overrides to control the output
+      format and modifications of the event sent to the sink. +optional
+    project: Project is the ID of the Google Cloud Project that the
+      CloudPubSubSource Topic exists in. If omitted, defaults to same as the
+      cluster. +optional
+    pubsubSecret: CloudPubSubSourceSecret is the credential to use to create
+      Topic / PullSubscription resources. If omitted, uses Secret.
+    retainAckedMessages: RetainAckedMessages defines whether to retain
+      acknowledged messages. If true, acknowledged messages will not be
+      expunged until they fall out of the RetentionDuration window.
+    retentionDuration: RetentionDuration defines how long to retain messages
+      in backlog, from the time of publish. If RetainAckedMessages is true,
+      this duration affects the retention of acknowledged messages, otherwise
+      only unacknowledged messages are retained. Cannot be longer than 7 days
+      or shorter than 10 minutes. Defaults to 7 days ('7d'). +optional
+    secret: Secret is the credential to use to create the Scheduler Job. If
+      not specified, defaults to: Name: google-cloud-key Key: key.json
+      +optional
+    sink: Sink is a reference to an object that will resolve to a domain name
+      or a URI directly to use as the sink.
+    topic: Topic is the ID of the CloudPubSubSource Topic to Subscribe to. It
+      must be in the form of the unique identifier within the project, not the
+      entire name. E.g. it must be 'laconia', not 'projects/my-
+      proj/topics/laconia'.
+  """
+
+  ackDeadline = _messages.StringField(1)
+  ceOverrides = _messages.MessageField('CloudEventOverrides', 2)
+  project = _messages.StringField(3)
+  pubsubSecret = _messages.MessageField('SecretKeySelector', 4)
+  retainAckedMessages = _messages.BooleanField(5)
+  retentionDuration = _messages.StringField(6)
+  secret = _messages.MessageField('SecretKeySelector', 7)
+  sink = _messages.MessageField('Destination', 8)
+  topic = _messages.StringField(9)
+
+
+class CloudPubSubSourceStatus(_messages.Message):
+  r"""CloudPubSubSourceStatus represents the current state of a
+  CloudPubSubSource.
+
+  Fields:
+    conditions: Array of observed CloudPubSubSourceConditions, indicating the
+      current state of the CloudPubSubSource.
+    observedGeneration: ObservedGeneration is the 'Generation' of the
+      CloudPubSubSource that was last processed by the controller.
+    sinkUri: SinkURI is the current active sink URI that has been configured
+      for the Source. +optional
+  """
+
+  conditions = _messages.MessageField('Condition', 1, repeated=True)
+  observedGeneration = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  sinkUri = _messages.StringField(3)
 
 
 class Condition(_messages.Message):
@@ -909,21 +982,33 @@ class ExecAction(_messages.Message):
 
 
 class Expr(_messages.Message):
-  r"""Represents an expression text. Example:      title: "User account
-  presence"     description: "Determines whether the request has a user
-  account"     expression: "size(request.user) > 0"
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec.  Example (Comparison):
+  title: "Summary size limit"     description: "Determines if a summary is
+  less than 100 chars"     expression: "document.summary.size() < 100"
+  Example (Equality):      title: "Requestor is owner"     description:
+  "Determines if requestor is the document owner"     expression:
+  "document.owner == request.auth.claims.email"  Example (Logic):      title:
+  "Public documents"     description: "Determine whether the document should
+  be publicly visible"     expression: "document.type != 'private' &&
+  document.type != 'internal'"  Example (Data Manipulation):      title:
+  "Notification string"     description: "Create a notification string with a
+  timestamp."     expression: "'New message received at ' +
+  string(document.create_time)"  The exact variables and functions that may be
+  referenced within an expression are determined by the service that evaluates
+  it. See the service documentation for additional information.
 
   Fields:
-    description: An optional description of the expression. This is a longer
+    description: Optional. Description of the expression. This is a longer
       text which describes the expression, e.g. when hovered over it in a UI.
     expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
       error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
   """
 
   description = _messages.StringField(1)
@@ -1083,20 +1168,40 @@ class ListAuthorizedDomainsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class ListCloudAuditLogsResponse(_messages.Message):
-  r"""ListCloudAuditLogsResponse is a list of CloudAuditLog resources.
+class ListCloudAuditLogsSourcesResponse(_messages.Message):
+  r"""ListCloudAuditLogsSourcesResponse is a list of CloudAuditLogsSource
+  resources.
 
   Fields:
     apiVersion: The API version for this call such as
       "events.cloud.google.com/v1alpha1".
-    items: List of CloudAuditLogs.
-    kind: The kind of this resource, in this case "CloudAuditLogList".
-    metadata: Metadata associated with this CloudAuditLog list.
+    items: List of CloudAuditLogsSources.
+    kind: The kind of this resource, in this case "CloudAuditLogsSourceList".
+    metadata: Metadata associated with this CloudAuditLogsSource list.
     unreachable: Locations that could not be reached.
   """
 
   apiVersion = _messages.StringField(1)
-  items = _messages.MessageField('CloudAuditLog', 2, repeated=True)
+  items = _messages.MessageField('CloudAuditLogsSource', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
+
+
+class ListCloudPubSubSourcesResponse(_messages.Message):
+  r"""ListCloudPubSubSourcesResponse is a list of CloudPubSubSource resources.
+
+  Fields:
+    apiVersion: The API version for this call such as
+      "events.cloud.google.com/v1alpha1".
+    items: List of CloudPubSubSources.
+    kind: The kind of this resource, in this case "CloudPubSubSourceList".
+    metadata: Metadata associated with this CloudPubSubSource list.
+    unreachable: Locations that could not be reached.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('CloudPubSubSource', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
   unreachable = _messages.StringField(5, repeated=True)
@@ -1199,25 +1304,6 @@ class ListMeta(_messages.Message):
   continue_ = _messages.StringField(1)
   resourceVersion = _messages.StringField(2)
   selfLink = _messages.StringField(3)
-
-
-class ListPubSubsResponse(_messages.Message):
-  r"""ListPubSubsResponse is a list of PubSub resources.
-
-  Fields:
-    apiVersion: The API version for this call such as
-      "events.cloud.google.com/v1alpha1".
-    items: List of PubSubs.
-    kind: The kind of this resource, in this case "PubSubList".
-    metadata: Metadata associated with this PubSub list.
-    unreachable: Locations that could not be reached.
-  """
-
-  apiVersion = _messages.StringField(1)
-  items = _messages.MessageField('PubSub', 2, repeated=True)
-  kind = _messages.StringField(3)
-  metadata = _messages.MessageField('ListMeta', 4)
-  unreachable = _messages.StringField(5, repeated=True)
 
 
 class ListRevisionsResponse(_messages.Message):
@@ -1779,91 +1865,6 @@ class Probe(_messages.Message):
   timeoutSeconds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
-class PubSub(_messages.Message):
-  r"""A PubSub object.
-
-  Fields:
-    apiVersion: The API version for this call such as
-      "events.cloud.google.com/v1alpha1".
-    kind: The kind of resource, in this case "PubSub".
-    metadata: Metadata associated with this PubSub.
-    spec: Spec defines the desired state of the PubSub.
-    status: Status represents the current state of the PubSub. This data may
-      be out of date. +optional
-  """
-
-  apiVersion = _messages.StringField(1)
-  kind = _messages.StringField(2)
-  metadata = _messages.MessageField('ObjectMeta', 3)
-  spec = _messages.MessageField('PubSubSpec', 4)
-  status = _messages.MessageField('PubSubStatus', 5)
-
-
-class PubSubSpec(_messages.Message):
-  r"""The desired state of the PubSub.
-
-  Fields:
-    ackDeadline: AckDeadline is the default maximum time after a subscriber
-      receives a message before the subscriber should acknowledge the message.
-      Defaults to 30 seconds ('30s'). +optional
-    ceOverrides: CloudEventOverrides defines overrides to control the output
-      format and modifications of the event sent to the sink. +optional
-    project: Project is the ID of the Google Cloud Project that the PubSub
-      Topic exists in. If omitted, defaults to same as the cluster. +optional
-    pubsubSecret: PubSubSecret is the credential to use to create Topic /
-      PullSubscription resources. If omitted, uses Secret.
-    retainAckedMessages: RetainAckedMessages defines whether to retain
-      acknowledged messages. If true, acknowledged messages will not be
-      expunged until they fall out of the RetentionDuration window.
-    retentionDuration: RetentionDuration defines how long to retain messages
-      in backlog, from the time of publish. If RetainAckedMessages is true,
-      this duration affects the retention of acknowledged messages, otherwise
-      only unacknowledged messages are retained. Cannot be longer than 7 days
-      or shorter than 10 minutes. Defaults to 7 days ('7d'). +optional
-    secret: Secret is the credential to use to create the Scheduler Job. If
-      not specified, defaults to: Name: google-cloud-key Key: key.json
-      +optional
-    serviceAccountName: Email address of the IAM service account associated
-      with the source. The service account represents the identity of the
-      source, and determines what permissions the source has. If not provided,
-      the source will use the project's Compute Engine default service
-      account. +optional
-    sink: Sink is a reference to an object that will resolve to a domain name
-      or a URI directly to use as the sink.
-    topic: Topic is the ID of the PubSub Topic to Subscribe to. It must be in
-      the form of the unique identifier within the project, not the entire
-      name. E.g. it must be 'laconia', not 'projects/my-proj/topics/laconia'.
-  """
-
-  ackDeadline = _messages.StringField(1)
-  ceOverrides = _messages.MessageField('CloudEventOverrides', 2)
-  project = _messages.StringField(3)
-  pubsubSecret = _messages.MessageField('SecretKeySelector', 4)
-  retainAckedMessages = _messages.BooleanField(5)
-  retentionDuration = _messages.StringField(6)
-  secret = _messages.MessageField('SecretKeySelector', 7)
-  serviceAccountName = _messages.StringField(8)
-  sink = _messages.MessageField('Destination', 9)
-  topic = _messages.StringField(10)
-
-
-class PubSubStatus(_messages.Message):
-  r"""PubSubStatus represents the current state of a PubSub.
-
-  Fields:
-    conditions: Array of observed PubSubConditions, indicating the current
-      state of the PubSub.
-    observedGeneration: ObservedGeneration is the 'Generation' of the PubSub
-      that was last processed by the controller.
-    sinkUri: SinkURI is the current active sink URI that has been configured
-      for the Source. +optional
-  """
-
-  conditions = _messages.MessageField('Condition', 1, repeated=True)
-  observedGeneration = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  sinkUri = _messages.StringField(3)
-
-
 class Quantity(_messages.Message):
   r"""The view model of a single quantity, e.g. "800 MiB". Corresponds to http
   s://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachi
@@ -2394,26 +2395,117 @@ class RunNamespacesAuthorizeddomainsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class RunNamespacesCloudauditlogsCreateRequest(_messages.Message):
-  r"""A RunNamespacesCloudauditlogsCreateRequest object.
+class RunNamespacesCloudauditlogssourcesCreateRequest(_messages.Message):
+  r"""A RunNamespacesCloudauditlogssourcesCreateRequest object.
 
   Fields:
-    cloudAuditLog: A CloudAuditLog resource to be passed as the request body.
-    parent: The project ID or project number in which this cloudauditlog
-      should be created.
+    cloudAuditLogsSource: A CloudAuditLogsSource resource to be passed as the
+      request body.
+    parent: The project ID or project number in which this
+      cloudauditlogssource should be created.
   """
 
-  cloudAuditLog = _messages.MessageField('CloudAuditLog', 1)
+  cloudAuditLogsSource = _messages.MessageField('CloudAuditLogsSource', 1)
   parent = _messages.StringField(2, required=True)
 
 
-class RunNamespacesCloudauditlogsDeleteRequest(_messages.Message):
-  r"""A RunNamespacesCloudauditlogsDeleteRequest object.
+class RunNamespacesCloudauditlogssourcesDeleteRequest(_messages.Message):
+  r"""A RunNamespacesCloudauditlogssourcesDeleteRequest object.
 
   Fields:
     apiVersion: Cloud Run currently ignores this parameter.
     kind: Cloud Run currently ignores this parameter.
-    name: The name of the cloudauditlog being deleted. If needed, replace
+    name: The name of the cloudauditlogssource being deleted. If needed,
+      replace {namespace_id} with the project ID.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  propagationPolicy = _messages.StringField(4)
+
+
+class RunNamespacesCloudauditlogssourcesGetRequest(_messages.Message):
+  r"""A RunNamespacesCloudauditlogssourcesGetRequest object.
+
+  Fields:
+    name: The name of the cloudauditlogssource being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunNamespacesCloudauditlogssourcesListRequest(_messages.Message):
+  r"""A RunNamespacesCloudauditlogssourcesListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: The project ID or project number from which the
+      cloudauditlogssources should be listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class RunNamespacesCloudauditlogssourcesReplaceCloudAuditLogsSourceRequest(_messages.Message):
+  r"""A RunNamespacesCloudauditlogssourcesReplaceCloudAuditLogsSourceRequest
+  object.
+
+  Fields:
+    cloudAuditLogsSource: A CloudAuditLogsSource resource to be passed as the
+      request body.
+    name: The name of the cloudauditlogssource being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+  """
+
+  cloudAuditLogsSource = _messages.MessageField('CloudAuditLogsSource', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class RunNamespacesCloudpubsubsourcesCreateRequest(_messages.Message):
+  r"""A RunNamespacesCloudpubsubsourcesCreateRequest object.
+
+  Fields:
+    cloudPubSubSource: A CloudPubSubSource resource to be passed as the
+      request body.
+    parent: The project ID or project number in which this cloudpubsubsource
+      should be created.
+  """
+
+  cloudPubSubSource = _messages.MessageField('CloudPubSubSource', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class RunNamespacesCloudpubsubsourcesDeleteRequest(_messages.Message):
+  r"""A RunNamespacesCloudpubsubsourcesDeleteRequest object.
+
+  Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
+    name: The name of the cloudpubsubsource being deleted. If needed, replace
       {namespace_id} with the project ID.
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
@@ -2427,19 +2519,19 @@ class RunNamespacesCloudauditlogsDeleteRequest(_messages.Message):
   propagationPolicy = _messages.StringField(4)
 
 
-class RunNamespacesCloudauditlogsGetRequest(_messages.Message):
-  r"""A RunNamespacesCloudauditlogsGetRequest object.
+class RunNamespacesCloudpubsubsourcesGetRequest(_messages.Message):
+  r"""A RunNamespacesCloudpubsubsourcesGetRequest object.
 
   Fields:
-    name: The name of the cloudauditlog being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the cloudpubsubsource being retrieved. If needed,
+      replace {namespace_id} with the project ID.
   """
 
   name = _messages.StringField(1, required=True)
 
 
-class RunNamespacesCloudauditlogsListRequest(_messages.Message):
-  r"""A RunNamespacesCloudauditlogsListRequest object.
+class RunNamespacesCloudpubsubsourcesListRequest(_messages.Message):
+  r"""A RunNamespacesCloudpubsubsourcesListRequest object.
 
   Fields:
     continue_: Optional encoded string to continue paging.
@@ -2450,7 +2542,7 @@ class RunNamespacesCloudauditlogsListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the cloudauditlogs
+    parent: The project ID or project number from which the cloudpubsubsources
       should be listed.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
@@ -2468,16 +2560,17 @@ class RunNamespacesCloudauditlogsListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunNamespacesCloudauditlogsReplaceCloudAuditLogRequest(_messages.Message):
-  r"""A RunNamespacesCloudauditlogsReplaceCloudAuditLogRequest object.
+class RunNamespacesCloudpubsubsourcesReplaceCloudPubSubSourceRequest(_messages.Message):
+  r"""A RunNamespacesCloudpubsubsourcesReplaceCloudPubSubSourceRequest object.
 
   Fields:
-    cloudAuditLog: A CloudAuditLog resource to be passed as the request body.
-    name: The name of the cloudauditlog being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+    cloudPubSubSource: A CloudPubSubSource resource to be passed as the
+      request body.
+    name: The name of the cloudpubsubsource being retrieved. If needed,
+      replace {namespace_id} with the project ID.
   """
 
-  cloudAuditLog = _messages.MessageField('CloudAuditLog', 1)
+  cloudPubSubSource = _messages.MessageField('CloudPubSubSource', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -2640,93 +2733,6 @@ class RunNamespacesEventtypesListRequest(_messages.Message):
   parent = _messages.StringField(6, required=True)
   resourceVersion = _messages.StringField(7)
   watch = _messages.BooleanField(8)
-
-
-class RunNamespacesPubsubsCreateRequest(_messages.Message):
-  r"""A RunNamespacesPubsubsCreateRequest object.
-
-  Fields:
-    parent: The project ID or project number in which this pubsub should be
-      created.
-    pubSub: A PubSub resource to be passed as the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  pubSub = _messages.MessageField('PubSub', 2)
-
-
-class RunNamespacesPubsubsDeleteRequest(_messages.Message):
-  r"""A RunNamespacesPubsubsDeleteRequest object.
-
-  Fields:
-    apiVersion: Cloud Run currently ignores this parameter.
-    kind: Cloud Run currently ignores this parameter.
-    name: The name of the pubsub being deleted. If needed, replace
-      {namespace_id} with the project ID.
-    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
-      currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
-  """
-
-  apiVersion = _messages.StringField(1)
-  kind = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  propagationPolicy = _messages.StringField(4)
-
-
-class RunNamespacesPubsubsGetRequest(_messages.Message):
-  r"""A RunNamespacesPubsubsGetRequest object.
-
-  Fields:
-    name: The name of the pubsub being retrieved. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class RunNamespacesPubsubsListRequest(_messages.Message):
-  r"""A RunNamespacesPubsubsListRequest object.
-
-  Fields:
-    continue_: Optional encoded string to continue paging.
-    fieldSelector: Allows to filter resources based on a specific value for a
-      field name. Send this in a query string format. i.e.
-      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
-    includeUninitialized: Not currently used by Cloud Run.
-    labelSelector: Allows to filter resources based on a label. Supported
-      operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the pubsubs should be
-      listed.
-    resourceVersion: The baseline resource version from which the list or
-      watch operation should start. Not currently used by Cloud Run.
-    watch: Flag that indicates that the client expects to watch this resource
-      as well. Not currently used by Cloud Run.
-  """
-
-  continue_ = _messages.StringField(1)
-  fieldSelector = _messages.StringField(2)
-  includeUninitialized = _messages.BooleanField(3)
-  labelSelector = _messages.StringField(4)
-  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  parent = _messages.StringField(6, required=True)
-  resourceVersion = _messages.StringField(7)
-  watch = _messages.BooleanField(8)
-
-
-class RunNamespacesPubsubsReplacePubSubRequest(_messages.Message):
-  r"""A RunNamespacesPubsubsReplacePubSubRequest object.
-
-  Fields:
-    name: The name of the pubsub being retrieved. If needed, replace
-      {namespace_id} with the project ID.
-    pubSub: A PubSub resource to be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  pubSub = _messages.MessageField('PubSub', 2)
 
 
 class RunNamespacesRevisionsDeleteRequest(_messages.Message):
@@ -3116,26 +3122,118 @@ class RunProjectsLocationsAuthorizeddomainsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class RunProjectsLocationsCloudauditlogsCreateRequest(_messages.Message):
-  r"""A RunProjectsLocationsCloudauditlogsCreateRequest object.
+class RunProjectsLocationsCloudauditlogssourcesCreateRequest(_messages.Message):
+  r"""A RunProjectsLocationsCloudauditlogssourcesCreateRequest object.
 
   Fields:
-    cloudAuditLog: A CloudAuditLog resource to be passed as the request body.
-    parent: The project ID or project number in which this cloudauditlog
-      should be created.
+    cloudAuditLogsSource: A CloudAuditLogsSource resource to be passed as the
+      request body.
+    parent: The project ID or project number in which this
+      cloudauditlogssource should be created.
   """
 
-  cloudAuditLog = _messages.MessageField('CloudAuditLog', 1)
+  cloudAuditLogsSource = _messages.MessageField('CloudAuditLogsSource', 1)
   parent = _messages.StringField(2, required=True)
 
 
-class RunProjectsLocationsCloudauditlogsDeleteRequest(_messages.Message):
-  r"""A RunProjectsLocationsCloudauditlogsDeleteRequest object.
+class RunProjectsLocationsCloudauditlogssourcesDeleteRequest(_messages.Message):
+  r"""A RunProjectsLocationsCloudauditlogssourcesDeleteRequest object.
 
   Fields:
     apiVersion: Cloud Run currently ignores this parameter.
     kind: Cloud Run currently ignores this parameter.
-    name: The name of the cloudauditlog being deleted. If needed, replace
+    name: The name of the cloudauditlogssource being deleted. If needed,
+      replace {namespace_id} with the project ID.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  propagationPolicy = _messages.StringField(4)
+
+
+class RunProjectsLocationsCloudauditlogssourcesGetRequest(_messages.Message):
+  r"""A RunProjectsLocationsCloudauditlogssourcesGetRequest object.
+
+  Fields:
+    name: The name of the cloudauditlogssource being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunProjectsLocationsCloudauditlogssourcesListRequest(_messages.Message):
+  r"""A RunProjectsLocationsCloudauditlogssourcesListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: The project ID or project number from which the
+      cloudauditlogssources should be listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class RunProjectsLocationsCloudauditlogssourcesReplaceCloudAuditLogsSourceRequest(_messages.Message):
+  r"""A
+  RunProjectsLocationsCloudauditlogssourcesReplaceCloudAuditLogsSourceRequest
+  object.
+
+  Fields:
+    cloudAuditLogsSource: A CloudAuditLogsSource resource to be passed as the
+      request body.
+    name: The name of the cloudauditlogssource being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+  """
+
+  cloudAuditLogsSource = _messages.MessageField('CloudAuditLogsSource', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class RunProjectsLocationsCloudpubsubsourcesCreateRequest(_messages.Message):
+  r"""A RunProjectsLocationsCloudpubsubsourcesCreateRequest object.
+
+  Fields:
+    cloudPubSubSource: A CloudPubSubSource resource to be passed as the
+      request body.
+    parent: The project ID or project number in which this cloudpubsubsource
+      should be created.
+  """
+
+  cloudPubSubSource = _messages.MessageField('CloudPubSubSource', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class RunProjectsLocationsCloudpubsubsourcesDeleteRequest(_messages.Message):
+  r"""A RunProjectsLocationsCloudpubsubsourcesDeleteRequest object.
+
+  Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
+    name: The name of the cloudpubsubsource being deleted. If needed, replace
       {namespace_id} with the project ID.
     propagationPolicy: Specifies the propagation policy of delete. Cloud Run
       currently ignores this setting, and deletes in the background. Please
@@ -3149,19 +3247,19 @@ class RunProjectsLocationsCloudauditlogsDeleteRequest(_messages.Message):
   propagationPolicy = _messages.StringField(4)
 
 
-class RunProjectsLocationsCloudauditlogsGetRequest(_messages.Message):
-  r"""A RunProjectsLocationsCloudauditlogsGetRequest object.
+class RunProjectsLocationsCloudpubsubsourcesGetRequest(_messages.Message):
+  r"""A RunProjectsLocationsCloudpubsubsourcesGetRequest object.
 
   Fields:
-    name: The name of the cloudauditlog being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+    name: The name of the cloudpubsubsource being retrieved. If needed,
+      replace {namespace_id} with the project ID.
   """
 
   name = _messages.StringField(1, required=True)
 
 
-class RunProjectsLocationsCloudauditlogsListRequest(_messages.Message):
-  r"""A RunProjectsLocationsCloudauditlogsListRequest object.
+class RunProjectsLocationsCloudpubsubsourcesListRequest(_messages.Message):
+  r"""A RunProjectsLocationsCloudpubsubsourcesListRequest object.
 
   Fields:
     continue_: Optional encoded string to continue paging.
@@ -3172,7 +3270,7 @@ class RunProjectsLocationsCloudauditlogsListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the cloudauditlogs
+    parent: The project ID or project number from which the cloudpubsubsources
       should be listed.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
@@ -3190,16 +3288,18 @@ class RunProjectsLocationsCloudauditlogsListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunProjectsLocationsCloudauditlogsReplaceCloudAuditLogRequest(_messages.Message):
-  r"""A RunProjectsLocationsCloudauditlogsReplaceCloudAuditLogRequest object.
+class RunProjectsLocationsCloudpubsubsourcesReplaceCloudPubSubSourceRequest(_messages.Message):
+  r"""A RunProjectsLocationsCloudpubsubsourcesReplaceCloudPubSubSourceRequest
+  object.
 
   Fields:
-    cloudAuditLog: A CloudAuditLog resource to be passed as the request body.
-    name: The name of the cloudauditlog being retrieved. If needed, replace
-      {namespace_id} with the project ID.
+    cloudPubSubSource: A CloudPubSubSource resource to be passed as the
+      request body.
+    name: The name of the cloudpubsubsource being retrieved. If needed,
+      replace {namespace_id} with the project ID.
   """
 
-  cloudAuditLog = _messages.MessageField('CloudAuditLog', 1)
+  cloudPubSubSource = _messages.MessageField('CloudPubSubSource', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -3378,93 +3478,6 @@ class RunProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-
-
-class RunProjectsLocationsPubsubsCreateRequest(_messages.Message):
-  r"""A RunProjectsLocationsPubsubsCreateRequest object.
-
-  Fields:
-    parent: The project ID or project number in which this pubsub should be
-      created.
-    pubSub: A PubSub resource to be passed as the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  pubSub = _messages.MessageField('PubSub', 2)
-
-
-class RunProjectsLocationsPubsubsDeleteRequest(_messages.Message):
-  r"""A RunProjectsLocationsPubsubsDeleteRequest object.
-
-  Fields:
-    apiVersion: Cloud Run currently ignores this parameter.
-    kind: Cloud Run currently ignores this parameter.
-    name: The name of the pubsub being deleted. If needed, replace
-      {namespace_id} with the project ID.
-    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
-      currently ignores this setting, and deletes in the background. Please
-      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
-      collection/ for more information.
-  """
-
-  apiVersion = _messages.StringField(1)
-  kind = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  propagationPolicy = _messages.StringField(4)
-
-
-class RunProjectsLocationsPubsubsGetRequest(_messages.Message):
-  r"""A RunProjectsLocationsPubsubsGetRequest object.
-
-  Fields:
-    name: The name of the pubsub being retrieved. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class RunProjectsLocationsPubsubsListRequest(_messages.Message):
-  r"""A RunProjectsLocationsPubsubsListRequest object.
-
-  Fields:
-    continue_: Optional encoded string to continue paging.
-    fieldSelector: Allows to filter resources based on a specific value for a
-      field name. Send this in a query string format. i.e.
-      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
-    includeUninitialized: Not currently used by Cloud Run.
-    labelSelector: Allows to filter resources based on a label. Supported
-      operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the pubsubs should be
-      listed.
-    resourceVersion: The baseline resource version from which the list or
-      watch operation should start. Not currently used by Cloud Run.
-    watch: Flag that indicates that the client expects to watch this resource
-      as well. Not currently used by Cloud Run.
-  """
-
-  continue_ = _messages.StringField(1)
-  fieldSelector = _messages.StringField(2)
-  includeUninitialized = _messages.BooleanField(3)
-  labelSelector = _messages.StringField(4)
-  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  parent = _messages.StringField(6, required=True)
-  resourceVersion = _messages.StringField(7)
-  watch = _messages.BooleanField(8)
-
-
-class RunProjectsLocationsPubsubsReplacePubSubRequest(_messages.Message):
-  r"""A RunProjectsLocationsPubsubsReplacePubSubRequest object.
-
-  Fields:
-    name: The name of the pubsub being retrieved. If needed, replace
-      {namespace_id} with the project ID.
-    pubSub: A PubSub resource to be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  pubSub = _messages.MessageField('PubSub', 2)
 
 
 class RunProjectsLocationsRevisionsDeleteRequest(_messages.Message):

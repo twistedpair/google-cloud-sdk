@@ -2379,9 +2379,7 @@ class Write(_messages.Message):
     delete: A document name to delete. In the format:
       `projects/{project_id}/databases/{database_id}/documents/{document_path}
       `.
-    transform: Applies a transformation to a document. At most one `transform`
-      per document is allowed in a given request. An `update` cannot follow a
-      `transform` on the same document in a given request.
+    transform: Applies a transformation to a document.
     update: A document to write.
     updateMask: The fields to update in this write.  This field can be set
       only when the operation is `update`. If the mask is not set for an

@@ -828,21 +828,33 @@ class Empty(_messages.Message):
 
 
 class Expr(_messages.Message):
-  r"""Represents an expression text. Example:      title: "User account
-  presence"     description: "Determines whether the request has a user
-  account"     expression: "size(request.user) > 0"
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec.  Example (Comparison):
+  title: "Summary size limit"     description: "Determines if a summary is
+  less than 100 chars"     expression: "document.summary.size() < 100"
+  Example (Equality):      title: "Requestor is owner"     description:
+  "Determines if requestor is the document owner"     expression:
+  "document.owner == request.auth.claims.email"  Example (Logic):      title:
+  "Public documents"     description: "Determine whether the document should
+  be publicly visible"     expression: "document.type != 'private' &&
+  document.type != 'internal'"  Example (Data Manipulation):      title:
+  "Notification string"     description: "Create a notification string with a
+  timestamp."     expression: "'New message received at ' +
+  string(document.create_time)"  The exact variables and functions that may be
+  referenced within an expression are determined by the service that evaluates
+  it. See the service documentation for additional information.
 
   Fields:
-    description: An optional description of the expression. This is a longer
+    description: Optional. Description of the expression. This is a longer
       text which describes the expression, e.g. when hovered over it in a UI.
     expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
       error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
   """
 
   description = _messages.StringField(1)
@@ -1000,6 +1012,7 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
       ENTRY_TYPE_UNSPECIFIED: Default unknown type
       TABLE: Output only. The type of entry that has a GoogleSQL schema,
         including logical views.
+      MODEL: Output only. The type of models.
       DATA_STREAM: Output only. An entry type which is used for streaming
         entries. Example: Cloud Pub/Sub topic.
       FILESET: Alpha feature. An entry type which is a set of files or
@@ -1007,8 +1020,9 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
     """
     ENTRY_TYPE_UNSPECIFIED = 0
     TABLE = 1
-    DATA_STREAM = 2
-    FILESET = 3
+    MODEL = 2
+    DATA_STREAM = 3
+    FILESET = 4
 
   bigqueryDateShardedSpec = _messages.MessageField('GoogleCloudDatacatalogV1beta1BigQueryDateShardedSpec', 1)
   bigqueryTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1beta1BigQueryTableSpec', 2)
@@ -1137,7 +1151,7 @@ class GoogleCloudDatacatalogV1beta1GcsFilesetSpec(_messages.Message):
   Fields:
     filePatterns: Required. Patterns to identify a set of files in Google
       Cloud Storage. See [Cloud Storage
-      documentation](storage/docs/gsutil/addlhelp/WildcardNames) for more
+      documentation](/storage/docs/gsutil/addlhelp/WildcardNames) for more
       information. Note that bucket wildcards are currently not supported.
       Examples of valid file_patterns:   * `gs://bucket_name/dir/*`: matches
       all files within `bucket_name/dir`
@@ -1145,9 +1159,17 @@ class GoogleCloudDatacatalogV1beta1GcsFilesetSpec(_messages.Message):
       `bucket_name/dir`                               spanning all
       subdirectories.  * `gs://bucket_name/file*`: matches files prefixed by
       `file` in                              `bucket_name`  *
-      `gs://bucket_name/a/*/b`: matches all files in `bucket_name` that match
+      `gs://bucket_name/??.txt`: matches files with two characters followed by
+      `.txt` in `bucket_name`  * `gs://bucket_name/[aeiou].txt`: matches files
+      that contain a single                                    vowel character
+      followed by `.txt` in                                    `bucket_name`
+      * `gs://bucket_name/[a-m].txt`: matches files that contain `a`, `b`, ...
+      or `m` followed by `.txt` in `bucket_name`  * `gs://bucket_name/a/*/b`:
+      matches all files in `bucket_name` that match
       `a/*/b` pattern, such as `a/c/b`, `a/d/b`  *
-      `gs://another_bucket/a.txt`: matches `gs://another_bucket/a.txt`
+      `gs://another_bucket/a.txt`: matches `gs://another_bucket/a.txt`  You
+      can combine wildcards to provide more powerful matches, for example:   *
+      `gs://bucket_name/[a-m]??.j*g`
     sampleGcsFileSpecs: Output only. Sample files contained in this fileset,
       not all files contained in this fileset are represented here.
   """

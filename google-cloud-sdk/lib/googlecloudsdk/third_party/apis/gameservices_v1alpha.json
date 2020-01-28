@@ -854,11 +854,11 @@
       "description": "Response message for GameServerDeploymentsService.FetchDeploymentState.",
       "type": "object",
       "properties": {
-        "details": {
-          "description": "The details of a deployment in a given location.",
+        "clusterState": {
+          "description": "The state of the deployment in each cluster.",
           "type": "array",
           "items": {
-            "$ref": "DeployedFleetDetails"
+            "$ref": "DeployedClusterState"
           }
         },
         "unavailable": {
@@ -870,90 +870,104 @@
         }
       }
     },
+    "DeployedClusterState": {
+      "id": "DeployedClusterState",
+      "description": "The cluster level changes made by the deployment.",
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "description": "The name of the cluster.",
+          "type": "string"
+        },
+        "fleetDetails": {
+          "description": "The details about the fleets and autoscalers created in the cluster.",
+          "type": "array",
+          "items": {
+            "$ref": "DeployedFleetDetails"
+          }
+        }
+      }
+    },
     "DeployedFleetDetails": {
       "id": "DeployedFleetDetails",
       "description": "Details of the deployed fleet.",
       "type": "object",
       "properties": {
-        "fleet": {
+        "deployedFleet": {
           "description": "Information about the agones fleet.",
-          "$ref": "Fleet"
+          "$ref": "DeployedFleet"
         },
-        "autoscaler": {
+        "deployedAutoscaler": {
           "description": "Information about the agones autoscaler for that fleet.",
-          "$ref": "FleetAutoscaler"
+          "$ref": "DeployedFleetAutoscaler"
         }
       }
     },
-    "Fleet": {
-      "id": "Fleet",
+    "DeployedFleet": {
+      "id": "DeployedFleet",
       "description": "Fleet specification and details.",
       "type": "object",
       "properties": {
-        "name": {
+        "fleet": {
           "description": "The name of the Agones game server fleet.",
           "type": "string"
         },
-        "agonesSpec": {
-          "description": "The Agones fleet spec.\nThis is sent because it is possible that we may no longer have the\ncorresponding game server config in our systems.",
-          "type": "string"
-        },
-        "cluster": {
-          "description": "The cluster name.",
+        "fleetSpec": {
+          "description": "The fleet spec retrieved from the Agones fleet.",
           "type": "string"
         },
         "specSource": {
-          "description": "The source spec that is used to create the fleet.\nThe game server config and fleet config may no longer\nexist in the system.",
+          "description": "The source spec that is used to create the fleet.\nThe GameServerConfig resource may no longer exist in the system.",
           "$ref": "SpecSource"
         },
         "status": {
           "description": "The current status of the fleet.\nIncludes count of game servers in various states.",
-          "$ref": "FleetStatus"
+          "$ref": "DeployedFleetStatus"
         }
       }
     },
-    "FleetStatus": {
-      "id": "FleetStatus",
-      "description": "FleetStatus has details about the fleets like how many are running,\nhow many allocated and so on.",
+    "DeployedFleetStatus": {
+      "id": "DeployedFleetStatus",
+      "description": "DeployedFleetStatus has details about the fleets such as how many are\nrunning, how many allocated and so on.",
       "type": "object",
       "properties": {
-        "availableCount": {
-          "description": "The number of available servers.\nThe are no players connected to this servers.",
+        "readyReplicas": {
+          "description": "The number of Ready GameServer replicas.",
           "type": "string",
           "format": "int64"
         },
-        "allocatedCount": {
-          "description": "The number of allocated servers.\nThese are servers allocated to game sessions.",
+        "allocatedReplicas": {
+          "description": "The number of Allocated GameServer replicas.",
           "type": "string",
           "format": "int64"
         },
-        "reservedCount": {
-          "description": "The number of reserved servers.\nReserved instances won't be deleted on scale down, but won't cause\nan autoscaler to scale up.",
+        "reservedReplicas": {
+          "description": "The total number of Reserved GameServer replicas in this fleet.\nReserved instances won't be deleted on scale down, but won't cause\nan autoscaler to scale up.",
           "type": "string",
           "format": "int64"
         },
-        "replicaCount": {
+        "replicas": {
           "description": "The total number of current GameServer replicas.",
           "type": "string",
           "format": "int64"
         }
       }
     },
-    "FleetAutoscaler": {
-      "id": "FleetAutoscaler",
+    "DeployedFleetAutoscaler": {
+      "id": "DeployedFleetAutoscaler",
       "description": "Details about the autoscaler.",
       "type": "object",
       "properties": {
-        "autoscalerName": {
+        "autoscaler": {
           "description": "The name of the Agones autoscaler.",
           "type": "string"
         },
         "specSource": {
-          "description": "The source spec that is used to create the autoscaler.\nThe game server config and scaling config may no longer\nexist in the system.",
+          "description": "The source spec that is used to create the autoscaler.\nThe GameServerConfig resource may no longer exist in the system.",
           "$ref": "SpecSource"
         },
         "fleetAutoscalerSpec": {
-          "description": "The autoscaler spec.\nThis is sent because it is possible that we may no longer have the\ncorresponding game server config in our systems.",
+          "description": "The autoscaler spec retrieved from Agones.",
           "type": "string"
         }
       }
@@ -1175,23 +1189,23 @@
     },
     "Expr": {
       "id": "Expr",
-      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
+      "description": "Represents a textual expression in the Common Expression Language (CEL)\nsyntax. CEL is a C-like expression language. The syntax and semantics of CEL\nare documented at https:\/\/github.com\/google\/cel-spec.\n\nExample (Comparison):\n\n    title: \"Summary size limit\"\n    description: \"Determines if a summary is less than 100 chars\"\n    expression: \"document.summary.size() < 100\"\n\nExample (Equality):\n\n    title: \"Requestor is owner\"\n    description: \"Determines if requestor is the document owner\"\n    expression: \"document.owner == request.auth.claims.email\"\n\nExample (Logic):\n\n    title: \"Public documents\"\n    description: \"Determine whether the document should be publicly visible\"\n    expression: \"document.type != 'private' && document.type != 'internal'\"\n\nExample (Data Manipulation):\n\n    title: \"Notification string\"\n    description: \"Create a notification string with a timestamp.\"\n    expression: \"'New message received at ' + string(document.create_time)\"\n\nThe exact variables and functions that may be referenced within an expression\nare determined by the service that evaluates it. See the service\ndocumentation for additional information.",
       "type": "object",
       "properties": {
         "expression": {
-          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
+          "description": "Textual representation of an expression in Common Expression Language\nsyntax.",
           "type": "string"
         },
         "title": {
-          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
+          "description": "Optional. Title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
           "type": "string"
         },
         "description": {
-          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
+          "description": "Optional. Description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
           "type": "string"
         },
         "location": {
-          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
+          "description": "Optional. String indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
           "type": "string"
         }
       }

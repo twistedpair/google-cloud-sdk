@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager V2Beta",
  "version": "v2beta",
- "revision": "20200110",
+ "revision": "20200120",
  "title": "Google Cloud Deployment Manager API V2Beta Methods",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -534,23 +534,23 @@
   "Expr": {
    "id": "Expr",
    "type": "object",
-   "description": "Represents an expression text. Example:\n\ntitle: \"User account presence\" description: \"Determines whether the request has a user account\" expression: \"size(request.user) \u003e 0\"",
+   "description": "Represents a textual expression in the Common Expression Language (CEL) syntax. CEL is a C-like expression language. The syntax and semantics of CEL are documented at https://github.com/google/cel-spec.\n\nExample (Comparison):\n\ntitle: \"Summary size limit\" description: \"Determines if a summary is less than 100 chars\" expression: \"document.summary.size() \u003c 100\"\n\nExample (Equality):\n\ntitle: \"Requestor is owner\" description: \"Determines if requestor is the document owner\" expression: \"document.owner == request.auth.claims.email\"\n\nExample (Logic):\n\ntitle: \"Public documents\" description: \"Determine whether the document should be publicly visible\" expression: \"document.type != 'private' && document.type != 'internal'\"\n\nExample (Data Manipulation):\n\ntitle: \"Notification string\" description: \"Create a notification string with a timestamp.\" expression: \"'New message received at ' + string(document.create_time)\"\n\nThe exact variables and functions that may be referenced within an expression are determined by the service that evaluates it. See the service documentation for additional information.",
    "properties": {
     "description": {
      "type": "string",
-     "description": "An optional description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI."
+     "description": "Optional. Description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI."
     },
     "expression": {
      "type": "string",
-     "description": "Textual representation of an expression in Common Expression Language syntax.\n\nThe application context of the containing message determines which well-known feature set of CEL is supported."
+     "description": "Textual representation of an expression in Common Expression Language syntax."
     },
     "location": {
      "type": "string",
-     "description": "An optional string indicating the location of the expression for error reporting, e.g. a file name and a position in the file."
+     "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file."
     },
     "title": {
      "type": "string",
-     "description": "An optional title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression."
+     "description": "Optional. Title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression."
     }
    }
   },

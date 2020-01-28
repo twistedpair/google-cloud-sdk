@@ -977,8 +977,15 @@ def AddAddressArgs(parser,
   addresses.add_argument(
       '--no-address',
       action='store_true',
-      help=('If provided, the instances will not be assigned external IP '
-            'addresses.'))
+      help="""\
+           If provided, the instances are not assigned external IP
+           addresses. To pull container images, you must configure private
+           Google access if using Container Registry or configure Cloud NAT
+           for instances to access container images directly. For more
+           information, see:
+             * https://cloud.google.com/vpc/docs/configure-private-google-access
+             * https://cloud.google.com/nat/docs/using-nat
+           """)
   if instances:
     address_help = """\
         Assigns the given external address to the instance that is created.

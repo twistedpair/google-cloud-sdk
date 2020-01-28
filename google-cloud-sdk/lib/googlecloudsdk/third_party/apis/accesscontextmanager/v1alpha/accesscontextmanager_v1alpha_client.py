@@ -248,9 +248,9 @@ ReplaceAccessLevelsResponse.
 Access Policy.
 A commit operation on a Service Perimeter involves copying its `spec` field
 to that Service Perimeter's `status` field. Only Service Perimeters with
-`dry_run` field set to true are affected by a commit operation.
-The longrunning operation from this RPC will have a successful status once
-the dry-run specs for all the Service Perimeters have been
+`use_explicit_dry_run_spec` field set to true are affected by a commit
+operation. The longrunning operation from this RPC will have a successful
+status once the dry-run specs for all the Service Perimeters have been
 committed. If a commit fails, it will cause the longrunning operation to
 return an error response and the entire commit operation will be cancelled.
 When successful, Operation.response field will contain

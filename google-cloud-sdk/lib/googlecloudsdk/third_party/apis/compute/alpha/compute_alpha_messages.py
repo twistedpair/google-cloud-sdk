@@ -6,7 +6,6 @@ Creates and runs virtual machines on Google Cloud Platform.
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
-from apitools.base.py import extra_types
 
 
 package = 'compute'
@@ -2457,7 +2456,25 @@ class AutoscalingPolicy(_messages.Message):
 class AutoscalingPolicyCpuUtilization(_messages.Message):
   r"""CPU utilization policy.
 
+  Enums:
+    PredictiveMethodValueValuesEnum: Indicates which method of prediction is
+      used for CPU utilization metric, if any. Current set of possible values:
+      * NONE: No predictions are made based on the scaling metric when
+      calculating the number of VM instances. * STANDARD: Standard predictive
+      autoscaling predicts the future values of the scaling metric and then
+      scales a MIG to ensure that new VM instances are ready in time to cover
+      the predicted peak. New values might be added in the future. Some of the
+      values might not be available in all API versions.
+
   Fields:
+    predictiveMethod: Indicates which method of prediction is used for CPU
+      utilization metric, if any. Current set of possible values: * NONE: No
+      predictions are made based on the scaling metric when calculating the
+      number of VM instances. * STANDARD: Standard predictive autoscaling
+      predicts the future values of the scaling metric and then scales a MIG
+      to ensure that new VM instances are ready in time to cover the predicted
+      peak. New values might be added in the future. Some of the values might
+      not be available in all API versions.
     utilizationTarget: The target CPU utilization that the autoscaler should
       maintain. Must be a float value in the range (0, 1]. If not specified,
       the default is 0.6.  If the CPU level is below the target utilization,
@@ -2469,7 +2486,27 @@ class AutoscalingPolicyCpuUtilization(_messages.Message):
       utilization reaches the target utilization.
   """
 
-  utilizationTarget = _messages.FloatField(1)
+  class PredictiveMethodValueValuesEnum(_messages.Enum):
+    r"""Indicates which method of prediction is used for CPU utilization
+    metric, if any. Current set of possible values: * NONE: No predictions are
+    made based on the scaling metric when calculating the number of VM
+    instances. * STANDARD: Standard predictive autoscaling predicts the future
+    values of the scaling metric and then scales a MIG to ensure that new VM
+    instances are ready in time to cover the predicted peak. New values might
+    be added in the future. Some of the values might not be available in all
+    API versions.
+
+    Values:
+      NONE: <no description>
+      PREDICTIVE_METHOD_UNSPECIFIED: <no description>
+      STANDARD: <no description>
+    """
+    NONE = 0
+    PREDICTIVE_METHOD_UNSPECIFIED = 1
+    STANDARD = 2
+
+  predictiveMethod = _messages.EnumField('PredictiveMethodValueValuesEnum', 1)
+  utilizationTarget = _messages.FloatField(2)
 
 
 class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
@@ -10332,6 +10369,20 @@ class ComputeInstancesGetRequest(_messages.Message):
   zone = _messages.StringField(3, required=True)
 
 
+class ComputeInstancesGetScreenshotRequest(_messages.Message):
+  r"""A ComputeInstancesGetScreenshotRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeInstancesGetSerialPortOutputRequest(_messages.Message):
   r"""A ComputeInstancesGetSerialPortOutputRequest object.
 
@@ -13426,35 +13477,6 @@ class ComputeNodeGroupsPatchRequest(_messages.Message):
 
   nodeGroup = _messages.StringField(1, required=True)
   nodeGroupResource = _messages.MessageField('NodeGroup', 2)
-  project = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  zone = _messages.StringField(5, required=True)
-
-
-class ComputeNodeGroupsSetAutoscalingPolicyRequest(_messages.Message):
-  r"""A ComputeNodeGroupsSetAutoscalingPolicyRequest object.
-
-  Fields:
-    nodeGroup: Name of the NodeGroup resource to update.
-    nodeGroupsSetAutoscalingPolicyRequest: A
-      NodeGroupsSetAutoscalingPolicyRequest resource to be passed as the
-      request body.
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.  The request
-      ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
-    zone: The name of the zone for this request.
-  """
-
-  nodeGroup = _messages.StringField(1, required=True)
-  nodeGroupsSetAutoscalingPolicyRequest = _messages.MessageField('NodeGroupsSetAutoscalingPolicyRequest', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   zone = _messages.StringField(5, required=True)
@@ -24557,21 +24579,33 @@ class ExchangedPeeringRoutesList(_messages.Message):
 
 
 class Expr(_messages.Message):
-  r"""Represents an expression text. Example:  title: "User account presence"
-  description: "Determines whether the request has a user account" expression:
-  "size(request.user) > 0"
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec.  Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100"  Example
+  (Equality):  title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email"  Example (Logic):  title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation):  title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)"  The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
-    description: An optional description of the expression. This is a longer
+    description: Optional. Description of the expression. This is a longer
       text which describes the expression, e.g. when hovered over it in a UI.
     expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
       error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
   """
 
   description = _messages.StringField(1)
@@ -27266,8 +27300,9 @@ class HealthStatus(_messages.Message):
     annotations: Metadata defined as annotations for network endpoint.
     healthState: Health state of the instance.
     instance: URL of the instance resource.
-    ipAddress: The IP address represented by this resource.
-    port: The port on the instance.
+    ipAddress: A forwarding rule IP address assigned to this instance.
+    port: The named port of the instance group, not necessarily the port that
+      is health-checked.
   """
 
   class HealthStateValueValuesEnum(_messages.Enum):
@@ -28695,6 +28730,8 @@ class Instance(_messages.Message):
       during instance creation. The tags can be later modified by the setTags
       method. Each tag within the list must comply with RFC1035. Multiple tags
       can be specified via the 'tags.items' field.
+    upcomingMaintenance: [Output Only] Specifies upcoming maintenance for the
+      instance.
     zone: [Output Only] URL of the zone where the instance resides. You must
       specify this field as part of the HTTP request URL. It is not settable
       as a field in the request body.
@@ -28817,7 +28854,8 @@ class Instance(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 39)
   statusMessage = _messages.StringField(40)
   tags = _messages.MessageField('Tags', 41)
-  zone = _messages.StringField(42)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 42)
+  zone = _messages.StringField(43)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -29384,8 +29422,9 @@ class InstanceGroupManager(_messages.Message):
       the instanceGroup field are added. The target pools automatically apply
       to all of the instances in the managed instance group.
     targetSize: The target number of running instances for this managed
-      instance group. Deleting or abandoning instances reduces this number.
-      Resizing the group changes this number.
+      instance group. You can reduce this number by using the
+      instanceGroupManager deleteInstances or abandonInstances methods.
+      Resizing the group also changes this number.
     updatePolicy: The update policy for this managed instance group.
     versions: Specifies the instance templates used by this managed instance
       group to create instances.  Each version is defined by an
@@ -34361,7 +34400,11 @@ class LogConfigDataAccessOptions(_messages.Message):
 
 
 class MachineImage(_messages.Message):
-  r"""Machine image resource.
+  r"""Represents a machine image resource.  A machine image is a Compute
+  Engine resource that stores all the configuration, metadata, permissions,
+  and data from one or more disks required to create a Virtual machine (VM)
+  instance. For more information, see Machine images. (== resource_for
+  {$api_version}.machineImages ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the machine image. One
@@ -37501,16 +37544,6 @@ class NodeGroupsScopedList(_messages.Message):
 
   nodeGroups = _messages.MessageField('NodeGroup', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
-
-
-class NodeGroupsSetAutoscalingPolicyRequest(_messages.Message):
-  r"""A NodeGroupsSetAutoscalingPolicyRequest object.
-
-  Fields:
-    autoscalingPolicy: A NodeGroupAutoscalingPolicy attribute.
-  """
-
-  autoscalingPolicy = _messages.MessageField('NodeGroupAutoscalingPolicy', 1)
 
 
 class NodeGroupsSetNodeTemplateRequest(_messages.Message):
@@ -40863,6 +40896,10 @@ class PublicDelegatedPrefix(_messages.Message):
   that scope. Public delegated prefixes may be further broken up into smaller
   IP blocks in the same scope as the parent block.
 
+  Enums:
+    StatusValueValuesEnum: [Output Only] The status of the public delegated
+      prefix.
+
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -40901,6 +40938,16 @@ class PublicDelegatedPrefix(_messages.Message):
     status: [Output Only] The status of the public delegated prefix.
   """
 
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The status of the public delegated prefix.
+
+    Values:
+      ANNOUNCED: <no description>
+      INITIALIZING: <no description>
+    """
+    ANNOUNCED = 0
+    INITIALIZING = 1
+
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   fingerprint = _messages.BytesField(3)
@@ -40913,7 +40960,7 @@ class PublicDelegatedPrefix(_messages.Message):
   region = _messages.StringField(10)
   selfLink = _messages.StringField(11)
   selfLinkWithId = _messages.StringField(12)
-  status = _messages.MessageField('extra_types.JsonValue', 13)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
 
 
 class PublicDelegatedPrefixAggregatedList(_messages.Message):
@@ -41196,6 +41243,10 @@ class PublicDelegatedPrefixList(_messages.Message):
 class PublicDelegatedPrefixPublicDelegatedSubPrefix(_messages.Message):
   r"""Represents a sub PublicDelegatedPrefix.
 
+  Enums:
+    StatusValueValuesEnum: [Output Only] The status of the sub public
+      delegated prefix.
+
   Fields:
     delegateeProject: Name of the project scoping this
       PublicDelegatedSubPrefix.
@@ -41211,13 +41262,23 @@ class PublicDelegatedPrefixPublicDelegatedSubPrefix(_messages.Message):
     status: [Output Only] The status of the sub public delegated prefix.
   """
 
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The status of the sub public delegated prefix.
+
+    Values:
+      ACTIVE: <no description>
+      INACTIVE: <no description>
+    """
+    ACTIVE = 0
+    INACTIVE = 1
+
   delegateeProject = _messages.StringField(1)
   description = _messages.StringField(2)
   ipCidrRange = _messages.StringField(3)
   isAddress = _messages.BooleanField(4)
   name = _messages.StringField(5)
   region = _messages.StringField(6)
-  status = _messages.MessageField('extra_types.JsonValue', 7)
+  status = _messages.EnumField('StatusValueValuesEnum', 7)
 
 
 class PublicDelegatedPrefixesScopedList(_messages.Message):
@@ -41362,6 +41423,7 @@ class Quota(_messages.Message):
       COMMITMENTS: <no description>
       COMMITTED_C2_CPUS: <no description>
       COMMITTED_CPUS: <no description>
+      COMMITTED_LICENSES: <no description>
       COMMITTED_LOCAL_SSD_TOTAL_GB: <no description>
       COMMITTED_N2D_CPUS: <no description>
       COMMITTED_N2_CPUS: <no description>
@@ -41463,94 +41525,95 @@ class Quota(_messages.Message):
     COMMITMENTS = 6
     COMMITTED_C2_CPUS = 7
     COMMITTED_CPUS = 8
-    COMMITTED_LOCAL_SSD_TOTAL_GB = 9
-    COMMITTED_N2D_CPUS = 10
-    COMMITTED_N2_CPUS = 11
-    COMMITTED_NVIDIA_K80_GPUS = 12
-    COMMITTED_NVIDIA_P100_GPUS = 13
-    COMMITTED_NVIDIA_P4_GPUS = 14
-    COMMITTED_NVIDIA_T4_GPUS = 15
-    COMMITTED_NVIDIA_V100_GPUS = 16
-    CPUS = 17
-    CPUS_ALL_REGIONS = 18
-    DISKS_TOTAL_GB = 19
-    EXTERNAL_VPN_GATEWAYS = 20
-    FIREWALLS = 21
-    FORWARDING_RULES = 22
-    GLOBAL_INTERNAL_ADDRESSES = 23
-    GPUS_ALL_REGIONS = 24
-    HEALTH_CHECKS = 25
-    IMAGES = 26
-    INSTANCES = 27
-    INSTANCES_PER_NETWORK_GLOBAL = 28
-    INSTANCE_GROUPS = 29
-    INSTANCE_GROUP_MANAGERS = 30
-    INSTANCE_TEMPLATES = 31
-    INTERCONNECTS = 32
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 33
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 34
-    INTERCONNECT_TOTAL_GBPS = 35
-    INTERNAL_ADDRESSES = 36
-    INTERNAL_FORWARDING_RULES_PER_NETWORK = 37
-    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 38
-    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 39
-    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 40
-    IN_USE_ADDRESSES = 41
-    IN_USE_BACKUP_SCHEDULES = 42
-    IN_USE_MAINTENANCE_WINDOWS = 43
-    IN_USE_SNAPSHOT_SCHEDULES = 44
-    LOCAL_SSD_TOTAL_GB = 45
-    MACHINE_IMAGES = 46
-    N2D_CPUS = 47
-    N2_CPUS = 48
-    NETWORKS = 49
-    NETWORK_ENDPOINT_GROUPS = 50
-    NVIDIA_K80_GPUS = 51
-    NVIDIA_P100_GPUS = 52
-    NVIDIA_P100_VWS_GPUS = 53
-    NVIDIA_P4_GPUS = 54
-    NVIDIA_P4_VWS_GPUS = 55
-    NVIDIA_T4_GPUS = 56
-    NVIDIA_T4_VWS_GPUS = 57
-    NVIDIA_V100_GPUS = 58
-    PACKET_MIRRORINGS = 59
-    PREEMPTIBLE_CPUS = 60
-    PREEMPTIBLE_LOCAL_SSD_GB = 61
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 62
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 63
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 64
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 65
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 66
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 67
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 68
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 69
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 70
-    REGIONAL_AUTOSCALERS = 71
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 72
-    RESERVATIONS = 73
-    RESOURCE_POLICIES = 74
-    ROUTERS = 75
-    ROUTES = 76
-    SECURITY_POLICIES = 77
-    SECURITY_POLICY_CEVAL_RULES = 78
-    SECURITY_POLICY_RULES = 79
-    SNAPSHOTS = 80
-    SSD_TOTAL_GB = 81
-    SSL_CERTIFICATES = 82
-    STATIC_ADDRESSES = 83
-    SUBNETWORKS = 84
-    SUBNET_RANGES_PER_NETWORK = 85
-    TARGET_HTTPS_PROXIES = 86
-    TARGET_HTTP_PROXIES = 87
-    TARGET_INSTANCES = 88
-    TARGET_POOLS = 89
-    TARGET_SSL_PROXIES = 90
-    TARGET_TCP_PROXIES = 91
-    TARGET_VPN_GATEWAYS = 92
-    URL_MAPS = 93
-    VPN_GATEWAYS = 94
-    VPN_TUNNELS = 95
-    XPN_SERVICE_PROJECTS = 96
+    COMMITTED_LICENSES = 9
+    COMMITTED_LOCAL_SSD_TOTAL_GB = 10
+    COMMITTED_N2D_CPUS = 11
+    COMMITTED_N2_CPUS = 12
+    COMMITTED_NVIDIA_K80_GPUS = 13
+    COMMITTED_NVIDIA_P100_GPUS = 14
+    COMMITTED_NVIDIA_P4_GPUS = 15
+    COMMITTED_NVIDIA_T4_GPUS = 16
+    COMMITTED_NVIDIA_V100_GPUS = 17
+    CPUS = 18
+    CPUS_ALL_REGIONS = 19
+    DISKS_TOTAL_GB = 20
+    EXTERNAL_VPN_GATEWAYS = 21
+    FIREWALLS = 22
+    FORWARDING_RULES = 23
+    GLOBAL_INTERNAL_ADDRESSES = 24
+    GPUS_ALL_REGIONS = 25
+    HEALTH_CHECKS = 26
+    IMAGES = 27
+    INSTANCES = 28
+    INSTANCES_PER_NETWORK_GLOBAL = 29
+    INSTANCE_GROUPS = 30
+    INSTANCE_GROUP_MANAGERS = 31
+    INSTANCE_TEMPLATES = 32
+    INTERCONNECTS = 33
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 34
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 35
+    INTERCONNECT_TOTAL_GBPS = 36
+    INTERNAL_ADDRESSES = 37
+    INTERNAL_FORWARDING_RULES_PER_NETWORK = 38
+    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 39
+    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 40
+    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 41
+    IN_USE_ADDRESSES = 42
+    IN_USE_BACKUP_SCHEDULES = 43
+    IN_USE_MAINTENANCE_WINDOWS = 44
+    IN_USE_SNAPSHOT_SCHEDULES = 45
+    LOCAL_SSD_TOTAL_GB = 46
+    MACHINE_IMAGES = 47
+    N2D_CPUS = 48
+    N2_CPUS = 49
+    NETWORKS = 50
+    NETWORK_ENDPOINT_GROUPS = 51
+    NVIDIA_K80_GPUS = 52
+    NVIDIA_P100_GPUS = 53
+    NVIDIA_P100_VWS_GPUS = 54
+    NVIDIA_P4_GPUS = 55
+    NVIDIA_P4_VWS_GPUS = 56
+    NVIDIA_T4_GPUS = 57
+    NVIDIA_T4_VWS_GPUS = 58
+    NVIDIA_V100_GPUS = 59
+    PACKET_MIRRORINGS = 60
+    PREEMPTIBLE_CPUS = 61
+    PREEMPTIBLE_LOCAL_SSD_GB = 62
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 63
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 64
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 65
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 66
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 67
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 68
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 69
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 70
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 71
+    REGIONAL_AUTOSCALERS = 72
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 73
+    RESERVATIONS = 74
+    RESOURCE_POLICIES = 75
+    ROUTERS = 76
+    ROUTES = 77
+    SECURITY_POLICIES = 78
+    SECURITY_POLICY_CEVAL_RULES = 79
+    SECURITY_POLICY_RULES = 80
+    SNAPSHOTS = 81
+    SSD_TOTAL_GB = 82
+    SSL_CERTIFICATES = 83
+    STATIC_ADDRESSES = 84
+    SUBNETWORKS = 85
+    SUBNET_RANGES_PER_NETWORK = 86
+    TARGET_HTTPS_PROXIES = 87
+    TARGET_HTTP_PROXIES = 88
+    TARGET_INSTANCES = 89
+    TARGET_POOLS = 90
+    TARGET_SSL_PROXIES = 91
+    TARGET_TCP_PROXIES = 92
+    TARGET_VPN_GATEWAYS = 93
+    URL_MAPS = 94
+    VPN_GATEWAYS = 95
+    VPN_TUNNELS = 96
+    XPN_SERVICE_PROJECTS = 97
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -41770,7 +41833,7 @@ class RegionCommitmentsUpdateReservationsRequest(_messages.Message):
   r"""A RegionCommitmentsUpdateReservationsRequest object.
 
   Fields:
-    reservations: List of two reservations to transfer GPUs and local SSD
+    reservations: A list of two reservations to transfer GPUs and local SSD
       between.
   """
 
@@ -46086,6 +46149,19 @@ class SchedulingNodeAffinity(_messages.Message):
   values = _messages.StringField(3, repeated=True)
 
 
+class Screenshot(_messages.Message):
+  r"""An instance's screenshot.
+
+  Fields:
+    contents: [Output Only] The Base64-encoded screenshot data.
+    kind: [Output Only] Type of the resource. Always compute#screenshot for
+      the screenshots.
+  """
+
+  contents = _messages.StringField(1)
+  kind = _messages.StringField(2, default=u'compute#screenshot')
+
+
 class SdsConfig(_messages.Message):
   r"""The configuration to access the SDS server.
 
@@ -46133,12 +46209,21 @@ class SecurityPolicy(_messages.Message):
       comply with RFC1035. Label values may be empty.
 
   Fields:
-    associations: A list of assocations that belong to this policy.
+    associations: A list of associations that belong to this policy.
     cloudArmorConfig: A SecurityPolicyCloudArmorConfig attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    displayName: User-provided name of the Organization security plicy. The
+      name should be unique in the organization in which the security policy
+      is created. This should only be used when SecurityPolicyType is
+      FIREWALL. The name must be 1-63 characters long, and comply with
+      RFC1035. Specifically, the name must be 1-63 characters long and match
+      the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the
+      first character must be a lowercase letter, and all following characters
+      must be a dash, lowercase letter, or digit, except the last character,
+      which cannot be a dash.
     fingerprint: Specifies a fingerprint for this resource, which is
       essentially a hash of the metadata's contents and used for optimistic
       locking. The fingerprint is initially generated by Compute Engine and
@@ -46168,6 +46253,7 @@ class SecurityPolicy(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    parent: [Output Only] The parent of the security policy.
     ruleTupleCount: [Output Only] Total count of all security policy rule
       tuples. A security policy can not exceed a set number of tuples.
     rules: A list of rules that belong to this policy. There must always be a
@@ -46224,17 +46310,19 @@ class SecurityPolicy(_messages.Message):
   cloudArmorConfig = _messages.MessageField('SecurityPolicyCloudArmorConfig', 2)
   creationTimestamp = _messages.StringField(3)
   description = _messages.StringField(4)
-  fingerprint = _messages.BytesField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#securityPolicy')
-  labelFingerprint = _messages.BytesField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  ruleTupleCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  rules = _messages.MessageField('SecurityPolicyRule', 12, repeated=True)
-  selfLink = _messages.StringField(13)
-  selfLinkWithId = _messages.StringField(14)
-  type = _messages.EnumField('TypeValueValuesEnum', 15)
+  displayName = _messages.StringField(5)
+  fingerprint = _messages.BytesField(6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default=u'compute#securityPolicy')
+  labelFingerprint = _messages.BytesField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  parent = _messages.StringField(12)
+  ruleTupleCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('SecurityPolicyRule', 14, repeated=True)
+  selfLink = _messages.StringField(15)
+  selfLinkWithId = _messages.StringField(16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
 
 
 class SecurityPolicyAssociation(_messages.Message):
@@ -46242,13 +46330,16 @@ class SecurityPolicyAssociation(_messages.Message):
 
   Fields:
     attachmentId: The resource that the security policy is attached to.
+    displayName: [Output Only] The display name of the security policy of the
+      association.
     name: The name for an association.
     securityPolicyId: [Output Only] The security policy ID of the association.
   """
 
   attachmentId = _messages.StringField(1)
-  name = _messages.StringField(2)
-  securityPolicyId = _messages.StringField(3)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  securityPolicyId = _messages.StringField(4)
 
 
 class SecurityPolicyCloudArmorConfig(_messages.Message):
@@ -46434,6 +46525,8 @@ class SecurityPolicyRule(_messages.Message):
       rule. If this field is left blank, all VMs within the organization will
       receive the rule.  This field may only be specified when versioned_expr
       is set to FIREWALL.
+    targetServiceAccounts: A list of service accounts indicating the sets of
+      instances that are applied with this rule.
   """
 
   class DirectionValueValuesEnum(_messages.Enum):
@@ -46458,6 +46551,7 @@ class SecurityPolicyRule(_messages.Message):
   rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 9)
   ruleTupleCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
   targetResources = _messages.StringField(11, repeated=True)
+  targetServiceAccounts = _messages.StringField(12, repeated=True)
 
 
 class SecurityPolicyRuleMatcher(_messages.Message):
@@ -46509,16 +46603,39 @@ class SecurityPolicyRuleMatcherConfig(_messages.Message):
       when versioned_expr is set to FIREWALL.
     destPorts: Pairs of IP protocols and ports that the rule should match.
       This field may only be specified when versioned_expr is set to FIREWALL.
+    layer4Configs: Pairs of IP protocols and ports that the rule should match.
+      This field may only be specified when versioned_expr is set to FIREWALL.
     srcIpRanges: CIDR IP address range.
   """
 
   destIpRanges = _messages.StringField(1, repeated=True)
   destPorts = _messages.MessageField('SecurityPolicyRuleMatcherConfigDestinationPort', 2, repeated=True)
-  srcIpRanges = _messages.StringField(3, repeated=True)
+  layer4Configs = _messages.MessageField('SecurityPolicyRuleMatcherConfigLayer4Config', 3, repeated=True)
+  srcIpRanges = _messages.StringField(4, repeated=True)
 
 
 class SecurityPolicyRuleMatcherConfigDestinationPort(_messages.Message):
   r"""A SecurityPolicyRuleMatcherConfigDestinationPort object.
+
+  Fields:
+    ipProtocol: The IP protocol to which this rule applies. The protocol type
+      is required when creating a firewall rule. This value can either be one
+      of the following well known protocol strings (tcp, udp, icmp, esp, ah,
+      ipip, sctp), or the IP protocol number.
+    ports: An optional list of ports to which this rule applies. This field is
+      only applicable for UDP or TCP protocol. Each entry must be either an
+      integer or a range. If not specified, this rule applies to connections
+      through any port.  Example inputs include: ["22"], ["80","443"], and
+      ["12345-12349"].  This field may only be specified when versioned_expr
+      is set to FIREWALL.
+  """
+
+  ipProtocol = _messages.StringField(1)
+  ports = _messages.StringField(2, repeated=True)
+
+
+class SecurityPolicyRuleMatcherConfigLayer4Config(_messages.Message):
+  r"""A SecurityPolicyRuleMatcherConfigLayer4Config object.
 
   Fields:
     ipProtocol: The IP protocol to which this rule applies. The protocol type
@@ -52386,6 +52503,37 @@ class UDPHealthCheck(_messages.Message):
   portName = _messages.StringField(2)
   request = _messages.StringField(3)
   response = _messages.StringField(4)
+
+
+class UpcomingMaintenance(_messages.Message):
+  r"""Upcoming Maintenance notification information.
+
+  Enums:
+    TypeValueValuesEnum: Defines the type of maintenance.
+
+  Fields:
+    date: [Output Only] The date when the maintenance will take place. This
+      value is in RFC3339 text format.
+    time: [Output Only] The time when the maintenance will take place. This
+      value is in RFC3339 text format.
+    type: Defines the type of maintenance.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Defines the type of maintenance.
+
+    Values:
+      SCHEDULED: <no description>
+      UNKNOWN_TYPE: <no description>
+      UNSCHEDULED: <no description>
+    """
+    SCHEDULED = 0
+    UNKNOWN_TYPE = 1
+    UNSCHEDULED = 2
+
+  date = _messages.StringField(1)
+  time = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class UrlMap(_messages.Message):

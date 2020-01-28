@@ -39,7 +39,6 @@ INGRESS_SETTINGS = ['ALL', 'INTERNAL-ONLY']
 INGRESS_SETTINGS_MAPPING = {
     'ALLOW_ALL': 'all',
     'ALLOW_INTERNAL_ONLY': 'internal-only',
-    'ALLOW_INTERNAL_AND_GCLB': 'internal-and-gclb',
 }
 
 EGRESS_SETTINGS_MAPPING = {

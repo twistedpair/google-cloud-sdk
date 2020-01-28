@@ -42,7 +42,7 @@ class Settings(object):
   """Settings for local development environments."""
 
   __slots__ = ('service_name', 'image_name', 'service_account', 'dockerfile',
-               'build_context_directory', 'builder', 'local_port')
+               'build_context_directory', 'builder', 'local_port', 'env_vars')
 
   @classmethod
   def FromArgs(cls, args):
@@ -63,10 +63,11 @@ class Settings(object):
       image_name = args.image_name
 
     return cls(service_name, image_name, args.service_account, args.dockerfile,
-               args.build_context_directory, args.builder, args.local_port)
+               args.build_context_directory, args.builder, args.local_port,
+               args.env_vars or args.env_vars_file)
 
   def __init__(self, service_name, image_name, service_account, dockerfile,
-               build_context_directory, builder, local_port):
+               build_context_directory, builder, local_port, env_vars):
     """Initialize Settings.
 
     Args:
@@ -75,9 +76,10 @@ class Settings(object):
       service_account: Service account id.
       dockerfile: Path to dockerfile.
       build_context_directory: Path to directory to use as the current working
-          directory for the docker build.
+        directory for the docker build.
       builder: Buildpack builder.
       local_port: Local port to which to forward the service connection.
+      env_vars: Container environment variables.
     """
     super(Settings, self).__setattr__('service_name', service_name)
     super(Settings, self).__setattr__('image_name', image_name)
@@ -87,13 +89,14 @@ class Settings(object):
                                       build_context_directory)
     super(Settings, self).__setattr__('builder', builder)
     super(Settings, self).__setattr__('local_port', local_port)
+    super(Settings, self).__setattr__('env_vars', env_vars)
 
   def __setattr__(self, name, value):
     """Prevent modification of attributes."""
     raise NotImplementedError('Settings cannot be modified')
 
 
-_POD_AND_SERVICES_TEMPLATE = """
+_POD_TEMPLATE = """
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -119,7 +122,24 @@ spec:
         ports:
         - containerPort: 8080
       terminationGracePeriodSeconds: 0
----
+"""
+
+
+def CreateDeployment(service_name, image_name):
+  """Create a deployment specification for a service.
+
+  Args:
+    service_name: Name of the service.
+    image_name: Image tag.
+
+  Returns:
+    Dictionary object representing the deployment yaml.
+  """
+  yaml_text = _POD_TEMPLATE.format(service=service_name, image=image_name)
+  return yaml.load(yaml_text)
+
+
+_SERVICE_TEMPLATE = """
 apiVersion: v1
 kind: Service
 metadata:
@@ -135,19 +155,33 @@ spec:
 """
 
 
-def CreatePodAndService(service_name, image_name):
-  """Create a pod and service specification for a service.
+def CreateService(service_name):
+  """Create a service specification.
 
   Args:
     service_name: Name of the service.
-    image_name: Image tag.
 
   Returns:
-    List of dictionary objects representing the service and image yaml.
+    Dictionary objects representing the service yaml.
   """
-  yaml_text = _POD_AND_SERVICES_TEMPLATE.format(
-      service=service_name, image=image_name)
-  return list(yaml.load_all(yaml_text))
+  yaml_text = _SERVICE_TEMPLATE.format(service=service_name)
+  return yaml.load(yaml_text)
+
+
+def AddEnvironmentVariables(deployment, container_name, env_vars):
+  """Add environment variable settings to a container.
+
+  Args:
+    deployment: (dict) Yaml deployment configuration.
+    container_name: (str) Container name.
+    env_vars: (dict) Key value environment variable pairs.
+  """
+  containers = yaml_helper.GetOrCreate(
+      deployment, ('spec', 'template', 'spec', 'containers'), constructor=list)
+  container = _FindFirst(containers, lambda c: c['name'] == container_name)
+  env_list = yaml_helper.GetOrCreate(container, ('env',), constructor=list)
+  for key, value in sorted(env_vars.items()):
+    env_list.append({'name': key, 'value': value})
 
 
 # Regular expression for parsing a service account email address.
@@ -437,4 +471,4 @@ def _IsEmpty(itr):
 
 def _Utf8ToBase64(s):
   """Encode a utf-8 string as a base 64 string."""
-  return base64.b64encode(s.encode('utf-8')).decode('utf-8')
+  return six.ensure_text(base64.b64encode(six.ensure_binary(s)))

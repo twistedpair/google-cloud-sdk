@@ -121,7 +121,10 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
     project = self.GetProject(compute_holder.client, instance_ref.project)
     expiration, expiration_micros = ssh_utils.GetSSHKeyExpirationFromArgs(args)
 
-    if not remote.user:
+    if remote.user:
+      username_requested = True
+    else:
+      username_requested = False
       remote.user = ssh.GetDefaultSshUsername(warn_on_account_user=True)
     if args.plain:
       use_oslogin = False
@@ -129,7 +132,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
       public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
       remote.user, use_oslogin = ssh.CheckForOsloginAndGetUser(
           instance, project, remote.user, public_key, expiration_micros,
-          release_track)
+          release_track, username_requested=username_requested)
 
     identity_file = None
     options = None

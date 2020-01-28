@@ -117,13 +117,9 @@ def AddAndroidTestArgs(parser):
       'to be APKs.')
   parser.add_argument(
       '--app-package',
-      action=actions.DeprecationAction(
-          '--app-package',
-          warn=('The `--app-package` flag is deprecated and should no longer '
-                'be used. By default, the correct application package name is '
-                'parsed from the APK manifest.')),
-      help='The Java package of the application under test (default: extracted '
-      'from the APK manifest).')
+      action=actions.DeprecationAction('--app-package', removed=True),
+      help='The Java package of the application under test. By default, the '
+      'application package name is parsed from the APK manifest.')
   parser.add_argument(
       '--auto-google-login',
       action='store_true',
@@ -210,14 +206,10 @@ def AddAndroidTestArgs(parser):
       'using a URL beginning with `gs://`.')
   parser.add_argument(
       '--test-package',
-      action=actions.DeprecationAction(
-          '--test-package',
-          warn=('The `--test-package` flag is deprecated and should no longer '
-                'be used. By default, the correct test package name is '
-                'parsed from the APK manifest.')),
+      action=actions.DeprecationAction('--test-package', removed=True),
       category=ANDROID_INSTRUMENTATION_TEST,
-      help='The Java package name of the instrumentation test (default: '
-      'extracted from the APK manifest).')
+      help='The Java package name of the instrumentation test. By default, the '
+      'test package name is parsed from the APK manifest.')
   parser.add_argument(
       '--test-runner-class',
       category=ANDROID_INSTRUMENTATION_TEST,

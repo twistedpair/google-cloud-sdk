@@ -286,6 +286,15 @@ def _GetDockerVersionTags(client, messages, docker_version):
   ]
 
 
+def _ValidateDockerRepo(repo_name):
+  repo = ar_requests.GetRepository(repo_name)
+  messages = ar_requests.GetMessages()
+  if repo.format != messages.Repository.FormatValueValuesEnum.DOCKER:
+    raise ar_exceptions.InvalidInputValueError(
+        "Invalid repository type {}. The `artifacts docker` command group can "
+        "only be used on Docker repositories.".format(repo.format))
+
+
 class DockerRepo(object):
   """Holder for a Docker repository.
 
@@ -424,11 +433,13 @@ def GetDockerImages(args):
   """Gets Docker images."""
   resource = _ParseDockerImagePath(args.IMAGE_PATH)
   if isinstance(resource, DockerRepo):
+    _ValidateDockerRepo(resource.GetRepositoryName())
     log.status.Print(
         "Listing items under project {}, location {}, repository {}.\n".format(
             resource.project, resource.location, resource.repo))
     return _GetDockerPackagesAndVersions(resource, args.include_tags)
   elif isinstance(resource, DockerImage):
+    _ValidateDockerRepo(resource.docker_repo.GetRepositoryName())
     log.status.Print(
         "Listing items under project {}, location {}, repository {}.\n".format(
             resource.docker_repo.project, resource.docker_repo.location,
@@ -472,6 +483,7 @@ def DeleteDockerImage(args):
     The long-running operation from DeletePackage API call.
   """
   image, version_or_tag = _ParseDockerImage(args.IMAGE, _INVALID_IMAGE_ERROR)
+  _ValidateDockerRepo(image.docker_repo.GetRepositoryName())
   client = ar_requests.GetClient()
   messages = ar_requests.GetMessages()
   if not version_or_tag:
@@ -526,6 +538,8 @@ def AddDockerTag(args):
         "Image {}\ndoes not match image {}".format(
             src_image.GetDockerString(), dest_image.GetDockerString()))
 
+  _ValidateDockerRepo(src_image.docker_repo.GetRepositoryName())
+
   client = ar_requests.GetClient()
   messages = ar_requests.GetMessages()
   docker_version = version_or_tag
@@ -552,6 +566,7 @@ def DeleteDockerTag(args):
   img, tag = _ParseDockerTag(args.DOCKER_TAG)
 
   ar_util.ValidateLocation(img.docker_repo.location, img.docker_repo.project)
+  _ValidateDockerRepo(img.docker_repo.GetRepositoryName())
 
   console_io.PromptContinue(
       message="You are about to delete tag [{}]".format(tag.GetDockerString()),
@@ -569,6 +584,7 @@ def ListDockerTags(args):
   messages = ar_requests.GetMessages()
   img_list = []
   if isinstance(resource, DockerRepo):
+    _ValidateDockerRepo(resource.GetRepositoryName())
     log.status.Print(
         "Listing items under project {}, location {}, repository {}.\n".format(
             resource.project, resource.location, resource.repo))
@@ -576,6 +592,7 @@ def ListDockerTags(args):
                                         resource.GetRepositoryName()):
       img_list.append(DockerImage(resource, pkg.name.split("/")[-1]))
   elif isinstance(resource, DockerImage):
+    _ValidateDockerRepo(resource.docker_repo.GetRepositoryName())
     log.status.Print(
         "Listing items under project {}, location {}, repository {}.\n".format(
             resource.docker_repo.project, resource.docker_repo.location,

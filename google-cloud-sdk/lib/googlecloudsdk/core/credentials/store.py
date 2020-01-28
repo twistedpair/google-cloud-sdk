@@ -22,12 +22,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+
 import datetime
 import json
 import os
 import textwrap
 import time
 
+import dateutil
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
@@ -38,6 +40,8 @@ from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import gce as c_gce
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import times
+
 
 import httplib2
 from oauth2client import client
@@ -292,6 +296,95 @@ def AvailableAccounts():
   accounts = store.GetAccounts() | STATIC_CREDENTIAL_PROVIDERS.GetAccounts()
 
   return sorted(accounts)
+
+
+def _TokenExpiresWithinWindow(expiry_window,
+                              token_expiry_time,
+                              max_window_seconds=3600):
+  """Determines if token_expiry_time is within expiry_window_duration.
+
+  Calculates the amount of time between utcnow() and token_expiry_time and
+  returns true, if that amount is less thank the provided duration window. All
+  calculations are done in number of seconds for consistency.
+
+
+  Args:
+    expiry_window: string, Duration representing the amount of time between
+      now and token_expiry_time to compare against.
+    token_expiry_time: datetime, The time when token expires.
+    max_window_seconds: int, Maximum size of expiry window, in seconds.
+
+  Raises:
+    ValueError: If expiry_window is invalid or can not be parsed.
+
+  Returns:
+    True if token is expired or will expire with in the provided window,
+    False otherwise.
+  """
+  try:
+    min_expiry = times.ParseDuration(expiry_window, default_suffix='s')
+    if min_expiry.total_seconds > max_window_seconds:
+      raise ValueError('Invalid expiry window duration [{}]: '
+                       'Must be between 0s and 1h'.format(expiry_window))
+  except times.Error as e:
+    message = six.text_type(e).rstrip('.')
+    raise ValueError('Error Parsing expiry window duration '
+                     '[{}]: {}'.format(expiry_window, message))
+
+  token_expiry_time = times.LocalizeDateTime(token_expiry_time,
+                                             tzinfo=dateutil.tz.tzutc())
+  window_end = times.GetDateTimePlusDuration(
+      times.Now(tzinfo=dateutil.tz.tzutc()), min_expiry)
+
+  return token_expiry_time <= window_end
+
+
+def LoadFreshCredential(account=None,
+                        scopes=None,
+                        min_expiry_duration='1h',
+                        allow_account_impersonation=True):
+  """Get Load credentials and force a refresh.
+
+    Will always refresh loaded credential if it is expired or would expire
+    within min_expiry_duration.
+
+  Args:
+    account: str, The account address for the credentials being fetched. If
+        None, the account stored in the core.account property is used.
+    scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES
+        are requested.
+    min_expiry_duration: Duration str, Refresh the credentials if they are
+        within this duration from expiration. Must be a valid duration between
+        0 seconds and 1 hour (e.g. '0s' >x< '1h').
+    allow_account_impersonation: bool, True to allow use of impersonated service
+      account credentials (if that is configured). If False, the active user
+      credentials will always be loaded.
+
+  Returns:
+    oauth2client.client.Credentials, The specified credentials.
+
+  Raises:
+    NoActiveAccountException: If account is not provided and there is no
+        active account.
+    NoCredentialsForAccountException: If there are no valid credentials
+        available for the provided or active account.
+    c_gce.CannotConnectToMetadataServerException: If the metadata server cannot
+        be reached.
+    TokenRefreshError: If the credentials fail to refresh.
+    TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
+    AccountImpersonationError: If impersonation is requested but an
+      impersonation provider is not configured.
+   ValueError:
+  """
+  cred = Load(account=account,
+              scopes=scopes,
+              allow_account_impersonation=allow_account_impersonation)
+  if not cred.token_expiry or _TokenExpiresWithinWindow(
+      expiry_window=min_expiry_duration,
+      token_expiry_time=cred.token_expiry):
+    Refresh(cred)
+
+  return cred
 
 
 def LoadIfEnabled(allow_account_impersonation=True):

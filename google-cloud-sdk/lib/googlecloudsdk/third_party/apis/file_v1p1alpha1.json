@@ -281,7 +281,6 @@
             "SCALE OUT tier.\nThis is a possibly temporary change for\ngo\/elastifile-filestore-hackathon.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_HDD is an alias for STANDARD Tier, offering economical\nperformance backed by Persistent Disk HDD.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_SSD is an alias for PREMIUM Tier, and offers improved\nperformance backed by Persistent Disk SSD.",
-            "ADVANCED_HDD instances offer larger capacity and scalable\nperformance backed by Persistent Disk HDD",
             "HIGH_SCALE instances offer larger capacity and professional\nperformance backed by Persistent Disk SSD."
           ],
           "type": "string",
@@ -292,7 +291,6 @@
             "SCALE_OUT",
             "BASIC_HDD",
             "BASIC_SSD",
-            "ADVANCED_HDD",
             "HIGH_SCALE_SSD"
           ]
         },
@@ -419,13 +417,13 @@
             "ROOT_SQUASH"
           ]
         },
-        "anonuid": {
-          "description": "An integer representing the anonymous user id with a default value of\n65534.\nAnonuid may only be set with squash_mode of ROOT_SQUASH.  An error will be\nreturned if this field is specified for other squash_mode settings.",
+        "anonUid": {
+          "description": "An integer representing the anonymous user id with a default value of\n65534.\nAnon_uid may only be set with squash_mode of ROOT_SQUASH.  An error will be\nreturned if this field is specified for other squash_mode settings.",
           "type": "string",
           "format": "int64"
         },
-        "anongid": {
-          "description": "An integer representing the anonymous group id with a default value of\n65534.\nAnongid may only be set with squash_mode of ROOT_SQUASH.  An error will be\nreturned if this field is specified for other squash_mode settings.",
+        "anonGid": {
+          "description": "An integer representing the anonymous group id with a default value of\n65534.\nAnon_gid may only be set with squash_mode of ROOT_SQUASH.  An error will be\nreturned if this field is specified for other squash_mode settings.",
           "type": "string",
           "format": "int64"
         }
@@ -586,7 +584,6 @@
             "SCALE OUT tier.\nThis is a possibly temporary change for\ngo\/elastifile-filestore-hackathon.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_HDD is an alias for STANDARD Tier, offering economical\nperformance backed by Persistent Disk HDD.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_SSD is an alias for PREMIUM Tier, and offers improved\nperformance backed by Persistent Disk SSD.",
-            "ADVANCED_HDD instances offer larger capacity and scalable\nperformance backed by Persistent Disk HDD",
             "HIGH_SCALE instances offer larger capacity and professional\nperformance backed by Persistent Disk SSD."
           ],
           "type": "string",
@@ -597,7 +594,6 @@
             "SCALE_OUT",
             "BASIC_HDD",
             "BASIC_SSD",
-            "ADVANCED_HDD",
             "HIGH_SCALE_SSD"
           ]
         },
@@ -714,7 +710,6 @@
             "SCALE OUT tier.\nThis is a possibly temporary change for\ngo\/elastifile-filestore-hackathon.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_HDD is an alias for STANDARD Tier, offering economical\nperformance backed by Persistent Disk HDD.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_SSD is an alias for PREMIUM Tier, and offers improved\nperformance backed by Persistent Disk SSD.",
-            "ADVANCED_HDD instances offer larger capacity and scalable\nperformance backed by Persistent Disk HDD",
             "HIGH_SCALE instances offer larger capacity and professional\nperformance backed by Persistent Disk SSD."
           ],
           "type": "string",
@@ -725,7 +720,6 @@
             "SCALE_OUT",
             "BASIC_HDD",
             "BASIC_SSD",
-            "ADVANCED_HDD",
             "HIGH_SCALE_SSD"
           ]
         }

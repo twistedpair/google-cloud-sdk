@@ -132,6 +132,7 @@ def RunDistributed(module_name,
                    package_root,
                    num_ps,
                    num_workers,
+                   num_evaluators,
                    start_port,
                    user_args=None):
   """Create a cluster configuration and start processes for the cluster.
@@ -141,6 +142,7 @@ def RunDistributed(module_name,
     package_root: str. Absolute path to the package root of the module.
     num_ps: int. Number of parameter servers
     num_workers: int. Number of workers.
+    num_evaluators: int. Number of evaluators.
     start_port: int. First port for the contiguous block of ports used
       by the cluster.
     user_args: [str]. Additional user args for the task. Any relative paths will
@@ -165,6 +167,13 @@ def RunDistributed(module_name,
                     task_type=task_type,
                     index=i,
                     cluster=cluster)
+  for i in range(num_evaluators):
+    MakeProcess(module_name,
+                package_root,
+                args=user_args,
+                task_type='evaluator',
+                index=i,
+                cluster=cluster)
   return MakeProcess(module_name,
                      package_root,
                      args=user_args,

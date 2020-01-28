@@ -51,8 +51,17 @@ class LocalRuntimeFiles(object):
     Returns:
       Text of a kubernetes config file.
     """
-    kubernetes_configs = local.CreatePodAndService(self._settings.service_name,
-                                                   self._settings.image_name)
+    deployment = local.CreateDeployment(self._settings.service_name,
+                                        self._settings.image_name)
+    if self._settings.env_vars:
+      local.AddEnvironmentVariables(deployment,
+                                    self._settings.service_name + '-container',
+                                    self._settings.env_vars)
+    kubernetes_configs = [
+        deployment,
+        local.CreateService(self._settings.service_name)
+    ]
+
     if self._settings.service_account:
       service_account = local.CreateDevelopmentServiceAccount(
           self._settings.service_account)

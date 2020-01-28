@@ -62,8 +62,6 @@ class Backup(_messages.Message):
       BASIC_SSD: BASIC instances offer a maximum capacity of 63.9 TB.
         BASIC_SSD is an alias for PREMIUM Tier, and offers improved
         performance backed by Persistent Disk SSD.
-      ADVANCED_HDD: ADVANCED_HDD instances offer larger capacity and scalable
-        performance backed by Persistent Disk HDD
       HIGH_SCALE_SSD: HIGH_SCALE instances offer larger capacity and
         professional performance backed by Persistent Disk SSD.
     """
@@ -73,8 +71,7 @@ class Backup(_messages.Message):
     SCALE_OUT = 3
     BASIC_HDD = 4
     BASIC_SSD = 5
-    ADVANCED_HDD = 6
-    HIGH_SCALE_SSD = 7
+    HIGH_SCALE_SSD = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The backup state.
@@ -1074,8 +1071,6 @@ class Instance(_messages.Message):
       BASIC_SSD: BASIC instances offer a maximum capacity of 63.9 TB.
         BASIC_SSD is an alias for PREMIUM Tier, and offers improved
         performance backed by Persistent Disk SSD.
-      ADVANCED_HDD: ADVANCED_HDD instances offer larger capacity and scalable
-        performance backed by Persistent Disk HDD
       HIGH_SCALE_SSD: HIGH_SCALE instances offer larger capacity and
         professional performance backed by Persistent Disk SSD.
     """
@@ -1085,8 +1080,7 @@ class Instance(_messages.Message):
     SCALE_OUT = 3
     BASIC_HDD = 4
     BASIC_SSD = 5
-    ADVANCED_HDD = 6
-    HIGH_SCALE_SSD = 7
+    HIGH_SCALE_SSD = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1343,14 +1337,14 @@ class NfsExportOptions(_messages.Message):
     accessMode: Either READ_ONLY, for allowing only read requests on the
       exported directory, or READ_WRITE, for allowing both read and write
       requests. The default is READ_WRITE.
-    anongid: An integer representing the anonymous group id with a default
-      value of 65534. Anongid may only be set with squash_mode of ROOT_SQUASH.
-      An error will be returned if this field is specified for other
-      squash_mode settings.
-    anonuid: An integer representing the anonymous user id with a default
-      value of 65534. Anonuid may only be set with squash_mode of ROOT_SQUASH.
-      An error will be returned if this field is specified for other
-      squash_mode settings.
+    anonGid: An integer representing the anonymous group id with a default
+      value of 65534. Anon_gid may only be set with squash_mode of
+      ROOT_SQUASH.  An error will be returned if this field is specified for
+      other squash_mode settings.
+    anonUid: An integer representing the anonymous user id with a default
+      value of 65534. Anon_uid may only be set with squash_mode of
+      ROOT_SQUASH.  An error will be returned if this field is specified for
+      other squash_mode settings.
     ipRanges: List of either an IPv4 addresses in the format {octet 1}.{octet
       2}.{octet 3}.{octet 4} or CIDR ranges in the format {octet 1}.{octet
       2}.{octet 3}.{octet 4}/{mask size} which may mount the file share.
@@ -1392,8 +1386,8 @@ class NfsExportOptions(_messages.Message):
     ROOT_SQUASH = 2
 
   accessMode = _messages.EnumField('AccessModeValueValuesEnum', 1)
-  anongid = _messages.IntegerField(2)
-  anonuid = _messages.IntegerField(3)
+  anonGid = _messages.IntegerField(2)
+  anonUid = _messages.IntegerField(3)
   ipRanges = _messages.StringField(4, repeated=True)
   squashMode = _messages.EnumField('SquashModeValueValuesEnum', 5)
 
@@ -1607,8 +1601,6 @@ class Snapshot(_messages.Message):
       BASIC_SSD: BASIC instances offer a maximum capacity of 63.9 TB.
         BASIC_SSD is an alias for PREMIUM Tier, and offers improved
         performance backed by Persistent Disk SSD.
-      ADVANCED_HDD: ADVANCED_HDD instances offer larger capacity and scalable
-        performance backed by Persistent Disk HDD
       HIGH_SCALE_SSD: HIGH_SCALE instances offer larger capacity and
         professional performance backed by Persistent Disk SSD.
     """
@@ -1618,8 +1610,7 @@ class Snapshot(_messages.Message):
     SCALE_OUT = 3
     BASIC_HDD = 4
     BASIC_SSD = 5
-    ADVANCED_HDD = 6
-    HIGH_SCALE_SSD = 7
+    HIGH_SCALE_SSD = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The snapshot state.

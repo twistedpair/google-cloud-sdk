@@ -35,7 +35,7 @@ def _FindOrInstallComponent(component_name):
     Path to the component. Returns None if the component can't be found.
   """
   if (config.Paths().sdk_root and
-      update_manager.EnsureInstalledAndRestart([component_name])):
+      update_manager.UpdateManager.EnsureInstalledAndRestart([component_name])):
     return os.path.join(config.Paths().sdk_root, 'bin', component_name)
 
   return None
@@ -93,7 +93,7 @@ class KindClusterContext(object):
 
   def __exit__(self, exc_type, exc_value, tb):
     if self._delete_cluster:
-      _StopKindCluster(self._cluster_name)
+      _DeleteKindCluster(self._cluster_name)
 
 
 def _StartKindCluster(cluster_name):
@@ -125,7 +125,7 @@ def _IsKindClusterUp(cluster_name):
   return cluster_name in lines
 
 
-def _StopKindCluster(cluster_name):
+def _DeleteKindCluster(cluster_name):
   """Deletes a kind kubernetes cluster.
 
   Args:
@@ -159,9 +159,9 @@ class MinikubeCluster(object):
 class Minikube(object):
   """Starts and stops a minikube cluster."""
 
-  def __init__(self, cluster_name, delete_cluster=True, vm_driver='kvm2'):
+  def __init__(self, cluster_name, stop_cluster=True, vm_driver=None):
     self._cluster_name = cluster_name
-    self._delete_cluster = delete_cluster
+    self._stop_cluster = stop_cluster
     self._vm_driver = vm_driver
 
   def __enter__(self):
@@ -169,8 +169,8 @@ class Minikube(object):
     return MinikubeCluster(self._cluster_name)
 
   def __exit__(self, exc_type, exc_value, tb):
-    if self._delete_cluster:
-      _DeleteMinikube(self._cluster_name)
+    if self._stop_cluster:
+      _StopMinikube(self._cluster_name)
 
 
 def _FindMinikube():
@@ -182,8 +182,9 @@ def _StartMinkubeCluster(cluster_name, vm_driver):
   if not _IsMinikubeClusterUp(cluster_name):
     cmd = [
         _FindMinikube(), 'start', '-p', cluster_name, '--keep-context',
-        '--vm-driver=' + vm_driver
     ]
+    if vm_driver:
+      cmd.append('--vm-driver=' + vm_driver)
     subprocess.check_call(cmd)
 
 
@@ -197,9 +198,9 @@ def _IsMinikubeClusterUp(cluster_name):
   return 'host' in status and status['host'].strip() == 'Running'
 
 
-def _DeleteMinikube(cluster_name):
-  """Delete a minikube cluster."""
-  cmd = [_FindMinikube(), 'delete', '-p', cluster_name]
+def _StopMinikube(cluster_name):
+  """Stop a minikube cluster."""
+  cmd = [_FindMinikube(), 'stop', '-p', cluster_name]
   subprocess.check_call(cmd)
 
 

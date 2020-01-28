@@ -53,6 +53,16 @@ class Error(exceptions.Error):
   pass
 
 
+class RequiredPromptError(Error):
+  """An exception for when a prompt cannot silenced with the --quiet flag."""
+
+  def __init__(self):
+    super(RequiredPromptError, self).__init__(
+        'This prompt could not be answered because you are not in an '
+        'interactive session.  Please re-run the command without the --quiet '
+        'flag to respond to the prompts.')
+
+
 class UnattendedPromptError(Error):
   """An exception for when a prompt cannot be answered."""
 

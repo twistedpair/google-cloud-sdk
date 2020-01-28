@@ -1104,6 +1104,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
       `n1-standard-2`. See https://cloud.google.com/compute/docs/machine-types
       for a list of supported machine types. Note that `f1-micro` and
       `g1-small` are not yet supported.
+    maxConcurrentActions: The maximum number of actions a worker can execute
+      concurrently.
     minCpuPlatform: Minimum CPU platform to use when creating the worker. See
       [CPU Platforms](https://cloud.google.com/compute/docs/cpu-platforms).
     networkAccess: Determines the type of network access granted to workers.
@@ -1151,9 +1153,10 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
   diskType = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   machineType = _messages.StringField(5)
-  minCpuPlatform = _messages.StringField(6)
-  networkAccess = _messages.StringField(7)
-  reserved = _messages.BooleanField(8)
+  maxConcurrentActions = _messages.IntegerField(6)
+  minCpuPlatform = _messages.StringField(7)
+  networkAccess = _messages.StringField(8)
+  reserved = _messages.BooleanField(9)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message):

@@ -324,8 +324,13 @@ def AddImportedVersionAlgorithmFlag(parser):
 def AddExternalKeyUriFlag(parser):
   parser.add_argument(
       '--external-key-uri',
+      suggestion_aliases=['--key-uri'],
       help='The URI of the external key for keys with protection level'
       ' "external".')
+
+
+def AddStateFlag(parser):
+  parser.add_argument('--state', dest='state', help='State of the key version.')
 
 
 # Arguments

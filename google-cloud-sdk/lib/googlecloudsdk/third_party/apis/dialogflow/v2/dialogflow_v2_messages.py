@@ -824,7 +824,7 @@ class GoogleCloudDialogflowV2Agent(_messages.Message):
         intents and/or wide use of templates syntax and composite entities.
       MATCH_MODE_ML_ONLY: Can be used for agents with a large number of
         examples in intents, especially the ones using @sys.any or very large
-        developer entities.
+        custom entities.
     """
     MATCH_MODE_UNSPECIFIED = 0
     MATCH_MODE_HYBRID = 1
@@ -902,7 +902,7 @@ class GoogleCloudDialogflowV2BatchDeleteEntitiesRequest(_messages.Message):
   r"""The request message for EntityTypes.BatchDeleteEntities.
 
   Fields:
-    entityValues: Required. The canonical `values` of the entities to delete.
+    entityValues: Required. The reference `values` of the entities to delete.
       Note that these are not fully-qualified names, i.e. they don't start
       with `projects/<Project ID>`.
     languageCode: Optional. The language of entity synonyms defined in
@@ -1247,9 +1247,9 @@ class GoogleCloudDialogflowV2EntityType(_messages.Message):
     Values:
       KIND_UNSPECIFIED: Not specified. This value should be never used.
       KIND_MAP: Map entity types allow mapping of a group of synonyms to a
-        canonical value.
+        reference value.
       KIND_LIST: List entity types contain a set of entries that do not map to
-        canonical values. However, list entity types can contain references to
+        reference values. However, list entity types can contain references to
         other entity types (with or without aliases).
       KIND_REGEXP: Regexp entity types allow to specify regular expressions in
         entries values.
@@ -1287,7 +1287,7 @@ class GoogleCloudDialogflowV2EntityTypeEntity(_messages.Message):
       must contain exactly one synonym equal to `value`.
     value: Required. The primary value associated with this entity entry. For
       example, if the entity type is *vegetable*, the value could be
-      *scallions*.  For `KIND_MAP` entity types:  *   A canonical value to be
+      *scallions*.  For `KIND_MAP` entity types:  *   A reference value to be
       used in place of synonyms.  For `KIND_LIST` entity types:  *   A string
       that can contain references to other entity types (with or     without
       aliases).
@@ -2914,21 +2914,21 @@ class GoogleCloudDialogflowV2SentimentAnalysisResult(_messages.Message):
 
 
 class GoogleCloudDialogflowV2SessionEntityType(_messages.Message):
-  r"""Represents a session entity type.  Extends or replaces a developer
-  entity type at the user session level (we refer to the entity types defined
-  at the agent level as "developer entity types").  Note: session entity types
-  apply to all queries, regardless of the language.
+  r"""Represents a session entity type.  Extends or replaces a custom entity
+  type at the user session level (we refer to the entity types defined at the
+  agent level as "custom entity types").  Note: session entity types apply to
+  all queries, regardless of the language.
 
   Enums:
     EntityOverrideModeValueValuesEnum: Required. Indicates whether the
-      additional data should override or supplement the developer entity type
+      additional data should override or supplement the custom entity type
       definition.
 
   Fields:
     entities: Required. The collection of entities associated with this
       session entity type.
     entityOverrideMode: Required. Indicates whether the additional data should
-      override or supplement the developer entity type definition.
+      override or supplement the custom entity type definition.
     name: Required. The unique identifier of this session entity type. Format:
       `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
       Type Display Name>`.  `<Entity Type Display Name>` must be the display
@@ -2938,22 +2938,22 @@ class GoogleCloudDialogflowV2SessionEntityType(_messages.Message):
 
   class EntityOverrideModeValueValuesEnum(_messages.Enum):
     r"""Required. Indicates whether the additional data should override or
-    supplement the developer entity type definition.
+    supplement the custom entity type definition.
 
     Values:
       ENTITY_OVERRIDE_MODE_UNSPECIFIED: Not specified. This value should be
         never used.
       ENTITY_OVERRIDE_MODE_OVERRIDE: The collection of session entities
-        overrides the collection of entities in the corresponding developer
+        overrides the collection of entities in the corresponding custom
         entity type.
       ENTITY_OVERRIDE_MODE_SUPPLEMENT: The collection of session entities
-        extends the collection of entities in the corresponding developer
-        entity type.  Note: Even in this override mode calls to
+        extends the collection of entities in the corresponding custom entity
+        type.  Note: Even in this override mode calls to
         `ListSessionEntityTypes`, `GetSessionEntityType`,
         `CreateSessionEntityType` and `UpdateSessionEntityType` only return
         the additional entities added in this session entity type. If you want
         to get the supplemented list, please call EntityTypes.GetEntityType on
-        the developer entity type and merge.
+        the custom entity type and merge.
     """
     ENTITY_OVERRIDE_MODE_UNSPECIFIED = 0
     ENTITY_OVERRIDE_MODE_OVERRIDE = 1
@@ -3374,9 +3374,9 @@ class GoogleCloudDialogflowV2beta1EntityType(_messages.Message):
     Values:
       KIND_UNSPECIFIED: Not specified. This value should be never used.
       KIND_MAP: Map entity types allow mapping of a group of synonyms to a
-        canonical value.
+        reference value.
       KIND_LIST: List entity types contain a set of entries that do not map to
-        canonical values. However, list entity types can contain references to
+        reference values. However, list entity types can contain references to
         other entity types (with or without aliases).
       KIND_REGEXP: Regexp entity types allow to specify regular expressions in
         entries values.
@@ -3404,7 +3404,7 @@ class GoogleCloudDialogflowV2beta1EntityTypeEntity(_messages.Message):
       must contain exactly one synonym equal to `value`.
     value: Required. The primary value associated with this entity entry. For
       example, if the entity type is *vegetable*, the value could be
-      *scallions*.  For `KIND_MAP` entity types:  *   A canonical value to be
+      *scallions*.  For `KIND_MAP` entity types:  *   A reference value to be
       used in place of synonyms.  For `KIND_LIST` entity types:  *   A string
       that can contain references to other entity types (with or     without
       aliases).
@@ -5022,21 +5022,21 @@ class GoogleCloudDialogflowV2beta1SentimentAnalysisResult(_messages.Message):
 
 
 class GoogleCloudDialogflowV2beta1SessionEntityType(_messages.Message):
-  r"""Represents a session entity type.  Extends or replaces a developer
-  entity type at the user session level (we refer to the entity types defined
-  at the agent level as "developer entity types").  Note: session entity types
-  apply to all queries, regardless of the language.
+  r"""Represents a session entity type.  Extends or replaces a custom entity
+  type at the user session level (we refer to the entity types defined at the
+  agent level as "custom entity types").  Note: session entity types apply to
+  all queries, regardless of the language.
 
   Enums:
     EntityOverrideModeValueValuesEnum: Required. Indicates whether the
-      additional data should override or supplement the developer entity type
+      additional data should override or supplement the custom entity type
       definition.
 
   Fields:
     entities: Required. The collection of entities associated with this
       session entity type.
     entityOverrideMode: Required. Indicates whether the additional data should
-      override or supplement the developer entity type definition.
+      override or supplement the custom entity type definition.
     name: Required. The unique identifier of this session entity type. Format:
       `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
       Type Display Name>`, or `projects/<Project
@@ -5050,22 +5050,22 @@ class GoogleCloudDialogflowV2beta1SessionEntityType(_messages.Message):
 
   class EntityOverrideModeValueValuesEnum(_messages.Enum):
     r"""Required. Indicates whether the additional data should override or
-    supplement the developer entity type definition.
+    supplement the custom entity type definition.
 
     Values:
       ENTITY_OVERRIDE_MODE_UNSPECIFIED: Not specified. This value should be
         never used.
       ENTITY_OVERRIDE_MODE_OVERRIDE: The collection of session entities
-        overrides the collection of entities in the corresponding developer
+        overrides the collection of entities in the corresponding custom
         entity type.
       ENTITY_OVERRIDE_MODE_SUPPLEMENT: The collection of session entities
-        extends the collection of entities in the corresponding developer
-        entity type.  Note: Even in this override mode calls to
+        extends the collection of entities in the corresponding custom entity
+        type.  Note: Even in this override mode calls to
         `ListSessionEntityTypes`, `GetSessionEntityType`,
         `CreateSessionEntityType` and `UpdateSessionEntityType` only return
         the additional entities added in this session entity type. If you want
         to get the supplemented list, please call EntityTypes.GetEntityType on
-        the developer entity type and merge.
+        the custom entity type and merge.
     """
     ENTITY_OVERRIDE_MODE_UNSPECIFIED = 0
     ENTITY_OVERRIDE_MODE_OVERRIDE = 1

@@ -141,21 +141,33 @@ class Empty(_messages.Message):
 
 
 class Expr(_messages.Message):
-  r"""Represents an expression text. Example:      title: "User account
-  presence"     description: "Determines whether the request has a user
-  account"     expression: "size(request.user) > 0"
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec.  Example (Comparison):
+  title: "Summary size limit"     description: "Determines if a summary is
+  less than 100 chars"     expression: "document.summary.size() < 100"
+  Example (Equality):      title: "Requestor is owner"     description:
+  "Determines if requestor is the document owner"     expression:
+  "document.owner == request.auth.claims.email"  Example (Logic):      title:
+  "Public documents"     description: "Determine whether the document should
+  be publicly visible"     expression: "document.type != 'private' &&
+  document.type != 'internal'"  Example (Data Manipulation):      title:
+  "Notification string"     description: "Create a notification string with a
+  timestamp."     expression: "'New message received at ' +
+  string(document.create_time)"  The exact variables and functions that may be
+  referenced within an expression are determined by the service that evaluates
+  it. See the service documentation for additional information.
 
   Fields:
-    description: An optional description of the expression. This is a longer
+    description: Optional. Description of the expression. This is a longer
       text which describes the expression, e.g. when hovered over it in a UI.
     expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
       error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
   """
 
   description = _messages.StringField(1)
@@ -235,8 +247,8 @@ class IapGetIapSettingsRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class IapOauthProjectsBrandsCreateRequest(_messages.Message):
-  r"""A IapOauthProjectsBrandsCreateRequest object.
+class IapProjectsBrandsCreateRequest(_messages.Message):
+  r"""A IapProjectsBrandsCreateRequest object.
 
   Fields:
     brand: A Brand resource to be passed as the request body.
@@ -248,8 +260,8 @@ class IapOauthProjectsBrandsCreateRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
-class IapOauthProjectsBrandsGetRequest(_messages.Message):
-  r"""A IapOauthProjectsBrandsGetRequest object.
+class IapProjectsBrandsGetRequest(_messages.Message):
+  r"""A IapProjectsBrandsGetRequest object.
 
   Fields:
     name: Required. Name of the brand to be fetched. In the following format:
@@ -259,8 +271,8 @@ class IapOauthProjectsBrandsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class IapOauthProjectsBrandsIdentityAwareProxyClientsCreateRequest(_messages.Message):
-  r"""A IapOauthProjectsBrandsIdentityAwareProxyClientsCreateRequest object.
+class IapProjectsBrandsIdentityAwareProxyClientsCreateRequest(_messages.Message):
+  r"""A IapProjectsBrandsIdentityAwareProxyClientsCreateRequest object.
 
   Fields:
     identityAwareProxyClient: A IdentityAwareProxyClient resource to be passed
@@ -274,8 +286,8 @@ class IapOauthProjectsBrandsIdentityAwareProxyClientsCreateRequest(_messages.Mes
   parent = _messages.StringField(2, required=True)
 
 
-class IapOauthProjectsBrandsIdentityAwareProxyClientsDeleteRequest(_messages.Message):
-  r"""A IapOauthProjectsBrandsIdentityAwareProxyClientsDeleteRequest object.
+class IapProjectsBrandsIdentityAwareProxyClientsDeleteRequest(_messages.Message):
+  r"""A IapProjectsBrandsIdentityAwareProxyClientsDeleteRequest object.
 
   Fields:
     name: Required. Name of the Identity Aware Proxy client to be deleted. In
@@ -286,8 +298,8 @@ class IapOauthProjectsBrandsIdentityAwareProxyClientsDeleteRequest(_messages.Mes
   name = _messages.StringField(1, required=True)
 
 
-class IapOauthProjectsBrandsIdentityAwareProxyClientsGetRequest(_messages.Message):
-  r"""A IapOauthProjectsBrandsIdentityAwareProxyClientsGetRequest object.
+class IapProjectsBrandsIdentityAwareProxyClientsGetRequest(_messages.Message):
+  r"""A IapProjectsBrandsIdentityAwareProxyClientsGetRequest object.
 
   Fields:
     name: Required. Name of the Identity Aware Proxy client to be fetched. In
@@ -298,8 +310,8 @@ class IapOauthProjectsBrandsIdentityAwareProxyClientsGetRequest(_messages.Messag
   name = _messages.StringField(1, required=True)
 
 
-class IapOauthProjectsBrandsIdentityAwareProxyClientsListRequest(_messages.Message):
-  r"""A IapOauthProjectsBrandsIdentityAwareProxyClientsListRequest object.
+class IapProjectsBrandsIdentityAwareProxyClientsListRequest(_messages.Message):
+  r"""A IapProjectsBrandsIdentityAwareProxyClientsListRequest object.
 
   Fields:
     pageSize: The maximum number of clients to return. The service may return
@@ -320,9 +332,8 @@ class IapOauthProjectsBrandsIdentityAwareProxyClientsListRequest(_messages.Messa
   parent = _messages.StringField(3, required=True)
 
 
-class IapOauthProjectsBrandsIdentityAwareProxyClientsResetSecretRequest(_messages.Message):
-  r"""A IapOauthProjectsBrandsIdentityAwareProxyClientsResetSecretRequest
-  object.
+class IapProjectsBrandsIdentityAwareProxyClientsResetSecretRequest(_messages.Message):
+  r"""A IapProjectsBrandsIdentityAwareProxyClientsResetSecretRequest object.
 
   Fields:
     name: Required. Name of the Identity Aware Proxy client to that will have
@@ -337,8 +348,8 @@ class IapOauthProjectsBrandsIdentityAwareProxyClientsResetSecretRequest(_message
   resetIdentityAwareProxyClientSecretRequest = _messages.MessageField('ResetIdentityAwareProxyClientSecretRequest', 2)
 
 
-class IapOauthProjectsBrandsListRequest(_messages.Message):
-  r"""A IapOauthProjectsBrandsListRequest object.
+class IapProjectsBrandsListRequest(_messages.Message):
+  r"""A IapProjectsBrandsListRequest object.
 
   Fields:
     parent: Required. GCP Project number/id. In the following format:

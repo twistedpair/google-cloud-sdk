@@ -20,6 +20,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import google_auth_httplib2
+
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
@@ -38,9 +40,13 @@ class Error(exceptions.Error):
   """Exceptions for the http module."""
 
 
-def Http(timeout='unset', enable_resource_quota=True,
-         force_resource_quota=False, response_encoding=None, ca_certs=None,
-         allow_account_impersonation=True):
+def Http(timeout='unset',
+         enable_resource_quota=True,
+         force_resource_quota=False,
+         response_encoding=None,
+         ca_certs=None,
+         allow_account_impersonation=True,
+         use_google_auth=False):
   """Get an httplib2.Http client for working with the Google API.
 
   Args:
@@ -60,10 +66,16 @@ def Http(timeout='unset', enable_resource_quota=True,
     allow_account_impersonation: bool, True to allow use of impersonated service
       account credentials for calls made with this client. If False, the active
       user credentials will always be used.
+    use_google_auth: bool, True if the calling command indicates to use
+      google-auth library for authentication. If False, authentication will
+      fallback to using the oauth2client library.
 
   Returns:
-    An authorized httplib2.Http client object, or a regular httplib2.Http object
-    if no credentials are available.
+    1. A regular httplib2.Http object if no credentials are available;
+    2. Or a httplib2.Http client object authorized by oauth2client
+       credentials if use_google_auth==False;
+    3. Or a google_auth_httplib2.AuthorizedHttp client object authorized by
+       google-auth credentials.
 
   Raises:
     c_store.Error: If an error loading the credentials occurs.
@@ -87,10 +99,17 @@ def Http(timeout='unset', enable_resource_quota=True,
         handlers.append(http.Modifiers.Handler(
             http.Modifiers.SetHeader('X-Goog-User-Project', quota_project)))
 
-    http_client = creds.authorize(http_client)
+    if _AuthenticateWithGoogleAuth(creds, use_google_auth):
+      google_auth_creds = store.ConvertToGoogleAuthCredentials(creds)
+      http_client = google_auth_httplib2.AuthorizedHttp(google_auth_creds,
+                                                        http_client)
+    else:
+      http_client = creds.authorize(http_client)
+
     # Wrap the request method to put in our own error handling.
-    http_client = http.Modifiers.WrapRequest(
-        http_client, handlers, _HandleAuthError, client.AccessTokenRefreshError)
+    http_client = http.Modifiers.WrapRequest(http_client, handlers,
+                                             _HandleAuthError,
+                                             client.AccessTokenRefreshError)
 
   return http_client
 
@@ -142,3 +161,31 @@ def _HandleAuthError(e):
   log.debug('Exception caught during HTTP request: %s', msg,
             exc_info=True)
   raise store.TokenRefreshError(msg)
+
+
+def _AuthenticateWithGoogleAuth(creds, use_google_auth):
+  """Whether authenticate the http transport with the google-auth library.
+
+  Authenticates with the google-auth library if the below condictions are all
+  met:
+  1. auth/disable_google_auth is NOT set to True;
+  2. The calling command indicates to use google-auth for authentication;
+  3. The input credentails are not built from P12 service account key. The
+     reason is that this legacy service account key is not supported by
+     google-auth. Additionally, gcloud plans to deprecate P12 service account
+     key support. The autenticaion logic of credentials of this type will be
+     left on oauth2client for now and will be removed in the deprecation.
+
+  Args:
+    creds: oauth2client.client.Credentials, Credentials of the oauth2client
+      library.
+    use_google_auth: bool, True if the calling command indicates to use
+      google-auth library for authentication.
+
+  Returns:
+    bool, True to authenticate the http transport with the google-auth library.
+  """
+  google_auth_disabled = properties.VALUES.auth.disable_google_auth.GetBool()
+  not_p12_service_account_creds = core_creds.CredentialType.FromCredentials(
+      creds) != core_creds.CredentialType.P12_SERVICE_ACCOUNT
+  return (not google_auth_disabled) and use_google_auth and not_p12_service_account_creds  # pylint: disable=line-too-long

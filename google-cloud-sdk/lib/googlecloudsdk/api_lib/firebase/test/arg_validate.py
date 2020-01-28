@@ -486,7 +486,7 @@ def ValidateRoboDirectivesList(args):
             ', '.join(duplicates)))
 
 
-_ENVIRONMENT_VARIABLE_REGEX = re.compile(r'^[a-zA-Z]\w+$')
+_ENVIRONMENT_VARIABLE_REGEX = re.compile(r'^[a-zA-Z][\w.]+$')
 
 
 def ValidateEnvironmentVariablesList(args):

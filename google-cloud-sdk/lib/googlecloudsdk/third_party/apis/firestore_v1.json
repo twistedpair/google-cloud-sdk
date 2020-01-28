@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1",
-  "revision": "20200109",
+  "revision": "20200121",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development.\n",
   "ownerDomain": "google.com",
@@ -774,7 +774,7 @@
           "type": "string"
         },
         "transform": {
-          "description": "Applies a transformation to a document.\nAt most one `transform` per document is allowed in a given request.\nAn `update` cannot follow a `transform` on the same document in a given\nrequest.",
+          "description": "Applies a transformation to a document.",
           "$ref": "DocumentTransform"
         },
         "updateMask": {
@@ -2464,53 +2464,6 @@
                   ],
                   "description": "Lists documents."
                 },
-                "createDocument": {
-                  "id": "firestore.projects.databases.documents.createDocument",
-                  "path": "v1/{+parent}/{collectionId}",
-                  "flatPath": "v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{collectionId}",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent resource. For example:\n`projects\/{project_id}\/databases\/{database_id}\/documents` or\n`projects\/{project_id}\/databases\/{database_id}\/documents\/chatrooms\/{chatroom_id}`",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/.+$",
-                      "type": "string"
-                    },
-                    "collectionId": {
-                      "description": "Required. The collection ID, relative to `parent`, to list. For example: `chatrooms`.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "documentId": {
-                      "description": "The client-assigned document ID to use for this document.\n\nOptional. If not specified, an ID will be assigned by the service.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "mask.fieldPaths": {
-                      "description": "The list of field paths in the mask. See Document.fields for a field\npath syntax reference.",
-                      "location": "query",
-                      "repeated": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent",
-                    "collectionId"
-                  ],
-                  "request": {
-                    "$ref": "Document"
-                  },
-                  "response": {
-                    "$ref": "Document"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/datastore"
-                  ],
-                  "description": "Creates a new document."
-                },
                 "patch": {
                   "id": "firestore.projects.databases.documents.patch",
                   "path": "v1/{+name}",
@@ -2889,6 +2842,53 @@
                     "https://www.googleapis.com/auth/datastore"
                   ],
                   "description": "Lists all the collection IDs underneath a document."
+                },
+                "createDocument": {
+                  "id": "firestore.projects.databases.documents.createDocument",
+                  "path": "v1/{+parent}/{collectionId}",
+                  "flatPath": "v1/projects/{projectsId}/databases/{databasesId}/documents/{documentsId}/{collectionId}",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource. For example:\n`projects\/{project_id}\/databases\/{database_id}\/documents` or\n`projects\/{project_id}\/databases\/{database_id}\/documents\/chatrooms\/{chatroom_id}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/.+$",
+                      "type": "string"
+                    },
+                    "collectionId": {
+                      "description": "Required. The collection ID, relative to `parent`, to list. For example: `chatrooms`.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "documentId": {
+                      "description": "The client-assigned document ID to use for this document.\n\nOptional. If not specified, an ID will be assigned by the service.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "mask.fieldPaths": {
+                      "description": "The list of field paths in the mask. See Document.fields for a field\npath syntax reference.",
+                      "location": "query",
+                      "repeated": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent",
+                    "collectionId"
+                  ],
+                  "request": {
+                    "$ref": "Document"
+                  },
+                  "response": {
+                    "$ref": "Document"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/datastore"
+                  ],
+                  "description": "Creates a new document."
                 }
               }
             }

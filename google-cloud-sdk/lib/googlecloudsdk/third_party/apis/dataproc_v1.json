@@ -496,7 +496,7 @@
     },
     "InstanceGroupConfig": {
       "id": "InstanceGroupConfig",
-      "description": "Optional. The config settings for Compute Engine resources in an instance group, such as a master or worker group.",
+      "description": "The config settings for Compute Engine resources in an instance group, such as a master or worker group.",
       "type": "object",
       "properties": {
         "numInstances": {
@@ -526,6 +526,20 @@
         "isPreemptible": {
           "description": "Optional. Specifies that this instance group contains preemptible instances.",
           "type": "boolean"
+        },
+        "preemptibility": {
+          "description": "Optional. Specifies the preemptibility of the instance group.",
+          "enumDescriptions": [
+            "Preemptibility is unspecified, the system will choose the appropriate setting for each instance group.",
+            "Instances are non-preemptible.This option is allowed for all instance groups and is the only valid value for Master and Worker instance groups.",
+            "Instances are preemptible.This option is allowed only for secondary worker group."
+          ],
+          "type": "string",
+          "enum": [
+            "PREEMPTIBILITY_UNSPECIFIED",
+            "NON_PREEMPTIBLE",
+            "PREEMPTIBLE"
+          ]
         },
         "managedGroupConfig": {
           "description": "Output only. The config for Compute Engine Instance Group Manager that manages this group. This is only used for preemptible instance groups.",
@@ -989,6 +1003,10 @@
         "jobUuid": {
           "description": "Output only. A UUID that uniquely identifies a job within the project over time. This is in contrast to a user-settable reference.job_id that may be reused over time.",
           "type": "string"
+        },
+        "done": {
+          "description": "Output only. Indicates whether the job is completed. If the value is false, the job is still in progress. If true, the job is completed, and status.state field will indicate if it was successful, failed, or cancelled.",
+          "type": "boolean"
         }
       }
     },
@@ -1908,23 +1926,23 @@
     },
     "Expr": {
       "id": "Expr",
-      "description": "Represents an expression text. Example:\ntitle: \"User account presence\"\ndescription: \"Determines whether the request has a user account\"\nexpression: \"size(request.user) > 0\"\n",
+      "description": "Represents a textual expression in the Common Expression Language (CEL) syntax. CEL is a C-like expression language. The syntax and semantics of CEL are documented at https:\/\/github.com\/google\/cel-spec.Example (Comparison):\ntitle: \"Summary size limit\"\ndescription: \"Determines if a summary is less than 100 chars\"\nexpression: \"document.summary.size() < 100\"\nExample (Equality):\ntitle: \"Requestor is owner\"\ndescription: \"Determines if requestor is the document owner\"\nexpression: \"document.owner == request.auth.claims.email\"\nExample (Logic):\ntitle: \"Public documents\"\ndescription: \"Determine whether the document should be publicly visible\"\nexpression: \"document.type != 'private' && document.type != 'internal'\"\nExample (Data Manipulation):\ntitle: \"Notification string\"\ndescription: \"Create a notification string with a timestamp.\"\nexpression: \"'New message received at ' + string(document.create_time)\"\nThe exact variables and functions that may be referenced within an expression are determined by the service that evaluates it. See the service documentation for additional information.",
       "type": "object",
       "properties": {
         "expression": {
-          "description": "Textual representation of an expression in Common Expression Language syntax.The application context of the containing message determines which well-known feature set of CEL is supported.",
+          "description": "Textual representation of an expression in Common Expression Language syntax.",
           "type": "string"
         },
         "title": {
-          "description": "An optional title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression.",
+          "description": "Optional. Title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression.",
           "type": "string"
         },
         "description": {
-          "description": "An optional description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.",
+          "description": "Optional. Description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.",
           "type": "string"
         },
         "location": {
-          "description": "An optional string indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
+          "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
           "type": "string"
         }
       }

@@ -5541,6 +5541,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetScreenshot(self, request, global_params=None):
+      r"""Returns the screenshot from the specified instance.
+
+      Args:
+        request: (ComputeInstancesGetScreenshotRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Screenshot) The response message.
+      """
+      config = self.GetMethodConfig('GetScreenshot')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetScreenshot.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.instances.getScreenshot',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/screenshot',
+        request_field='',
+        request_type_name=u'ComputeInstancesGetScreenshotRequest',
+        response_type_name=u'Screenshot',
+        supports_download=False,
+    )
+
     def GetSerialPortOutput(self, request, global_params=None):
       r"""Returns the last 1 MB of serial port output from the specified instance.
 
@@ -8553,32 +8579,6 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
-    def SetAutoscalingPolicy(self, request, global_params=None):
-      r"""Sets the autoscaling policy of the node group.
-
-      Args:
-        request: (ComputeNodeGroupsSetAutoscalingPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('SetAutoscalingPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetAutoscalingPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.nodeGroups.setAutoscalingPolicy',
-        ordered_params=[u'project', u'zone', u'nodeGroup'],
-        path_params=[u'nodeGroup', u'project', u'zone'],
-        query_params=[u'requestId'],
-        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/setAutoscalingPolicy',
-        request_field=u'nodeGroupsSetAutoscalingPolicyRequest',
-        request_type_name=u'ComputeNodeGroupsSetAutoscalingPolicyRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
@@ -10786,7 +10786,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def UpdateReservations(self, request, global_params=None):
-      r"""Update the shape of reservations for GPUS/Local SSDs of reservations within the commitments.
+      r"""Transfers GPUs or local SSDs between reservations within commitments.
 
       Args:
         request: (ComputeRegionCommitmentsUpdateReservationsRequest) input message

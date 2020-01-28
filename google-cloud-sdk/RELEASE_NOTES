@@ -5,6 +5,73 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 278.0.0 (2020-01-28)
+
+### AI Platform
+
+* Added `--evaluator-count` for local train to allow specifying the number of
+  evaluators to run with when `--distributed` is set.
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.78.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### Artifact Registry
+
+* Rolled back `gcloud beta artifacts` command group to alpha state.
+
+### Cloud Dataflow
+
+* Added `--flex-template` flag to `gcloud beta dataflow jobs run`.
+
+### Cloud Key Management Service
+
+*   Added `gcloud beta kms versions update` to enable updating crypto key versions and the external key URIs of key versions.
+
+### Cloud Pub/Sub
+
+*   Promoted dead letter queue-related flags in `gcloud pubsub subscriptions
+    create` and `gcloud pubsub subscriptions update` to GA.
+
+### Compute Engine
+
+* Promoted permission validation in `gcloud compute images import`,
+  `gcloud compute images export`, and `gcloud compute instances import` to GA.
+* Promoted `gcloud compute instance-groups managed create-instance` to GA.
+* Promoted `gcloud compute instance-groups managed wait-until` to GA.
+* Deprecated `gcloud compute instance-groups managed wait-until-stable` to GA; use `gcloud compute instance-groups managed wait-until --stable` instead.
+* Renamed `--update-stateful-disk` and `--update-stateful-metadata` of `gcloud compute instance-groups managed instance-configs update` to `--stateful-disk` and `--stateful-metadata` respectively.
+* Renamed `--update-stateful-disk` of `gcloud compute instance-groups managed update` to `--stateful-disk`.
+* Promoted `gcloud compute instance-groups managed list-errors` command to
+  beta.
+
+### Firebase Test Lab
+
+* Removed `--app-package` and `--test-package` flags from `gcloud firebase test android run`; the application and test package names are parsed automatically from the APK manifest.
+* Updated `--environment-variables` to allow a period in the key.
+
+### Kpt
+
+* `kpt` binary published as a new Cloud SDK component.
+* `kpt` may be installed with `gcloud components install kpt`.
+* `kpt` contains utilities for packaging, viewing and modifying Kubernetes configuration.
+
+### Kubernetes Engine
+
+*   Promoted Autoscaling Profiles to beta. Use with
+    `gcloud beta container clusters create` or
+    `gcloud container clusters update`:
+    `--autoscaling-profile=balanced` (default) or
+    `--autoscaling-profile=optimize-utilization`.
+*   Promoted `--sandbox` flag of `gcloud container node-pools create` to GA.
+    This flag enables the requested sandbox on all nodes in the node-pool.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 277.0.0 (2020-01-21)
 
 ### Breaking Changes

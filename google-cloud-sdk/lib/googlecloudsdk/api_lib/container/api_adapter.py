@@ -30,6 +30,7 @@ from googlecloudsdk.api_lib.container import constants as gke_constants
 from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as cloud_resources
@@ -103,10 +104,6 @@ Must specify --enable-autoprovisioning to specify resource limits for autoscalin
 
 MISMATCH_ACCELERATOR_TYPE_LIMITS_ERROR_MSG = """\
 Maximum and minimum accelerator limits must be set on the same accelerator type.
-"""
-
-UNKNOWN_AUTOSCALING_PROFILE_MSG = """\
-Unknown autoscaling profile: '{profile}'.
 """
 
 NO_SUCH_LABEL_ERROR_MSG = """\
@@ -206,6 +203,15 @@ Must specify --reservation for --reservation-affinity=specific.
 RESERVATION_AFFINITY_NON_SPECIFIC_WITH_RESERVATION_NAME_ERROR_MSG = """\
 Cannot specify --reservation for --reservation-affinity={affinity}.
 """
+
+SANDBOX_TYPE_NOT_PROVIDED = """\
+Must specify sandbox type.
+"""
+
+SANDBOX_TYPE_NOT_SUPPORTED = """\
+Provided sandbox type '{type}' not supported.
+"""
+
 
 MAX_NODES_PER_POOL = 1000
 
@@ -2094,10 +2100,7 @@ class APIAdapter(object):
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
     _AddShieldedInstanceConfigToNodeConfig(node_config, options, self.messages)
     _AddReservationAffinityToNodeConfig(node_config, options, self.messages)
-
-    if options.sandbox is not None:
-      node_config.sandboxConfig = self.messages.SandboxConfig(
-          sandboxType=options.sandbox['type'])
+    _AddSandboxConfigToNodeConfig(node_config, options, self.messages)
 
     pool = self.messages.NodePool(
         name=node_pool_ref.nodePoolId,
@@ -2631,9 +2634,10 @@ class V1Beta1Adapter(V1Adapter):
               istio_auth = mtls
         cluster.addonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=False, auth=istio_auth)
-    if options.enable_autoprovisioning is not None:
+    if (options.enable_autoprovisioning is not None or
+        options.autoscaling_profile is not None):
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
-          cluster_ref, options, False)
+          None, options, False)
     if options.boot_disk_kms_key:
       for pool in cluster.nodePools:
         pool.config.bootDiskKmsKey = options.boot_disk_kms_key
@@ -2722,10 +2726,13 @@ class V1Beta1Adapter(V1Adapter):
     Returns:
       Cluster's autoscaling configuration.
     """
-    del cluster_ref  # Unused in GA.
 
+    # Patch cluster autoscaling if cluster_ref is provided.
     autoscaling = self.messages.ClusterAutoscaling()
-    autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
+    cluster = self.GetCluster(cluster_ref) if cluster_ref else None
+    if cluster and cluster.autoscaling:
+      autoscaling.enableNodeAutoprovisioning = \
+          cluster.autoscaling.enableNodeAutoprovisioning
 
     resource_limits = []
     if options.autoprovisioning_config_file is not None:
@@ -2781,8 +2788,32 @@ class V1Beta1Adapter(V1Adapter):
         autoscaling.autoprovisioningLocations = \
           sorted(autoprovisioning_locations)
 
+    if options.autoscaling_profile is not None:
+      autoscaling.autoscalingProfile = \
+          self.CreateAutoscalingProfileCommon(options)
+
     self.ValidateClusterAutoscaling(autoscaling, for_update)
     return autoscaling
+
+  def CreateAutoscalingProfileCommon(self, options):
+    """Create and validate cluster's autoscaling profile configuration.
+
+    Args:
+      options: Either CreateClusterOptions or UpdateClusterOptions.
+
+    Returns:
+      Cluster's autoscaling profile configuration.
+    """
+
+    profiles_enum = \
+        self.messages.ClusterAutoscaling.AutoscalingProfileValueValuesEnum
+    valid_choices = [arg_utils.EnumNameToChoice(n)
+                     for n in profiles_enum.names()
+                     if n != 'profile-unspecified']
+    return arg_utils.ChoiceToEnum(
+        choice=arg_utils.EnumNameToChoice(options.autoscaling_profile),
+        enum_type=profiles_enum,
+        valid_choices=valid_choices)
 
   def ValidateClusterAutoscaling(self, autoscaling, for_update):
     """Validate cluster autoscaling configuration.
@@ -3144,16 +3175,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     self.ValidateClusterAutoscaling(autoscaling, for_update)
     return autoscaling
 
-  def CreateAutoscalingProfileCommon(self, options):
-    if options.autoscaling_profile == 'optimize-utilization':
-      return self.messages.ClusterAutoscaling \
-          .AutoscalingProfileValueValuesEnum.OPTIMIZE_UTILIZATION
-    if options.autoscaling_profile == 'balanced':
-      return self.messages.ClusterAutoscaling \
-          .AutoscalingProfileValueValuesEnum.BALANCED
-    raise util.Error(UNKNOWN_AUTOSCALING_PROFILE_MSG \
-                       .format(profile=options.autoscaling_profile))
-
   def ParseNodePools(self, options, node_config):
     """Creates a list of node pools for the cluster by parsing options.
 
@@ -3338,6 +3359,22 @@ def _AddReservationAffinityToNodeConfig(node_config, options, messages):
         .ConsumeReservationTypeValueValuesEnum.SPECIFIC_RESERVATION,
         key='compute.googleapis.com/reservation-name',
         values=[options.reservation])
+
+
+def _AddSandboxConfigToNodeConfig(node_config, options, messages):
+  """Adds SandboxConfig to NodeConfig."""
+  if options.sandbox is not None:
+    if 'type' not in options.sandbox:
+      raise util.Error(SANDBOX_TYPE_NOT_PROVIDED)
+    sandbox_types = {
+        'unspecified': messages.SandboxConfig.TypeValueValuesEnum.UNSPECIFIED,
+        'gvisor': messages.SandboxConfig.TypeValueValuesEnum.GVISOR,
+    }
+    if options.sandbox['type'] not in sandbox_types:
+      raise util.Error(SANDBOX_TYPE_NOT_SUPPORTED.format(
+          type=options.sandbox['type']))
+    node_config.sandboxConfig = messages.SandboxConfig(
+        type=sandbox_types[options.sandbox['type']])
 
 
 def _AddReleaseChannelToCluster(cluster, options, messages):

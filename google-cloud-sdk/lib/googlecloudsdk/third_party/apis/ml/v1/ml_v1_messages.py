@@ -1619,6 +1619,20 @@ class GoogleCloudMlV1RequestLoggingConfig(_messages.Message):
   samplingPercentage = _messages.FloatField(2)
 
 
+class GoogleCloudMlV1RouteMap(_messages.Message):
+  r"""RouteMap is used to override HTTP paths sent to a Custom Container. If
+  specified, the HTTP server implemented in the ContainerSpec must support the
+  route. If unspecified, standard HTTP paths will be used.
+
+  Fields:
+    health: HTTP path to send health check requests.
+    predict: HTTP path to send prediction requests.
+  """
+
+  health = _messages.StringField(1)
+  predict = _messages.StringField(2)
+
+
 class GoogleCloudMlV1SaabasAttribution(_messages.Message):
   r"""Attributes credit by running a faster aproximation to the TreeShap
   method. Please refer to this link for more details:
@@ -2048,6 +2062,7 @@ class GoogleCloudMlV1Version(_messages.Message):
       projects.models.versions.patch request. Specifying it in a
       projects.models.versions.create request has no effect.  Configures the
       request-response pair logging on predictions from this Version.
+    routes: A GoogleCloudMlV1RouteMap attribute.
     runtimeVersion: Optional. The AI Platform runtime version to use for this
       deployment. If not set, AI Platform uses the default stable version,
       1.0. Starting [January 13, 2020](/ml-engine/docs/release-
@@ -2158,9 +2173,10 @@ class GoogleCloudMlV1Version(_messages.Message):
   predictionClass = _messages.StringField(20)
   pythonVersion = _messages.StringField(21)
   requestLoggingConfig = _messages.MessageField('GoogleCloudMlV1RequestLoggingConfig', 22)
-  runtimeVersion = _messages.StringField(23)
-  serviceAccount = _messages.StringField(24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
+  routes = _messages.MessageField('GoogleCloudMlV1RouteMap', 23)
+  runtimeVersion = _messages.StringField(24)
+  serviceAccount = _messages.StringField(25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
 
 
 class GoogleCloudMlV1XraiAttribution(_messages.Message):
@@ -2588,21 +2604,33 @@ class GoogleRpcStatus(_messages.Message):
 
 
 class GoogleTypeExpr(_messages.Message):
-  r"""Represents an expression text. Example:      title: "User account
-  presence"     description: "Determines whether the request has a user
-  account"     expression: "size(request.user) > 0"
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec.  Example (Comparison):
+  title: "Summary size limit"     description: "Determines if a summary is
+  less than 100 chars"     expression: "document.summary.size() < 100"
+  Example (Equality):      title: "Requestor is owner"     description:
+  "Determines if requestor is the document owner"     expression:
+  "document.owner == request.auth.claims.email"  Example (Logic):      title:
+  "Public documents"     description: "Determine whether the document should
+  be publicly visible"     expression: "document.type != 'private' &&
+  document.type != 'internal'"  Example (Data Manipulation):      title:
+  "Notification string"     description: "Create a notification string with a
+  timestamp."     expression: "'New message received at ' +
+  string(document.create_time)"  The exact variables and functions that may be
+  referenced within an expression are determined by the service that evaluates
+  it. See the service documentation for additional information.
 
   Fields:
-    description: An optional description of the expression. This is a longer
+    description: Optional. Description of the expression. This is a longer
       text which describes the expression, e.g. when hovered over it in a UI.
     expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
       error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
   """
 
   description = _messages.StringField(1)

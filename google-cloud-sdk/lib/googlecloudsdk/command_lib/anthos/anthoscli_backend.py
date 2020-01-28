@@ -17,12 +17,31 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import copy
+import json
 import os
 
 from googlecloudsdk.command_lib.anthos.common import messages
 from googlecloudsdk.command_lib.util.anthos import binary_operations
+from googlecloudsdk.core import exceptions as c_except
+from googlecloudsdk.core.credentials import store as c_store
 
 import six
+
+DEFAULT_ENV_ARGS = {'COBRA_SILENCE_USAGE': 'true', 'GCLOUD_AUTH_PLUGIN': 'true'}
+
+
+def GetEnvArgsForCommand(extra_vars=None):
+  """Return an env dict to be passed on command invocation."""
+  env = copy.deepcopy(os.environ)
+  env.update(DEFAULT_ENV_ARGS)
+  if extra_vars:
+    env.update(extra_vars)
+  return  env
+
+
+class AnthosAuthException(c_except.Error):
+  """Base Exception for auth issues raised by gcloud anthos surface."""
 
 
 def RelativePkgPathFromFullPath(path):
@@ -35,8 +54,6 @@ def RelativePkgPathFromFullPath(path):
 
 class AnthosCliWrapper(binary_operations.BinaryBackedOperation):
   """Binary operation wrapper for anthoscli commands."""
-
-  _ENV_ARGS = {'COBRA_SILENCE_USAGE': 'true'}
 
   def __init__(self, **kwargs):
     custom_errors = {
@@ -109,7 +126,6 @@ class AnthosCliWrapper(binary_operations.BinaryBackedOperation):
     return exec_args
 
   def _ParseArgsForCommand(self, command, **kwargs):
-    kwargs['env'] = self._ENV_ARGS
     if command == 'get':
       return self._ParseGetArgs(**kwargs)
     if command == 'update':
@@ -123,3 +139,18 @@ class AnthosCliWrapper(binary_operations.BinaryBackedOperation):
 
     raise binary_operations.InvalidOperationForBinary(
         'Invalid Operation [{}] for anthoscli'.format(command))
+
+
+def GetAuthToken(account, operation, impersonated=False):
+  """Generate a JSON object containing the current gcloud auth token."""
+  try:
+    cred = c_store.LoadFreshCredential(account,
+                                       allow_account_impersonation=impersonated)
+    output = {
+        'auth_token': cred.access_token,
+    }
+  except Exception as e:  # pylint: disable=broad-except
+    raise AnthosAuthException(
+        'Error retrieving auth credentials for {operation}: {error}. '.format(
+            operation=operation, error=e))
+  return json.dumps(output, sort_keys=True)

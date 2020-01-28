@@ -2752,6 +2752,13 @@
             "$ref": "GoogleCloudVideointelligenceV1p3beta1_LogoRecognitionAnnotation"
           }
         },
+        "personDetectionAnnotations": {
+          "description": "Person detection annotations.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p3beta1_PersonDetectionAnnotation"
+          }
+        },
         "celebrityRecognitionAnnotations": {
           "description": "Celebrity recognition annotations.",
           "$ref": "GoogleCloudVideointelligenceV1p3beta1_CelebrityRecognitionAnnotation"
@@ -2932,6 +2939,13 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p3beta1_DetectedAttribute"
           }
+        },
+        "landmarks": {
+          "description": "Optional. The detected landmarks.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p3beta1_DetectedLandmark"
+          }
         }
       }
     },
@@ -2979,6 +2993,43 @@
         "value": {
           "description": "Text value of the detection result. For example, the value for \"HairColor\"\ncan be \"black\", \"blonde\", etc.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_DetectedLandmark": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_DetectedLandmark",
+      "description": "A generic detected landmark represented by name in string format and a 2D\nlocation.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of this landmark, i.e. left_hand, right_shoulder.",
+          "type": "string"
+        },
+        "point": {
+          "description": "The 2D point of the detected landmark using the normalized image\ncoordindate system. The normalized coordinates have the range from 0 to 1.",
+          "$ref": "GoogleCloudVideointelligenceV1p3beta1_NormalizedVertex"
+        },
+        "confidence": {
+          "description": "The confidence score of the detected landmark. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_NormalizedVertex": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_NormalizedVertex",
+      "description": "A vertex represents a 2D point in the image.\nNOTE: the normalized vertex coordinates are relative to the original image\nand range from 0 to 1.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "description": "X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "y": {
+          "description": "Y coordinate.",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -3171,23 +3222,6 @@
         }
       }
     },
-    "GoogleCloudVideointelligenceV1p3beta1_NormalizedVertex": {
-      "id": "GoogleCloudVideointelligenceV1p3beta1_NormalizedVertex",
-      "description": "A vertex represents a 2D point in the image.\nNOTE: the normalized vertex coordinates are relative to the original image\nand range from 0 to 1.",
-      "type": "object",
-      "properties": {
-        "x": {
-          "description": "X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "y": {
-          "description": "Y coordinate.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
     "GoogleCloudVideointelligenceV1p3beta1_ObjectTrackingAnnotation": {
       "id": "GoogleCloudVideointelligenceV1p3beta1_ObjectTrackingAnnotation",
       "description": "Annotations corresponding to one tracked object.",
@@ -3257,6 +3291,20 @@
           "type": "array",
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p3beta1_VideoSegment"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_PersonDetectionAnnotation": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_PersonDetectionAnnotation",
+      "description": "Person detection annotation per video.",
+      "type": "object",
+      "properties": {
+        "tracks": {
+          "description": "The trackes that a person is detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p3beta1_Track"
           }
         }
       }
@@ -3378,7 +3426,8 @@
             "OCR text detection and tracking.",
             "Object detection and tracking.",
             "Logo detection, tracking, and recognition.",
-            "Celebrity recognition."
+            "Celebrity recognition.",
+            "Person detection."
           ],
           "type": "string",
           "enum": [
@@ -3391,7 +3440,8 @@
             "TEXT_DETECTION",
             "OBJECT_TRACKING",
             "LOGO_RECOGNITION",
-            "CELEBRITY_RECOGNITION"
+            "CELEBRITY_RECOGNITION",
+            "PERSON_DETECTION"
           ]
         },
         "segment": {

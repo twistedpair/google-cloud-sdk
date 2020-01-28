@@ -35,19 +35,18 @@ class IapV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.oauth_projects_brands_identityAwareProxyClients = self.OauthProjectsBrandsIdentityAwareProxyClientsService(self)
-    self.oauth_projects_brands = self.OauthProjectsBrandsService(self)
-    self.oauth_projects = self.OauthProjectsService(self)
-    self.oauth = self.OauthService(self)
+    self.projects_brands_identityAwareProxyClients = self.ProjectsBrandsIdentityAwareProxyClientsService(self)
+    self.projects_brands = self.ProjectsBrandsService(self)
+    self.projects = self.ProjectsService(self)
     self.v1 = self.V1Service(self)
 
-  class OauthProjectsBrandsIdentityAwareProxyClientsService(base_api.BaseApiService):
-    """Service class for the oauth_projects_brands_identityAwareProxyClients resource."""
+  class ProjectsBrandsIdentityAwareProxyClientsService(base_api.BaseApiService):
+    """Service class for the projects_brands_identityAwareProxyClients resource."""
 
-    _NAME = u'oauth_projects_brands_identityAwareProxyClients'
+    _NAME = u'projects_brands_identityAwareProxyClients'
 
     def __init__(self, client):
-      super(IapV1.OauthProjectsBrandsIdentityAwareProxyClientsService, self).__init__(client)
+      super(IapV1.ProjectsBrandsIdentityAwareProxyClientsService, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -57,7 +56,7 @@ by IAP. Requires that the brand for the project exists and that it is
 set for internal-only use.
 
       Args:
-        request: (IapOauthProjectsBrandsIdentityAwareProxyClientsCreateRequest) input message
+        request: (IapProjectsBrandsIdentityAwareProxyClientsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (IdentityAwareProxyClient) The response message.
@@ -67,15 +66,15 @@ set for internal-only use.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/oauth/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients',
+        flat_path=u'v1/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients',
         http_method=u'POST',
-        method_id=u'iap.oauth.projects.brands.identityAwareProxyClients.create',
+        method_id=u'iap.projects.brands.identityAwareProxyClients.create',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[],
-        relative_path=u'v1/oauth/{+parent}/identityAwareProxyClients',
+        relative_path=u'v1/{+parent}/identityAwareProxyClients',
         request_field=u'identityAwareProxyClient',
-        request_type_name=u'IapOauthProjectsBrandsIdentityAwareProxyClientsCreateRequest',
+        request_type_name=u'IapProjectsBrandsIdentityAwareProxyClientsCreateRequest',
         response_type_name=u'IdentityAwareProxyClient',
         supports_download=False,
     )
@@ -86,7 +85,7 @@ obsolete clients, managing the number of clients in a given project, and
 cleaning up after tests. Requires that the client is owned by IAP.
 
       Args:
-        request: (IapOauthProjectsBrandsIdentityAwareProxyClientsDeleteRequest) input message
+        request: (IapProjectsBrandsIdentityAwareProxyClientsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Empty) The response message.
@@ -96,15 +95,15 @@ cleaning up after tests. Requires that the client is owned by IAP.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/oauth/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients/{identityAwareProxyClientsId}',
+        flat_path=u'v1/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients/{identityAwareProxyClientsId}',
         http_method=u'DELETE',
-        method_id=u'iap.oauth.projects.brands.identityAwareProxyClients.delete',
+        method_id=u'iap.projects.brands.identityAwareProxyClients.delete',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1/oauth/{+name}',
+        relative_path=u'v1/{+name}',
         request_field='',
-        request_type_name=u'IapOauthProjectsBrandsIdentityAwareProxyClientsDeleteRequest',
+        request_type_name=u'IapProjectsBrandsIdentityAwareProxyClientsDeleteRequest',
         response_type_name=u'Empty',
         supports_download=False,
     )
@@ -114,7 +113,7 @@ cleaning up after tests. Requires that the client is owned by IAP.
 Requires that the client is owned by IAP.
 
       Args:
-        request: (IapOauthProjectsBrandsIdentityAwareProxyClientsGetRequest) input message
+        request: (IapProjectsBrandsIdentityAwareProxyClientsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (IdentityAwareProxyClient) The response message.
@@ -124,15 +123,15 @@ Requires that the client is owned by IAP.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/oauth/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients/{identityAwareProxyClientsId}',
+        flat_path=u'v1/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients/{identityAwareProxyClientsId}',
         http_method=u'GET',
-        method_id=u'iap.oauth.projects.brands.identityAwareProxyClients.get',
+        method_id=u'iap.projects.brands.identityAwareProxyClients.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1/oauth/{+name}',
+        relative_path=u'v1/{+name}',
         request_field='',
-        request_type_name=u'IapOauthProjectsBrandsIdentityAwareProxyClientsGetRequest',
+        request_type_name=u'IapProjectsBrandsIdentityAwareProxyClientsGetRequest',
         response_type_name=u'IdentityAwareProxyClient',
         supports_download=False,
     )
@@ -141,7 +140,7 @@ Requires that the client is owned by IAP.
       r"""Lists the existing clients for the brand.
 
       Args:
-        request: (IapOauthProjectsBrandsIdentityAwareProxyClientsListRequest) input message
+        request: (IapProjectsBrandsIdentityAwareProxyClientsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ListIdentityAwareProxyClientsResponse) The response message.
@@ -151,15 +150,15 @@ Requires that the client is owned by IAP.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/oauth/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients',
+        flat_path=u'v1/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients',
         http_method=u'GET',
-        method_id=u'iap.oauth.projects.brands.identityAwareProxyClients.list',
+        method_id=u'iap.projects.brands.identityAwareProxyClients.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/oauth/{+parent}/identityAwareProxyClients',
+        relative_path=u'v1/{+parent}/identityAwareProxyClients',
         request_field='',
-        request_type_name=u'IapOauthProjectsBrandsIdentityAwareProxyClientsListRequest',
+        request_type_name=u'IapProjectsBrandsIdentityAwareProxyClientsListRequest',
         response_type_name=u'ListIdentityAwareProxyClientsResponse',
         supports_download=False,
     )
@@ -169,7 +168,7 @@ Requires that the client is owned by IAP.
 secret was compromised. Requires that the client is owned by IAP.
 
       Args:
-        request: (IapOauthProjectsBrandsIdentityAwareProxyClientsResetSecretRequest) input message
+        request: (IapProjectsBrandsIdentityAwareProxyClientsResetSecretRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (IdentityAwareProxyClient) The response message.
@@ -179,26 +178,26 @@ secret was compromised. Requires that the client is owned by IAP.
           config, request, global_params=global_params)
 
     ResetSecret.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/oauth/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients/{identityAwareProxyClientsId}:resetSecret',
+        flat_path=u'v1/projects/{projectsId}/brands/{brandsId}/identityAwareProxyClients/{identityAwareProxyClientsId}:resetSecret',
         http_method=u'POST',
-        method_id=u'iap.oauth.projects.brands.identityAwareProxyClients.resetSecret',
+        method_id=u'iap.projects.brands.identityAwareProxyClients.resetSecret',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1/oauth/{+name}:resetSecret',
+        relative_path=u'v1/{+name}:resetSecret',
         request_field=u'resetIdentityAwareProxyClientSecretRequest',
-        request_type_name=u'IapOauthProjectsBrandsIdentityAwareProxyClientsResetSecretRequest',
+        request_type_name=u'IapProjectsBrandsIdentityAwareProxyClientsResetSecretRequest',
         response_type_name=u'IdentityAwareProxyClient',
         supports_download=False,
     )
 
-  class OauthProjectsBrandsService(base_api.BaseApiService):
-    """Service class for the oauth_projects_brands resource."""
+  class ProjectsBrandsService(base_api.BaseApiService):
+    """Service class for the projects_brands resource."""
 
-    _NAME = u'oauth_projects_brands'
+    _NAME = u'projects_brands'
 
     def __init__(self, client):
-      super(IapV1.OauthProjectsBrandsService, self).__init__(client)
+      super(IapV1.ProjectsBrandsService, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -212,7 +211,7 @@ Cloud console. Requires that a brand does not already exist for the
 project, and that the specified support email is owned by the caller.
 
       Args:
-        request: (IapOauthProjectsBrandsCreateRequest) input message
+        request: (IapProjectsBrandsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Brand) The response message.
@@ -222,15 +221,15 @@ project, and that the specified support email is owned by the caller.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/oauth/projects/{projectsId}/brands',
+        flat_path=u'v1/projects/{projectsId}/brands',
         http_method=u'POST',
-        method_id=u'iap.oauth.projects.brands.create',
+        method_id=u'iap.projects.brands.create',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[],
-        relative_path=u'v1/oauth/{+parent}/brands',
+        relative_path=u'v1/{+parent}/brands',
         request_field=u'brand',
-        request_type_name=u'IapOauthProjectsBrandsCreateRequest',
+        request_type_name=u'IapProjectsBrandsCreateRequest',
         response_type_name=u'Brand',
         supports_download=False,
     )
@@ -239,7 +238,7 @@ project, and that the specified support email is owned by the caller.
       r"""Retrieves the OAuth brand of the project.
 
       Args:
-        request: (IapOauthProjectsBrandsGetRequest) input message
+        request: (IapProjectsBrandsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Brand) The response message.
@@ -249,15 +248,15 @@ project, and that the specified support email is owned by the caller.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/oauth/projects/{projectsId}/brands/{brandsId}',
+        flat_path=u'v1/projects/{projectsId}/brands/{brandsId}',
         http_method=u'GET',
-        method_id=u'iap.oauth.projects.brands.get',
+        method_id=u'iap.projects.brands.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1/oauth/{+name}',
+        relative_path=u'v1/{+name}',
         request_field='',
-        request_type_name=u'IapOauthProjectsBrandsGetRequest',
+        request_type_name=u'IapProjectsBrandsGetRequest',
         response_type_name=u'Brand',
         supports_download=False,
     )
@@ -266,7 +265,7 @@ project, and that the specified support email is owned by the caller.
       r"""Lists the existing brands for the project.
 
       Args:
-        request: (IapOauthProjectsBrandsListRequest) input message
+        request: (IapProjectsBrandsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ListBrandsResponse) The response message.
@@ -276,36 +275,26 @@ project, and that the specified support email is owned by the caller.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/oauth/projects/{projectsId}/brands',
+        flat_path=u'v1/projects/{projectsId}/brands',
         http_method=u'GET',
-        method_id=u'iap.oauth.projects.brands.list',
+        method_id=u'iap.projects.brands.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[],
-        relative_path=u'v1/oauth/{+parent}/brands',
+        relative_path=u'v1/{+parent}/brands',
         request_field='',
-        request_type_name=u'IapOauthProjectsBrandsListRequest',
+        request_type_name=u'IapProjectsBrandsListRequest',
         response_type_name=u'ListBrandsResponse',
         supports_download=False,
     )
 
-  class OauthProjectsService(base_api.BaseApiService):
-    """Service class for the oauth_projects resource."""
+  class ProjectsService(base_api.BaseApiService):
+    """Service class for the projects resource."""
 
-    _NAME = u'oauth_projects'
-
-    def __init__(self, client):
-      super(IapV1.OauthProjectsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class OauthService(base_api.BaseApiService):
-    """Service class for the oauth resource."""
-
-    _NAME = u'oauth'
+    _NAME = u'projects'
 
     def __init__(self, client):
-      super(IapV1.OauthService, self).__init__(client)
+      super(IapV1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
 

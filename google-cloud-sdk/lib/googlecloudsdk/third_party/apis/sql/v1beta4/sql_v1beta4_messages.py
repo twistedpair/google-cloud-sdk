@@ -1553,7 +1553,9 @@ class Reschedule(_messages.Message):
   Fields:
     rescheduleType: Required. The type of the reschedule.
     scheduleTime: Optional. Timestamp when the maintenance shall be
-      rescheduled to if reschedule_type=SPECIFIC_TIME.
+      rescheduled to if reschedule_type=SPECIFIC_TIME, in <a
+      href="https://tools.ietf.org/html/rfc3339">RFC 3339</a> format, for
+      example <code>2012-11-15T16:19:00.094Z</code>.
   """
 
   class RescheduleTypeValueValuesEnum(_messages.Enum):

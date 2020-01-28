@@ -512,12 +512,12 @@ class BuildTrigger(_messages.Message):
       with `trigger_template`.
     id: Output only. Unique identifier of the trigger.
     ignoredFiles: ignored_files and included_files are file glob matches using
-      http://godoc/pkg/path/filepath#Match extended with support for "**".  If
-      ignored_files and changed files are both empty, then they are not used
-      to determine whether or not to trigger a build.  If ignored_files is not
-      empty, then we ignore any files that match any of the ignored_file
-      globs. If the change has no files that are outside of the ignored_files
-      globs, then we do not trigger a build.
+      https://golang.org/pkg/path/filepath/#Match extended with support for
+      "**".  If ignored_files and changed files are both empty, then they are
+      not used to determine whether or not to trigger a build.  If
+      ignored_files is not empty, then we ignore any files that match any of
+      the ignored_file globs. If the change has no files that are outside of
+      the ignored_files globs, then we do not trigger a build.
     includedFiles: If any of the files altered in the commit pass the
       ignored_files filter and included_files is empty, then as far as this
       filter is concerned, we should trigger the build.  If any of the files
@@ -600,6 +600,23 @@ class CancelBuildRequest(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class CloudbuildOauthProcessOAuthCallbackRequest(_messages.Message):
+  r"""A CloudbuildOauthProcessOAuthCallbackRequest object.
+
+  Fields:
+    code: GitHub generated temproary authorization code.
+    namespace: The namespace that the oauth callback credential should be
+      processed for. This should map to the string name of the enum defined in
+      the GetOAuthRegistrationURLRequest.
+    state: The XSRF token that was sent as part of the initial request to
+      start the OAuth flow.
+  """
+
+  code = _messages.StringField(1)
+  namespace = _messages.StringField(2)
+  state = _messages.StringField(3)
 
 
 class CloudbuildOperationsCancelRequest(_messages.Message):

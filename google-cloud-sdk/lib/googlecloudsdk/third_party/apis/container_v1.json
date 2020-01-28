@@ -390,7 +390,7 @@
           }
         },
         "serviceAccount": {
-          "description": "The Google Cloud Platform Service Account to be used by the node VMs. If\nno Service Account is specified, the \"default\" service account is used.",
+          "description": "The Google Cloud Platform Service Account to be used by the node VMs.\nSpecify the email address of the Service Account; otherwise, if no Service\nAccount is specified, the \"default\" service account is used.",
           "type": "string"
         },
         "metadata": {
@@ -742,6 +742,13 @@
           "description": "The initial node count for the pool. You must ensure that your\nCompute Engine <a href=\"\/compute\/docs\/resource-quotas\">resource quota<\/a>\nis sufficient for this number of instances. You must also have available\nfirewall and routes quota.",
           "type": "integer",
           "format": "int32"
+        },
+        "locations": {
+          "description": "The list of Google Compute Engine [zones](\/compute\/docs\/zones#available)\nin which the NodePool's nodes should be located.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
@@ -1671,6 +1678,13 @@
         "imageProject": {
           "description": "The project containing the desired image to use for this node pool.\nThis is used to create clusters using a custom image.",
           "type": "string"
+        },
+        "locations": {
+          "description": "The desired list of Google Compute Engine\n[zones](\/compute\/docs\/zones#available) in which the node pool's nodes\nshould be located. Changing the locations for a node pool will result\nin nodes being either created or removed from the node pool, depending\non whether locations are being added or removed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "name": {
           "description": "The name (project, location, cluster, node pool) of the node pool to\nupdate. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
@@ -2780,7 +2794,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the locations for a specific cluster."
+                  "description": "Sets the locations for a specific cluster.\nDeprecated. Use\n[projects.locations.clusters.update](\/kubernetes-engine\/docs\/reference\/rest\/v1\/projects.locations.clusters.update)\ninstead."
                 },
                 "updateMaster": {
                   "id": "container.projects.locations.clusters.updateMaster",
@@ -3869,7 +3883,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the locations for a specific cluster."
+                  "description": "Sets the locations for a specific cluster.\nDeprecated. Use\n[projects.locations.clusters.update](\/kubernetes-engine\/docs\/reference\/rest\/v1\/projects.locations.clusters.update)\ninstead."
                 },
                 "master": {
                   "id": "container.projects.zones.clusters.master",

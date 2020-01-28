@@ -103,18 +103,6 @@ def ValidateMeshModeFlags(args):
   """Validates the values of all mesh-mode related flags."""
 
   if getattr(args, 'mesh', False):
-    if 'startup-script' in args.metadata and args.mesh[
-        'mode'] == mesh_mode_aux_data.MeshModes.ON:
-      # Extending startup-script is a temporary solution.
-      # After b/143457772 is implemented,
-      # we will switch to separate 'google-software-declaration' metadata key.
-      if args.metadata[
-          'startup-script'][:mesh_mode_aux_data
-                            .shebang_len] != mesh_mode_aux_data.shebang:
-        raise exceptions.InvalidArgumentException(
-            'startup-script',
-            'Only a bash startup-script can be used with mesh mode.')
-
     if args.no_scopes and args.mesh[
         'mode'] == mesh_mode_aux_data.MeshModes.ON:
       # --no-scopes flag needs to be removed for adding cloud-platform scope.

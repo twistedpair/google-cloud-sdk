@@ -225,16 +225,13 @@ def ParseExpirationPeriodWithNeverSentinel(value):
 
 def AddSubscriptionSettingsFlags(parser,
                                  is_update=False,
-                                 support_message_ordering=False,
-                                 support_dead_letter_queues=False):
+                                 support_message_ordering=False):
   """Adds the flags for creating or updating a subscription.
 
   Args:
     parser: The argparse parser.
     is_update: Whether or not this is for the update operation (vs. create).
     support_message_ordering: Whether or not flags for ordering should be added.
-    support_dead_letter_queues: Whether or not flags for dead letter queues
-      should be added.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(parser)
@@ -248,38 +245,36 @@ def AddSubscriptionSettingsFlags(parser,
             order. If true, messages with the same ordering key will by sent to
             subscribers in the order in which they were received by Cloud
             Pub/Sub.""")
-  if support_dead_letter_queues:
-    current_group = parser
-    if is_update:
-      mutual_exclusive_group = current_group.add_mutually_exclusive_group()
-      mutual_exclusive_group.add_argument(
-          '--clear-dead-letter-policy',
-          action='store_true',
-          default=None,
-          help="""If set, clear the dead letter policy from the subscription."""
-      )
-      current_group = mutual_exclusive_group
-
-    set_dead_letter_policy_group = current_group.add_argument_group(
-        help="""Dead Letter Queue Options. The Cloud Pub/Sub service account
-             associated with the enclosing subscription's parent project (i.e.,
-             service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
-             must have permission to Publish() to this topic and Acknowledge()
-             messages on this subscription.""")
-    dead_letter_topic = resource_args.CreateTopicResourceArg(
-        'to publish dead letter messages to.',
-        flag_name='dead-letter-topic',
-        positional=False,
-        required=False)
-    resource_args.AddResourceArgs(set_dead_letter_policy_group,
-                                  [dead_letter_topic])
-    set_dead_letter_policy_group.add_argument(
-        '--max-delivery-attempts',
-        type=arg_parsers.BoundedInt(5, 100),
+  current_group = parser
+  if is_update:
+    mutual_exclusive_group = current_group.add_mutually_exclusive_group()
+    mutual_exclusive_group.add_argument(
+        '--clear-dead-letter-policy',
+        action='store_true',
         default=None,
-        help="""Maximum number of delivery attempts for any message. The value
-            must be between 5 and 100. Defaults to 5. `--dead-letter-topic`
-            must also be specified.""")
+        help="""If set, clear the dead letter policy from the subscription.""")
+    current_group = mutual_exclusive_group
+
+  set_dead_letter_policy_group = current_group.add_argument_group(
+      help="""Dead Letter Queue Options. The Cloud Pub/Sub service account
+           associated with the enclosing subscription's parent project (i.e.,
+           service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
+           must have permission to Publish() to this topic and Acknowledge()
+           messages on this subscription.""")
+  dead_letter_topic = resource_args.CreateTopicResourceArg(
+      'to publish dead letter messages to.',
+      flag_name='dead-letter-topic',
+      positional=False,
+      required=False)
+  resource_args.AddResourceArgs(set_dead_letter_policy_group,
+                                [dead_letter_topic])
+  set_dead_letter_policy_group.add_argument(
+      '--max-delivery-attempts',
+      type=arg_parsers.BoundedInt(5, 100),
+      default=None,
+      help="""Maximum number of delivery attempts for any message. The value
+          must be between 5 and 100. Defaults to 5. `--dead-letter-topic`
+          must also be specified.""")
   parser.add_argument(
       '--expiration-period',
       type=ParseExpirationPeriodWithNeverSentinel,

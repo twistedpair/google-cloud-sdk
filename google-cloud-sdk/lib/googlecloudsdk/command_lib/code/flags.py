@@ -17,6 +17,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.util.args import map_util
+import six
+
 
 def CommonFlags(parser):
   """Add common flags for local developement environments."""
@@ -52,3 +56,20 @@ def CommonFlags(parser):
       type=int,
       help='Local port to which the service connection is forwarded. If this '
       'flag is not set, then a random port is chosen.')
+
+  env_var_group = parser.add_mutually_exclusive_group(required=False)
+  env_var_group.add_argument(
+      '--env-vars',
+      metavar='KEY=VALUE',
+      action=arg_parsers.UpdateAction,
+      type=arg_parsers.ArgDict(
+          key_type=six.text_type, value_type=six.text_type),
+      help='List of key-value pairs to set as environment variables.')
+
+  env_var_group.add_argument(
+      '--env-vars-file',
+      metavar='FILE_PATH',
+      type=map_util.ArgDictFile(
+          key_type=six.text_type, value_type=six.text_type),
+      help='Path to a local YAML file with definitions for all environment '
+      'variables.')

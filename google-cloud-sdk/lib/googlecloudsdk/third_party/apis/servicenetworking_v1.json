@@ -1415,6 +1415,10 @@
         "producerNotificationChannel": {
           "description": "The full resource name of a channel used for sending notifications to the\nservice producer.\n\nGoogle Service Management currently only supports\n[Google Cloud Pub\/Sub](https:\/\/cloud.google.com\/pubsub) as a notification\nchannel. To use Google Cloud Pub\/Sub as the channel, this must be the name\nof a Cloud Pub\/Sub topic that uses the Cloud Pub\/Sub topic name format\ndocumented in https:\/\/cloud.google.com\/pubsub\/docs\/overview.",
           "type": "string"
+        },
+        "serviceIdentity": {
+          "description": "The configuration of a per-product per-project service identity.",
+          "$ref": "ServiceIdentity"
         }
       }
     },
@@ -1434,6 +1438,25 @@
         "skipServiceControl": {
           "description": "If true, the selected method should skip service control and the control\nplane features, such as quota and billing, will not be available.\nThis flag is used by Google Cloud Endpoints to bypass checks for internal\nmethods, such as service health check methods.",
           "type": "boolean"
+        }
+      }
+    },
+    "ServiceIdentity": {
+      "id": "ServiceIdentity",
+      "description": "The per-product per-project service identity for a service.\n\n\nUse this field to configure per-product per-project service identity.\nExample of a service identity configuration.\n\n    usage:\n      service_identity:\n      - service_account_parent: \"projects\/123456789\"\n        display_name: \"Cloud XXX Service Agent\"\n        description: \"Used as the identity of Cloud XXX to access resources\"",
+      "type": "object",
+      "properties": {
+        "serviceAccountParent": {
+          "description": "A service account project that hosts the service accounts.\n\nAn example name would be:\n`projects\/123456789`",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Optional. A user-specified name for the service account.\nMust be less than or equal to 100 UTF-8 bytes.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. A user-specified opaque description of the service account.\nMust be less than or equal to 256 UTF-8 bytes.",
+          "type": "string"
         }
       }
     },

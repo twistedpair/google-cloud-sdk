@@ -1906,21 +1906,33 @@ class EndpointConfig(_messages.Message):
 
 
 class Expr(_messages.Message):
-  r"""Represents an expression text. Example: title: "User account presence"
-  description: "Determines whether the request has a user account" expression:
-  "size(request.user) > 0"
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec.Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
-    description: An optional description of the expression. This is a longer
+    description: Optional. Description of the expression. This is a longer
       text which describes the expression, e.g. when hovered over it in a UI.
     expression: Textual representation of an expression in Common Expression
-      Language syntax.The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
       error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
   """
 
   description = _messages.StringField(1)
@@ -2263,6 +2275,10 @@ class InstanceGroupConfig(_messages.Message):
   r"""The config settings for Compute Engine resources in an instance group,
   such as a master or worker group.
 
+  Enums:
+    PreemptibilityValueValuesEnum: Optional. Specifies the preemptibility of
+      the instance group.
+
   Fields:
     accelerators: Optional. The Compute Engine accelerator configuration for
       these instances.
@@ -2288,7 +2304,25 @@ class InstanceGroupConfig(_messages.Message):
       See Dataproc&rarr;Minimum CPU Platform.
     numInstances: Optional. The number of VM instances in the instance group.
       For master instance groups, must be set to 1.
+    preemptibility: Optional. Specifies the preemptibility of the instance
+      group.
   """
+
+  class PreemptibilityValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the preemptibility of the instance group.
+
+    Values:
+      PREEMPTIBILITY_UNSPECIFIED: Preemptibility is unspecified, the system
+        will choose the appropriate setting for each instance group.
+      NON_PREEMPTIBLE: Instances are non-preemptible.This option is allowed
+        for all instance groups and is the only valid value for Master and
+        Worker instance groups.
+      PREEMPTIBLE: Instances are preemptible.This option is allowed only for
+        secondary worker group.
+    """
+    PREEMPTIBILITY_UNSPECIFIED = 0
+    NON_PREEMPTIBLE = 1
+    PREEMPTIBLE = 2
 
   accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   diskConfig = _messages.MessageField('DiskConfig', 2)
@@ -2299,6 +2333,7 @@ class InstanceGroupConfig(_messages.Message):
   managedGroupConfig = _messages.MessageField('ManagedGroupConfig', 7)
   minCpuPlatform = _messages.StringField(8)
   numInstances = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  preemptibility = _messages.EnumField('PreemptibilityValueValuesEnum', 10)
 
 
 class InstantiateWorkflowTemplateRequest(_messages.Message):
@@ -2368,6 +2403,10 @@ class Job(_messages.Message):
       be associated with a job.
 
   Fields:
+    done: Output only. Indicates whether the job is completed. If the value is
+      false, the job is still in progress. If true, the job is completed, and
+      status.state field will indicate if it was successful, failed, or
+      cancelled.
     driverControlFilesUri: Output only. If present, the location of
       miscellaneous control files which may be used as part of job setup and
       handling. If not present, control files may be placed in the same
@@ -2439,25 +2478,26 @@ class Job(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  driverControlFilesUri = _messages.StringField(1)
-  driverOutputResourceUri = _messages.StringField(2)
-  hadoopJob = _messages.MessageField('HadoopJob', 3)
-  hiveJob = _messages.MessageField('HiveJob', 4)
-  jobUuid = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  pigJob = _messages.MessageField('PigJob', 7)
-  placement = _messages.MessageField('JobPlacement', 8)
-  prestoJob = _messages.MessageField('PrestoJob', 9)
-  pysparkJob = _messages.MessageField('PySparkJob', 10)
-  reference = _messages.MessageField('JobReference', 11)
-  scheduling = _messages.MessageField('JobScheduling', 12)
-  sparkJob = _messages.MessageField('SparkJob', 13)
-  sparkRJob = _messages.MessageField('SparkRJob', 14)
-  sparkSqlJob = _messages.MessageField('SparkSqlJob', 15)
-  status = _messages.MessageField('JobStatus', 16)
-  statusHistory = _messages.MessageField('JobStatus', 17, repeated=True)
-  submittedBy = _messages.StringField(18)
-  yarnApplications = _messages.MessageField('YarnApplication', 19, repeated=True)
+  done = _messages.BooleanField(1)
+  driverControlFilesUri = _messages.StringField(2)
+  driverOutputResourceUri = _messages.StringField(3)
+  hadoopJob = _messages.MessageField('HadoopJob', 4)
+  hiveJob = _messages.MessageField('HiveJob', 5)
+  jobUuid = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  pigJob = _messages.MessageField('PigJob', 8)
+  placement = _messages.MessageField('JobPlacement', 9)
+  prestoJob = _messages.MessageField('PrestoJob', 10)
+  pysparkJob = _messages.MessageField('PySparkJob', 11)
+  reference = _messages.MessageField('JobReference', 12)
+  scheduling = _messages.MessageField('JobScheduling', 13)
+  sparkJob = _messages.MessageField('SparkJob', 14)
+  sparkRJob = _messages.MessageField('SparkRJob', 15)
+  sparkSqlJob = _messages.MessageField('SparkSqlJob', 16)
+  status = _messages.MessageField('JobStatus', 17)
+  statusHistory = _messages.MessageField('JobStatus', 18, repeated=True)
+  submittedBy = _messages.StringField(19)
+  yarnApplications = _messages.MessageField('YarnApplication', 20, repeated=True)
 
 
 class JobPlacement(_messages.Message):

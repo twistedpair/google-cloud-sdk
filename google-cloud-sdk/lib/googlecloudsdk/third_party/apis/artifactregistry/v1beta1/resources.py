@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://artifactregistry.googleapis.com/v1beta1/'
-DOCS_URL = 'https://cloud.google.com/artifact-registry'
+DOCS_URL = 'https://cloud.google.com/artifacts/docs/'
 
 
 class Collections(enum.Enum):

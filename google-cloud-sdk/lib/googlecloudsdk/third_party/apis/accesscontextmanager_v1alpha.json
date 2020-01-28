@@ -456,23 +456,23 @@
     },
     "Expr": {
       "id": "Expr",
-      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
+      "description": "Represents a textual expression in the Common Expression Language (CEL)\nsyntax. CEL is a C-like expression language. The syntax and semantics of CEL\nare documented at https:\/\/github.com\/google\/cel-spec.\n\nExample (Comparison):\n\n    title: \"Summary size limit\"\n    description: \"Determines if a summary is less than 100 chars\"\n    expression: \"document.summary.size() < 100\"\n\nExample (Equality):\n\n    title: \"Requestor is owner\"\n    description: \"Determines if requestor is the document owner\"\n    expression: \"document.owner == request.auth.claims.email\"\n\nExample (Logic):\n\n    title: \"Public documents\"\n    description: \"Determine whether the document should be publicly visible\"\n    expression: \"document.type != 'private' && document.type != 'internal'\"\n\nExample (Data Manipulation):\n\n    title: \"Notification string\"\n    description: \"Create a notification string with a timestamp.\"\n    expression: \"'New message received at ' + string(document.create_time)\"\n\nThe exact variables and functions that may be referenced within an expression\nare determined by the service that evaluates it. See the service\ndocumentation for additional information.",
       "type": "object",
       "properties": {
         "expression": {
-          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
+          "description": "Textual representation of an expression in Common Expression Language\nsyntax.",
           "type": "string"
         },
         "title": {
-          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
+          "description": "Optional. Title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
           "type": "string"
         },
         "description": {
-          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
+          "description": "Optional. Description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
           "type": "string"
         },
         "location": {
-          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
+          "description": "Optional. String indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
           "type": "string"
         }
       }
@@ -577,6 +577,20 @@
         "vpcServiceRestriction": {
           "description": "Alpha. Configuration for within Perimeter allowed APIs.",
           "$ref": "VpcServiceRestriction"
+        },
+        "ingressPolicies": {
+          "description": "List of ingress policies to apply to the perimeter.  A perimeter\nmay have multiple ingress policies, each of which is evaluated separately.\nAccess is granted if any ingress policy grants it.  Must be empty for a\nperimeter bridge.",
+          "type": "array",
+          "items": {
+            "$ref": "IngressPolicy"
+          }
+        },
+        "egressPolicies": {
+          "description": "List of egress policies to apply to the perimeter.  A perimeter\nmay have multiple egress policies, each of which is evaluated separately.\nAccess is granted if any egress policy grants it.  Must be empty for a\nperimeter bridge.",
+          "type": "array",
+          "items": {
+            "$ref": "EgressPolicy"
+          }
         }
       }
     },
@@ -594,6 +608,164 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        }
+      }
+    },
+    "IngressPolicy": {
+      "id": "IngressPolicy",
+      "description": "Policy for ingress into perimeter.\n\nIngress policies match requests based on `from` and `to` stanzas.  For an\ningress policy to match, both the `from` and `to` stanzas must be matched.\nIf an ingress policy matches a request, the request is allowed through the\nperimeter boundary from outside the perimeter.\n\nFor example, access from the internet can be allowed either\nbased on an access level or, for traffic hosted on GCP, the project of the\nsource network.  For access from private networks, using the project of the\nhosting network is required.\n\nIndividual ingress policies can be limited by restricting which\nservices and\/or methods they match using the `to` field.",
+      "type": "object",
+      "properties": {
+        "ingressFrom": {
+          "description": "`from` defines the conditions on the source of a request causing this\ningress policy to apply.",
+          "$ref": "IngressFrom"
+        },
+        "ingressTo": {
+          "description": "`to` defines the conditions on the API operation and request destination\nthat cause this ingress policy to apply.",
+          "$ref": "IngressTo"
+        }
+      }
+    },
+    "IngressFrom": {
+      "id": "IngressFrom",
+      "description": "Rule specifying information about the source of a request in an ingress\npolicy.",
+      "type": "object",
+      "properties": {
+        "allowedIdentity": {
+          "description": "Specifies the identities that are allowed access from outside the\nperimeter. Can be either ANY_IDENTITY (everything is allowed), ANY_USER\n(all human users), ANY_SERVICE_ACCOUNT (all service accounts), or\nALLOWED_IDENTITY_UNSPECIFIED (use the identities field instead).",
+          "enumDescriptions": [
+            "No blanket identity group specified, look at the list of allowed identities\ninstead.",
+            "[IngressFrom] rule will authorize access from all identities outside\nthe perimeter. [EgressFrom] rule will authorizes all identities to access\nthrough the egress policy.",
+            "The [IngressFrom] rule will authorize access from all human users outside\nthe perimeter. [EgressFrom] rule authorizes all human users through the\negress policy. This is not supported for [EgressFrom] for now.",
+            "The [IngressFrom] rule will authorize access from all service accounts\noutside the perimeter. [EgressFrom] rule authorizes all service accounts\nthrough the egress policy. This is not supported for [EgressFrom] for now."
+          ],
+          "type": "string",
+          "enum": [
+            "ALLOWED_IDENTITY_UNSPECIFIED",
+            "ANY_IDENTITY",
+            "ANY_USER",
+            "ANY_SERVICE_ACCOUNT"
+          ]
+        },
+        "sources": {
+          "description": "Sources that this ingress policy authorizes access from.",
+          "type": "array",
+          "items": {
+            "$ref": "IngressSource"
+          }
+        },
+        "identities": {
+          "description": "A list of identities that are allowed access through this ingress\npolicy. Should be in the format of email address. The email address\nshould represent individual users or service accounts only.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "IngressSource": {
+      "id": "IngressSource",
+      "description": "The source that [Ingress Policy] authorizes access from.",
+      "type": "object",
+      "properties": {
+        "accessLevel": {
+          "description": "An `AccessLevel` resource name that allow resources within the\n`ServicePerimeter` to be accessed from the internet. `AccessLevels`\nlisted must be in the same policy as this `ServicePerimeter`.\nReferencing a nonexistent `AccessLevel` is a syntax error. If no\n`AccessLevel` names are listed, resources within the perimeter can\nonly be accessed via GCP calls with request origins within the\nperimeter.\nExample: `\"accessPolicies\/MY_POLICY\/accessLevels\/MY_LEVEL\"`.\nIf '*' is specified for an access_level, then all IngressSources will\nbe allowed. This is due to an `AccessLevel` can be made permissive\nenough to allow a resource.",
+          "type": "string"
+        },
+        "resource": {
+          "description": "A GCP resource that is allowed to ingress the perimeter.\nRequests from these resources will be allowed to access perimeter data.\nCurrently only projects are allowed.\nFormat: `projects\/{project_number}`\nThe project may be in any GCP organization, not just the organization\nthat the perimeter is defined in. '*' is not allowed, the case of\nallowing all GCP resources only is not supported.",
+          "type": "string"
+        }
+      }
+    },
+    "IngressTo": {
+      "id": "IngressTo",
+      "description": "Rule specifying information about the destination of a request in an\ningress policy.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of api operations that this ingress rule applies to.",
+          "type": "array",
+          "items": {
+            "$ref": "ApiOperation"
+          }
+        }
+      }
+    },
+    "ApiOperation": {
+      "id": "ApiOperation",
+      "description": "Identification for an API Operation.",
+      "type": "object",
+      "properties": {
+        "serviceName": {
+          "description": "The API service that this [ApiOperation] relates to.  An empty list of\nservices is not allowed.  Set this field to \"*\" to authorize access to\nall services. The methods field will be ignored if this field is set to\n\"*\".",
+          "type": "string"
+        },
+        "methods": {
+          "description": "The API methods that this operation relates to.  Must be in the\ncanonical RPC format (e.g. google.spanner.v1.Spanner.ExecuteSql).\nIf \"*' is specified, all methods are allowed.  An empty list of methods\nis invalid.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "EgressPolicy": {
+      "id": "EgressPolicy",
+      "description": "Policy for egress from perimeter.\n\nEgress policies match requests based on `from` and `to` stanzas.  For an\negress policy to match, both `from` and `to stanzas must be matched.\nIf an egress policy matches a request, the request is allowed to span the\nperimeter boundary.  For example, an egress policy can be used to allow\nVMs on networks within the perimeter to access a defined set of projects\noutside the perimeter in certain contexts (e.g. to read data from a\nGCS bucket or query against a BigQuery dataset).\n\nEgress policies are concerned with the *resources* that a request relates\nas well as the API services and API methods being used.  They do not\nrelated to the direction of data movement.  Please consult the VPC-SC\ndocumentation for detailed discussion of example use cases for egress\npolicies.",
+      "type": "object",
+      "properties": {
+        "egressFrom": {
+          "description": "Defines the `from` stanza for the egress policy.",
+          "$ref": "EgressFrom"
+        },
+        "egressTo": {
+          "description": "Defines the `to` stanza for the egress policy.",
+          "$ref": "EgressTo"
+        }
+      }
+    },
+    "EgressFrom": {
+      "id": "EgressFrom",
+      "description": "Defines the conditions under which this egress policy matches a request,\nbased on information about the source of the request.  Currently, only\n\"ANY_IDENTITY\" is supported (meaning that the Egress rule applies to all\nresources in the associated perimeter).",
+      "type": "object",
+      "properties": {
+        "allowedIdentity": {
+          "description": "Specifies the identities that are allowed through the [EgressPolicy].\nCan be either ANY_IDENTITY (everything is allowed), ANY_USER (all human\nusers), ANY_SERVICE_ACCOUNT (all service accounts), or\nALLOWED_IDENTITY_UNSPECIFIED (use the identities field instead).\nANY_USER, ANY_SERVICE_ACCOUNT, and ALLOWED_IDENTITY_UNSPECIFIED are\ncurrently not supported for [EgressFrom].",
+          "enumDescriptions": [
+            "No blanket identity group specified, look at the list of allowed identities\ninstead.",
+            "[IngressFrom] rule will authorize access from all identities outside\nthe perimeter. [EgressFrom] rule will authorizes all identities to access\nthrough the egress policy.",
+            "The [IngressFrom] rule will authorize access from all human users outside\nthe perimeter. [EgressFrom] rule authorizes all human users through the\negress policy. This is not supported for [EgressFrom] for now.",
+            "The [IngressFrom] rule will authorize access from all service accounts\noutside the perimeter. [EgressFrom] rule authorizes all service accounts\nthrough the egress policy. This is not supported for [EgressFrom] for now."
+          ],
+          "type": "string",
+          "enum": [
+            "ALLOWED_IDENTITY_UNSPECIFIED",
+            "ANY_IDENTITY",
+            "ANY_USER",
+            "ANY_SERVICE_ACCOUNT"
+          ]
+        }
+      }
+    },
+    "EgressTo": {
+      "id": "EgressTo",
+      "description": "Defines the conditions under which this egress policy matches a request,\nbased on information about the API and resources that the request affects.\nTo match a `to` stanza, the request must match BOTH \"resources\" and\n\"operations\".",
+      "type": "object",
+      "properties": {
+        "resources": {
+          "description": "A list of resources, currently only projects in the form\n`projects\/<projectnumber>`, that match this to stanza.  A request matches\nif it contains a resource in this list.  If '*' is specified for\nresources, then this [EgressTo] rule will authorize access to all\nresources outside the perimeter.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "operations": {
+          "description": "A list of api operations that this egress rule applies to.  A request\nmatches if it contains an operation\/service in this list.",
+          "type": "array",
+          "items": {
+            "$ref": "ApiOperation"
           }
         }
       }
@@ -1264,7 +1436,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Commit the dry-run spec for all the Service Perimeters in an\nAccess Policy.\nA commit operation on a Service Perimeter involves copying its `spec` field\nto that Service Perimeter's `status` field. Only Service Perimeters with\n`dry_run` field set to true are affected by a commit operation.\nThe longrunning operation from this RPC will have a successful status once\nthe dry-run specs for all the Service Perimeters have been\ncommitted. If a commit fails, it will cause the longrunning operation to\nreturn an error response and the entire commit operation will be cancelled.\nWhen successful, Operation.response field will contain\nCommitServicePerimetersResponse. The `dry_run` and the `spec` fields will\nbe cleared after a successful commit operation."
+              "description": "Commit the dry-run spec for all the Service Perimeters in an\nAccess Policy.\nA commit operation on a Service Perimeter involves copying its `spec` field\nto that Service Perimeter's `status` field. Only Service Perimeters with\n`use_explicit_dry_run_spec` field set to true are affected by a commit\noperation. The longrunning operation from this RPC will have a successful\nstatus once the dry-run specs for all the Service Perimeters have been\ncommitted. If a commit fails, it will cause the longrunning operation to\nreturn an error response and the entire commit operation will be cancelled.\nWhen successful, Operation.response field will contain\nCommitServicePerimetersResponse. The `dry_run` and the `spec` fields will\nbe cleared after a successful commit operation."
             }
           }
         }

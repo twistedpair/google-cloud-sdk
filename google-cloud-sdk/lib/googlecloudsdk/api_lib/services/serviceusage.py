@@ -32,6 +32,19 @@ _V1_VERSION = 'v1'
 _V1BETA1_VERSION = 'v1beta1'
 _V1ALPHA_VERSION = 'v1alpha'
 
+# Map of services which should be protected from being disabled by
+# prompting the user for  confirmation
+_PROTECTED_SERVICES = {
+    'anthos.googleapis.com': ('Warning: Disabling this service will '
+                              'also automatically disable any running '
+                              'Anthos clusters.')
+}
+
+
+def GetProtectedServiceWarning(service_name):
+  """Return the warning message associated with a protected service."""
+  return _PROTECTED_SERVICES.get(service_name)
+
 
 def EnableApiCall(project, service):
   """Make API call to enable a specific service.

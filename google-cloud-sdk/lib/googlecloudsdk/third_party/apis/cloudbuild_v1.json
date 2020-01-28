@@ -931,7 +931,7 @@
           }
         },
         "ignoredFiles": {
-          "description": "ignored_files and included_files are file glob matches using\nhttp:\/\/godoc\/pkg\/path\/filepath#Match extended with support for \"**\".\n\nIf ignored_files and changed files are both empty, then they are\nnot used to determine whether or not to trigger a build.\n\nIf ignored_files is not empty, then we ignore any files that match\nany of the ignored_file globs. If the change has no files that are\noutside of the ignored_files globs, then we do not trigger a build.",
+          "description": "ignored_files and included_files are file glob matches using\nhttps:\/\/golang.org\/pkg\/path\/filepath\/#Match extended with support for \"**\".\n\nIf ignored_files and changed files are both empty, then they are\nnot used to determine whether or not to trigger a build.\n\nIf ignored_files is not empty, then we ignore any files that match\nany of the ignored_file globs. If the change has no files that are\noutside of the ignored_files globs, then we do not trigger a build.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1526,6 +1526,42 @@
               "description": "Runs a `BuildTrigger` at a particular source revision."
             }
           }
+        }
+      }
+    },
+    "oauth": {
+      "methods": {
+        "processOAuthCallback": {
+          "id": "cloudbuild.oauth.processOAuthCallback",
+          "path": "v1/oauth:processOAuthCallback",
+          "flatPath": "v1/oauth:processOAuthCallback",
+          "httpMethod": "GET",
+          "parameters": {
+            "namespace": {
+              "description": "The namespace that the oauth callback credential should be processed for.\nThis should map to the string name of the enum defined in the\nGetOAuthRegistrationURLRequest.",
+              "location": "query",
+              "type": "string"
+            },
+            "code": {
+              "description": "GitHub generated temproary authorization code.",
+              "location": "query",
+              "type": "string"
+            },
+            "state": {
+              "description": "The XSRF token that was sent as part of the initial request to start the\nOAuth flow.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "ProcessOAuthCallback fulfills the last leg of the OAuth dance with a\nsource provider.\nFor GitHub this is as defined by\nhttps:\/\/developer.github.com\/apps\/building-oauth-apps\/authorizing-oauth-apps\/#2-users-are-redirected-back-to-your-site-by-github\nUsers will not be able to call this in any meaningful way since they don't\nhave access to the OAuth code used in the exchange.\nFor now, this rpc only supports GitHubEnterprise, but will eventually\nreplace GenerateGitHubAccessToken"
         }
       }
     }

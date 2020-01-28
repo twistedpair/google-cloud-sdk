@@ -249,7 +249,8 @@ class Environment(_messages.Message):
       constrained to be <= 128 bytes in size.
     name: The resource name of the environment, in the form:
       "projects/{projectId}/locations/{locationId}/environments/{environmentId
-      }"
+      }"  EnvironmentId must start with a lowercase letter followed by up to
+      63 lowercase letters, numbers, or hyphens, and cannot end with a hyphen.
     state: The current state of the environment.
     updateTime: Output only. The time at which this environment was last
       modified.

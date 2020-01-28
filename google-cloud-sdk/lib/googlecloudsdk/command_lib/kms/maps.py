@@ -79,10 +79,14 @@ VALID_ALGORITHMS_MAP = {
 }
 
 # Derive available algorithms from VALID_ALGORITHMS_MAP.
-ALL_ALGORITHMS = {
+ALL_ALGORITHMS = frozenset({
+    # pylint: disable=g-complex-comprehension
     algorithm for algorithms in VALID_ALGORITHMS_MAP.values()
     for algorithm in algorithms
-}
+})
 
 ALGORITHMS_FOR_IMPORT = ALL_ALGORITHMS - {'external-symmetric-encryption'}
 
+CRYPTO_KEY_VERSION_STATE_ENUM = MESSAGES.CryptoKeyVersion.StateValueValuesEnum
+CRYPTO_KEY_VERSION_STATE_MAPPER = arg_utils.ChoiceEnumMapper(
+    'crypto_key_version_state_enum', CRYPTO_KEY_VERSION_STATE_ENUM)
