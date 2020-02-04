@@ -3077,36 +3077,6 @@ This method is called on a best-effort basis. Specifically:
         supports_download=False,
     )
 
-    def Wait(self, request, global_params=None):
-      r"""Waits for the specified Operation resource to return as DONE or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the GET method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be DONE or still in progress.
-
-This method is called on a best-effort basis. Specifically:  
-- In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. 
-- If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
-
-      Args:
-        request: (ComputeGlobalOrganizationOperationsWaitRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Wait')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Wait.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'compute.globalOrganizationOperations.wait',
-        ordered_params=[u'operation'],
-        path_params=[u'operation'],
-        query_params=[u'parentId'],
-        relative_path=u'projects/locations/global/operations/{operation}/wait',
-        request_field='',
-        request_type_name=u'ComputeGlobalOrganizationOperationsWaitRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
   class GlobalPublicDelegatedPrefixesService(base_api.BaseApiService):
     """Service class for the globalPublicDelegatedPrefixes resource."""
 

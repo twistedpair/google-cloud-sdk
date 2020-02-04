@@ -36,7 +36,7 @@ class PreviewTimeFieldNotRelevantError(exceptions.Error):
 
 def ConvertOutput(response, args):
   if not args.dry_run:
-    utils.WaitForOperation(response)
+    utils.WaitForOperation(response, utils.GetApiVersionFromArgs(args))
     log.status.Print('Updated rollout for: [{}]'.format(args.deployment))
     return GetExistingResource(args)
 
@@ -55,17 +55,17 @@ def GetResourceRef(args):
 
 def GetExistingResource(args):
   resource_ref = GetResourceRef(args)
-  api_version = resource_ref.GetCollectionInfo().api_version
-  get_request_message = GetRequestMessage(resource_ref)
+  api_version = utils.GetApiVersionFromArgs(args)
+  get_request_message = GetRequestMessage(resource_ref, api_version)
   orig_resource = utils.GetClient(
       api_version).projects_locations_gameServerDeployments.GetRollout(
           get_request_message)
   return orig_resource
 
 
-def GetRequestMessage(resource_ref):
+def GetRequestMessage(resource_ref, api_version):
   return utils.GetApiMessage(
-      resource_ref
+      api_version
   ).GameservicesProjectsLocationsGameServerDeploymentsGetRolloutRequest(
       name=resource_ref.RelativeName())
 

@@ -49,7 +49,7 @@ class Trigger(k8s_object.KubernetesObject):
   TERMINAL_CONDITIONS = {
       READY_CONDITION,
   }
-  FIELD_BLACKLIST = ['sourceAndType']
+  FIELD_BLACKLIST = []
 
   @property
   def dependency(self):

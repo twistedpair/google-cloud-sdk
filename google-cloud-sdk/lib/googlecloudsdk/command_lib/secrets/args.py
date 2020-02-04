@@ -191,21 +191,21 @@ def GetVersionResourceSpec():
 # Resource parsers
 
 
-def ParseProjectRef(ref, **kwargs):
+def ParseProjectRef(ref, version=None, **kwargs):
   kwargs['collection'] = 'secretmanager.projects'
-  return resources.REGISTRY.Parse(ref, **kwargs)
+  return resources.REGISTRY.Parse(ref, api_version=version, **kwargs)
 
 
-def ParseLocationRef(ref, **kwargs):
+def ParseLocationRef(ref, version=None, **kwargs):
   kwargs['collection'] = 'secretmanager.projects.locations'
-  return resources.REGISTRY.Parse(ref, **kwargs)
+  return resources.REGISTRY.Parse(ref, api_version=version, **kwargs)
 
 
-def ParseSecretRef(ref, **kwargs):
+def ParseSecretRef(ref, version=None, **kwargs):
   kwargs['collection'] = 'secretmanager.projects.secrets'
-  return resources.REGISTRY.Parse(ref, **kwargs)
+  return resources.REGISTRY.Parse(ref, api_version=version, **kwargs)
 
 
-def ParseVersionRef(ref, **kwargs):
+def ParseVersionRef(ref, version=None, **kwargs):
   kwargs['collection'] = 'secretmanager.projects.secrets.versions'
-  return resources.REGISTRY.Parse(ref, **kwargs)
+  return resources.REGISTRY.Parse(ref, api_version=version, **kwargs)

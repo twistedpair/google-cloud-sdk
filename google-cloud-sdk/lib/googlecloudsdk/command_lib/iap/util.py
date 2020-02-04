@@ -152,7 +152,52 @@ def AddIapSettingFileArg(parser):
       capture some information, but behaves like an ArgumentParser.
   """
   parser.add_argument(
-      'setting_file', help='JSON file containing the IAP resource settings')
+      'setting_file',
+      help="""JSON or YAML file containing the IAP resource settings.
+
+       JSON example:
+         {
+           "access_settings" : {
+             "oauth_settings" : {
+                "login_hint" : {
+                   "value": "test_hint"
+                }
+             },
+             "gcip_settings" : {
+                "tenant_ids": ["tenant1-p9puj", "tenant2-y8rxc"],
+                "login_page_uri" : {
+                   "value" : "https://test.com/?apiKey=abcd_efgh"
+                }
+             },
+             "cors_settings": {
+                "allow_http_options" : {
+                   "value": true
+                }
+             }
+          },
+          "application_settings" : {
+             "csm_settings" : {
+               "rctoken_aud" : {
+                  "value" : "test_aud"
+               }
+             }
+          }
+        }
+
+       YAML example:
+       accessSettings :
+          oauthSettings:
+            loginHint: test_hint
+          gcipSettings:
+            tenantIds:
+            - tenant1-p9puj
+            - tenant2-y8rxc
+            loginPageUri: https://test.com/?apiKey=abcd_efgh
+          corsSettings:
+            allowHttpOptions: true
+       applicationSettings:
+          csmSettings:
+            rctokenAud: test_aud""")
 
 
 def ParseIapIamResource(release_track, args):
@@ -311,9 +356,9 @@ def ParseIapSettingsResource(release_track, args):
             release_track, 'projects/{0}/iap_web'.format(args.project))
       elif args.resource_type == APP_ENGINE_RESOURCE_TYPE:
         if not args.service:
-          raise calliope_exc.RequiredArgumentException(
-              '--service', '`--service` must be specified for '
-              '`--resource-type=app-engine`.')
+          return iap_api.IapSettingsResource(
+              release_track, 'projects/{0}/iap_web/appengine-{1}'.format(
+                  args.project, args.project))
         else:
           if args.version:
             return iap_api.IapSettingsResource(

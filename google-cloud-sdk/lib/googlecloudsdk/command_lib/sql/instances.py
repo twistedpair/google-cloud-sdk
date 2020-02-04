@@ -288,6 +288,10 @@ class _BaseInstances(object):
     original_settings = instance.settings if instance else None
     settings = cls._ConstructBaseSettingsFromArgs(sql_messages, args, instance,
                                                   release_track)
+    if _IsAlpha(release_track):
+      enable_point_in_time_recovery = args.enable_point_in_time_recovery
+    else:
+      enable_point_in_time_recovery = None
 
     backup_configuration = (
         reducers.BackupConfiguration(
@@ -295,7 +299,8 @@ class _BaseInstances(object):
             instance,
             backup=args.backup,
             backup_start_time=args.backup_start_time,
-            enable_bin_log=args.enable_bin_log))
+            enable_bin_log=args.enable_bin_log,
+            enable_point_in_time_recovery=enable_point_in_time_recovery))
     if backup_configuration:
       cls.AddBackupConfigToSettings(settings, backup_configuration)
 
@@ -351,13 +356,19 @@ class _BaseInstances(object):
     if args.enable_database_replication is not None:
       settings.databaseReplicationEnabled = args.enable_database_replication
 
+    if _IsAlpha(release_track):
+      enable_point_in_time_recovery = args.enable_point_in_time_recovery
+    else:
+      enable_point_in_time_recovery = None
+
     backup_configuration = (
         reducers.BackupConfiguration(
             sql_messages,
             instance,
             no_backup=args.no_backup,
             backup_start_time=args.backup_start_time,
-            enable_bin_log=args.enable_bin_log))
+            enable_bin_log=args.enable_bin_log,
+            enable_point_in_time_recovery=enable_point_in_time_recovery))
     if backup_configuration:
       cls.AddBackupConfigToSettings(settings, backup_configuration)
 

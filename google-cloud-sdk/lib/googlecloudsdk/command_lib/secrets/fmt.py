@@ -27,8 +27,6 @@ table(
 )
 """
 
-_LOCATION_URI_FUNC = lambda r: secrets_args.ParseLocationRef(r.name).SelfLink()
-
 _SECRET_DATA = """
 value(
   payload.data.decode(base64).decode(utf8)
@@ -43,8 +41,6 @@ table(
   locations_transform():label=LOCATIONS
 )
 """
-
-_SECRET_URI_FUNC = lambda r: secrets_args.ParseSecretRef(r.name).SelfLink()
 
 _VERSION_TABLE = """
 table(
@@ -93,25 +89,26 @@ _SECRET_TRANSFORMS = {
     'locations_transform': _TransformLocations
 }
 
-_VERSION_URI_FUNC = lambda r: secrets_args.ParseVersionRef(r.name).SelfLink()
 
-
-def UseLocationTable(parser):
+def UseLocationTable(parser, api_version):
   parser.display_info.AddFormat(_LOCATION_TABLE)
-  parser.display_info.AddUriFunc(_LOCATION_URI_FUNC)
+  parser.display_info.AddUriFunc(
+      lambda r: secrets_args.ParseLocationRef(r.name, api_version).SelfLink())
 
 
-def UseSecretTable(parser):
+def UseSecretTable(parser, api_version):
   parser.display_info.AddFormat(_SECRET_TABLE)
   parser.display_info.AddTransforms(_SECRET_TRANSFORMS)
-  parser.display_info.AddUriFunc(_SECRET_URI_FUNC)
+  parser.display_info.AddUriFunc(
+      lambda r: secrets_args.ParseSecretRef(r.name, api_version).SelfLink())
 
 
 def UseSecretData(parser):
   parser.display_info.AddFormat(_SECRET_DATA)
 
 
-def UseVersionTable(parser):
+def UseVersionTable(parser, api_version):
   parser.display_info.AddFormat(_VERSION_TABLE)
   parser.display_info.AddTransforms(_VERSION_STATE_TRANSFORMS)
-  parser.display_info.AddUriFunc(_VERSION_URI_FUNC)
+  parser.display_info.AddUriFunc(
+      lambda r: secrets_args.ParseVersionRef(r.name, api_version).SelfLink())

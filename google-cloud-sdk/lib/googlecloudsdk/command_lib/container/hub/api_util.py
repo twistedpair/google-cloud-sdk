@@ -21,16 +21,13 @@ from __future__ import unicode_literals
 
 import re
 
+from googlecloudsdk.api_lib.container.hub import gkehub_api_util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.container.hub import kube_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
-
-
-def _MembershipClient():
-  api_version = core_apis.ResolveVersion('gkehub')
-  return core_apis.GetClientInstance('gkehub', api_version)
 
 
 def _ComputeClient():
@@ -38,8 +35,43 @@ def _ComputeClient():
   return core_apis.GetClientInstance('compute', api_version)
 
 
-def CreateMembership(project, membership_id, description,
-                     gke_cluster_self_link):
+def MembershipRef(project, location, membership_id):
+  """Get the resource name of a membership.
+
+  Args:
+    project: the project in which to create the membership
+    location: the GCP region of the membership.
+    membership_id: the ID of the membership.
+
+  Returns:
+    the full resource name of the membership in the format of
+    `projects/{project}/locations/{location}/memberships/{membership_id}`
+  """
+
+  return '{}/memberships/{}'.format(ParentRef(project, location), membership_id)
+
+
+def ParentRef(project, location):
+  """Get the resource name of the parent collection of a membership.
+
+  Args:
+    project: the project of the parent collection.
+    location: the GCP region of the membership.
+
+  Returns:
+    the resource name of the parent collection in the format of
+    `projects/{project}/locations/{location}`.
+  """
+
+  return 'projects/{}/locations/{}'.format(project, location)
+
+
+def CreateMembership(project,
+                     membership_id,
+                     description,
+                     gke_cluster_self_link=None,
+                     external_id=None,
+                     release_track=None):
   """Creates a Membership resource in the GKE Hub API.
 
   Args:
@@ -48,6 +80,10 @@ def CreateMembership(project, membership_id, description,
     description: the value to put in the description field
     gke_cluster_self_link: the selfLink for the cluster if it is a GKE cluster,
       or None if it is not
+    external_id: the unique id associated with the cluster,
+      or None if it is not available.
+    release_track: the release_track used in the gcloud command,
+      or None if it is not available.
 
   Returns:
     the created Membership resource.
@@ -56,18 +92,20 @@ def CreateMembership(project, membership_id, description,
     - apitools.base.py.HttpError: if the request returns an HTTP error
     - exceptions raised by waiter.WaitFor()
   """
-  client = _MembershipClient()
+  client = gkehub_api_util.GetApiClientForTrack(release_track)
   messages = client.MESSAGES_MODULE
+  parent_ref = ParentRef(project, 'global')
   request = messages.GkehubProjectsLocationsMembershipsCreateRequest(
       membership=messages.Membership(description=description),
-      parent='projects/{}/locations/global'.format(project),
+      parent=parent_ref,
       membershipId=membership_id,
   )
   if gke_cluster_self_link:
     endpoint = messages.MembershipEndpoint(
         gkeCluster=messages.GkeCluster(resourceLink=gke_cluster_self_link))
     request.membership.endpoint = endpoint
-
+  if external_id:
+    request.membership.externalId = external_id
   op = client.projects_locations_memberships.Create(request)
   op_resource = resources.REGISTRY.ParseRelativeName(
       op.name, collection='gkehub.projects.locations.operations')
@@ -77,12 +115,14 @@ def CreateMembership(project, membership_id, description,
       op_resource, 'Waiting for membership to be created')
 
 
-def GetMembership(name):
+def GetMembership(name, release_track=None):
   """Gets a Membership resource from the GKE Hub API.
 
   Args:
     name: the full resource name of the membership to get, e.g.,
       projects/foo/locations/global/memberships/name.
+    release_track: the release_track used in the gcloud command,
+      or None if it is not available.
 
   Returns:
     a Membership resource
@@ -91,27 +131,27 @@ def GetMembership(name):
     apitools.base.py.HttpError: if the request returns an HTTP error
   """
 
-  client = _MembershipClient()
+  client = gkehub_api_util.GetApiClientForTrack(release_track)
   return client.projects_locations_memberships.Get(
       client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsGetRequest(
           name=name))
 
 
-def ProjectForClusterUUID(uuid, projects):
+def ProjectForClusterUUID(uuid, projects, release_track=None):
   """Retrieves the project that the cluster UUID has a Membership with.
 
   Args:
     uuid: the UUID of the cluster.
     projects: sequence of project IDs to consider.
-
+    release_track: the release_track used in the gcloud command,
+      or None if it is not available.
   Returns:
     a project ID.
 
   Raises:
     apitools.base.py.HttpError: if any request returns an HTTP error
   """
-
-  client = _MembershipClient()
+  client = gkehub_api_util.GetApiClientForTrack(release_track)
   for project in projects:
     if project:
       parent = 'projects/{}/locations/global'.format(project)
@@ -148,18 +188,19 @@ def _ClusterUUIDForMembershipName(membership_name):
   return matches[0]
 
 
-def DeleteMembership(name):
+def DeleteMembership(name, release_track=None):
   """Deletes a membership from the GKE Hub.
 
   Args:
     name: the full resource name of the membership to delete, e.g.,
       projects/foo/locations/global/memberships/name.
-
+    release_track: the release_track used in the gcloud command,
+      or None if it is not available.
   Raises:
     apitools.base.py.HttpError: if the request returns an HTTP error
   """
 
-  client = _MembershipClient()
+  client = gkehub_api_util.GetApiClientForTrack(release_track)
   op = client.projects_locations_memberships.Delete(
       client.MESSAGES_MODULE
       .GkehubProjectsLocationsMembershipsDeleteRequest(name=name))
@@ -169,6 +210,65 @@ def DeleteMembership(name):
       waiter.CloudOperationPollerNoResources(
           client.projects_locations_operations), op_resource,
       'Waiting for membership to be deleted')
+
+
+def ValidateExclusivity(cr_manifest, parent_ref, intended_membership,
+                        release_track=None):
+  """Validate the exclusivity state of the cluster.
+
+  Args:
+    cr_manifest: the YAML manifest of the Membership CR fetched from the
+      cluster.
+    parent_ref: the parent collection that the cluster is to be registered to.
+    intended_membership: the ID of the membership to be created.
+    release_track: the release_track used in the gcloud command,
+      or None if it is not available.
+  Returns:
+    the ValidateExclusivityResponse from API.
+
+  Raises:
+    apitools.base.py.HttpError: if the request returns an HTTP error.
+  """
+  # TODO(b/145955278): Use release_track to select the right Exclusivity API.
+  release_track = base.ReleaseTrack.BETA
+  client = gkehub_api_util.GetApiClientForTrack(release_track)
+  return client.projects_locations_memberships.ValidateExclusivity(
+      client.MESSAGES_MODULE
+      .GkehubProjectsLocationsMembershipsValidateExclusivityRequest(
+          parent=parent_ref,
+          crManifest=cr_manifest,
+          intendedMembership=intended_membership))
+
+
+def GenerateExclusivityManifest(crd_manifest, cr_manifest, membership_ref,
+                                release_track=None):
+  """Generate the CR(D) manifests to apply to the registered cluster.
+
+  Args:
+    crd_manifest: the YAML manifest of the Membership CRD fetched from the
+      cluster.
+    cr_manifest: the YAML manifest of the Membership CR fetched from the
+      cluster.
+    membership_ref: the full resource name of the membership.
+    release_track: the release_track used in the gcloud command,
+      or None if it is not available.
+
+  Returns:
+    the GenerateExclusivityManifestResponse from API.
+
+  Raises:
+    apitools.base.py.HttpError: if the request returns an HTTP error.
+  """
+
+  # TODO(b/145955278): remove static mapping after Exclusivity is promoted.
+  release_track = base.ReleaseTrack.BETA
+  client = gkehub_api_util.GetApiClientForTrack(release_track)
+  return client.projects_locations_memberships.GenerateExclusivityManifest(
+      client.MESSAGES_MODULE
+      .GkehubProjectsLocationsMembershipsGenerateExclusivityManifestRequest(
+          name=membership_ref,
+          crdManifest=crd_manifest,
+          crManifest=cr_manifest))
 
 
 def GKEClusterSelfLink(args):

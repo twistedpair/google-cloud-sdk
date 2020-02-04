@@ -164,6 +164,10 @@ CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG = """\
 The CloudRun-on-GKE addon (--addons=CloudRun) requires HTTP Load Balancing to be enabled via the --addons=HttpLoadBalancing flag.
 """
 
+CLOUDBUILD_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG = """\
+Cloud Build for Anthos (--addons=CloudBuild) requires Cloud Logging and Cloud Monitoring to be enabled via the --enable-stackdriver-kubernetes flag.
+"""
+
 DEFAULT_MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG = """\
 Cannot use --default-max-pods-per-node without --enable-ip-alias.
 """
@@ -1757,6 +1761,11 @@ class APIAdapter(object):
               state=self.messages.DatabaseEncryption.StateValueValuesEnum
               .DECRYPTED))
 
+    if options.enable_shielded_nodes is not None:
+      update = self.messages.ClusterUpdate(
+          desiredShieldedNodes=self.messages.ShieldedNodes(
+              enabled=options.enable_shielded_nodes))
+
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -2620,6 +2629,8 @@ class V1Beta1Adapter(V1Adapter):
             disabled=False)
       # CloudBuild is disabled by default.
       if CLOUDBUILD in options.addons:
+        if not options.enable_stackdriver_kubernetes:
+          raise util.Error(CLOUDBUILD_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         cluster.addonsConfig.cloudBuildConfig = self.messages.CloudBuildConfig(
             enabled=True)
       # Istio is disabled by default.
@@ -2663,11 +2674,6 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               identityNamespace=''))
-
-    if options.enable_shielded_nodes is not None:
-      update = self.messages.ClusterUpdate(
-          desiredShieldedNodes=self.messages.ShieldedNodes(
-              enabled=options.enable_shielded_nodes))
 
     if options.release_channel is not None:
       update = self.messages.ClusterUpdate(
@@ -2947,6 +2953,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             disabled=False, enableAlphaFeatures=enable_alpha_features)
       # Cloud Build is disabled by default.
       if CLOUDBUILD in options.addons:
+        if not options.enable_stackdriver_kubernetes:
+          raise util.Error(CLOUDBUILD_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         cluster.addonsConfig.cloudBuildConfig = self.messages.CloudBuildConfig(
             enabled=True)
       # Istio is disabled by default
@@ -3012,11 +3020,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       update = self.messages.ClusterUpdate(
           desiredCostManagementConfig=self.messages.CostManagementConfig(
               enabled=options.enable_cost_management))
-
-    if options.enable_shielded_nodes is not None:
-      update = self.messages.ClusterUpdate(
-          desiredShieldedNodes=self.messages.ShieldedNodes(
-              enabled=options.enable_shielded_nodes))
 
     if options.disable_default_snat is not None:
       disable_default_snat = self.messages.DefaultSnatStatus(

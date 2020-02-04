@@ -976,7 +976,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
   the instance.
 
   Fields:
-    eligibility: Optional: user-defined instance eligibility.
+    eligibility: Optional. User-defined instance eligibility.
     exclusions: List of SLO exclusion windows. When multiple entries in the
       list match (matching the exclusion time-window against current time
       point) the exclusion reason used in the first matching entry will be
@@ -988,7 +988,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
       temporary ineligible for the purpose of SLO calculation. For permanent
       instance SLO exclusion, use of custom instance eligibility is
       recommended. See 'eligibility' field below.
-    nodes: Optional: list of nodes. Some producers need to use per-node
+    nodes: Optional. List of nodes. Some producers need to use per-node
       metadata to calculate SLO. This field allows such producers to publish
       per-node SLO meta data, which will be consumed by SSA Eligibility
       Exporter and published in the form of per node metric to Monarch.

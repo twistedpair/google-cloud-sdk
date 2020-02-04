@@ -139,38 +139,51 @@ class GoogleCloudOrgpolicyV2alpha1ListPoliciesResponse(_messages.Message):
 
 
 class GoogleCloudOrgpolicyV2alpha1Policy(_messages.Message):
-  r"""A GoogleCloudOrgpolicyV2alpha1Policy object.
+  r"""Defines a Cloud Organization `Policy` which is used to specify
+  `Constraints` for configurations of Cloud Platform resources.
 
   Fields:
     alternate: An alternate policy configuration that will be used instead of
       the baseline policy configurations as determined by the launch.
       Currently the only way the launch can trigger the alternate
       configuration is via dry-run/dark.
+    name: Immutable. The resource name of the Policy. Must be one of the
+      following forms, where constraint_name is the name of the constraint
+      which this Policy configures: *
+      `projects/{project_number}/policies/{constraint_name}` *
+      `folders/{folder_id}/policies/{constraint_name}` *
+      `organizations/{organization_id}/policies/{constraint_name}`  For
+      example, "projects/123/policies/compute.disableSerialPortAccess".  Note:
+      `projects/{project_id}/policies/{constraint_name}` is also an acceptable
+      name for API requests, but responses will return the name using the
+      equivalent project number.
     spec: A GoogleCloudOrgpolicyV2alpha1PolicySpec attribute.
   """
 
   alternate = _messages.MessageField('GoogleCloudOrgpolicyV2alpha1AlternatePolicySpec', 1)
-  spec = _messages.MessageField('GoogleCloudOrgpolicyV2alpha1PolicySpec', 2)
+  name = _messages.StringField(2)
+  spec = _messages.MessageField('GoogleCloudOrgpolicyV2alpha1PolicySpec', 3)
 
 
 class GoogleCloudOrgpolicyV2alpha1PolicySpec(_messages.Message):
-  r"""Defines a Cloud Organization `Policy` which is used to specify
+  r"""Defines a Cloud Organization `PolicySpec` which is used to specify
   `Constraints` for configurations of Cloud Platform resources.
 
   Fields:
-    etag: This field is ignored if used in a `CreatePolicy` request.  When the
-      `Policy` is returned from either a `GetPolicy` or a `ListPolicies`
-      request, this `etag` indicates the version of the current `Policy` to
-      use when executing a read-modify-write loop.  When the `Policy` is
-      returned from a `GetEffectivePolicy` request, the `etag` will be unset.
-      When the `Policy` is used in a `UpdatePolicy` method, use the `etag`
-      value that was returned from a `GetPolicy` request as part of a read-
-      modify-write loop for concurrency control. If `UpdatePolicyRequest`'s
-      `force_unconditional_write` field is set to true, this field must not be
-      set. Otherwise, the `etag` is required for `UpdatePolicy`.
+    etag: An opaque tag indicating the current version of the `Policy`, used
+      for concurrency control.  This field is ignored if used in a
+      `CreatePolicy` request.  When the `Policy` is returned from either a
+      `GetPolicy` or a `ListPolicies` request, this `etag` indicates the
+      version of the current `Policy` to use when executing a read-modify-
+      write loop.  When the `Policy` is returned from a `GetEffectivePolicy`
+      request, the `etag` will be unset.  When the `Policy` is used in a
+      `UpdatePolicy` method, use the `etag` value that was returned from a
+      `GetPolicy` request as part of a read-modify-write loop for concurrency
+      control. If `UpdatePolicyRequest`'s `force_unconditional_write` field is
+      set to true, this field must not be set. Otherwise, the `etag` is
+      required for `UpdatePolicy`.
     inheritFromParent: This field can be set only for Policies which configure
       list constraints.
-    name: A string attribute.
     reset: Ignores policies set above this resource and restores the
       `constraint_default` enforcement behavior of the specific `Constraint`
       at this resource. This field can be set in policies for either list or
@@ -183,17 +196,16 @@ class GoogleCloudOrgpolicyV2alpha1PolicySpec(_messages.Message):
       PolicyRule without a condition.   - During policy evaluation,
       PolicyRules with conditions that are     true for a target resource take
       precedence.
-    updateTime: Output only. The time stamp the `Policy` was previously
-      updated. This represents the last time a call to `CreatePolicy` or
-      `UpdatePolicy` was made for that `Policy`.
+    updateTime: Output only. The time stamp this was previously updated. This
+      represents the last time a call to `CreatePolicy` or `UpdatePolicy` was
+      made for that `Policy`.
   """
 
   etag = _messages.StringField(1)
   inheritFromParent = _messages.BooleanField(2)
-  name = _messages.StringField(3)
-  reset = _messages.BooleanField(4)
-  rules = _messages.MessageField('GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRule', 5, repeated=True)
-  updateTime = _messages.StringField(6)
+  reset = _messages.BooleanField(3)
+  rules = _messages.MessageField('GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRule', 4, repeated=True)
+  updateTime = _messages.StringField(5)
 
 
 class GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRule(_messages.Message):
@@ -202,7 +214,7 @@ class GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRule(_messages.Message):
   Fields:
     allowAll: Setting this to true means that all values are allowed. This
       field can be set only in Policies for list constraints.
-    condition: An optional condition which determines whether this rule is
+    condition: Optional. A condition which determines whether this rule is
       used in the evaluation of the policy. When set, the `expression` field
       in the `Expr' must include from 1 to 10 subexpressions, joined by the
       "||" or "&&" operators. Each subexpression must be of the form
@@ -396,7 +408,16 @@ class OrgpolicyPoliciesPatchRequest(_messages.Message):
       `etag` is required.
     googleCloudOrgpolicyV2alpha1Policy: A GoogleCloudOrgpolicyV2alpha1Policy
       resource to be passed as the request body.
-    name: A string attribute.
+    name: Immutable. The resource name of the Policy. Must be one of the
+      following forms, where constraint_name is the name of the constraint
+      which this Policy configures: *
+      `projects/{project_number}/policies/{constraint_name}` *
+      `folders/{folder_id}/policies/{constraint_name}` *
+      `organizations/{organization_id}/policies/{constraint_name}`  For
+      example, "projects/123/policies/compute.disableSerialPortAccess".  Note:
+      `projects/{project_id}/policies/{constraint_name}` is also an acceptable
+      name for API requests, but responses will return the name using the
+      equivalent project number.
   """
 
   forceUnconditionalWrite = _messages.BooleanField(1)

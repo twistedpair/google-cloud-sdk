@@ -35,54 +35,10 @@ class CloudbuildV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.oauth = self.OauthService(self)
     self.operations = self.OperationsService(self)
     self.projects_builds = self.ProjectsBuildsService(self)
     self.projects_triggers = self.ProjectsTriggersService(self)
     self.projects = self.ProjectsService(self)
-
-  class OauthService(base_api.BaseApiService):
-    """Service class for the oauth resource."""
-
-    _NAME = u'oauth'
-
-    def __init__(self, client):
-      super(CloudbuildV1.OauthService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def ProcessOAuthCallback(self, request, global_params=None):
-      r"""ProcessOAuthCallback fulfills the last leg of the OAuth dance with a.
-source provider.
-For GitHub this is as defined by
-https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#2-users-are-redirected-back-to-your-site-by-github
-Users will not be able to call this in any meaningful way since they don't
-have access to the OAuth code used in the exchange.
-For now, this rpc only supports GitHubEnterprise, but will eventually
-replace GenerateGitHubAccessToken
-
-      Args:
-        request: (CloudbuildOauthProcessOAuthCallbackRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('ProcessOAuthCallback')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ProcessOAuthCallback.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudbuild.oauth.processOAuthCallback',
-        ordered_params=[],
-        path_params=[],
-        query_params=[u'code', u'namespace', u'state'],
-        relative_path=u'v1/oauth:processOAuthCallback',
-        request_field='',
-        request_type_name=u'CloudbuildOauthProcessOAuthCallbackRequest',
-        response_type_name=u'Empty',
-        supports_download=False,
-    )
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""

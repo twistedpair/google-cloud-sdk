@@ -92,14 +92,19 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
   created by NAP.
 
   Fields:
+    management: Specifies the node management options for NAP created node-
+      pools.
     oauthScopes: Scopes that are used by NAP when creating node pools. If
       oauth_scopes are specified, service_account should be empty.
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs. If service_account is specified, scopes should be empty.
+    upgradeSettings: Specifies the upgrade settings for NAP created node pools
   """
 
-  oauthScopes = _messages.StringField(1, repeated=True)
-  serviceAccount = _messages.StringField(2)
+  management = _messages.MessageField('NodeManagement', 1)
+  oauthScopes = _messages.StringField(2, repeated=True)
+  serviceAccount = _messages.StringField(3)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 4)
 
 
 class BigQueryDestination(_messages.Message):

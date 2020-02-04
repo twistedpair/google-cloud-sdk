@@ -26,9 +26,9 @@ class Collections(enum.Enum):
 
   PROJECTS = (
       'projects',
-      'projects/{project}/iap_web',
+      'projects/{projectsId}',
       {},
-      [u'project'],
+      [u'projectsId'],
       True
   )
   PROJECTS_BRANDS = (

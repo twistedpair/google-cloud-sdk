@@ -899,73 +899,6 @@ class EnvVarSource(_messages.Message):
   secretKeyRef = _messages.MessageField('SecretKeySelector', 2)
 
 
-class EventType(_messages.Message):
-  r"""A EventType object.
-
-  Fields:
-    apiVersion: The API version for this call such as
-      "eventing.knative.dev/v1alpha1".
-    kind: The kind of resource, in this case "EventType".
-    metadata: Metadata associated with this EventType.
-    spec: Spec defines the desired state of the EventType.
-  """
-
-  apiVersion = _messages.StringField(1)
-  kind = _messages.StringField(2)
-  metadata = _messages.MessageField('ObjectMeta', 3)
-  spec = _messages.MessageField('EventTypeSpec', 4)
-
-
-class EventTypeImporter(_messages.Message):
-  r"""A EventTypeImporter object.
-
-  Fields:
-    apiVersion: The API version of the importer CRD.
-    kind: The kind of the importer CRD.
-    parameters: Parameters required to create an importer for the EventType.
-  """
-
-  apiVersion = _messages.StringField(1)
-  kind = _messages.StringField(2)
-  parameters = _messages.MessageField('EventTypeParameter', 3, repeated=True)
-
-
-class EventTypeParameter(_messages.Message):
-  r"""A EventTypeParameter object.
-
-  Fields:
-    description: Description of the parameter. E.g. "Google Cloud Project Id."
-    name: Name of the parameter. E.g. googleCloudProject.
-  """
-
-  description = _messages.StringField(1)
-  name = _messages.StringField(2)
-
-
-class EventTypeSpec(_messages.Message):
-  r"""A EventTypeSpec object.
-
-  Fields:
-    broker: Refers to the Broker that can provide the EventType.
-    description: Description is a string describing what the EventType is
-      about. +optional
-    importer: The importer that provides this EventType to the eventing mesh.
-    schema: Schema is a URI with the EventType schema. It may be a JSON
-      schema, a protobuf schema, etc. +optional
-    source: Source is a valid URI. Refers to the CloudEvent source as it
-      enters into the eventing mesh.
-    type: Type is authoritative. This refers to the CloudEvent type as it
-      enters into the eventing mesh.
-  """
-
-  broker = _messages.StringField(1)
-  description = _messages.StringField(2)
-  importer = _messages.MessageField('EventTypeImporter', 3)
-  schema = _messages.StringField(4)
-  source = _messages.StringField(5)
-  type = _messages.StringField(6)
-
-
 class ExecAction(_messages.Message):
   r"""ExecAction describes a "run in container" action.
 
@@ -1065,32 +998,6 @@ class Handler(_messages.Message):
   exec_ = _messages.MessageField('ExecAction', 1)
   httpGet = _messages.MessageField('HTTPGetAction', 2)
   tcpSocket = _messages.MessageField('TCPSocketAction', 3)
-
-
-class Initializer(_messages.Message):
-  r"""Initializer is information about an initializer that has not yet
-  completed.
-
-  Fields:
-    name: name of the process that is responsible for initializing this
-      object.
-  """
-
-  name = _messages.StringField(1)
-
-
-class Initializers(_messages.Message):
-  r"""Initializers tracks the progress of initialization.
-
-  Fields:
-    pending: Pending is a list of initializers that must execute in order
-      before this object is visible. When the last pending initializer is
-      removed, and no failing result is set, the initializers struct will be
-      set to nil and the object is considered as initialized and visible to
-      all clients. +patchMergeKey=name +patchStrategy=merge
-  """
-
-  pending = _messages.MessageField('Initializer', 1, repeated=True)
 
 
 class IntOrString(_messages.Message):
@@ -1240,25 +1147,6 @@ class ListDomainMappingsResponse(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('DomainMapping', 2, repeated=True)
-  kind = _messages.StringField(3)
-  metadata = _messages.MessageField('ListMeta', 4)
-  unreachable = _messages.StringField(5, repeated=True)
-
-
-class ListEventTypesResponse(_messages.Message):
-  r"""ListEventTypesResponse is a list of EventType resources.
-
-  Fields:
-    apiVersion: The API version for this call such as
-      "eventing.knative.dev/v1alpha1".
-    items: List of EventTypes.
-    kind: The kind of this resource, in this case "EventTypeList".
-    metadata: Metadata associated with this EventType list.
-    unreachable: Locations that could not be reached.
-  """
-
-  apiVersion = _messages.StringField(1)
-  items = _messages.MessageField('EventType', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
   unreachable = _messages.StringField(5, repeated=True)
@@ -1573,16 +1461,6 @@ class ObjectMeta(_messages.Message):
       conventions.md#idempotency +optional  string generateName = 2;
     generation: A sequence number representing a specific generation of the
       desired state. Populated by the system. Read-only. +optional
-    initializers: Not currently supported by Cloud Run.  An initializer is a
-      controller which enforces some system invariant at object creation time.
-      This field is a list of initializers that have not yet acted on this
-      object. If nil or empty, this object has been completely initialized.
-      Otherwise, the object is considered uninitialized and is hidden (in
-      list/watch and get calls) from clients that haven't explicitly asked to
-      observe uninitialized objects.  When an object is created, the system
-      will populate this list with the current set of initializers. Only
-      privileged users may set or modify this list. Once it is empty, it may
-      not be modified further by any user.
     labels: Map of string keys and values that can be used to organize and
       categorize (scope and select) objects. May match selectors of
       replication controllers and routes. More info: http://kubernetes.io/docs
@@ -1681,14 +1559,13 @@ class ObjectMeta(_messages.Message):
   finalizers = _messages.StringField(6, repeated=True)
   generateName = _messages.StringField(7)
   generation = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  initializers = _messages.MessageField('Initializers', 9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  namespace = _messages.StringField(12)
-  ownerReferences = _messages.MessageField('OwnerReference', 13, repeated=True)
-  resourceVersion = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  uid = _messages.StringField(16)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  namespace = _messages.StringField(11)
+  ownerReferences = _messages.MessageField('OwnerReference', 12, repeated=True)
+  resourceVersion = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  uid = _messages.StringField(15)
 
 
 class ObjectReference(_messages.Message):
@@ -2470,21 +2347,6 @@ class RunNamespacesCloudauditlogssourcesListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunNamespacesCloudauditlogssourcesReplaceCloudAuditLogsSourceRequest(_messages.Message):
-  r"""A RunNamespacesCloudauditlogssourcesReplaceCloudAuditLogsSourceRequest
-  object.
-
-  Fields:
-    cloudAuditLogsSource: A CloudAuditLogsSource resource to be passed as the
-      request body.
-    name: The name of the cloudauditlogssource being retrieved. If needed,
-      replace {namespace_id} with the project ID.
-  """
-
-  cloudAuditLogsSource = _messages.MessageField('CloudAuditLogsSource', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class RunNamespacesCloudpubsubsourcesCreateRequest(_messages.Message):
   r"""A RunNamespacesCloudpubsubsourcesCreateRequest object.
 
@@ -2558,20 +2420,6 @@ class RunNamespacesCloudpubsubsourcesListRequest(_messages.Message):
   parent = _messages.StringField(6, required=True)
   resourceVersion = _messages.StringField(7)
   watch = _messages.BooleanField(8)
-
-
-class RunNamespacesCloudpubsubsourcesReplaceCloudPubSubSourceRequest(_messages.Message):
-  r"""A RunNamespacesCloudpubsubsourcesReplaceCloudPubSubSourceRequest object.
-
-  Fields:
-    cloudPubSubSource: A CloudPubSubSource resource to be passed as the
-      request body.
-    name: The name of the cloudpubsubsource being retrieved. If needed,
-      replace {namespace_id} with the project ID.
-  """
-
-  cloudPubSubSource = _messages.MessageField('CloudPubSubSource', 1)
-  name = _messages.StringField(2, required=True)
 
 
 class RunNamespacesConfigurationsGetRequest(_messages.Message):
@@ -2678,47 +2526,6 @@ class RunNamespacesDomainmappingsListRequest(_messages.Message):
     limit: The maximum number of records that should be returned.
     parent: The project ID or project number from which the domain mappings
       should be listed.
-    resourceVersion: The baseline resource version from which the list or
-      watch operation should start. Not currently used by Cloud Run.
-    watch: Flag that indicates that the client expects to watch this resource
-      as well. Not currently used by Cloud Run.
-  """
-
-  continue_ = _messages.StringField(1)
-  fieldSelector = _messages.StringField(2)
-  includeUninitialized = _messages.BooleanField(3)
-  labelSelector = _messages.StringField(4)
-  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  parent = _messages.StringField(6, required=True)
-  resourceVersion = _messages.StringField(7)
-  watch = _messages.BooleanField(8)
-
-
-class RunNamespacesEventtypesGetRequest(_messages.Message):
-  r"""A RunNamespacesEventtypesGetRequest object.
-
-  Fields:
-    name: The name of the trigger being retrieved. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class RunNamespacesEventtypesListRequest(_messages.Message):
-  r"""A RunNamespacesEventtypesListRequest object.
-
-  Fields:
-    continue_: Optional encoded string to continue paging.
-    fieldSelector: Allows to filter resources based on a specific value for a
-      field name. Send this in a query string format. i.e.
-      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
-    includeUninitialized: Not currently used by Cloud Run.
-    labelSelector: Allows to filter resources based on a label. Supported
-      operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the EventTypes should
-      be listed.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -3095,19 +2902,6 @@ class RunNamespacesTriggersListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunNamespacesTriggersReplaceTriggerRequest(_messages.Message):
-  r"""A RunNamespacesTriggersReplaceTriggerRequest object.
-
-  Fields:
-    name: The name of the trigger being retrieved. If needed, replace
-      {namespace_id} with the project ID.
-    trigger: A Trigger resource to be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  trigger = _messages.MessageField('Trigger', 2)
-
-
 class RunProjectsLocationsAuthorizeddomainsListRequest(_messages.Message):
   r"""A RunProjectsLocationsAuthorizeddomainsListRequest object.
 
@@ -3197,22 +2991,6 @@ class RunProjectsLocationsCloudauditlogssourcesListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunProjectsLocationsCloudauditlogssourcesReplaceCloudAuditLogsSourceRequest(_messages.Message):
-  r"""A
-  RunProjectsLocationsCloudauditlogssourcesReplaceCloudAuditLogsSourceRequest
-  object.
-
-  Fields:
-    cloudAuditLogsSource: A CloudAuditLogsSource resource to be passed as the
-      request body.
-    name: The name of the cloudauditlogssource being retrieved. If needed,
-      replace {namespace_id} with the project ID.
-  """
-
-  cloudAuditLogsSource = _messages.MessageField('CloudAuditLogsSource', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class RunProjectsLocationsCloudpubsubsourcesCreateRequest(_messages.Message):
   r"""A RunProjectsLocationsCloudpubsubsourcesCreateRequest object.
 
@@ -3286,21 +3064,6 @@ class RunProjectsLocationsCloudpubsubsourcesListRequest(_messages.Message):
   parent = _messages.StringField(6, required=True)
   resourceVersion = _messages.StringField(7)
   watch = _messages.BooleanField(8)
-
-
-class RunProjectsLocationsCloudpubsubsourcesReplaceCloudPubSubSourceRequest(_messages.Message):
-  r"""A RunProjectsLocationsCloudpubsubsourcesReplaceCloudPubSubSourceRequest
-  object.
-
-  Fields:
-    cloudPubSubSource: A CloudPubSubSource resource to be passed as the
-      request body.
-    name: The name of the cloudpubsubsource being retrieved. If needed,
-      replace {namespace_id} with the project ID.
-  """
-
-  cloudPubSubSource = _messages.MessageField('CloudPubSubSource', 1)
-  name = _messages.StringField(2, required=True)
 
 
 class RunProjectsLocationsConfigurationsGetRequest(_messages.Message):
@@ -3407,47 +3170,6 @@ class RunProjectsLocationsDomainmappingsListRequest(_messages.Message):
     limit: The maximum number of records that should be returned.
     parent: The project ID or project number from which the domain mappings
       should be listed.
-    resourceVersion: The baseline resource version from which the list or
-      watch operation should start. Not currently used by Cloud Run.
-    watch: Flag that indicates that the client expects to watch this resource
-      as well. Not currently used by Cloud Run.
-  """
-
-  continue_ = _messages.StringField(1)
-  fieldSelector = _messages.StringField(2)
-  includeUninitialized = _messages.BooleanField(3)
-  labelSelector = _messages.StringField(4)
-  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  parent = _messages.StringField(6, required=True)
-  resourceVersion = _messages.StringField(7)
-  watch = _messages.BooleanField(8)
-
-
-class RunProjectsLocationsEventtypesGetRequest(_messages.Message):
-  r"""A RunProjectsLocationsEventtypesGetRequest object.
-
-  Fields:
-    name: The name of the trigger being retrieved. If needed, replace
-      {namespace_id} with the project ID.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class RunProjectsLocationsEventtypesListRequest(_messages.Message):
-  r"""A RunProjectsLocationsEventtypesListRequest object.
-
-  Fields:
-    continue_: Optional encoded string to continue paging.
-    fieldSelector: Allows to filter resources based on a specific value for a
-      field name. Send this in a query string format. i.e.
-      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
-    includeUninitialized: Not currently used by Cloud Run.
-    labelSelector: Allows to filter resources based on a label. Supported
-      operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
-    parent: The project ID or project number from which the EventTypes should
-      be listed.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start. Not currently used by Cloud Run.
     watch: Flag that indicates that the client expects to watch this resource
@@ -3886,19 +3608,6 @@ class RunProjectsLocationsTriggersListRequest(_messages.Message):
   parent = _messages.StringField(6, required=True)
   resourceVersion = _messages.StringField(7)
   watch = _messages.BooleanField(8)
-
-
-class RunProjectsLocationsTriggersReplaceTriggerRequest(_messages.Message):
-  r"""A RunProjectsLocationsTriggersReplaceTriggerRequest object.
-
-  Fields:
-    name: The name of the trigger being retrieved. If needed, replace
-      {namespace_id} with the project ID.
-    trigger: A Trigger resource to be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  trigger = _messages.MessageField('Trigger', 2)
 
 
 class SELinuxOptions(_messages.Message):
@@ -4520,30 +4229,33 @@ class TriggerFilter(_messages.Message):
   r"""A TriggerFilter object.
 
   Messages:
-    AttributesValue: Optional. Cloud Run fully managed: not supported  Cloud
-      Run on GKE: supported  Attributes filters events by exact match on event
-      context attributes. Each key in the map is compared with the equivalent
-      key in the event context. An event passes the filter if all values are
-      equal to the specified values.  Nested context attributes are not
-      supported as keys. Only string values are supported.
+    AttributesValue: Optional. Attributes filters events by exact match on
+      event context attributes. Each key in the map is compared with the
+      equivalent key in the event context. An event passes the filter if all
+      values are equal to the specified values.  Nested context attributes are
+      not supported as keys. Only string values are supported. Note that this
+      field is optional in knative. In fully managed, 'type' attribute is
+      required due to different broker implementation.
 
   Fields:
-    attributes: Optional. Cloud Run fully managed: not supported  Cloud Run on
-      GKE: supported  Attributes filters events by exact match on event
+    attributes: Optional. Attributes filters events by exact match on event
       context attributes. Each key in the map is compared with the equivalent
       key in the event context. An event passes the filter if all values are
       equal to the specified values.  Nested context attributes are not
-      supported as keys. Only string values are supported.
+      supported as keys. Only string values are supported. Note that this
+      field is optional in knative. In fully managed, 'type' attribute is
+      required due to different broker implementation.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributesValue(_messages.Message):
-    r"""Optional. Cloud Run fully managed: not supported  Cloud Run on GKE:
-    supported  Attributes filters events by exact match on event context
+    r"""Optional. Attributes filters events by exact match on event context
     attributes. Each key in the map is compared with the equivalent key in the
     event context. An event passes the filter if all values are equal to the
     specified values.  Nested context attributes are not supported as keys.
-    Only string values are supported.
+    Only string values are supported. Note that this field is optional in
+    knative. In fully managed, 'type' attribute is required due to different
+    broker implementation.
 
     Messages:
       AdditionalProperty: An additional property for a AttributesValue object.
@@ -4575,8 +4287,10 @@ class TriggerSpec(_messages.Message):
     broker: Broker is the broker that this trigger receives events from. If
       not specified, will default to 'default'.  Not currently supported by
       Cloud Run.
-    filter: Filter is the filter to apply against all events from the Broker.
-      Only events that pass this filter will be sent to the Subscriber.
+    filter: Optional. Filter is the filter to apply against all events from
+      the Broker. Only events that pass this filter will be sent to the
+      Subscriber. Note that filter is optional in knative and is only required
+      in fully managed due to different broker implementation.
     subscriber: Sink is the addressable that will receive events.
   """
 

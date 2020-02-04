@@ -33,7 +33,7 @@ def AddAudienceArg(parser):
       '--audiences',
       type=arg_parsers.ArgList(),
       metavar='AUDIENCES',
-      help=('Comma-separated list of audiences which are the intended'
+      help=('Comma-separated list of audiences which are the intended '
             'recipients of the token.'))
 
 

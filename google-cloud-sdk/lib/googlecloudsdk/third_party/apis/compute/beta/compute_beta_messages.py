@@ -39483,7 +39483,10 @@ class ResourcePoliciesScopedList(_messages.Message):
 
 
 class ResourcePolicy(_messages.Message):
-  r"""A ResourcePolicy object.
+  r"""Represents a Resource Policy resource. You can use resource policies to
+  schedule actions for some Compute Engine resources. For example, you can use
+  them to schedule persistent disk snapshots.  (== resource_for
+  {$api_version}.resourcePolicies ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of resource policy
@@ -39696,7 +39699,8 @@ class ResourcePolicyDailyCycle(_messages.Message):
   r"""Time window specified for daily operations.
 
   Fields:
-    daysInCycle: Defines a schedule that runs every nth day of the month.
+    daysInCycle: Defines a schedule with units measured in months. The value
+      determines how many months pass between the start of each cycle.
     duration: [Output only] A predetermined duration for the window,
       automatically chosen to be the smallest possible in the given scenario.
     startTime: Start time of the window. This must be in UTC format that
@@ -39745,7 +39749,8 @@ class ResourcePolicyHourlyCycle(_messages.Message):
   Fields:
     duration: [Output only] Duration of the time window, automatically chosen
       to be smallest possible in the given scenario.
-    hoursInCycle: Allows to define schedule that runs every nth hour.
+    hoursInCycle: Defines a schedule with units measured in hours. The value
+      determines how many hours pass between the start of each cycle.
     startTime: Time within the window to start the operations. It must be in
       format "HH:MM", where HH : [00-23] and MM : [00-00] GMT.
   """
@@ -40006,11 +40011,14 @@ class ResourcePolicyWeeklyCycleDayOfWeek(_messages.Message):
   r"""A ResourcePolicyWeeklyCycleDayOfWeek object.
 
   Enums:
-    DayValueValuesEnum: Allows to define schedule that runs specified day of
-      the week.
+    DayValueValuesEnum: Defines a schedule that runs on specific days of the
+      week. Specify one or more days. The following options are available:
+      MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY.
 
   Fields:
-    day: Allows to define schedule that runs specified day of the week.
+    day: Defines a schedule that runs on specific days of the week. Specify
+      one or more days. The following options are available: MONDAY, TUESDAY,
+      WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY.
     duration: [Output only] Duration of the time window, automatically chosen
       to be smallest possible in the given scenario.
     startTime: Time within the window to start the operations. It must be in
@@ -40018,7 +40026,9 @@ class ResourcePolicyWeeklyCycleDayOfWeek(_messages.Message):
   """
 
   class DayValueValuesEnum(_messages.Enum):
-    r"""Allows to define schedule that runs specified day of the week.
+    r"""Defines a schedule that runs on specific days of the week. Specify one
+    or more days. The following options are available: MONDAY, TUESDAY,
+    WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY.
 
     Values:
       FRIDAY: <no description>

@@ -921,14 +921,14 @@
           }
         },
         "nodes": {
-          "description": "Optional: list of nodes.\nSome producers need to use per-node metadata to calculate SLO.\nThis field allows such producers to publish per-node SLO meta data,\nwhich will be consumed by SSA Eligibility Exporter and published in the\nform of per node metric to Monarch.",
+          "description": "Optional. List of nodes.\nSome producers need to use per-node metadata to calculate SLO.\nThis field allows such producers to publish per-node SLO meta data,\nwhich will be consumed by SSA Eligibility Exporter and published in the\nform of per node metric to Monarch.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata"
           }
         },
         "eligibility": {
-          "description": "Optional: user-defined instance eligibility.",
+          "description": "Optional. User-defined instance eligibility.",
           "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility"
         }
       }

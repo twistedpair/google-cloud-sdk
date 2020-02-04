@@ -37,7 +37,7 @@ def ConvertOutput(response, args):
   # This enables the log output which was disabled in the request hook
   log.SetUserOutputEnabled(True)
   if not args.dry_run:
-    utils.WaitForOperation(response)
+    utils.WaitForOperation(response, utils.GetApiVersionFromArgs(args))
     log.status.Print('Updated realm: [{}]'.format(args.realm))
     return GetExistingResource(args)
 
@@ -56,19 +56,18 @@ def GetResourceRef(args):
 
 def GetExistingResource(args):
   resource_ref = GetResourceRef(args)
-  api_version = resource_ref.GetCollectionInfo().api_version
-  get_request_message = GetRequestMessage(resource_ref)
+  api_version = utils.GetApiVersionFromArgs(args)
+  get_request_message = GetRequestMessage(resource_ref, api_version)
   orig_resource = utils.GetClient(
       api_version).projects_locations_realms.Get(
           get_request_message)
   return orig_resource
 
 
-def GetRequestMessage(resource_ref):
+def GetRequestMessage(resource_ref, api_version):
   return utils.GetApiMessage(
-      resource_ref
-  ).GameservicesProjectsLocationsRealmsGetRequest(
-      name=resource_ref.RelativeName())
+      api_version).GameservicesProjectsLocationsRealmsGetRequest(
+          name=resource_ref.RelativeName())
 
 
 def ChooseUpdateOrPreviewMethod(unused_instance_ref, args):

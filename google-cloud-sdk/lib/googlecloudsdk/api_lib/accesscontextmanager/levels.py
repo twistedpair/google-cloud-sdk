@@ -34,18 +34,21 @@ class Client(object):
             level_ref,
             description=None,
             title=None,
-            combine_function=None,
-            basic_level_conditions=None):
+            basic_level_combine_function=None,
+            basic_level_conditions=None,
+            custom_level_expr=None):
     """Patch an access level.
 
     Args:
       level_ref: resources.Resource, reference to the level to patch
       description: str, description of the level or None if not updating
       title: str, title of the level or None if not updating
-      combine_function: ZoneTypeValueValuesEnum, combine function enum value of
-        the level or None if not updating
+      basic_level_combine_function: ZoneTypeValueValuesEnum, combine function
+        enum value of the level or None if not updating
       basic_level_conditions: list of Condition, the conditions for a basic
         level or None if not updating
+      custom_level_expr: the expression of the Custom level, or none if not
+        updating.
 
     Returns:
       AccessLevel, the updated access level
@@ -58,14 +61,18 @@ class Client(object):
     if title is not None:
       update_mask.append('title')
       level.title = title
-    if combine_function is not None:
+    if basic_level_combine_function is not None:
       update_mask.append('basic.combiningFunction')
       level.basic = level.basic or self.messages.BasicLevel()
-      level.basic.combiningFunction = combine_function
+      level.basic.combiningFunction = basic_level_combine_function
     if basic_level_conditions is not None:
       update_mask.append('basic.conditions')
       level.basic = level.basic or self.messages.BasicLevel()
       level.basic.conditions = basic_level_conditions
+    if custom_level_expr is not None:
+      update_mask.append('custom')
+      level.custom = level.custom or self.messages.CustomLevel()
+      level.custom.expr = custom_level_expr
     update_mask.sort()  # For ease-of-testing
 
     m = self.messages

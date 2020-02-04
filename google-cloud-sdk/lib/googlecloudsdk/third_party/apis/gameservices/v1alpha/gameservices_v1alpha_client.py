@@ -54,10 +54,9 @@ class GameservicesV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new game server config in a given project, location, and game.
-server deployment. Game server configs are immutable. A game server config
-is not applied until it is rolled out which is managed
-by updating the game server rollout resource.
+      r"""Creates a new Game Server Config in a given project, Location, and Game.
+Server Deployment. Game Server Configs are immutable, and are not applied
+until referenced in the Game Server Deployment Rollout resource.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsConfigsCreateRequest) input message
@@ -84,8 +83,8 @@ by updating the game server rollout resource.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single game server config. The deletion will fail if the game.
-server config is referenced in a game server rollout.
+      r"""Deletes a single Game Server Config. The deletion will fail if the Game.
+Server Config is referenced in a Game Server Deployment Rollout.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsConfigsDeleteRequest) input message
@@ -112,7 +111,7 @@ server config is referenced in a game server rollout.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single game server config.
+      r"""Gets details of a single Game Server Config.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsConfigsGetRequest) input message
@@ -139,8 +138,8 @@ server config is referenced in a game server rollout.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists game server configs in a given project, location, and game server.
-deployment.
+      r"""Lists Game Server Configs in a given project, Location, and Game Server.
+Deployment.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsConfigsListRequest) input message
@@ -177,7 +176,7 @@ deployment.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new game server deployment in a given project and location.
+      r"""Creates a new Game Server Deployment in a given project and Location.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsCreateRequest) input message
@@ -204,7 +203,7 @@ deployment.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single game server deployment.
+      r"""Deletes a single Game Server Deployment.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsDeleteRequest) input message
@@ -231,9 +230,9 @@ deployment.
     )
 
     def FetchDeploymentState(self, request, global_params=None):
-      r"""Retrieves information about the current state of the deployment, e.g. it.
-gathers all the fleets and autoscalars for this deployment.
-This includes fleets running older version of the deployment.
+      r"""Retrieves information about the current state of the Game Server.
+Ddeployment. Gathers all the Agones fleets and Agones autoscalers,
+including fleets running an older version of the Game Server Deployment.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsFetchDeploymentStateRequest) input message
@@ -260,7 +259,7 @@ This includes fleets running older version of the deployment.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single game server deployment.
+      r"""Gets details of a single Game Server Deployment.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsGetRequest) input message
@@ -316,7 +315,7 @@ set.
     )
 
     def GetRollout(self, request, global_params=None):
-      r"""Gets details a single game server deployment rollout.
+      r"""Gets details a single Game Server Deployment Rollout.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsGetRolloutRequest) input message
@@ -343,7 +342,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists game server deployments in a given project and location.
+      r"""Lists Game Server Deployments in a given project and Location.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsListRequest) input message
@@ -370,7 +369,7 @@ set.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches a game server deployment.
+      r"""Patches a Game Server Deployment.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsPatchRequest) input message
@@ -397,8 +396,8 @@ set.
     )
 
     def PreviewRollout(self, request, global_params=None):
-      r"""Previews the game server deployment rollout. This API does not mutate the.
-rollout resource.
+      r"""Previews the Game Server Deployment Rollout. This API does not mutate the.
+Rollout resource.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsPreviewRolloutRequest) input message
@@ -488,7 +487,7 @@ may "fail open" without warning.
     )
 
     def UpdateRollout(self, request, global_params=None):
-      r"""Patches a single game server deployment rollout.
+      r"""Patches a single Game Server Deployment Rollout.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsUpdateRolloutRequest) input message
@@ -747,7 +746,7 @@ is the parent resource, without the operations collection id.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists game server clusters in a given project and location.
+      r"""Lists Game Server Clusters in a given project and location.
 
       Args:
         request: (GameservicesProjectsLocationsRealmsGameServerClustersListRequest) input message
@@ -893,7 +892,7 @@ location.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Realm in a given project and location.
+      r"""Creates a new Realm in a given project and Location.
 
       Args:
         request: (GameservicesProjectsLocationsRealmsCreateRequest) input message
@@ -920,7 +919,7 @@ location.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single realm.
+      r"""Deletes a single Realm.
 
       Args:
         request: (GameservicesProjectsLocationsRealmsDeleteRequest) input message
@@ -947,7 +946,7 @@ location.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single realm.
+      r"""Gets details of a single Realm.
 
       Args:
         request: (GameservicesProjectsLocationsRealmsGetRequest) input message
@@ -974,7 +973,7 @@ location.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists realms in a given project and location.
+      r"""Lists Realms in a given project and Location.
 
       Args:
         request: (GameservicesProjectsLocationsRealmsListRequest) input message

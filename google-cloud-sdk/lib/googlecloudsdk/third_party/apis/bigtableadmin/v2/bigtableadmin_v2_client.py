@@ -450,6 +450,35 @@ creation and delete the backup.
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a Table or Backup resource.
+Returns an empty policy if the resource exists but does not have a policy
+set.
+
+      Args:
+        request: (BigtableadminProjectsInstancesClustersBackupsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups/{backupsId}:getIamPolicy',
+        http_method=u'POST',
+        method_id=u'bigtableadmin.projects.instances.clusters.backups.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v2/{+resource}:getIamPolicy',
+        request_field=u'getIamPolicyRequest',
+        request_type_name=u'BigtableadminProjectsInstancesClustersBackupsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Cloud Bigtable backups. Returns both completed and pending.
 backups.
@@ -502,6 +531,34 @@ backups.
         request_field=u'backup',
         request_type_name=u'BigtableadminProjectsInstancesClustersBackupsPatchRequest',
         response_type_name=u'Backup',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on a Table or Backup resource.
+Replaces any existing policy.
+
+      Args:
+        request: (BigtableadminProjectsInstancesClustersBackupsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/backups/{backupsId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'bigtableadmin.projects.instances.clusters.backups.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v2/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'BigtableadminProjectsInstancesClustersBackupsSetIamPolicyRequest',
+        response_type_name=u'Policy',
         supports_download=False,
     )
 
@@ -832,8 +889,9 @@ for 90 days.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a table resource. Returns an empty.
-policy if an table exists but does not have a policy set.
+      r"""Gets the access control policy for a Table or Backup resource.
+Returns an empty policy if the resource exists but does not have a policy
+set.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesGetIamPolicyRequest) input message
@@ -951,8 +1009,8 @@ Table, if successful.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on a table resource. Replaces any existing.
-policy.
+      r"""Sets the access control policy on a Table or Backup resource.
+Replaces any existing policy.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesSetIamPolicyRequest) input message

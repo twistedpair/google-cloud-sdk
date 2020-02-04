@@ -1793,6 +1793,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.manager = self._Add('manager')
     self.ml = self._Add('ml')
     self.monitoring = self._Add('monitoring')
+    self.networkmanagement = self._Add('networkmanagement')
     self.orgpolicy = self._Add('orgpolicy')
     self.osconfig = self._Add('osconfig')
     self.oslogin = self._Add('oslogin')

@@ -19,7 +19,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.container.hub import api_adapter
+from googlecloudsdk.api_lib.container.hub import gkehub_api_adapter
+from googlecloudsdk.api_lib.container.hub import gkehub_api_util
 from googlecloudsdk.command_lib.container.hub import kube_util
 from googlecloudsdk.command_lib.projects import util as p_util
 from googlecloudsdk.core import exceptions
@@ -199,7 +200,7 @@ def _PurgeAlphaInstaller(kube_client, namespace, project_id):
 
 def _GetConnectAgentOptions(args, upgrade, namespace, image_pull_secret_data,
                             membership_ref):
-  return api_adapter.ConnectAgentOption(
+  return gkehub_api_adapter.ConnectAgentOption(
       name=args.CLUSTER_NAME,
       proxy=args.proxy or '',
       namespace=namespace,
@@ -211,7 +212,7 @@ def _GetConnectAgentOptions(args, upgrade, namespace, image_pull_secret_data,
 
 
 def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
-                      upgrade, membership_ref):
+                      upgrade, membership_ref, release_track=None):
   """Generate the manifest for connect agent from API.
 
   Args:
@@ -223,11 +224,14 @@ def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
     upgrade: if this is an upgrade operation.
     membership_ref: The membership associated with the connect agent in the
       format of `projects/[PROJECT]/locations/global/memberships/[MEMBERSHIP]`
+    release_track: the release_track used in the gcloud command,
+      or None if it is not available.
 
   Returns:
     The full manifest to deploy the connect agent resources.
   """
-  adapter = api_adapter.NewV1Beta1APIAdapter()
+  api_version = gkehub_api_util.GetApiVersionForTrack(release_track)
+  adapter = gkehub_api_adapter.NewAPIAdapter(api_version)
   connect_agent_ref = _GetConnectAgentOptions(args,
                                               upgrade,
                                               DEFAULT_NAMESPACE,
@@ -251,7 +255,7 @@ def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
 def DeployConnectAgent(args,
                        service_account_key_data,
                        image_pull_secret_data,
-                       membership_ref):
+                       membership_ref, release_track=None):
   """Deploys the GKE Connect agent to the cluster.
 
   Args:
@@ -263,7 +267,8 @@ def DeployConnectAgent(args,
     membership_ref: The membership should be associated with the connect agent
       in the format of
       `project/[PROJECT]/location/global/memberships/[MEMBERSHIP]`.
-
+    release_track: the release_track used in the gcloud command,
+      or None if it is not available.
   Raises:
     exceptions.Error: If the agent cannot be deployed properly
     calliope_exceptions.MinimumArgumentException: If the agent cannot be
@@ -278,7 +283,7 @@ def DeployConnectAgent(args,
                                     service_account_key_data,
                                     image_pull_secret_data,
                                     False,
-                                    membership_ref)
+                                    membership_ref, release_track)
 
   # Generate a manifest file if necessary.
   if args.manifest_output_file:

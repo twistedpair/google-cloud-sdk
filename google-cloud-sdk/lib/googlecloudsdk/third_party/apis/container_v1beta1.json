@@ -739,6 +739,10 @@
           "description": "Configuration for NodeLocalDNS, a dns cache running on cluster nodes",
           "$ref": "DnsCacheConfig"
         },
+        "gcePersistentDiskCsiDriverConfig": {
+          "description": "Configuration for the GCE PD CSI driver. This option can only be enabled\nat cluster creation time.",
+          "$ref": "GcePersistentDiskCsiDriverConfig"
+        },
         "kalmConfig": {
           "description": "Configuration for the KALM addon, which manages the lifecycle of k8s\napplications.",
           "$ref": "KalmConfig"
@@ -830,6 +834,17 @@
       "properties": {
         "enabled": {
           "description": "Whether NodeLocal DNSCache is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GcePersistentDiskCsiDriverConfig": {
+      "id": "GcePersistentDiskCsiDriverConfig",
+      "description": "Configuration for the GCE PD CSI driver. This option can only be enabled\nat cluster creation time.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether the GCE PD CSI driver is enabled for this cluster.",
           "type": "boolean"
         }
       }

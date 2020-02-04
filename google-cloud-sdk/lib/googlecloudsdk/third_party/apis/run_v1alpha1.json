@@ -343,10 +343,6 @@
           "type": "integer",
           "format": "int32"
         },
-        "initializers": {
-          "description": "Not currently supported by Cloud Run.\n\nAn initializer is a controller which enforces some system invariant at\nobject creation time. This field is a list of initializers that have not\nyet acted on this object. If nil or empty, this object has been completely\ninitialized. Otherwise, the object is considered uninitialized and is\nhidden (in list\/watch and get calls) from clients that haven't explicitly\nasked to observe uninitialized objects.\n\nWhen an object is created, the system will populate this list with the\ncurrent set of initializers. Only privileged users may set or modify this\nlist. Once it is empty, it may not be modified further by any user.",
-          "$ref": "Initializers"
-        },
         "finalizers": {
           "description": "Not currently supported by Cloud Run.\n\nMust be empty before the object is deleted from the registry. Each entry\nis an identifier for the responsible component that will remove the entry\nfrom the list. If the deletionTimestamp of the object is non-nil, entries\nin this list can only be removed.\n+optional\n+patchStrategy=merge",
           "type": "array",
@@ -388,31 +384,6 @@
         "blockOwnerDeletion": {
           "description": "If true, AND if the owner has the \"foregroundDeletion\" finalizer, then\nthe owner cannot be deleted from the key-value store until this\nreference is removed.\nDefaults to false.\nTo set this field, a user needs \"delete\" permission of the owner,\notherwise 422 (Unprocessable Entity) will be returned.\n+optional",
           "type": "boolean"
-        }
-      }
-    },
-    "Initializers": {
-      "id": "Initializers",
-      "description": "Initializers tracks the progress of initialization.",
-      "type": "object",
-      "properties": {
-        "pending": {
-          "description": "Pending is a list of initializers that must execute in order before this\nobject is visible. When the last pending initializer is removed, and no\nfailing result is set, the initializers struct will be set to nil and the\nobject is considered as initialized and visible to all clients.\n+patchMergeKey=name\n+patchStrategy=merge",
-          "type": "array",
-          "items": {
-            "$ref": "Initializer"
-          }
-        }
-      }
-    },
-    "Initializer": {
-      "id": "Initializer",
-      "description": "Initializer is information about an initializer that has not yet completed.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "name of the process that is responsible for initializing this object.",
-          "type": "string"
         }
       }
     },
@@ -1600,126 +1571,6 @@
         }
       }
     },
-    "EventType": {
-      "id": "EventType",
-      "type": "object",
-      "properties": {
-        "apiVersion": {
-          "description": "The API version for this call such as \"eventing.knative.dev\/v1alpha1\".",
-          "type": "string"
-        },
-        "kind": {
-          "description": "The kind of resource, in this case \"EventType\".",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Metadata associated with this EventType.",
-          "$ref": "ObjectMeta"
-        },
-        "spec": {
-          "description": "Spec defines the desired state of the EventType.",
-          "$ref": "EventTypeSpec"
-        }
-      }
-    },
-    "EventTypeSpec": {
-      "id": "EventTypeSpec",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "Type is authoritative. This refers to the CloudEvent type as it enters\ninto the eventing mesh.",
-          "type": "string"
-        },
-        "source": {
-          "description": "Source is a valid URI. Refers to the CloudEvent source as it enters into\nthe eventing mesh.",
-          "type": "string"
-        },
-        "schema": {
-          "description": "Schema is a URI with the EventType schema. It may be a JSON schema, a\nprotobuf schema, etc.\n+optional",
-          "type": "string"
-        },
-        "description": {
-          "description": "Description is a string describing what the EventType is about.\n+optional",
-          "type": "string"
-        },
-        "broker": {
-          "description": "Refers to the Broker that can provide the EventType.",
-          "type": "string"
-        },
-        "importer": {
-          "description": "The importer that provides this EventType to the eventing mesh.",
-          "$ref": "EventTypeImporter"
-        }
-      }
-    },
-    "EventTypeImporter": {
-      "id": "EventTypeImporter",
-      "type": "object",
-      "properties": {
-        "apiVersion": {
-          "description": "The API version of the importer CRD.",
-          "type": "string"
-        },
-        "kind": {
-          "description": "The kind of the importer CRD.",
-          "type": "string"
-        },
-        "parameters": {
-          "description": "Parameters required to create an importer for the EventType.",
-          "type": "array",
-          "items": {
-            "$ref": "EventTypeParameter"
-          }
-        }
-      }
-    },
-    "EventTypeParameter": {
-      "id": "EventTypeParameter",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Name of the parameter. E.g. googleCloudProject.",
-          "type": "string"
-        },
-        "description": {
-          "description": "Description of the parameter. E.g. \"Google Cloud Project Id.\"",
-          "type": "string"
-        }
-      }
-    },
-    "ListEventTypesResponse": {
-      "id": "ListEventTypesResponse",
-      "description": "ListEventTypesResponse is a list of EventType resources.",
-      "type": "object",
-      "properties": {
-        "apiVersion": {
-          "description": "The API version for this call such as \"eventing.knative.dev\/v1alpha1\".",
-          "type": "string"
-        },
-        "kind": {
-          "description": "The kind of this resource, in this case \"EventTypeList\".",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Metadata associated with this EventType list.",
-          "$ref": "ListMeta"
-        },
-        "items": {
-          "description": "List of EventTypes.",
-          "type": "array",
-          "items": {
-            "$ref": "EventType"
-          }
-        },
-        "unreachable": {
-          "description": "Locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "ListRoutesResponse": {
       "id": "ListRoutesResponse",
       "description": "ListRoutesResponse is a list of Route resources.",
@@ -2360,7 +2211,7 @@
           "type": "string"
         },
         "filter": {
-          "description": "Filter is the filter to apply against all events from the Broker. Only\nevents that pass this filter will be sent to the Subscriber.",
+          "description": "Optional. Filter is the filter to apply against all events from the Broker. Only\nevents that pass this filter will be sent to the Subscriber.\nNote that filter is optional in knative and is only required in fully\nmanaged due to different broker implementation.",
           "$ref": "TriggerFilter"
         },
         "subscriber": {
@@ -2374,7 +2225,7 @@
       "type": "object",
       "properties": {
         "attributes": {
-          "description": "Optional. Cloud Run fully managed: not supported\n\nCloud Run on GKE: supported\n\nAttributes filters events by exact match on event context attributes.\nEach key in the map is compared with the equivalent key in the event\ncontext. An event passes the filter if all values are equal to the\nspecified values.\n\nNested context attributes are not supported as keys.\nOnly string values are supported.",
+          "description": "Optional. Attributes filters events by exact match on event context attributes.\nEach key in the map is compared with the equivalent key in the event\ncontext. An event passes the filter if all values are equal to the\nspecified values.\n\nNested context attributes are not supported as keys.\nOnly string values are supported.\nNote that this field is optional in knative. In fully managed, 'type'\nattribute is required due to different broker implementation.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -3409,96 +3260,6 @@
                 }
               }
             },
-            "eventtypes": {
-              "methods": {
-                "get": {
-                  "id": "run.projects.locations.eventtypes.get",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/eventtypes/{eventtypesId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the trigger being retrieved. If needed, replace\n{namespace_id} with the project ID.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/eventtypes\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "EventType"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to get information about an EventType."
-                },
-                "list": {
-                  "id": "run.projects.locations.eventtypes.list",
-                  "path": "v1alpha1/{+parent}/eventtypes",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/eventtypes",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "The project ID or project number from which the EventTypes should be\nlisted.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "limit": {
-                      "description": "The maximum number of records that should be returned.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "includeUninitialized": {
-                      "description": "Not currently used by Cloud Run.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "fieldSelector": {
-                      "description": "Allows to filter resources based on a specific value for a field name.\nSend this in a query string format. i.e. 'metadata.name%3Dlorem'.\nNot currently used by Cloud Run.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "labelSelector": {
-                      "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "resourceVersion": {
-                      "description": "The baseline resource version from which the list or watch operation should\nstart. Not currently used by Cloud Run.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "watch": {
-                      "description": "Flag that indicates that the client expects to watch this resource as well.\nNot currently used by Cloud Run.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "continue": {
-                      "description": "Optional encoded string to continue paging.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListEventTypesResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to list EventTypes."
-                }
-              }
-            },
             "routes": {
               "methods": {
                 "list": {
@@ -3983,34 +3744,6 @@
                   ],
                   "description": "Rpc to get information about a trigger."
                 },
-                "replaceTrigger": {
-                  "id": "run.projects.locations.triggers.replaceTrigger",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/triggers/{triggersId}",
-                  "httpMethod": "PUT",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the trigger being retrieved. If needed, replace\n{namespace_id} with the project ID.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/triggers\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "Trigger"
-                  },
-                  "response": {
-                    "$ref": "Trigger"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to replace a trigger.\n\nOnly the spec and metadata labels and annotations are modifiable. After\nthe Update request, Cloud Run will work to make the 'status'\nmatch the requested 'spec'.\n\nMay provide metadata.resourceVersion to enforce update from last read for\noptimistic concurrency control."
-                },
                 "delete": {
                   "id": "run.projects.locations.triggers.delete",
                   "path": "v1alpha1/{+name}",
@@ -4169,34 +3902,6 @@
                   ],
                   "description": "Rpc to get information about a cloudauditlogssource."
                 },
-                "replaceCloudAuditLogsSource": {
-                  "id": "run.projects.locations.cloudauditlogssources.replaceCloudAuditLogsSource",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudauditlogssources/{cloudauditlogssourcesId}",
-                  "httpMethod": "PUT",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the cloudauditlogssource being retrieved. If needed, replace\n{namespace_id} with the project ID.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/cloudauditlogssources\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "CloudAuditLogsSource"
-                  },
-                  "response": {
-                    "$ref": "CloudAuditLogsSource"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to replace a cloudauditlogssource.\n\nOnly the spec and metadata labels and annotations are modifiable. After\nthe Update request, Cloud Run will work to make the 'status'\nmatch the requested 'spec'.\n\nMay provide metadata.resourceVersion to enforce update from last read for\noptimistic concurrency control."
-                },
                 "delete": {
                   "id": "run.projects.locations.cloudauditlogssources.delete",
                   "path": "v1alpha1/{+name}",
@@ -4354,34 +4059,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Rpc to get information about a cloudpubsubsource."
-                },
-                "replaceCloudPubSubSource": {
-                  "id": "run.projects.locations.cloudpubsubsources.replaceCloudPubSubSource",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudpubsubsources/{cloudpubsubsourcesId}",
-                  "httpMethod": "PUT",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the cloudpubsubsource being retrieved. If needed, replace\n{namespace_id} with the project ID.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/cloudpubsubsources\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "CloudPubSubSource"
-                  },
-                  "response": {
-                    "$ref": "CloudPubSubSource"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to replace a cloudpubsubsource.\n\nOnly the spec and metadata labels and annotations are modifiable. After\nthe Update request, Cloud Run will work to make the 'status'\nmatch the requested 'spec'.\n\nMay provide metadata.resourceVersion to enforce update from last read for\noptimistic concurrency control."
                 },
                 "delete": {
                   "id": "run.projects.locations.cloudpubsubsources.delete",
@@ -5045,96 +4722,6 @@
             }
           }
         },
-        "eventtypes": {
-          "methods": {
-            "get": {
-              "id": "run.namespaces.eventtypes.get",
-              "path": "apis/eventing.knative.dev/v1alpha1/{+name}",
-              "flatPath": "apis/eventing.knative.dev/v1alpha1/namespaces/{namespacesId}/eventtypes/{eventtypesId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "The name of the trigger being retrieved. If needed, replace\n{namespace_id} with the project ID.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/eventtypes\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "EventType"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to get information about an EventType."
-            },
-            "list": {
-              "id": "run.namespaces.eventtypes.list",
-              "path": "apis/eventing.knative.dev/v1alpha1/{+parent}/eventtypes",
-              "flatPath": "apis/eventing.knative.dev/v1alpha1/namespaces/{namespacesId}/eventtypes",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "The project ID or project number from which the EventTypes should be\nlisted.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
-                  "type": "string"
-                },
-                "limit": {
-                  "description": "The maximum number of records that should be returned.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "includeUninitialized": {
-                  "description": "Not currently used by Cloud Run.",
-                  "location": "query",
-                  "type": "boolean"
-                },
-                "fieldSelector": {
-                  "description": "Allows to filter resources based on a specific value for a field name.\nSend this in a query string format. i.e. 'metadata.name%3Dlorem'.\nNot currently used by Cloud Run.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "labelSelector": {
-                  "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "resourceVersion": {
-                  "description": "The baseline resource version from which the list or watch operation should\nstart. Not currently used by Cloud Run.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "watch": {
-                  "description": "Flag that indicates that the client expects to watch this resource as well.\nNot currently used by Cloud Run.",
-                  "location": "query",
-                  "type": "boolean"
-                },
-                "continue": {
-                  "description": "Optional encoded string to continue paging.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListEventTypesResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to list EventTypes."
-            }
-          }
-        },
         "routes": {
           "methods": {
             "list": {
@@ -5532,34 +5119,6 @@
               ],
               "description": "Rpc to get information about a trigger."
             },
-            "replaceTrigger": {
-              "id": "run.namespaces.triggers.replaceTrigger",
-              "path": "apis/eventing.knative.dev/v1alpha1/{+name}",
-              "flatPath": "apis/eventing.knative.dev/v1alpha1/namespaces/{namespacesId}/triggers/{triggersId}",
-              "httpMethod": "PUT",
-              "parameters": {
-                "name": {
-                  "description": "The name of the trigger being retrieved. If needed, replace\n{namespace_id} with the project ID.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/triggers\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "Trigger"
-              },
-              "response": {
-                "$ref": "Trigger"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to replace a trigger.\n\nOnly the spec and metadata labels and annotations are modifiable. After\nthe Update request, Cloud Run will work to make the 'status'\nmatch the requested 'spec'.\n\nMay provide metadata.resourceVersion to enforce update from last read for\noptimistic concurrency control."
-            },
             "delete": {
               "id": "run.namespaces.triggers.delete",
               "path": "apis/eventing.knative.dev/v1alpha1/{+name}",
@@ -5718,34 +5277,6 @@
               ],
               "description": "Rpc to get information about a cloudauditlogssource."
             },
-            "replaceCloudAuditLogsSource": {
-              "id": "run.namespaces.cloudauditlogssources.replaceCloudAuditLogsSource",
-              "path": "apis/events.cloud.google.com/v1alpha1/{+name}",
-              "flatPath": "apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudauditlogssources/{cloudauditlogssourcesId}",
-              "httpMethod": "PUT",
-              "parameters": {
-                "name": {
-                  "description": "The name of the cloudauditlogssource being retrieved. If needed, replace\n{namespace_id} with the project ID.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/cloudauditlogssources\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "CloudAuditLogsSource"
-              },
-              "response": {
-                "$ref": "CloudAuditLogsSource"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to replace a cloudauditlogssource.\n\nOnly the spec and metadata labels and annotations are modifiable. After\nthe Update request, Cloud Run will work to make the 'status'\nmatch the requested 'spec'.\n\nMay provide metadata.resourceVersion to enforce update from last read for\noptimistic concurrency control."
-            },
             "delete": {
               "id": "run.namespaces.cloudauditlogssources.delete",
               "path": "apis/events.cloud.google.com/v1alpha1/{+name}",
@@ -5903,34 +5434,6 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Rpc to get information about a cloudpubsubsource."
-            },
-            "replaceCloudPubSubSource": {
-              "id": "run.namespaces.cloudpubsubsources.replaceCloudPubSubSource",
-              "path": "apis/events.cloud.google.com/v1alpha1/{+name}",
-              "flatPath": "apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudpubsubsources/{cloudpubsubsourcesId}",
-              "httpMethod": "PUT",
-              "parameters": {
-                "name": {
-                  "description": "The name of the cloudpubsubsource being retrieved. If needed, replace\n{namespace_id} with the project ID.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/cloudpubsubsources\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "CloudPubSubSource"
-              },
-              "response": {
-                "$ref": "CloudPubSubSource"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to replace a cloudpubsubsource.\n\nOnly the spec and metadata labels and annotations are modifiable. After\nthe Update request, Cloud Run will work to make the 'status'\nmatch the requested 'spec'.\n\nMay provide metadata.resourceVersion to enforce update from last read for\noptimistic concurrency control."
             },
             "delete": {
               "id": "run.namespaces.cloudpubsubsources.delete",

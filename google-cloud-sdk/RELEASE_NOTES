@@ -5,6 +5,65 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 279.0.0 (2020-02-04)
+
+### Breaking Changes
+
+*   **(Cloud SDK)** Modified `gcloud auth application-default login` to not write a quota
+    project to the generated file. Use `--add-quota-project` to change
+    this behavior.
+*   **(Compute Engine)** Removed `--priority` flag from `compute beta packet-mirrorings create` and `compute beta packet-mirrorings update`.
+
+
+### BigQuery
+
+* Fixed issue where `--apilog` would not use the specified log file and would
+.. instead output the logs to stdout.
+
+### Cloud Dataproc
+
+*   Deprecated default global value of `gcloud dataproc --region` flag.
+
+### Cloud Life Sciences
+
+* Added `gcloud beta lifesciences locations` command group to query locations where the Cloud Life Sciences API is available.
+
+### Cloud Memorystore
+
+*   Added `gcloud beta redis instances upgrade` to upgrade a Memorystore Redis
+    instance to a specified Redis version.
+
+### Cloud Run
+
+* Promoted `--cpu` to GA for all platforms.
+* Promoted `gcloud run services update-traffic` to GA.
+
+### Compute Engine
+
+* Promoted ubuntu-1804 option of `--os` flag for `gcloud compute images import`
+  and `gcloud compute instances import` to GA.
+* Promoted `--hostname` flag of `gcloud compute instances import` to GA.
+* Promoted `gcloud compute packet-mirrorings` command group to GA.
+* Promoted `--is-mirroring-collector` flag of `gcloud compute forwarding-rules create` to GA.
+* Promoted `--logging-metadata` flag for `gcloud compute firewall-rules create`
+  and `gcloud compute firewall-rules update` to beta.
+* Promoted `gcloud compute network-endpoint-groups` command group in global scope to beta.
+* Promoted `--global-network-endpoint-group` flag of `gcloud compute backend-services` to beta.
+
+### Kubernetes Engine
+
+*   Promoted `--enable-shielded-nodes` to GA. Use this flag with `gcloud
+    container clusters create` or `gcloud container clusters update`.
+
+### Network Management
+
+* Added `gcloud network-management` command group. This feature enable the
+  provisioning and administering of Network Management resources.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 278.0.0 (2020-01-28)
 
 ### AI Platform
@@ -28,7 +87,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Key Management Service
 
-*   Added `gcloud beta kms versions update` to enable updating crypto key versions and the external key URIs of key versions.
+*   Added `gcloud beta kms keys versions update` to enable updating crypto key versions and the external key URIs of key versions.
 
 ### Cloud Pub/Sub
 
@@ -54,9 +113,10 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Kpt
 
-* `kpt` binary published as a new Cloud SDK component.
-* `kpt` may be installed with `gcloud components install kpt`.
-* `kpt` contains utilities for packaging, viewing and modifying Kubernetes configuration.
+* Published `kpt` binary as a new Cloud SDK component.
+  * `kpt` may be installed with `gcloud components install kpt`.
+  * `kpt` contains utilities for packaging, viewing and modifying Kubernetes configuration.
+  *  For more information, run `kpt help`.
 
 ### Kubernetes Engine
 
@@ -78,7 +138,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 *   **(App Engine)** Fixed longstanding issue where `/path*` in dispatch.yaml was silently
   converted to `/path/*`.
-*   **(Cloud Dataproc)** 
 *   **(Cloud Dataproc)** Modified `--region` flag to be mandatory.
   * To use Cloud Dataproc commands, pass `--region` flag on every invocation,
     or set `dataproc/region` configuration variable via `gcloud config set
@@ -171,7 +230,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Storage
 
-* 
 * Updated gsutil component to 4.47.
 
 ### Compute Engine
@@ -734,7 +792,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### App Engine
 
-*
 * Updated the Python SDK to version 1.9.87.
   Please visit the following release notes for details:
   <https://cloud.google.com/appengine/docs/python/release-notes>
@@ -772,7 +829,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Storage
 
-*
 * Updated gsutil component to 4.46.
 
 ### Compute Engine
@@ -898,7 +954,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Storage
 
-*
 * Updated gsutil component to 4.45.
 
 ### Compute Engine

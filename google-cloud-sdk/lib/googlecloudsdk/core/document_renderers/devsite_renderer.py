@@ -39,7 +39,7 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
     self._out.write(
         '<meta http-equiv="Content-Type" content="text/html; '
         'charset=UTF-8">\n'
-        '<meta name="project_path" value="/sdk/_project.yaml">\n'
+        '<meta name="project_path" value="/sdk/docs/_project.yaml">\n'
         '<meta name="book_path" value="/sdk/_book.yaml">\n')
     for comment, script in devsite_scripts.SCRIPTS:
       self._out.write('<!-- {comment} -->\n{script}\n'.format(comment=comment,

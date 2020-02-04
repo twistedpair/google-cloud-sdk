@@ -114,7 +114,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The group resource name.\nExample: <code>projects\/my-project-123\/groups\/my-groupid<\/code>",
+          "description": "The group resource name.\nExample: <code>projects\/my-project-123\/groups\/CNSgkpnppqKCUw<\/code>",
           "type": "string"
         },
         "groupId": {
@@ -503,7 +503,7 @@
               "httpMethod": "PUT",
               "parameters": {
                 "name": {
-                  "description": "The group resource name.\nExample: <code>projects\/my-project-123\/groups\/my-groupid<\/code>",
+                  "description": "The group resource name.\nExample: <code>projects\/my-project-123\/groups\/CNSgkpnppqKCUw<\/code>",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/groups\/[^\/]+$",

@@ -191,9 +191,9 @@ def AddCapacityLimits(parser,
       type=int,
       help="""\
       Maximum number of HTTP requests per second (RPS) that the backend can
-      handle. Valid for instance group and network endpoint group backends.
-      Must not be defined if the backend is a managed instance group using
-      autoscaling based on load balancing.
+      handle. Valid for network endpoint group and instance group backends
+      (except for regional managed instance groups). Must not be defined if the
+      backend is a managed instance group using load balancing-based autoscaling.
       """ + append_help_text)
   capacity_group.add_argument(
       '--max-rate-per-instance',
@@ -212,8 +212,9 @@ def AddCapacityLimits(parser,
       '--max-connections',
       type=int,
       help="""\
-      Maximum concurrent connections that the backend can handle.
-      Valid for instance group and network endpoint group backends.
+      Maximum concurrent connections that the backend can handle. Valid for
+      network endpoint group and instance group backends (except for regional
+      managed instance groups).
       """ + append_help_text)
   capacity_group.add_argument(
       '--max-connections-per-instance',
@@ -235,36 +236,36 @@ def AddMaxUtilization(parser):
       '--max-utilization',
       type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
       help="""\
-      Defines the maximum target for average CPU utilization of the backend
-      instance in the backend instance group. Acceptable values are 0.0 (0%)
-      through 1.0 (100%). Available for all backend service protocols,
-      with --balancing-mode=UTILIZATION.
+      Defines the maximum target for average utilization of the backend instance
+      in the backend instance group. Acceptable values are `0.0` (0%) through
+      `1.0`(100%). Available for all backend service protocols, with
+      `--balancing-mode=UTILIZATION`.
 
-      For backend services that use SSL, TCP, or UDP protocols, you may specify
-      either `--max-connections` or `--max-connections-per-instance`, either by
-      themselves or one in conjunction with `--max-utilization`. In other words,
-      the following configuration options are supported:
+      For backend services that use SSL, TCP, or UDP protocols, the following
+      configuration options are supported:
+
       * no additional parameter
-      * just `--max-utilization`
-      * just `--max-connections`
-      * just `--max-connections-per-instance`
-      * both `--max-utilization` and `--max-connections`
+      * only `--max-utilization`
+      * only `--max-connections` (except for regional managed instance groups)
+      * only `--max-connections-per-instance`
+      * both `--max-utilization` and `--max-connections` (except for regional
+        managed instance groups)
       * both `--max-utilization` and `--max-connections-per-instance`
 
-      The meanings for `--max-connections` and `--max-connections-per-instance`
-      are the same as for --balancing-mode=CONNECTION. If one is used in
-      conjunction with `--max-utilization`, instances are considered at capacity
+      The meanings for `-max-connections` and `--max-connections-per-instance`
+      are the same as for --balancing-mode=CONNECTION. If one is used  with
+      `--max-utilization`, instances are considered at capacity
       when either maximum utilization or maximum connections is reached.
 
-      For backend services that use HTTP, HTTPS, or HTTP/2 protocols, you may
-      specify either `--max-rate` or `--max-rate-per-instance`, either by
-      themselves or one in conjunction with `--max-utilization`. In other words,
-      the following configuration options are supported:
+      For backend services that use HTTP, HTTPS, or HTTP/2 protocols, the
+      following configuration options are supported:
+
       * no additional parameter
-      * just `--max-utilization`
-      * just `--max-rate`
-      * just `--max-rate-per-instance`
-      * both `--max-utilization` and `--max-rate`
+      * only `--max-utilization`
+      * only `--max-rate` (except for regional managed instance groups)
+      * only `--max-rate-per-instance`
+      * both `--max-utilization` and `--max-rate` (except for regional managed
+        instance groups)
       * both `--max-utilization` and `--max-rate-per-instance`
 
       The meanings for `--max-rate` and `--max-rate-per-instance` are the same

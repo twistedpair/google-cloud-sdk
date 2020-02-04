@@ -148,8 +148,8 @@ class OrgPolicyGetAndUpdateCommand(
     parent = utils.GetResourceFromArgs(args)
 
     empty_policy = self.org_policy_messages.GoogleCloudOrgpolicyV2alpha1Policy(
-        spec=self.org_policy_messages.GoogleCloudOrgpolicyV2alpha1PolicySpec(
-            name=name))
+        name=name,
+        spec=self.org_policy_messages.GoogleCloudOrgpolicyV2alpha1PolicySpec())
     new_policy = self.UpdatePolicy(empty_policy, args)
 
     if not new_policy.spec.rules and not new_policy.spec.inheritFromParent and not new_policy.spec.reset:

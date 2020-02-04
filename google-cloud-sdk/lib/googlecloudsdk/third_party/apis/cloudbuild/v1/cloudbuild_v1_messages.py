@@ -602,23 +602,6 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class CloudbuildOauthProcessOAuthCallbackRequest(_messages.Message):
-  r"""A CloudbuildOauthProcessOAuthCallbackRequest object.
-
-  Fields:
-    code: GitHub generated temproary authorization code.
-    namespace: The namespace that the oauth callback credential should be
-      processed for. This should map to the string name of the enum defined in
-      the GetOAuthRegistrationURLRequest.
-    state: The XSRF token that was sent as part of the initial request to
-      start the OAuth flow.
-  """
-
-  code = _messages.StringField(1)
-  namespace = _messages.StringField(2)
-  state = _messages.StringField(3)
-
-
 class CloudbuildOperationsCancelRequest(_messages.Message):
   r"""A CloudbuildOperationsCancelRequest object.
 

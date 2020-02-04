@@ -439,6 +439,11 @@ class ArgumentParser(argparse.ArgumentParser):
       if suggestion:
         suggestions[arg] = suggestion
         messages.append(arg + " (did you mean '{0}'?)".format(suggestion))
+      elif self._ExistingFlagAlternativeReleaseTracks(arg):
+        existing_alternatives = self._ExistingFlagAlternativeReleaseTracks(arg)
+        messages.append('\n {} flag is available in one or more alternate '
+                        'release tracks. Try:\n'.format(arg))
+        messages.append('\n  '.join(existing_alternatives))
       else:
         messages.append(arg)
 
@@ -796,7 +801,7 @@ class ArgumentParser(argparse.ArgumentParser):
     message = "Invalid choice: '{0}'.".format(value)
 
     # Determine if the requested command is available in another release track.
-    existing_alternatives = self._ExistingAlternativeReleaseTracks(arg)
+    existing_alternatives = self._ExistingCommandAlternativeReleaseTracks(arg)
     if existing_alternatives:
       message += ('\nThis command is available in one or more alternate '
                   'release tracks.  Try:\n  ')
@@ -837,31 +842,55 @@ class ArgumentParser(argparse.ArgumentParser):
         total_suggestions=1 if suggestion else 0,
         suggestions=[suggestion] if suggestion else choices))
 
-  def _ExistingAlternativeReleaseTracks(self, value):
+  def _CommandAlternativeReleaseTracks(self, value=None):
+    """Gets alternatives for the command in other release tracks.
+
+    Args:
+      value: str, The value being parsed.
+
+    Returns:
+      [CommandCommon]: The alternatives for the command in other release tracks.
+    """
+    existing_alternatives = []
+    # pylint:disable=protected-access
+    cli_generator = self._calliope_command._cli_generator
+    alternates = cli_generator.ReplicateCommandPathForAllOtherTracks(
+        self._calliope_command.GetPath() + ([value] if value else []))
+    if alternates:
+      top_element = self._calliope_command._TopCLIElement()
+      for _, command_path in sorted(six.iteritems(alternates),
+                                    key=lambda x: x[0].prefix or ''):
+        alternative_cmd = top_element.LoadSubElementByPath(command_path[1:])
+        if alternative_cmd and not alternative_cmd.IsHidden():
+          existing_alternatives.append(alternative_cmd)
+    return existing_alternatives
+
+  def _ExistingFlagAlternativeReleaseTracks(self, arg):
+    """Checks whether the arg exists in other tracks of the command.
+
+    Args:
+      arg: str, The argument being parsed.
+
+    Returns:
+      [str]: The names of alternate commands that the user may use.
+    """
+    res = []
+    for alternate in self._CommandAlternativeReleaseTracks():
+      if arg in [f.option_strings[0] for f in alternate.GetAllAvailableFlags()]:
+        res.append(' '.join(alternate.GetPath()) + ' ' + arg)
+    return res
+
+  def _ExistingCommandAlternativeReleaseTracks(self, value):
     """Gets the path of alternatives for the command in other release tracks.
 
     Args:
       value: str, The value being parsed.
 
     Returns:
-      [str]: The names of alternate commands that the user may have meant.
+      [str]:  The names of alternate commands that the user may use.
     """
-    existing_alternatives = []
-    # Get possible alternatives.
-    # pylint:disable=protected-access
-    cli_generator = self._calliope_command._cli_generator
-    alternates = cli_generator.ReplicateCommandPathForAllOtherTracks(
-        self._calliope_command.GetPath() + [value])
-    # See if the command is actually enabled in any of those alternative tracks.
-    if alternates:
-      top_element = self._calliope_command._TopCLIElement()
-      # Sort by the release track prefix.
-      for _, command_path in sorted(six.iteritems(alternates),
-                                    key=lambda x: x[0].prefix or ''):
-        alternative_cmd = top_element.LoadSubElementByPath(command_path[1:])
-        if alternative_cmd and not alternative_cmd.IsHidden():
-          existing_alternatives.append(' '.join(command_path))
-    return existing_alternatives
+    return [' '.join(alternate.GetPath()) for alternate in
+            self._CommandAlternativeReleaseTracks(value=value)]
 
   def _ReportErrorMetricsHelper(self, dotted_command_path, error,
                                 error_extra_info=None):

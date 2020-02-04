@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20200120",
+ "revision": "20200124",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -19469,6 +19469,7 @@
   "ResourcePolicy": {
    "id": "ResourcePolicy",
    "type": "object",
+   "description": "Represents a Resource Policy resource. You can use resource policies to schedule actions for some Compute Engine resources. For example, you can use them to schedule persistent disk snapshots.\n\n(== resource_for {$api_version}.resourcePolicies ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -19653,7 +19654,7 @@
    "properties": {
     "daysInCycle": {
      "type": "integer",
-     "description": "Defines a schedule that runs every nth day of the month.",
+     "description": "Defines a schedule with units measured in months. The value determines how many months pass between the start of each cycle.",
      "format": "int32"
     },
     "duration": {
@@ -19706,7 +19707,7 @@
     },
     "hoursInCycle": {
      "type": "integer",
-     "description": "Allows to define schedule that runs every nth hour.",
+     "description": "Defines a schedule with units measured in hours. The value determines how many hours pass between the start of each cycle.",
      "format": "int32"
     },
     "startTime": {
@@ -19935,7 +19936,7 @@
    "properties": {
     "day": {
      "type": "string",
-     "description": "Allows to define schedule that runs specified day of the week.",
+     "description": "Defines a schedule that runs on specific days of the week. Specify one or more days. The following options are available: MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY.",
      "enum": [
       "FRIDAY",
       "INVALID",

@@ -132,7 +132,7 @@
           "type": "string"
         },
         "orderBy": {
-          "description": "Specifies the ordering of results, currently supported case-sensitive\nchoices are:\n\n  * `relevance`, only supports desecending\n  * `last_access_timestamp [asc|desc]`, defaults to descending if not\n    specified\n  * `last_modified_timestamp [asc|desc]`, defaults to descending if not\n    specified\n\nIf not specified, defaults to `relevance` descending.",
+          "description": "Specifies the ordering of results, currently supported case-sensitive\nchoices are:\n\n  * `relevance`, only supports descending\n  * `last_modified_timestamp [asc|desc]`, defaults to descending if not\n    specified\n\nIf not specified, defaults to `relevance` descending.",
           "type": "string"
         }
       }
@@ -867,7 +867,7 @@
     },
     "GoogleCloudDatacatalogV1beta1PolicyTag": {
       "id": "GoogleCloudDatacatalogV1beta1PolicyTag",
-      "description": "Denotes one policy tag in a taxonomy (e.g. ssn). Policy Tags can be defined\nin a hierarchy. For example, consider the following hierachy:\nGeolocation -&gt; (LatLong, City, ZipCode). PolicyTag \"Geolocation\"\ncontains three child policy tags: \"LatLong\", \"City\", and \"ZipCode\".",
+      "description": "Denotes one policy tag in a taxonomy (e.g. ssn). Policy Tags can be defined\nin a hierarchy. For example, consider the following hierarchy:\nGeolocation -&gt; (LatLong, City, ZipCode). PolicyTag \"Geolocation\"\ncontains three child policy tags: \"LatLong\", \"City\", and \"ZipCode\".",
       "type": "object",
       "properties": {
         "name": {
@@ -1032,7 +1032,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Searches Data Catalog for multiple resources like entries, tags that\nmatch a query.\n\nThis is a custom method\n(https:\/\/cloud.google.com\/apis\/design\/custom_methods) and does not return\nthe complete resource, only the resource identifier and high level\nfields. Clients can subsequentally call `Get` methods.\n\nNote that searches do not have full recall. There may be results that match\nyour query but are not returned, even in subsequent pages of results. These\nmissing results may vary across repeated calls to search. Do not rely on\nthis method if you need to guarantee full recall.\n\nSee [Data Catalog Search\nSyntax](\/data-catalog\/docs\/how-to\/search-reference) for more information."
+          "description": "Searches Data Catalog for multiple resources like entries, tags that\nmatch a query.\n\nThis is a custom method\n(https:\/\/cloud.google.com\/apis\/design\/custom_methods) and does not return\nthe complete resource, only the resource identifier and high level\nfields. Clients can subsequentally call `Get` methods.\n\nNote that Data Catalog search queries do not guarantee full recall. Query\nresults that match your query may not be returned, even in subsequent\nresult pages. Also note that results returned (and not returned) can vary\nacross repeated search queries.\n\nSee [Data Catalog Search\nSyntax](\/data-catalog\/docs\/how-to\/search-reference) for more information."
         }
       }
     },

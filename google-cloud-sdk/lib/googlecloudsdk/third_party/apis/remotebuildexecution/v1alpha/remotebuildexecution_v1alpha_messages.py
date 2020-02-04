@@ -785,6 +785,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         when downloading blobs.
       REMOTE_CAS_UPLOAD_ERROR: The bot encountered errors from remote CAS when
         uploading blobs.
+      LOCAL_CASPROXY_NOT_RUNNING: The local casproxy is not running.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -809,6 +810,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     NO_CUDA_CAPABLE_DEVICE = 20
     REMOTE_CAS_DOWNLOAD_ERROR = 21
     REMOTE_CAS_UPLOAD_ERROR = 22
+    LOCAL_CASPROXY_NOT_RUNNING = 23
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

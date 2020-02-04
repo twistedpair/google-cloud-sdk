@@ -17,6 +17,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
+
 import os.path
 import subprocess
 from googlecloudsdk.core import config
@@ -181,7 +183,11 @@ def _StartMinkubeCluster(cluster_name, vm_driver):
   """Starts a minikube cluster."""
   if not _IsMinikubeClusterUp(cluster_name):
     cmd = [
-        _FindMinikube(), 'start', '-p', cluster_name, '--keep-context',
+        _FindMinikube(),
+        'start',
+        '-p',
+        cluster_name,
+        '--keep-context',
     ]
     if vm_driver:
       cmd.append('--vm-driver=' + vm_driver)
@@ -190,12 +196,14 @@ def _StartMinkubeCluster(cluster_name, vm_driver):
 
 def _IsMinikubeClusterUp(cluster_name):
   """Checks if a minikube cluster is running."""
-  cmd = [_FindMinikube(), 'status', '-p', cluster_name]
+  cmd = [_FindMinikube(), 'status', '-p', cluster_name, '-o', 'json']
   p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
   stdout, _ = p.communicate()
-  lines = six.ensure_text(stdout).strip().splitlines()
-  status = dict(line.split(':', 1) for line in lines)
-  return 'host' in status and status['host'].strip() == 'Running'
+  try:
+    status = json.loads(six.ensure_text(stdout).strip())
+    return 'host' in status and status['host'].strip() == 'Running'
+  except ValueError:
+    return False
 
 
 def _StopMinikube(cluster_name):
@@ -231,3 +239,58 @@ class ExternalClusterContext(object):
 
   def __exit__(self, exc_type, exc_value, tb):
     pass
+
+
+def _FindKubectl():
+  return _FindExecutable('kubectl')
+
+
+def _NamespaceExists(namespace, context_name=None):
+  cmd = [_FindKubectl()]
+  if context_name:
+    cmd += ['--context', context_name]
+  cmd += ['get', 'namespaces', '-o', 'name']
+
+  process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+  out, _ = process.communicate()
+  return 'namespace/' + namespace in six.ensure_text(out).splitlines()
+
+
+def _CreateNamespace(namespace, context_name=None):
+  cmd = [_FindKubectl()]
+  if context_name:
+    cmd += ['--context', context_name]
+  cmd += ['create', 'namespace', namespace]
+  subprocess.check_call(cmd)
+
+
+def _DeleteNamespace(namespace, context_name=None):
+  cmd = [_FindKubectl()]
+  if context_name:
+    cmd += ['--context', context_name]
+  cmd += ['delete', 'namespace', namespace]
+  subprocess.check_call(cmd)
+
+
+class KubeNamespace(object):
+  """Context to create and tear down kubernetes namespace."""
+
+  def __init__(self, namespace, context_name=None):
+    """Initialize KubeNamespace.
+
+    Args:
+      namespace: (str) Namespace name.
+      context_name: (str) Kubernetes context name.
+    """
+    self._namespace = namespace
+    self._context_name = context_name
+    self._delete_namespace = False
+
+  def __enter__(self):
+    if not _NamespaceExists(self._namespace, self._context_name):
+      _CreateNamespace(self._namespace, self._context_name)
+      self._delete_namespace = True
+
+  def __exit__(self, exc_type, exc_value, tb):
+    if self._delete_namespace:
+      _DeleteNamespace(self._namespace, self._context_name)

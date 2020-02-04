@@ -193,6 +193,9 @@ class Instance(_messages.Message):
   r"""A Google Cloud Redis instance.
 
   Enums:
+    ConnectModeValueValuesEnum: Optional. The connect mode of Redis instance.
+      If not provided, default one will be used. Current default:
+      DIRECT_PEERING.
     StateValueValuesEnum: Output only. The current state of this instance.
     TierValueValuesEnum: Required. The service tier of the instance.
 
@@ -213,6 +216,8 @@ class Instance(_messages.Message):
       [network](/compute/docs/networks-and-firewalls#networks) to which the
       instance is connected. If left unspecified, the `default` network will
       be used.
+    connectMode: Optional. The connect mode of Redis instance. If not
+      provided, default one will be used. Current default: DIRECT_PEERING.
     createTime: Output only. The time the instance was created.
     currentLocationId: Output only. The current zone where the Redis endpoint
       is placed. For Basic Tier instances, this will always be the same as the
@@ -263,6 +268,21 @@ class Instance(_messages.Message):
       status of this instance, if available.
     tier: Required. The service tier of the instance.
   """
+
+  class ConnectModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The connect mode of Redis instance. If not provided, default
+    one will be used. Current default: DIRECT_PEERING.
+
+    Values:
+      CONNECT_MODE_UNSPECIFIED: Not set.
+      DIRECT_PEERING: Connect via directly peering with memorystore redis
+        hosted service.
+      PRIVATE_SERVICE_ACCESS: Connect with google via private service access
+        and share connection across google managed services.
+    """
+    CONNECT_MODE_UNSPECIFIED = 0
+    DIRECT_PEERING = 1
+    PRIVATE_SERVICE_ACCESS = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of this instance.
@@ -360,22 +380,23 @@ class Instance(_messages.Message):
 
   alternativeLocationId = _messages.StringField(1)
   authorizedNetwork = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  currentLocationId = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  host = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  locationId = _messages.StringField(8)
-  memorySizeGb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  name = _messages.StringField(10)
-  persistenceIamIdentity = _messages.StringField(11)
-  port = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 13)
-  redisVersion = _messages.StringField(14)
-  reservedIpRange = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  statusMessage = _messages.StringField(17)
-  tier = _messages.EnumField('TierValueValuesEnum', 18)
+  connectMode = _messages.EnumField('ConnectModeValueValuesEnum', 3)
+  createTime = _messages.StringField(4)
+  currentLocationId = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  host = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  locationId = _messages.StringField(9)
+  memorySizeGb = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  name = _messages.StringField(11)
+  persistenceIamIdentity = _messages.StringField(12)
+  port = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 14)
+  redisVersion = _messages.StringField(15)
+  reservedIpRange = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  statusMessage = _messages.StringField(18)
+  tier = _messages.EnumField('TierValueValuesEnum', 19)
 
 
 class ListInstancesResponse(_messages.Message):

@@ -1598,9 +1598,9 @@ class GoogleCloudMlV1RequestLoggingConfig(_messages.Message):
     bigqueryTableName: Required. Fully qualified BigQuery table name in the
       following format:
       "<var>project_id</var>.<var>dataset_name</var>.<var>table_name</var>"
-      The specifcied table must already exist, and the "Cloud ML Service
-      Agent" for your project must have permission to write to it. The table
-      must have the following [schema](/bigquery/docs/schemas):  <table>
+      The specified table must already exist, and the "Cloud ML Service Agent"
+      for your project must have permission to write to it. The table must
+      have the following [schema](/bigquery/docs/schemas):  <table>
       <tr><th>Field name</th><th style="display: table-cell">Type</th>     <th
       style="display: table-cell">Mode</th></tr>
       <tr><td>model</td><td>STRING</td><td>REQUIRED</td></tr>

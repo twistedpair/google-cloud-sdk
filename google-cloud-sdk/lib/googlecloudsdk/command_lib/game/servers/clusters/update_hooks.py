@@ -46,7 +46,7 @@ def ConvertOutput(response, args):
   # This enables the log output which was disabled in the request hook
   log.SetUserOutputEnabled(True)
   if not args.dry_run:
-    utils.WaitForOperation(response)
+    utils.WaitForOperation(response, utils.GetApiVersionFromArgs(args))
     if 'update' in args.command_path:
       log.status.Print('Updated game server cluster: [{}]'.format(
           args.cluster))
@@ -80,51 +80,51 @@ def GetResourceRef(args):
 
 def GetExistingResource(args):
   resource_ref = GetResourceRef(args)
-  api_version = resource_ref.GetCollectionInfo().api_version
-  get_request_message = GetRequestMessage(resource_ref)
+  api_version = utils.GetApiVersionFromArgs(args)
+  get_request_message = GetRequestMessage(resource_ref, api_version)
   orig_resource = utils.GetClient(
       api_version).projects_locations_realms_gameServerClusters.Get(
           get_request_message)
   return orig_resource
 
 
-def GetRequestMessage(resource_ref):
+def GetRequestMessage(resource_ref, api_version):
   return utils.GetApiMessage(
-      resource_ref
+      api_version
   ).GameservicesProjectsLocationsRealmsGameServerClustersGetRequest(
       name=resource_ref.RelativeName())
 
 
-def DeleteRequestMessage(resource_ref):
+def DeleteRequestMessage(resource_ref, api_version):
   return utils.GetApiMessage(
-      resource_ref
+      api_version
   ).GameservicesProjectsLocationsRealmsGameServerClustersDeleteRequest(
       name=resource_ref.RelativeName())
 
 
 def DeleteInstance(args):
   resource_ref = GetResourceRef(args)
-  api_version = resource_ref.GetCollectionInfo().api_version
-  delete_request_message = DeleteRequestMessage(resource_ref)
+  api_version = utils.GetApiVersionFromArgs(args)
+  delete_request_message = DeleteRequestMessage(resource_ref, api_version)
   delete_op = utils.GetClient(
       api_version).projects_locations_realms_gameServerClusters.Delete(
           delete_request_message)
   return delete_op
 
 
-def PreviewDeleteRequestMessage(resource_ref, preview_time):
+def PreviewDeleteRequestMessage(resource_ref, preview_time, api_version):
   return utils.GetApiMessage(
-      resource_ref
+      api_version
   ).GameservicesProjectsLocationsRealmsGameServerClustersPreviewDeleteRequest(
       name=resource_ref.RelativeName(), previewTime=preview_time)
 
 
 def PreviewDeleteInstance(args):
   resource_ref = GetResourceRef(args)
-  api_version = resource_ref.GetCollectionInfo().api_version
+  api_version = utils.GetApiVersionFromArgs(args)
   preview_time = args.preview_time if args.preview_time else None
   preview_delete_request_message = PreviewDeleteRequestMessage(
-      resource_ref, preview_time)
+      resource_ref, preview_time, api_version)
   preview_resp = utils.GetClient(
       api_version).projects_locations_realms_gameServerClusters.PreviewDelete(
           preview_delete_request_message)

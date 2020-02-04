@@ -276,8 +276,9 @@ class DeidentifyDatasetRequest(_messages.Message):
       the redacted data to. For example,
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
       * The destination dataset must not exist.  * The destination dataset
-      must be in the same project as the source    dataset. De-identifying
-      data across multiple projects is not supported.
+      must be in the same project and location as the  source dataset. De-
+      identifying data across multiple projects or locations  is not
+      supported.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)

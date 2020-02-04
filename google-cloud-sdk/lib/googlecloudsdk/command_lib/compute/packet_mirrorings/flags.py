@@ -65,26 +65,6 @@ def _AddArgs(parser, is_for_update=False):
       help='Optional, textual description for the packet mirroring.')
 
   parser.add_argument(
-      '--priority',
-      type=int,
-      help="""\
-      Priority of applying this packet mirroring. Priority is used to
-      break ties in cases where there is more than one matching policy. In
-      the case of two policies that apply for a given Instance, the one with
-      the lowest-numbered priority value wins. Mirroring all instances in
-      a region for the network may produce a lot of mirrored traffic. If
-      you want to "zoom in" on a subset of that traffic you can create
-      another packet mirroring with a more restricted set of mirrored instances
-      (using the --mirrored-* flags) or a more restrictive CIDR filter and send
-      that traffic to a dedicated collector. Because we cannot mirror traffic
-      to multiple sets of collector, you should set the priority for the more
-      specific packet mirroring configuration to a lower value to ensure the
-      packets are sent to the desired collector. Default value is 1000. Valid
-      range is 0 through 65535. If multiple policies end up having the same
-      priority, then one of the policies is picked non-deterministically.
-      """)
-
-  parser.add_argument(
       '--enable',
       action='store_true',
       help="""Enable or disable the packet-mirroring.""",

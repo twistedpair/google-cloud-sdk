@@ -42,16 +42,16 @@ def _FormatUpdateMask(update_mask):
 class Client(object):
   """Base class for all clients."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or GetClient()
-    self.messages = messages or self.client.MESSAGES_MODULE
+  def __init__(self, client=None, messages=None, version=None):
+    self.client = client or GetClient(version=version)
+    self.messages = messages or GetMessages(version=version)
 
 
 class Locations(Client):
   """High-level client for locations."""
 
-  def __init__(self, client=None, messages=None):
-    super(Locations, self).__init__(client, messages)
+  def __init__(self, client=None, messages=None, version=None):
+    super(Locations, self).__init__(client, messages, version)
     self.service = self.client.projects_locations
 
   def Get(self, location_ref):
@@ -76,8 +76,8 @@ class Locations(Client):
 class Secrets(Client):
   """High-level client for secrets."""
 
-  def __init__(self, client=None, messages=None):
-    super(Secrets, self).__init__(client, messages)
+  def __init__(self, client=None, messages=None, version=None):
+    super(Secrets, self).__init__(client, messages, version)
     self.service = self.client.projects_secrets
 
   def Create(self, secret_ref, policy, locations, labels):
@@ -163,8 +163,8 @@ class SecretsLatest(Client):
 class Versions(Client):
   """High-level client for secret versions."""
 
-  def __init__(self, client=None, messages=None):
-    super(Versions, self).__init__(client, messages)
+  def __init__(self, client=None, messages=None, version=None):
+    super(Versions, self).__init__(client, messages, version)
     self.service = self.client.projects_secrets_versions
 
   def Access(self, version_ref):

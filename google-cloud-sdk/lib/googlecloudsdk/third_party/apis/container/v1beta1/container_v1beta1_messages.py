@@ -36,6 +36,8 @@ class AddonsConfig(_messages.Message):
       can only be enabled at cluster creation time.
     dnsCacheConfig: Configuration for NodeLocalDNS, a dns cache running on
       cluster nodes
+    gcePersistentDiskCsiDriverConfig: Configuration for the GCE PD CSI driver.
+      This option can only be enabled at cluster creation time.
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
       replication controller has based on the resource usage of the existing
@@ -59,12 +61,13 @@ class AddonsConfig(_messages.Message):
 
   cloudRunConfig = _messages.MessageField('CloudRunConfig', 1)
   dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 2)
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 3)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 4)
-  istioConfig = _messages.MessageField('IstioConfig', 5)
-  kalmConfig = _messages.MessageField('KalmConfig', 6)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 7)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 8)
+  gcePersistentDiskCsiDriverConfig = _messages.MessageField('GcePersistentDiskCsiDriverConfig', 3)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 4)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 5)
+  istioConfig = _messages.MessageField('IstioConfig', 6)
+  kalmConfig = _messages.MessageField('KalmConfig', 7)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 8)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 9)
 
 
 class AuthenticatorGroupsConfig(_messages.Message):
@@ -1359,6 +1362,17 @@ class FeatureConfig(_messages.Message):
 
   feature = _messages.EnumField('FeatureValueValuesEnum', 1)
   tier = _messages.EnumField('TierValueValuesEnum', 2)
+
+
+class GcePersistentDiskCsiDriverConfig(_messages.Message):
+  r"""Configuration for the GCE PD CSI driver. This option can only be enabled
+  at cluster creation time.
+
+  Fields:
+    enabled: Whether the GCE PD CSI driver is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class GetJSONWebKeysResponse(_messages.Message):

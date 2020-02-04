@@ -700,6 +700,12 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.gameservices.v1alpha',
                 client_classpath='gameservices_v1alpha_client.GameservicesV1alpha',
                 messages_modulepath='gameservices_v1alpha_messages',
+                default_version=False),
+        'v1beta':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.gameservices.v1beta',
+                client_classpath='gameservices_v1beta_client.GameservicesV1beta',
+                messages_modulepath='gameservices_v1beta_messages',
                 default_version=True),
     },
     'genomics': {
@@ -952,6 +958,14 @@ MAP = {
                 messages_modulepath='policytroubleshooter_v1beta_messages',
                 default_version=False),
     },
+    'privateca': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.privateca.v1alpha1',
+                client_classpath='privateca_v1alpha1_client.PrivatecaV1alpha1',
+                messages_modulepath='privateca_v1alpha1_messages',
+                default_version=True),
+    },
     'pubsub': {
         'v1':
             APIDef(
@@ -1056,13 +1070,13 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.secretmanager.v1',
                 client_classpath='secretmanager_v1_client.SecretmanagerV1',
                 messages_modulepath='secretmanager_v1_messages',
-                default_version=False),
+                default_version=True),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.secretmanager.v1beta1',
                 client_classpath='secretmanager_v1beta1_client.SecretmanagerV1beta1',
                 messages_modulepath='secretmanager_v1beta1_messages',
-                default_version=True),
+                default_version=False),
     },
     'securitycenter': {
         'v1':
@@ -1284,6 +1298,22 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.websecurityscanner.v1beta',
                 client_classpath='websecurityscanner_v1beta_client.WebsecurityscannerV1beta',
                 messages_modulepath='websecurityscanner_v1beta_messages',
+                default_version=True),
+    },
+    'workflowexecutions': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.workflowexecutions.v1alpha1',
+                client_classpath='workflowexecutions_v1alpha1_client.WorkflowexecutionsV1alpha1',
+                messages_modulepath='workflowexecutions_v1alpha1_messages',
+                default_version=True),
+    },
+    'workflows': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.workflows.v1alpha1',
+                client_classpath='workflows_v1alpha1_client.WorkflowsV1alpha1',
+                messages_modulepath='workflows_v1alpha1_messages',
                 default_version=True),
     },
 }

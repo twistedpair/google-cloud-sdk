@@ -278,7 +278,7 @@ class ErrorGroup(_messages.Message):
       error occurs in different service contexts, it will receive the same
       group ID.
     name: The group resource name. Example: <code>projects/my-
-      project-123/groups/my-groupid</code>
+      project-123/groups/CNSgkpnppqKCUw</code>
     trackingIssues: Associated tracking issues.
   """
 

@@ -580,7 +580,7 @@
       "type": "object",
       "properties": {
         "destinationDataset": {
-          "description": "The name of the dataset resource to create and write the redacted data to.\nFor example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`.\n\n * The destination dataset must not exist.\n * The destination dataset must be in the same project as the source\n   dataset. De-identifying data across multiple projects is not supported.",
+          "description": "The name of the dataset resource to create and write the redacted data to.\nFor example,\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}`.\n\n * The destination dataset must not exist.\n * The destination dataset must be in the same project and location as the\n source dataset. De-identifying data across multiple projects or locations\n is not supported.",
           "type": "string"
         },
         "config": {

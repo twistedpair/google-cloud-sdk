@@ -32,13 +32,10 @@ def _RegionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='region',
       help_text=(
-          'Cloud Dataproc region for the {resource}. Each Cloud Dataproc '
+          'Dataproc region for the {resource}. Each Dataproc '
           'region constitutes an independent resource namespace constrained to '
-          'deploying instances into Google Compute Engine zones inside the '
-          'region. The default value of `global` is a special multi-region '
-          'namespace which is capable of deploying instances into all Google '
-          'Compute Engine zones globally, and is disjoint from other Cloud '
-          'Dataproc regions. Overrides the default `dataproc/region` property '
+          'deploying instances into Compute Engine zones inside the '
+          'region. Overrides the default `dataproc/region` property '
           'value for this command invocation.'),
       fallthroughs=fallthroughs)
 

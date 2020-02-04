@@ -33,7 +33,8 @@ def BackupConfiguration(sql_messages,
                         backup=None,
                         no_backup=None,
                         backup_start_time=None,
-                        enable_bin_log=None):
+                        enable_bin_log=None,
+                        enable_point_in_time_recovery=None):
   """Generates the backup configuration for the instance.
 
   Args:
@@ -44,6 +45,8 @@ def BackupConfiguration(sql_messages,
     no_backup: boolean, True if backup should be disabled.
     backup_start_time: string, start time of backup specified in 24-hour format.
     enable_bin_log: boolean, True if binary logging should be enabled.
+    enable_point_in_time_recovery: boolean, True if point-in-time recovery
+      (using write-ahead log archiving) should be enabled.
 
   Returns:
     sql_messages.BackupConfiguration object, or None
@@ -52,8 +55,10 @@ def BackupConfiguration(sql_messages,
     ToolException: Bad combination of arguments.
   """
   backup_enabled = no_backup is False or backup
-  should_generate_config = any(
-      [backup_start_time, enable_bin_log is not None, not backup_enabled])
+  should_generate_config = any([
+      backup_start_time, enable_bin_log is not None,
+      enable_point_in_time_recovery is not None, not backup_enabled
+  ])
 
   if not should_generate_config:
     return None
@@ -77,6 +82,9 @@ def BackupConfiguration(sql_messages,
 
   if enable_bin_log is not None:
     backup_config.binaryLogEnabled = enable_bin_log
+
+  if enable_point_in_time_recovery is not None:
+    backup_config.pointInTimeRecoveryEnabled = enable_point_in_time_recovery
 
   return backup_config
 

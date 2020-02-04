@@ -255,7 +255,7 @@ class KubernetesClient(object):
     _, err = self._RunKubectl(['delete', 'membership', 'membership'])
     return err
 
-  def _MembershipCRDExists(self):
+  def MembershipCRDExists(self):
     cmd = ['get', 'crds', 'memberships.hub.gke.io']
     _, err = self._RunKubectl(cmd, None)
     if err:
@@ -264,9 +264,30 @@ class KubernetesClient(object):
       raise exceptions.Error('Error retrieving Membership CRD: {}'.format(err))
     return True
 
+  def GetMembershipCR(self):
+    """Get the YAML representation of the Membership CR."""
+    cmd = ['get', 'membership', 'membership', '-o', 'yaml']
+    out, err = self._RunKubectl(cmd, None)
+    if err:
+      if 'NotFound' in err:
+        return ''
+      raise exceptions.Error('Error retrieving membership CR: {}'.format(err))
+    return out
+
+  def GetMembershipCRD(self):
+    """Get the YAML representation of the Membership CRD."""
+    cmd = ['get', 'customresourcedefinition', 'memberships.hub.gke.io', '-o',
+           'yaml']
+    out, err = self._RunKubectl(cmd, None)
+    if err:
+      if 'NotFound' in err:
+        return ''
+      raise exceptions.Error('Error retrieving membership CRD: {}'.format(err))
+    return out
+
   def GetMembershipOwnerID(self):
     """Looks up the owner id field in the Membership resource."""
-    if not self._MembershipCRDExists():
+    if not self.MembershipCRDExists():
       return None
 
     cmd = ['get', 'membership', 'membership', '-o', 'jsonpath={.spec.owner.id}']
@@ -282,20 +303,22 @@ class KubernetesClient(object):
 
   def ApplyMembership(self, membership_crd_manifest, membership_cr_manifest):
     """Apply membership resources."""
-    _, error = waiter.WaitFor(
-        KubernetesPoller(),
-        MembershipCRDCreationOperation(self, membership_crd_manifest),
-        pre_start_sleep_ms=NAMESPACE_DELETION_INITIAL_WAIT_MS,
-        max_wait_ms=NAMESPACE_DELETION_TIMEOUT_MS,
-        wait_ceiling_ms=NAMESPACE_DELETION_MAX_POLL_INTERVAL_MS,
-        sleep_ms=NAMESPACE_DELETION_INITIAL_POLL_INTERVAL_MS)
-    if error:
-      raise exceptions.Error(
-          'Membership CRD creation failed to complete: {}'.format(error))
-    _, err = self.Apply(membership_cr_manifest)
-    if err:
-      raise exceptions.Error(
-          'Failed to apply Membership CR to cluster: {}'.format(err))
+    if membership_crd_manifest:
+      _, error = waiter.WaitFor(
+          KubernetesPoller(),
+          MembershipCRDCreationOperation(self, membership_crd_manifest),
+          pre_start_sleep_ms=NAMESPACE_DELETION_INITIAL_WAIT_MS,
+          max_wait_ms=NAMESPACE_DELETION_TIMEOUT_MS,
+          wait_ceiling_ms=NAMESPACE_DELETION_MAX_POLL_INTERVAL_MS,
+          sleep_ms=NAMESPACE_DELETION_INITIAL_POLL_INTERVAL_MS)
+      if error:
+        raise exceptions.Error(
+            'Membership CRD creation failed to complete: {}'.format(error))
+    if membership_cr_manifest:
+      _, err = self.Apply(membership_cr_manifest)
+      if err:
+        raise exceptions.Error(
+            'Failed to apply Membership CR to cluster: {}'.format(err))
 
   def NamespaceExists(self, namespace):
     _, err = self._RunKubectl(['get', 'namespace', namespace])

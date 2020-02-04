@@ -20,10 +20,10 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
 
 GAME_SERVICES_API = 'gameservices'
-API_VERSION = 'v1alpha'
 OPERATIONS_COLLECTION = 'gameservices.projects.locations.operations'
 
 
@@ -37,40 +37,48 @@ def AddFieldToUpdateMask(field, patch_request):
   return patch_request
 
 
-def GetApiMessage(resource_ref):
-  api_version = resource_ref.GetCollectionInfo().api_version
+def GetApiMessage(api_version):
   return apis.GetMessagesModule(GAME_SERVICES_API, api_version)
 
 
-def GetClient(api_version=API_VERSION):
+def GetClient(api_version):
   return apis.GetClientInstance(GAME_SERVICES_API, api_version)
 
 
-def GetClientInstance(api_version=API_VERSION):
-  return apis.GetClientClass(GAME_SERVICES_API, api_version)
+def GetApiVersionFromArgs(args):
+  """Return API version based on args.
+
+  Args:
+    args: The argparse namespace.
+
+  Returns:
+    API version (e.g. v1alpha or v1beta).
+
+  Raises:
+    UnsupportedReleaseTrackError: If invalid release track from args
+  """
+
+  release_track = args.calliope_command.ReleaseTrack()
+  if release_track == base.ReleaseTrack.ALPHA:
+    return 'v1alpha'
+  if release_track == base.ReleaseTrack.BETA:
+    return 'v1beta'
+  raise UnsupportedReleaseTrackError(release_track)
 
 
-def ParseMatchClusters(ref, match_clusters, messages=None):
-  messages = messages or GetApiMessage(ref)
-
-  cluster_selectors = []
-  for clusters in match_clusters:
-    cluster_labels = []
-    for (key, val) in clusters.items():
-      cluster_labels.append(ParseClusters(ref, key, val, messages=messages))
-    cluster_selectors.append(ParseLabels(ref, cluster_labels))
-  return cluster_selectors
+class UnsupportedReleaseTrackError(Exception):
+  """Raised when requesting an api for an unsupported release track."""
 
 
-def ParseClusters(ref, key, val, messages=None):
-  messages = messages or GetApiMessage(ref)
+def ParseClusters(api_version, key, val, messages=None):
+  messages = messages or GetApiMessage(api_version)
 
   return messages.LabelSelector.LabelsValue.AdditionalProperty(
       key=key, value=val)
 
 
-def ParseLabels(ref, cluster_labels, messages=None):
-  messages = messages or GetApiMessage(ref)
+def ParseLabels(api_version, cluster_labels, messages=None):
+  messages = messages or GetApiMessage(api_version)
 
   selectors = messages.LabelSelector.LabelsValue()
   selectors.additionalProperties = cluster_labels
@@ -85,16 +93,15 @@ def _GetDefaultVersion():
   return apis.ResolveVersion(GAME_SERVICES_API)
 
 
-def GetMessages(version=None):
-  version = version or _GetDefaultVersion()
-  return apis.GetMessagesModule(GAME_SERVICES_API, version)
+def GetMessages(api_version=None):
+  api_version = api_version or _GetDefaultVersion()
+  return apis.GetMessagesModule(GAME_SERVICES_API, api_version)
 
 
-def WaitForOperation(response):
+def WaitForOperation(response, api_version):
   operation_ref = resources.REGISTRY.ParseRelativeName(
       response.name, collection=OPERATIONS_COLLECTION)
-  api_version = operation_ref.GetCollectionInfo().api_version
   return waiter.WaitFor(
       waiter.CloudOperationPollerNoResources(
-          GetClient(api_version).projects_locations_operations),
-      operation_ref, 'Waiting for [{0}] to finish'.format(operation_ref.Name()))
+          GetClient(api_version).projects_locations_operations), operation_ref,
+      'Waiting for [{0}] to finish'.format(operation_ref.Name()))

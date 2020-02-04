@@ -1249,7 +1249,7 @@ class GoogleCloudDatacatalogV1beta1ListTaxonomiesResponse(_messages.Message):
 
 class GoogleCloudDatacatalogV1beta1PolicyTag(_messages.Message):
   r"""Denotes one policy tag in a taxonomy (e.g. ssn). Policy Tags can be
-  defined in a hierarchy. For example, consider the following hierachy:
+  defined in a hierarchy. For example, consider the following hierarchy:
   Geolocation -&gt; (LatLong, City, ZipCode). PolicyTag "Geolocation" contains
   three child policy tags: "LatLong", "City", and "ZipCode".
 
@@ -1309,11 +1309,9 @@ class GoogleCloudDatacatalogV1beta1SearchCatalogRequest(_messages.Message):
 
   Fields:
     orderBy: Specifies the ordering of results, currently supported case-
-      sensitive choices are:    * `relevance`, only supports desecending   *
-      `last_access_timestamp [asc|desc]`, defaults to descending if not
-      specified   * `last_modified_timestamp [asc|desc]`, defaults to
-      descending if not     specified  If not specified, defaults to
-      `relevance` descending.
+      sensitive choices are:    * `relevance`, only supports descending   *
+      `last_modified_timestamp [asc|desc]`, defaults to descending if not
+      specified  If not specified, defaults to `relevance` descending.
     pageSize: Number of results in the search page. If <=0 then defaults to
       10. Max limit for page_size is 1000. Throws an invalid argument for
       page_size > 1000.

@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
@@ -54,3 +55,22 @@ def ReadFileOrStdin(path, max_bytes=None):
   except files.Error as e:
     raise exceptions.BadFileException(
         'Failed to read file [{path}]: {e}'.format(path=path, e=e))
+
+
+def GetVersionFromReleasePath(release_track):
+  """Converts a ReleaseTrack to a version string used to initialize clients.
+
+  If the release track is unknown, default to v1 rather than raise an exception.
+  This should never happen as we only support BETA and GA, but if it somehow
+  does, it shouldn't break the user's ability to use the gcloud SDK.
+
+  Args:
+      release_track (base.ReleaseTrack): Release track to get version string for
+
+  Returns:
+      result (str): version string corresponding to the given release_track.
+      Defaults to v1 (GA) if unrecognized.
+  """
+  if release_track == base.ReleaseTrack.BETA:
+    return 'v1beta1'
+  return 'v1'

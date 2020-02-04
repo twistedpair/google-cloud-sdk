@@ -500,8 +500,6 @@ apis:
       discovery_doc: iap_v1.json
       default: true
       resources:
-        projects:
-          path: projects/{project}/iap_web
         projects.iap_web:
           path: projects/{project}/iap_web/{iapWebId}
         projects.iap_web.services:
@@ -581,6 +579,9 @@ apis:
         iam:
           path: iam
       discovery_doc: policytroubleshooter_v1.json
+  privateca:
+    v1alpha1:
+      discovery_doc: privateca_v1alpha1.json
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json
@@ -613,9 +614,9 @@ apis:
   secretmanager:
     v1beta1:
       discovery_doc: secretmanager_v1beta1.json
-      default: true
     v1:
       discovery_doc: secretmanager_v1.json
+      default: true
   securitycenter:
     v1beta1:
       discovery_doc: securitycenter_v1beta1.json
@@ -793,9 +794,18 @@ apis:
   gameservices:
     v1alpha:
       discovery_doc: gameservices_v1alpha.json
+    v1beta:
+      discovery_doc: gameservices_v1beta.json
+      default: true
   translate:
     v3beta1:
       discovery_doc: translate_v3beta1.json
       default: true
     v3:
       discovery_doc: translate_v3.json
+  workflowexecutions:
+    v1alpha1:
+      discovery_doc: workflowexecutions_v1alpha1.json
+  workflows:
+    v1alpha1:
+      discovery_doc: workflows_v1alpha1.json

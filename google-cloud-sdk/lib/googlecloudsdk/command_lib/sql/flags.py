@@ -314,6 +314,17 @@ def AddEnableBinLog(parser, show_negated_in_help=False):
       **kwargs)
 
 
+def AddEnablePointInTimeRecovery(parser, show_negated_in_help=False):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--enable-point-in-time-recovery',
+      required=False,
+      help=('Specified if point-in-time recovery (using write-ahead log '
+            'archiving) should be enabled. If backup configuration is '
+            'disabled, point-in-time recovery must be disabled as well.'),
+      **kwargs)
+
+
 def AddExternalMasterGroup(parser):
   """Add flags to the parser for creating an external master and replica."""
 

@@ -210,8 +210,13 @@
     },
     "GoogleCloudOrgpolicyV2alpha1Policy": {
       "id": "GoogleCloudOrgpolicyV2alpha1Policy",
+      "description": "Defines a Cloud Organization `Policy` which is used to specify `Constraints`\nfor configurations of Cloud Platform resources.",
       "type": "object",
       "properties": {
+        "name": {
+          "description": "Immutable. The resource name of the Policy. Must be one of the following\nforms, where constraint_name is the name of the constraint which this\nPolicy configures:\n* `projects\/{project_number}\/policies\/{constraint_name}`\n* `folders\/{folder_id}\/policies\/{constraint_name}`\n* `organizations\/{organization_id}\/policies\/{constraint_name}`\n\nFor example, \"projects\/123\/policies\/compute.disableSerialPortAccess\".\n\nNote: `projects\/{project_id}\/policies\/{constraint_name}` is also an\nacceptable name for API requests, but responses will return the name using\nthe equivalent project number.",
+          "type": "string"
+        },
         "spec": {
           "$ref": "GoogleCloudOrgpolicyV2alpha1PolicySpec"
         },
@@ -223,18 +228,15 @@
     },
     "GoogleCloudOrgpolicyV2alpha1PolicySpec": {
       "id": "GoogleCloudOrgpolicyV2alpha1PolicySpec",
-      "description": "Defines a Cloud Organization `Policy` which is used to specify `Constraints`\nfor configurations of Cloud Platform resources.",
+      "description": "Defines a Cloud Organization `PolicySpec` which is used to specify\n`Constraints` for configurations of Cloud Platform resources.",
       "type": "object",
       "properties": {
-        "name": {
-          "type": "string"
-        },
         "etag": {
-          "description": "This field is ignored if used in a `CreatePolicy` request.\n\nWhen the `Policy` is returned from either a `GetPolicy` or a\n`ListPolicies` request, this `etag` indicates the version of the\ncurrent `Policy` to use when executing a read-modify-write loop.\n\nWhen the `Policy` is returned from a `GetEffectivePolicy` request, the\n`etag` will be unset.\n\nWhen the `Policy` is used in a `UpdatePolicy` method, use the `etag` value\nthat was returned from a `GetPolicy` request as part of a\nread-modify-write loop for concurrency control. If `UpdatePolicyRequest`'s\n`force_unconditional_write` field is set to true, this field must not be\nset. Otherwise, the `etag` is required for `UpdatePolicy`.",
+          "description": "An opaque tag indicating the current version of the `Policy`, used for\nconcurrency control.\n\nThis field is ignored if used in a `CreatePolicy` request.\n\nWhen the `Policy` is returned from either a `GetPolicy` or a\n`ListPolicies` request, this `etag` indicates the version of the\ncurrent `Policy` to use when executing a read-modify-write loop.\n\nWhen the `Policy` is returned from a `GetEffectivePolicy` request, the\n`etag` will be unset.\n\nWhen the `Policy` is used in a `UpdatePolicy` method, use the `etag` value\nthat was returned from a `GetPolicy` request as part of a\nread-modify-write loop for concurrency control. If `UpdatePolicyRequest`'s\n`force_unconditional_write` field is set to true, this field must not be\nset. Otherwise, the `etag` is required for `UpdatePolicy`.",
           "type": "string"
         },
         "updateTime": {
-          "description": "Output only. The time stamp the `Policy` was previously updated. This\nrepresents the last time a call to `CreatePolicy` or `UpdatePolicy` was\nmade for that `Policy`.",
+          "description": "Output only. The time stamp this was previously updated. This\nrepresents the last time a call to `CreatePolicy` or `UpdatePolicy` was\nmade for that `Policy`.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -277,7 +279,7 @@
           "type": "boolean"
         },
         "condition": {
-          "description": "An optional condition which determines whether this rule is used\nin the evaluation of the policy. When set, the `expression` field in\nthe `Expr' must include from 1 to 10 subexpressions, joined by the \"||\"\nor \"&&\" operators. Each subexpression must be of the form\n\"resource.matchLabels(key_name, value_name)\",\nwhere key_name and value_name are the resource names for Label Keys\nand Values. These names are available from the Label Manager Service. An\nexample expression is:\n\"resource.matchLabels('labelKeys\/123, 'labelValues\/456')\".",
+          "description": "Optional. A condition which determines whether this rule is used\nin the evaluation of the policy. When set, the `expression` field in\nthe `Expr' must include from 1 to 10 subexpressions, joined by the \"||\"\nor \"&&\" operators. Each subexpression must be of the form\n\"resource.matchLabels(key_name, value_name)\",\nwhere key_name and value_name are the resource names for Label Keys\nand Values. These names are available from the Label Manager Service. An\nexample expression is:\n\"resource.matchLabels('labelKeys\/123, 'labelValues\/456')\".",
           "$ref": "GoogleTypeExpr"
         }
       }
@@ -516,6 +518,7 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
+              "description": "Immutable. The resource name of the Policy. Must be one of the following\nforms, where constraint_name is the name of the constraint which this\nPolicy configures:\n* `projects\/{project_number}\/policies\/{constraint_name}`\n* `folders\/{folder_id}\/policies\/{constraint_name}`\n* `organizations\/{organization_id}\/policies\/{constraint_name}`\n\nFor example, \"projects\/123\/policies\/compute.disableSerialPortAccess\".\n\nNote: `projects\/{project_id}\/policies\/{constraint_name}` is also an\nacceptable name for API requests, but responses will return the name using\nthe equivalent project number.",
               "location": "path",
               "required": true,
               "pattern": "^[^\/]+\/[^\/]+\/policies\/[^\/]+$",

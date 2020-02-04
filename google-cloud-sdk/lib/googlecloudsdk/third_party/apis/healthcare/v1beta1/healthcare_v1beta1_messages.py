@@ -222,8 +222,9 @@ class DeidentifyDatasetRequest(_messages.Message):
     config: Deidentify configuration.
     destinationDataset: The name of the dataset resource to create and write
       the redacted data to.   * The destination dataset must not exist.  * The
-      destination dataset must be in the same project as the source
-      dataset. De-identifying data across multiple projects is not supported.
+      destination dataset must be in the same project and location as the
+      source dataset. De-identifying data across multiple projects or
+      locations  is not supported.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
