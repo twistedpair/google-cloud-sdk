@@ -360,8 +360,6 @@ class GoogleCloudMlV1ExplanationConfig(_messages.Message):
     saabasAttribution: A GoogleCloudMlV1SaabasAttribution attribute.
     sampledShapleyAttribution: A GoogleCloudMlV1SampledShapleyAttribution
       attribute.
-    samplingShapAttribution: A GoogleCloudMlV1SamplingShapAttribution
-      attribute.
     treeShapAttribution: XGBoost framework explanation methods.
     xraiAttribution: A GoogleCloudMlV1XraiAttribution attribute.
   """
@@ -370,9 +368,8 @@ class GoogleCloudMlV1ExplanationConfig(_messages.Message):
   integratedGradientsAttribution = _messages.MessageField('GoogleCloudMlV1IntegratedGradientsAttribution', 2)
   saabasAttribution = _messages.MessageField('GoogleCloudMlV1SaabasAttribution', 3)
   sampledShapleyAttribution = _messages.MessageField('GoogleCloudMlV1SampledShapleyAttribution', 4)
-  samplingShapAttribution = _messages.MessageField('GoogleCloudMlV1SamplingShapAttribution', 5)
-  treeShapAttribution = _messages.MessageField('GoogleCloudMlV1TreeShapAttribution', 6)
-  xraiAttribution = _messages.MessageField('GoogleCloudMlV1XraiAttribution', 7)
+  treeShapAttribution = _messages.MessageField('GoogleCloudMlV1TreeShapAttribution', 5)
+  xraiAttribution = _messages.MessageField('GoogleCloudMlV1XraiAttribution', 6)
 
 
 class GoogleCloudMlV1ExplanationInput(_messages.Message):
@@ -1655,14 +1652,23 @@ class GoogleCloudMlV1SampledShapleyAttribution(_messages.Message):
   numPaths = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
-class GoogleCloudMlV1SamplingShapAttribution(_messages.Message):
-  r"""DEPRECATED - use SampledShapleyAttribution.
+class GoogleCloudMlV1Scheduling(_messages.Message):
+  r"""All parameters related to queuing and scheduling of training jobs.
 
   Fields:
-    numPaths: A integer attribute.
+    maxRunningTime: Optional. The maximum job running time, expressed in
+      seconds. By default there is no limit.  If the training job is still
+      running after this duration, AI Platform Training cancels it.  For
+      example, if you want to ensure your job runs for no more than 2 hours,
+      set this field to `7200s` (2 hours * 60 minutes / hour * 60 seconds /
+      minute).  If you submit your training job using the `gcloud` tool, you
+      can [provide this field in a `config.yaml` file](/ml-engine/docs
+      /training-jobs#formatting_your_configuration_parameters). For example:
+      ```yaml trainingInput:   ...   scheduling:     maxRunningTime: 7200s
+      ... ```
   """
 
-  numPaths = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxRunningTime = _messages.StringField(1)
 
 
 class GoogleCloudMlV1SetDefaultVersionRequest(_messages.Message):
@@ -1770,6 +1776,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       versions</a>.
     scaleTier: Required. Specifies the machine types, the number of replicas
       for workers and parameter servers.
+    scheduling: Optional. Scheduling options for a training job.
     useChiefInTfConfig: Optional. Use 'chief' instead of 'master' in TF_CONFIG
       when Custom Container is used and evaluator is not specified.  Defaults
       to false.
@@ -1853,10 +1860,11 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
   region = _messages.StringField(13)
   runtimeVersion = _messages.StringField(14)
   scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 15)
-  useChiefInTfConfig = _messages.BooleanField(16)
-  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 17)
-  workerCount = _messages.IntegerField(18)
-  workerType = _messages.StringField(19)
+  scheduling = _messages.MessageField('GoogleCloudMlV1Scheduling', 16)
+  useChiefInTfConfig = _messages.BooleanField(17)
+  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 18)
+  workerCount = _messages.IntegerField(19)
+  workerType = _messages.StringField(20)
 
 
 class GoogleCloudMlV1TrainingOutput(_messages.Message):

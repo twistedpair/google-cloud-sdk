@@ -546,6 +546,14 @@ MAP = {
                 messages_modulepath='datafusion_v1beta1_messages',
                 default_version=True),
     },
+    'datamigration': {
+        'v1alpha2':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.datamigration.v1alpha2',
+                client_classpath='datamigration_v1alpha2_client.DatamigrationV1alpha2',
+                messages_modulepath='datamigration_v1alpha2_messages',
+                default_version=True),
+    },
     'dataproc': {
         'v1':
             APIDef(
@@ -1090,6 +1098,12 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.securitycenter.v1beta1',
                 client_classpath='securitycenter_v1beta1_client.SecuritycenterV1beta1',
                 messages_modulepath='securitycenter_v1beta1_messages',
+                default_version=False),
+        'v1p1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.securitycenter.v1p1beta1',
+                client_classpath='securitycenter_v1p1beta1_client.SecuritycenterV1p1beta1',
+                messages_modulepath='securitycenter_v1p1beta1_messages',
                 default_version=False),
     },
     'serviceconsumermanagement': {

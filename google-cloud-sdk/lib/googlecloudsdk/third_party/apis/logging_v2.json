@@ -255,11 +255,6 @@
           "type": "string",
           "format": "google-datetime"
         },
-        "expireTime": {
-          "description": "Time at which this view will no longer be useable. Requests to view logs after expire_time has passed will fail with a FAILED_PRECONDITION error.",
-          "type": "string",
-          "format": "google-datetime"
-        },
         "filter": {
           "description": "Filter that restricts which log entries in a bucket are visible in this view. Filters are restricted to be a logical AND of ==\/!= of any of the following:  originating project\/folder\/organization\/billing account.  resource type  log id  user labels",
           "type": "string"

@@ -211,6 +211,16 @@ class _BaseInstances(object):
       ToolException: An error other than http error occurred while executing the
           command.
     """
+
+    # This code is shared by create and patch, but these args don't exist in
+    # create anymore, so insert them here to avoid regressions below.
+    if 'authorized_gae_apps' not in args:
+      args.authorized_gae_apps = None
+    if 'follow_gae_app' not in args:
+      args.follow_gae_app = None
+    if 'pricing_plan' not in args:
+      args.pricing_plan = 'PER_USE'
+
     settings = sql_messages.Settings(
         kind='sql#settings',
         tier=reducers.MachineType(instance, args.tier, args.memory, args.cpu),

@@ -100,6 +100,7 @@ class SubscriptionsClient(object):
              no_expiration=False,
              expiration_period=None,
              enable_message_ordering=None,
+             filter_string=None,
              dead_letter_topic=None,
              max_delivery_attempts=None):
     """Creates a Subscription.
@@ -120,6 +121,7 @@ class SubscriptionsClient(object):
       expiration_period (str): TTL on expiration_policy.
       enable_message_ordering (bool): Whether or not to deliver messages with
         the same ordering key in order.
+      filter_string (str): filter string in the Cloud Pub/Sub filter language.
       dead_letter_topic (str): Topic for publishing dead messages.
       max_delivery_attempts (int): Threshold of failed deliveries before sending
         message to the dead letter topic.
@@ -137,6 +139,7 @@ class SubscriptionsClient(object):
         expirationPolicy=self._ExpirationPolicy(no_expiration,
                                                 expiration_period),
         enableMessageOrdering=enable_message_ordering,
+        filter=filter_string,
         deadLetterPolicy=self._DeadLetterPolicy(dead_letter_topic,
                                                 max_delivery_attempts))
 

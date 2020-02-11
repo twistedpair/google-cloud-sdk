@@ -488,6 +488,11 @@ may "fail open" without warning.
 
     def UpdateRollout(self, request, global_params=None):
       r"""Patches a single Game Server Deployment Rollout.
+The method will not return an error if the update does not affect any
+existing realms. For example - if the default_game_server_config is changed
+but all existing realms use the override, that is valid. Similarly, if a
+non existing realm is explicitly called out in game_server_config_overrides
+field, that will also not result in an error.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsUpdateRolloutRequest) input message

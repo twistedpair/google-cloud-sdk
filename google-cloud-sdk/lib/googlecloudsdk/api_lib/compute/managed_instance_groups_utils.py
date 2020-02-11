@@ -97,9 +97,11 @@ def ArgsSupportQueueScaling(args):
   return 'queue_scaling_acceptable_backlog_per_instance' in args
 
 
-def AddAutoscalerArgs(
-    parser, queue_scaling_enabled=False, autoscaling_file_enabled=False,
-    stackdriver_metrics_flags=False, scale_down=False):
+def AddAutoscalerArgs(parser,
+                      queue_scaling_enabled=False,
+                      autoscaling_file_enabled=False,
+                      stackdriver_metrics_flags=False,
+                      scale_in=False):
   """Adds commandline arguments to parser."""
   parser.add_argument(
       '--cool-down-period',
@@ -256,8 +258,8 @@ Mutually exclusive with `--update-stackdriver-metric`.
 
   GetModeFlag().AddToParser(parser)
 
-  if scale_down:
-    AddScaleDownControlFlag(parser)
+  if scale_in:
+    AddScaleInControlFlag(parser)
 
 
 def GetModeFlag():
@@ -283,38 +285,36 @@ def GetModeFlag():
       """)
 
 
-def AddScaleDownControlFlag(parser):
+def AddScaleInControlFlag(parser):
   parser.add_argument(
-      '--scale-down-control',
+      '--scale-in-control',
       type=arg_parsers.ArgDict(
           spec={
-              'max-scaled-down-replicas': str,
-              'max-scaled-down-replicas-percent': str,
+              'max-scaled-in-replicas': str,
+              'max-scaled-in-replicas-percent': str,
               'time-window': int,
-          },
-      ),
+          },),
       help="""\
-        Configuration that allows slower scale down so that even if Autoscaler
-        recommends an abrupt scale down of a managed instance group, it will be
+        Configuration that allows slower scale in so that even if Autoscaler
+        recommends an abrupt scale in of a managed instance group, it will be
         throttled as specified by the parameters.
 
-        *max-scaled-down-replicas*::: Maximum allowed number of VMs that can be
+        *max-scaled-in-replicas*::: Maximum allowed number of VMs that can be
         deducted from the peak recommendation during the window. Possibly all
         these VMs can be deleted at once so the application needs to be prepared
         to lose that many VMs in one step. Mutually exclusive with
-        'max-scaled-down-replicas-percent'.
+        'max-scaled-in-replicas-percent'.
 
-        *max-scaled-down-replicas-percent*::: Maximum allowed percent of VMs
+        *max-scaled-in-replicas-percent*::: Maximum allowed percent of VMs
         that can be deducted from the peak recommendation during the window.
         Possibly all these VMs can be deleted at once so the application needs
         to be prepared to lose that many VMs in one step. Mutually exclusive
-        with  'max-scaled-down-replicas'.
+        with  'max-scaled-in-replicas'.
 
         *time-window*::: How long back autoscaling should look when computing
-        recommendations to include directives regarding slower scale down.
+        recommendations to include directives regarding slower scale in.
         Measured in seconds.
-        """
-  )
+        """)
 
 
 def _ValidateCloudPubSubResource(pubsub_spec_dict, expected_resource_type):
@@ -917,8 +917,8 @@ def BuildScaleDown(args, messages):
   Returns:
     AutoscalingPolicyScaleDownControl message object.
 
-  if args.IsSpecified('scale_down_control'):
-    replicas_arg = args.scale_down_control.get('max-scaled-down-replicas')
+  if args.IsSpecified('scale_in_control'):
+    replicas_arg = args.scale_in_control.get('max-scaled-in-replicas')
 
     if replicas_arg.endswith('%'):
       max_replicas = messages.FixedOrPercent(
@@ -928,18 +928,18 @@ def BuildScaleDown(args, messages):
 
     return messages.AutoscalingPolicyScaleDownControl(
         maxScaledDownReplicas=max_replicas,
-        timeWindowSec=args.scale_down_control.get('time-window'))
+        timeWindow='%ds' % args.scale_in_control.get('time-window'))
   Raises:
-    InvalidArgumentError:  if both max-scaled-down-replicas and
-      max-scaled-down-replicas-percent are specified.
+    InvalidArgumentError:  if both max-scaled-in-replicas and
+      max-scaled-in-replicas-percent are specified.
   """
-  if args.IsSpecified('scale_down_control'):
-    replicas_arg = args.scale_down_control.get('max-scaled-down-replicas')
-    replicas_arg_percent = args.scale_down_control.get(
-        'max-scaled-down-replicas-percent')
+  if args.IsSpecified('scale_in_control'):
+    replicas_arg = args.scale_in_control.get('max-scaled-in-replicas')
+    replicas_arg_percent = args.scale_in_control.get(
+        'max-scaled-in-replicas-percent')
     if replicas_arg and replicas_arg_percent:
       raise InvalidArgumentError(
-          'max-scaled-down-replicas and max-scaled-down-replicas-percent'
+          'max-scaled-in-replicas and max-scaled-in-replicas-percent'
           'are mutually exclusive, you can\'t specify both')
     elif replicas_arg_percent:
       max_replicas = messages.FixedOrPercent(percent=int(replicas_arg_percent))
@@ -948,17 +948,18 @@ def BuildScaleDown(args, messages):
 
     return messages.AutoscalingPolicyScaleDownControl(
         maxScaledDownReplicas=max_replicas,
-        timeWindowSec=args.scale_down_control.get('time-window'))
+        timeWindow=messages.GoogleDuration(
+            seconds=args.scale_in_control.get('time-window')))
 
 
-def _BuildAutoscalerPolicy(args, messages, original, scale_down=False):
+def _BuildAutoscalerPolicy(args, messages, original, scale_in=False):
   """Builds AutoscalingPolicy from args.
 
   Args:
     args: command line arguments.
     messages: module containing message classes.
     original: original autoscaler message.
-    scale_down: bool, whether to include the
+    scale_in: bool, whether to include the
     'autoscalingPolicy.scaleDownControl' field in the message
   Returns:
     AutoscalingPolicy message object.
@@ -975,7 +976,7 @@ def _BuildAutoscalerPolicy(args, messages, original, scale_down=False):
       'minNumReplicas': args.min_num_replicas,
   }
   policy_dict['mode'] = _BuildMode(args, messages, original)
-  if scale_down:
+  if scale_in:
     policy_dict['scaleDownControl'] = BuildScaleDown(args, messages)
 
   return messages.AutoscalingPolicy(
@@ -1008,11 +1009,11 @@ def AdjustAutoscalerNameForCreation(autoscaler_resource, igm_ref):
   autoscaler_resource.name = new_name
 
 
-def BuildAutoscaler(args, messages, igm_ref, name, original, scale_down=False):
+def BuildAutoscaler(args, messages, igm_ref, name, original, scale_in=False):
   """Builds autoscaler message protocol buffer."""
   autoscaler = messages.Autoscaler(
-      autoscalingPolicy=_BuildAutoscalerPolicy(args, messages, original,
-                                               scale_down=scale_down),
+      autoscalingPolicy=_BuildAutoscalerPolicy(
+          args, messages, original, scale_in=scale_in),
       description=args.description,
       name=name,
       target=igm_ref.SelfLink(),

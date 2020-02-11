@@ -265,7 +265,7 @@
       "type": "object",
       "properties": {
         "glossary": {
-          "description": "Required. Specifies the glossary used for this translation. Use\nthis format: projects\/*\/locations\/*\/glossaries\/*",
+          "description": "Required. The `glossary` to be applied for this translation.\n\nThe format depends on glossary:\n\n- User provided custom glossary:\n  `projects\/{project-number-or-id}\/locations\/{location-id}\/glossaries\/{glossary-id}`",
           "type": "string"
         },
         "ignoreCase": {

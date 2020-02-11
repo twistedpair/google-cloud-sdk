@@ -50,7 +50,7 @@ def _GetPrimaryNodeName():
          '-c',
          'import tensorflow as tf; print(tf.version.VERSION)']
   proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-  tf_version = proc.stdout.read()
+  tf_version = proc.stdout.read().decode('utf-8')
   if tf_version.startswith('1.'):
     return 'master'
   elif tf_version.startswith('2.'):

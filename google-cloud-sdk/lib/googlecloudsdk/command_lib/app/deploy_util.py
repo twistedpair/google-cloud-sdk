@@ -36,6 +36,7 @@ from googlecloudsdk.api_lib.app import runtime_builders
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app import yaml_parsing
+from googlecloudsdk.api_lib.datastore import index_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.calliope import actions
@@ -655,6 +656,8 @@ def RunDeploy(
       with progress_tracker.ProgressTracker(message):
         if config.name == 'dispatch' and dispatch_admin_api:
           api_client.UpdateDispatchRules(config.GetRules())
+        elif config.name == yaml_parsing.ConfigYamlInfo.INDEX:
+          index_api.CreateMissingIndexes(project, config.parsed)
         else:
           ac_client.UpdateConfig(config.name, config.parsed)
     metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG)

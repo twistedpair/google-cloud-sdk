@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/managed-microsoft-ad/",
   "protocol": "rest",
   "rootUrl": "https://managedidentities.googleapis.com/",
+  "mtlsRootUrl": "https://managedidentities.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://managedidentities.googleapis.com/",
   "batchPath": "batch",
@@ -441,12 +442,14 @@
     },
     "ResetAdminPasswordRequest": {
       "id": "ResetAdminPasswordRequest",
+      "description": "Request message for\nResetAdminPassword",
       "type": "object",
       "properties": {
       }
     },
     "ResetAdminPasswordResponse": {
       "id": "ResetAdminPasswordResponse",
+      "description": "Response message for\nResetAdminPassword",
       "type": "object",
       "properties": {
         "password": {
@@ -457,6 +460,7 @@
     },
     "ListDomainsResponse": {
       "id": "ListDomainsResponse",
+      "description": "Response message for\nListDomains",
       "type": "object",
       "properties": {
         "domains": {
@@ -481,6 +485,7 @@
     },
     "AttachTrustRequest": {
       "id": "AttachTrustRequest",
+      "description": "Request message for\nAttachTrust",
       "type": "object",
       "properties": {
         "trust": {
@@ -491,6 +496,7 @@
     },
     "ReconfigureTrustRequest": {
       "id": "ReconfigureTrustRequest",
+      "description": "Request message for\nReconfigureTrust",
       "type": "object",
       "properties": {
         "targetDomainName": {
@@ -508,6 +514,7 @@
     },
     "DetachTrustRequest": {
       "id": "DetachTrustRequest",
+      "description": "Request message for\nDetachTrust",
       "type": "object",
       "properties": {
         "trust": {
@@ -518,6 +525,7 @@
     },
     "ValidateTrustRequest": {
       "id": "ValidateTrustRequest",
+      "description": "Request message for\nValidateTrust",
       "type": "object",
       "properties": {
         "trust": {

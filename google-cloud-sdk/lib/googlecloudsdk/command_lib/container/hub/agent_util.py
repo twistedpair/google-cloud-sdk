@@ -252,13 +252,14 @@ def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
   return full_manifest
 
 
-def DeployConnectAgent(args,
+def DeployConnectAgent(kube_client, args,
                        service_account_key_data,
                        image_pull_secret_data,
                        membership_ref, release_track=None):
   """Deploys the GKE Connect agent to the cluster.
 
   Args:
+    kube_client: A Kubernetes Client for the cluster to be registered.
     args: arguments of the command.
     service_account_key_data: The contents of a Google IAM service account JSON
       file
@@ -274,7 +275,6 @@ def DeployConnectAgent(args,
     calliope_exceptions.MinimumArgumentException: If the agent cannot be
     deployed properly
   """
-  kube_client = kube_util.KubernetesClient(args)
   project_id = properties.VALUES.core.project.GetOrFail()
 
   log.status.Print('Generating connect agent manifest...')
@@ -344,10 +344,11 @@ class NamespaceDeleteOperation(object):
       self.error = err
 
 
-def DeleteConnectNamespace(args):
+def DeleteConnectNamespace(kube_client, args):
   """Delete the namespace in the cluster that contains the connect agent.
 
   Args:
+    kube_client: A Kubernetes Client for the cluster to be registered.
     args: an argparse namespace. All arguments that were provided to this
       command invocation.
 
@@ -356,7 +357,6 @@ def DeleteConnectNamespace(args):
       be deduced from the command line flags or environment
   """
 
-  kube_client = kube_util.KubernetesClient(args)
   namespace = _GKEConnectNamespace(kube_client,
                                    properties.VALUES.core.project.GetOrFail())
   cleanup_msg = 'Please delete namespace {} manually in your cluster.'.format(

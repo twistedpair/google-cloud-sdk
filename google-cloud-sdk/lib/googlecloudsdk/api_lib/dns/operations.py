@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.dns import util
 from googlecloudsdk.api_lib.util import waiter
 
 
@@ -87,7 +87,7 @@ class Client(object):
 
   @classmethod
   def FromApiVersion(cls, version):
-    return cls(version, apis.GetClientInstance('dns', version))
+    return cls(version, util.GetApiClient(version))
 
   def Get(self, operation_ref):
     return self._service.Get(

@@ -113,6 +113,9 @@ definitions:
       fallthroughs:
         type: array
         items: {$ref: "#/definitions/fallthrough"}
+      # The module path to a class that implements remote completion
+      # for this resource.
+      completer: {$ref: "#/definitions/python_hook"}
       # The ID field of the return value in the response for completions.
       completion_id_field: {type: string}
       # Field names to use as static field values in any request to
@@ -374,6 +377,9 @@ properties:
       display_resource_type: {type: string}
       # The API version to use, defaults to API set as gcloud default.
       api_version: {type: string}
+      # If true, use google-auth library for authentication. Defaults to false and using
+      # the oauth2client library.
+      use_google_auth: {type: boolean}
       # The name of the method to call to perform the operation. Optional if
       # your command is one of the supported command types (not Generic).
       method: {type: string}

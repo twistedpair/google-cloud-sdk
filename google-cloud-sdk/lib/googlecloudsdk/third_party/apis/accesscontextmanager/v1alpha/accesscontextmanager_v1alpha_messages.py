@@ -1186,8 +1186,9 @@ class ServicePerimeterConfig(_messages.Message):
       restrictions. For example, if `storage.googleapis.com` is specified,
       access to the storage buckets inside the perimeter must meet the
       perimeter's access restrictions.
+    vpcAccessibleServices: Configuration for within Perimeter allowed APIs.
     vpcServiceRestriction: Alpha. Configuration for within Perimeter allowed
-      APIs.
+      APIs. Deprecated. The field had been renamed to vpc_accessible_services
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
@@ -1195,7 +1196,8 @@ class ServicePerimeterConfig(_messages.Message):
   ingressPolicies = _messages.MessageField('IngressPolicy', 3, repeated=True)
   resources = _messages.StringField(4, repeated=True)
   restrictedServices = _messages.StringField(5, repeated=True)
-  vpcServiceRestriction = _messages.MessageField('VpcServiceRestriction', 6)
+  vpcAccessibleServices = _messages.MessageField('VpcAccessibleServices', 6)
+  vpcServiceRestriction = _messages.MessageField('VpcServiceRestriction', 7)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1312,9 +1314,25 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class VpcAccessibleServices(_messages.Message):
+  r"""Specifies how APIs are allowed to communicate within the Service
+  Perimeter.
+
+  Fields:
+    allowedServices: The list of APIs usable within the Service Perimeter.
+      Must be empty unless 'enable_restriction' is True.
+    enableRestriction: Whether to restrict API calls within the Service
+      Perimeter to the list of APIs specified in 'allowed_services'.
+  """
+
+  allowedServices = _messages.StringField(1, repeated=True)
+  enableRestriction = _messages.BooleanField(2)
+
+
 class VpcServiceRestriction(_messages.Message):
   r"""Alpha. Specifies how APIs are allowed to communicate within the Service
-  Perimeter.
+  Perimeter. This message is DEPRECATED and had been renamed to
+  VpcAccessibleServices
 
   Fields:
     allowedServices: The list of APIs usable within the Service Perimeter.

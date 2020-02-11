@@ -19,24 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.datastore import constants
-from googlecloudsdk.api_lib.util import apis
-
-_DATASTORE_API_VERSION = 'v1'
-
-
-def GetMessages():
-  """Import and return the appropriate admin messages module."""
-  return apis.GetMessagesModule('datastore', _DATASTORE_API_VERSION)
-
-
-def GetClient():
-  """Returns the Cloud Datastore client for the appropriate release track."""
-  return apis.GetClientInstance('datastore', _DATASTORE_API_VERSION)
-
-
-def GetService():
-  """Returns the service for interacting with the Datastore Admin service."""
-  return GetClient().projects
+from googlecloudsdk.api_lib.datastore import util
 
 
 def GetExportEntitiesRequest(project,
@@ -55,7 +38,7 @@ def GetExportEntitiesRequest(project,
   Returns:
     an ExportRequest message.
   """
-  messages = GetMessages()
+  messages = util.GetMessages()
   request_class = messages.GoogleDatastoreAdminV1ExportEntitiesRequest
 
   labels_message = request_class.LabelsValue()
@@ -94,7 +77,7 @@ def GetImportEntitiesRequest(project,
   Returns:
     an ImportRequest message.
   """
-  messages = GetMessages()
+  messages = util.GetMessages()
   request_class = messages.GoogleDatastoreAdminV1ImportEntitiesRequest
 
   entity_filter = _MakeEntityFilter(namespaces, kinds)
@@ -129,7 +112,7 @@ def Export(project, output_url_prefix, kinds=None, namespaces=None,
   Returns:
     a google.longrunning.Operation.
   """
-  return GetService().Export(
+  return util.GetService().Export(
       GetExportEntitiesRequest(project, output_url_prefix, kinds, namespaces,
                                labels))
 
@@ -146,7 +129,7 @@ def Import(project, input_url, kinds=None, namespaces=None, labels=None):
   Returns:
     a google.longrunning.Operation.
   """
-  return GetService().Import(
+  return util.GetService().Import(
       GetImportEntitiesRequest(project, input_url, kinds, namespaces, labels))
 
 
@@ -162,7 +145,7 @@ def _MakeEntityFilter(namespaces, kinds):
   namespaces = namespaces or []
   namespaces = [_TransformNamespaceId(namespace) for namespace in namespaces]
 
-  return GetMessages().GoogleDatastoreAdminV1EntityFilter(
+  return util.GetMessages().GoogleDatastoreAdminV1EntityFilter(
       kinds=kinds or [], namespaceIds=namespaces)
 
 

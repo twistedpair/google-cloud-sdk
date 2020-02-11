@@ -283,9 +283,8 @@ class BackendRule(_messages.Message):
 
   Fields:
     address: The address of the API backend.
-    deadline: The number of seconds to wait for a response from a request.
-      The default deadline for gRPC is infinite (no deadline) and HTTP
-      requests is 5 seconds.
+    deadline: The number of seconds to wait for a response from a request. The
+      default varies based on the request protocol and deployment environment.
     disableAuth: When disable_auth is false,  a JWT ID token will be generated
       with the value from BackendRule.address as jwt_audience, overrode to the
       HTTP "Authorization" request header and sent to the backend.  When

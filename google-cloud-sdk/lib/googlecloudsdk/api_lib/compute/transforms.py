@@ -213,7 +213,7 @@ def TransformProject(r, undefined=''):
 
 
 def TransformName(r, undefined=''):
-  """Returns a resorce name from an URI.
+  """Returns a resource name from an URI.
 
   Args:
     r: JSON-serializable object.

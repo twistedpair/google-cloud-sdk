@@ -4006,6 +4006,23 @@ class SDKInfo(_messages.Message):
   version = _messages.StringField(2)
 
 
+class SdkHarnessContainerImage(_messages.Message):
+  r"""Defines a SDK harness container for executing Dataflow pipelines.
+
+  Fields:
+    containerImage: A docker container image that resides in Google Container
+      Registry.
+    useSingleCorePerContainer: If true, recommends the Dataflow service to use
+      only one core per SDK container instance with this image. If false (or
+      unset) recommends using more than one core per SDK container instance
+      with this image for efficiency. Note that Dataflow service may choose to
+      override this property if needed.
+  """
+
+  containerImage = _messages.StringField(1)
+  useSingleCorePerContainer = _messages.BooleanField(2)
+
+
 class SdkVersion(_messages.Message):
   r"""The version of the SDK used to run the job.
 
@@ -5906,6 +5923,10 @@ class WorkerPool(_messages.Message):
       the Google Compute Engine API.
     packages: Packages to be installed on workers.
     poolArgs: Extra arguments for this worker pool.
+    sdkHarnessContainerImages: Set of SDK harness containers needed to execute
+      this pipeline. This will only be set in the Fn API path. For non-cross-
+      language pipelines this should have only one entry. Cross-language
+      pipelines will have two or more entries.
     subnetwork: Subnetwork to which VMs will be assigned, if desired.
       Expected to be of the form "regions/REGION/subnetworks/SUBNETWORK".
     taskrunnerSettings: Settings passed through to Google Compute Engine
@@ -5924,7 +5945,8 @@ class WorkerPool(_messages.Message):
       unspecified, the service will attempt to choose a reasonable default.
     workerHarnessContainerImage: Required. Docker container image that
       executes the Cloud Dataflow worker harness, residing in Google Container
-      Registry.
+      Registry.  Deprecated for the Fn API path. Use
+      sdk_harness_container_images instead.
     zone: Zone to run the worker pools in.  If empty or unspecified, the
       service will attempt to choose a reasonable default.
   """
@@ -6053,11 +6075,12 @@ class WorkerPool(_messages.Message):
   onHostMaintenance = _messages.StringField(14)
   packages = _messages.MessageField('Package', 15, repeated=True)
   poolArgs = _messages.MessageField('PoolArgsValue', 16)
-  subnetwork = _messages.StringField(17)
-  taskrunnerSettings = _messages.MessageField('TaskRunnerSettings', 18)
-  teardownPolicy = _messages.EnumField('TeardownPolicyValueValuesEnum', 19)
-  workerHarnessContainerImage = _messages.StringField(20)
-  zone = _messages.StringField(21)
+  sdkHarnessContainerImages = _messages.MessageField('SdkHarnessContainerImage', 17, repeated=True)
+  subnetwork = _messages.StringField(18)
+  taskrunnerSettings = _messages.MessageField('TaskRunnerSettings', 19)
+  teardownPolicy = _messages.EnumField('TeardownPolicyValueValuesEnum', 20)
+  workerHarnessContainerImage = _messages.StringField(21)
+  zone = _messages.StringField(22)
 
 
 class WorkerSettings(_messages.Message):

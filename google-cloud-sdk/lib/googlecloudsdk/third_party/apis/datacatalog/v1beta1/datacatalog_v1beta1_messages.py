@@ -179,6 +179,29 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesGetRequest(_messages.Message
   name = _messages.StringField(1, required=True)
 
 
+class DatacatalogProjectsLocationsEntryGroupsEntriesListRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsEntryGroupsEntriesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return. Default is 10. Max limit
+      is 1000. Throws an invalid argument for `page_size > 1000`.
+    pageToken: Token that specifies which page is requested. If empty, the
+      first page is returned.
+    parent: Required. The name of the entry group that contains the entries,
+      which can be provided in URL format. Example:  *
+      projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
+    readMask: The fields to return for each Entry. If not set or empty, all
+      fields are returned. For example, setting read_mask to contain only one
+      path "name" will cause ListEntries to return a list of Entries with only
+      "name" field.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  readMask = _messages.StringField(4)
+
+
 class DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest object.
 
@@ -317,6 +340,26 @@ class DatacatalogProjectsLocationsEntryGroupsGetRequest(_messages.Message):
   readMask = _messages.StringField(2)
 
 
+class DatacatalogProjectsLocationsEntryGroupsPatchRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsEntryGroupsPatchRequest object.
+
+  Fields:
+    googleCloudDatacatalogV1beta1EntryGroup: A
+      GoogleCloudDatacatalogV1beta1EntryGroup resource to be passed as the
+      request body.
+    name: The resource name of the entry group in URL format. Example:  *
+      projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
+      Note that this EntryGroup and its child resources may not actually be
+      stored in the location in this name.
+    updateMask: The fields to update on the entry group. If absent or empty,
+      all modifiable fields are updated.
+  """
+
+  googleCloudDatacatalogV1beta1EntryGroup = _messages.MessageField('GoogleCloudDatacatalogV1beta1EntryGroup', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class DatacatalogProjectsLocationsEntryGroupsSetIamPolicyRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsEntryGroupsSetIamPolicyRequest object.
 
@@ -355,10 +398,10 @@ class DatacatalogProjectsLocationsTagTemplatesCreateRequest(_messages.Message):
     googleCloudDatacatalogV1beta1TagTemplate: A
       GoogleCloudDatacatalogV1beta1TagTemplate resource to be passed as the
       request body.
-    parent: Required. The name of the project and the location this template
-      is in. Example:  * projects/{project_id}/locations/{location}
-      TagTemplate and its child resources may not actually be stored in the
-      location in this name.
+    parent: Required. The name of the project and the template location
+      [region](/compute/docs/regions-zones/#available). NOTE: Currently, only
+      the `us-central1 region` is supported.  Example:  *
+      projects/{project_id}/locations/us-central1
     tagTemplateId: Required. The id of the tag template to create.
   """
 
@@ -390,10 +433,11 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsCreateRequest(_messages.Mess
     googleCloudDatacatalogV1beta1TagTemplateField: A
       GoogleCloudDatacatalogV1beta1TagTemplateField resource to be passed as
       the request body.
-    parent: Required. The name of the project this template is in. Example:  *
-      projects/{project_id}/locations/{location}/tagTemplates/{tag_template_id
-      }  Note that this TagTemplateField may not actually be stored in the
-      location in this name.
+    parent: Required. The name of the project and the template location
+      [region](/compute/docs/regions-zones/#available). NOTE: Currently, only
+      the `us-central1 region` is supported.  Example:  *
+      projects/{project_id}/locations/us-
+      central1/tagTemplates/{tag_template_id}
     tagTemplateFieldId: Required. The ID of the tag template field to create.
       Field ids can contain letters (both uppercase and lowercase), numbers
       (0-9), underscores (_) and dashes (-). Field IDs must be at least 1
@@ -971,7 +1015,11 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
   also be used to attach flexible metadata, such as a Tag.
 
   Enums:
-    TypeValueValuesEnum: The type of the entry.
+    IntegratedSystemValueValuesEnum: Output only. This field indicates the
+      entry's source system that Data Catalog integrates with, such as
+      BigQuery or Cloud Pub/Sub.
+    TypeValueValuesEnum: The type of the entry. Only used for Entries with
+      types in the EntryType enum.
 
   Fields:
     bigqueryDateShardedSpec: Specification for a group of BigQuery tables with
@@ -988,12 +1036,17 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
       Default value is an empty string.
     gcsFilesetSpec: Specification that applies to a Cloud Storage fileset.
       This is only valid on entries of type FILESET.
-    linkedResource: Output only. The resource this metadata entry refers to.
-      For Google Cloud Platform resources, `linked_resource` is the [full name
-      of the resource](https://cloud.google.com/apis/design/resource_names#ful
-      l_resource_name). For example, the `linked_resource` for a table
-      resource from BigQuery is:  * //bigquery.googleapis.com/projects/project
-      Id/datasets/datasetId/tables/tableId
+    integratedSystem: Output only. This field indicates the entry's source
+      system that Data Catalog integrates with, such as BigQuery or Cloud
+      Pub/Sub.
+    linkedResource: The resource this metadata entry refers to.  For Google
+      Cloud Platform resources, `linked_resource` is the [full name of the res
+      ource](https://cloud.google.com/apis/design/resource_names#full_resource
+      _name). For example, the `linked_resource` for a table resource from
+      BigQuery is:  * //bigquery.googleapis.com/projects/projectId/datasets/da
+      tasetId/tables/tableId  Output only when Entry is of type in the
+      EntryType enum. For entries with user_specified_type, this field is
+      optional and defaults to an empty string.
     name: The Data Catalog resource name of the entry in URL format. Example:
       * projects/{project_id}/locations/{location}/entryGroups/{entry_group_id
       }/entries/{entry_id}  Note that this Entry and its child resources may
@@ -1001,12 +1054,43 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
     schema: Schema of the entry. An entry might not have any schema attached
       to it.
     sourceSystemTimestamps: Output only. Timestamps about the underlying
-      Google Cloud Platform resource, not about this Data Catalog Entry.
-    type: The type of the entry.
+      resource, not about this Data Catalog entry. Output only when Entry is
+      of type in the EntryType enum. For entries with user_specified_type,
+      this field is optional and defaults to an empty timestamp.
+    type: The type of the entry. Only used for Entries with types in the
+      EntryType enum.
+    userSpecifiedSystem: This field indicates the entry's source system that
+      Data Catalog does not integrate with. `user_specified_system` strings
+      must begin with a letter or underscore and can only contain letters,
+      numbers, and underscores; are case insensitive; must be at least 1
+      character and at most 64 characters long.
+    userSpecifiedType: Entry type if it does not fit any of the input-allowed
+      values listed in `EntryType` enum above. When creating an entry, users
+      should check the enum values first, if nothing matches the entry to be
+      created, then provide a custom value, for example "my_special_type".
+      `user_specified_type` strings must begin with a letter or underscore and
+      can only contain letters, numbers, and underscores; are case
+      insensitive; must be at least 1 character and at most 64 characters
+      long.  Currently, only FILESET enum value is allowed. All other entries
+      created through Data Catalog must use `user_specified_type`.
   """
 
+  class IntegratedSystemValueValuesEnum(_messages.Enum):
+    r"""Output only. This field indicates the entry's source system that Data
+    Catalog integrates with, such as BigQuery or Cloud Pub/Sub.
+
+    Values:
+      INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
+      BIGQUERY: BigQuery.
+      CLOUD_PUBSUB: Cloud Pub/Sub.
+    """
+    INTEGRATED_SYSTEM_UNSPECIFIED = 0
+    BIGQUERY = 1
+    CLOUD_PUBSUB = 2
+
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of the entry.
+    r"""The type of the entry. Only used for Entries with types in the
+    EntryType enum.
 
     Values:
       ENTRY_TYPE_UNSPECIFIED: Default unknown type
@@ -1015,8 +1099,8 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
       MODEL: Output only. The type of models.
       DATA_STREAM: Output only. An entry type which is used for streaming
         entries. Example: Cloud Pub/Sub topic.
-      FILESET: Alpha feature. An entry type which is a set of files or
-        objects. Example: Cloud Storage fileset.
+      FILESET: An entry type which is a set of files or objects. Example:
+        Cloud Storage fileset.
     """
     ENTRY_TYPE_UNSPECIFIED = 0
     TABLE = 1
@@ -1029,11 +1113,14 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
   gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1beta1GcsFilesetSpec', 5)
-  linkedResource = _messages.StringField(6)
-  name = _messages.StringField(7)
-  schema = _messages.MessageField('GoogleCloudDatacatalogV1beta1Schema', 8)
-  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1beta1SystemTimestamps', 9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 6)
+  linkedResource = _messages.StringField(7)
+  name = _messages.StringField(8)
+  schema = _messages.MessageField('GoogleCloudDatacatalogV1beta1Schema', 9)
+  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1beta1SystemTimestamps', 10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  userSpecifiedSystem = _messages.StringField(12)
+  userSpecifiedType = _messages.StringField(13)
 
 
 class GoogleCloudDatacatalogV1beta1EntryGroup(_messages.Message):
@@ -1206,6 +1293,19 @@ class GoogleCloudDatacatalogV1beta1InlineSource(_messages.Message):
   """
 
   taxonomies = _messages.MessageField('GoogleCloudDatacatalogV1beta1SerializedTaxonomy', 1, repeated=True)
+
+
+class GoogleCloudDatacatalogV1beta1ListEntriesResponse(_messages.Message):
+  r"""Response message for ListEntries.
+
+  Fields:
+    entries: Entry details.
+    nextPageToken: Token to retrieve the next page of results. It is set to
+      empty if no items remain in results.
+  """
+
+  entries = _messages.MessageField('GoogleCloudDatacatalogV1beta1Entry', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class GoogleCloudDatacatalogV1beta1ListPolicyTagsResponse(_messages.Message):

@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/dataproc/",
   "protocol": "rest",
   "rootUrl": "https://dataproc.googleapis.com/",
+  "mtlsRootUrl": "https://dataproc.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://dataproc.googleapis.com/",
   "batchPath": "batch",
@@ -645,7 +646,8 @@
             "The Zookeeper service.",
             "The Solr service.",
             "HBase.",
-            "The Ranger service."
+            "The Ranger service.",
+            "Docker"
           ],
           "type": "array",
           "items": {
@@ -662,7 +664,8 @@
               "ZOOKEEPER",
               "SOLR",
               "HBASE",
-              "RANGER"
+              "RANGER",
+              "DOCKER"
             ]
           }
         }
@@ -2030,17 +2033,6 @@
         }
       }
     },
-    "DiagnoseClusterResults": {
-      "id": "DiagnoseClusterResults",
-      "description": "The location of diagnostic output.",
-      "type": "object",
-      "properties": {
-        "outputUri": {
-          "description": "Output only. The Cloud Storage URI of the diagnostic output. The output report is a plain text file with a summary of collected diagnostics.",
-          "type": "string"
-        }
-      }
-    },
     "ClusterOperationMetadata": {
       "id": "ClusterOperationMetadata",
       "description": "Metadata describing the operation.",
@@ -2122,6 +2114,17 @@
           "description": "Output only. The time this state was entered.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "DiagnoseClusterResults": {
+      "id": "DiagnoseClusterResults",
+      "description": "The location of diagnostic output.",
+      "type": "object",
+      "properties": {
+        "outputUri": {
+          "description": "Output only. The Cloud Storage URI of the diagnostic output. The output report is a plain text file with a summary of collected diagnostics.",
+          "type": "string"
         }
       }
     },

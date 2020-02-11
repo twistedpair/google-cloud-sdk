@@ -302,6 +302,32 @@ name](https://cloud.google.com/apis/design/resource_names) of a
         supports_download=False,
     )
 
+    def List(self, request, global_params=None):
+      r"""Lists the `Group`s within a customer or namespace.
+
+      Args:
+        request: (CloudidentityGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListGroupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'cloudidentity.groups.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'pageSize', u'pageToken', u'parent', u'view'],
+        relative_path=u'v1beta1/groups',
+        request_field='',
+        request_type_name=u'CloudidentityGroupsListRequest',
+        response_type_name=u'ListGroupsResponse',
+        supports_download=False,
+    )
+
     def Lookup(self, request, global_params=None):
       r"""Looks up the [resource.
 name](https://cloud.google.com/apis/design/resource_names) of a `Group` by

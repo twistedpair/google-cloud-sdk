@@ -25,28 +25,6 @@ _API_NAME = 'servicedirectory'
 _API_VERSION = 'v1beta1'
 
 
-def ParseSortByArg(sort_by=None):
-  """Parses and creates the sort by object from parsed arguments.
-
-  Args:
-    sort_by: list of strings, passed in from the --sort-by flag.
-
-  Returns:
-    A parsed sort by string ending in asc or desc.
-  """
-  if not sort_by:
-    return None
-
-  fields = []
-  for field in sort_by:
-    if field.startswith('~'):
-      field = field.lstrip('~') + ' desc'
-    else:
-      field += ' asc'
-    fields.append(field)
-  return ','.join(fields)
-
-
 def ParseMetadataArg(metadata=None, resource_type=None):
   """Parses and creates the metadata object from the parsed arguments.
 

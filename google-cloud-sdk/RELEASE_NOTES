@@ -5,6 +5,72 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 280.0.0 (2020-02-11)
+
+### Breaking Changes
+
+*   **(Cloud SQL)** Removed support for creating First Generation Cloud SQL instances.
+    * Removed First Generation instance only flags: `--authorized-gae-apps`,
+      `--follow-gae-app`, and `--pricing-plan` from `gcloud sql create`.
+
+
+### AI Platform
+
+* Added `--use-chief-in-tf-config` flag to `gcloud beta ml-engine jobs submit training` and `gcloud beta ai-platform jobs submit training`.
+
+### Cloud Access Context Manager
+
+* Access Context Manger beta track commands now call the ACM v1 API instead of
+v1beta.
+
+### Cloud Data Catalog
+
+* Added `gcloud beta data-catalog entries list` which lists Data Catalog entries.
+* Added `gcloud beta data-catalog entry-groups update` which updates a Data Catalog entry group.
+* Added flags to `gcloud beta data-catalog entries update` for updating an entry's description, display name, and Cloud Storage file patterns.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.10.4
+  * Add `update_transform` support for commit and batchWrite.
+  * Send resume tokens on the Listen stream
+
+### Cloud Run
+
+*   Added `--force-override` to `gcloud run domain-mappings create` to override
+    an existing domain mapping.
+* Fixed a bug where `--cpu` flag was incorrectly disallowed with
+  `--platform=managed`.
+
+### Compute Engine
+
+* Promoted `--allow-global-access` flag of `gcloud compute forwarding-rules
+  create` to GA.
+* Promoted `gcloud compute forwarding-rules update` to GA.
+* Added `HEALTH_STATE` to output of `gcloud compute instance-groups managed
+  list-instances` in GA.
+* Added `gcloud beta compute machine-images import` to enable importing OVA/OVF
+  virtual appliances into Google machine images.
+
+### Kubernetes Engine
+
+*   Promoted `--max-surge-upgrade` and `--max-unavailable-upgrade` flags to GA
+    in `gcloud container` command group. Use these flags to specify upgrade
+    settings parameters during cluster creation, node pool creation, or node
+    pool update.
+* Updates kubectl to change default version of kubectl from 1.13 to 1.14.
+* Additional kubectl versions:
+  * kubectl.1.13 (1.13.12)
+  * kubectl.1.14 (1.14.10)
+  * kubectl.1.15 (1.15.9)
+  * kubectl.1.16 (1.16.6)
+
+
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 279.0.0 (2020-02-04)
 
 ### Breaking Changes

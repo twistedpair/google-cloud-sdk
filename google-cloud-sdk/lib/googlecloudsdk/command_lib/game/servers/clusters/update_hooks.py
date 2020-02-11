@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Update hooks for Cloud Game Servers Scaling Policy."""
+"""Update hooks for Cloud Game Servers Cluster."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -43,8 +43,8 @@ def ConvertOutput(response, args):
   Returns:
     Output response.
   """
-  # This enables the log output which was disabled in the request hook
-  log.SetUserOutputEnabled(True)
+  # Try to reenable the log output which was disabled in the request hook
+  log.SetUserOutputEnabled(args.user_output_enabled != 'false')
   if not args.dry_run:
     utils.WaitForOperation(response, utils.GetApiVersionFromArgs(args))
     if 'update' in args.command_path:

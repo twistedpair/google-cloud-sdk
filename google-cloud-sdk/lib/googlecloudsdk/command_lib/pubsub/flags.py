@@ -225,13 +225,15 @@ def ParseExpirationPeriodWithNeverSentinel(value):
 
 def AddSubscriptionSettingsFlags(parser,
                                  is_update=False,
-                                 support_message_ordering=False):
+                                 support_message_ordering=False,
+                                 support_filtering=False):
   """Adds the flags for creating or updating a subscription.
 
   Args:
     parser: The argparse parser.
     is_update: Whether or not this is for the update operation (vs. create).
     support_message_ordering: Whether or not flags for ordering should be added.
+    support_filtering: Whether or not flags for filtering should be added.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(parser)
@@ -245,6 +247,13 @@ def AddSubscriptionSettingsFlags(parser,
             order. If true, messages with the same ordering key will by sent to
             subscribers in the order in which they were received by Cloud
             Pub/Sub.""")
+  if support_filtering and not is_update:
+    parser.add_argument(
+        '--filter',
+        type=str,
+        help="""A non-empty string written in the Cloud Pub/Sub filter
+            language. This feature is part of an invitation-only alpha
+            release.""")
   current_group = parser
   if is_update:
     mutual_exclusive_group = current_group.add_mutually_exclusive_group()
@@ -353,6 +362,22 @@ def ParseMessageBody(args):
   if args.message_body is not None:
     log.warning(DEPRECATION_FORMAT_STR.format('MESSAGE_BODY', '--message'))
   return args.message_body or args.message
+
+
+def ValidateFilterString(args):
+  """Raises an exception if filter string is empty.
+
+  Args:
+    args (argparse.Namespace): Parsed arguments
+
+  Raises:
+    InvalidArgumentException: if filter string is empty.
+  """
+  if args.filter is not None and not args.filter:
+    raise exceptions.InvalidArgumentException(
+        '--filter',
+        'Filter string must be non-empty. If you do not want a filter, ' +
+        'do not set the --filter argument.')
 
 
 def ValidateDeadLetterPolicy(args):

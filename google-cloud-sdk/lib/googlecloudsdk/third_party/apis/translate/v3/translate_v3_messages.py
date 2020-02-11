@@ -1131,8 +1131,10 @@ class TranslateTextGlossaryConfig(_messages.Message):
   and defines options for applying that glossary.
 
   Fields:
-    glossary: Required. Specifies the glossary used for this translation. Use
-      this format: projects/*/locations/*/glossaries/*
+    glossary: Required. The `glossary` to be applied for this translation.
+      The format depends on glossary:  - User provided custom glossary:
+      `projects/{project-number-or-id}/locations/{location-id}/glossaries
+      /{glossary-id}`
     ignoreCase: Optional. Indicates match is case-insensitive. Default value
       is false if missing.
   """

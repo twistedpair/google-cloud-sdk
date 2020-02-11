@@ -148,11 +148,6 @@ def AddVpcServiceRestrictionAlpha(ref, args, req):
   return AddVpcServiceRestriction(args, req, 'v1alpha')
 
 
-def AddVpcServiceRestrictionBeta(ref, args, req):
-  del ref  # Unused
-  return AddVpcServiceRestriction(args, req, 'v1beta')
-
-
 def AddVpcServiceRestriction(args, req, version=None):
   """Hook to add the VpcServiceRestriction to request."""
   return _AddServiceFilterRestriction(args, req, version, 'vpc')
@@ -160,10 +155,6 @@ def AddVpcServiceRestriction(args, req, version=None):
 
 def AddAccessLevelsGA(ref, args, req):
   return AddAccessLevelsBase(ref, args, req, version='v1')
-
-
-def AddAccessLevelsBeta(ref, args, req):
-  return AddAccessLevelsBase(ref, args, req, version='v1beta')
 
 
 def AddAccessLevelsAlpha(ref, args, req):
@@ -458,10 +449,6 @@ def ParseLevels(args, perimeter_result, policy_id, dry_run=False):
 
 def ParseServicePerimetersAlpha(path):
   return ParseServicePerimetersBase(path, version='v1alpha')
-
-
-def ParseServicePerimetersBeta(path):
-  return ParseServicePerimetersBase(path, version='v1beta')
 
 
 def ParseServicePerimetersBase(path, version=None):

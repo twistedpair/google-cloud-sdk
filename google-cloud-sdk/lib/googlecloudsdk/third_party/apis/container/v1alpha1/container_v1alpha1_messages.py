@@ -2142,7 +2142,8 @@ class NetworkConfig(_messages.Message):
     disableDefaultSnat: Whether the cluster disables default in-node sNAT
       rules. In-node sNAT rules will be disabled when this flag is true. When
       set to false, default IP masquerade rules will be applied to the nodes
-      to prevent sNAT on cluster internal traffic.
+      to prevent sNAT on cluster internal traffic. Deprecated. Use
+      default_snat_status instead
     enableCloudNat: Whether GKE Cloud NAT is enabled for this cluster.
       Requires that the cluster has already set
       IPAllocationPolicy.use_ip_aliases to true. Deprecated: use

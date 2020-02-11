@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Update hooks for Cloud Game Servers Config."""
+"""Update hooks for Cloud Game Servers Deployment."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -49,7 +49,8 @@ def GetResourceRef(args):
   ref = resources.REGISTRY.Create(
       'gameservices.projects.locations.gameServerDeployments',
       projectsId=project,
-      locationsId=location, gameServerDeploymentsId=args.deployment)
+      locationsId=location,
+      gameServerDeploymentsId=args.deployment)
   return ref
 
 
@@ -115,7 +116,7 @@ def ClearConfigOverrides(ref, args, request):
   del ref
   if args.clear_config_overrides:
     if not request.gameServerDeploymentRollout:
-      messages = utils.GetMessages()
+      messages = utils.GetMessages(utils.GetApiVersionFromArgs(args))
       gsd = messages.GameServerDeploymentRollout()
       request.gameServerDeploymentRollout = gsd
     request.gameServerDeploymentRollout.gameServerConfigOverrides = []
@@ -126,8 +127,17 @@ def ClearDefaultConfig(ref, args, request):
   del ref
   if args.clear_default_config:
     if not request.gameServerDeploymentRollout:
-      messages = utils.GetMessages()
+      messages = utils.GetMessages(utils.GetApiVersionFromArgs(args))
       gsd = messages.GameServerDeploymentRollout()
       request.gameServerDeploymentRollout = gsd
     request.gameServerDeploymentRollout.defaultGameServerConfig = ''
+  return request
+
+
+def ProcessConfigsFiles(ref, args, request):
+  """Reads the config into GameServerConfig proto and updates the request."""
+  del ref
+  if args.config_overrides_file:
+    request.gameServerDeploymentRollout.gameServerConfigOverrides = utils.ProcessConfigOverrideFile(
+        args.config_overrides_file, utils.GetApiVersionFromArgs(args))
   return request

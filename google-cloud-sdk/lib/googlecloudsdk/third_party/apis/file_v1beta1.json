@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/filestore/",
   "protocol": "rest",
   "rootUrl": "https://file.googleapis.com/",
+  "mtlsRootUrl": "https://file.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://file.googleapis.com/",
   "batchPath": "batch",

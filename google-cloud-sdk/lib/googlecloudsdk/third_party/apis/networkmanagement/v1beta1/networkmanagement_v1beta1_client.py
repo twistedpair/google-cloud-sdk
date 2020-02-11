@@ -52,18 +52,19 @@ class NetworkmanagementV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new connectivity test.
-After user creates a test, the reachability analysis is performed as part
+      r"""Creates a new Connectivity Test.
+After you create a test, the reachability analysis is performed as part
 of the long running operation, which completes when the analysis completes.
 
-If the endpoint specifications in ConnectivityTest are invalid, for
-example, containing non-existent resources in the network, or the user does
-not have read permissions to the network configurations of listed projects,
-then the reachability result will return `UNKNOWN` value.
+If the endpoint specifications in `ConnectivityTest` are invalid
+(for example, containing non-existent resources in the network, or you
+don't have read permissions to the network configurations of listed
+projects), then the reachability result returns a value of `UNKNOWN`.
 
-If the endpoint specifications in ConnectivityTest are incomplete, the
-reachability result will return `AMBIGUOUS` value. See the documentation in
-ConnectivityTest for for more details.
+If the endpoint specifications in `ConnectivityTest` are
+incomplete, the reachability result returns a value of
+<code>AMBIGUOUS</code>. For more information,
+see the Connectivity Test documentation.
 
       Args:
         request: (NetworkmanagementProjectsLocationsGlobalConnectivityTestsCreateRequest) input message
@@ -90,7 +91,7 @@ ConnectivityTest for for more details.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a specific connectivity test.
+      r"""Deletes a specific `ConnectivityTest`.
 
       Args:
         request: (NetworkmanagementProjectsLocationsGlobalConnectivityTestsDeleteRequest) input message
@@ -117,7 +118,7 @@ ConnectivityTest for for more details.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the details of a specific connectivity test.
+      r"""Gets the details of a specific Connectivity Test.
 
       Args:
         request: (NetworkmanagementProjectsLocationsGlobalConnectivityTestsGetRequest) input message
@@ -173,7 +174,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all connectivity tests owned by a project.
+      r"""Lists all Connectivity Tests owned by a project.
 
       Args:
         request: (NetworkmanagementProjectsLocationsGlobalConnectivityTestsListRequest) input message
@@ -200,19 +201,20 @@ set.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the configuration of an existing connectivity test.
-After user updates a test, the reachability analysis is performed as part
+      r"""Updates the configuration of an existing `ConnectivityTest`.
+After you update a test, the reachability analysis is performed as part
 of the long running operation, which completes when the analysis completes.
-Reachability state in the test resource is updated with the new result.
+The Reachability state in the test resource is updated with the new result.
 
-If the endpoint specifications in ConnectivityTest are invalid, for
-example, containing non-exist resources in the network, or the user does
-not have read permissions to the network configurations of listed projects,
-then the reachability result will return `UNKNOWN` value.
+If the endpoint specifications in `ConnectivityTest` are invalid
+(for example, they contain non-existent resources in the network, or the
+user does not have read permissions to the network configurations of
+listed projects), then the reachability result returns a value of
+<code>UNKNOWN</code>.
 
-If the endpoint specifications in ConnectivityTest are incomplete, the
-reachability result will return `AMBIGUOUS` value. See the documentation in
-ConnectivityTest for for more details.
+If the endpoint specifications in `ConnectivityTest` are incomplete, the
+reachability result returns a value of `AMBIGUOUS`. See the documentation
+in `ConnectivityTest` for for more details.
 
       Args:
         request: (NetworkmanagementProjectsLocationsGlobalConnectivityTestsPatchRequest) input message
@@ -239,18 +241,18 @@ ConnectivityTest for for more details.
     )
 
     def Rerun(self, request, global_params=None):
-      r"""Rerun an existing connectivity test.
-After user triggers the rerun, the reachability analysis is performed as
-part of the long running operation, which completes when the analysis
+      r"""Rerun an existing `ConnectivityTest`.
+After the user triggers the rerun, the reachability analysis is performed
+as part of the long running operation, which completes when the analysis
 completes.
 
 Even though the test configuration remains the same, the reachability
 result may change due to underlying network configuration changes.
 
-If the endpoint specifications in ConnectivityTest become invalid, for
-example, specified resources are deleted in the network, or the user lost
-read permissions to the network configurations of listed projects, then the
-reachability result will return `UNKNOWN` value.
+If the endpoint specifications in `ConnectivityTest` become invalid (for
+example, specified resources are deleted in the network, or you lost
+read permissions to the network configurations of listed projects), then
+the reachability result returns a value of `UNKNOWN`.
 
       Args:
         request: (NetworkmanagementProjectsLocationsGlobalConnectivityTestsRerunRequest) input message
@@ -546,7 +548,7 @@ is the parent resource, without the operations collection id.
         method_id=u'networkmanagement.projects.locations.list',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'includeUnrevealedLocations', u'pageSize', u'pageToken'],
         relative_path=u'v1beta1/{+name}/locations',
         request_field='',
         request_type_name=u'NetworkmanagementProjectsLocationsListRequest',

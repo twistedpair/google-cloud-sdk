@@ -918,6 +918,11 @@
         "cpe": {
           "description": "The CPE of the resource being scanned.",
           "type": "string"
+        },
+        "lastScanTime": {
+          "description": "The last time this resource was scanned.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -1016,7 +1021,7 @@
           "type": "string"
         },
         "classification": {
-          "description": "The operating system classification of this Upgrade, as specified by the\nupstream operating system upgrade feed.",
+          "description": "The operating system classification of this Upgrade, as specified by the\nupstream operating system upgrade feed. For Windows the classification is\none of the category_ids listed at\nhttps:\/\/docs.microsoft.com\/en-us\/previous-versions\/windows\/desktop\/ff357803(v=vs.85)",
           "type": "string"
         },
         "severity": {

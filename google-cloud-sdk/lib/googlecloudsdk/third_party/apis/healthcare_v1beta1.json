@@ -1130,10 +1130,17 @@
       "type": "object",
       "properties": {
         "messages": {
-          "description": "The returned message names. Won't be more values than the value of\npage_size in the request.",
+          "description": "Deprecated. Use `hl7_v2_messages` instead.\nThe returned message names. Won't be more values than the value of\npage_size in the request.",
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "hl7V2Messages": {
+          "description": "The returned Messages. Won't be more Messages than the value of\npage_size in the request. See\nview for\npopulated fields.",
+          "type": "array",
+          "items": {
+            "$ref": "Message"
           }
         },
         "nextPageToken": {
@@ -3272,7 +3279,8 @@
                                 "MESSAGE_VIEW_UNSPECIFIED",
                                 "RAW_ONLY",
                                 "PARSED_ONLY",
-                                "FULL"
+                                "FULL",
+                                "BASIC"
                               ]
                             }
                           },
@@ -3345,6 +3353,18 @@
                               "description": "Orders messages returned by the specified order_by clause.\nSyntax: https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order\n\nFields available for ordering are:\n\n*  `send_time`",
                               "location": "query",
                               "type": "string"
+                            },
+                            "view": {
+                              "description": "Specifies the parts of the Message to return in the response.\nWhen unspecified, equivalent to BASIC.",
+                              "location": "query",
+                              "type": "string",
+                              "enum": [
+                                "MESSAGE_VIEW_UNSPECIFIED",
+                                "RAW_ONLY",
+                                "PARSED_ONLY",
+                                "FULL",
+                                "BASIC"
+                              ]
                             }
                           },
                           "parameterOrder": [

@@ -21,13 +21,17 @@ from __future__ import unicode_literals
 
 import io
 import os
+import re
 
+from googlecloudsdk.api_lib.container import api_adapter as gke_api_adapter
 from googlecloudsdk.api_lib.container import kubeconfig as kconfig
 from googlecloudsdk.api_lib.container import util as c_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.container.hub import api_util as api_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
 NAMESPACE_DELETION_INITIAL_WAIT_MS = 0
@@ -109,12 +113,82 @@ class MembershipCRDCreationOperation(object):
       self.error = err
 
     # If creation is successful, the create operation should show "unchanged"
-    if self.CREATED_KEYWORD in out:
+    elif self.CREATED_KEYWORD in out:
       self.done = True
       self.succeeded = True
 
 
 class KubeconfigProcessor(object):
+  """A helper class that processes kubeconfig and context arguments."""
+
+  def __init__(self):
+    """Constructor for KubeconfigProcessor.
+
+    Raises:
+      exceptions.Error: if kubectl is not installed
+    """
+    # Warn if kubectl is not installed.
+    if not c_util.CheckKubectlInstalled():
+      raise exceptions.Error('kubectl not installed.')
+
+  def GetKubeconfigAndContext(self, flags, temp_kubeconfig_dir):
+    """Gets the kubeconfig and cluster context from arguments and defaults.
+
+    Args:
+      flags: the flags passed to the enclosing command. It must include
+        kubeconfig and context.
+      temp_kubeconfig_dir: a TemporaryDirectoryObject.
+
+    Returns:
+      the kubeconfig filepath and context name
+
+    Raises:
+      calliope_exceptions.MinimumArgumentException: if a kubeconfig file cannot
+        be deduced from the command line flags or environment
+      exceptions.Error: if the context does not exist in the deduced kubeconfig
+        file
+    """
+    # Parsing flags to get the name and location of the GKE cluster to register
+    if flags.gke_uri or flags.gke_cluster:
+      location, name = _ParseGKEURI(
+          flags.gke_uri) if flags.gke_uri else _ParseGKECluster(
+              flags.gke_cluster)
+
+      return _GetGKEKubeconfig(location, name, temp_kubeconfig_dir), None
+
+    # We need to support in-cluster configuration so that gcloud can run from
+    # a container on the Cluster we are registering. KUBERNETES_SERICE_PORT
+    # and KUBERNETES_SERVICE_HOST environment variables are set in a kubernetes
+    # cluster automatically, which can be used by kubectl to talk to
+    # the API server.
+    if not flags.kubeconfig and os.getenv(
+        'KUBERNETES_SERVICE_PORT') and os.getenv('KUBERNETES_SERVICE_HOST'):
+      return None, None
+
+    kubeconfig_file = (
+        flags.kubeconfig or os.getenv('KUBECONFIG') or '~/.kube/config')
+
+    kubeconfig = files.ExpandHomeDir(kubeconfig_file)
+    if not kubeconfig:
+      raise calliope_exceptions.MinimumArgumentException(
+          ['--kubeconfig'],
+          'Please specify --kubeconfig, set the $KUBECONFIG environment '
+          'variable, or ensure that $HOME/.kube/config exists')
+    kc = kconfig.Kubeconfig.LoadFromFile(kubeconfig)
+
+    context_name = flags.context
+
+    if context_name not in kc.contexts:
+      raise exceptions.Error(
+          'context [{}] does not exist in kubeconfig [{}]'.format(
+              context_name, kubeconfig))
+
+    return kubeconfig, context_name
+
+
+# TODO(b/144528144): Remove the method when deprecating old beta commands
+# as a last step.
+class OldKubeconfigProcessor(object):
   """A helper class that processes kubeconfig and context arguments."""
 
   def __init__(self):
@@ -186,7 +260,9 @@ class KubernetesPoller(waiter.OperationPoller):
     return (operation.succeeded, operation.error)
 
 
-class KubernetesClient(object):
+# TODO(b/144528144): Remove the method when deprecating old beta commands
+# as a last step.
+class OldKubernetesClient(object):
   """A client for accessing a subset of the Kubernetes API."""
 
   def __init__(self, flags):
@@ -202,7 +278,7 @@ class KubernetesClient(object):
     """
     self.kubectl_timeout = '20s'
 
-    processor = KubeconfigProcessor()
+    processor = OldKubeconfigProcessor()
     self.kubeconfig, self.context = processor.GetKubeconfigAndContext(flags)
 
   def GetNamespaceUID(self, namespace):
@@ -399,6 +475,238 @@ class KubernetesClient(object):
     ) if returncode != 0 else None
 
 
+class KubernetesClient(object):
+  """A client for accessing a subset of the Kubernetes API."""
+
+  def __init__(self, flags):
+    """Constructor for KubernetesClient.
+
+    Args:
+      flags: the flags passed to the enclosing command.
+
+    Raises:
+      exceptions.Error: if the client cannot be configured
+      calliope_exceptions.MinimumArgumentException: if a kubeconfig file
+        cannot be deduced from the command line flags or environment
+    """
+    self.kubectl_timeout = '20s'
+
+    self.temp_kubeconfig_dir = None
+    # If the cluster to be registered is a GKE cluster, create a temporary
+    # directory to store the kubeconfig that will be generated using the
+    # GKE GetCluster() API
+    if flags and (flags.gke_uri or flags.gke_cluster):
+      self.temp_kubeconfig_dir = files.TemporaryDirectory()
+
+    processor = KubeconfigProcessor()
+    self.kubeconfig, self.context = processor.GetKubeconfigAndContext(
+        flags, self.temp_kubeconfig_dir)
+
+  def __enter__(self):
+    return self
+
+  def __exit__(self, *_):
+    # delete temp directory
+    if self.temp_kubeconfig_dir is not None:
+      self.temp_kubeconfig_dir.Close()
+
+  def GetNamespaceUID(self, namespace):
+    out, err = self._RunKubectl(
+        ['get', 'namespace', namespace, '-o', 'jsonpath=\'{.metadata.uid}\''],
+        None)
+    if err:
+      raise exceptions.Error(
+          'Failed to get the UID of the cluster: {}'.format(err))
+    return out.replace("'", '')
+
+  def GetEvents(self, namespace):
+    out, err = self._RunKubectl([
+        'get', 'events', '--namespace=' + namespace,
+        "--sort-by='{.lastTimestamp}'"
+    ], None)
+    if err:
+      raise exceptions.Error()
+    return out
+
+  def NamespacesWithLabelSelector(self, label):
+    """Get the GKE Connect namespace by label.
+
+    Args:
+      label: the label used for namespace selection
+
+    Raises:
+      exceptions.Error: if failing to get namespaces.
+
+    Returns:
+      The first namespace with the label selector.
+    """
+    # Check if any namespace with label exists.
+    out, err = self._RunKubectl(['get', 'namespaces', '--selector', label,
+                                 '-o', 'jsonpath={.items}'], None)
+    if err:
+      raise exceptions.Error(
+          'Failed to list namespaces in the cluster: {}'.format(err))
+    if out == '[]':
+      return []
+    out, err = self._RunKubectl([
+        'get', 'namespaces', '--selector', label, '-o',
+        'jsonpath={.items[0].metadata.name}'
+    ], None)
+    if err:
+      raise exceptions.Error(
+          'Failed to list namespaces in the cluster: {}'.format(err))
+    return out.strip().split(' ') if out else []
+
+  def DeleteMembership(self):
+    _, err = self._RunKubectl(['delete', 'membership', 'membership'])
+    return err
+
+  def MembershipCRDExists(self):
+    _, err = self._RunKubectl(['get', 'crds', 'memberships.hub.gke.io'], None)
+    if err:
+      if 'NotFound' in err:
+        return False
+      raise exceptions.Error('Error retrieving Membership CRD: {}'.format(err))
+    return True
+
+  def GetMembershipCR(self):
+    """Get the YAML representation of the Membership CR."""
+    out, err = self._RunKubectl(
+        ['get', 'membership', 'membership', '-o', 'yaml'], None)
+    if err:
+      if 'NotFound' in err:
+        return ''
+      raise exceptions.Error('Error retrieving membership CR: {}'.format(err))
+    return out
+
+  def GetMembershipCRD(self):
+    """Get the YAML representation of the Membership CRD."""
+    out, err = self._RunKubectl([
+        'get', 'customresourcedefinition', 'memberships.hub.gke.io', '-o',
+        'yaml'
+    ], None)
+    if err:
+      if 'NotFound' in err:
+        return ''
+      raise exceptions.Error('Error retrieving membership CRD: {}'.format(err))
+    return out
+
+  def GetMembershipOwnerID(self):
+    """Looks up the owner id field in the Membership resource."""
+    if not self.MembershipCRDExists():
+      return None
+
+    out, err = self._RunKubectl(
+        ['get', 'membership', 'membership', '-o', 'jsonpath={.spec.owner.id}'],
+        None)
+    if err:
+      if 'NotFound' in err:
+        return None
+      raise exceptions.Error('Error retrieving membership id: {}'.format(err))
+    return out
+
+  def CreateMembershipCRD(self, membership_crd_manifest):
+    return self.Apply(membership_crd_manifest)
+
+  def ApplyMembership(self, membership_crd_manifest, membership_cr_manifest):
+    """Apply membership resources."""
+    if membership_crd_manifest:
+      _, error = waiter.WaitFor(
+          KubernetesPoller(),
+          MembershipCRDCreationOperation(self, membership_crd_manifest),
+          pre_start_sleep_ms=NAMESPACE_DELETION_INITIAL_WAIT_MS,
+          max_wait_ms=NAMESPACE_DELETION_TIMEOUT_MS,
+          wait_ceiling_ms=NAMESPACE_DELETION_MAX_POLL_INTERVAL_MS,
+          sleep_ms=NAMESPACE_DELETION_INITIAL_POLL_INTERVAL_MS)
+      if error:
+        raise exceptions.Error(
+            'Membership CRD creation failed to complete: {}'.format(error))
+    if membership_cr_manifest:
+      _, err = self.Apply(membership_cr_manifest)
+      if err:
+        raise exceptions.Error(
+            'Failed to apply Membership CR to cluster: {}'.format(err))
+
+  def NamespaceExists(self, namespace):
+    _, err = self._RunKubectl(['get', 'namespace', namespace])
+    return err is None
+
+  def DeleteNamespace(self, namespace):
+    _, err = self._RunKubectl(['delete', 'namespace', namespace])
+    return err
+
+  def GetResourceField(self, namespace, resource, json_path):
+    """Returns the value of a field on a Kubernetes resource.
+
+    Args:
+      namespace: the namespace of the resource, or None if this resource is
+        cluster-scoped
+      resource: the resource, in the format <resourceType>/<name>; e.g.,
+        'configmap/foo', or <resourceType> for a list of resources
+      json_path: the JSONPath expression to filter with
+
+    Returns:
+      The field value (which could be empty if there is no such field), or
+      the error printed by the command if there is an error.
+    """
+    cmd = ['-n', namespace] if namespace else []
+    cmd.extend(['get', resource, '-o', 'jsonpath={{{}}}'.format(json_path)])
+    return self._RunKubectl(cmd)
+
+  def Apply(self, manifest):
+    out, err = self._RunKubectl(['apply', '-f', '-'], stdin=manifest)
+    return out, err
+
+  def Delete(self, manifest):
+    _, err = self._RunKubectl(['delete', '-f', '-'], stdin=manifest)
+    return err
+
+  def Logs(self, namespace, log_target):
+    """Gets logs from a workload in the cluster.
+
+    Args:
+      namespace: the namespace from which to collect logs.
+      log_target: the target for the logs command. Any target supported by
+        'kubectl logs' is supported here.
+
+    Returns:
+      The logs, or an error if there was an error gathering these logs.
+    """
+    return self._RunKubectl(['logs', '-n', namespace, log_target])
+
+  def _RunKubectl(self, args, stdin=None):
+    """Runs a kubectl command with the cluster referenced by this client.
+
+    Args:
+      args: command line arguments to pass to kubectl
+      stdin: text to be passed to kubectl via stdin
+
+    Returns:
+      The contents of stdout if the return code is 0, stderr (or a fabricated
+      error if stderr is empty) otherwise
+    """
+    cmd = [c_util.CheckKubectlInstalled()]
+    if self.context:
+      cmd.extend(['--context', self.context])
+
+    if self.kubeconfig:
+      cmd.extend(['--kubeconfig', self.kubeconfig])
+
+    cmd.extend(['--request-timeout', self.kubectl_timeout])
+    cmd.extend(args)
+    out = io.StringIO()
+    err = io.StringIO()
+    returncode = execution_utils.Exec(
+        cmd, no_exit=True, out_func=out.write, err_func=err.write, in_str=stdin
+    )
+
+    if returncode != 0 and not err.getvalue():
+      err.write('kubectl exited with return code {}'.format(returncode))
+
+    return out.getvalue() if returncode == 0 else None, err.getvalue(
+    ) if returncode != 0 else None
+
+
 class DeploymentPodsAvailableOperation(object):
   """An operation that tracks whether a Deployment's Pods are all available."""
 
@@ -510,3 +818,190 @@ class NamespaceDeleteOperation(object):
       self.succeeded = True
     else:
       self.error = err
+
+
+def _ParseGKEURI(gke_uri):
+  """The GKE resource URI can be of following types: zonal, regional or generic.
+
+  zonal - */projects/{project_id}/zones/{zone}/clusters/{cluster_name}
+  regional - */projects/{project_id}/regions/{zone}/clusters/{cluster_name}
+  generic - */projects/{project_id}/locations/{zone}/clusters/{cluster_name}
+
+  The expected patterns are matched to extract the cluster location and name.
+  Args:
+   gke_uri: GKE resource URI
+
+  Returns:
+    cluster location and name
+  """
+  zonal_uri_pattern = r'.*\/projects\/(.*)\/zones\/(.*)\/clusters\/(.*)'
+  regional_uri_pattern = r'.*\/projects\/(.*)\/regions\/(.*)\/clusters\/(.*)'
+  location_uri_pattern = r'.*\/projects\/(.*)\/locations\/(.*)\/clusters\/(.*)'
+
+  zone_matcher = re.search(zonal_uri_pattern, gke_uri)
+  if zone_matcher is not None:
+    return zone_matcher.group(2), zone_matcher.group(3)
+
+  region_matcher = re.search(regional_uri_pattern, gke_uri)
+  if region_matcher is not None:
+    return region_matcher.group(2), region_matcher.group(3)
+
+  location_matcher = re.search(location_uri_pattern, gke_uri)
+  if location_matcher is not None:
+    return location_matcher.group(2), location_matcher.group(3)
+
+  raise exceptions.Error(
+      'argument --gke-uri: {} is not a valid GKE URI'.format(gke_uri))
+
+
+def _ParseGKECluster(gke_cluster):
+  rgx = r'(.*)\/(.*)'
+  cluster_matcher = re.search(rgx, gke_cluster)
+  if cluster_matcher is not None:
+    return cluster_matcher.group(1), cluster_matcher.group(2)
+  raise exceptions.Error(
+      'argument --gke-cluster: {} is invalid. --gke-cluster must of format'
+      '{{REGION OR ZONE}}/{{CLUSTER_NAME`}}'.format(gke_cluster))
+
+
+def _GetGKEKubeconfig(location_id,
+                      cluster_id,
+                      temp_kubeconfig_dir):
+  """The kubeconfig of GKE Cluster is fetched using the GKE APIs.
+
+  The 'KUBECONFIG' value in `os.environ` will be temporarily updated with
+  the temporary kubeconfig's path if the kubeconfig arg is not None.
+  Consequently, subprocesses started with
+  googlecloudsdk.core.execution_utils.Exec will see the temporary KUBECONFIG
+  environment variable.
+
+  Using GKE APIs the GKE cluster is validated, and the ClusterConfig object, is
+  persisted in the temporarily updated 'KUBECONFIG'.
+
+  Args:
+    location_id: string, the id of the location to which the cluster belongs
+    cluster_id: string, the id of the cluster
+    temp_kubeconfig_dir: TemporaryDirectory object
+
+  Raises:
+    Error: If unable to get credentials for kubernetes cluster.
+
+  Returns:
+    the path to the kubeconfig file
+  """
+  kubeconfig = os.path.join(temp_kubeconfig_dir.path, 'kubeconfig')
+  old_kubeconfig = encoding.GetEncodedValue(os.environ,
+                                            'KUBECONFIG')
+  try:
+    encoding.SetEncodedValue(os.environ, 'KUBECONFIG', kubeconfig)
+    gke_api = gke_api_adapter.NewAPIAdapter('v1')
+    cluster_ref = gke_api.ParseCluster(cluster_id, location_id)
+    cluster = gke_api.GetCluster(cluster_ref)
+    auth = cluster.masterAuth
+    valid_creds = auth and auth.clientCertificate and auth.clientKey
+    # c_util.ClusterConfig.UseGCPAuthProvider() checks for
+    # container/use_client_certificate setting
+    if not valid_creds and not c_util.ClusterConfig.UseGCPAuthProvider():
+      raise c_util.Error(
+          'Unable to get cluster credentials. User must have edit '
+          'permission on {}'.format(cluster_ref.projectId))
+    c_util.ClusterConfig.Persist(cluster, cluster_ref.projectId)
+  finally:
+    if old_kubeconfig:
+      encoding.SetEncodedValue(os.environ, 'KUBECONFIG', old_kubeconfig)
+    else:
+      del os.environ['KUBECONFIG']
+  return kubeconfig
+
+
+def GKEClusterSelfLink(args, project):
+  """Returns the selfLink of a cluster, if it is a GKE cluster.
+
+     It also incidentally validates the args.
+
+  Args:
+    args: an argparse namespace. All arguments that were provided to this
+      command invocation.
+    project: project ID.
+
+  Returns:
+    the full OnePlatform resource path of a GKE cluster, e.g.,
+    //container.googleapis.com/project/p/location/l/cluster/c. If the cluster is
+    not a GKE cluster, returns None.
+  """
+  if args.context:
+    return None
+
+  if args.gke_uri:
+    location, cluster_name = _ParseGKEURI(args.gke_uri)
+    return api_util.GetEffectiveResourceEndpoint(project, location,
+                                                 cluster_name)
+
+  if args.gke_cluster:
+    location, cluster_name = _ParseGKECluster(args.gke_cluster)
+    return api_util.GetEffectiveResourceEndpoint(project, location,
+                                                 cluster_name)
+
+
+def ValidateClusterIdentifierFlags(kube_client, args):
+  """Validates if --gke-cluster | --gke-uri is supplied for GKE cluster, and --context for non GKE clusters.
+
+  Args:
+    kube_client: A Kubernetes client for the cluster to be registered.
+    args: An argparse namespace. All arguments that were provided to this
+      command invocation.
+
+  Raises:
+    calliope_exceptions.ConflictingArgumentsException: --context, --gke-uri,
+    --gke-cluster are conflicting arguments.
+    calliope_exceptions.ConflictingArgumentsException is raised if more than
+    one of these arguments is set.
+
+    calliope_exceptions.InvalidArgumentException is raised if --context is set
+    for non GKE clusters.
+  """
+  is_gke_cluster = IsGKECluster(kube_client)
+  if args.context and is_gke_cluster:
+    raise calliope_exceptions.InvalidArgumentException(
+        '--context', '--context cannot be used for GKE clusters. '
+        'Either --gke-uri | --gke-cluster must be specified')
+
+  if args.gke_uri and not is_gke_cluster:
+    raise calliope_exceptions.InvalidArgumentException(
+        '--gke-uri', 'use --context for non GKE clusters.')
+
+  if args.gke_cluster and not is_gke_cluster:
+    raise calliope_exceptions.InvalidArgumentException(
+        '--gke-cluster', 'use --context for non GKE clusters.')
+
+
+def IsGKECluster(kube_client):
+  """Returns true if the cluster to be registered is a GKE cluster.
+
+  There is no straightforward way to obtain this information from the cluster
+  API server directly. This method uses metadata on the Kubernetes nodes to
+  determine the instance ID. The instance ID field is unique to GKE clusters:
+  Kubernetes-on-GCE clusters do not have this field.
+
+  Args:
+    kube_client: A Kubernetes client for the cluster to be registered.
+
+  Raises:
+      exceptions.Error: if failing there's a permission error or for invalid
+      command.
+
+  Returns:
+    bool: True if kubeclient communicates with a GKE Cluster, false otherwise.
+  """
+  vm_instance_id, err = kube_client.GetResourceField(
+      None, 'nodes',
+      '.items[0].metadata.annotations.container\\.googleapis\\.com/instance_id')
+
+  if err:
+    raise exceptions.Error(
+        'kubectl returned non-zero status code: {}'.format(err))
+
+  if not vm_instance_id:
+    return False
+  return True
+

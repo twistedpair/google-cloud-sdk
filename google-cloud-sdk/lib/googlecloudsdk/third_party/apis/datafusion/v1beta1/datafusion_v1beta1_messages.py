@@ -18,6 +18,34 @@ from apitools.base.py import extra_types
 package = 'datafusion'
 
 
+class Accelerator(_messages.Message):
+  r"""Identifies Data Fusion accelerators for an instance.
+
+  Enums:
+    AcceleratorTypeValueValuesEnum: The type of an accelator for a CDF
+      instance.
+
+  Fields:
+    acceleratorType: The type of an accelator for a CDF instance.
+  """
+
+  class AcceleratorTypeValueValuesEnum(_messages.Enum):
+    r"""The type of an accelator for a CDF instance.
+
+    Values:
+      ACCELERATOR_TYPE_UNSPECIFIED: Default value, if unspecified.
+      CDC: Change Data Capture accelerator for CDF.
+      HEALTHCARE: Cloud Healthcare accelerator for CDF. This accelerator is to
+        enable Cloud Healthcare specific CDF plugins developed by Healthcare
+        team.
+    """
+    ACCELERATOR_TYPE_UNSPECIFIED = 0
+    CDC = 1
+    HEALTHCARE = 2
+
+  acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 1)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -420,7 +448,7 @@ class Expr(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""Represents a Data Fusion instance.
+  r"""Represents a Data Fusion instance. Next available ID: 23
 
   Enums:
     StateValueValuesEnum: Output only. The current state of this Data Fusion
@@ -435,6 +463,7 @@ class Instance(_messages.Message):
       Data Fusion instance.
 
   Fields:
+    accelerators: List of accelerators enabled for this CDF instance.
     apiEndpoint: Output only. Endpoint on which the REST APIs is accessible.
     availableVersion: Available versions that the instance can be upgraded to
       using UpdateInstanceRequest.
@@ -564,27 +593,28 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  apiEndpoint = _messages.StringField(1)
-  availableVersion = _messages.MessageField('Version', 2, repeated=True)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  enableStackdriverLogging = _messages.BooleanField(6)
-  enableStackdriverMonitoring = _messages.BooleanField(7)
-  gcsBucket = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  networkConfig = _messages.MessageField('NetworkConfig', 11)
-  options = _messages.MessageField('OptionsValue', 12)
-  privateInstance = _messages.BooleanField(13)
-  serviceAccount = _messages.StringField(14)
-  serviceEndpoint = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  stateMessage = _messages.StringField(17)
-  type = _messages.EnumField('TypeValueValuesEnum', 18)
-  updateTime = _messages.StringField(19)
-  version = _messages.StringField(20)
-  zone = _messages.StringField(21)
+  accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
+  apiEndpoint = _messages.StringField(2)
+  availableVersion = _messages.MessageField('Version', 3, repeated=True)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  enableStackdriverLogging = _messages.BooleanField(7)
+  enableStackdriverMonitoring = _messages.BooleanField(8)
+  gcsBucket = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  networkConfig = _messages.MessageField('NetworkConfig', 12)
+  options = _messages.MessageField('OptionsValue', 13)
+  privateInstance = _messages.BooleanField(14)
+  serviceAccount = _messages.StringField(15)
+  serviceEndpoint = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  stateMessage = _messages.StringField(18)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
+  updateTime = _messages.StringField(20)
+  version = _messages.StringField(21)
+  zone = _messages.StringField(22)
 
 
 class ListInstancesResponse(_messages.Message):

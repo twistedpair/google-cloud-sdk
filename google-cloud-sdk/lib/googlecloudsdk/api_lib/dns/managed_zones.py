@@ -20,14 +20,11 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.dns import operations
 from googlecloudsdk.api_lib.dns import util
-from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import log
 
 
 class Client(object):
   """API client for Cloud DNS managed zones."""
-
-  _API_NAME = 'dns'
 
   def __init__(self, version, client, messages=None):
     self.version = version
@@ -37,7 +34,7 @@ class Client(object):
 
   @classmethod
   def FromApiVersion(cls, version):
-    return cls(version, apis.GetClientInstance(cls._API_NAME, version))
+    return cls(version, util.GetApiClient(version))
 
   def Get(self, zone_ref):
     return self._service.Get(

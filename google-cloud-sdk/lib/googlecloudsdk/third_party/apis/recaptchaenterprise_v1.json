@@ -299,6 +299,11 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "createTime": {
+          "description": "The timestamp corresponding to the creation of this Key.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

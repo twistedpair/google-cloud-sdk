@@ -26,6 +26,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cb_logs
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
+from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.services import enable_api as services_api
 from googlecloudsdk.api_lib.storage import storage_util
@@ -140,7 +141,7 @@ class ImageOperation(object):
   EXPORT = 'export'
 
 
-def AddCommonDaisyArgs(parser, add_log_location=True):
+def AddCommonDaisyArgs(parser, add_log_location=True, operation='a build'):
   """Common arguments for Daisy builds."""
 
   if add_log_location:
@@ -155,11 +156,11 @@ def AddCommonDaisyArgs(parser, add_log_location=True):
       '--timeout',
       type=arg_parsers.Duration(),
       default='2h',
-      help="""\
-          Maximum time a build can last before it fails as "TIMEOUT".
+      help=("""\
+          Maximum time {} can last before it fails as "TIMEOUT".
           For example, specifying `2h` fails the process after 2 hours.
           See $ gcloud topic datetimes for information about duration formats.
-          """)
+          """).format(operation))
   base.ASYNC_FLAG.AddToParser(parser)
 
 
@@ -176,6 +177,26 @@ def AddExtraCommonDaisyArgs(parser):
           "latest" is supported as well. There may be more versions supported in
           the future.
           """
+  )
+
+
+def AddOVFSourceUriArg(parser):
+  """Adds OVF Source URI arg."""
+  parser.add_argument(
+      '--source-uri',
+      required=True,
+      help=('Cloud Storage path to one of:\n  OVF descriptor\n  '
+            'OVA file\n  Directory with OVF package'))
+
+
+def AddGuestEnvironmentArg(parser, resource='instance'):
+  """Adds Google Guest environment arg."""
+  parser.add_argument(
+      '--guest-environment',
+      action='store_true',
+      default=True,
+      help='The guest environment will be installed on the {}.'.format(
+          resource)
   )
 
 
@@ -553,7 +574,7 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
                       subnet, private_network_ip, no_restart_on_failure, os,
                       tags, zone, project, output_filter,
                       compute_release_track, hostname):
-  """Run a OVF import build on Google Cloud Builder.
+  """Run a OVF into VM instance import build on Google Cloud Build.
 
   Args:
     args: an argparse namespace. All the arguments that were provided to this
@@ -636,6 +657,81 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
   AppendArg(ovf_importer_args, 'hostname', hostname)
 
   build_tags = ['gce-ovf-import']
+
+  backoff = lambda elapsed: 2 if elapsed < 30 else 15
+
+  return _RunCloudBuild(args, _OVF_IMPORT_BUILDER.format(args.docker_image_tag),
+                        ovf_importer_args, build_tags, output_filter,
+                        backoff=backoff)
+
+
+def RunMachineImageOVFImportBuild(args, output_filter, compute_release_track):
+  """Run a OVF into VM instance import build on Google Cloud Builder.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+    output_filter: A list of strings indicating what lines from the log should
+      be output. Only lines that start with one of the strings in output_filter
+      will be displayed.
+    compute_release_track: release track to be used for Compute API calls. One
+      of - "alpha", "beta" or ""
+
+  Returns:
+    A build object that either streams the output or is displayed as a
+    link to the build.
+
+  Raises:
+    FailedBuildException: If the build is completed and not 'SUCCESS'.
+  """
+  project_id = projects_util.ParseProject(
+      properties.VALUES.core.project.GetOrFail())
+
+  _CheckIamPermissions(project_id)
+
+  # Make OVF import time-out before gcloud by shaving off 2% from the timeout
+  # time, up to a max of 5m (300s).
+  two_percent = int(args.timeout * 0.02)
+  ovf_import_timeout = args.timeout - min(two_percent, 300)
+
+  machine_type = None
+  if args.machine_type or args.custom_cpu or args.custom_memory:
+    machine_type = instance_utils.InterpretMachineType(
+        machine_type=args.machine_type,
+        custom_cpu=args.custom_cpu,
+        custom_memory=args.custom_memory,
+        ext=getattr(args, 'custom_extensions', None),
+        vm_type=getattr(args, 'custom_vm_type', None))
+
+  ovf_importer_args = []
+  AppendArg(ovf_importer_args, 'machine-image-name', args.IMAGE)
+  AppendArg(ovf_importer_args, 'machine-image-storage-location',
+            args.storage_location)
+  AppendArg(ovf_importer_args, 'client-id', 'gcloud')
+  AppendArg(ovf_importer_args, 'ovf-gcs-path', args.source_uri)
+  AppendBoolArg(ovf_importer_args, 'no-guest-environment',
+                not args.guest_environment)
+  AppendBoolArg(ovf_importer_args, 'can-ip-forward', args.can_ip_forward)
+  AppendArg(ovf_importer_args, 'description', args.description)
+  if args.labels:
+    AppendArg(ovf_importer_args, 'labels',
+              ','.join(['{}={}'.format(k, v) for k, v in args.labels.items()]))
+  AppendArg(ovf_importer_args, 'machine-type', machine_type)
+  AppendArg(ovf_importer_args, 'network', args.network)
+  AppendArg(ovf_importer_args, 'network-tier', args.network_tier)
+  AppendArg(ovf_importer_args, 'subnet', args.subnet)
+  AppendBoolArg(ovf_importer_args, 'no-restart-on-failure',
+                not args.restart_on_failure)
+  AppendArg(ovf_importer_args, 'os', args.os)
+  if args.tags:
+    AppendArg(ovf_importer_args, 'tags', ','.join(args.tags))
+  AppendArg(ovf_importer_args, 'zone', properties.VALUES.compute.zone.Get())
+  AppendArg(ovf_importer_args, 'timeout', ovf_import_timeout, '-{0}={1}s')
+  AppendArg(ovf_importer_args, 'project', args.project)
+  if compute_release_track:
+    AppendArg(ovf_importer_args, 'release-track', compute_release_track)
+
+  build_tags = ['gce-ovf-machine-image-import']
 
   backoff = lambda elapsed: 2 if elapsed < 30 else 15
 

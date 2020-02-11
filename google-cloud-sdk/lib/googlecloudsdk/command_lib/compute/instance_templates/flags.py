@@ -57,10 +57,9 @@ def MakeSourceInstanceArg():
 
 def AddMeshModeConfigArgs(parser):
   """Adds mesh mode configuration arguments for instance templates."""
-  mesh_group = parser.add_group(hidden=True)
+  mesh_group = parser.add_group()
   mesh_group.add_argument(
       '--mesh',
-      hidden=True,
       type=arg_parsers.ArgDict(
           spec={
               'mode': mesh_mode_aux_data.MeshModes,
@@ -81,7 +80,6 @@ def AddMeshModeConfigArgs(parser):
       """)
   mesh_group.add_argument(
       '--mesh-labels',
-      hidden=True,
       metavar='KEY=VALUE, ...',
       type=arg_parsers.ArgDict(),
       help="""\
@@ -89,7 +87,6 @@ def AddMeshModeConfigArgs(parser):
       """)
   mesh_group.add_argument(
       '--mesh-proxy-config',
-      hidden=True,
       metavar='KEY=VALUE, ...',
       type=arg_parsers.ArgDict(),
       help="""\

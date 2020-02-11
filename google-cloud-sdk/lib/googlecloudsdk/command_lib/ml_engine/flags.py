@@ -591,6 +591,7 @@ def AddCustomContainerFlags(parser, support_tpu_tf_version=False):
   GetWorkerMachineConfig().AddToParser(parser)
   GetWorkerAccelerator().AddToParser(parser)
   GetWorkerImageUri().AddToParser(parser)
+  GetUseChiefInTfConfig().AddToParser(parser)
   if support_tpu_tf_version:
     GetTpuTfVersion().AddToParser(parser)
 
@@ -773,6 +774,17 @@ def GetTpuTfVersion():
       help=('Runtime version of TensorFlow used by the container. This field '
             'must be specified if a custom container on the TPU worker is '
             'being used.'))
+
+
+def GetUseChiefInTfConfig():
+  """Build use-chief-in-tf-config flag."""
+  return base.Argument(
+      '--use-chief-in-tf-config',
+      required=False,
+      type=arg_parsers.ArgBoolean(),
+      help=('Use "chief" role in the cluster instead of "master". This is '
+            'required for TensorFlow 2.0 and newer versions. Unlike "master" '
+            'node, "chief" node does not run evaluation.'))
 
 
 def AddMachineTypeFlagToParser(parser):

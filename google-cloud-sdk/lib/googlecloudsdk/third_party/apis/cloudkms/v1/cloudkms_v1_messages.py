@@ -1657,11 +1657,14 @@ class LocationMetadata(_messages.Message):
   r"""Cloud KMS metadata for the given google.cloud.location.Location.
 
   Fields:
+    ekmAvailable: Indicates whether CryptoKeys with protection_level EXTERNAL
+      can be created in this location.
     hsmAvailable: Indicates whether CryptoKeys with protection_level HSM can
       be created in this location.
   """
 
-  hsmAvailable = _messages.BooleanField(1)
+  ekmAvailable = _messages.BooleanField(1)
+  hsmAvailable = _messages.BooleanField(2)
 
 
 class Policy(_messages.Message):

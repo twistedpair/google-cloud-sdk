@@ -1781,8 +1781,11 @@ class GooglePrivacyDlpV2BigQueryKey(_messages.Message):
   r"""Row key for identifying a record in BigQuery table.
 
   Fields:
-    rowNumber: Absolute number of the row from the beginning of the table at
-      the time of scanning.
+    rowNumber: Row number inferred at the time the table was scanned. This
+      value is nondeterministic, cannot be queried, and may be null for
+      inspection jobs. To locate findings within a table, specify
+      `inspect_job.storage_config.big_query_options.identifying_fields` in
+      `CreateDlpJobRequest`.
     tableReference: Complete BigQuery table reference.
   """
 
@@ -1800,9 +1803,11 @@ class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
     excludedFields: References to fields excluded from scanning. This allows
       you to skip inspection of entire columns which you know have no
       findings.
-    identifyingFields: References to fields uniquely identifying rows within
-      the table. Nested fields in the format, like `person.birthdate.year`,
-      are allowed.
+    identifyingFields: Table fields that may uniquely identify a row within
+      the table. When `actions.saveFindings.outputConfig.table` is specified,
+      the values of columns specified here are available in the output table
+      under `location.content_locations.record_location.record_key.id_values`.
+      Nested fields such as `person.birthdate.year` are allowed.
     rowsLimit: Max number of rows to scan. If the table has more rows than
       this value, the rest of the rows are omitted. If not set, or if set to
       0, all rows will be scanned. Only one of rows_limit and
@@ -2295,7 +2300,8 @@ class GooglePrivacyDlpV2ContentItem(_messages.Message):
 
 
 class GooglePrivacyDlpV2ContentLocation(_messages.Message):
-  r"""Findings container location data.
+  r"""Precise location of the finding within a document, record, image, or
+  metadata container.
 
   Fields:
     containerName: Name of the container where the finding is located. The top
@@ -4539,7 +4545,7 @@ class GooglePrivacyDlpV2RecordKey(_messages.Message):
     bigQueryKey: A GooglePrivacyDlpV2BigQueryKey attribute.
     datastoreKey: A GooglePrivacyDlpV2DatastoreKey attribute.
     idValues: Values of identifying columns in the given row. Order of values
-      matches the order of field identifiers specified in the scanning
+      matches the order of `identifying_fields` specified in the scanning
       request.
   """
 

@@ -25,7 +25,7 @@ import textwrap
 
 from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
-from googlecloudsdk.api_lib.run import traffic
+from googlecloudsdk.api_lib.run import traffic_pair
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
@@ -171,7 +171,7 @@ class ServicePrinter(cp.CustomPrinterBase):
 
   def Transform(self, record):
     """Transform a service into the output structure of marker classes."""
-    pairs = traffic.GetTrafficTargetPairs(
+    pairs = traffic_pair.GetTrafficTargetPairs(
         record.spec.traffic,
         record.status.traffic,
         record.is_managed,

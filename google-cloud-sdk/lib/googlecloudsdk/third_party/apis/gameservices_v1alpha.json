@@ -6,8 +6,8 @@
   "canonicalName": "Game Services",
   "version": "v1alpha",
   "revision": "0",
-  "title": "Cloud Game Services API",
-  "description": "",
+  "title": "Game Servers API",
+  "description": "Deploy and manage infrastructure for global multiplayer gaming experiences.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/solutions/gaming/",
   "protocol": "rest",
   "rootUrl": "https://gameservices.googleapis.com/",
+  "mtlsRootUrl": "https://gameservices.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://gameservices.googleapis.com/",
   "batchPath": "batch",
@@ -2070,7 +2071,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Patches a single Game Server Deployment Rollout."
+                  "description": "Patches a single Game Server Deployment Rollout.\nThe method will not return an error if the update does not affect any\nexisting realms. For example - if the default_game_server_config is changed\nbut all existing realms use the override, that is valid. Similarly, if a\nnon existing realm is explicitly called out in game_server_config_overrides\nfield, that will also not result in an error."
                 },
                 "previewRollout": {
                   "id": "gameservices.projects.locations.gameServerDeployments.previewRollout",

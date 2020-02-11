@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/",
   "protocol": "rest",
   "rootUrl": "https://privateca.googleapis.com/",
+  "mtlsRootUrl": "https://privateca.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://privateca.googleapis.com/",
   "batchPath": "batch",

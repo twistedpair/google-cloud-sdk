@@ -94,13 +94,15 @@ class AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
+    exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  service = _messages.StringField(2)
+  exemptedMembers = _messages.StringField(2, repeated=True)
+  service = _messages.StringField(3)
 
 
 class AuditLogConfig(_messages.Message):
@@ -117,6 +119,7 @@ class AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
+    ignoreChildExemptions: A boolean attribute.
     logType: The log type that this config enables.
   """
 
@@ -135,7 +138,38 @@ class AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+  ignoreChildExemptions = _messages.BooleanField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
+
+
+class AuthorizationLoggingOptions(_messages.Message):
+  r"""Authorization-related information used by Cloud Audit Logging.
+
+  Enums:
+    PermissionTypeValueValuesEnum: The type of the permission that was
+      checked.
+
+  Fields:
+    permissionType: The type of the permission that was checked.
+  """
+
+  class PermissionTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the permission that was checked.
+
+    Values:
+      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
+      ADMIN_READ: A read of admin (meta) data.
+      ADMIN_WRITE: A write of admin (meta) data.
+      DATA_READ: A read of standard data.
+      DATA_WRITE: A write of standard data.
+    """
+    PERMISSION_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    ADMIN_WRITE = 2
+    DATA_READ = 3
+    DATA_WRITE = 4
+
+  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
 
 
 class Binding(_messages.Message):
@@ -189,29 +223,168 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CloudAuditOptions(_messages.Message):
+  r"""Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    authorizationLoggingOptions: Information used by the Cloud Audit Logging
+      pipeline.
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    r"""The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      UNSPECIFIED_LOG_NAME: Default. Should not be used.
+      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
+      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
+    """
+    UNSPECIFIED_LOG_NAME = 0
+    ADMIN_ACTIVITY = 1
+    DATA_ACCESS = 2
+
+  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
+
+
+class Condition(_messages.Message):
+  r"""A condition to be met.
+
+  Enums:
+    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
+    OpValueValuesEnum: An operator to apply the subject with.
+    SysValueValuesEnum: Trusted attributes supplied by any service that owns
+      resources and uses the IAM system for access control.
+
+  Fields:
+    iam: Trusted attributes supplied by the IAM system.
+    op: An operator to apply the subject with.
+    svc: Trusted attributes discharged by the service.
+    sys: Trusted attributes supplied by any service that owns resources and
+      uses the IAM system for access control.
+    values: The objects of the condition.
+  """
+
+  class IamValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by the IAM system.
+
+    Values:
+      NO_ATTR: Default non-attribute.
+      AUTHORITY: Either principal or (if present) authority selector.
+      ATTRIBUTION: The principal (even if an authority selector is present),
+        which must only be used for attribution, not authorization.
+      SECURITY_REALM: Any of the security realms in the IAMContext (go
+        /security-realms). When used with IN, the condition indicates "any of
+        the request's realms match one of the given values; with NOT_IN, "none
+        of the realms match any of the given values". Note that a value can
+        be:  - 'self' (i.e., allow connections from clients that are in the
+        same  security realm)  - a realm (e.g., 'campus-abc')  - a realm group
+        (e.g., 'realms-for-borg-cell-xx', see: go/realm-groups) A match is
+        determined by a realm group membership check performed by a
+        RealmAclRep object (go/realm-acl-howto). It is not permitted to grant
+        access based on the *absence* of a realm, so realm conditions can only
+        be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+      APPROVER: An approver (distinct from the requester) that has authorized
+        this request. When used with IN, the condition indicates that one of
+        the approvers associated with the request matches the specified
+        principal, or is a member of the specified group. Approvers can only
+        grant additional access, and are thus only used in a strictly positive
+        context (e.g. ALLOW/IN or DENY/NOT_IN).
+      JUSTIFICATION_TYPE: What types of justifications have been supplied with
+        this request. String values should match enum names from
+        security.credentials.JustificationType, e.g. "MANUAL_STRING". It is
+        not permitted to grant access based on the *absence* of a
+        justification, so justification conditions can only be used in a
+        "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).  Multiple
+        justifications, e.g., a Buganizer ID and a manually-entered reason,
+        are normal and supported.
+      CREDENTIALS_TYPE: What type of credentials have been supplied with this
+        request. String values should match enum names from
+        security_loas_l2.CredentialsType - currently, only
+        CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
+        based on the *absence* of a credentials type, so the conditions can
+        only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+    """
+    NO_ATTR = 0
+    AUTHORITY = 1
+    ATTRIBUTION = 2
+    SECURITY_REALM = 3
+    APPROVER = 4
+    JUSTIFICATION_TYPE = 5
+    CREDENTIALS_TYPE = 6
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""An operator to apply the subject with.
+
+    Values:
+      NO_OP: Default no-op.
+      EQUALS: DEPRECATED. Use IN instead.
+      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
+      IN: The condition is true if the subject (or any element of it if it is
+        a set) matches any of the supplied values.
+      NOT_IN: The condition is true if the subject (or every element of it if
+        it is a set) matches none of the supplied values.
+      DISCHARGED: Subject is discharged
+    """
+    NO_OP = 0
+    EQUALS = 1
+    NOT_EQUALS = 2
+    IN = 3
+    NOT_IN = 4
+    DISCHARGED = 5
+
+  class SysValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by any service that owns resources and
+    uses the IAM system for access control.
+
+    Values:
+      NO_ATTR: Default non-attribute type
+      REGION: Region of the resource
+      SERVICE: Service name
+      NAME: Resource name
+      IP: IP address of the caller
+    """
+    NO_ATTR = 0
+    REGION = 1
+    SERVICE = 2
+    NAME = 3
+    IP = 4
+
+  iam = _messages.EnumField('IamValueValuesEnum', 1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  svc = _messages.StringField(3)
+  sys = _messages.EnumField('SysValueValuesEnum', 4)
+  values = _messages.StringField(5, repeated=True)
+
+
 class ConnectivityTest(_messages.Message):
-  r"""A ConnectivityTest for network reachability analysis.
+  r"""A Connectivity Test for a network reachability analysis.
 
   Messages:
-    LabelsValue: Resource labels to represent user provided metadata.
+    LabelsValue: Resource labels to represent user-provided metadata.
 
   Fields:
     createTime: Output only. The time the test was created.
-    description: The user-supplied description of the connectivity test.
+    description: The user-supplied description of the Connectivity Test.
       Maximum of 512 characters.
-    destination: Required. Destination specification of the connectivity test.
-      User can use a combination of destination IP address, Compute Engine
-      instance, or Compute Engine network to uniquely identify the destination
-      location.  If destination IP is not unique, however the user-specified
-      source location is unique, usually the destination endpoint can be
-      uniquely inferred from routes.  If the user-specified destination is an
-      instance and the instance has multiple network interfaces, then user
-      should also specify either destination IP or network to remove the
-      ambiguity.  Reachability analysis will proceed even if the destination
-      location is ambiguous, however, the result may include endpoints that
-      the user does not intend to test.
-    displayName: Output only. The display name of a connectivity test.
-    labels: Resource labels to represent user provided metadata.
+    destination: Required. Destination specification of the Connectivity Test.
+      You can use a combination of destination IP address, Compute Engine VM
+      instance, or VPC network to uniquely identify the destination location.
+      Even if the destination IP address is not unique, the source IP location
+      is unique. Usually, the analysis can infer the destination endpoint from
+      route information.  If the destination you specify is a VM instance and
+      the instance has multiple network interfaces, then you must also specify
+      either a destination IP address  or VPC network to identify the
+      destination interface.  A reachability analysis proceeds even if the
+      destination location is ambiguous. However, the result can include
+      endpoints that you don't intend to test.
+    displayName: Output only. The display name of a Connectivity Test.
+    labels: Resource labels to represent user-provided metadata.
     name: Required. Unique name of the resource using the form:
       `projects/{project_id}/tests/{test_id}`
     protocol: IP Protocol of the test. When not provided, "TCP" is assumed.
@@ -220,26 +393,28 @@ class ConnectivityTest(_messages.Message):
       updating an existing test, or triggering a one-time rerun of an existing
       test.
     relatedProjects: Other projects that may be relevant for reachability
-      analysis. This is applicable to scenarios where a test may cross project
+      analysis. This is applicable to scenarios where a test can cross project
       boundaries.
-    source: Required. Source specification of the connectivity test.  User can
-      use a combination of source IP address, Compute Engine instance, or
-      Compute Engine network to uniquely identify the source location.
-      Examples: If the source IP is an internal IP within Google Cloud VPC,
-      then the Compute Engine instance or the network should also be
-      specified.  If the source of the test is within an on-premises network,
-      then the destination network (a Google Cloud VPC) should be provided.
-      If the source endpoint is an instance with multiple network interfaces,
-      the instance itself is not sufficient to identify the endpoint, so the
-      user should also specify source IP address or the network.  Reachability
-      analysis will proceed even if the source location is ambiguous, however,
-      the result may include endpoints that the user does not intend to test.
+    source: Required. Source specification of the Connectivity Test.  You can
+      use a combination of source IP address, virtual machine (VM) instance,
+      or Compute Engine network to uniquely identify the source location.
+      Examples: If the source IP address is an internal IP address within a
+      Google Cloud Virtual Private Cloud (VPC) network, then you must also
+      specify the VPC network. Otherwise, specify the VM instance, which
+      already contains its internal IP address and VPC network information.
+      If the source of the test is within an on-premises network, then you
+      must provide the destination VPC network.  If the source endpoint is a
+      Compute Engine VM instance with multiple network interfaces, the
+      instance itself is not sufficient to identify the endpoint. So, you must
+      also specify the source IP address or VPC network.  A reachability
+      analysis proceeds even if the source location is ambiguous. However, the
+      test result may include endpoints that you don't intend to test.
     updateTime: Output only. The time the test's configuration was updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Resource labels to represent user provided metadata.
+    r"""Resource labels to represent user-provided metadata.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -272,6 +447,86 @@ class ConnectivityTest(_messages.Message):
   relatedProjects = _messages.StringField(9, repeated=True)
   source = _messages.MessageField('Endpoint', 10)
   updateTime = _messages.StringField(11)
+
+
+class CounterOptions(_messages.Message):
+  r"""Increment a streamz counter with the specified metric and field names.
+  Metric names should start with a '/', generally be lowercase-only, and end
+  in "_count". Field names should not contain an initial slash. The actual
+  exported metric names will have "/iam/policy" prepended.  Field names
+  correspond to IAM request parameters and field values are their respective
+  values.  Supported field names:    - "authority", which is "[token]" if
+  IAMContext.token is present,      otherwise the value of
+  IAMContext.authority_selector if present, and      otherwise a
+  representation of IAMContext.principal; or    - "iam_principal", a
+  representation of IAMContext.principal even if a      token or authority
+  selector is present; or    - "" (empty string), resulting in a counter with
+  no fields.  Examples:   counter { metric: "/debug_access_count"  field:
+  "iam_principal" }   ==> increment counter /iam/policy/debug_access_count
+  {iam_principal=[value of IAMContext.principal]}
+
+  Fields:
+    customFields: Custom fields.
+    field: The field value to attribute.
+    metric: The metric to update.
+  """
+
+  customFields = _messages.MessageField('CustomField', 1, repeated=True)
+  field = _messages.StringField(2)
+  metric = _messages.StringField(3)
+
+
+class CustomField(_messages.Message):
+  r"""Custom fields. These can be used to create a counter with arbitrary
+  field/value pairs. See: go/rpcsp-custom-fields.
+
+  Fields:
+    name: Name is the field name.
+    value: Value is the field value. It is important that in contrast to the
+      CounterOptions.field, the value here is a constant that is not derived
+      from the IAMContext.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class DataAccessOptions(_messages.Message):
+  r"""Write a Data Access (Gin) log
+
+  Enums:
+    LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
+      manner at the caller. This is relevant only in the LocalIAM
+      implementation, for now.
+
+  Fields:
+    logMode: Whether Gin logging should happen in a fail-closed manner at the
+      caller. This is relevant only in the LocalIAM implementation, for now.
+  """
+
+  class LogModeValueValuesEnum(_messages.Enum):
+    r"""Whether Gin logging should happen in a fail-closed manner at the
+    caller. This is relevant only in the LocalIAM implementation, for now.
+
+    Values:
+      LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
+        immediately after the authorization check. If client chooses to write
+        one and it fails, client may either fail open (allow the operation to
+        continue) or fail closed (handle as a DENY outcome).
+      LOG_FAIL_CLOSED: The application's operation in the context of which
+        this authorization check is being made may only be performed if it is
+        successfully logged to Gin. For instance, the authorization library
+        may satisfy this obligation by emitting a partial log entry at
+        authorization check time and only returning ALLOW to the application
+        if it succeeds.  If a matching Rule has this directive, but the client
+        has not indicated that it will honor such requirements, then the IAM
+        check will result in authorization failure by setting
+        CheckPolicyResponse.success=false.
+    """
+    LOG_MODE_UNSPECIFIED = 0
+    LOG_FAIL_CLOSED = 1
+
+  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
 class DeliverInfo(_messages.Message):
@@ -354,8 +609,8 @@ class DropInfo(_messages.Message):
         unavailable for traffic from the load balancer. See [Health check
         firewall rules](/load-balancing/docs/ health-checks#firewall_rules)
         for more details.
-      INSTANCE_NOT_RUNNING: Packet sent from or to a GCE instance that is not
-        in running state.
+      INSTANCE_NOT_RUNNING: Packet is sent from or to a Compute Engine
+        instance that is not in a running state.
       TRAFFIC_TYPE_BLOCKED: The type of traffic is blocked and the user cannot
         configure a firewall rule to enable it. See [Always blocked
         traffic](/vpc/docs/firewalls# blockedtraffic) for more details.
@@ -397,7 +652,7 @@ class Empty(_messages.Message):
 
 
 class Endpoint(_messages.Message):
-  r"""Source or destination of the connectivity test.
+  r"""Source or destination of the Connectivity Test.
 
   Enums:
     NetworkTypeValueValuesEnum: Type of the network where the endpoint is
@@ -406,7 +661,7 @@ class Endpoint(_messages.Message):
 
   Fields:
     instance: A Compute Engine instance URI.
-    ipAddress: The IP address of the endpoint which can be an external or
+    ipAddress: The IP address of the endpoint, which can be an external or
       internal IP. An IPv6 address is only allowed when the test's destination
       is a [global load balancer VIP](/load-balancing/docs/load-balancing-
       overview).
@@ -416,12 +671,13 @@ class Endpoint(_messages.Message):
       from the source.
     port: The IP protocol port of the endpoint. Only applicable when protocol
       is TCP or UDP.
-    projectId: Project ID where the endpoint is located. Project ID can be
-      derived from URI if instance or network URI is provided. There are two
-      cases where the project ID is needed: 1. Only IP address is specified,
-      and the IP address is within a GCP project. 2. In shared VPC case, the
-      IP address is used in a different project (service project) than the
-      project where the network of the IP address is defined (host project).
+    projectId: Project ID where the endpoint is located. The Project ID can be
+      derived from the URI if you provide a VM instance or network URI. The
+      following are two cases where you must provide the project ID: 1. Only
+      the IP address is specified, and the IP address is within a GCP project.
+      2. When you are using Shared VPC and the IP address that you provide is
+      from the service project. In this case, the network that the IP address
+      resides in is defined in the host project.
   """
 
   class NetworkTypeValueValuesEnum(_messages.Enum):
@@ -431,10 +687,9 @@ class Endpoint(_messages.Message):
 
     Values:
       NETWORK_TYPE_UNSPECIFIED: Default type if unspecified.
-      GCP_NETWORK: A network hosted within Google Cloud Platform.
-        Alternatively, if the network URI is known, the user can set the
-        network URI for the source or destination network in order to receive
-        more detailed input.
+      GCP_NETWORK: A network hosted within Google Cloud Platform. To receive
+        more detailed output, specify the URI for the source or destination
+        network.
       NON_GCP_NETWORK: A network hosted outside of Google Cloud Platform. This
         can be an on-premises network, or a network hosted by another cloud
         provider.
@@ -622,11 +877,11 @@ class InstanceInfo(_messages.Message):
 
 
 class ListConnectivityTestsResponse(_messages.Message):
-  r"""Response for the ListConnectivityTests method.
+  r"""Response for the `ListConnectivityTests` method.
 
   Fields:
-    nextPageToken: Page token to fetch the next set of connectivity tests.
-    resources: List of connectivity tests.
+    nextPageToken: Page token to fetch the next set of Connectivity Tests.
+    resources: List of Connectivity Tests.
     unreachable: Locations that could not be reached (when querying all
       locations with `-`).
   """
@@ -838,6 +1093,20 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LogConfig(_messages.Message):
+  r"""Specifies what kind of log the caller must write
+
+  Fields:
+    cloudAudit: Cloud audit options.
+    counter: Counter options.
+    dataAccess: Data access options.
+  """
+
+  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
+  counter = _messages.MessageField('CounterOptions', 2)
+  dataAccess = _messages.MessageField('DataAccessOptions', 3)
+
+
 class NetworkInfo(_messages.Message):
   r"""For display only. Metadata associated with a Compute Engine network.
 
@@ -869,13 +1138,13 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsCreateRequest(_me
   Fields:
     connectivityTest: A ConnectivityTest resource to be passed as the request
       body.
-    parent: Required. The parent resource of the connectivity test to create:
+    parent: Required. The parent resource of the Connectivity Test to create:
       `projects/{project_id}/locations/global`
-    testId: Required. The logical name of the connectivity test in the
-      customer project with the following restrictions:  * Must contain only
-      lowercase letters, numbers, and hyphens. * Must start with a letter. *
-      Must be between 1-40 characters. * Must end with a number or a letter. *
-      Must be unique within the customer project
+    testId: Required. The logical name of the Connectivity Test in your
+      project with the following restrictions:  * Must contain only lowercase
+      letters, numbers, and hyphens. * Must start with a letter. * Must be
+      between 1-40 characters. * Must end with a number or a letter. * Must be
+      unique within the customer project
   """
 
   connectivityTest = _messages.MessageField('ConnectivityTest', 1)
@@ -888,7 +1157,7 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsDeleteRequest(_me
   object.
 
   Fields:
-    name: Required. Connectivity test resource name using the form:
+    name: Required. Connectivity Test resource name using the form:
       `projects/{project_id}/connectivityTests/{test_id}`
   """
 
@@ -920,7 +1189,7 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsGetRequest(_messa
   object.
 
   Fields:
-    name: Required. Connectivity test resource name using the form:
+    name: Required. `ConnectivityTest` resource name using the form:
       `projects/{project_id}/locations/global/connectivityTests/{test_id}`
   """
 
@@ -932,7 +1201,7 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsListRequest(_mess
   object.
 
   Fields:
-    filter: Lists the ConnectivityTests that match the filter expression. A
+    filter: Lists the `ConnectivityTests` that match the filter expression. A
       filter expression filters the resources listed in the response. The
       expression must be of the form `<field> <operator> <value>` where
       operators: `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:`
@@ -943,10 +1212,10 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsListRequest(_mess
       - Resources that have a key called `foo`     labels.foo:*   - Resources
       that have a key called `foo` whose value is `bar`     labels.foo = bar
     orderBy: Field to use to sort the list.
-    pageSize: Number of connectivity tests to return.
+    pageSize: Number of `ConnectivityTests` to return.
     pageToken: Page token from an earlier query, as returned in
       `next_page_token`.
-    parent: Required. The parent resource of the connectivity tests:
+    parent: Required. The parent resource of the Connectivity Tests:
       `projects/{project_id}/locations/global`
   """
 
@@ -980,7 +1249,7 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsRerunRequest(_mes
   object.
 
   Fields:
-    name: Required. Connectivity test resource name using the form:
+    name: Required. Connectivity Test resource name using the form:
       `projects/{project_id}/connectivityTests/{test_id}`
     rerunConnectivityTestRequest: A RerunConnectivityTestRequest resource to
       be passed as the request body.
@@ -1079,15 +1348,18 @@ class NetworkmanagementProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: The standard list filter.
+    includeUnrevealedLocations: If true, the returned list will include
+      locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
   """
 
   filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  includeUnrevealedLocations = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class Operation(_messages.Message):
@@ -1270,6 +1542,14 @@ class Policy(_messages.Message):
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
+    iamOwned: A boolean attribute.
+    rules: If more than one rule is specified, the rules are applied in the
+      following manner: - All matching LOG rules are always applied. - If any
+      DENY/DENY_WITH_LOG rule matches, permission is denied.   Logging will be
+      applied if one or more matching rule requires logging. - Otherwise, if
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
+      Logging will be applied if one or more matching rule requires logging. -
+      Otherwise, if no rule applies, permission is denied.
     version: Specifies the format of the policy.  Valid values are `0`, `1`,
       and `3`. Requests that specify an invalid value are rejected.  Any
       operation that affects conditional role bindings must specify version
@@ -1289,7 +1569,9 @@ class Policy(_messages.Message):
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  iamOwned = _messages.BooleanField(4)
+  rules = _messages.MessageField('Rule', 5, repeated=True)
+  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class ReachabilityDetails(_messages.Message):
@@ -1325,9 +1607,9 @@ class ReachabilityDetails(_messages.Message):
         are:  * Analysis is aborted due to permission error. User does not
         have read   permission to the projects listed in the test. * Analysis
         is aborted due to internal errors. * Analysis is partially complete
-        based on configurations where the user   has permission.   Final state
-        indicates the packet is forwarded to another network where   the user
-        has no permission to access the configurations.
+        based on configurations where the user   has permission.   The Final
+        state indicates that the packet is forwarded to another network where
+        the user has no permission to access the configurations.
     """
     RESULT_UNSPECIFIED = 0
     REACHABLE = 1
@@ -1342,7 +1624,7 @@ class ReachabilityDetails(_messages.Message):
 
 
 class RerunConnectivityTestRequest(_messages.Message):
-  r"""Request for the RerunConnectivityTest method."""
+  r"""Request for the `RerunConnectivityTest` method."""
 
 
 class RouteInfo(_messages.Message):
@@ -1427,6 +1709,60 @@ class RouteInfo(_messages.Message):
   priority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   routeType = _messages.EnumField('RouteTypeValueValuesEnum', 8)
   uri = _messages.StringField(9)
+
+
+class Rule(_messages.Message):
+  r"""A rule to be applied in a Policy.
+
+  Enums:
+    ActionValueValuesEnum: Required
+
+  Fields:
+    action: Required
+    conditions: Additional restrictions that must be met. All conditions must
+      pass for the rule to match.
+    description: Human-readable description of the rule.
+    in_: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
+    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
+      any entries that match the LOG action.
+    notIn: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
+      for in and not_in entries can be found at in the Local IAM documentation
+      (see go/local-iam#features).
+    permissions: A permission is a string of form '<service>.<resource
+      type>.<verb>' (e.g., 'storage.buckets.list'). A value of '*' matches all
+      permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches
+      all verbs.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required
+
+    Values:
+      NO_ACTION: Default no action.
+      ALLOW: Matching 'Entries' grant access.
+      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
+        to log the request per the returned log_configs.
+      DENY: Matching 'Entries' deny access.
+      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
+        log the request per the returned log_configs.
+      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
+    """
+    NO_ACTION = 0
+    ALLOW = 1
+    ALLOW_WITH_LOG = 2
+    DENY = 3
+    DENY_WITH_LOG = 4
+    LOG = 5
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  description = _messages.StringField(3)
+  in_ = _messages.StringField(4, repeated=True)
+  logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
+  notIn = _messages.StringField(6, repeated=True)
+  permissions = _messages.StringField(7, repeated=True)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1562,8 +1898,8 @@ class Status(_messages.Message):
 
 
 class Step(_messages.Message):
-  r"""A simulated forwarding path is composed of multiple steps. Each step is
-  in a well-defined state with associated configuration.
+  r"""A simulated forwarding path is composed of multiple steps. Each step has
+  a well-defined state and an associated configuration.
 
   Enums:
     StateValueValuesEnum: Each step is in one of the pre-defined states.
@@ -1572,7 +1908,8 @@ class Step(_messages.Message):
     abort: Display info of the final state "abort" and reason.
     causesDrop: This is a step that leads to the final state Drop.
     deliver: Display info of the final state "deliver" and reason.
-    description: A description of the step. Usually a summary of the state.
+    description: A description of the step. Usually this is a summary of the
+      state.
     drop: Display info of the final state "drop" and reason.
     endpoint: Display info of the source and destination under analysis. The
       endpiont info in an intermediate state may differ with the initial
@@ -1700,11 +2037,11 @@ class TestIamPermissionsResponse(_messages.Message):
 
 class Trace(_messages.Message):
   r"""Trace represents one simulated packet forwarding path. <ul>   <li>Each
-  trace contains multiple ordered Steps.</li>   <li>Each step is in a
-  particular state with associated configuration.</li>   <li>State is
-  categorized as final or non-final states.</li>   <li>Each final state has a
-  reason associated.</li>   <li>Each trace must end with a final state (the
-  last step).</li> </ul> <pre><code>
+  trace contains multiple ordered steps.</li>   <li>Each step is in a
+  particular state and has an associated   configuration.</li> <li>State is
+  categorized as a final or non-final   state.</li> <li>Each final state has a
+  reason associated with it.</li>   <li>Each trace must end with a final state
+  (the last step).</li> </ul> <pre><code>
   |---------------------Trace----------------------|   Step1(State)
   Step2(State) ---  StepN(State(final)) </code></pre>
 
@@ -1714,10 +2051,10 @@ class Trace(_messages.Message):
       traces starting from different source locations, then the endpoint_info
       may be different between traces.
     steps: A trace of a test contains multiple steps from the initial state to
-      the final state (delivered, dropped, forwarded, aborted).  The steps are
-      ordered by the processing sequence within the simulated network state
-      machine. It is critical to preserve the order of the steps and avoid
-      reordering or sorting them.
+      the final state (delivered, dropped, forwarded, or aborted).  The steps
+      are ordered by the processing sequence within the simulated network
+      state machine. It is critical to preserve the order of the steps and
+      avoid reordering or sorting them.
   """
 
   endpointInfo = _messages.MessageField('EndpointInfo', 1)
@@ -1791,6 +2128,8 @@ class VpnTunnelInfo(_messages.Message):
   uri = _messages.StringField(9)
 
 
+encoding.AddCustomJsonFieldMapping(
+    Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

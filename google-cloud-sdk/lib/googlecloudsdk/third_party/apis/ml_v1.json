@@ -303,6 +303,10 @@
           "description": "Optional. The version of Python used in training. If not set, the default\nversion is '2.7'. Starting [January 13,\n2020](\/ml-engine\/docs\/release-notes#december_10_2019), this field is\nrequired.\n\nThe following Python versions are available:\n\n* Python '3.7' is available when `runtime_version` is set to '1.15' or\n  later.\n* Python '3.5' is available when `runtime_version` is set to a version\n  from '1.4' to '1.14'.\n* Python '2.7' is available when `runtime_version` is set to '1.15' or\n  earlier. (Runtime versions released [after January 1,\n  2020](\/ml-engine\/docs\/release-notes#december_10_2019) do not support\n  Python 2.7.)\n\nRead more about the Python versions available for [each runtime\nversion](\/ml-engine\/docs\/runtime-version-list).",
           "type": "string"
         },
+        "scheduling": {
+          "description": "Optional. Scheduling options for a training job.",
+          "$ref": "GoogleCloudMlV1__Scheduling"
+        },
         "useChiefInTfConfig": {
           "description": "Optional. Use 'chief' instead of 'master' in TF_CONFIG when Custom\nContainer is used and evaluator is not specified.\n\nDefaults to false.",
           "type": "boolean"
@@ -585,6 +589,18 @@
         }
       }
     },
+    "GoogleCloudMlV1__Scheduling": {
+      "id": "GoogleCloudMlV1__Scheduling",
+      "description": "All parameters related to queuing and scheduling of training jobs.",
+      "type": "object",
+      "properties": {
+        "maxRunningTime": {
+          "description": "Optional. The maximum job running time, expressed in seconds. By default\nthere is no limit.\n\nIf the training job is still running after this duration, AI Platform\nTraining cancels it.\n\nFor example, if you want to ensure your job runs for no more than 2 hours,\nset this field to `7200s` (2 hours * 60 minutes \/ hour * 60 seconds \/\nminute).\n\nIf you submit your training job using the `gcloud` tool, you can [provide\nthis field in a `config.yaml`\nfile](\/ml-engine\/docs\/training-jobs#formatting_your_configuration_parameters).\nFor example:\n\n```yaml\ntrainingInput:\n  ...\n  scheduling:\n    maxRunningTime: 7200s\n  ...\n```",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
     "GoogleCloudMlV1__PredictionInput": {
       "id": "GoogleCloudMlV1__PredictionInput",
       "description": "Represents input parameters for a prediction job.",
@@ -855,9 +871,6 @@
         "xraiAttribution": {
           "$ref": "GoogleCloudMlV1__XraiAttribution"
         },
-        "samplingShapAttribution": {
-          "$ref": "GoogleCloudMlV1__SamplingShapAttribution"
-        },
         "treeShapAttribution": {
           "description": "XGBoost framework explanation methods.",
           "$ref": "GoogleCloudMlV1__TreeShapAttribution"
@@ -910,17 +923,6 @@
       "properties": {
         "numIntegralSteps": {
           "description": "Number of steps for approximating the path integral.\nA good value to start is 50 and gradually increase until the\nsum to diff property is met within the desired error range.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "GoogleCloudMlV1__SamplingShapAttribution": {
-      "id": "GoogleCloudMlV1__SamplingShapAttribution",
-      "description": "DEPRECATED - use SampledShapleyAttribution.",
-      "type": "object",
-      "properties": {
-        "numPaths": {
           "type": "integer",
           "format": "int32"
         }

@@ -14,9 +14,10 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://sites.google.com/corp/google.com/cloudworkflows",
   "protocol": "rest",
   "rootUrl": "https://workflows.googleapis.com/",
+  "mtlsRootUrl": "https://workflows.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://workflows.googleapis.com/",
   "batchPath": "batch",

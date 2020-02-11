@@ -575,8 +575,12 @@
           }
         },
         "vpcServiceRestriction": {
-          "description": "Alpha. Configuration for within Perimeter allowed APIs.",
+          "description": "Alpha. Configuration for within Perimeter allowed APIs.\nDeprecated. The field had been renamed to vpc_accessible_services",
           "$ref": "VpcServiceRestriction"
+        },
+        "vpcAccessibleServices": {
+          "description": "Configuration for within Perimeter allowed APIs.",
+          "$ref": "VpcAccessibleServices"
         },
         "ingressPolicies": {
           "description": "List of ingress policies to apply to the perimeter.  A perimeter\nmay have multiple ingress policies, each of which is evaluated separately.\nAccess is granted if any ingress policy grants it.  Must be empty for a\nperimeter bridge.",
@@ -596,7 +600,25 @@
     },
     "VpcServiceRestriction": {
       "id": "VpcServiceRestriction",
-      "description": "Alpha. Specifies how APIs are allowed to communicate within the Service\nPerimeter.",
+      "description": "Alpha. Specifies how APIs are allowed to communicate within the Service\nPerimeter.\nThis message is DEPRECATED and had been renamed to VpcAccessibleServices",
+      "type": "object",
+      "properties": {
+        "enableRestriction": {
+          "description": "Whether to restrict API calls within the Service Perimeter to the list of\nAPIs specified in 'allowed_services'.",
+          "type": "boolean"
+        },
+        "allowedServices": {
+          "description": "The list of APIs usable within the Service Perimeter. Must be empty\nunless 'enable_restriction' is True.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "VpcAccessibleServices": {
+      "id": "VpcAccessibleServices",
+      "description": "Specifies how APIs are allowed to communicate within the Service\nPerimeter.",
       "type": "object",
       "properties": {
         "enableRestriction": {

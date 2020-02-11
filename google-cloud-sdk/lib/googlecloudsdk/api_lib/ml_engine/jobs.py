@@ -191,7 +191,8 @@ class JobsClient(object):
     if custom_train_server_config:
       for field_name, value in custom_train_server_config.GetFieldMap().items():
         if value is not None:
-          if field_name.endswith('Config'):
+          if (field_name.endswith('Config') and
+              not field_name.endswith('TfConfig')):
             if value['imageUri']:
               arg_utils.SetFieldInMessage(
                   job,

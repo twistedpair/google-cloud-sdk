@@ -1104,6 +1104,10 @@
         "hsmAvailable": {
           "description": "Indicates whether CryptoKeys with\nprotection_level\nHSM can be created in this location.",
           "type": "boolean"
+        },
+        "ekmAvailable": {
+          "description": "Indicates whether CryptoKeys with\nprotection_level\nEXTERNAL can be created in this location.",
+          "type": "boolean"
         }
       }
     }

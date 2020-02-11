@@ -814,6 +814,9 @@ class ManagedZone(_messages.Message):
       managed reverse lookup zone and Cloud DNS will resolve reverse lookup
       queries using automatically configured records for VPC resources. This
       only applies to networks listed under private_visibility_config.
+    serviceDirectoryConfig: This field links to the associated service
+      directory namespace. This field should not be set for public zones or
+      forwarding zones.
     serviceDiscoveryConfig: This field links to the associated service
       registry. This field should not be set for public zones or forwarding
       zones.
@@ -871,8 +874,9 @@ class ManagedZone(_messages.Message):
   peeringConfig = _messages.MessageField('ManagedZonePeeringConfig', 12)
   privateVisibilityConfig = _messages.MessageField('ManagedZonePrivateVisibilityConfig', 13)
   reverseLookupConfig = _messages.MessageField('ManagedZoneReverseLookupConfig', 14)
-  serviceDiscoveryConfig = _messages.MessageField('ManagedZoneServiceDiscoveryConfig', 15)
-  visibility = _messages.EnumField('VisibilityValueValuesEnum', 16)
+  serviceDirectoryConfig = _messages.MessageField('ManagedZoneServiceDirectoryConfig', 15)
+  serviceDiscoveryConfig = _messages.MessageField('ManagedZoneServiceDiscoveryConfig', 16)
+  visibility = _messages.EnumField('VisibilityValueValuesEnum', 17)
 
 
 class ManagedZoneDnsSecConfig(_messages.Message):
@@ -1069,6 +1073,37 @@ class ManagedZoneReverseLookupConfig(_messages.Message):
   """
 
   kind = _messages.StringField(1, default=u'dns#managedZoneReverseLookupConfig')
+
+
+class ManagedZoneServiceDirectoryConfig(_messages.Message):
+  r"""Contains information about Service Directory-backed zones.
+
+  Fields:
+    kind: A string attribute.
+    namespace: Contains information about the namespace associated with the
+      zone.
+  """
+
+  kind = _messages.StringField(1, default=u'dns#managedZoneServiceDirectoryConfig')
+  namespace = _messages.MessageField('ManagedZoneServiceDirectoryConfigNamespace', 2)
+
+
+class ManagedZoneServiceDirectoryConfigNamespace(_messages.Message):
+  r"""A ManagedZoneServiceDirectoryConfigNamespace object.
+
+  Fields:
+    deletionTime: The time that the namespace backing this zone was deleted,
+      empty string if it still exists. This is in RFC3339 text format. Output
+      only.
+    kind: A string attribute.
+    namespaceUrl: The fully qualified URL of the namespace associated with the
+      zone. This should be formatted like https://servicedirectory.googleapis.
+      com/v1/projects/{project}/locations/{location}/namespaces/{namespace}
+  """
+
+  deletionTime = _messages.StringField(1)
+  kind = _messages.StringField(2, default=u'dns#managedZoneServiceDirectoryConfigNamespace')
+  namespaceUrl = _messages.StringField(3)
 
 
 class ManagedZoneServiceDiscoveryConfig(_messages.Message):

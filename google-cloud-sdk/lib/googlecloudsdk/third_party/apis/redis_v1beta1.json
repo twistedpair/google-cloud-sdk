@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/memorystore/docs/redis/",
   "protocol": "rest",
   "rootUrl": "https://redis.googleapis.com/",
+  "mtlsRootUrl": "https://redis.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://redis.googleapis.com/",
   "batchPath": "batch",

@@ -1155,7 +1155,9 @@ class GoogleCloudDialogflowV2ConversationEvent(_messages.Message):
 
 
 class GoogleCloudDialogflowV2DetectIntentRequest(_messages.Message):
-  r"""The request to detect user's intent.
+  r"""========================================================================
+  ==== Requests and responses for custom methods. The request to detect user's
+  intent.
 
   Fields:
     inputAudio: Optional. The natural language speech audio to be processed.

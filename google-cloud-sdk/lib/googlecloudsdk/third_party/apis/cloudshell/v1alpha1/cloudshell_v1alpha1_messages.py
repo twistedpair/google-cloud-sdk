@@ -458,13 +458,18 @@ class StartEnvironmentMetadata(_messages.Message):
         unarchived. This can happen when the user returns to Cloud Shell after
         not having used it for a while, and suggests that startup will take
         longer than normal.
+      AWAITING_VM: Startup is waiting for a VM to be assigned to the
+        environment. This should normally happen very quickly, but an
+        environment might stay in this state for an extended period of time if
+        the system is experiencing heavy load.
       FINISHED: Startup is complete and the user should be able to establish
         an SSH connection to their environment.
     """
     STATE_UNSPECIFIED = 0
     STARTING = 1
     UNARCHIVING_DISK = 2
-    FINISHED = 3
+    AWAITING_VM = 3
+    FINISHED = 4
 
   state = _messages.EnumField('StateValueValuesEnum', 1)
 

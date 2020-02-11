@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Wrapper fors a Cloud Run TrafficTargets messages."""
+"""Wrapper for Cloud Run TrafficTargets messages."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -33,15 +33,23 @@ class InvalidTrafficSpecificationError(exceptions.Error):
 LATEST_REVISION_KEY = 'LATEST'
 
 
-def NewTrafficTarget(messages, key, percent):
+def NewTrafficTarget(messages, key, percent, tag=None):
+  """Creates a new TrafficTarget.
+
+  Args:
+    messages: The message module that defines TrafficTarget.
+    key: The key for the traffic target in the TrafficTargets mapping.
+    percent: Percent of traffic to assign to the traffic target.
+    tag: Optional tag to assign to the traffic target.
+
+  Returns:
+    The newly created TrafficTarget.
+  """
   if key == LATEST_REVISION_KEY:
     result = messages.TrafficTarget(
-        latestRevision=True,
-        percent=percent)
+        latestRevision=True, percent=percent, tag=tag)
   else:
-    result = messages.TrafficTarget(
-        revisionName=key,
-        percent=percent)
+    result = messages.TrafficTarget(revisionName=key, percent=percent, tag=tag)
   return result
 
 
@@ -96,6 +104,15 @@ def SortKeyFromTarget(target):
   return SortKeyFromKey(key)
 
 
+def _GetItemSortKey(target):
+  """Key function for sorting TrafficTarget objects during __getitem__."""
+  # The list of TrafficTargets returned by TrafficTargets.__getitem__ needs to
+  # be sorted for comparisons on TrafficTargets instances to work correctly. The
+  # order of the list of traffic targets for a given key should not affect
+  # equality. TrafficTarget is not hashable so a set is not an option.
+  return target.percent, (target.tag if target.tag is not None else '')
+
+
 def NewRoundingCorrectionPrecedence(key_and_percent):
   """Returns object that sorts in the order we correct traffic rounding errors.
 
@@ -138,11 +155,17 @@ class TrafficTargets(collections.MutableMapping):
      LATEST_REVISION_KEY for the latest revision
      TrafficTarget.revisionName for TrafficTargets with a revision name.
 
+  The dictionary value is a list of all traffic targets referencing the same
+  revision, either by name or the latest revision.
   """
 
-  def __init__(
-      self, messages_module, to_wrap):
-    """Constructor.
+  def __init__(self, messages_module, to_wrap):
+    """Constructs a new TrafficTargets instance.
+
+    The TrafficTargets instance wraps the to_wrap argument, which is a repeated
+    proto message. Operations that mutate to_wrap will usually occur through
+    this class, but that is not a requirement. Callers can directly mutate
+    to_wrap by accessing the proto directly.
 
     Args:
       messages_module: The message module that defines TrafficTarget.
@@ -153,40 +176,69 @@ class TrafficTargets(collections.MutableMapping):
     self._traffic_target_cls = self._messages.TrafficTarget
 
   def __getitem__(self, key):
-    """Implements evaluation of `self[key]`."""
-    for target in self._m:
-      if key == GetKey(target):
-        return target
-    raise KeyError(key)
+    """Gets a sorted list of traffic targets associated with the given key.
 
-  def __setitem__(self, key, new_target):
-    """Implements evaluation of `self[key] = target`."""
-    for index, target in enumerate(self._m):
-      if key == GetKey(target):
-        self._m[index] = new_target
-        break
+    Allows accessing traffic targets based on the revision they reference
+    (either directly by name or the latest ready revision by specifying
+    "LATEST" as the key).
+
+    Returns a sorted list of traffic targets to support comparison operations on
+    TrafficTargets objects which should be independent of the order of the
+    traffic targets for a given key.
+
+    Args:
+      key: A revision name or "LATEST" to get the traffic targets for.
+
+    Returns:
+      A sorted list of traffic targets associated with the given key.
+
+    Raises:
+      KeyError: If this object does not contain the given key.
+    """
+    result = sorted((t for t in self._m if GetKey(t) == key),
+                    key=_GetItemSortKey)
+    if not result:
+      raise KeyError(key)
+    return result
+
+  def _OtherTargets(self, key):
+    """Gets all targets that do not match the given key."""
+    return [t for t in self._m if GetKey(t) != key]
+
+  def __setitem__(self, key, new_targets):
+    """Implements evaluation of `self[key] = targets`."""
+    if key not in self:
+      self._m.extend(new_targets)
     else:
-      self._m.append(new_target)
+      self._m[:] = self._OtherTargets(key) + new_targets
 
   def SetPercent(self, key, percent):
-    """Set the given percent in the traffic targets."""
+    """Set the given percent in the traffic targets.
+
+    Moves any tags on existing targets with the specified key to zero percent
+    targets.
+
+    Args:
+      key: Name of the revision (or "LATEST") to set the percent for.
+      percent: Percent of traffic to set.
+    """
     existing = self.get(key)
     if existing:
-      existing.percent = percent
+      new_targets = [
+          NewTrafficTarget(self._messages, key, 0, t.tag)
+          for t in existing
+          if t.tag
+      ]
+      new_targets.append(NewTrafficTarget(self._messages, key, percent))
+      self[key] = new_targets
     else:
-      self[key] = NewTrafficTarget(self._messages, key, percent)
+      self._m.append(NewTrafficTarget(self._messages, key, percent))
 
   def __delitem__(self, key):
     """Implements evaluation of `del self[key]`."""
-    index_to_delete = 0
-    for index, target in enumerate(self._m):
-      if key == GetKey(target):
-        index_to_delete = index
-        break
-    else:
+    if key not in self:
       raise KeyError(key)
-
-    del self._m[index_to_delete]
+    self._m[:] = self._OtherTargets(key)
 
   def __contains__(self, key):
     """Implements evaluation of `item in self`."""
@@ -195,14 +247,18 @@ class TrafficTargets(collections.MutableMapping):
         return True
     return False
 
+  @property
+  def _key_set(self):
+    """A set containing the mapping's keys."""
+    return set(GetKey(t) for t in self._m)
+
   def __len__(self):
     """Implements evaluation of `len(self)`."""
-    return len(self._m)
+    return len(self._key_set)
 
   def __iter__(self):
-    """Returns a generator yielding the env var keys."""
-    for target in self._m:
-      yield GetKey(target)
+    """Returns an iterator over the traffic target keys."""
+    return iter(self._key_set)
 
   def MakeSerializable(self):
     return self._m
@@ -210,6 +266,31 @@ class TrafficTargets(collections.MutableMapping):
   def __repr__(self):
     content = ', '.join('{}: {}'.format(k, v) for k, v in self.items())
     return '[%s]' % content
+
+  def _GetNormalizedTraffic(self):
+    """Returns normalized targets, split into percent and tags targets.
+
+    Moves all tags to 0% targets. Combines all targets with a non-zero percent
+    that reference the same revision into a single target. Drops 0% targets
+    without tags. Does not modify the underlying repeated message field.
+
+    Returns:
+      A tuple of (percent targets, tag targets), where percent targets is a
+      dictionary mapping key to traffic target for all targets with percent
+      greater than zero, and tag targets is a list of traffic targets with
+      tags and percent equal to zero.
+    """
+    tag_targets = []
+    percent_targets = {}
+    for target in self._m:
+      key = GetKey(target)
+      if target.tag:
+        tag_targets.append(
+            NewTrafficTarget(self._messages, key, 0, tag=target.tag))
+      if target.percent:
+        percent_targets.setdefault(key, NewTrafficTarget(
+            self._messages, key, 0)).percent += target.percent
+    return percent_targets, tag_targets
 
   def _ValidateCurrentTraffic(self):
     percent = 0
@@ -304,17 +385,24 @@ class TrafficTargets(collections.MutableMapping):
     return assigned_percentages
 
   def UpdateTraffic(self, new_percentages):
-    """Update traffic assignments.
+    """Update traffic percent assignments.
 
-    The updated traffic assignments will include assignments explicitly
+    The updated traffic percent assignments will include assignments explicitly
     specified by the caller. If the caller does not assign 100% of
     traffic explicitly this function will scale traffic for targets
-    the user does not specify up or down based on the provided
-    assignments as needed.
+    the user does not specify with an existing percent greater than zero up or
+    down based on the provided assignments as needed.
+
+    This method normalizes the traffic targets while updating the traffic
+    percent assignments. Normalization merges all targets referencing the same
+    revision without tags into a single target with the combined percent.
+    Normalization also moves any tags referencing a revision to zero percent
+    targets.
 
     The update removes targets with 0% traffic unless:
      o The user explicitly specifies under 100% of total traffic
      o The user does not explicitly specify 0% traffic for the target.
+     o The 0% target has a tag.
 
     Args:
       new_percentages: Dict[str, int], Map from revision to percent
@@ -325,27 +413,28 @@ class TrafficTargets(collections.MutableMapping):
         the traffic for the service to an incorrect state.
     """
     self._ValidateCurrentTraffic()
-    original_targets = {GetKey(target): target for target in self._m}
+    existing_percent_targets, tag_targets = self._GetNormalizedTraffic()
     updated_percentages = new_percentages.copy()
     unassigned_targets = self._GetUnassignedTargets(updated_percentages)
     self._ValidateNewPercentages(updated_percentages, unassigned_targets)
     updated_percentages.update(
         self._GetAssignedPercentages(updated_percentages, unassigned_targets))
     int_percentages = self._IntPercentages(updated_percentages)
-    new_targets = []
+    new_percent_targets = []
     for key in int_percentages:
       if key in new_percentages and new_percentages[key] == 0:
         continue
-      elif key in original_targets:
+      elif key in existing_percent_targets:
         # Preserve state of retained targets.
-        target = original_targets[key]
+        target = existing_percent_targets[key]
         target.percent = int_percentages[key]
       else:
         target = NewTrafficTarget(self._messages, key, int_percentages[key])
-      new_targets.append(target)
-    new_targets = sorted(new_targets, key=SortKeyFromTarget)
+      new_percent_targets.append(target)
+    new_percent_targets = sorted(new_percent_targets, key=SortKeyFromTarget)
     del self._m[:]
-    self._m.extend(new_targets)
+    self._m.extend(new_percent_targets)
+    self._m.extend(tag_targets)
 
   def ZeroLatestTraffic(self, latest_ready_revision_name):
     """Reasign traffic from LATEST to the current latest revision."""
@@ -361,162 +450,27 @@ class TrafficTargets(collections.MutableMapping):
       del self._m[:]
       self._m.extend(sorted_targets)
 
-# Human readable indicator for a missing traffic percentage.
-_MISSING_PERCENT = '-'
+  def UpdateTags(self, to_update, to_remove, clear_others):
+    """Update traffic tags.
 
+    Removes and/or clears existing traffic tags as requested. Always adds new
+    tags to zero percent targets for the specified revision. Treats a tag
+    update as a remove and add.
 
-def FormatPercentage(percent):
-  if percent == _MISSING_PERCENT:
-    return _MISSING_PERCENT
-  else:
-    return '{}%'.format(percent)
-
-
-class TrafficTargetPair(object):
-  """Holder for a TrafficTarget status information.
-
-  The representation of the status of traffic for a service
-  includes:
-    o User requested assignments (spec.traffic)
-    o Actual assignments (status.traffic)
-
-  These may differ after a failed traffic update or during a
-  successful one. A TrafficTargetPair holds both values
-  for a TrafficTarget, identified by revisionName or by
-  latestRevision. In cases a TrafficTarget is added or removed
-  from a service, either value can be missing.
-
-  The latest revision can be included in the spec traffic targets
-  twice
-    o by revisionName
-    o by setting latestRevision to True.
-
-  Managed cloud run provides a single combined status traffic target
-  for both spec entries with:
-    o revisionName set to the latest revision's name
-    o percent set to combined percentage for both spec entries
-    o latestRevision not set
-
-  In this case both spec targets are paired with the combined status
-  target and a status_percent_override value is used to allocate the
-  combined traffic.
-  """
-
-  def __init__(
-      self, spec_target, status_target, latest_revision_name,
-      status_percent_override):
-    self._spec_target = spec_target
-    self._status_target = status_target
-    self._latest_revision_name = latest_revision_name
-    self._status_percent_override = status_percent_override
-
-  @property
-  def key(self):
-    return LATEST_REVISION_KEY if self.latestRevision else GetKey(self)
-
-  @property
-  def latestRevision(self):  # pylint: disable=invalid-name
-    result = False
-    if self._spec_target and self._spec_target.latestRevision:
-      result = True
-    if self._status_target and self._status_target.latestRevision:
-      result = True
-    return result
-
-  @property
-  def revisionName(self):  # pylint: disable=invalid-name
-    result = None
-    if self._spec_target and self._spec_target.revisionName:
-      result = self._spec_target.revisionName
-    if self._status_target and self._status_target.revisionName:
-      result = self._status_target.revisionName
-    return result
-
-  @property
-  def specTarget(self):  # pylint: disable=invalid-name
-    return self._spec_target
-
-  @property
-  def statusTarget(self):  # pylint: disable=invalid-name
-    return self._status_target
-
-  @property
-  def specPercent(self):  # pylint: disable=invalid-name
-    if self._spec_target:
-      return str(self._spec_target.percent)
-    else:
-      return _MISSING_PERCENT
-
-  @property
-  def statusPercent(self):  # pylint: disable=invalid-name
-    if self._status_percent_override is not None:
-      return str(self._status_percent_override)
-    elif self._status_target:
-      return str(self._status_target.percent)
-    return _MISSING_PERCENT
-
-  @property
-  def displayPercent(self):  # pylint: disable=invalid-name
-    """Returns human readable revision percent."""
-
-    if self.statusPercent == self.specPercent:
-      return FormatPercentage(self.statusPercent)
-    else:
-      return '{:4} (currently {})'.format(
-          FormatPercentage(self.specPercent),
-          FormatPercentage(self.statusPercent))
-
-  @property
-  def displayRevisionId(self):  # pylint: disable=invalid-name
-    """Returns human readable revision identifier."""
-    if self.latestRevision:
-      return '%s (currently %s)'% (GetKey(self), self._latest_revision_name)
-    else:
-      return self.revisionName
-
-  def SetSpecTarget(self, target):
-    self._spec_target = target
-
-  def SetStatusTarget(self, target, inferred_latest=False):
-    self._status_target = target
-    self._inferred_latest = inferred_latest
-
-
-def GetTrafficTargetPairs(spec_targets, status_targets, is_platform_managed,
-                          latest_ready_revision_name):
-  """Returns the list of TrafficTargetPair's for a Service."""
-  spec_dict = {GetKey(t): t for t in spec_targets}
-  status_dict = {GetKey(t): t for t in status_targets}
-
-  # For managed the status target for the latest revision is
-  # included by revisionName only and may hold the combined traffic
-  # percent for both latestRevisionName and latestRevision spec targets.
-  # Here we adjust keys in status_dict to match with spec_dict.
-  combined_status_target_id = None
-  if (is_platform_managed
-      and LATEST_REVISION_KEY in spec_dict
-      and LATEST_REVISION_KEY not in status_dict
-      and latest_ready_revision_name in status_dict):
-    latest_status_target = status_dict[latest_ready_revision_name]
-    status_dict[LATEST_REVISION_KEY] = latest_status_target
-    if latest_ready_revision_name in spec_dict:
-      combined_status_target_id = id(latest_status_target)
-    else:
-      del status_dict[latest_ready_revision_name]
-  result = []
-  for k in set(spec_dict).union(status_dict):
-    spec_target = spec_dict.get(k, None)
-    status_target = status_dict.get(k, None)
-    percent_override = None
-    if id(status_target) == combined_status_target_id:
-      spec_by_latest_target = spec_dict[LATEST_REVISION_KEY]
-      status_by_latest_percent = min(
-          spec_by_latest_target.percent, status_target.percent)
-      if k == LATEST_REVISION_KEY:
-        percent_override = status_by_latest_percent
-      else:
-        percent_override = status_target.percent - status_by_latest_percent
-    result.append(TrafficTargetPair(
-        spec_target, status_target, latest_ready_revision_name,
-        percent_override))
-  return sorted(result, key=SortKeyFromTarget)
+    Args:
+      to_update: A dictionary mapping tag to revision name or 'LATEST' for the
+        latest ready revision.
+      to_remove: A list of tags to remove.
+      clear_others: A boolean indicating whether to clear tags not specified in
+        to_update.
+    """
+    new_targets = []
+    for target in self._m:
+      if clear_others or target.tag in to_remove or target.tag in to_update:
+        target.tag = None
+      if target.percent or target.tag:
+        new_targets.append(target)
+    for tag, revision_key in to_update.items():
+      new_targets.append(
+          NewTrafficTarget(self._messages, revision_key, 0, tag=tag))
+    self._m[:] = new_targets

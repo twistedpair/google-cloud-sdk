@@ -213,7 +213,7 @@ def GetApiEnablementInfo(exception):
   """
   parsed_error = api_exceptions.HttpException(exception)
   (project, service_token) = _GetApiEnablementInfo(parsed_error)
-# TODO(b/141556680): delete this when KMS throws 403.
+  # TODO(b/141556680): delete this when KMS throws 403.
   if parsed_error.payload.api_name == 'cloudkms':
     (project, service_token) = _GetApiEnablementInfoKMS(parsed_error)
   if (project is not None and ShouldAttemptProjectEnable(project)
@@ -302,22 +302,27 @@ def GetClientClass(api_name, api_version):
   return apis_internal._GetClientClass(api_name, api_version)
 
 
-def GetClientInstance(api_name, api_version, no_http=False):
+def GetClientInstance(api_name,
+                      api_version,
+                      no_http=False,
+                      use_google_auth=False):
   """Returns an instance of the API client specified in the args.
 
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
     no_http: bool, True to not create an http object for this client.
+    use_google_auth: bool, True if the calling command indicates to use
+      google-auth library for authentication. If False, authentication will
+      fallback to using the oauth2client library.
 
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
   """
   # pylint:disable=protected-access
-  return apis_internal._GetClientInstance(
-      api_name, api_version,
-      no_http=no_http,
-      check_response_func=CheckResponseForApiEnablement())
+  return apis_internal._GetClientInstance(api_name, api_version, no_http, None,
+                                          CheckResponseForApiEnablement(),
+                                          use_google_auth)
 
 
 def GetEffectiveApiEndpoint(api_name, api_version, client_class=None):

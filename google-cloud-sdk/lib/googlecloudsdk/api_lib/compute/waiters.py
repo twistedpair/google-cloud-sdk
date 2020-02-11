@@ -370,7 +370,7 @@ def WaitForOperations(
   sleep_sec = 0
   # There is only one type of operation in compute API.
   # We pick the type of the first operation in the list.
-  operation_type = operations_data[0].operation_service.GetResponseType('Wait')
+  operation_type = operations_data[0].operation_service.GetResponseType('Get')
 
   while unprocessed_operations:
     if progress_tracker:

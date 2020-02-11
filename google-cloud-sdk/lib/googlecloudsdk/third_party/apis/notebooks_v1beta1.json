@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/ai-platform/notebooks/docs/",
   "protocol": "rest",
   "rootUrl": "https://notebooks.googleapis.com/",
+  "mtlsRootUrl": "https://notebooks.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://notebooks.googleapis.com/",
   "batchPath": "batch",
@@ -481,8 +482,11 @@
             "Accelerator type is Nvidia Tesla V100.",
             "Accelerator type is Nvidia Tesla P4.",
             "Accelerator type is Nvidia Tesla T4.",
-            "Accelerator type is TPU V2.",
-            "Accelerator type is TPU V3."
+            "Accelerator type is NVIDIA Tesla T4 Virtual Workstations.",
+            "Accelerator type is NVIDIA Tesla P100 Virtual Workstations.",
+            "Accelerator type is NVIDIA Tesla P4 Virtual Workstations.",
+            "(Coming soon) Accelerator type is TPU V2.",
+            "(Coming soon) Accelerator type is TPU V3."
           ],
           "type": "string",
           "enum": [
@@ -492,6 +496,9 @@
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
+            "NVIDIA_TESLA_T4_VWS",
+            "NVIDIA_TESLA_P100_VWS",
+            "NVIDIA_TESLA_P4_VWS",
             "TPU_V2",
             "TPU_V3"
           ]
@@ -528,8 +535,11 @@
             "Accelerator type is Nvidia Tesla V100.",
             "Accelerator type is Nvidia Tesla P4.",
             "Accelerator type is Nvidia Tesla T4.",
-            "Accelerator type is TPU V2.",
-            "Accelerator type is TPU V3."
+            "Accelerator type is NVIDIA Tesla T4 Virtual Workstations.",
+            "Accelerator type is NVIDIA Tesla P100 Virtual Workstations.",
+            "Accelerator type is NVIDIA Tesla P4 Virtual Workstations.",
+            "(Coming soon) Accelerator type is TPU V2.",
+            "(Coming soon) Accelerator type is TPU V3."
           ],
           "type": "string",
           "enum": [
@@ -539,6 +549,9 @@
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
+            "NVIDIA_TESLA_T4_VWS",
+            "NVIDIA_TESLA_P100_VWS",
+            "NVIDIA_TESLA_P4_VWS",
             "TPU_V2",
             "TPU_V3"
           ]

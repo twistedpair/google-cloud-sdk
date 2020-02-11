@@ -964,6 +964,18 @@ class DataSourceParameter(_messages.Message):
   validationRegex = _messages.StringField(16)
 
 
+class EmailPreferences(_messages.Message):
+  r"""Represents preferences for sending email notifications for transfer run
+  events.
+
+  Fields:
+    enableFailureEmail: If true, email notifications will be sent on transfer
+      run failures.
+  """
+
+  enableFailureEmail = _messages.BooleanField(1)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1360,6 +1372,9 @@ class TransferConfig(_messages.Message):
     disabled: Is this config disabled. When set to true, no runs are scheduled
       for a given transfer.
     displayName: User specified display name for the data transfer.
+    emailPreferences: Email notifications will be sent according to these
+      preferences to the email address of the user who owns this transfer
+      config.
     name: The resource name of the transfer config. Transfer config names have
       the form of
       `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
@@ -1368,6 +1383,8 @@ class TransferConfig(_messages.Message):
       config_id is not provided, usually a uuid, even though it is not
       guaranteed or required, will be generated for config_id.
     nextRunTime: Output only. Next time when data transfer will run.
+    notificationPubsubTopic: Pub/Sub topic where notifications will be sent
+      after transfer runs associated with this transfer config finish.
     params: Data transfer specific parameters.
     schedule: Data transfer schedule. If the data source does not support a
       custom schedule, this should be empty. If it is empty, the default value
@@ -1435,14 +1452,16 @@ class TransferConfig(_messages.Message):
   destinationDatasetId = _messages.StringField(4)
   disabled = _messages.BooleanField(5)
   displayName = _messages.StringField(6)
-  name = _messages.StringField(7)
-  nextRunTime = _messages.StringField(8)
-  params = _messages.MessageField('ParamsValue', 9)
-  schedule = _messages.StringField(10)
-  scheduleOptions = _messages.MessageField('ScheduleOptions', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
-  userId = _messages.IntegerField(14)
+  emailPreferences = _messages.MessageField('EmailPreferences', 7)
+  name = _messages.StringField(8)
+  nextRunTime = _messages.StringField(9)
+  notificationPubsubTopic = _messages.StringField(10)
+  params = _messages.MessageField('ParamsValue', 11)
+  schedule = _messages.StringField(12)
+  scheduleOptions = _messages.MessageField('ScheduleOptions', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  updateTime = _messages.StringField(15)
+  userId = _messages.IntegerField(16)
 
 
 class TransferMessage(_messages.Message):
@@ -1488,12 +1507,17 @@ class TransferRun(_messages.Message):
   Fields:
     dataSourceId: Output only. Data source id.
     destinationDatasetId: Output only. The BigQuery target dataset id.
+    emailPreferences: Output only. Email notifications will be sent according
+      to these preferences to the email address of the user who owns the
+      transfer config this run was derived from.
     endTime: Output only. Time when transfer run ended. Parameter ignored by
       server for input requests.
     errorStatus: Status of the transfer run.
     name: The resource name of the transfer run. Transfer run names have the
       form `projects/{project_id}/locations/{location}/transferConfigs/{config
       _id}/runs/{run_id}`. The name is ignored when creating a transfer run.
+    notificationPubsubTopic: Output only. Pub/Sub topic where a notification
+      will be sent after this transfer run finishes
     params: Output only. Data transfer specific parameters.
     runTime: For batch transfer runs, specifies the date and time of the data
       should be ingested.
@@ -1557,17 +1581,19 @@ class TransferRun(_messages.Message):
 
   dataSourceId = _messages.StringField(1)
   destinationDatasetId = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  errorStatus = _messages.MessageField('Status', 4)
-  name = _messages.StringField(5)
-  params = _messages.MessageField('ParamsValue', 6)
-  runTime = _messages.StringField(7)
-  schedule = _messages.StringField(8)
-  scheduleTime = _messages.StringField(9)
-  startTime = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
-  userId = _messages.IntegerField(13)
+  emailPreferences = _messages.MessageField('EmailPreferences', 3)
+  endTime = _messages.StringField(4)
+  errorStatus = _messages.MessageField('Status', 5)
+  name = _messages.StringField(6)
+  notificationPubsubTopic = _messages.StringField(7)
+  params = _messages.MessageField('ParamsValue', 8)
+  runTime = _messages.StringField(9)
+  schedule = _messages.StringField(10)
+  scheduleTime = _messages.StringField(11)
+  startTime = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  updateTime = _messages.StringField(14)
+  userId = _messages.IntegerField(15)
 
 
 encoding.AddCustomJsonFieldMapping(

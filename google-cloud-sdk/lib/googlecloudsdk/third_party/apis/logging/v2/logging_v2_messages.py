@@ -1141,9 +1141,6 @@ class LogView(_messages.Message):
     createTime: Output only. The creation timestamp of the view.
     description: Describes this view.
     displayName: Display name of the view.
-    expireTime: Time at which this view will no longer be useable. Requests to
-      view logs after expire_time has passed will fail with a
-      FAILED_PRECONDITION error.
     filter: Filter that restricts which log entries in a bucket are visible in
       this view. Filters are restricted to be a logical AND of ==/!= of any of
       the following:  originating project/folder/organization/billing account.
@@ -1156,10 +1153,9 @@ class LogView(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
-  expireTime = _messages.StringField(4)
-  filter = _messages.StringField(5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  filter = _messages.StringField(4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class LoggingBillingAccountsBucketsGetRequest(_messages.Message):

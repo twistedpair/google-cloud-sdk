@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.command_lib.secrets import completers as secrets_completers
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import resources
 
@@ -91,10 +92,27 @@ def AddSecret(parser, purpose, positional=False, **kwargs):
       **kwargs).AddToParser(parser)
 
 
+def AddBetaSecret(parser, purpose, positional=False, **kwargs):
+  concept_parsers.ConceptParser.ForResource(
+      name=_ArgOrFlag('secret', positional),
+      resource_spec=GetBetaSecretResourceSpec(),
+      group_help='The secret {}.'.format(purpose),
+      **kwargs).AddToParser(parser)
+
+
 def AddVersion(parser, purpose, positional=False, **kwargs):
   concept_parsers.ConceptParser.ForResource(
       name=_ArgOrFlag('version', positional),
       resource_spec=GetVersionResourceSpec(),
+      group_help='Numeric secret version {}.'.format(purpose),
+      **kwargs).AddToParser(parser)
+
+
+def AddBetaVersion(parser, purpose, positional=False, **kwargs):
+  # Adds a SecretVersion parser using the beta Secrets completer
+  concept_parsers.ConceptParser.ForResource(
+      name=_ArgOrFlag('version', positional),
+      resource_spec=GetBetaVersionResourceSpec(),
       group_help='Numeric secret version {}.'.format(purpose),
       **kwargs).AddToParser(parser)
 
@@ -133,8 +151,14 @@ def GetSecretAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='secret',
       help_text='The secret of the {resource}.',
-      completion_request_params={'fieldMask': 'name'},
-      completion_id_field='name')
+      completer=secrets_completers.SecretsCompleter)
+
+
+def GetBetaSecretAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='secret',
+      help_text='The secret of the {resource}.',
+      completer=secrets_completers.BetaSecretsCompleter)
 
 
 def GetVersionAttributeConfig():
@@ -143,7 +167,6 @@ def GetVersionAttributeConfig():
       help_text='The version of the {resource}.',
       completion_request_params={'fieldMask': 'name'},
       completion_id_field='name')
-
 
 # Resource specs
 
@@ -177,6 +200,16 @@ def GetSecretResourceSpec():
       projectsId=GetProjectAttributeConfig())
 
 
+def GetBetaSecretResourceSpec():
+  return concepts.ResourceSpec(
+      resource_collection='secretmanager.projects.secrets',
+      resource_name='secret',
+      plural_name='secrets',
+      disable_auto_completers=False,
+      secretsId=GetBetaSecretAttributeConfig(),
+      projectsId=GetProjectAttributeConfig())
+
+
 def GetVersionResourceSpec():
   return concepts.ResourceSpec(
       'secretmanager.projects.secrets.versions',
@@ -185,6 +218,17 @@ def GetVersionResourceSpec():
       disable_auto_completers=False,
       versionsId=GetVersionAttributeConfig(),
       secretsId=GetSecretAttributeConfig(),
+      projectsId=GetProjectAttributeConfig())
+
+
+def GetBetaVersionResourceSpec():
+  return concepts.ResourceSpec(
+      'secretmanager.projects.secrets.versions',
+      resource_name='version',
+      plural_name='version',
+      disable_auto_completers=False,
+      versionsId=GetVersionAttributeConfig(),
+      secretsId=GetBetaSecretAttributeConfig(),
       projectsId=GetProjectAttributeConfig())
 
 

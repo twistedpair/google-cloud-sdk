@@ -18,134 +18,175 @@ package = 'monitoring'
 
 
 class Aggregation(_messages.Message):
-  r"""Describes how to combine multiple time series to provide different views
-  of the data. Aggregation consists of an alignment step on individual time
-  series (alignment_period and per_series_aligner) followed by an optional
-  reduction step of the data across the aligned time series
-  (cross_series_reducer and group_by_fields). For more details, see
-  Aggregation.
+  r"""Describes how to combine multiple time series to provide a different
+  view of the data. Aggregation of time series is done in two steps. First,
+  each time series in the set is aligned to the same time interval boundaries,
+  then the set of time series is optionally reduced in number.Alignment
+  consists of applying the per_series_aligner operation to each time series
+  after its data has been divided into regular alignment_period time
+  intervals. This process takes all of the data points in an alignment period,
+  applies a mathematical transformation such as averaging, minimum, maximum,
+  delta, etc., and converts them into a single data point per period.Reduction
+  is when the aligned and transformed time series can optionally be combined,
+  reducing the number of time series through similar mathematical
+  transformations. Reduction involves applying a cross_series_reducer to all
+  the time series, optionally sorting the time series into subsets with
+  group_by_fields, and applying the reducer to each subset.The raw time series
+  data can contain a huge amount of information from multiple sources.
+  Alignment and reduction transforms this mass of data into a more manageable
+  and representative collection of data, for example "the 95% latency across
+  the average of all tasks in a cluster". This representative data can be more
+  easily graphed and comprehended, and the individual time series data is
+  still available for later drilldown. For more details, see Aggregating Time
+  Series.
 
   Enums:
-    CrossSeriesReducerValueValuesEnum: The approach to be used to combine time
-      series. Not all reducer functions may be applied to all time series,
-      depending on the metric type and the value type of the original time
-      series. Reduction may change the metric type of value type of the time
-      series.Time series data must be aligned in order to perform cross-time
-      series reduction. If crossSeriesReducer is specified, then
-      perSeriesAligner must be specified and not equal ALIGN_NONE and
-      alignmentPeriod must be specified; otherwise, an error is returned.
-    PerSeriesAlignerValueValuesEnum: The approach to be used to align
-      individual time series. Not all alignment functions may be applied to
-      all time series, depending on the metric type and value type of the
-      original time series. Alignment may change the metric type or the value
-      type of the time series.Time series data must be aligned in order to
-      perform cross-time series reduction. If crossSeriesReducer is specified,
-      then perSeriesAligner must be specified and not equal ALIGN_NONE and
-      alignmentPeriod must be specified; otherwise, an error is returned.
+    CrossSeriesReducerValueValuesEnum: The reduction operation to be used to
+      combine time series into a single time series, where the value of each
+      data point in the resulting series is a function of all the already
+      aligned values in the input time series.Not all reducer operations can
+      be applied to all time series. The valid choices depend on the
+      metric_kind and the value_type of the original time series. Reduction
+      can yield a time series with a different metric_kind or value_type than
+      the input time series.Time series data must first be aligned (see
+      per_series_aligner) in order to perform cross-time series reduction. If
+      cross_series_reducer is specified, then per_series_aligner must be
+      specified, and must not be ALIGN_NONE. An alignment_period must also be
+      specified; otherwise, an error is returned.
+    PerSeriesAlignerValueValuesEnum: An Aligner describes how to bring the
+      data points in a single time series into temporal alignment. Except for
+      ALIGN_NONE, all alignments cause all the data points in an
+      alignment_period to be mathematically grouped together, resulting in a
+      single data point for each alignment_period with end timestamp at the
+      end of the period.Not all alignment operations may be applied to all
+      time series. The valid choices depend on the metric_kind and value_type
+      of the original time series. Alignment can change the metric_kind or the
+      value_type of the time series.Time series data must be aligned in order
+      to perform cross-time series reduction. If cross_series_reducer is
+      specified, then per_series_aligner must be specified and not equal to
+      ALIGN_NONE and alignment_period must be specified; otherwise, an error
+      is returned.
 
   Fields:
-    alignmentPeriod: The alignment period for per-time series alignment. If
-      present, alignmentPeriod must be at least 60 seconds. After per-time
-      series alignment, each time series will contain data points only on the
-      period boundaries. If perSeriesAligner is not specified or equals
-      ALIGN_NONE, then this field is ignored. If perSeriesAligner is specified
-      and does not equal ALIGN_NONE, then this field must be defined;
-      otherwise an error is returned.
-    crossSeriesReducer: The approach to be used to combine time series. Not
-      all reducer functions may be applied to all time series, depending on
-      the metric type and the value type of the original time series.
-      Reduction may change the metric type of value type of the time
-      series.Time series data must be aligned in order to perform cross-time
-      series reduction. If crossSeriesReducer is specified, then
-      perSeriesAligner must be specified and not equal ALIGN_NONE and
-      alignmentPeriod must be specified; otherwise, an error is returned.
-    groupByFields: The set of fields to preserve when crossSeriesReducer is
-      specified. The groupByFields determine how the time series are
-      partitioned into subsets prior to applying the aggregation function.
+    alignmentPeriod: The alignment_period specifies a time interval, in
+      seconds, that is used to divide the data in all the time series into
+      consistent blocks of time. This will be done before the per-series
+      aligner can be applied to the data.The value must be at least 60
+      seconds. If a per-series aligner other than ALIGN_NONE is specified,
+      this field is required or an error is returned. If no per-series aligner
+      is specified, or the aligner ALIGN_NONE is specified, then this field is
+      ignored.
+    crossSeriesReducer: The reduction operation to be used to combine time
+      series into a single time series, where the value of each data point in
+      the resulting series is a function of all the already aligned values in
+      the input time series.Not all reducer operations can be applied to all
+      time series. The valid choices depend on the metric_kind and the
+      value_type of the original time series. Reduction can yield a time
+      series with a different metric_kind or value_type than the input time
+      series.Time series data must first be aligned (see per_series_aligner)
+      in order to perform cross-time series reduction. If cross_series_reducer
+      is specified, then per_series_aligner must be specified, and must not be
+      ALIGN_NONE. An alignment_period must also be specified; otherwise, an
+      error is returned.
+    groupByFields: The set of fields to preserve when cross_series_reducer is
+      specified. The group_by_fields determine how the time series are
+      partitioned into subsets prior to applying the aggregation operation.
       Each subset contains time series that have the same value for each of
       the grouping fields. Each individual time series is a member of exactly
-      one subset. The crossSeriesReducer is applied to each subset of time
+      one subset. The cross_series_reducer is applied to each subset of time
       series. It is not possible to reduce across different resource types, so
       this field implicitly contains resource.type. Fields not specified in
-      groupByFields are aggregated away. If groupByFields is not specified and
-      all the time series have the same resource type, then the time series
-      are aggregated into a single output time series. If crossSeriesReducer
-      is not defined, this field is ignored.
-    perSeriesAligner: The approach to be used to align individual time series.
-      Not all alignment functions may be applied to all time series, depending
-      on the metric type and value type of the original time series. Alignment
-      may change the metric type or the value type of the time series.Time
-      series data must be aligned in order to perform cross-time series
-      reduction. If crossSeriesReducer is specified, then perSeriesAligner
-      must be specified and not equal ALIGN_NONE and alignmentPeriod must be
-      specified; otherwise, an error is returned.
+      group_by_fields are aggregated away. If group_by_fields is not specified
+      and all the time series have the same resource type, then the time
+      series are aggregated into a single output time series. If
+      cross_series_reducer is not defined, this field is ignored.
+    perSeriesAligner: An Aligner describes how to bring the data points in a
+      single time series into temporal alignment. Except for ALIGN_NONE, all
+      alignments cause all the data points in an alignment_period to be
+      mathematically grouped together, resulting in a single data point for
+      each alignment_period with end timestamp at the end of the period.Not
+      all alignment operations may be applied to all time series. The valid
+      choices depend on the metric_kind and value_type of the original time
+      series. Alignment can change the metric_kind or the value_type of the
+      time series.Time series data must be aligned in order to perform cross-
+      time series reduction. If cross_series_reducer is specified, then
+      per_series_aligner must be specified and not equal to ALIGN_NONE and
+      alignment_period must be specified; otherwise, an error is returned.
   """
 
   class CrossSeriesReducerValueValuesEnum(_messages.Enum):
-    r"""The approach to be used to combine time series. Not all reducer
-    functions may be applied to all time series, depending on the metric type
-    and the value type of the original time series. Reduction may change the
-    metric type of value type of the time series.Time series data must be
-    aligned in order to perform cross-time series reduction. If
-    crossSeriesReducer is specified, then perSeriesAligner must be specified
-    and not equal ALIGN_NONE and alignmentPeriod must be specified; otherwise,
-    an error is returned.
+    r"""The reduction operation to be used to combine time series into a
+    single time series, where the value of each data point in the resulting
+    series is a function of all the already aligned values in the input time
+    series.Not all reducer operations can be applied to all time series. The
+    valid choices depend on the metric_kind and the value_type of the original
+    time series. Reduction can yield a time series with a different
+    metric_kind or value_type than the input time series.Time series data must
+    first be aligned (see per_series_aligner) in order to perform cross-time
+    series reduction. If cross_series_reducer is specified, then
+    per_series_aligner must be specified, and must not be ALIGN_NONE. An
+    alignment_period must also be specified; otherwise, an error is returned.
 
     Values:
-      REDUCE_NONE: No cross-time series reduction. The output of the aligner
+      REDUCE_NONE: No cross-time series reduction. The output of the Aligner
         is returned.
-      REDUCE_MEAN: Reduce by computing the mean across time series for each
-        alignment period. This reducer is valid for delta and gauge metrics
-        with numeric or distribution values. The value type of the output is
-        DOUBLE.
-      REDUCE_MIN: Reduce by computing the minimum across time series for each
-        alignment period. This reducer is valid for delta and gauge metrics
-        with numeric values. The value type of the output is the same as the
-        value type of the input.
-      REDUCE_MAX: Reduce by computing the maximum across time series for each
-        alignment period. This reducer is valid for delta and gauge metrics
-        with numeric values. The value type of the output is the same as the
-        value type of the input.
+      REDUCE_MEAN: Reduce by computing the mean value across time series for
+        each alignment period. This reducer is valid for DELTA and GAUGE
+        metrics with numeric or distribution values. The value_type of the
+        output is DOUBLE.
+      REDUCE_MIN: Reduce by computing the minimum value across time series for
+        each alignment period. This reducer is valid for DELTA and GAUGE
+        metrics with numeric values. The value_type of the output is the same
+        as the value_type of the input.
+      REDUCE_MAX: Reduce by computing the maximum value across time series for
+        each alignment period. This reducer is valid for DELTA and GAUGE
+        metrics with numeric values. The value_type of the output is the same
+        as the value_type of the input.
       REDUCE_SUM: Reduce by computing the sum across time series for each
-        alignment period. This reducer is valid for delta and gauge metrics
-        with numeric and distribution values. The value type of the output is
-        the same as the value type of the input.
+        alignment period. This reducer is valid for DELTA and GAUGE metrics
+        with numeric and distribution values. The value_type of the output is
+        the same as the value_type of the input.
       REDUCE_STDDEV: Reduce by computing the standard deviation across time
-        series for each alignment period. This reducer is valid for delta and
-        gauge metrics with numeric or distribution values. The value type of
+        series for each alignment period. This reducer is valid for DELTA and
+        GAUGE metrics with numeric or distribution values. The value_type of
         the output is DOUBLE.
-      REDUCE_COUNT: Reduce by computing the count of data points across time
-        series for each alignment period. This reducer is valid for delta and
-        gauge metrics of numeric, Boolean, distribution, and string value
-        type. The value type of the output is INT64.
-      REDUCE_COUNT_TRUE: Reduce by computing the count of True-valued data
+      REDUCE_COUNT: Reduce by computing the number of data points across time
+        series for each alignment period. This reducer is valid for DELTA and
+        GAUGE metrics of numeric, Boolean, distribution, and string
+        value_type. The value_type of the output is INT64.
+      REDUCE_COUNT_TRUE: Reduce by computing the number of True-valued data
         points across time series for each alignment period. This reducer is
-        valid for delta and gauge metrics of Boolean value type. The value
-        type of the output is INT64.
-      REDUCE_COUNT_FALSE: Reduce by computing the count of False-valued data
+        valid for DELTA and GAUGE metrics of Boolean value_type. The
+        value_type of the output is INT64.
+      REDUCE_COUNT_FALSE: Reduce by computing the number of False-valued data
         points across time series for each alignment period. This reducer is
-        valid for delta and gauge metrics of Boolean value type. The value
-        type of the output is INT64.
-      REDUCE_FRACTION_TRUE: Reduce by computing the fraction of True-valued
-        data points across time series for each alignment period. This reducer
-        is valid for delta and gauge metrics of Boolean value type. The output
-        value is in the range 0, 1 and has value type DOUBLE.
-      REDUCE_PERCENTILE_99: Reduce by computing 99th percentile of data points
-        across time series for each alignment period. This reducer is valid
-        for gauge and delta metrics of numeric and distribution type. The
-        value of the output is DOUBLE
-      REDUCE_PERCENTILE_95: Reduce by computing 95th percentile of data points
-        across time series for each alignment period. This reducer is valid
-        for gauge and delta metrics of numeric and distribution type. The
-        value of the output is DOUBLE
-      REDUCE_PERCENTILE_50: Reduce by computing 50th percentile of data points
-        across time series for each alignment period. This reducer is valid
-        for gauge and delta metrics of numeric and distribution type. The
-        value of the output is DOUBLE
-      REDUCE_PERCENTILE_05: Reduce by computing 5th percentile of data points
-        across time series for each alignment period. This reducer is valid
-        for gauge and delta metrics of numeric and distribution type. The
-        value of the output is DOUBLE
+        valid for DELTA and GAUGE metrics of Boolean value_type. The
+        value_type of the output is INT64.
+      REDUCE_FRACTION_TRUE: Reduce by computing the ratio of the number of
+        True-valued data points to the total number of data points for each
+        alignment period. This reducer is valid for DELTA and GAUGE metrics of
+        Boolean value_type. The output value is in the range 0.0, 1.0 and has
+        value_type DOUBLE.
+      REDUCE_PERCENTILE_99: Reduce by computing the 99th percentile
+        (https://en.wikipedia.org/wiki/Percentile) of data points across time
+        series for each alignment period. This reducer is valid for GAUGE and
+        DELTA metrics of numeric and distribution type. The value of the
+        output is DOUBLE.
+      REDUCE_PERCENTILE_95: Reduce by computing the 95th percentile
+        (https://en.wikipedia.org/wiki/Percentile) of data points across time
+        series for each alignment period. This reducer is valid for GAUGE and
+        DELTA metrics of numeric and distribution type. The value of the
+        output is DOUBLE.
+      REDUCE_PERCENTILE_50: Reduce by computing the 50th percentile
+        (https://en.wikipedia.org/wiki/Percentile) of data points across time
+        series for each alignment period. This reducer is valid for GAUGE and
+        DELTA metrics of numeric and distribution type. The value of the
+        output is DOUBLE.
+      REDUCE_PERCENTILE_05: Reduce by computing the 5th percentile
+        (https://en.wikipedia.org/wiki/Percentile) of data points across time
+        series for each alignment period. This reducer is valid for GAUGE and
+        DELTA metrics of numeric and distribution type. The value of the
+        output is DOUBLE.
     """
     REDUCE_NONE = 0
     REDUCE_MEAN = 1
@@ -163,115 +204,117 @@ class Aggregation(_messages.Message):
     REDUCE_PERCENTILE_05 = 13
 
   class PerSeriesAlignerValueValuesEnum(_messages.Enum):
-    r"""The approach to be used to align individual time series. Not all
-    alignment functions may be applied to all time series, depending on the
-    metric type and value type of the original time series. Alignment may
-    change the metric type or the value type of the time series.Time series
-    data must be aligned in order to perform cross-time series reduction. If
-    crossSeriesReducer is specified, then perSeriesAligner must be specified
-    and not equal ALIGN_NONE and alignmentPeriod must be specified; otherwise,
-    an error is returned.
+    r"""An Aligner describes how to bring the data points in a single time
+    series into temporal alignment. Except for ALIGN_NONE, all alignments
+    cause all the data points in an alignment_period to be mathematically
+    grouped together, resulting in a single data point for each
+    alignment_period with end timestamp at the end of the period.Not all
+    alignment operations may be applied to all time series. The valid choices
+    depend on the metric_kind and value_type of the original time series.
+    Alignment can change the metric_kind or the value_type of the time
+    series.Time series data must be aligned in order to perform cross-time
+    series reduction. If cross_series_reducer is specified, then
+    per_series_aligner must be specified and not equal to ALIGN_NONE and
+    alignment_period must be specified; otherwise, an error is returned.
 
     Values:
-      ALIGN_NONE: No alignment. Raw data is returned. Not valid if cross-time
-        series reduction is requested. The value type of the result is the
-        same as the value type of the input.
-      ALIGN_DELTA: Align and convert to delta metric type. This alignment is
-        valid for cumulative metrics and delta metrics. Aligning an existing
-        delta metric to a delta metric requires that the alignment period be
-        increased. The value type of the result is the same as the value type
-        of the input.One can think of this aligner as a rate but without time
-        units; that is, the output is conceptually (second_point -
-        first_point).
-      ALIGN_RATE: Align and convert to a rate. This alignment is valid for
-        cumulative metrics and delta metrics with numeric values. The output
-        is a gauge metric with value type DOUBLE.One can think of this aligner
-        as conceptually providing the slope of the line that passes through
-        the value at the start and end of the window. In other words, this is
-        conceptually ((y1 - y0)/(t1 - t0)), and the output unit is one that
-        has a "/time" dimension.If, by rate, you are looking for percentage
-        change, see the ALIGN_PERCENT_CHANGE aligner option.
+      ALIGN_NONE: No alignment. Raw data is returned. Not valid if cross-
+        series reduction is requested. The value_type of the result is the
+        same as the value_type of the input.
+      ALIGN_DELTA: Align and convert to DELTA. The output is delta = y1 -
+        y0.This alignment is valid for CUMULATIVE and DELTA metrics. If the
+        selected alignment period results in periods with no data, then the
+        aligned value for such a period is created by interpolation. The
+        value_type of the aligned result is the same as the value_type of the
+        input.
+      ALIGN_RATE: Align and convert to a rate. The result is computed as rate
+        = (y1 - y0)/(t1 - t0), or "delta over time". Think of this aligner as
+        providing the slope of the line that passes through the value at the
+        start and at the end of the alignment_period.This aligner is valid for
+        CUMULATIVE and DELTA metrics with numeric values. If the selected
+        alignment period results in periods with no data, then the aligned
+        value for such a period is created by interpolation. The output is a
+        GAUGE metric with value_type DOUBLE.If, by "rate", you mean
+        "percentage change", see the ALIGN_PERCENT_CHANGE aligner instead.
       ALIGN_INTERPOLATE: Align by interpolating between adjacent points around
-        the period boundary. This alignment is valid for gauge metrics with
-        numeric values. The value type of the result is the same as the value
-        type of the input.
-      ALIGN_NEXT_OLDER: Align by shifting the oldest data point before the
-        period boundary to the boundary. This alignment is valid for gauge
-        metrics. The value type of the result is the same as the value type of
-        the input.
-      ALIGN_MIN: Align time series via aggregation. The resulting data point
-        in the alignment period is the minimum of all data points in the
-        period. This alignment is valid for gauge and delta metrics with
-        numeric values. The value type of the result is the same as the value
-        type of the input.
-      ALIGN_MAX: Align time series via aggregation. The resulting data point
-        in the alignment period is the maximum of all data points in the
-        period. This alignment is valid for gauge and delta metrics with
-        numeric values. The value type of the result is the same as the value
-        type of the input.
-      ALIGN_MEAN: Align time series via aggregation. The resulting data point
-        in the alignment period is the average or arithmetic mean of all data
-        points in the period. This alignment is valid for gauge and delta
-        metrics with numeric values. The value type of the output is DOUBLE.
-      ALIGN_COUNT: Align time series via aggregation. The resulting data point
-        in the alignment period is the count of all data points in the period.
-        This alignment is valid for gauge and delta metrics with numeric or
-        Boolean values. The value type of the output is INT64.
-      ALIGN_SUM: Align time series via aggregation. The resulting data point
-        in the alignment period is the sum of all data points in the period.
-        This alignment is valid for gauge and delta metrics with numeric and
-        distribution values. The value type of the output is the same as the
-        value type of the input.
-      ALIGN_STDDEV: Align time series via aggregation. The resulting data
-        point in the alignment period is the standard deviation of all data
-        points in the period. This alignment is valid for gauge and delta
-        metrics with numeric values. The value type of the output is DOUBLE.
-      ALIGN_COUNT_TRUE: Align time series via aggregation. The resulting data
-        point in the alignment period is the count of True-valued data points
-        in the period. This alignment is valid for gauge metrics with Boolean
-        values. The value type of the output is INT64.
-      ALIGN_COUNT_FALSE: Align time series via aggregation. The resulting data
-        point in the alignment period is the count of False-valued data points
-        in the period. This alignment is valid for gauge metrics with Boolean
-        values. The value type of the output is INT64.
-      ALIGN_FRACTION_TRUE: Align time series via aggregation. The resulting
-        data point in the alignment period is the fraction of True-valued data
-        points in the period. This alignment is valid for gauge metrics with
-        Boolean values. The output value is in the range 0, 1 and has value
-        type DOUBLE.
-      ALIGN_PERCENTILE_99: Align time series via aggregation. The resulting
-        data point in the alignment period is the 99th percentile of all data
-        points in the period. This alignment is valid for gauge and delta
-        metrics with distribution values. The output is a gauge metric with
-        value type DOUBLE.
-      ALIGN_PERCENTILE_95: Align time series via aggregation. The resulting
-        data point in the alignment period is the 95th percentile of all data
-        points in the period. This alignment is valid for gauge and delta
-        metrics with distribution values. The output is a gauge metric with
-        value type DOUBLE.
-      ALIGN_PERCENTILE_50: Align time series via aggregation. The resulting
-        data point in the alignment period is the 50th percentile of all data
-        points in the period. This alignment is valid for gauge and delta
-        metrics with distribution values. The output is a gauge metric with
-        value type DOUBLE.
-      ALIGN_PERCENTILE_05: Align time series via aggregation. The resulting
-        data point in the alignment period is the 5th percentile of all data
-        points in the period. This alignment is valid for gauge and delta
-        metrics with distribution values. The output is a gauge metric with
-        value type DOUBLE.
+        the alignment period boundary. This aligner is valid for GAUGE metrics
+        with numeric values. The value_type of the aligned result is the same
+        as the value_type of the input.
+      ALIGN_NEXT_OLDER: Align by moving the most recent data point before the
+        end of the alignment period to the boundary at the end of the
+        alignment period. This aligner is valid for GAUGE metrics. The
+        value_type of the aligned result is the same as the value_type of the
+        input.
+      ALIGN_MIN: Align the time series by returning the minimum value in each
+        alignment period. This aligner is valid for GAUGE and DELTA metrics
+        with numeric values. The value_type of the aligned result is the same
+        as the value_type of the input.
+      ALIGN_MAX: Align the time series by returning the maximum value in each
+        alignment period. This aligner is valid for GAUGE and DELTA metrics
+        with numeric values. The value_type of the aligned result is the same
+        as the value_type of the input.
+      ALIGN_MEAN: Align the time series by returning the mean value in each
+        alignment period. This aligner is valid for GAUGE and DELTA metrics
+        with numeric values. The value_type of the aligned result is DOUBLE.
+      ALIGN_COUNT: Align the time series by returning the number of values in
+        each alignment period. This aligner is valid for GAUGE and DELTA
+        metrics with numeric or Boolean values. The value_type of the aligned
+        result is INT64.
+      ALIGN_SUM: Align the time series by returning the sum of the values in
+        each alignment period. This aligner is valid for GAUGE and DELTA
+        metrics with numeric and distribution values. The value_type of the
+        aligned result is the same as the value_type of the input.
+      ALIGN_STDDEV: Align the time series by returning the standard deviation
+        of the values in each alignment period. This aligner is valid for
+        GAUGE and DELTA metrics with numeric values. The value_type of the
+        output is DOUBLE.
+      ALIGN_COUNT_TRUE: Align the time series by returning the number of True
+        values in each alignment period. This aligner is valid for GAUGE
+        metrics with Boolean values. The value_type of the output is INT64.
+      ALIGN_COUNT_FALSE: Align the time series by returning the number of
+        False values in each alignment period. This aligner is valid for GAUGE
+        metrics with Boolean values. The value_type of the output is INT64.
+      ALIGN_FRACTION_TRUE: Align the time series by returning the ratio of the
+        number of True values to the total number of values in each alignment
+        period. This aligner is valid for GAUGE metrics with Boolean values.
+        The output value is in the range 0.0, 1.0 and has value_type DOUBLE.
+      ALIGN_PERCENTILE_99: Align the time series by using percentile
+        aggregation (https://en.wikipedia.org/wiki/Percentile). The resulting
+        data point in each alignment period is the 99th percentile of all data
+        points in the period. This aligner is valid for GAUGE and DELTA
+        metrics with distribution values. The output is a GAUGE metric with
+        value_type DOUBLE.
+      ALIGN_PERCENTILE_95: Align the time series by using percentile
+        aggregation (https://en.wikipedia.org/wiki/Percentile). The resulting
+        data point in each alignment period is the 95th percentile of all data
+        points in the period. This aligner is valid for GAUGE and DELTA
+        metrics with distribution values. The output is a GAUGE metric with
+        value_type DOUBLE.
+      ALIGN_PERCENTILE_50: Align the time series by using percentile
+        aggregation (https://en.wikipedia.org/wiki/Percentile). The resulting
+        data point in each alignment period is the 50th percentile of all data
+        points in the period. This aligner is valid for GAUGE and DELTA
+        metrics with distribution values. The output is a GAUGE metric with
+        value_type DOUBLE.
+      ALIGN_PERCENTILE_05: Align the time series by using percentile
+        aggregation (https://en.wikipedia.org/wiki/Percentile). The resulting
+        data point in each alignment period is the 5th percentile of all data
+        points in the period. This aligner is valid for GAUGE and DELTA
+        metrics with distribution values. The output is a GAUGE metric with
+        value_type DOUBLE.
       ALIGN_PERCENT_CHANGE: Align and convert to a percentage change. This
-        alignment is valid for gauge and delta metrics with numeric values.
-        This alignment conceptually computes the equivalent of "((current -
-        previous)/previous)*100" where previous value is determined based on
-        the alignmentPeriod. In the event that previous is 0 the calculated
-        value is infinity with the exception that if both (current - previous)
-        and previous are 0 the calculated value is 0. A 10 minute moving mean
-        is computed at each point of the time window prior to the above
-        calculation to smooth the metric and prevent false positives from very
-        short lived spikes. Only applicable for data that is >= 0. Any values
-        < 0 are treated as no data. While delta metrics are accepted by this
-        alignment special care should be taken that the values for the metric
-        will always be positive. The output is a gauge metric with value type
+        aligner is valid for GAUGE and DELTA metrics with numeric values. This
+        alignment returns ((current - previous)/previous) * 100, where the
+        value of previous is determined based on the alignment_period.If the
+        values of current and previous are both 0, then the returned value is
+        0. If only previous is 0, the returned value is infinity.A 10-minute
+        moving mean is computed at each point of the alignment period prior to
+        the above calculation to smooth the metric and prevent false positives
+        from very short-lived spikes. The moving mean is only applicable for
+        data whose values are >= 0. Any values < 0 are treated as a missing
+        datapoint, and are ignored. While DELTA metrics are accepted by this
+        alignment, special care should be taken that the values for the metric
+        will always be positive. The output is a GAUGE metric with value_type
         DOUBLE.
     """
     ALIGN_NONE = 0
@@ -796,21 +839,24 @@ class Option(_messages.Message):
 
 class PickTimeSeriesFilter(_messages.Message):
   r"""Describes a ranking-based time series filter. Each input time series is
-  ranked with an aligner. The filter lets through up to num_time_series time
-  series, selecting them based on the relative ranking.
+  ranked with an aligner. The filter will allow up to num_time_series time
+  series to pass through it, selecting them based on the relative ranking.For
+  example, if ranking_method is METHOD_MEAN,direction is BOTTOM, and
+  num_time_series is 3, then the 3 times series with the lowest mean values
+  will pass through the filter.
 
   Enums:
     DirectionValueValuesEnum: How to use the ranking to select time series
       that pass through the filter.
-    RankingMethodValueValuesEnum: rankingMethod is applied to each time series
-      independently to produce the value which will be used to compare the
-      time series to other time series.
+    RankingMethodValueValuesEnum: ranking_method is applied to each time
+      series independently to produce the value which will be used to compare
+      the time series to other time series.
 
   Fields:
     direction: How to use the ranking to select time series that pass through
       the filter.
-    numTimeSeries: How many time series to return.
-    rankingMethod: rankingMethod is applied to each time series independently
+    numTimeSeries: How many time series to allow to pass through the filter.
+    rankingMethod: ranking_method is applied to each time series independently
       to produce the value which will be used to compare the time series to
       other time series.
   """
@@ -820,21 +866,23 @@ class PickTimeSeriesFilter(_messages.Message):
     filter.
 
     Values:
-      DIRECTION_UNSPECIFIED: Not allowed in well-formed requests.
-      TOP: Pass the highest ranking inputs.
-      BOTTOM: Pass the lowest ranking inputs.
+      DIRECTION_UNSPECIFIED: Not allowed. You must specify a different
+        Direction if you specify a PickTimeSeriesFilter.
+      TOP: Pass the highest num_time_series ranking inputs.
+      BOTTOM: Pass the lowest num_time_series ranking inputs.
     """
     DIRECTION_UNSPECIFIED = 0
     TOP = 1
     BOTTOM = 2
 
   class RankingMethodValueValuesEnum(_messages.Enum):
-    r"""rankingMethod is applied to each time series independently to produce
+    r"""ranking_method is applied to each time series independently to produce
     the value which will be used to compare the time series to other time
     series.
 
     Values:
-      METHOD_UNSPECIFIED: Not allowed in well-formed requests.
+      METHOD_UNSPECIFIED: Not allowed. You must specify a different Method if
+        you specify a PickTimeSeriesFilter.
       METHOD_MEAN: Select the mean of all values.
       METHOD_MAX: Select the maximum value.
       METHOD_MIN: Select the minimum value.
@@ -1054,44 +1102,6 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
-class StatisticalTimeSeriesFilter(_messages.Message):
-  r"""A filter that ranks streams based on their statistical relation to other
-  streams in a request.
-
-  Enums:
-    RankingMethodValueValuesEnum: rankingMethod is applied to a set of time
-      series, and then the produced value for each individual time series is
-      used to compare a given time series to others. These are methods that
-      cannot be applied stream-by-stream, but rather require the full context
-      of a request to evaluate time series.
-
-  Fields:
-    numTimeSeries: How many time series to output.
-    rankingMethod: rankingMethod is applied to a set of time series, and then
-      the produced value for each individual time series is used to compare a
-      given time series to others. These are methods that cannot be applied
-      stream-by-stream, but rather require the full context of a request to
-      evaluate time series.
-  """
-
-  class RankingMethodValueValuesEnum(_messages.Enum):
-    r"""rankingMethod is applied to a set of time series, and then the
-    produced value for each individual time series is used to compare a given
-    time series to others. These are methods that cannot be applied stream-by-
-    stream, but rather require the full context of a request to evaluate time
-    series.
-
-    Values:
-      METHOD_UNSPECIFIED: Not allowed in well-formed requests.
-      METHOD_CLUSTER_OUTLIER: Compute the outlier score of each stream.
-    """
-    METHOD_UNSPECIFIED = 0
-    METHOD_CLUSTER_OUTLIER = 1
-
-  numTimeSeries = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  rankingMethod = _messages.EnumField('RankingMethodValueValuesEnum', 2)
-
-
 class Text(_messages.Message):
   r"""A widget that displays textual content.
 
@@ -1182,13 +1192,11 @@ class TimeSeriesFilter(_messages.Message):
     filter: Required. The monitoring filter that identifies the metric types,
       resources, and projects to query.
     pickTimeSeriesFilter: Ranking based time series filter.
-    statisticalTimeSeriesFilter: Statistics based time series filter.
   """
 
   aggregation = _messages.MessageField('Aggregation', 1)
   filter = _messages.StringField(2)
   pickTimeSeriesFilter = _messages.MessageField('PickTimeSeriesFilter', 3)
-  statisticalTimeSeriesFilter = _messages.MessageField('StatisticalTimeSeriesFilter', 4)
 
 
 class TimeSeriesFilterRatio(_messages.Message):
@@ -1202,14 +1210,12 @@ class TimeSeriesFilterRatio(_messages.Message):
     pickTimeSeriesFilter: Ranking based time series filter.
     secondaryAggregation: Apply a second aggregation after the ratio is
       computed.
-    statisticalTimeSeriesFilter: Statistics based time series filter.
   """
 
   denominator = _messages.MessageField('RatioPart', 1)
   numerator = _messages.MessageField('RatioPart', 2)
   pickTimeSeriesFilter = _messages.MessageField('PickTimeSeriesFilter', 3)
   secondaryAggregation = _messages.MessageField('Aggregation', 4)
-  statisticalTimeSeriesFilter = _messages.MessageField('StatisticalTimeSeriesFilter', 5)
 
 
 class TimeSeriesQuery(_messages.Message):

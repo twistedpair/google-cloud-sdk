@@ -270,11 +270,14 @@ used to create the tag must be from the same organization.
           }
 
     def Create(self, request, global_params=None):
-      r"""Alpha feature.
-Creates an entry. Currently only entries of 'FILESET' type can be created.
+      r"""Creates an entry. Only entries of 'FILESET' type or user-specified type can.
+be created.
+
 The user should enable the Data Catalog API in the project identified by
 the `parent` parameter (see [Data Catalog Resource Project]
 (/data-catalog/docs/concepts/resource-project) for more information).
+
+A maximum of 100,000 entries may be created per entry group.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesCreateRequest) input message
@@ -301,8 +304,7 @@ the `parent` parameter (see [Data Catalog Resource Project]
     )
 
     def Delete(self, request, global_params=None):
-      r"""Alpha feature.
-Deletes an existing entry. Only entries created through
+      r"""Deletes an existing entry. Only entries created through.
 CreateEntry
 method can be deleted.
 The user should enable the Data Catalog API in the project identified by
@@ -403,6 +405,33 @@ Callers must have following Google IAM permission
         supports_download=False,
     )
 
+    def List(self, request, global_params=None):
+      r"""Lists entries.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsEntriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1beta1ListEntriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries',
+        http_method=u'GET',
+        method_id=u'datacatalog.projects.locations.entryGroups.entries.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken', u'readMask'],
+        relative_path=u'v1beta1/{+parent}/entries',
+        request_field='',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsEntriesListRequest',
+        response_type_name=u'GoogleCloudDatacatalogV1beta1ListEntriesResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an existing entry.
 The user should enable the Data Catalog API in the project identified by
@@ -484,11 +513,14 @@ request.
           }
 
     def Create(self, request, global_params=None):
-      r"""Alpha feature.
-Creates an EntryGroup.
+      r"""Creates an EntryGroup.
+
 The user should enable the Data Catalog API in the project identified by
 the `parent` parameter (see [Data Catalog Resource Project]
 (/data-catalog/docs/concepts/resource-project) for more information).
+
+A maximum of 10,000 entry groups may be created per organization across all
+locations.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsCreateRequest) input message
@@ -515,8 +547,7 @@ the `parent` parameter (see [Data Catalog Resource Project]
     )
 
     def Delete(self, request, global_params=None):
-      r"""Alpha feature.
-Deletes an EntryGroup. Only entry groups that do not contain entries can be
+      r"""Deletes an EntryGroup. Only entry groups that do not contain entries can be.
 deleted. The user should enable the Data Catalog API in the project
 identified by the `name` parameter (see [Data Catalog Resource Project]
 (/data-catalog/docs/concepts/resource-project) for more information).
@@ -546,8 +577,7 @@ identified by the `name` parameter (see [Data Catalog Resource Project]
     )
 
     def Get(self, request, global_params=None):
-      r"""Alpha feature.
-Gets an EntryGroup.
+      r"""Gets an EntryGroup.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsGetRequest) input message
@@ -613,6 +643,36 @@ Callers must have following Google IAM permission
         request_field=u'getIamPolicyRequest',
         request_type_name=u'DatacatalogProjectsLocationsEntryGroupsGetIamPolicyRequest',
         response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an EntryGroup. The user should enable the Data Catalog API in the.
+project identified by the `entry_group.name` parameter (see [Data Catalog
+Resource Project] (/data-catalog/docs/concepts/resource-project) for more
+information).
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1beta1EntryGroup) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}',
+        http_method=u'PATCH',
+        method_id=u'datacatalog.projects.locations.entryGroups.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1beta1/{+name}',
+        request_field=u'googleCloudDatacatalogV1beta1EntryGroup',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsPatchRequest',
+        response_type_name=u'GoogleCloudDatacatalogV1beta1EntryGroup',
         supports_download=False,
     )
 

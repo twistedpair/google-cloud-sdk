@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/domains/",
   "protocol": "rest",
   "rootUrl": "https://domains.googleapis.com/",
+  "mtlsRootUrl": "https://domains.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://domains.googleapis.com/",
   "batchPath": "batch",

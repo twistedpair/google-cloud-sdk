@@ -1538,14 +1538,14 @@ class MethodMap(_messages.Message):
 class Operation(_messages.Message):
   r"""Represents an Operation resource.  Google Compute Engine has three
   Operation resources:  *
-  [Global](/compute/docs/reference/rest/latest/globalOperations) *
-  [Regional](/compute/docs/reference/rest/latest/regionOperations) *
-  [Zonal](/compute/docs/reference/rest/latest/zoneOperations)  You can use an
-  operation resource to manage asynchronous API requests. For more
+  [Global](/compute/docs/reference/rest/{$api_version}/globalOperations) *
+  [Regional](/compute/docs/reference/rest/{$api_version}/regionOperations) *
+  [Zonal](/compute/docs/reference/rest/{$api_version}/zoneOperations)  You can
+  use an operation resource to manage asynchronous API requests. For more
   information, read Handling API responses.  Operations can be global,
   regional or zonal.   - For global operations, use the globalOperations
   resource.  - For regional operations, use the regionOperations resource.  -
-  For zonal operations, use the zonalOperations resource.    For more
+  For zonal operations, use the zoneOperations resource.    For more
   information, read  Global, Regional, and Zonal Resources. (== resource_for
   {$api_version}.globalOperations ==) (== resource_for
   {$api_version}.regionOperations ==) (== resource_for

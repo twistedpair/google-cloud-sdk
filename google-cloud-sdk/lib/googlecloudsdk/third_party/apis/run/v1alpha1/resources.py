@@ -53,6 +53,28 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  NAMESPACES_CLOUDSCHEDULERSOURCES = (
+      'namespaces.cloudschedulersources',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/cloudschedulersources/'
+              '{cloudschedulersourcesId}',
+      },
+      [u'name'],
+      True
+  )
+  NAMESPACES_CLOUDSTORAGESOURCES = (
+      'namespaces.cloudstoragesources',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/cloudstoragesources/'
+              '{cloudstoragesourcesId}',
+      },
+      [u'name'],
+      True
+  )
   NAMESPACES_CONFIGURATIONS = (
       'namespaces.configurations',
       '{+name}',
@@ -103,16 +125,6 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
-  NAMESPACES_STORAGES = (
-      'namespaces.storages',
-      '{+name}',
-      {
-          '':
-              'namespaces/{namespacesId}/storages/{storagesId}',
-      },
-      [u'name'],
-      True
-  )
   NAMESPACES_TRIGGERS = (
       'namespaces.triggers',
       '{+name}',
@@ -155,6 +167,28 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'cloudpubsubsources/{cloudpubsubsourcesId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CLOUDSCHEDULERSOURCES = (
+      'projects.locations.cloudschedulersources',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'cloudschedulersources/{cloudschedulersourcesId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CLOUDSTORAGESOURCES = (
+      'projects.locations.cloudstoragesources',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'cloudstoragesources/{cloudstoragesourcesId}',
       },
       [u'name'],
       True
@@ -210,17 +244,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/services/'
               '{servicesId}',
-      },
-      [u'name'],
-      True
-  )
-  PROJECTS_LOCATIONS_STORAGES = (
-      'projects.locations.storages',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/storages/'
-              '{storagesId}',
       },
       [u'name'],
       True

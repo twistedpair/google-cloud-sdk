@@ -136,7 +136,8 @@ class TrainingCustomInputServerConfig(object):
                worker_machine_count=None,
                worker_image_uri=None,
                work_accelerator_type=None,
-               work_accelerator_count=None):
+               work_accelerator_count=None,
+               use_chief_in_tf_config=None):
     self.master_image_uri = master_image_uri
     self.master_machine_type = master_machine_type
     self.master_accelerator_type = master_accelerator_type
@@ -154,6 +155,7 @@ class TrainingCustomInputServerConfig(object):
     self.work_accelerator_count = work_accelerator_count
     self.runtime_version = runtime_version
     self.scale_tier = scale_tier
+    self.use_chief_in_tf_config = use_chief_in_tf_config
 
   def ValidateConfig(self):
     """Validate that custom config parameters are set correctly."""
@@ -169,28 +171,34 @@ class TrainingCustomInputServerConfig(object):
   def GetFieldMap(self):
     """Return a mapping of object fields to apitools message fields."""
     return {
-        'masterConfig': {'imageUri': self.master_image_uri,
-                         'acceleratorConfig':
-                             {'count': self.master_accelerator_count,
-                              'type': self.master_accelerator_type}
-                        },
+        'masterConfig': {
+            'imageUri': self.master_image_uri,
+            'acceleratorConfig': {
+                'count': self.master_accelerator_count,
+                'type': self.master_accelerator_type
+            }
+        },
         'masterType': self.master_machine_type,
         'parameterServerConfig': {
             'imageUri': self.parameter_image_uri,
-            'acceleratorConfig':
-                {'count': self.parameter_accelerator_count,
-                 'type': self.parameter_accelerator_type}
+            'acceleratorConfig': {
+                'count': self.parameter_accelerator_count,
+                'type': self.parameter_accelerator_type
+            }
         },
         'parameterServerCount': self.parameter_machine_count,
         'parameterServerType': self.parameter_machine_type,
-        'workerConfig': {'imageUri': self.worker_image_uri,
-                         'acceleratorConfig':
-                             {'count': self.work_accelerator_count,
-                              'type': self.work_accelerator_type},
-                         'tpuTfVersion': self.tpu_tf_version
-                        },
+        'workerConfig': {
+            'imageUri': self.worker_image_uri,
+            'acceleratorConfig': {
+                'count': self.work_accelerator_count,
+                'type': self.work_accelerator_type
+            },
+            'tpuTfVersion': self.tpu_tf_version
+        },
         'workerCount': self.worker_machine_count,
         'workerType': self.worker_machine_type,
+        'useChiefInTfConfig': self.use_chief_in_tf_config,
     }
 
   @classmethod
@@ -209,7 +217,6 @@ class TrainingCustomInputServerConfig(object):
         scale_tier=parsed_tier,
         runtime_version=args.runtime_version,
         master_machine_type=args.master_machine_type,
-
         master_image_uri=args.master_image_uri,
         master_accelerator_type=(args.master_accelerator.get('type')
                                  if args.master_accelerator else None),
@@ -218,8 +225,8 @@ class TrainingCustomInputServerConfig(object):
         parameter_machine_type=args.parameter_server_machine_type,
         parameter_machine_count=args.parameter_server_count,
         parameter_image_uri=args.parameter_server_image_uri,
-        parameter_accelerator_type=args.parameter_server_accelerator.get(
-            'type') if args.parameter_server_accelerator else None,
+        parameter_accelerator_type=args.parameter_server_accelerator.get('type')
+        if args.parameter_server_accelerator else None,
         parameter_accelerator_count=args.parameter_server_accelerator.get(
             'count') if args.parameter_server_accelerator else None,
         tpu_tf_version=args.tpu_tf_version if support_tpu_tf_version else None,
@@ -229,7 +236,8 @@ class TrainingCustomInputServerConfig(object):
         work_accelerator_type=(args.worker_accelerator.get('type')
                                if args.worker_accelerator else None),
         work_accelerator_count=(args.worker_accelerator.get('count')
-                                if args.worker_accelerator else None))
+                                if args.worker_accelerator else None),
+        use_chief_in_tf_config=args.use_chief_in_tf_config)
 
 
 def DataFormatFlagMap():

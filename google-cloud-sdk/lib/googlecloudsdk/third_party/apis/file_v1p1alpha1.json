@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/filestore/",
   "protocol": "rest",
   "rootUrl": "https://file.googleapis.com/",
+  "mtlsRootUrl": "https://file.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://file.googleapis.com/",
   "batchPath": "batch",
@@ -278,7 +279,6 @@
             "Not set.",
             "STANDARD tier. BASIC_HDD is the preferred term for this tier.",
             "PREMIUM tier. BASIC_SSD is the preferred term for this tier.",
-            "SCALE OUT tier.\nThis is a possibly temporary change for\ngo\/elastifile-filestore-hackathon.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_HDD is an alias for STANDARD Tier, offering economical\nperformance backed by Persistent Disk HDD.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_SSD is an alias for PREMIUM Tier, and offers improved\nperformance backed by Persistent Disk SSD.",
             "HIGH_SCALE instances offer larger capacity and professional\nperformance backed by Persistent Disk SSD."
@@ -288,7 +288,6 @@
             "TIER_UNSPECIFIED",
             "STANDARD",
             "PREMIUM",
-            "SCALE_OUT",
             "BASIC_HDD",
             "BASIC_SSD",
             "HIGH_SCALE_SSD"
@@ -581,7 +580,6 @@
             "Not set.",
             "STANDARD tier. BASIC_HDD is the preferred term for this tier.",
             "PREMIUM tier. BASIC_SSD is the preferred term for this tier.",
-            "SCALE OUT tier.\nThis is a possibly temporary change for\ngo\/elastifile-filestore-hackathon.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_HDD is an alias for STANDARD Tier, offering economical\nperformance backed by Persistent Disk HDD.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_SSD is an alias for PREMIUM Tier, and offers improved\nperformance backed by Persistent Disk SSD.",
             "HIGH_SCALE instances offer larger capacity and professional\nperformance backed by Persistent Disk SSD."
@@ -591,7 +589,6 @@
             "TIER_UNSPECIFIED",
             "STANDARD",
             "PREMIUM",
-            "SCALE_OUT",
             "BASIC_HDD",
             "BASIC_SSD",
             "HIGH_SCALE_SSD"
@@ -707,7 +704,6 @@
             "Not set.",
             "STANDARD tier. BASIC_HDD is the preferred term for this tier.",
             "PREMIUM tier. BASIC_SSD is the preferred term for this tier.",
-            "SCALE OUT tier.\nThis is a possibly temporary change for\ngo\/elastifile-filestore-hackathon.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_HDD is an alias for STANDARD Tier, offering economical\nperformance backed by Persistent Disk HDD.",
             "BASIC instances offer a maximum capacity of 63.9 TB.\nBASIC_SSD is an alias for PREMIUM Tier, and offers improved\nperformance backed by Persistent Disk SSD.",
             "HIGH_SCALE instances offer larger capacity and professional\nperformance backed by Persistent Disk SSD."
@@ -717,7 +713,6 @@
             "TIER_UNSPECIFIED",
             "STANDARD",
             "PREMIUM",
-            "SCALE_OUT",
             "BASIC_HDD",
             "BASIC_SSD",
             "HIGH_SCALE_SSD"

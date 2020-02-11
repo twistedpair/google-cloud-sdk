@@ -333,6 +333,9 @@ apis:
   datafusion:
     v1beta1:
       discovery_doc: datafusion_v1beta1.json
+  datamigration:
+    v1alpha2:
+      discovery_doc: datamigration_v1alpha2.json
   dataproc:
     v1:
       discovery_doc: dataproc_v1.json
@@ -633,6 +636,15 @@ apis:
         organizations.assets:
           path: organizations/{organizationsId}/assets/{assetsId}
       default: true
+    v1p1beta1:
+      discovery_doc: securitycenter_v1p1beta1.json
+      resources:
+        organizations.sources.findings:
+          path: organizations/{organizationsId}/sources/{sourcesId}/findings/{findingId}
+        organizations.assets:
+          path: organizations/{organizationsId}/assets/{assetsId}
+        organizations.notificationConfigs:
+          path: organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}
   serviceconsumermanagement:
     v1beta1:
       discovery_doc: serviceconsumermanagement_v1beta1.json

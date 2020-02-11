@@ -885,15 +885,18 @@ class ServicePerimeterConfig(_messages.Message):
       Perimeter restrictions. Deprecated. Must be set to a single wildcard
       "*".  The wildcard means that unless explicitly specified by
       "restricted_services" list, any service is treated as unrestricted.
-    vpcServiceRestriction: Alpha. Configuration for within Perimeter allowed
+    vpcAccessibleServices: Beta. Configuration for within Perimeter allowed
       APIs.
+    vpcServiceRestriction: Alpha. Configuration for within Perimeter allowed
+      APIs. Deprecated. The field had been renamed to vpc_accessible_services
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
   resources = _messages.StringField(2, repeated=True)
   restrictedServices = _messages.StringField(3, repeated=True)
   unrestrictedServices = _messages.StringField(4, repeated=True)
-  vpcServiceRestriction = _messages.MessageField('VpcServiceRestriction', 5)
+  vpcAccessibleServices = _messages.MessageField('VpcAccessibleServices', 5)
+  vpcServiceRestriction = _messages.MessageField('VpcServiceRestriction', 6)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1010,9 +1013,25 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class VpcAccessibleServices(_messages.Message):
+  r"""Specifies how APIs are allowed to communicate within the Service
+  Perimeter.
+
+  Fields:
+    allowedServices: The list of APIs usable within the Service Perimeter.
+      Must be empty unless 'enable_restriction' is True.
+    enableRestriction: Whether to restrict API calls within the Service
+      Perimeter to the list of APIs specified in 'allowed_services'.
+  """
+
+  allowedServices = _messages.StringField(1, repeated=True)
+  enableRestriction = _messages.BooleanField(2)
+
+
 class VpcServiceRestriction(_messages.Message):
   r"""Alpha. Specifies how APIs are allowed to communicate within the Service
-  Perimeter.
+  Perimeter. This message is DEPRECATED and had been renamed to
+  VpcAccessibleServices
 
   Fields:
     allowedServices: The list of APIs usable within the Service Perimeter.

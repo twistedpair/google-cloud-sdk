@@ -583,6 +583,8 @@ class ClusterUpdate(_messages.Message):
     desiredClusterTelemetry: The desired telemetry integration for the
       cluster.
     desiredDatabaseEncryption: Configuration of etcd encryption.
+    desiredDefaultSnatStatus: The desired status of whether to disable default
+      sNAT for this cluster.
     desiredImage: The desired name of the image to use for this node. This is
       used to create clusters using a custom image.
     desiredImageProject: The project containing the desired image to use for
@@ -652,25 +654,26 @@ class ClusterUpdate(_messages.Message):
   desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 3)
   desiredClusterTelemetry = _messages.MessageField('ClusterTelemetry', 4)
   desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 5)
-  desiredImage = _messages.StringField(6)
-  desiredImageProject = _messages.StringField(7)
-  desiredImageType = _messages.StringField(8)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 9)
-  desiredLocations = _messages.StringField(10, repeated=True)
-  desiredLoggingService = _messages.StringField(11)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 12)
-  desiredMasterVersion = _messages.StringField(13)
-  desiredMonitoringService = _messages.StringField(14)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 15)
-  desiredNodePoolId = _messages.StringField(16)
-  desiredNodeVersion = _messages.StringField(17)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 18)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 19)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 20)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 21)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 22)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 23)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 24)
+  desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 6)
+  desiredImage = _messages.StringField(7)
+  desiredImageProject = _messages.StringField(8)
+  desiredImageType = _messages.StringField(9)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 10)
+  desiredLocations = _messages.StringField(11, repeated=True)
+  desiredLoggingService = _messages.StringField(12)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 13)
+  desiredMasterVersion = _messages.StringField(14)
+  desiredMonitoringService = _messages.StringField(15)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 16)
+  desiredNodePoolId = _messages.StringField(17)
+  desiredNodeVersion = _messages.StringField(18)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 19)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 20)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 21)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 22)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 23)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 24)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 25)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1288,6 +1291,17 @@ class DatabaseEncryption(_messages.Message):
 
   keyName = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class DefaultSnatStatus(_messages.Message):
+  r"""DefaultSnatStatus contains the desired state of whether default sNAT
+  should be disabled on the cluster.
+
+  Fields:
+    disabled: Disables cluster default sNAT rules.
+  """
+
+  disabled = _messages.BooleanField(1)
 
 
 class DnsCacheConfig(_messages.Message):

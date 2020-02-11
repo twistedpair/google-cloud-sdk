@@ -37,8 +37,14 @@ class AcceleratorConfig(_messages.Message):
       NVIDIA_TESLA_V100: Accelerator type is Nvidia Tesla V100.
       NVIDIA_TESLA_P4: Accelerator type is Nvidia Tesla P4.
       NVIDIA_TESLA_T4: Accelerator type is Nvidia Tesla T4.
-      TPU_V2: Accelerator type is TPU V2.
-      TPU_V3: Accelerator type is TPU V3.
+      NVIDIA_TESLA_T4_VWS: Accelerator type is NVIDIA Tesla T4 Virtual
+        Workstations.
+      NVIDIA_TESLA_P100_VWS: Accelerator type is NVIDIA Tesla P100 Virtual
+        Workstations.
+      NVIDIA_TESLA_P4_VWS: Accelerator type is NVIDIA Tesla P4 Virtual
+        Workstations.
+      TPU_V2: (Coming soon) Accelerator type is TPU V2.
+      TPU_V3: (Coming soon) Accelerator type is TPU V3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -46,8 +52,11 @@ class AcceleratorConfig(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
+    NVIDIA_TESLA_T4_VWS = 6
+    NVIDIA_TESLA_P100_VWS = 7
+    NVIDIA_TESLA_P4_VWS = 8
+    TPU_V2 = 9
+    TPU_V3 = 10
 
   coreCount = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -1172,8 +1181,14 @@ class SetInstanceAcceleratorRequest(_messages.Message):
       NVIDIA_TESLA_V100: Accelerator type is Nvidia Tesla V100.
       NVIDIA_TESLA_P4: Accelerator type is Nvidia Tesla P4.
       NVIDIA_TESLA_T4: Accelerator type is Nvidia Tesla T4.
-      TPU_V2: Accelerator type is TPU V2.
-      TPU_V3: Accelerator type is TPU V3.
+      NVIDIA_TESLA_T4_VWS: Accelerator type is NVIDIA Tesla T4 Virtual
+        Workstations.
+      NVIDIA_TESLA_P100_VWS: Accelerator type is NVIDIA Tesla P100 Virtual
+        Workstations.
+      NVIDIA_TESLA_P4_VWS: Accelerator type is NVIDIA Tesla P4 Virtual
+        Workstations.
+      TPU_V2: (Coming soon) Accelerator type is TPU V2.
+      TPU_V3: (Coming soon) Accelerator type is TPU V3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -1181,8 +1196,11 @@ class SetInstanceAcceleratorRequest(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
+    NVIDIA_TESLA_T4_VWS = 6
+    NVIDIA_TESLA_P100_VWS = 7
+    NVIDIA_TESLA_P4_VWS = 8
+    TPU_V2 = 9
+    TPU_V3 = 10
 
   coreCount = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

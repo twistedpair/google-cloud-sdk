@@ -518,11 +518,6 @@ def AddTier(parser, is_patch=False):
                'available here: https://cloud.google.com/sql/pricing.')
   if is_patch:
     help_text += ' WARNING: Instance will be restarted.'
-  # TODO(b/122660263): Remove when V1 instances are no longer supported.
-  # V1 deprecation notice.
-  help_text += ('\n\nIMPORTANT: First Generation instances are deprecated. '
-                'If you\'re considering any First Generation tiers, we '
-                'recommend using Second Generation instead.')
 
   parser.add_argument('--tier', '-t', required=False, help=help_text)
 

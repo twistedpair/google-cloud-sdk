@@ -1217,7 +1217,14 @@ def ExportResource(resource,
     details: str, Extra details appended to the message. Keep it succinct.
     failed: str, Failure message.
   """
-  _PrintResourceChange('export', resource, kind, is_async, details, failed)
+  _PrintResourceChange(
+      'export',
+      resource,
+      kind,
+      is_async,
+      details,
+      failed,
+      operation_past_tense='exported')
 
 
 # pylint: disable=invalid-name

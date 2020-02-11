@@ -31,25 +31,9 @@ def AddUnRegisterCommonArgs(parser):
   Args:
     parser: an argparse.ArgumentParser, to which the common flags will be added
   """
-  parser.add_argument(
-      '--kubeconfig',
-      type=str,
-      help=textwrap.dedent("""\
-            The kubeconfig file containing an entry for the cluster. Defaults to
-            $KUBECONFIG if it is set in the environment, otherwise defaults to
-            to $HOME/.kube/config.
-          """),
-  )
   # A top level Cluster identifier mutually exclusive group.
   group = parser.add_group(
       mutex=True, required=True, help='Cluster identifier.')
-  group.add_argument(
-      '--context',
-      type=str,
-      help=textwrap.dedent("""\
-        The context in the kubeconfig file that specifies the cluster.
-      """)
-  )
   group.add_argument(
       '--gke-uri',
       type=str,
@@ -71,6 +55,27 @@ def AddUnRegisterCommonArgs(parser):
           The location/name of the GKE cluster. The location can be a zone or
           a region for e.g `us-central1-a/my-cluster`.
         """),
+  )
+  # A group with context and kubeconfig flags.
+  context_group = group.add_group(help='Non-GKE cluster identifier.')
+  context_group.add_argument(
+      '--context',
+      type=str,
+      required=True,
+      help=textwrap.dedent("""\
+        The cluster context as it appears in the kubeconfig file. You can get
+        this value from the command line by running command:
+        `kubectl config current-context`.
+      """),
+  )
+  context_group.add_argument(
+      '--kubeconfig',
+      type=str,
+      help=textwrap.dedent("""\
+            The kubeconfig file containing an entry for the cluster. Defaults to
+            $KUBECONFIG if it is set in the environment, otherwise defaults to
+            $HOME/.kube/config.
+          """),
   )
 
 

@@ -1245,6 +1245,12 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
     guestAccelerators: Specifies accelerator type and count.
     localSsds: Specifies amount of local ssd to reserve with each instance.
       The type of disk is local-ssd.
+    longTermRelease: Compute Engine Long Term Release. When specified, VMs
+      that have this policy become long term release (internal: stable fleet)
+      VMs.  For all VM shapes, this should result in fewer disruptions due to
+      software updates and greater predictability via 1 week extended
+      notifications.  For GPU VMs, this should also result in an 2 week uptime
+      guarantee. See go/stable-fleet-gpus-design for more details.
     machineType: Specifies type of machine (name only) which has fixed number
       of vCPUs and fixed amount of memory. This also includes specifying
       custom machine type following custom-NUMBER_OF_CPUS-AMOUNT_OF_MEMORY
@@ -1254,8 +1260,9 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
 
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   localSsds = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk', 2, repeated=True)
-  machineType = _messages.StringField(3)
-  minCpuPlatform = _messages.StringField(4)
+  longTermRelease = _messages.BooleanField(3)
+  machineType = _messages.StringField(4)
+  minCpuPlatform = _messages.StringField(5)
 
 
 class AllocationSpecificSKUReservation(_messages.Message):
@@ -1745,13 +1752,13 @@ class AuthorizationLoggingOptions(_messages.Message):
 class Autoscaler(_messages.Message):
   r"""Represents an Autoscaler resource.  Google Compute Engine has two
   Autoscaler resources:  *
-  [Global](/compute/docs/reference/rest/latest/autoscalers) *
-  [Regional](/compute/docs/reference/rest/latest/regionAutoscalers)  Use
-  autoscalers to automatically add or delete instances from a managed instance
-  group according to your defined autoscaling policy. For more information,
-  read Autoscaling Groups of Instances.  For zonal managed instance groups
-  resource, use the autoscaler resource.  For regional managed instance
-  groups, use the regionAutoscalers resource. (== resource_for
+  [Global](/compute/docs/reference/rest/{$api_version}/autoscalers) *
+  [Regional](/compute/docs/reference/rest/{$api_version}/regionAutoscalers)
+  Use autoscalers to automatically add or delete instances from a managed
+  instance group according to your defined autoscaling policy. For more
+  information, read Autoscaling Groups of Instances.  For zonal managed
+  instance groups resource, use the autoscaler resource.  For regional managed
+  instance groups, use the regionAutoscalers resource. (== resource_for
   {$api_version}.autoscalers ==) (== resource_for
   {$api_version}.regionAutoscalers ==)
 
@@ -3033,9 +3040,9 @@ class BackendService(_messages.Message):
   configuration values for Google Cloud Platform load balancing services.
   Backend services in Google Compute Engine can be either regionally or
   globally scoped.  *
-  [Global](/compute/docs/reference/rest/latest/backendServices) *
-  [Regional](/compute/docs/reference/rest/latest/regionBackendServices)  For
-  more information, read Backend Services.  (== resource_for
+  [Global](/compute/docs/reference/rest/{$api_version}/backendServices) * [Reg
+  ional](/compute/docs/reference/rest/{$api_version}/regionBackendServices)
+  For more information, read Backend Services.  (== resource_for
   {$api_version}.backendService ==)
 
   Enums:
@@ -3071,7 +3078,7 @@ class BackendService(_messages.Message):
       RING_HASH, session affinity settings will not take effect.
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends.  Possible values are HTTP, HTTPS, HTTP2, TCP,
-      SSL, or UDP, depending on the chosen load balancer or Traffic Director
+      SSL, or UDP. depending on the chosen load balancer or Traffic Director
       configuration. Refer to the documentation for the load balancer or for
       Traffic Director for more information.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
@@ -3201,7 +3208,7 @@ class BackendService(_messages.Message):
       when the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load
       Blaancing).
     protocol: The protocol this BackendService uses to communicate with
-      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP,
+      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP.
       depending on the chosen load balancer or Traffic Director configuration.
       Refer to the documentation for the load balancer or for Traffic Director
       for more information.
@@ -3298,7 +3305,7 @@ class BackendService(_messages.Message):
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""The protocol this BackendService uses to communicate with backends.
-    Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP, depending on the
+    Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP. depending on the
     chosen load balancer or Traffic Director configuration. Refer to the
     documentation for the load balancer or for Traffic Director for more
     information.
@@ -4232,6 +4239,44 @@ class Binding(_messages.Message):
   condition = _messages.MessageField('Expr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
+
+
+class BulkInsertInstanceResource(_messages.Message):
+  r"""A BulkInsertInstanceResource object.
+
+  Fields:
+    count: The maximum number of instances to create.
+    excludedZones: List of zones to exclude for regional requests.
+    instance: A Instance attribute.
+    minCount: The minimum number of instances to create. If no min_count is
+      specified then count is used as the default value. If min_count
+      instances cannot be created, then no instances will be created.
+    namePattern: Instance name pattern. Name pattern includes a parameter to
+      specify the auto-incrementing portion of the name. For example:
+      name_pattern = inst-{index:04d} The {index:04d} is replaced with a four
+      character numeric index. The number (04, in this case) specifies the
+      number of characters (min: 4). In this example, you'll get instances
+      named: inst-0000, inst-0001, inst-0002, ... If instances exist with this
+      pattern, the index of the first instance will begin numbering after the
+      maximum existing index.
+    predefinedNames: List of predefined names. The number of names provided
+      must be equal to count.
+    sourceInstanceTemplate: Specifies the instance template from which to
+      create the instance. This field is optional. This field is optional. It
+      can be a full or partial URL. For example, the following are all valid
+      URLs to an instance template:   - https://www.googleapis.com/compute/v1/
+      projects/project/global/instanceTemplates/instanceTemplate  -
+      projects/project/global/instanceTemplates/instanceTemplate  -
+      global/instanceTemplates/instanceTemplate
+  """
+
+  count = _messages.IntegerField(1)
+  excludedZones = _messages.StringField(2, repeated=True)
+  instance = _messages.MessageField('Instance', 3)
+  minCount = _messages.IntegerField(4)
+  namePattern = _messages.StringField(5)
+  predefinedNames = _messages.StringField(6, repeated=True)
+  sourceInstanceTemplate = _messages.StringField(7)
 
 
 class CacheInvalidationRule(_messages.Message):
@@ -9158,7 +9203,7 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests. Acceptable values are 0 to
       500, inclusive. (Default: 500)
-    order_by: Sorts list results by a certain order. By default, results are
+    orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
       using orderBy="creationTimestamp desc". This sorts results based on the
@@ -9176,7 +9221,7 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
   filter = _messages.StringField(1)
   instanceGroupManager = _messages.StringField(2, required=True)
   maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  order_by = _messages.StringField(4)
+  orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   zone = _messages.StringField(7, required=True)
@@ -10208,6 +10253,32 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
   project = _messages.StringField(4, required=True)
   requestId = _messages.StringField(5)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputeInstancesBulkInsertRequest(_messages.Message):
+  r"""A ComputeInstancesBulkInsertRequest object.
+
+  Fields:
+    bulkInsertInstanceResource: A BulkInsertInstanceResource resource to be
+      passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  bulkInsertInstanceResource = _messages.MessageField('BulkInsertInstanceResource', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstancesDeleteAccessConfigRequest(_messages.Message):
@@ -14543,7 +14614,7 @@ class ComputeProjectsGetXpnResourcesRequest(_messages.Message):
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests. Acceptable values are 0 to
       500, inclusive. (Default: 500)
-    order_by: Sorts list results by a certain order. By default, results are
+    orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
       using orderBy="creationTimestamp desc". This sorts results based on the
@@ -14559,7 +14630,7 @@ class ComputeProjectsGetXpnResourcesRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  order_by = _messages.StringField(3)
+  orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
 
@@ -14589,7 +14660,7 @@ class ComputeProjectsListXpnHostsRequest(_messages.Message):
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests. Acceptable values are 0 to
       500, inclusive. (Default: 500)
-    order_by: Sorts list results by a certain order. By default, results are
+    orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
       using orderBy="creationTimestamp desc". This sorts results based on the
@@ -14607,7 +14678,7 @@ class ComputeProjectsListXpnHostsRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  order_by = _messages.StringField(3)
+  orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   projectsListXpnHostsRequest = _messages.MessageField('ProjectsListXpnHostsRequest', 6)
@@ -16660,7 +16731,7 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests. Acceptable values are 0 to
       500, inclusive. (Default: 500)
-    order_by: Sorts list results by a certain order. By default, results are
+    orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
       using orderBy="creationTimestamp desc". This sorts results based on the
@@ -16678,7 +16749,7 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
   filter = _messages.StringField(1)
   instanceGroupManager = _messages.StringField(2, required=True)
   maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  order_by = _messages.StringField(4)
+  orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   region = _messages.StringField(7, required=True)
@@ -17229,6 +17300,32 @@ class ComputeRegionInstanceGroupsTestIamPermissionsRequest(_messages.Message):
   region = _messages.StringField(2, required=True)
   resource = _messages.StringField(3, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
+class ComputeRegionInstancesBulkInsertRequest(_messages.Message):
+  r"""A ComputeRegionInstancesBulkInsertRequest object.
+
+  Fields:
+    bulkInsertInstanceResource: A BulkInsertInstanceResource resource to be
+      passed as the request body.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  bulkInsertInstanceResource = _messages.MessageField('BulkInsertInstanceResource', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeRegionNetworkEndpointGroupsDeleteRequest(_messages.Message):
@@ -23105,15 +23202,17 @@ class DeprecationStatus(_messages.Message):
 
 class Disk(_messages.Message):
   r"""Represents a Persistent Disk resource.  Google Compute Engine has two
-  Disk resources:  * [Global](/compute/docs/reference/rest/latest/disks) *
-  [Regional](/compute/docs/reference/rest/latest/regionDisks)  Persistent
-  disks are required for running your VM instances. Create both boot and non-
-  boot (data) persistent disks. For more information, read Persistent Disks.
-  For more storage options, read Storage options.  The disks resource
-  represents a zonal persistent disk. For more information, read Zonal
-  persistent disks.  The regionDisks resource represents a regional persistent
-  disk. For more information, read  Regional resources. (== resource_for
-  {$api_version}.disks ==) (== resource_for {$api_version}.regionDisks ==)
+  Disk resources:  *
+  [Global](/compute/docs/reference/rest/{$api_version}/disks) *
+  [Regional](/compute/docs/reference/rest/{$api_version}/regionDisks)
+  Persistent disks are required for running your VM instances. Create both
+  boot and non-boot (data) persistent disks. For more information, read
+  Persistent Disks. For more storage options, read Storage options.  The disks
+  resource represents a zonal persistent disk. For more information, read
+  Zonal persistent disks.  The regionDisks resource represents a regional
+  persistent disk. For more information, read  Regional resources. (==
+  resource_for {$api_version}.disks ==) (== resource_for
+  {$api_version}.regionDisks ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of disk creation.
@@ -23731,9 +23830,10 @@ class DiskMoveRequest(_messages.Message):
 
 class DiskType(_messages.Message):
   r"""Represents a Disk Type resource.  Google Compute Engine has two Disk
-  Type resources:  * [Global](/compute/docs/reference/rest/latest/diskTypes) *
-  [Regional](/compute/docs/reference/rest/latest/regionDiskTypes)  You can
-  choose from a variety of disk types based on your needs. For more
+  Type resources:  *
+  [Global](/compute/docs/reference/rest/{$api_version}/diskTypes) *
+  [Regional](/compute/docs/reference/rest/{$api_version}/regionDiskTypes)  You
+  can choose from a variety of disk types based on your needs. For more
   information, read Storage options.  The diskTypes resource represents disk
   types for a zonal persistent disk. For more information, read Zonal
   persistent disks.  The regionDiskTypes resource represents disk types for a
@@ -25248,8 +25348,8 @@ class FixedOrPercent(_messages.Message):
 class ForwardingRule(_messages.Message):
   r"""Represents a Forwarding Rule resource.  Forwarding rule resources in GCP
   can be either regional or global in scope:  *
-  [Global](/compute/docs/reference/rest/latest/globalForwardingRules) *
-  [Regional](/compute/docs/reference/rest/latest/forwardingRules)  A
+  [Global](/compute/docs/reference/rest/{$api_version}/globalForwardingRules)
+  * [Regional](/compute/docs/reference/rest/{$api_version}/forwardingRules)  A
   forwarding rule and its corresponding IP address represent the frontend
   configuration of a Google Cloud Platform load balancer. Forwarding rules can
   also reference target instances and Cloud VPN Classic gateways
@@ -25278,7 +25378,7 @@ class ForwardingRule(_messages.Message):
       balancers: HTTP(S), SSL Proxy, TCP Proxy, and Network TCP/UDP     -
       INTERNAL is used for:   - Protocol forwarding to VMs from an internal IP
       address  - Internal TCP/UDP load balancers    - INTERNAL_MANAGED is used
-      for:   - Internal HTTP(S) load balancers    - >INTERNAL_SELF_MANAGED is
+      for:   - Internal HTTP(S) load balancers    - INTERNAL_SELF_MANAGED is
       used for:   - Traffic Director      For more information about
       forwarding rules, refer to Forwarding rule concepts.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
@@ -25373,7 +25473,7 @@ class ForwardingRule(_messages.Message):
       SSL Proxy, TCP Proxy, and Network TCP/UDP     - INTERNAL is used for:
       - Protocol forwarding to VMs from an internal IP address  - Internal
       TCP/UDP load balancers    - INTERNAL_MANAGED is used for:   - Internal
-      HTTP(S) load balancers    - >INTERNAL_SELF_MANAGED is used for:   -
+      HTTP(S) load balancers    - INTERNAL_SELF_MANAGED is used for:   -
       Traffic Director      For more information about forwarding rules, refer
       to Forwarding rule concepts.
     metadataFilters: Opaque filter criteria used by Loadbalancer to restrict
@@ -25513,7 +25613,7 @@ class ForwardingRule(_messages.Message):
     and Network TCP/UDP     - INTERNAL is used for:   - Protocol forwarding to
     VMs from an internal IP address  - Internal TCP/UDP load balancers    -
     INTERNAL_MANAGED is used for:   - Internal HTTP(S) load balancers    -
-    >INTERNAL_SELF_MANAGED is used for:   - Traffic Director      For more
+    INTERNAL_SELF_MANAGED is used for:   - Traffic Director      For more
     information about forwarding rules, refer to Forwarding rule concepts.
 
     Values:
@@ -25999,6 +26099,68 @@ class ForwardingRulesScopedList(_messages.Message):
 
   forwardingRules = _messages.MessageField('ForwardingRule', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class GRPCHealthCheck(_messages.Message):
+  r"""A GRPCHealthCheck object.
+
+  Enums:
+    PortSpecificationValueValuesEnum: Specifies how port is selected for
+      health checking, can be one of following values: USE_FIXED_PORT: The
+      port number in port is used for health checking. USE_NAMED_PORT: The
+      portName is used for health checking. USE_SERVING_PORT: For
+      NetworkEndpointGroup, the port specified for each network endpoint is
+      used for health checking. For other backends, the port or named port
+      specified in the Backend Service is used for health checking.   If not
+      specified, gRPC health check follows behavior specified in port and
+      portName fields.
+
+  Fields:
+    grpcServiceName: The gRPC service name for the health check. This field is
+      optional. The value of grpc_service_name has the following meanings by
+      convention: - Empty service_name means the overall status of all
+      services at the backend. - Non-empty service_name means the health of
+      that gRPC service, as defined by the owner of the service. The
+      grpc_service_name can only be ASCII.
+    port: The port number for the health check request. Must be specified if
+      port_name and port_specification are not set or if port_specification is
+      USE_FIXED_PORT. Valid values are 1 through 65535.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence. The port_name
+      should conform to RFC1035.
+    portSpecification: Specifies how port is selected for health checking, can
+      be one of following values: USE_FIXED_PORT: The port number in port is
+      used for health checking. USE_NAMED_PORT: The portName is used for
+      health checking. USE_SERVING_PORT: For NetworkEndpointGroup, the port
+      specified for each network endpoint is used for health checking. For
+      other backends, the port or named port specified in the Backend Service
+      is used for health checking.   If not specified, gRPC health check
+      follows behavior specified in port and portName fields.
+  """
+
+  class PortSpecificationValueValuesEnum(_messages.Enum):
+    r"""Specifies how port is selected for health checking, can be one of
+    following values: USE_FIXED_PORT: The port number in port is used for
+    health checking. USE_NAMED_PORT: The portName is used for health checking.
+    USE_SERVING_PORT: For NetworkEndpointGroup, the port specified for each
+    network endpoint is used for health checking. For other backends, the port
+    or named port specified in the Backend Service is used for health
+    checking.   If not specified, gRPC health check follows behavior specified
+    in port and portName fields.
+
+    Values:
+      USE_FIXED_PORT: <no description>
+      USE_NAMED_PORT: <no description>
+      USE_SERVING_PORT: <no description>
+    """
+    USE_FIXED_PORT = 0
+    USE_NAMED_PORT = 1
+    USE_SERVING_PORT = 2
+
+  grpcServiceName = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(3)
+  portSpecification = _messages.EnumField('PortSpecificationValueValuesEnum', 4)
 
 
 class GlobalNetworkEndpointGroupsAttachEndpointsRequest(_messages.Message):
@@ -26490,13 +26652,13 @@ class HTTPSHealthCheck(_messages.Message):
 class HealthCheck(_messages.Message):
   r"""Represents a Health Check resource.  Google Compute Engine has two
   Health Check resources:  *
-  [Global](/compute/docs/reference/rest/latest/healthChecks) *
-  [Regional](/compute/docs/reference/rest/latest/regionHealthChecks)  Internal
-  HTTP(S) load balancers use regional health checks. All other types of GCP
-  load balancers and managed instance group auto-healing use global health
-  checks. For more information, read Health Check Concepts.  To perform health
-  checks on network load balancers, you must use either httpHealthChecks or
-  httpsHealthChecks.
+  [Global](/compute/docs/reference/rest/{$api_version}/healthChecks) *
+  [Regional](/compute/docs/reference/rest/{$api_version}/regionHealthChecks)
+  Internal HTTP(S) load balancers use regional health checks. All other types
+  of GCP load balancers and managed instance group auto-healing use global
+  health checks. For more information, read Health Check Concepts.  To perform
+  health checks on network load balancers, you must use either
+  httpHealthChecks or httpsHealthChecks.
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
@@ -26510,6 +26672,7 @@ class HealthCheck(_messages.Message):
     creationTimestamp: [Output Only] Creation timestamp in 3339 text format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    grpcHealthCheck: A GRPCHealthCheck attribute.
     healthyThreshold: A so-far unhealthy instance will be marked healthy after
       this many consecutive successes. The default value is 2.
     http2HealthCheck: A HTTP2HealthCheck attribute.
@@ -26552,6 +26715,7 @@ class HealthCheck(_messages.Message):
     field.
 
     Values:
+      GRPC: <no description>
       HTTP: <no description>
       HTTP2: <no description>
       HTTPS: <no description>
@@ -26560,34 +26724,36 @@ class HealthCheck(_messages.Message):
       TCP: <no description>
       UDP: <no description>
     """
-    HTTP = 0
-    HTTP2 = 1
-    HTTPS = 2
-    INVALID = 3
-    SSL = 4
-    TCP = 5
-    UDP = 6
+    GRPC = 0
+    HTTP = 1
+    HTTP2 = 2
+    HTTPS = 3
+    INVALID = 4
+    SSL = 5
+    TCP = 6
+    UDP = 7
 
   checkIntervalSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
-  healthyThreshold = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  http2HealthCheck = _messages.MessageField('HTTP2HealthCheck', 5)
-  httpHealthCheck = _messages.MessageField('HTTPHealthCheck', 6)
-  httpsHealthCheck = _messages.MessageField('HTTPSHealthCheck', 7)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default=u'compute#healthCheck')
-  logConfig = _messages.MessageField('HealthCheckLogConfig', 10)
-  name = _messages.StringField(11)
-  region = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  selfLinkWithId = _messages.StringField(14)
-  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 15)
-  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 16)
-  timeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  type = _messages.EnumField('TypeValueValuesEnum', 18)
-  udpHealthCheck = _messages.MessageField('UDPHealthCheck', 19)
-  unhealthyThreshold = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  grpcHealthCheck = _messages.MessageField('GRPCHealthCheck', 4)
+  healthyThreshold = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  http2HealthCheck = _messages.MessageField('HTTP2HealthCheck', 6)
+  httpHealthCheck = _messages.MessageField('HTTPHealthCheck', 7)
+  httpsHealthCheck = _messages.MessageField('HTTPSHealthCheck', 8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default=u'compute#healthCheck')
+  logConfig = _messages.MessageField('HealthCheckLogConfig', 11)
+  name = _messages.StringField(12)
+  region = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  selfLinkWithId = _messages.StringField(15)
+  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 16)
+  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 17)
+  timeoutSec = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
+  udpHealthCheck = _messages.MessageField('UDPHealthCheck', 20)
+  unhealthyThreshold = _messages.IntegerField(21, variant=_messages.Variant.INT32)
 
 
 class HealthCheckList(_messages.Message):
@@ -37234,10 +37400,12 @@ class NodeGroupNode(_messages.Message):
   r"""A NodeGroupNode object.
 
   Enums:
+    CpuOvercommitTypeValueValuesEnum: CPU overcommit.
     StatusValueValuesEnum:
 
   Fields:
     accelerators: Accelerators for this node.
+    cpuOvercommitType: CPU overcommit.
     disks: Local disk configurations.
     instances: Instances scheduled on this node.
     name: The name of the node.
@@ -37246,6 +37414,18 @@ class NodeGroupNode(_messages.Message):
     serverId: Server ID associated with this node.
     status: A StatusValueValuesEnum attribute.
   """
+
+  class CpuOvercommitTypeValueValuesEnum(_messages.Enum):
+    r"""CPU overcommit.
+
+    Values:
+      CPU_OVERCOMMIT_TYPE_UNSPECIFIED: <no description>
+      ENABLED: <no description>
+      NONE: <no description>
+    """
+    CPU_OVERCOMMIT_TYPE_UNSPECIFIED = 0
+    ENABLED = 1
+    NONE = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""StatusValueValuesEnum enum type.
@@ -37264,13 +37444,14 @@ class NodeGroupNode(_messages.Message):
     REPAIRING = 4
 
   accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
-  disks = _messages.MessageField('LocalDisk', 2, repeated=True)
-  instances = _messages.StringField(3, repeated=True)
-  name = _messages.StringField(4)
-  nodeType = _messages.StringField(5)
-  serverBinding = _messages.MessageField('ServerBinding', 6)
-  serverId = _messages.StringField(7)
-  status = _messages.EnumField('StatusValueValuesEnum', 8)
+  cpuOvercommitType = _messages.EnumField('CpuOvercommitTypeValueValuesEnum', 2)
+  disks = _messages.MessageField('LocalDisk', 3, repeated=True)
+  instances = _messages.StringField(4, repeated=True)
+  name = _messages.StringField(5)
+  nodeType = _messages.StringField(6)
+  serverBinding = _messages.MessageField('ServerBinding', 7)
+  serverId = _messages.StringField(8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
 
 
 class NodeGroupsAddNodesRequest(_messages.Message):
@@ -37549,9 +37730,10 @@ class NodeTemplate(_messages.Message):
   r"""Represent a sole-tenant Node Template resource.  You can use a template
   to define properties for nodes in a node group. For more information, read
   Creating node groups and instances. (== resource_for
-  {$api_version}.nodeTemplates ==) (== NextID: 18 ==)
+  {$api_version}.nodeTemplates ==) (== NextID: 19 ==)
 
   Enums:
+    CpuOvercommitTypeValueValuesEnum: CPU overcommit.
     StatusValueValuesEnum: [Output Only] The status of the node template. One
       of the following values: CREATING, READY, and DELETING.
 
@@ -37561,6 +37743,7 @@ class NodeTemplate(_messages.Message):
 
   Fields:
     accelerators: A AcceleratorConfig attribute.
+    cpuOvercommitType: CPU overcommit.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -37600,6 +37783,18 @@ class NodeTemplate(_messages.Message):
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
   """
+
+  class CpuOvercommitTypeValueValuesEnum(_messages.Enum):
+    r"""CPU overcommit.
+
+    Values:
+      CPU_OVERCOMMIT_TYPE_UNSPECIFIED: <no description>
+      ENABLED: <no description>
+      NONE: <no description>
+    """
+    CPU_OVERCOMMIT_TYPE_UNSPECIFIED = 0
+    ENABLED = 1
+    NONE = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the node template. One of the following
@@ -37644,21 +37839,22 @@ class NodeTemplate(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   accelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  disks = _messages.MessageField('LocalDisk', 4, repeated=True)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#nodeTemplate')
-  name = _messages.StringField(7)
-  nodeAffinityLabels = _messages.MessageField('NodeAffinityLabelsValue', 8)
-  nodeType = _messages.StringField(9)
-  nodeTypeFlexibility = _messages.MessageField('NodeTemplateNodeTypeFlexibility', 10)
-  region = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  selfLinkWithId = _messages.StringField(13)
-  serverBinding = _messages.MessageField('ServerBinding', 14)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  statusMessage = _messages.StringField(16)
+  cpuOvercommitType = _messages.EnumField('CpuOvercommitTypeValueValuesEnum', 2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  disks = _messages.MessageField('LocalDisk', 5, repeated=True)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#nodeTemplate')
+  name = _messages.StringField(8)
+  nodeAffinityLabels = _messages.MessageField('NodeAffinityLabelsValue', 9)
+  nodeType = _messages.StringField(10)
+  nodeTypeFlexibility = _messages.MessageField('NodeTemplateNodeTypeFlexibility', 11)
+  region = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  selfLinkWithId = _messages.StringField(14)
+  serverBinding = _messages.MessageField('ServerBinding', 15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  statusMessage = _messages.StringField(17)
 
 
 class NodeTemplateAggregatedList(_messages.Message):
@@ -38702,14 +38898,14 @@ class NotificationEndpointList(_messages.Message):
 class Operation(_messages.Message):
   r"""Represents an Operation resource.  Google Compute Engine has three
   Operation resources:  *
-  [Global](/compute/docs/reference/rest/latest/globalOperations) *
-  [Regional](/compute/docs/reference/rest/latest/regionOperations) *
-  [Zonal](/compute/docs/reference/rest/latest/zoneOperations)  You can use an
-  operation resource to manage asynchronous API requests. For more
+  [Global](/compute/docs/reference/rest/{$api_version}/globalOperations) *
+  [Regional](/compute/docs/reference/rest/{$api_version}/regionOperations) *
+  [Zonal](/compute/docs/reference/rest/{$api_version}/zoneOperations)  You can
+  use an operation resource to manage asynchronous API requests. For more
   information, read Handling API responses.  Operations can be global,
   regional or zonal.   - For global operations, use the globalOperations
   resource.  - For regional operations, use the regionOperations resource.  -
-  For zonal operations, use the zonalOperations resource.    For more
+  For zonal operations, use the zoneOperations resource.    For more
   information, read  Global, Regional, and Zonal Resources. (== resource_for
   {$api_version}.globalOperations ==) (== resource_for
   {$api_version}.regionOperations ==) (== resource_for
@@ -46056,7 +46252,7 @@ class SavedAttachedDisk(_messages.Message):
 
 
 class Scheduling(_messages.Message):
-  r"""Sets the scheduling options for an Instance. NextID: 9
+  r"""Sets the scheduling options for an Instance. NextID: 10
 
   Enums:
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
@@ -46079,10 +46275,17 @@ class Scheduling(_messages.Message):
     locationHint: An opaque location hint used to place the instance close to
       other resources. This field is for use by internal tools that use the
       public API.
+    longTermRelease: Compute Engine Long Term Release. When specified, VMs
+      that have this policy become long term release (internal: stable fleet)
+      VMs.  For all VM shapes, this should result in fewer disruptions due to
+      software updates and greater predictability via 1 week extended
+      notifications.  For GPU VMs, this should also result in an 2 week uptime
+      guarantee. See go/stable-fleet-gpus-design for more details.
     minNodeCpus: The minimum number of virtual CPUs this instance will consume
       when running on a sole-tenant node.
     nodeAffinities: A set of node affinity and anti-affinity configurations.
-      Refer to Configuring node affinity for more information.
+      Refer to Configuring node affinity for more information. Overrides
+      reservationAffinity.
     onHostMaintenance: Defines the maintenance behavior for this instance. For
       standard instances, the default behavior is MIGRATE. For preemptible
       instances, the default and only possible behavior is TERMINATE. For more
@@ -46108,10 +46311,11 @@ class Scheduling(_messages.Message):
   automaticRestart = _messages.BooleanField(1)
   latencyTolerant = _messages.BooleanField(2)
   locationHint = _messages.StringField(3)
-  minNodeCpus = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 5, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 6)
-  preemptible = _messages.BooleanField(7)
+  longTermRelease = _messages.BooleanField(4)
+  minNodeCpus = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 6, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 7)
+  preemptible = _messages.BooleanField(8)
 
 
 class SchedulingNodeAffinity(_messages.Message):
@@ -47367,15 +47571,15 @@ class SourceInstanceProperties(_messages.Message):
 class SslCertificate(_messages.Message):
   r"""Represents an SSL Certificate resource.  Google Compute Engine has two
   SSL Certificate resources:  *
-  [Global](/compute/docs/reference/rest/latest/sslCertificates) *
-  [Regional](/compute/docs/reference/rest/latest/regionSslCertificates)  -
-  sslCertificates are used by: - external HTTPS load balancers - SSL proxy
-  load balancers  - regionSslCertificates are used by: - internal HTTPS load
-  balancers  This SSL certificate resource also contains a private key. You
-  can use SSL keys and certificates to secure connections to a load balancer.
-  For more information, read  Creating and Using SSL Certificates. (==
-  resource_for {$api_version}.sslCertificates ==) (== resource_for
-  {$api_version}.regionSslCertificates ==) Next ID: 17
+  [Global](/compute/docs/reference/rest/{$api_version}/sslCertificates) * [Reg
+  ional](/compute/docs/reference/rest/{$api_version}/regionSslCertificates)
+  The sslCertificates are used by:   - external HTTPS load balancers  - SSL
+  proxy load balancers    The regionSslCertificates are used by internal HTTPS
+  load balancers.  This SSL certificate resource also contains a private key.
+  You can use SSL keys and certificates to secure connections to a load
+  balancer. For more information, read  Creating and Using SSL Certificates.
+  (== resource_for {$api_version}.sslCertificates ==) (== resource_for
+  {$api_version}.regionSslCertificates ==)
 
   Enums:
     TypeValueValuesEnum: (Optional) Specifies the type of SSL certificate,
@@ -49497,9 +49701,9 @@ class TargetHttpProxiesScopedList(_messages.Message):
 class TargetHttpProxy(_messages.Message):
   r"""Represents a Target HTTP Proxy resource.  Google Compute Engine has two
   Target HTTP Proxy resources:  *
-  [Global](/compute/docs/reference/rest/latest/targetHttpProxies) *
-  [Regional](/compute/docs/reference/rest/latest/regionTargetHttpProxies)  A
-  target HTTP proxy is a component of GCP HTTP load balancers.  *
+  [Global](/compute/docs/reference/rest/{$api_version}/targetHttpProxies) * [R
+  egional](/compute/docs/reference/rest/{$api_version}/regionTargetHttpProxies
+  )  A target HTTP proxy is a component of GCP HTTP load balancers.  *
   targetHttpProxies are used by external HTTP load balancers and Traffic
   Director. * regionTargetHttpProxies are used by internal HTTP load
   balancers.  Forwarding rules reference a target HTTP proxy, and the target
@@ -49980,9 +50184,9 @@ class TargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
 class TargetHttpsProxy(_messages.Message):
   r"""Represents a Target HTTPS Proxy resource.  Google Compute Engine has two
   Target HTTPS Proxy resources:  *
-  [Global](/compute/docs/reference/rest/latest/targetHttpsProxies) *
-  [Regional](/compute/docs/reference/rest/latest/regionTargetHttpsProxies)  A
-  target HTTPS proxy is a component of GCP HTTPS load balancers.  *
+  [Global](/compute/docs/reference/rest/{$api_version}/targetHttpsProxies) * [
+  Regional](/compute/docs/reference/rest/{$api_version}/regionTargetHttpsProxi
+  es)  A target HTTPS proxy is a component of GCP HTTPS load balancers.  *
   targetHttpsProxies are used by external HTTPS load balancers. *
   regionTargetHttpsProxies are used by internal HTTPS load balancers.
   Forwarding rules reference a target HTTPS proxy, and the target proxy then
@@ -50001,6 +50205,9 @@ class TargetHttpsProxy(_messages.Message):
       flag is not specified, NONE is implied. -
 
   Fields:
+    certificateMap: URL of a certificate map that identifies a certificate map
+      associated with the given target proxy. This field can only be set for
+      global target proxies. If set, sslCertificates will be ignored.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -50065,19 +50272,20 @@ class TargetHttpsProxy(_messages.Message):
     ENABLE = 1
     NONE = 2
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#targetHttpsProxy')
-  name = _messages.StringField(5)
-  proxyBind = _messages.BooleanField(6)
-  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 7)
-  region = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  selfLinkWithId = _messages.StringField(10)
-  sslCertificates = _messages.StringField(11, repeated=True)
-  sslPolicy = _messages.StringField(12)
-  urlMap = _messages.StringField(13)
+  certificateMap = _messages.StringField(1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#targetHttpsProxy')
+  name = _messages.StringField(6)
+  proxyBind = _messages.BooleanField(7)
+  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 8)
+  region = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  selfLinkWithId = _messages.StringField(11)
+  sslCertificates = _messages.StringField(12, repeated=True)
+  sslPolicy = _messages.StringField(13)
+  urlMap = _messages.StringField(14)
 
 
 class TargetHttpsProxyAggregatedList(_messages.Message):
@@ -51456,6 +51664,9 @@ class TargetSslProxy(_messages.Message):
       is NONE.
 
   Fields:
+    certificateMap: URL of a certificate map that identifies a certificate map
+      associated with the given target proxy. This field can only be set for
+      global target proxies. If set, sslCertificates will be ignored.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -51494,16 +51705,17 @@ class TargetSslProxy(_messages.Message):
     NONE = 0
     PROXY_V1 = 1
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#targetSslProxy')
-  name = _messages.StringField(5)
-  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 6)
-  selfLink = _messages.StringField(7)
-  service = _messages.StringField(8)
-  sslCertificates = _messages.StringField(9, repeated=True)
-  sslPolicy = _messages.StringField(10)
+  certificateMap = _messages.StringField(1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#targetSslProxy')
+  name = _messages.StringField(6)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 7)
+  selfLink = _messages.StringField(8)
+  service = _messages.StringField(9)
+  sslCertificates = _messages.StringField(10, repeated=True)
+  sslPolicy = _messages.StringField(11)
 
 
 class TargetSslProxyList(_messages.Message):
@@ -52536,17 +52748,17 @@ class UpcomingMaintenance(_messages.Message):
 
 class UrlMap(_messages.Message):
   r"""Represents a URL Map resource.  Google Compute Engine has two URL Map
-  resources:  * [Global](/compute/docs/reference/rest/latest/urlMaps) *
-  [Regional](/compute/docs/reference/rest/latest/regionUrlMaps)  A URL map
-  resource is a component of certain types of GCP load balancers and Traffic
-  Director.  * urlMaps are used by external HTTP(S) load balancers and Traffic
-  Director. * regionUrlMaps are used by internal HTTP(S) load balancers.  This
-  resource defines mappings from host names and URL paths to either a backend
-  service or a backend bucket.  To use the global urlMaps resource, the
-  backend service must have a loadBalancingScheme of either EXTERNAL or
-  INTERNAL_SELF_MANAGED. To use the regionUrlMaps resource, the backend
-  service must have a loadBalancingScheme of INTERNAL_MANAGED. For more
-  information, read URL Map Concepts.
+  resources:  * [Global](/compute/docs/reference/rest/{$api_version}/urlMaps)
+  * [Regional](/compute/docs/reference/rest/{$api_version}/regionUrlMaps)  A
+  URL map resource is a component of certain types of GCP load balancers and
+  Traffic Director.  * urlMaps are used by external HTTP(S) load balancers and
+  Traffic Director. * regionUrlMaps are used by internal HTTP(S) load
+  balancers.  This resource defines mappings from host names and URL paths to
+  either a backend service or a backend bucket.  To use the global urlMaps
+  resource, the backend service must have a loadBalancingScheme of either
+  EXTERNAL or INTERNAL_SELF_MANAGED. To use the regionUrlMaps resource, the
+  backend service must have a loadBalancingScheme of INTERNAL_MANAGED. For
+  more information, read URL Map Concepts.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text

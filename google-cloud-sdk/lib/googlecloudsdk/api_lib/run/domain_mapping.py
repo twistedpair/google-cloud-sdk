@@ -40,5 +40,13 @@ class DomainMapping(k8s_object.KubernetesObject):
     self._m.spec.routeName = value
 
   @property
+  def force_override(self):
+    return self.spec.forceOverride or False
+
+  @force_override.setter
+  def force_override(self, value):
+    self.spec.forceOverride = value
+
+  @property
   def records(self):
     return getattr(self._m.status, 'resourceRecords', None)

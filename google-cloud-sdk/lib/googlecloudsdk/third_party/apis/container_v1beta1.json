@@ -1947,6 +1947,10 @@
           "description": "The desired config of Intra-node visibility.",
           "$ref": "IntraNodeVisibilityConfig"
         },
+        "desiredDefaultSnatStatus": {
+          "description": "The desired status of whether to disable default sNAT for this cluster.",
+          "$ref": "DefaultSnatStatus"
+        },
         "desiredClusterTelemetry": {
           "description": "The desired telemetry integration for the cluster.",
           "$ref": "ClusterTelemetry"
@@ -1988,6 +1992,17 @@
       "properties": {
         "enabled": {
           "description": "Enables intra node visibility for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "DefaultSnatStatus": {
+      "id": "DefaultSnatStatus",
+      "description": "DefaultSnatStatus contains the desired state of whether default sNAT should\nbe disabled on the cluster.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "Disables cluster default sNAT rules.",
           "type": "boolean"
         }
       }

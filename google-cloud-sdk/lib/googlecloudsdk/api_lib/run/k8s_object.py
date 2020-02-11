@@ -325,6 +325,13 @@ class KubernetesObject(object):
     if self.ready_condition:
       return self.ready_condition['status']
 
+  @property
+  def last_transition_time(self):
+    assert hasattr(self, 'READY_CONDITION')
+    return next((c.lastTransitionTime
+                 for c in self.status.conditions
+                 if c.type == self.READY_CONDITION), None)
+
   def _PickSymbol(self, best, alt, encoding):
     """Choose the best symbol (if it's in this encoding) or an alternate."""
     try:

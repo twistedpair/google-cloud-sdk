@@ -99,9 +99,10 @@ class CommandBuilder(object):
   def __init__(self, spec, path):
     self.spec = spec
     self.path = path
-    self.method = registry.GetMethod(
-        self.spec.request.collection, self.spec.request.method,
-        self.spec.request.api_version)
+    self.method = registry.GetMethod(self.spec.request.collection,
+                                     self.spec.request.method,
+                                     self.spec.request.api_version,
+                                     self.spec.request.use_google_auth)
     resource_arg = self.spec.arguments.resource
     self.arg_generator = arg_marshalling.DeclarativeArgumentGenerator(
         self.method,

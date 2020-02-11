@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/resource-manager",
   "protocol": "rest",
   "rootUrl": "https://cloudresourcemanager.googleapis.com/",
+  "mtlsRootUrl": "https://cloudresourcemanager.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudresourcemanager.googleapis.com/",
   "batchPath": "batch",

@@ -2445,7 +2445,7 @@ through a filter.
         method_id=u'healthcare.projects.locations.datasets.hl7V2Stores.messages.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken', u'view'],
         relative_path=u'v1beta1/{+parent}/messages',
         request_field='',
         request_type_name=u'HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest',

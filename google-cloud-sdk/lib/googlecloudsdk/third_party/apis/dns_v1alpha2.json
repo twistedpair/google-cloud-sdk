@@ -295,6 +295,10 @@
           "description": "The presence of this field indicates that this is a managed reverse\nlookup zone and Cloud DNS will resolve reverse lookup queries using\nautomatically configured records for VPC resources. This only applies\nto networks listed under private_visibility_config.",
           "$ref": "ManagedZoneReverseLookupConfig"
         },
+        "serviceDirectoryConfig": {
+          "description": "This field links to the associated service directory namespace. This field\nshould not be set for public zones or forwarding zones.",
+          "$ref": "ManagedZoneServiceDirectoryConfig"
+        },
         "kind": {
           "default": "dns#managedZone",
           "type": "string"
@@ -535,6 +539,39 @@
       "properties": {
         "kind": {
           "default": "dns#managedZoneReverseLookupConfig",
+          "type": "string"
+        }
+      }
+    },
+    "ManagedZoneServiceDirectoryConfig": {
+      "id": "ManagedZoneServiceDirectoryConfig",
+      "description": "Contains information about Service Directory-backed zones.",
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "description": "Contains information about the namespace associated with the zone.",
+          "$ref": "ManagedZoneServiceDirectoryConfigNamespace"
+        },
+        "kind": {
+          "default": "dns#managedZoneServiceDirectoryConfig",
+          "type": "string"
+        }
+      }
+    },
+    "ManagedZoneServiceDirectoryConfigNamespace": {
+      "id": "ManagedZoneServiceDirectoryConfigNamespace",
+      "type": "object",
+      "properties": {
+        "namespaceUrl": {
+          "description": "The fully qualified URL of the namespace associated with the zone.\nThis should be formatted like\nhttps:\/\/servicedirectory.googleapis.com\/v1\/projects\/{project}\/locations\/{location}\/namespaces\/{namespace}",
+          "type": "string"
+        },
+        "deletionTime": {
+          "description": "The time that the namespace backing this zone was deleted, empty\nstring if it still exists. This is in RFC3339 text format. Output\nonly.",
+          "type": "string"
+        },
+        "kind": {
+          "default": "dns#managedZoneServiceDirectoryConfigNamespace",
           "type": "string"
         }
       }

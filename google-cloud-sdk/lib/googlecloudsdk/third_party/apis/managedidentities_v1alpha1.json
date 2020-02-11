@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/managed-microsoft-ad/",
   "protocol": "rest",
   "rootUrl": "https://managedidentities.googleapis.com/",
+  "mtlsRootUrl": "https://managedidentities.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://managedidentities.googleapis.com/",
   "batchPath": "batch",

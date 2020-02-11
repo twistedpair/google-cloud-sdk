@@ -1030,6 +1030,7 @@ class DiscoveryOccurrence(_messages.Message):
       is output only and populated by the API.
     continuousAnalysis: Whether the resource is continuously analyzed.
     cpe: The CPE of the resource being scanned.
+    lastScanTime: The last time this resource was scanned.
   """
 
   class AnalysisStatusValueValuesEnum(_messages.Enum):
@@ -1067,6 +1068,7 @@ class DiscoveryOccurrence(_messages.Message):
   analysisStatusError = _messages.MessageField('Status', 2)
   continuousAnalysis = _messages.EnumField('ContinuousAnalysisValueValuesEnum', 3)
   cpe = _messages.StringField(4)
+  lastScanTime = _messages.StringField(5)
 
 
 class Distribution(_messages.Message):
@@ -2175,7 +2177,10 @@ class UpgradeDistribution(_messages.Message):
 
   Fields:
     classification: The operating system classification of this Upgrade, as
-      specified by the upstream operating system upgrade feed.
+      specified by the upstream operating system upgrade feed. For Windows the
+      classification is one of the category_ids listed at
+      https://docs.microsoft.com/en-us/previous-
+      versions/windows/desktop/ff357803(v=vs.85)
     cpeUri: Required - The specific operating system this metadata applies to.
       See https://cpe.mitre.org/specification/.
     cve: The cve tied to this Upgrade.

@@ -20,6 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import contextlib
+import datetime
 import functools
 import random
 
@@ -93,64 +94,52 @@ def Connect(conn_context):
         op_client)
 
 
-# TODO(b/141626230): Remove this and use regular ConditionPoller
-class UnfailingConditionPoller(serverless_operations.ConditionPoller):
-  """Condition poller that never fails and is only done on success.
+class TriggerConditionPoller(serverless_operations.ConditionPoller):
+  """A ConditionPoller for triggers."""
 
-  Knative Eventing does not use the Ready == False condition to indicate
-  failure. Instead, only Ready == True can be relied upon as a terminal state
-  and all other statuses (False, Unknown) simply mean not currently successful,
-  but provide no indication if this is a temporary or permanent state.
+  def __init__(self, getter, tracker, dependencies=None):
 
-  This condition poller never fails a stage for that reason, and therefore
-  never done until successful.
-  """
+    def GetIfProbablyNewerOrNotFalse():
+      """Workaround for a potentially slowly updating Trigger.
 
-  def IsDone(self, conditions):
-    """Overrides.
+      The trigger's Ready condition is based on the source it depends on. If the
+      source doesn't exist the trigger should be Ready == False and if it does
+      exist, the trigger's Ready condition should match the source's (assuming
+      no other issues with the trigger).
 
-    Args:
-      conditions: A condition.Conditions object.
+      We only start polling for the trigger's Ready condition once the source
+      has been created and gone Ready == True, which means the trigger *should*
+      also be Ready == True. However, to prevent against the trigger being slow
+      in updating its status, we allow for a 3 second grace period where we'll
+      ignore a Ready == False status and continue polling.
 
-    Returns:
-      A bool indicating whether `conditions` is ready.
-    """
-    if conditions is None:
-      return False
-    return conditions.IsReady()
+      Returns:
+        The requested resource or None if it seems stale.
+      """
+      resource = getter()
+      # pylint:disable=g-bool-id-comparison, Need to check for False explicitly
+      # because None is a valid state (meaning Unknown)
+      if (resource is None or resource.ready_condition['status'] is not False or
+          self._HaveThreeSecondsPassed()):
+        return resource
 
-  def Poll(self, unused_ref):
-    """Overrides.
+      # lastTransitionTime being updated from what we first saw when we started
+      # polling is good enough to stop waiting, even if Ready == False
+      if not self._last_transition_time:
+        self._last_transition_time = resource.last_transition_time
+      if self._last_transition_time != resource.last_transition_time:
+        return resource
 
-    Args:
-      unused_ref: A string representing the operation reference. Unused and may
-        be None.
-
-    Returns:
-      A condition.Conditions object or None if there's no conditions on the
-        resource or if the conditions are not fresh (the generation on the
-        resource doesn't match the observedGeneration)
-    """
-    conditions = self.GetConditions()
-
-    if conditions is None or not conditions.IsFresh():
       return None
 
-    conditions_message = conditions.DescriptiveMessage()
-    if conditions_message:
-      self._tracker.UpdateHeaderMessage(conditions_message)
+    super(TriggerConditionPoller, self).__init__(GetIfProbablyNewerOrNotFalse,
+                                                 tracker, dependencies)
+    self._last_transition_time = None
+    self._start_time = datetime.datetime.now()
+    self._three_seconds = datetime.timedelta(seconds=3)
 
-    self._PollTerminalSubconditions(conditions, conditions_message)
-
-    if conditions.IsReady():
-      self._tracker.UpdateHeaderMessage(self._ready_message)
-      # TODO(b/120679874): Should not have to manually call Tick()
-      self._tracker.Tick()
-
-    return conditions
-
-  def _PossiblyFailStage(self, condition, message):
-    """Stages are never marked as failed."""
+  def _HaveThreeSecondsPassed(self):
+    return datetime.datetime.now() - self._start_time > self._three_seconds
 
 
 class EventflowOperations(object):
@@ -390,8 +379,8 @@ class EventflowOperations(object):
         source_obj.name, source_obj.namespace, event_type.crd)
     source_getter = functools.partial(
         self.GetSource, source_ref, event_type.crd)
-    poller = UnfailingConditionPoller(source_getter, tracker,
-                                      stages.TriggerSourceDependencies())
+    poller = serverless_operations.ConditionPoller(
+        source_getter, tracker, stages.TriggerSourceDependencies())
     util.WaitForCondition(poller, exceptions.SourceCreationError)
     # Manually complete the stage indicating source readiness because we can't
     # track a terminal (Ready) condition in the ConditionPoller.
@@ -399,8 +388,8 @@ class EventflowOperations(object):
 
     # Wait for trigger to be Ready == True
     trigger_getter = functools.partial(self.GetTrigger, trigger_ref)
-    poller = UnfailingConditionPoller(trigger_getter, tracker,
-                                      stages.TriggerSourceDependencies())
+    poller = TriggerConditionPoller(trigger_getter, tracker,
+                                    stages.TriggerSourceDependencies())
     util.WaitForCondition(poller, exceptions.TriggerCreationError)
 
   def ListSourceCustomResourceDefinitions(self):

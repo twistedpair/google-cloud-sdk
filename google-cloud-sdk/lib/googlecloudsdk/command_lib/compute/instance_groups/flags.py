@@ -276,6 +276,7 @@ _LIST_INSTANCES_FORMAT = """\
         table(instance.basename():label=NAME,
               instance.scope().segment(0):label=ZONE,
               instanceStatus:label=STATUS,
+              instanceHealth[0].detailedHealthState:label=HEALTH_STATE,
               currentAction:label=ACTION,
               version.instanceTemplate.basename():label=INSTANCE_TEMPLATE,
               version.name:label=VERSION_NAME,

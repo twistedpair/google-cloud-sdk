@@ -41,7 +41,7 @@ def AddPortFlag(parser):
       type=int).AddToParser(parser)
 
 
-def AddMetadataFlag(parser, resource_type):
+def AddMetadataFlag(parser, resource_type, dictionary_size_limit):
   """Adds metadata flags for service-directory commands."""
   return base.Argument(
       '--metadata',
@@ -50,10 +50,9 @@ def AddMetadataFlag(parser, resource_type):
       help="""\
            Metadata for the {}.
 
-           Metadata takes the form of key/value string pairs limited to 10
-           pairs where the key is limited to 128 characters and values are
-           limited to 1024 characters.
-           """.format(resource_type)).AddToParser(parser)
+           Metadata takes the form of key/value string pairs. The total
+           dictionary is limited to {} characters.
+           """.format(resource_type, dictionary_size_limit)).AddToParser(parser)
 
 
 def AddLabelsFlag(parser, resource_type):

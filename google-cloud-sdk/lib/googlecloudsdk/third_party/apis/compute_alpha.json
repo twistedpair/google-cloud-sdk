@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20200124",
+ "revision": "20200131",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1072,6 +1072,10 @@
       "$ref": "AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk"
      }
     },
+    "longTermRelease": {
+     "type": "boolean",
+     "description": "Compute Engine Long Term Release. When specified, VMs that have this policy become long term release (internal: stable fleet) VMs.\n\nFor all VM shapes, this should result in fewer disruptions due to software updates and greater predictability via 1 week extended notifications.\n\nFor GPU VMs, this should also result in an 2 week uptime guarantee. See go/stable-fleet-gpus-design for more details."
+    },
     "machineType": {
      "type": "string",
      "description": "Specifies type of machine (name only) which has fixed number of vCPUs and fixed amount of memory. This also includes specifying custom machine type following custom-NUMBER_OF_CPUS-AMOUNT_OF_MEMORY pattern."
@@ -1439,7 +1443,7 @@
   "Autoscaler": {
    "id": "Autoscaler",
    "type": "object",
-   "description": "Represents an Autoscaler resource.\n\nGoogle Compute Engine has two Autoscaler resources:\n\n* [Global](/compute/docs/reference/rest/latest/autoscalers) * [Regional](/compute/docs/reference/rest/latest/regionAutoscalers)\n\nUse autoscalers to automatically add or delete instances from a managed instance group according to your defined autoscaling policy. For more information, read Autoscaling Groups of Instances.\n\nFor zonal managed instance groups resource, use the autoscaler resource.\n\nFor regional managed instance groups, use the regionAutoscalers resource. (== resource_for {$api_version}.autoscalers ==) (== resource_for {$api_version}.regionAutoscalers ==)",
+   "description": "Represents an Autoscaler resource.\n\nGoogle Compute Engine has two Autoscaler resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/autoscalers) * [Regional](/compute/docs/reference/rest/{$api_version}/regionAutoscalers)\n\nUse autoscalers to automatically add or delete instances from a managed instance group according to your defined autoscaling policy. For more information, read Autoscaling Groups of Instances.\n\nFor zonal managed instance groups resource, use the autoscaler resource.\n\nFor regional managed instance groups, use the regionAutoscalers resource. (== resource_for {$api_version}.autoscalers ==) (== resource_for {$api_version}.regionAutoscalers ==)",
    "properties": {
     "autoscalingPolicy": {
      "$ref": "AutoscalingPolicy",
@@ -2341,7 +2345,7 @@
   "BackendService": {
    "id": "BackendService",
    "type": "object",
-   "description": "Represents a Backend Service resource.\n\nA backend service contains configuration values for Google Cloud Platform load balancing services.\n\nBackend services in Google Compute Engine can be either regionally or globally scoped.\n\n* [Global](/compute/docs/reference/rest/latest/backendServices) * [Regional](/compute/docs/reference/rest/latest/regionBackendServices)\n\nFor more information, read Backend Services.\n\n(== resource_for {$api_version}.backendService ==)",
+   "description": "Represents a Backend Service resource.\n\nA backend service contains configuration values for Google Cloud Platform load balancing services.\n\nBackend services in Google Compute Engine can be either regionally or globally scoped.\n\n* [Global](/compute/docs/reference/rest/{$api_version}/backendServices) * [Regional](/compute/docs/reference/rest/{$api_version}/regionBackendServices)\n\nFor more information, read Backend Services.\n\n(== resource_for {$api_version}.backendService ==)",
    "properties": {
     "affinityCookieTtlSec": {
      "type": "integer",
@@ -2486,7 +2490,7 @@
     },
     "protocol": {
      "type": "string",
-     "description": "The protocol this BackendService uses to communicate with backends.\n\nPossible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP, depending on the chosen load balancer or Traffic Director configuration. Refer to the documentation for the load balancer or for Traffic Director for more information.",
+     "description": "The protocol this BackendService uses to communicate with backends.\n\nPossible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP. depending on the chosen load balancer or Traffic Director configuration. Refer to the documentation for the load balancer or for Traffic Director for more information.",
      "enum": [
       "HTTP",
       "HTTP2",
@@ -3291,6 +3295,47 @@
     "role": {
      "type": "string",
      "description": "Role that is assigned to `members`. For example, `roles/viewer`, `roles/editor`, or `roles/owner`."
+    }
+   }
+  },
+  "BulkInsertInstanceResource": {
+   "id": "BulkInsertInstanceResource",
+   "type": "object",
+   "properties": {
+    "count": {
+     "type": "string",
+     "description": "The maximum number of instances to create.",
+     "format": "int64"
+    },
+    "excludedZones": {
+     "type": "array",
+     "description": "List of zones to exclude for regional requests.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "instance": {
+     "$ref": "Instance"
+    },
+    "minCount": {
+     "type": "string",
+     "description": "The minimum number of instances to create. If no min_count is specified then count is used as the default value. If min_count instances cannot be created, then no instances will be created.",
+     "format": "int64"
+    },
+    "namePattern": {
+     "type": "string",
+     "description": "Instance name pattern. Name pattern includes a parameter to specify the auto-incrementing portion of the name. For example: name_pattern = inst-{index:04d} The {index:04d} is replaced with a four character numeric index. The number (04, in this case) specifies the number of characters (min: 4). In this example, you'll get instances named: inst-0000, inst-0001, inst-0002, ... If instances exist with this pattern, the index of the first instance will begin numbering after the maximum existing index."
+    },
+    "predefinedNames": {
+     "type": "array",
+     "description": "List of predefined names. The number of names provided must be equal to count.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "sourceInstanceTemplate": {
+     "type": "string",
+     "description": "Specifies the instance template from which to create the instance. This field is optional. This field is optional. It can be a full or partial URL. For example, the following are all valid URLs to an instance template:  \n- https://www.googleapis.com/compute/v1/projects/project/global/instanceTemplates/instanceTemplate \n- projects/project/global/instanceTemplates/instanceTemplate \n- global/instanceTemplates/instanceTemplate"
     }
    }
   },
@@ -4198,7 +4243,7 @@
   "Disk": {
    "id": "Disk",
    "type": "object",
-   "description": "Represents a Persistent Disk resource.\n\nGoogle Compute Engine has two Disk resources:\n\n* [Global](/compute/docs/reference/rest/latest/disks) * [Regional](/compute/docs/reference/rest/latest/regionDisks)\n\nPersistent disks are required for running your VM instances. Create both boot and non-boot (data) persistent disks. For more information, read Persistent Disks. For more storage options, read Storage options.\n\nThe disks resource represents a zonal persistent disk. For more information, read Zonal persistent disks.\n\nThe regionDisks resource represents a regional persistent disk. For more information, read  Regional resources. (== resource_for {$api_version}.disks ==) (== resource_for {$api_version}.regionDisks ==)",
+   "description": "Represents a Persistent Disk resource.\n\nGoogle Compute Engine has two Disk resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/disks) * [Regional](/compute/docs/reference/rest/{$api_version}/regionDisks)\n\nPersistent disks are required for running your VM instances. Create both boot and non-boot (data) persistent disks. For more information, read Persistent Disks. For more storage options, read Storage options.\n\nThe disks resource represents a zonal persistent disk. For more information, read Zonal persistent disks.\n\nThe regionDisks resource represents a regional persistent disk. For more information, read  Regional resources. (== resource_for {$api_version}.disks ==) (== resource_for {$api_version}.regionDisks ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -4687,7 +4732,7 @@
   "DiskType": {
    "id": "DiskType",
    "type": "object",
-   "description": "Represents a Disk Type resource.\n\nGoogle Compute Engine has two Disk Type resources:\n\n* [Global](/compute/docs/reference/rest/latest/diskTypes) * [Regional](/compute/docs/reference/rest/latest/regionDiskTypes)\n\nYou can choose from a variety of disk types based on your needs. For more information, read Storage options.\n\nThe diskTypes resource represents disk types for a zonal persistent disk. For more information, read Zonal persistent disks.\n\nThe regionDiskTypes resource represents disk types for a regional persistent disk. For more information, read Regional persistent disks. (== resource_for {$api_version}.diskTypes ==) (== resource_for {$api_version}.regionDiskTypes ==)",
+   "description": "Represents a Disk Type resource.\n\nGoogle Compute Engine has two Disk Type resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/diskTypes) * [Regional](/compute/docs/reference/rest/{$api_version}/regionDiskTypes)\n\nYou can choose from a variety of disk types based on your needs. For more information, read Storage options.\n\nThe diskTypes resource represents disk types for a zonal persistent disk. For more information, read Zonal persistent disks.\n\nThe regionDiskTypes resource represents disk types for a regional persistent disk. For more information, read Regional persistent disks. (== resource_for {$api_version}.diskTypes ==) (== resource_for {$api_version}.regionDiskTypes ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -5978,7 +6023,7 @@
   "ForwardingRule": {
    "id": "ForwardingRule",
    "type": "object",
-   "description": "Represents a Forwarding Rule resource.\n\nForwarding rule resources in GCP can be either regional or global in scope:\n\n* [Global](/compute/docs/reference/rest/latest/globalForwardingRules) * [Regional](/compute/docs/reference/rest/latest/forwardingRules)\n\nA forwarding rule and its corresponding IP address represent the frontend configuration of a Google Cloud Platform load balancer. Forwarding rules can also reference target instances and Cloud VPN Classic gateways (targetVpnGateway).\n\nFor more information, read Forwarding rule concepts and Using protocol forwarding.\n\n(== resource_for {$api_version}.forwardingRules ==) (== resource_for {$api_version}.globalForwardingRules ==) (== resource_for {$api_version}.regionForwardingRules ==)",
+   "description": "Represents a Forwarding Rule resource.\n\nForwarding rule resources in GCP can be either regional or global in scope:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/globalForwardingRules) * [Regional](/compute/docs/reference/rest/{$api_version}/forwardingRules)\n\nA forwarding rule and its corresponding IP address represent the frontend configuration of a Google Cloud Platform load balancer. Forwarding rules can also reference target instances and Cloud VPN Classic gateways (targetVpnGateway).\n\nFor more information, read Forwarding rule concepts and Using protocol forwarding.\n\n(== resource_for {$api_version}.forwardingRules ==) (== resource_for {$api_version}.globalForwardingRules ==) (== resource_for {$api_version}.regionForwardingRules ==)",
    "properties": {
     "IPAddress": {
      "type": "string",
@@ -6071,7 +6116,7 @@
     },
     "loadBalancingScheme": {
      "type": "string",
-     "description": "Specifies the forwarding rule type.\n\n \n- EXTERNAL is used for:  \n- Classic Cloud VPN gateways \n- Protocol forwarding to VMs from an external IP address \n- The following load balancers: HTTP(S), SSL Proxy, TCP Proxy, and Network TCP/UDP    \n- INTERNAL is used for:  \n- Protocol forwarding to VMs from an internal IP address \n- Internal TCP/UDP load balancers   \n- INTERNAL_MANAGED is used for:  \n- Internal HTTP(S) load balancers   \n- \u003eINTERNAL_SELF_MANAGED is used for:  \n- Traffic Director    \n\nFor more information about forwarding rules, refer to Forwarding rule concepts.",
+     "description": "Specifies the forwarding rule type.\n\n \n- EXTERNAL is used for:  \n- Classic Cloud VPN gateways \n- Protocol forwarding to VMs from an external IP address \n- The following load balancers: HTTP(S), SSL Proxy, TCP Proxy, and Network TCP/UDP    \n- INTERNAL is used for:  \n- Protocol forwarding to VMs from an internal IP address \n- Internal TCP/UDP load balancers   \n- INTERNAL_MANAGED is used for:  \n- Internal HTTP(S) load balancers   \n- INTERNAL_SELF_MANAGED is used for:  \n- Traffic Director    \n\nFor more information about forwarding rules, refer to Forwarding rule concepts.",
      "enum": [
       "EXTERNAL",
       "INTERNAL",
@@ -6486,6 +6531,39 @@
     }
    }
   },
+  "GRPCHealthCheck": {
+   "id": "GRPCHealthCheck",
+   "type": "object",
+   "properties": {
+    "grpcServiceName": {
+     "type": "string",
+     "description": "The gRPC service name for the health check. This field is optional. The value of grpc_service_name has the following meanings by convention:\n- Empty service_name means the overall status of all services at the backend.\n- Non-empty service_name means the health of that gRPC service, as defined by the owner of the service.\nThe grpc_service_name can only be ASCII."
+    },
+    "port": {
+     "type": "integer",
+     "description": "The port number for the health check request. Must be specified if port_name and port_specification are not set or if port_specification is USE_FIXED_PORT. Valid values are 1 through 65535.",
+     "format": "int32"
+    },
+    "portName": {
+     "type": "string",
+     "description": "Port name as defined in InstanceGroup#NamedPort#name. If both port and port_name are defined, port takes precedence. The port_name should conform to RFC1035."
+    },
+    "portSpecification": {
+     "type": "string",
+     "description": "Specifies how port is selected for health checking, can be one of following values:\nUSE_FIXED_PORT: The port number in port is used for health checking.\nUSE_NAMED_PORT: The portName is used for health checking.\nUSE_SERVING_PORT: For NetworkEndpointGroup, the port specified for each network endpoint is used for health checking. For other backends, the port or named port specified in the Backend Service is used for health checking.\n\n\nIf not specified, gRPC health check follows behavior specified in port and portName fields.",
+     "enum": [
+      "USE_FIXED_PORT",
+      "USE_NAMED_PORT",
+      "USE_SERVING_PORT"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
   "GlobalNetworkEndpointGroupsAttachEndpointsRequest": {
    "id": "GlobalNetworkEndpointGroupsAttachEndpointsRequest",
    "type": "object",
@@ -6843,7 +6921,7 @@
   "HealthCheck": {
    "id": "HealthCheck",
    "type": "object",
-   "description": "Represents a Health Check resource.\n\nGoogle Compute Engine has two Health Check resources:\n\n* [Global](/compute/docs/reference/rest/latest/healthChecks) * [Regional](/compute/docs/reference/rest/latest/regionHealthChecks)\n\nInternal HTTP(S) load balancers use regional health checks. All other types of GCP load balancers and managed instance group auto-healing use global health checks. For more information, read Health Check Concepts.\n\nTo perform health checks on network load balancers, you must use either httpHealthChecks or httpsHealthChecks.",
+   "description": "Represents a Health Check resource.\n\nGoogle Compute Engine has two Health Check resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/healthChecks) * [Regional](/compute/docs/reference/rest/{$api_version}/regionHealthChecks)\n\nInternal HTTP(S) load balancers use regional health checks. All other types of GCP load balancers and managed instance group auto-healing use global health checks. For more information, read Health Check Concepts.\n\nTo perform health checks on network load balancers, you must use either httpHealthChecks or httpsHealthChecks.",
    "properties": {
     "checkIntervalSec": {
      "type": "integer",
@@ -6857,6 +6935,9 @@
     "description": {
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "grpcHealthCheck": {
+     "$ref": "GRPCHealthCheck"
     },
     "healthyThreshold": {
      "type": "integer",
@@ -6918,6 +6999,7 @@
      "type": "string",
      "description": "Specifies the type of the healthCheck, either TCP, SSL, HTTP, HTTPS or HTTP2. If not specified, the default is TCP. Exactly one of the protocol-specific health check field must be specified, which must match type field.",
      "enum": [
+      "GRPC",
       "HTTP",
       "HTTP2",
       "HTTPS",
@@ -6927,6 +7009,7 @@
       "UDP"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -16081,6 +16164,20 @@
       "$ref": "AcceleratorConfig"
      }
     },
+    "cpuOvercommitType": {
+     "type": "string",
+     "description": "CPU overcommit.",
+     "enum": [
+      "CPU_OVERCOMMIT_TYPE_UNSPECIFIED",
+      "ENABLED",
+      "NONE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
     "disks": {
      "type": "array",
      "description": "Local disk configurations.",
@@ -16372,13 +16469,27 @@
   "NodeTemplate": {
    "id": "NodeTemplate",
    "type": "object",
-   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for {$api_version}.nodeTemplates ==) (== NextID: 18 ==)",
+   "description": "Represent a sole-tenant Node Template resource.\n\nYou can use a template to define properties for nodes in a node group. For more information, read Creating node groups and instances. (== resource_for {$api_version}.nodeTemplates ==) (== NextID: 19 ==)",
    "properties": {
     "accelerators": {
      "type": "array",
      "items": {
       "$ref": "AcceleratorConfig"
      }
+    },
+    "cpuOvercommitType": {
+     "type": "string",
+     "description": "CPU overcommit.",
+     "enum": [
+      "CPU_OVERCOMMIT_TYPE_UNSPECIFIED",
+      "ENABLED",
+      "NONE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     },
     "creationTimestamp": {
      "type": "string",
@@ -17361,7 +17472,7 @@
   "Operation": {
    "id": "Operation",
    "type": "object",
-   "description": "Represents an Operation resource.\n\nGoogle Compute Engine has three Operation resources:\n\n* [Global](/compute/docs/reference/rest/latest/globalOperations) * [Regional](/compute/docs/reference/rest/latest/regionOperations) * [Zonal](/compute/docs/reference/rest/latest/zoneOperations)\n\nYou can use an operation resource to manage asynchronous API requests. For more information, read Handling API responses.\n\nOperations can be global, regional or zonal.  \n- For global operations, use the globalOperations resource. \n- For regional operations, use the regionOperations resource. \n- For zonal operations, use the zonalOperations resource.  \n\nFor more information, read  Global, Regional, and Zonal Resources. (== resource_for {$api_version}.globalOperations ==) (== resource_for {$api_version}.regionOperations ==) (== resource_for {$api_version}.zoneOperations ==)",
+   "description": "Represents an Operation resource.\n\nGoogle Compute Engine has three Operation resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/globalOperations) * [Regional](/compute/docs/reference/rest/{$api_version}/regionOperations) * [Zonal](/compute/docs/reference/rest/{$api_version}/zoneOperations)\n\nYou can use an operation resource to manage asynchronous API requests. For more information, read Handling API responses.\n\nOperations can be global, regional or zonal.  \n- For global operations, use the globalOperations resource. \n- For regional operations, use the regionOperations resource. \n- For zonal operations, use the zoneOperations resource.  \n\nFor more information, read  Global, Regional, and Zonal Resources. (== resource_for {$api_version}.globalOperations ==) (== resource_for {$api_version}.regionOperations ==) (== resource_for {$api_version}.zoneOperations ==)",
    "properties": {
     "clientOperationId": {
      "type": "string",
@@ -23970,7 +24081,7 @@
   "Scheduling": {
    "id": "Scheduling",
    "type": "object",
-   "description": "Sets the scheduling options for an Instance. NextID: 9",
+   "description": "Sets the scheduling options for an Instance. NextID: 10",
    "properties": {
     "automaticRestart": {
      "type": "boolean",
@@ -23984,6 +24095,10 @@
      "type": "string",
      "description": "An opaque location hint used to place the instance close to other resources. This field is for use by internal tools that use the public API."
     },
+    "longTermRelease": {
+     "type": "boolean",
+     "description": "Compute Engine Long Term Release. When specified, VMs that have this policy become long term release (internal: stable fleet) VMs.\n\nFor all VM shapes, this should result in fewer disruptions due to software updates and greater predictability via 1 week extended notifications.\n\nFor GPU VMs, this should also result in an 2 week uptime guarantee. See go/stable-fleet-gpus-design for more details."
+    },
     "minNodeCpus": {
      "type": "integer",
      "description": "The minimum number of virtual CPUs this instance will consume when running on a sole-tenant node.",
@@ -23991,7 +24106,7 @@
     },
     "nodeAffinities": {
      "type": "array",
-     "description": "A set of node affinity and anti-affinity configurations. Refer to Configuring node affinity for more information.",
+     "description": "A set of node affinity and anti-affinity configurations. Refer to Configuring node affinity for more information. Overrides reservationAffinity.",
      "items": {
       "$ref": "SchedulingNodeAffinity"
      }
@@ -25166,7 +25281,7 @@
   "SslCertificate": {
    "id": "SslCertificate",
    "type": "object",
-   "description": "Represents an SSL Certificate resource.\n\nGoogle Compute Engine has two SSL Certificate resources:\n\n* [Global](/compute/docs/reference/rest/latest/sslCertificates) * [Regional](/compute/docs/reference/rest/latest/regionSslCertificates)\n\n- sslCertificates are used by: - external HTTPS load balancers - SSL proxy load balancers\n\n- regionSslCertificates are used by: - internal HTTPS load balancers\n\nThis SSL certificate resource also contains a private key. You can use SSL keys and certificates to secure connections to a load balancer. For more information, read  Creating and Using SSL Certificates. (== resource_for {$api_version}.sslCertificates ==) (== resource_for {$api_version}.regionSslCertificates ==) Next ID: 17",
+   "description": "Represents an SSL Certificate resource.\n\nGoogle Compute Engine has two SSL Certificate resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/sslCertificates) * [Regional](/compute/docs/reference/rest/{$api_version}/regionSslCertificates)\n\n\n\nThe sslCertificates are used by:  \n- external HTTPS load balancers \n- SSL proxy load balancers  \n\nThe regionSslCertificates are used by internal HTTPS load balancers.\n\nThis SSL certificate resource also contains a private key. You can use SSL keys and certificates to secure connections to a load balancer. For more information, read  Creating and Using SSL Certificates. (== resource_for {$api_version}.sslCertificates ==) (== resource_for {$api_version}.regionSslCertificates ==)",
    "properties": {
     "certificate": {
      "type": "string",
@@ -26791,7 +26906,7 @@
   "TargetHttpProxy": {
    "id": "TargetHttpProxy",
    "type": "object",
-   "description": "Represents a Target HTTP Proxy resource.\n\nGoogle Compute Engine has two Target HTTP Proxy resources:\n\n* [Global](/compute/docs/reference/rest/latest/targetHttpProxies) * [Regional](/compute/docs/reference/rest/latest/regionTargetHttpProxies)\n\nA target HTTP proxy is a component of GCP HTTP load balancers.\n\n* targetHttpProxies are used by external HTTP load balancers and Traffic Director. * regionTargetHttpProxies are used by internal HTTP load balancers.\n\nForwarding rules reference a target HTTP proxy, and the target proxy then references a URL map. For more information, read Using Target Proxies and  Forwarding rule concepts. (== resource_for {$api_version}.targetHttpProxies ==) (== resource_for {$api_version}.regionTargetHttpProxies ==)",
+   "description": "Represents a Target HTTP Proxy resource.\n\nGoogle Compute Engine has two Target HTTP Proxy resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/targetHttpProxies) * [Regional](/compute/docs/reference/rest/{$api_version}/regionTargetHttpProxies)\n\nA target HTTP proxy is a component of GCP HTTP load balancers.\n\n* targetHttpProxies are used by external HTTP load balancers and Traffic Director. * regionTargetHttpProxies are used by internal HTTP load balancers.\n\nForwarding rules reference a target HTTP proxy, and the target proxy then references a URL map. For more information, read Using Target Proxies and  Forwarding rule concepts. (== resource_for {$api_version}.targetHttpProxies ==) (== resource_for {$api_version}.regionTargetHttpProxies ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -27192,8 +27307,12 @@
   "TargetHttpsProxy": {
    "id": "TargetHttpsProxy",
    "type": "object",
-   "description": "Represents a Target HTTPS Proxy resource.\n\nGoogle Compute Engine has two Target HTTPS Proxy resources:\n\n* [Global](/compute/docs/reference/rest/latest/targetHttpsProxies) * [Regional](/compute/docs/reference/rest/latest/regionTargetHttpsProxies)\n\nA target HTTPS proxy is a component of GCP HTTPS load balancers.\n\n* targetHttpsProxies are used by external HTTPS load balancers. * regionTargetHttpsProxies are used by internal HTTPS load balancers.\n\nForwarding rules reference a target HTTPS proxy, and the target proxy then references a URL map. For more information, read Using Target Proxies and  Forwarding rule concepts. (== resource_for {$api_version}.targetHttpsProxies ==) (== resource_for {$api_version}.regionTargetHttpsProxies ==)",
+   "description": "Represents a Target HTTPS Proxy resource.\n\nGoogle Compute Engine has two Target HTTPS Proxy resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/targetHttpsProxies) * [Regional](/compute/docs/reference/rest/{$api_version}/regionTargetHttpsProxies)\n\nA target HTTPS proxy is a component of GCP HTTPS load balancers.\n\n* targetHttpsProxies are used by external HTTPS load balancers. * regionTargetHttpsProxies are used by internal HTTPS load balancers.\n\nForwarding rules reference a target HTTPS proxy, and the target proxy then references a URL map. For more information, read Using Target Proxies and  Forwarding rule concepts. (== resource_for {$api_version}.targetHttpsProxies ==) (== resource_for {$api_version}.regionTargetHttpsProxies ==)",
    "properties": {
+    "certificateMap": {
+     "type": "string",
+     "description": "URL of a certificate map that identifies a certificate map associated with the given target proxy. This field can only be set for global target proxies. If set, sslCertificates will be ignored."
+    },
     "creationTimestamp": {
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
@@ -28397,6 +28516,10 @@
    "type": "object",
    "description": "Represents a Target SSL Proxy resource.\n\nA target SSL proxy is a component of a SSL Proxy load balancer. Global forwarding rules reference a target SSL proxy, and the target proxy then references an external backend service. For more information, read Using Target Proxies. (== resource_for {$api_version}.targetSslProxies ==)",
    "properties": {
+    "certificateMap": {
+     "type": "string",
+     "description": "URL of a certificate map that identifies a certificate map associated with the given target proxy. This field can only be set for global target proxies. If set, sslCertificates will be ignored."
+    },
     "creationTimestamp": {
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
@@ -29354,7 +29477,7 @@
   "UrlMap": {
    "id": "UrlMap",
    "type": "object",
-   "description": "Represents a URL Map resource.\n\nGoogle Compute Engine has two URL Map resources:\n\n* [Global](/compute/docs/reference/rest/latest/urlMaps) * [Regional](/compute/docs/reference/rest/latest/regionUrlMaps)\n\nA URL map resource is a component of certain types of GCP load balancers and Traffic Director.\n\n* urlMaps are used by external HTTP(S) load balancers and Traffic Director. * regionUrlMaps are used by internal HTTP(S) load balancers.\n\nThis resource defines mappings from host names and URL paths to either a backend service or a backend bucket.\n\nTo use the global urlMaps resource, the backend service must have a loadBalancingScheme of either EXTERNAL or INTERNAL_SELF_MANAGED. To use the regionUrlMaps resource, the backend service must have a loadBalancingScheme of INTERNAL_MANAGED. For more information, read URL Map Concepts.",
+   "description": "Represents a URL Map resource.\n\nGoogle Compute Engine has two URL Map resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/urlMaps) * [Regional](/compute/docs/reference/rest/{$api_version}/regionUrlMaps)\n\nA URL map resource is a component of certain types of GCP load balancers and Traffic Director.\n\n* urlMaps are used by external HTTP(S) load balancers and Traffic Director. * regionUrlMaps are used by internal HTTP(S) load balancers.\n\nThis resource defines mappings from host names and URL paths to either a backend service or a backend bucket.\n\nTo use the global urlMaps resource, the backend service must have a loadBalancingScheme of either EXTERNAL or INTERNAL_SELF_MANAGED. To use the regionUrlMaps resource, the backend service must have a loadBalancingScheme of INTERNAL_MANAGED. For more information, read URL Map Concepts.",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -38275,7 +38398,7 @@
        "minimum": "0",
        "location": "query"
       },
-      "order_by": {
+      "orderBy": {
        "type": "string",
        "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
        "location": "query"
@@ -39865,6 +39988,47 @@
      ],
      "request": {
       "$ref": "AttachedDisk"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "bulkInsert": {
+     "id": "compute.instances.bulkInsert",
+     "path": "{project}/zones/{zone}/instances/bulkInsert",
+     "httpMethod": "POST",
+     "description": "Creates multiple instances. Count specifies the number of instances to create.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone"
+     ],
+     "request": {
+      "$ref": "BulkInsertInstanceResource"
      },
      "response": {
       "$ref": "Operation"
@@ -47218,7 +47382,7 @@
        "minimum": "0",
        "location": "query"
       },
-      "order_by": {
+      "orderBy": {
        "type": "string",
        "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
        "location": "query"
@@ -47266,7 +47430,7 @@
        "minimum": "0",
        "location": "query"
       },
-      "order_by": {
+      "orderBy": {
        "type": "string",
        "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
        "location": "query"
@@ -50784,7 +50948,7 @@
        "minimum": "0",
        "location": "query"
       },
-      "order_by": {
+      "orderBy": {
        "type": "string",
        "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
        "location": "query"
@@ -51615,6 +51779,51 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    }
+   }
+  },
+  "regionInstances": {
+   "methods": {
+    "bulkInsert": {
+     "id": "compute.regionInstances.bulkInsert",
+     "path": "{project}/regions/{region}/instances/bulkInsert",
+     "httpMethod": "POST",
+     "description": "Creates multiple instances in a given region. Count specifies the number of instances to create.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region"
+     ],
+     "request": {
+      "$ref": "BulkInsertInstanceResource"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     }
    }

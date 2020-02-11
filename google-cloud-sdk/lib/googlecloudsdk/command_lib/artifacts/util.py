@@ -129,18 +129,6 @@ def DeleteVersionTags(ver_ref, ver_args, request):
   return request
 
 
-def DeletePackageTags(pkg_ref, pkg_args, request):
-  """Deletes tags associate with the specified package."""
-  if not pkg_args.delete_tags:
-    return request
-  client = _GetClientForResource(pkg_ref)
-  messages = _GetMessagesForResource(pkg_ref)
-  tag_list = ar_requests.ListTags(client, messages, pkg_ref.RelativeName())
-  for tag in tag_list:
-    ar_requests.DeleteTag(client, messages, tag.name)
-  return request
-
-
 def AppendTagDataToRequest(tag_ref, tag_args, request):
   """Adds tag data to CreateTagRequest."""
   parts = request.parent.split("/")

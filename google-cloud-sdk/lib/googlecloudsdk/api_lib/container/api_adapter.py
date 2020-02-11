@@ -2233,6 +2233,37 @@ class APIAdapter(object):
       upgrade_settings.maxUnavailable = options.max_unavailable_upgrade
     return upgrade_settings
 
+  def UpdateNodePoolRequest(self, node_pool_ref, options):
+    """Creates an UpdateNodePoolRequest from the provided options.
+
+    Arguments:
+      node_pool_ref: The node pool to act on.
+      options: UpdateNodePoolOptions with the user-specified options.
+
+    Returns:
+
+      An UpdateNodePoolRequest.
+    """
+
+    update_request = self.messages.UpdateNodePoolRequest(
+        name=ProjectLocationClusterNodePool(
+            node_pool_ref.projectId,
+            node_pool_ref.zone,
+            node_pool_ref.clusterId,
+            node_pool_ref.nodePoolId,
+        ))
+
+    if options.workload_metadata_from_node is not None:
+      _AddWorkloadMetadataToNodeConfig(update_request, options, self.messages)
+    elif options.node_locations is not None:
+      update_request.locations = sorted(options.node_locations)
+    elif (options.max_surge_upgrade is not None or
+          options.max_unavailable_upgrade is not None):
+      update_request.upgradeSettings = self.UpdateUpgradeSettings(
+          node_pool_ref, options)
+
+    return update_request
+
   def UpdateNodePool(self, node_pool_ref, options):
     """Updates nodePool on a cluster."""
     if options.IsAutoscalingUpdate():
@@ -2258,6 +2289,9 @@ class APIAdapter(object):
               management=management))
       operation = (
           self.client.projects_locations_clusters_nodePools.SetManagement(req))
+    elif options.IsUpdateNodePoolRequest():
+      req = self.UpdateNodePoolRequest(node_pool_ref, options)
+      operation = self.client.projects_locations_clusters_nodePools.Update(req)
     else:
       raise util.Error('Unhandled node pool update mode')
 
@@ -2860,37 +2894,6 @@ class V1Beta1Adapter(V1Adapter):
          autoscaling.autoprovisioningNodePoolDefaults.management or
          autoscaling.autoprovisioningNodePoolDefaults.upgradeSettings):
       raise util.Error(DEFAULTS_WITHOUT_AUTOPROVISIONING_MSG)
-
-  def UpdateNodePoolRequest(self, node_pool_ref, options):
-    """Creates an UpdateNodePoolRequest from the provided options.
-
-    Arguments:
-      node_pool_ref: The node pool to act on.
-      options: UpdateNodePoolOptions with the user-specified options.
-
-    Returns:
-
-      An UpdateNodePoolRequest.
-    """
-
-    update_request = self.messages.UpdateNodePoolRequest(
-        name=ProjectLocationClusterNodePool(
-            node_pool_ref.projectId,
-            node_pool_ref.zone,
-            node_pool_ref.clusterId,
-            node_pool_ref.nodePoolId,
-        ))
-
-    if options.workload_metadata_from_node is not None:
-      _AddWorkloadMetadataToNodeConfig(update_request, options, self.messages)
-    elif options.node_locations is not None:
-      update_request.locations = sorted(options.node_locations)
-    elif (options.max_surge_upgrade is not None or
-          options.max_unavailable_upgrade is not None):
-      update_request.upgradeSettings = self.UpdateUpgradeSettings(
-          node_pool_ref, options)
-
-    return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):
     if options.IsAutoscalingUpdate():

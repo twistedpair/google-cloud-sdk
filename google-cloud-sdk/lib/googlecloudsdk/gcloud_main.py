@@ -90,7 +90,7 @@ def SurveyPromptCheck(command_path, **unused_kwargs):
   if not _ShouldCheckSurveyPrompt(command_path):
     return
   try:
-    survey_check.SurveyPrompter().PromptForSurvey()
+    survey_check.SurveyPrompter().Prompt()
   # pylint:disable=broad-except, We never want this to escape, ever. Only
   # messages printed should reach the user.
   except Exception:

@@ -122,13 +122,19 @@ class APICollection(object):
 class APIMethod(object):
   """A data holder for method information for an API collection."""
 
-  def __init__(self, service, name, api_collection, method_config):
+  def __init__(self,
+               service,
+               name,
+               api_collection,
+               method_config,
+               use_google_auth=False):
     self._service = service
     self._method_name = name
 
     self.collection = api_collection
 
     self.name = method_config.method_id
+    self.use_google_auth = use_google_auth
     dotted_path = self.collection.full_name + NAME_SEPARATOR
     if self.name.startswith(dotted_path):
       self.name = self.name[len(dotted_path):]
@@ -326,7 +332,9 @@ class APIMethod(object):
     """
     if client is None:
       client = apis.GetClientInstance(
-          self.collection.api_name, self.collection.api_version)
+          self.collection.api_name,
+          self.collection.api_version,
+          use_google_auth=self.use_google_auth)
     service = _GetService(client, self.collection.name)
     request_func = self._GetRequestFunc(
         service, request, raw=raw, limit=limit, page_size=page_size)
@@ -526,7 +534,10 @@ def GetAPICollection(full_collection_name, api_version=None):
   raise UnknownCollectionError(api_name, api_version, collection)
 
 
-def GetMethod(full_collection_name, method, api_version=None):
+def GetMethod(full_collection_name,
+              method,
+              api_version=None,
+              use_google_auth=False):
   """Gets the specification for the given API method.
 
   Args:
@@ -534,6 +545,9 @@ def GetMethod(full_collection_name, method, api_version=None):
     method: str, The name of the method.
     api_version: str, The version string of the API or None to use the default
       for this API.
+    use_google_auth: bool, True if the calling command indicates to use
+      google-auth library for authentication. If False, authentication will
+      fallback to using the oauth2client library.
 
   Returns:
     APIMethod, The method specification.
@@ -541,7 +555,10 @@ def GetMethod(full_collection_name, method, api_version=None):
   Raises:
     UnknownMethodError: If the method does not exist on the collection.
   """
-  methods = GetMethods(full_collection_name, api_version=api_version)
+  methods = GetMethods(
+      full_collection_name,
+      api_version=api_version,
+      use_google_auth=use_google_auth)
   for m in methods:
     if m.name == method:
       return m
@@ -552,20 +569,24 @@ def _GetService(client, collection_name):
   return getattr(client, collection_name.replace(NAME_SEPARATOR, '_'), None)
 
 
-def GetMethods(full_collection_name, api_version=None):
+def GetMethods(full_collection_name, api_version=None, use_google_auth=False):
   """Gets all the methods available on the given collection.
 
   Args:
     full_collection_name: str, The collection including the api name.
     api_version: str, The version string of the API or None to use the default
       for this API.
+    use_google_auth: bool, True if the calling command indicates to use
+      google-auth library for authentication. If False, authentication will
+      fallback to using the oauth2client library.
 
   Returns:
     [APIMethod], The method specifications.
   """
   api_name, collection = _SplitFullCollectionName(full_collection_name)
   api_version = _ValidateAndGetDefaultVersion(api_name, api_version)
-  client = apis.GetClientInstance(api_name, api_version, no_http=True)
+  client = apis.GetClientInstance(
+      api_name, api_version, no_http=True, use_google_auth=use_google_auth)
   api_collection = GetAPICollection(full_collection_name,
                                     api_version=api_version)
   service = _GetService(client, collection)
@@ -576,5 +597,7 @@ def GetMethods(full_collection_name, api_version=None):
   method_names = service.GetMethodsList()
   method_configs = [(name, service.GetMethodConfig(name))
                     for name in method_names]
-  return [APIMethod(service, name, api_collection, config)
-          for name, config in method_configs]
+  return [
+      APIMethod(service, name, api_collection, config, use_google_auth)
+      for name, config in method_configs
+  ]

@@ -25,7 +25,6 @@ from googlecloudsdk.api_lib.container.hub import gkehub_api_util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.container.hub import kube_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
 
@@ -271,7 +270,9 @@ def GenerateExclusivityManifest(crd_manifest, cr_manifest, membership_ref,
           crManifest=cr_manifest))
 
 
-def GKEClusterSelfLink(args):
+# TODO(b/145953996): Remove this method once
+# gcloud.container.memberships.* has been ported
+def GKEClusterSelfLink(kube_client):
   """Returns the selfLink of a cluster, if it is a GKE cluster.
 
   There is no straightforward way to obtain this information from the cluster
@@ -280,8 +281,7 @@ def GKEClusterSelfLink(args):
   to find the location of the cluster and its name.
 
   Args:
-    args: an argparse namespace. All arguments that were provided to the command
-      invocation.
+    kube_client: A Kubernetes client for the cluster to be registered.
 
   Returns:
     the full OnePlatform resource path of a GKE cluster, e.g.,
@@ -295,8 +295,6 @@ def GKEClusterSelfLink(args):
       cannot be deduced from the command line flags or environment
     <others?>
   """
-
-  kube_client = kube_util.KubernetesClient(args)
 
   # Get the instance ID and provider ID of some VM. Since all of the VMs should
   # have the same cluster name, arbitrarily choose the first one that is
@@ -359,6 +357,17 @@ def GKEClusterSelfLink(args):
         'Could not determine cluster location from instance.')
 
   # Trim http prefix.
+  container_endpoint = core_apis.GetEffectiveApiEndpoint(
+      'container', 'v1').replace('https://', '', 1).replace('http://', '', 1)
+  if container_endpoint.endswith('/'):
+    container_endpoint = container_endpoint[:-1]
+  return '//{}/projects/{}/locations/{}/clusters/{}'.format(
+      container_endpoint, project_id, cluster_location, cluster_name)
+
+
+def GetEffectiveResourceEndpoint(project_id, cluster_location, cluster_name):
+  # where container_endpoint looks like
+  # https://container.googleapis.com/v1/projects/{projectID}/locations/{location}/clusters/{clusterName}
   container_endpoint = core_apis.GetEffectiveApiEndpoint(
       'container', 'v1').replace('https://', '', 1).replace('http://', '', 1)
   if container_endpoint.endswith('/'):

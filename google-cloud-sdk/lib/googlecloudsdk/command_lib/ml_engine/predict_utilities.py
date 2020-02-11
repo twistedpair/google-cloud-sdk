@@ -71,7 +71,7 @@ def ReadInstances(input_file, data_format, limit=None):
       except ValueError:
         raise InvalidInstancesFileError(
             'Input instances are not in JSON format. '
-            'See "gcloud ml-engine predict --help" for details.')
+            'See "gcloud ai-platform predict --help" for details.')
     elif data_format == 'text':
       instances.append(line_content)
 

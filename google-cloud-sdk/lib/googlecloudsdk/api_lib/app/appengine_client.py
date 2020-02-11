@@ -22,8 +22,6 @@ from __future__ import unicode_literals
 
 from __future__ import with_statement
 
-import json
-
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.core import exceptions
@@ -134,7 +132,7 @@ class AppengineClient(object):
     if notused_indexes.indexes:
       for index in notused_indexes.indexes:
         msg = ('This index is no longer defined in your index.yaml file.\n{0}'
-               .format(six.text_type(index.ToYAML())))
+               .format(six.text_type((index.ToYAML()))))
         prompt = 'Do you want to delete this index'
         if console_io.PromptContinue(msg, prompt, default=True):
           deletions.indexes.append(index)
@@ -184,8 +182,6 @@ class AppengineClient(object):
       return self.UpdateDispatch(parsed_yaml)
     if config_name == yaml_parsing.ConfigYamlInfo.DOS:
       return self.UpdateDos(parsed_yaml)
-    if config_name == yaml_parsing.ConfigYamlInfo.INDEX:
-      return self.UpdateIndexes(parsed_yaml)
     if config_name == yaml_parsing.ConfigYamlInfo.QUEUE:
       return self.UpdateQueues(parsed_yaml)
     raise UnknownConfigType(
@@ -218,16 +214,6 @@ class AppengineClient(object):
     """
     self._GetRpcServer().Send('/api/dos/update',
                               app_id=self.project, payload=dos_yaml.ToYAML())
-
-  def UpdateIndexes(self, index_yaml):
-    """Updates indexes.
-
-    Args:
-      index_yaml: The parsed yaml file with index data.
-    """
-    payload = json.dumps(index_yaml.ToDict())
-    self._GetRpcServer().Send('/api/datastore/index/add',
-                              app_id=self.project, payload=payload)
 
   def UpdateQueues(self, queue_yaml):
     """Updates any new or changed task queue definitions.

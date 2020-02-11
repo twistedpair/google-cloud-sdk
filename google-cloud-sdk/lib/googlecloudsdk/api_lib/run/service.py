@@ -127,12 +127,6 @@ class Service(k8s_object.KubernetesObject):
     return self.annotations.get(u'serving.knative.dev/lastModifier')
 
   @property
-  def last_transition_time(self):
-    return next((c.lastTransitionTime
-                 for c in self.status.conditions
-                 if c.type == u'Ready'), None)
-
-  @property
   def traffic(self):
     self.AssertFullObject()
     return traffic.TrafficTargets(self._messages, self.spec.traffic)

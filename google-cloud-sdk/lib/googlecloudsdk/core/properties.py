@@ -316,6 +316,8 @@ class _Sections(object):
       SDK.
     survey: Section, The section containing survey properties for the Cloud SDK.
     test: Section, The section containing test properties for the Cloud SDK.
+    workflows: Section, The section containing workflows properties for the
+      Cloud SDK.
   """
 
   class _ValueFlag(object):
@@ -368,6 +370,7 @@ class _Sections(object):
     self.storage = _SectionStorage()
     self.survey = _SectionSurvey()
     self.test = _SectionTest()
+    self.workflows = _SectionWorkflows()
 
     sections = [
         self.access_context_manager,
@@ -411,6 +414,7 @@ class _Sections(object):
         self.spanner,
         self.survey,
         self.test,
+        self.workflows,
     ]
     self.__sections = {section.name: section for section in sections}
     self.__invocation_value_stack = [{}]
@@ -1820,6 +1824,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.tpu = self._Add('tpu')
     self.vision = self._Add('vision')
     self.vpcaccess = self._Add('vpcaccess')
+    self.workflowexecutions = self._Add('workflowexecutions')
+    self.workflows = self._Add('workflows')
 
   def EndpointValidator(self, value):
     """Checks to see if the endpoint override string is valid."""
@@ -1849,6 +1855,7 @@ class _SectionApiClientOverrides(_Section):
     self.cloudidentity = self._Add('cloudidentity')
     self.compute = self._Add('compute')
     self.container = self._Add('container')
+    self.speech = self._Add('speech')
     self.sql = self._Add('sql')
     self.run = self._Add('run')
 
@@ -1954,6 +1961,19 @@ class _SectionSurvey(_Section):
         default=False,
         help_text='If True, gcloud will not prompt you to take periodic usage '
         'experience surveys.')
+
+
+class _SectionWorkflows(_Section):
+  """Contains the properties for the 'workflows' section."""
+
+  def __init__(self):
+    super(_SectionWorkflows, self).__init__('workflows', hidden=True)
+    self.location = self._Add(
+        'location',
+        default='us-central1',
+        help_text='The default region to use when working with Cloud '
+        'Workflows resources. When a `--location` flag is required '
+        'but not provided, the command will fall back to this value, if set.')
 
 
 class _Property(object):

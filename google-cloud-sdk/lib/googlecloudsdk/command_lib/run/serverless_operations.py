@@ -1084,12 +1084,16 @@ class ServerlessOperations(object):
     return [domain_mapping.DomainMapping(item, messages)
             for item in response.items]
 
-  def CreateDomainMapping(self, domain_mapping_ref, service_name):
+  def CreateDomainMapping(self,
+                          domain_mapping_ref,
+                          service_name,
+                          force_override=False):
     """Create a domain mapping.
 
     Args:
       domain_mapping_ref: Resource, domainmapping resource.
       service_name: str, the service to which to map domain.
+      force_override: bool, override an existing mapping of this domain.
 
     Returns:
       A domain_mapping.DomainMapping object.
@@ -1100,6 +1104,7 @@ class ServerlessOperations(object):
         self._client, domain_mapping_ref.namespacesId)
     new_mapping.name = domain_mapping_ref.domainmappingsId
     new_mapping.route_name = service_name
+    new_mapping.force_override = force_override
 
     request = messages.RunNamespacesDomainmappingsCreateRequest(
         domainMapping=new_mapping.Message(),

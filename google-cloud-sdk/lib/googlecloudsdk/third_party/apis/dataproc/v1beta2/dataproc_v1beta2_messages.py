@@ -3556,6 +3556,7 @@ class SoftwareConfig(_messages.Message):
       SOLR: <no description>
       HBASE: <no description>
       RANGER: <no description>
+      DOCKER: <no description>
     """
     COMPONENT_UNSPECIFIED = 0
     ANACONDA = 1
@@ -3569,6 +3570,7 @@ class SoftwareConfig(_messages.Message):
     SOLR = 9
     HBASE = 10
     RANGER = 11
+    DOCKER = 12
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):

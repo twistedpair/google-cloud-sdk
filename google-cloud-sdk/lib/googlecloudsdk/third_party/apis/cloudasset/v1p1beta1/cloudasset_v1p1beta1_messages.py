@@ -130,9 +130,11 @@ class CloudassetIamPoliciesSearchAllRequest(_messages.Message):
   r"""A CloudassetIamPoliciesSearchAllRequest object.
 
   Fields:
-    pageSize: Optional. The page size for search result pagination. Returned
-      results may be fewer than requested. The maximum is 2000. If set to the
-      zero value, the server will pick an appropriate default.
+    pageSize: Optional. The page size for search result pagination. Page size
+      is capped at 500 even if a larger value is given. If set to zero, server
+      will pick an appropriate default. Returned results may be fewer than
+      requested. When this happens, there could be more results as long as
+      `next_page_token` is returned.
     pageToken: Optional. If present, retrieve the next batch of results from
       the preceding call to this method. `page_token` must be the value of
       `next_page_token` from the previous response. The values of all other
@@ -155,9 +157,11 @@ class CloudassetIamPoliciesSearchRequest(_messages.Message):
   r"""A CloudassetIamPoliciesSearchRequest object.
 
   Fields:
-    pageSize: Optional. The page size for search result pagination. Returned
-      results may be fewer than requested. The maximum is 2000. If set to the
-      zero value, the server will pick an appropriate default.
+    pageSize: Optional. The page size for search result pagination. Page size
+      is capped at 500 even if a larger value is given. If set to zero, server
+      will pick an appropriate default. Returned results may be fewer than
+      requested. When this happens, there could be more results as long as
+      `next_page_token` is returned.
     pageToken: Optional. If present, retrieve the next batch of results from
       the preceding call to this method. `page_token` must be the value of
       `next_page_token` from the previous response. The values of all other
@@ -182,10 +186,11 @@ class CloudassetResourcesSearchAllRequest(_messages.Message):
   Fields:
     assetTypes: Optional. A list of asset types that this request searches
       for. If empty, it will search all the supported asset types.
-    pageSize: Optional. The page size for search result pagination. Returned
-      results may be fewer than requested. The value of this field is capped
-      at 2000.  If set to the zero value, server will pick an appropriate
-      default.
+    pageSize: Optional. The page size for search result pagination. Page size
+      is capped at 500 even if a larger value is given. If set to zero, server
+      will pick an appropriate default. Returned results may be fewer than
+      requested. When this happens, there could be more results as long as
+      `next_page_token` is returned.
     pageToken: Optional. If present, then retrieve the next batch of results
       from the preceding call to this method.  `page_token` must be the value
       of `next_page_token` from the previous response. The values of all other
@@ -210,12 +215,13 @@ class CloudassetResourcesSearchRequest(_messages.Message):
   Fields:
     assetTypes: Optional. A list of asset types that this request searches
       for. If empty, it will search all the supported asset types.
-    pageSize: Optional. The page size for search result pagination. Returned
-      results may be fewer than requested. The value of this field is capped
-      at 2000.  If set to the zero value, server will pick an appropriate
-      default.
+    pageSize: Optional. The page size for search result pagination. Page size
+      is capped at 500 even if a larger value is given. If set to zero, server
+      will pick an appropriate default. Returned results may be fewer than
+      requested. When this happens, there could be more results as long as
+      `next_page_token` is returned.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method.  `page_token` must be the value
+      from the preceding call to this method. `page_token` must be the value
       of `next_page_token` from the previous response. The values of all other
       method parameters, must be identical to those in the previous call.
     query: Optional. The query statement.
@@ -233,21 +239,33 @@ class CloudassetResourcesSearchRequest(_messages.Message):
 
 
 class Expr(_messages.Message):
-  r"""Represents an expression text. Example:      title: "User account
-  presence"     description: "Determines whether the request has a user
-  account"     expression: "size(request.user) > 0"
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec.  Example (Comparison):
+  title: "Summary size limit"     description: "Determines if a summary is
+  less than 100 chars"     expression: "document.summary.size() < 100"
+  Example (Equality):      title: "Requestor is owner"     description:
+  "Determines if requestor is the document owner"     expression:
+  "document.owner == request.auth.claims.email"  Example (Logic):      title:
+  "Public documents"     description: "Determine whether the document should
+  be publicly visible"     expression: "document.type != 'private' &&
+  document.type != 'internal'"  Example (Data Manipulation):      title:
+  "Notification string"     description: "Create a notification string with a
+  timestamp."     expression: "'New message received at ' +
+  string(document.create_time)"  The exact variables and functions that may be
+  referenced within an expression are determined by the service that evaluates
+  it. See the service documentation for additional information.
 
   Fields:
-    description: An optional description of the expression. This is a longer
+    description: Optional. Description of the expression. This is a longer
       text which describes the expression, e.g. when hovered over it in a UI.
     expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
       error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
   """
 
   description = _messages.StringField(1)
@@ -477,6 +495,9 @@ class StandardResourceMetadata(_messages.Message):
   r"""The standard metadata of a cloud resource.
 
   Fields:
+    additionalAttributes: Additional searchable attributes of this resource.
+      Informational only. The exact set of attributes is subject to change.
+      For example: project id, DNS name etc.
     assetType: The type of this resource. For example:
       "compute.googleapis.com/Disk".
     description: One or more paragraphs of text description of this resource.
@@ -490,11 +511,12 @@ class StandardResourceMetadata(_messages.Message):
       `projects/{project_number}`.
   """
 
-  assetType = _messages.StringField(1)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  name = _messages.StringField(4)
-  project = _messages.StringField(5)
+  additionalAttributes = _messages.StringField(1, repeated=True)
+  assetType = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  name = _messages.StringField(5)
+  project = _messages.StringField(6)
 
 
 encoding.AddCustomJsonFieldMapping(

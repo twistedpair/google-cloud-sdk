@@ -54,8 +54,6 @@ class Backup(_messages.Message):
       TIER_UNSPECIFIED: Not set.
       STANDARD: STANDARD tier. BASIC_HDD is the preferred term for this tier.
       PREMIUM: PREMIUM tier. BASIC_SSD is the preferred term for this tier.
-      SCALE_OUT: SCALE OUT tier. This is a possibly temporary change for go
-        /elastifile-filestore-hackathon.
       BASIC_HDD: BASIC instances offer a maximum capacity of 63.9 TB.
         BASIC_HDD is an alias for STANDARD Tier, offering economical
         performance backed by Persistent Disk HDD.
@@ -68,10 +66,9 @@ class Backup(_messages.Message):
     TIER_UNSPECIFIED = 0
     STANDARD = 1
     PREMIUM = 2
-    SCALE_OUT = 3
-    BASIC_HDD = 4
-    BASIC_SSD = 5
-    HIGH_SCALE_SSD = 6
+    BASIC_HDD = 3
+    BASIC_SSD = 4
+    HIGH_SCALE_SSD = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The backup state.
@@ -1063,8 +1060,6 @@ class Instance(_messages.Message):
       TIER_UNSPECIFIED: Not set.
       STANDARD: STANDARD tier. BASIC_HDD is the preferred term for this tier.
       PREMIUM: PREMIUM tier. BASIC_SSD is the preferred term for this tier.
-      SCALE_OUT: SCALE OUT tier. This is a possibly temporary change for go
-        /elastifile-filestore-hackathon.
       BASIC_HDD: BASIC instances offer a maximum capacity of 63.9 TB.
         BASIC_HDD is an alias for STANDARD Tier, offering economical
         performance backed by Persistent Disk HDD.
@@ -1077,10 +1072,9 @@ class Instance(_messages.Message):
     TIER_UNSPECIFIED = 0
     STANDARD = 1
     PREMIUM = 2
-    SCALE_OUT = 3
-    BASIC_HDD = 4
-    BASIC_SSD = 5
-    HIGH_SCALE_SSD = 6
+    BASIC_HDD = 3
+    BASIC_SSD = 4
+    HIGH_SCALE_SSD = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1593,8 +1587,6 @@ class Snapshot(_messages.Message):
       TIER_UNSPECIFIED: Not set.
       STANDARD: STANDARD tier. BASIC_HDD is the preferred term for this tier.
       PREMIUM: PREMIUM tier. BASIC_SSD is the preferred term for this tier.
-      SCALE_OUT: SCALE OUT tier. This is a possibly temporary change for go
-        /elastifile-filestore-hackathon.
       BASIC_HDD: BASIC instances offer a maximum capacity of 63.9 TB.
         BASIC_HDD is an alias for STANDARD Tier, offering economical
         performance backed by Persistent Disk HDD.
@@ -1607,10 +1599,9 @@ class Snapshot(_messages.Message):
     TIER_UNSPECIFIED = 0
     STANDARD = 1
     PREMIUM = 2
-    SCALE_OUT = 3
-    BASIC_HDD = 4
-    BASIC_SSD = 5
-    HIGH_SCALE_SSD = 6
+    BASIC_HDD = 3
+    BASIC_SSD = 4
+    HIGH_SCALE_SSD = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The snapshot state.

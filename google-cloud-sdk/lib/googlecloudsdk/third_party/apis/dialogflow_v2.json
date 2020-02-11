@@ -1637,7 +1637,7 @@
     },
     "GoogleCloudDialogflowV2DetectIntentRequest": {
       "id": "GoogleCloudDialogflowV2DetectIntentRequest",
-      "description": "The request to detect user's intent.",
+      "description": "============================================================================\nRequests and responses for custom methods.\nThe request to detect user's intent.",
       "type": "object",
       "properties": {
         "queryParams": {

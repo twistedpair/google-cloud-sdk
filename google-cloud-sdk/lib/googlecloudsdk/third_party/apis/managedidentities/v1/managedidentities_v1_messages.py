@@ -14,7 +14,7 @@ package = 'managedidentities'
 
 
 class AttachTrustRequest(_messages.Message):
-  r"""A AttachTrustRequest object.
+  r"""Request message for AttachTrust
 
   Fields:
     trust: Required. The domain trust resource.
@@ -75,7 +75,7 @@ class CancelOperationRequest(_messages.Message):
 
 
 class DetachTrustRequest(_messages.Message):
-  r"""A DetachTrustRequest object.
+  r"""Request message for DetachTrust
 
   Fields:
     trust: Required. The domain trust resource to removed.
@@ -763,7 +763,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
 
 
 class ListDomainsResponse(_messages.Message):
-  r"""A ListDomainsResponse object.
+  r"""Response message for ListDomains
 
   Fields:
     domains: A list of Managed Identities Service domains in the project.
@@ -1384,7 +1384,7 @@ class Policy(_messages.Message):
 
 
 class ReconfigureTrustRequest(_messages.Message):
-  r"""A ReconfigureTrustRequest object.
+  r"""Request message for ReconfigureTrust
 
   Fields:
     targetDnsIpAddresses: Required. The target DNS server IP addresses to
@@ -1398,11 +1398,12 @@ class ReconfigureTrustRequest(_messages.Message):
 
 
 class ResetAdminPasswordRequest(_messages.Message):
-  r"""A ResetAdminPasswordRequest object."""
+  r"""Request message for
+ResetAdminPassword"""
 
 
 class ResetAdminPasswordResponse(_messages.Message):
-  r"""A ResetAdminPasswordResponse object.
+  r"""Response message for ResetAdminPassword
 
   Fields:
     password: A random password. See admin for more information.
@@ -1655,7 +1656,7 @@ class Trust(_messages.Message):
 
 
 class ValidateTrustRequest(_messages.Message):
-  r"""A ValidateTrustRequest object.
+  r"""Request message for ValidateTrust
 
   Fields:
     trust: Required. The domain trust to validate trust state for.

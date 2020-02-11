@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/data-catalog/docs/",
   "protocol": "rest",
   "rootUrl": "https://datacatalog.googleapis.com/",
+  "mtlsRootUrl": "https://datacatalog.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://datacatalog.googleapis.com/",
   "batchPath": "batch",

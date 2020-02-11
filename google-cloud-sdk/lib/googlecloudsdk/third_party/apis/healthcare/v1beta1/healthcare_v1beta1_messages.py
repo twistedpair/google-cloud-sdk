@@ -2126,11 +2126,13 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesGetRequest(_messages
       RAW_ONLY: <no description>
       PARSED_ONLY: <no description>
       FULL: <no description>
+      BASIC: <no description>
     """
     MESSAGE_VIEW_UNSPECIFIED = 0
     RAW_ONLY = 1
     PARSED_ONLY = 2
     FULL = 3
+    BASIC = 4
 
   name = _messages.StringField(1, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 2)
@@ -2153,6 +2155,10 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesIngestRequest(_messa
 class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest
   object.
+
+  Enums:
+    ViewValueValuesEnum: Specifies the parts of the Message to return in the
+      response. When unspecified, equivalent to BASIC.
 
   Fields:
     filter: Restricts messages returned to those matching a filter. Syntax: ht
@@ -2193,13 +2199,33 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
     pageToken: The next_page_token value returned from the previous List
       request, if any.
     parent: Name of the HL7v2 store to retrieve messages from.
+    view: Specifies the parts of the Message to return in the response. When
+      unspecified, equivalent to BASIC.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Specifies the parts of the Message to return in the response. When
+    unspecified, equivalent to BASIC.
+
+    Values:
+      MESSAGE_VIEW_UNSPECIFIED: <no description>
+      RAW_ONLY: <no description>
+      PARSED_ONLY: <no description>
+      FULL: <no description>
+      BASIC: <no description>
+    """
+    MESSAGE_VIEW_UNSPECIFIED = 0
+    RAW_ONLY = 1
+    PARSED_ONLY = 2
+    FULL = 3
+    BASIC = 4
 
   filter = _messages.StringField(1)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
 
 
 class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesPatchRequest(_messages.Message):
@@ -2748,14 +2774,17 @@ class ListMessagesResponse(_messages.Message):
   r"""Lists the messages in the specified HL7v2 store.
 
   Fields:
-    messages: The returned message names. Won't be more values than the value
-      of page_size in the request.
+    hl7V2Messages: The returned Messages. Won't be more Messages than the
+      value of page_size in the request. See view for populated fields.
+    messages: Deprecated. Use `hl7_v2_messages` instead. The returned message
+      names. Won't be more values than the value of page_size in the request.
     nextPageToken: Token to retrieve the next page of results or empty if
       there are no more results in the list.
   """
 
-  messages = _messages.StringField(1, repeated=True)
-  nextPageToken = _messages.StringField(2)
+  hl7V2Messages = _messages.MessageField('Message', 1, repeated=True)
+  messages = _messages.StringField(2, repeated=True)
+  nextPageToken = _messages.StringField(3)
 
 
 class ListOperationsResponse(_messages.Message):

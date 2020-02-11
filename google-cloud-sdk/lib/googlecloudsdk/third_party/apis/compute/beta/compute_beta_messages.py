@@ -1396,6 +1396,10 @@ class AttachedDiskInitializeParams(_messages.Message):
   mutually exclusive with the source property; you can only define one or the
   other, but not both.
 
+  Enums:
+    OnUpdateActionValueValuesEnum: Specifies which action to take on instance
+      update with this disk. Default is to use the existing disk.
+
   Messages:
     LabelsValue: Labels to apply to this disk. These can be later modified by
       the disks.setLabels method. This field is only applicable for persistent
@@ -1430,6 +1434,8 @@ class AttachedDiskInitializeParams(_messages.Message):
     labels: Labels to apply to this disk. These can be later modified by the
       disks.setLabels method. This field is only applicable for persistent
       disks.
+    onUpdateAction: Specifies which action to take on instance update with
+      this disk. Default is to use the existing disk.
     resourcePolicies: Resource policies applied to this disk for automatic
       snapshot creations. Specified using the full or partial URL. For
       instance template, specify only the resource policy name.
@@ -1464,6 +1470,19 @@ class AttachedDiskInitializeParams(_messages.Message):
       source snapshot.
   """
 
+  class OnUpdateActionValueValuesEnum(_messages.Enum):
+    r"""Specifies which action to take on instance update with this disk.
+    Default is to use the existing disk.
+
+    Values:
+      RECREATE_DISK: <no description>
+      RECREATE_DISK_IF_SOURCE_CHANGED: <no description>
+      USE_EXISTING_DISK: <no description>
+    """
+    RECREATE_DISK = 0
+    RECREATE_DISK_IF_SOURCE_CHANGED = 1
+    USE_EXISTING_DISK = 2
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels to apply to this disk. These can be later modified by the
@@ -1496,11 +1515,12 @@ class AttachedDiskInitializeParams(_messages.Message):
   diskType = _messages.StringField(4)
   guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
   labels = _messages.MessageField('LabelsValue', 6)
-  resourcePolicies = _messages.StringField(7, repeated=True)
-  sourceImage = _messages.StringField(8)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
-  sourceSnapshot = _messages.StringField(10)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
+  onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 7)
+  resourcePolicies = _messages.StringField(8, repeated=True)
+  sourceImage = _messages.StringField(9)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
+  sourceSnapshot = _messages.StringField(11)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 12)
 
 
 class AuditConfig(_messages.Message):
@@ -1603,13 +1623,13 @@ class AuthorizationLoggingOptions(_messages.Message):
 class Autoscaler(_messages.Message):
   r"""Represents an Autoscaler resource.  Google Compute Engine has two
   Autoscaler resources:  *
-  [Global](/compute/docs/reference/rest/latest/autoscalers) *
-  [Regional](/compute/docs/reference/rest/latest/regionAutoscalers)  Use
-  autoscalers to automatically add or delete instances from a managed instance
-  group according to your defined autoscaling policy. For more information,
-  read Autoscaling Groups of Instances.  For zonal managed instance groups
-  resource, use the autoscaler resource.  For regional managed instance
-  groups, use the regionAutoscalers resource. (== resource_for
+  [Global](/compute/docs/reference/rest/{$api_version}/autoscalers) *
+  [Regional](/compute/docs/reference/rest/{$api_version}/regionAutoscalers)
+  Use autoscalers to automatically add or delete instances from a managed
+  instance group according to your defined autoscaling policy. For more
+  information, read Autoscaling Groups of Instances.  For zonal managed
+  instance groups resource, use the autoscaler resource.  For regional managed
+  instance groups, use the regionAutoscalers resource. (== resource_for
   {$api_version}.autoscalers ==) (== resource_for
   {$api_version}.regionAutoscalers ==)
 
@@ -2800,9 +2820,9 @@ class BackendService(_messages.Message):
   configuration values for Google Cloud Platform load balancing services.
   Backend services in Google Compute Engine can be either regionally or
   globally scoped.  *
-  [Global](/compute/docs/reference/rest/latest/backendServices) *
-  [Regional](/compute/docs/reference/rest/latest/regionBackendServices)  For
-  more information, read Backend Services.  (== resource_for
+  [Global](/compute/docs/reference/rest/{$api_version}/backendServices) * [Reg
+  ional](/compute/docs/reference/rest/{$api_version}/regionBackendServices)
+  For more information, read Backend Services.  (== resource_for
   {$api_version}.backendService ==)
 
   Enums:
@@ -2838,7 +2858,7 @@ class BackendService(_messages.Message):
       RING_HASH, session affinity settings will not take effect.
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends.  Possible values are HTTP, HTTPS, HTTP2, TCP,
-      SSL, or UDP, depending on the chosen load balancer or Traffic Director
+      SSL, or UDP. depending on the chosen load balancer or Traffic Director
       configuration. Refer to the documentation for the load balancer or for
       Traffic Director for more information.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
@@ -2968,7 +2988,7 @@ class BackendService(_messages.Message):
       when the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load
       Blaancing).
     protocol: The protocol this BackendService uses to communicate with
-      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP,
+      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP.
       depending on the chosen load balancer or Traffic Director configuration.
       Refer to the documentation for the load balancer or for Traffic Director
       for more information.
@@ -3058,7 +3078,7 @@ class BackendService(_messages.Message):
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""The protocol this BackendService uses to communicate with backends.
-    Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP, depending on the
+    Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP. depending on the
     chosen load balancer or Traffic Director configuration. Refer to the
     documentation for the load balancer or for Traffic Director for more
     information.
@@ -8469,7 +8489,7 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests. Acceptable values are 0 to
       500, inclusive. (Default: 500)
-    order_by: Sorts list results by a certain order. By default, results are
+    orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
       using orderBy="creationTimestamp desc". This sorts results based on the
@@ -8487,7 +8507,7 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
   filter = _messages.StringField(1)
   instanceGroupManager = _messages.StringField(2, required=True)
   maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  order_by = _messages.StringField(4)
+  orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   zone = _messages.StringField(7, required=True)
@@ -10441,6 +10461,84 @@ class ComputeInstancesUpdateNetworkInterfaceRequest(_messages.Message):
   project = _messages.StringField(4, required=True)
   requestId = _messages.StringField(5)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputeInstancesUpdateRequest(_messages.Message):
+  r"""A ComputeInstancesUpdateRequest object.
+
+  Enums:
+    MinimalActionValueValuesEnum: If specified, this action or higher level
+      action is performed on the instance irrespective of what action is
+      required for the update to take effect. If not specified, then Compute
+      Engine acts based on the minimum action required.
+    MostDisruptiveAllowedActionValueValuesEnum: If specified, Compute Engine
+      returns an error if the update requires a higher action to be applied to
+      the instance. If not specified, the default will be REFRESH.
+
+  Fields:
+    instance: Name of the instance resource to update.
+    instanceResource: A Instance resource to be passed as the request body.
+    minimalAction: If specified, this action or higher level action is
+      performed on the instance irrespective of what action is required for
+      the update to take effect. If not specified, then Compute Engine acts
+      based on the minimum action required.
+    mostDisruptiveAllowedAction: If specified, Compute Engine returns an error
+      if the update requires a higher action to be applied to the instance. If
+      not specified, the default will be REFRESH.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  class MinimalActionValueValuesEnum(_messages.Enum):
+    r"""If specified, this action or higher level action is performed on the
+    instance irrespective of what action is required for the update to take
+    effect. If not specified, then Compute Engine acts based on the minimum
+    action required.
+
+    Values:
+      INVALID: <no description>
+      NO_EFFECT: <no description>
+      REFRESH: <no description>
+      RESTART: <no description>
+    """
+    INVALID = 0
+    NO_EFFECT = 1
+    REFRESH = 2
+    RESTART = 3
+
+  class MostDisruptiveAllowedActionValueValuesEnum(_messages.Enum):
+    r"""If specified, Compute Engine returns an error if the update requires a
+    higher action to be applied to the instance. If not specified, the default
+    will be REFRESH.
+
+    Values:
+      INVALID: <no description>
+      NO_EFFECT: <no description>
+      REFRESH: <no description>
+      RESTART: <no description>
+    """
+    INVALID = 0
+    NO_EFFECT = 1
+    REFRESH = 2
+    RESTART = 3
+
+  instance = _messages.StringField(1, required=True)
+  instanceResource = _messages.MessageField('Instance', 2)
+  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 3)
+  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 4)
+  project = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeInstancesUpdateShieldedInstanceConfigRequest(_messages.Message):
@@ -13065,7 +13163,7 @@ class ComputeProjectsGetXpnResourcesRequest(_messages.Message):
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests. Acceptable values are 0 to
       500, inclusive. (Default: 500)
-    order_by: Sorts list results by a certain order. By default, results are
+    orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
       using orderBy="creationTimestamp desc". This sorts results based on the
@@ -13081,7 +13179,7 @@ class ComputeProjectsGetXpnResourcesRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  order_by = _messages.StringField(3)
+  orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
 
@@ -13111,7 +13209,7 @@ class ComputeProjectsListXpnHostsRequest(_messages.Message):
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests. Acceptable values are 0 to
       500, inclusive. (Default: 500)
-    order_by: Sorts list results by a certain order. By default, results are
+    orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
       using orderBy="creationTimestamp desc". This sorts results based on the
@@ -13129,7 +13227,7 @@ class ComputeProjectsListXpnHostsRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  order_by = _messages.StringField(3)
+  orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   projectsListXpnHostsRequest = _messages.MessageField('ProjectsListXpnHostsRequest', 6)
@@ -14769,7 +14867,7 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
       Compute Engine returns a nextPageToken that can be used to get the next
       page of results in subsequent list requests. Acceptable values are 0 to
       500, inclusive. (Default: 500)
-    order_by: Sorts list results by a certain order. By default, results are
+    orderBy: Sorts list results by a certain order. By default, results are
       returned in alphanumerical order based on the resource name.  You can
       also sort results in descending order based on the creation timestamp
       using orderBy="creationTimestamp desc". This sorts results based on the
@@ -14787,7 +14885,7 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
   filter = _messages.StringField(1)
   instanceGroupManager = _messages.StringField(2, required=True)
   maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  order_by = _messages.StringField(4)
+  orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   region = _messages.StringField(7, required=True)
@@ -20967,15 +21065,17 @@ class DeprecationStatus(_messages.Message):
 
 class Disk(_messages.Message):
   r"""Represents a Persistent Disk resource.  Google Compute Engine has two
-  Disk resources:  * [Global](/compute/docs/reference/rest/latest/disks) *
-  [Regional](/compute/docs/reference/rest/latest/regionDisks)  Persistent
-  disks are required for running your VM instances. Create both boot and non-
-  boot (data) persistent disks. For more information, read Persistent Disks.
-  For more storage options, read Storage options.  The disks resource
-  represents a zonal persistent disk. For more information, read Zonal
-  persistent disks.  The regionDisks resource represents a regional persistent
-  disk. For more information, read  Regional resources. (== resource_for
-  {$api_version}.disks ==) (== resource_for {$api_version}.regionDisks ==)
+  Disk resources:  *
+  [Global](/compute/docs/reference/rest/{$api_version}/disks) *
+  [Regional](/compute/docs/reference/rest/{$api_version}/regionDisks)
+  Persistent disks are required for running your VM instances. Create both
+  boot and non-boot (data) persistent disks. For more information, read
+  Persistent Disks. For more storage options, read Storage options.  The disks
+  resource represents a zonal persistent disk. For more information, read
+  Zonal persistent disks.  The regionDisks resource represents a regional
+  persistent disk. For more information, read  Regional resources. (==
+  resource_for {$api_version}.disks ==) (== resource_for
+  {$api_version}.regionDisks ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of disk creation.
@@ -21569,9 +21669,10 @@ class DiskMoveRequest(_messages.Message):
 
 class DiskType(_messages.Message):
   r"""Represents a Disk Type resource.  Google Compute Engine has two Disk
-  Type resources:  * [Global](/compute/docs/reference/rest/latest/diskTypes) *
-  [Regional](/compute/docs/reference/rest/latest/regionDiskTypes)  You can
-  choose from a variety of disk types based on your needs. For more
+  Type resources:  *
+  [Global](/compute/docs/reference/rest/{$api_version}/diskTypes) *
+  [Regional](/compute/docs/reference/rest/{$api_version}/regionDiskTypes)  You
+  can choose from a variety of disk types based on your needs. For more
   information, read Storage options.  The diskTypes resource represents disk
   types for a zonal persistent disk. For more information, read Zonal
   persistent disks.  The regionDiskTypes resource represents disk types for a
@@ -23017,8 +23118,8 @@ class FixedOrPercent(_messages.Message):
 class ForwardingRule(_messages.Message):
   r"""Represents a Forwarding Rule resource.  Forwarding rule resources in GCP
   can be either regional or global in scope:  *
-  [Global](/compute/docs/reference/rest/latest/globalForwardingRules) *
-  [Regional](/compute/docs/reference/rest/latest/forwardingRules)  A
+  [Global](/compute/docs/reference/rest/{$api_version}/globalForwardingRules)
+  * [Regional](/compute/docs/reference/rest/{$api_version}/forwardingRules)  A
   forwarding rule and its corresponding IP address represent the frontend
   configuration of a Google Cloud Platform load balancer. Forwarding rules can
   also reference target instances and Cloud VPN Classic gateways
@@ -23047,7 +23148,7 @@ class ForwardingRule(_messages.Message):
       balancers: HTTP(S), SSL Proxy, TCP Proxy, and Network TCP/UDP     -
       INTERNAL is used for:   - Protocol forwarding to VMs from an internal IP
       address  - Internal TCP/UDP load balancers    - INTERNAL_MANAGED is used
-      for:   - Internal HTTP(S) load balancers    - >INTERNAL_SELF_MANAGED is
+      for:   - Internal HTTP(S) load balancers    - INTERNAL_SELF_MANAGED is
       used for:   - Traffic Director      For more information about
       forwarding rules, refer to Forwarding rule concepts.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
@@ -23142,7 +23243,7 @@ class ForwardingRule(_messages.Message):
       SSL Proxy, TCP Proxy, and Network TCP/UDP     - INTERNAL is used for:
       - Protocol forwarding to VMs from an internal IP address  - Internal
       TCP/UDP load balancers    - INTERNAL_MANAGED is used for:   - Internal
-      HTTP(S) load balancers    - >INTERNAL_SELF_MANAGED is used for:   -
+      HTTP(S) load balancers    - INTERNAL_SELF_MANAGED is used for:   -
       Traffic Director      For more information about forwarding rules, refer
       to Forwarding rule concepts.
     metadataFilters: Opaque filter criteria used by Loadbalancer to restrict
@@ -23280,7 +23381,7 @@ class ForwardingRule(_messages.Message):
     and Network TCP/UDP     - INTERNAL is used for:   - Protocol forwarding to
     VMs from an internal IP address  - Internal TCP/UDP load balancers    -
     INTERNAL_MANAGED is used for:   - Internal HTTP(S) load balancers    -
-    >INTERNAL_SELF_MANAGED is used for:   - Traffic Director      For more
+    INTERNAL_SELF_MANAGED is used for:   - Traffic Director      For more
     information about forwarding rules, refer to Forwarding rule concepts.
 
     Values:
@@ -24240,13 +24341,13 @@ class HTTPSHealthCheck(_messages.Message):
 class HealthCheck(_messages.Message):
   r"""Represents a Health Check resource.  Google Compute Engine has two
   Health Check resources:  *
-  [Global](/compute/docs/reference/rest/latest/healthChecks) *
-  [Regional](/compute/docs/reference/rest/latest/regionHealthChecks)  Internal
-  HTTP(S) load balancers use regional health checks. All other types of GCP
-  load balancers and managed instance group auto-healing use global health
-  checks. For more information, read Health Check Concepts.  To perform health
-  checks on network load balancers, you must use either httpHealthChecks or
-  httpsHealthChecks.
+  [Global](/compute/docs/reference/rest/{$api_version}/healthChecks) *
+  [Regional](/compute/docs/reference/rest/{$api_version}/regionHealthChecks)
+  Internal HTTP(S) load balancers use regional health checks. All other types
+  of GCP load balancers and managed instance group auto-healing use global
+  health checks. For more information, read Health Check Concepts.  To perform
+  health checks on network load balancers, you must use either
+  httpHealthChecks or httpsHealthChecks.
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
@@ -26280,6 +26381,13 @@ class Instance(_messages.Message):
     eraseWindowsVssSignature: Specifies whether the disks restored from source
       snapshots or source machine image should erase Windows specific VSS
       signature.
+    fingerprint: Specifies a fingerprint for this resource, which is
+      essentially a hash of the instance's contents and used for optimistic
+      locking. The fingerprint is initially generated by Compute Engine and
+      changes after every request to modify or update the instance. You must
+      always provide an up-to-date fingerprint hash in order to update the
+      instance.  To see the latest fingerprint, make get() request to the
+      instance.
     guestAccelerators: A list of the type and count of accelerator cards
       attached to the instance.
     hostname: Specifies the hostname of the instance. The specified hostname
@@ -26421,33 +26529,34 @@ class Instance(_messages.Message):
   disks = _messages.MessageField('AttachedDisk', 6, repeated=True)
   displayDevice = _messages.MessageField('DisplayDevice', 7)
   eraseWindowsVssSignature = _messages.BooleanField(8)
-  guestAccelerators = _messages.MessageField('AcceleratorConfig', 9, repeated=True)
-  hostname = _messages.StringField(10)
-  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(12, default=u'compute#instance')
-  labelFingerprint = _messages.BytesField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  machineType = _messages.StringField(15)
-  metadata = _messages.MessageField('Metadata', 16)
-  minCpuPlatform = _messages.StringField(17)
-  name = _messages.StringField(18)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 19, repeated=True)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 20)
-  resourcePolicies = _messages.StringField(21, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 22)
-  selfLink = _messages.StringField(23)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 24, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 25)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 26)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 27)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 28)
-  sourceMachineImage = _messages.StringField(29)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 30)
-  startRestricted = _messages.BooleanField(31)
-  status = _messages.EnumField('StatusValueValuesEnum', 32)
-  statusMessage = _messages.StringField(33)
-  tags = _messages.MessageField('Tags', 34)
-  zone = _messages.StringField(35)
+  fingerprint = _messages.BytesField(9)
+  guestAccelerators = _messages.MessageField('AcceleratorConfig', 10, repeated=True)
+  hostname = _messages.StringField(11)
+  id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(13, default=u'compute#instance')
+  labelFingerprint = _messages.BytesField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  machineType = _messages.StringField(16)
+  metadata = _messages.MessageField('Metadata', 17)
+  minCpuPlatform = _messages.StringField(18)
+  name = _messages.StringField(19)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 20, repeated=True)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 21)
+  resourcePolicies = _messages.StringField(22, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 23)
+  selfLink = _messages.StringField(24)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 25, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 26)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 27)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 28)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 29)
+  sourceMachineImage = _messages.StringField(30)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 31)
+  startRestricted = _messages.BooleanField(32)
+  status = _messages.EnumField('StatusValueValuesEnum', 33)
+  statusMessage = _messages.StringField(34)
+  tags = _messages.MessageField('Tags', 35)
+  zone = _messages.StringField(36)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -34004,9 +34113,11 @@ class NodeGroupNode(_messages.Message):
   r"""A NodeGroupNode object.
 
   Enums:
+    CpuOvercommitTypeValueValuesEnum: CPU overcommit.
     StatusValueValuesEnum:
 
   Fields:
+    cpuOvercommitType: CPU overcommit.
     instances: Instances scheduled on this node.
     name: The name of the node.
     nodeType: The type of this node.
@@ -34014,6 +34125,18 @@ class NodeGroupNode(_messages.Message):
     serverId: Server ID associated with this node.
     status: A StatusValueValuesEnum attribute.
   """
+
+  class CpuOvercommitTypeValueValuesEnum(_messages.Enum):
+    r"""CPU overcommit.
+
+    Values:
+      CPU_OVERCOMMIT_TYPE_UNSPECIFIED: <no description>
+      ENABLED: <no description>
+      NONE: <no description>
+    """
+    CPU_OVERCOMMIT_TYPE_UNSPECIFIED = 0
+    ENABLED = 1
+    NONE = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""StatusValueValuesEnum enum type.
@@ -34031,12 +34154,13 @@ class NodeGroupNode(_messages.Message):
     READY = 3
     REPAIRING = 4
 
-  instances = _messages.StringField(1, repeated=True)
-  name = _messages.StringField(2)
-  nodeType = _messages.StringField(3)
-  serverBinding = _messages.MessageField('ServerBinding', 4)
-  serverId = _messages.StringField(5)
-  status = _messages.EnumField('StatusValueValuesEnum', 6)
+  cpuOvercommitType = _messages.EnumField('CpuOvercommitTypeValueValuesEnum', 1)
+  instances = _messages.StringField(2, repeated=True)
+  name = _messages.StringField(3)
+  nodeType = _messages.StringField(4)
+  serverBinding = _messages.MessageField('ServerBinding', 5)
+  serverId = _messages.StringField(6)
+  status = _messages.EnumField('StatusValueValuesEnum', 7)
 
 
 class NodeGroupsAddNodesRequest(_messages.Message):
@@ -34315,9 +34439,10 @@ class NodeTemplate(_messages.Message):
   r"""Represent a sole-tenant Node Template resource.  You can use a template
   to define properties for nodes in a node group. For more information, read
   Creating node groups and instances. (== resource_for
-  {$api_version}.nodeTemplates ==) (== NextID: 18 ==)
+  {$api_version}.nodeTemplates ==) (== NextID: 19 ==)
 
   Enums:
+    CpuOvercommitTypeValueValuesEnum: CPU overcommit.
     StatusValueValuesEnum: [Output Only] The status of the node template. One
       of the following values: CREATING, READY, and DELETING.
 
@@ -34326,6 +34451,7 @@ class NodeTemplate(_messages.Message):
       used in instance scheduling.
 
   Fields:
+    cpuOvercommitType: CPU overcommit.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -34362,6 +34488,18 @@ class NodeTemplate(_messages.Message):
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
   """
+
+  class CpuOvercommitTypeValueValuesEnum(_messages.Enum):
+    r"""CPU overcommit.
+
+    Values:
+      CPU_OVERCOMMIT_TYPE_UNSPECIFIED: <no description>
+      ENABLED: <no description>
+      NONE: <no description>
+    """
+    CPU_OVERCOMMIT_TYPE_UNSPECIFIED = 0
+    ENABLED = 1
+    NONE = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the node template. One of the following
@@ -34405,19 +34543,20 @@ class NodeTemplate(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#nodeTemplate')
-  name = _messages.StringField(5)
-  nodeAffinityLabels = _messages.MessageField('NodeAffinityLabelsValue', 6)
-  nodeType = _messages.StringField(7)
-  nodeTypeFlexibility = _messages.MessageField('NodeTemplateNodeTypeFlexibility', 8)
-  region = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  serverBinding = _messages.MessageField('ServerBinding', 11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  statusMessage = _messages.StringField(13)
+  cpuOvercommitType = _messages.EnumField('CpuOvercommitTypeValueValuesEnum', 1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#nodeTemplate')
+  name = _messages.StringField(6)
+  nodeAffinityLabels = _messages.MessageField('NodeAffinityLabelsValue', 7)
+  nodeType = _messages.StringField(8)
+  nodeTypeFlexibility = _messages.MessageField('NodeTemplateNodeTypeFlexibility', 9)
+  region = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  serverBinding = _messages.MessageField('ServerBinding', 12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  statusMessage = _messages.StringField(14)
 
 
 class NodeTemplateAggregatedList(_messages.Message):
@@ -35458,14 +35597,14 @@ class NotificationEndpointList(_messages.Message):
 class Operation(_messages.Message):
   r"""Represents an Operation resource.  Google Compute Engine has three
   Operation resources:  *
-  [Global](/compute/docs/reference/rest/latest/globalOperations) *
-  [Regional](/compute/docs/reference/rest/latest/regionOperations) *
-  [Zonal](/compute/docs/reference/rest/latest/zoneOperations)  You can use an
-  operation resource to manage asynchronous API requests. For more
+  [Global](/compute/docs/reference/rest/{$api_version}/globalOperations) *
+  [Regional](/compute/docs/reference/rest/{$api_version}/regionOperations) *
+  [Zonal](/compute/docs/reference/rest/{$api_version}/zoneOperations)  You can
+  use an operation resource to manage asynchronous API requests. For more
   information, read Handling API responses.  Operations can be global,
   regional or zonal.   - For global operations, use the globalOperations
   resource.  - For regional operations, use the regionOperations resource.  -
-  For zonal operations, use the zonalOperations resource.    For more
+  For zonal operations, use the zoneOperations resource.    For more
   information, read  Global, Regional, and Zonal Resources. (== resource_for
   {$api_version}.globalOperations ==) (== resource_for
   {$api_version}.regionOperations ==) (== resource_for
@@ -41675,7 +41814,7 @@ class SavedAttachedDisk(_messages.Message):
 
 
 class Scheduling(_messages.Message):
-  r"""Sets the scheduling options for an Instance. NextID: 9
+  r"""Sets the scheduling options for an Instance. NextID: 10
 
   Enums:
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
@@ -41694,7 +41833,8 @@ class Scheduling(_messages.Message):
     minNodeCpus: The minimum number of virtual CPUs this instance will consume
       when running on a sole-tenant node.
     nodeAffinities: A set of node affinity and anti-affinity configurations.
-      Refer to Configuring node affinity for more information.
+      Refer to Configuring node affinity for more information. Overrides
+      reservationAffinity.
     onHostMaintenance: Defines the maintenance behavior for this instance. For
       standard instances, the default behavior is MIGRATE. For preemptible
       instances, the default and only possible behavior is TERMINATE. For more
@@ -42678,15 +42818,15 @@ class SourceInstanceProperties(_messages.Message):
 class SslCertificate(_messages.Message):
   r"""Represents an SSL Certificate resource.  Google Compute Engine has two
   SSL Certificate resources:  *
-  [Global](/compute/docs/reference/rest/latest/sslCertificates) *
-  [Regional](/compute/docs/reference/rest/latest/regionSslCertificates)  -
-  sslCertificates are used by: - external HTTPS load balancers - SSL proxy
-  load balancers  - regionSslCertificates are used by: - internal HTTPS load
-  balancers  This SSL certificate resource also contains a private key. You
-  can use SSL keys and certificates to secure connections to a load balancer.
-  For more information, read  Creating and Using SSL Certificates. (==
-  resource_for {$api_version}.sslCertificates ==) (== resource_for
-  {$api_version}.regionSslCertificates ==) Next ID: 17
+  [Global](/compute/docs/reference/rest/{$api_version}/sslCertificates) * [Reg
+  ional](/compute/docs/reference/rest/{$api_version}/regionSslCertificates)
+  The sslCertificates are used by:   - external HTTPS load balancers  - SSL
+  proxy load balancers    The regionSslCertificates are used by internal HTTPS
+  load balancers.  This SSL certificate resource also contains a private key.
+  You can use SSL keys and certificates to secure connections to a load
+  balancer. For more information, read  Creating and Using SSL Certificates.
+  (== resource_for {$api_version}.sslCertificates ==) (== resource_for
+  {$api_version}.regionSslCertificates ==)
 
   Enums:
     TypeValueValuesEnum: (Optional) Specifies the type of SSL certificate,
@@ -44655,9 +44795,9 @@ class TargetHttpProxiesScopedList(_messages.Message):
 class TargetHttpProxy(_messages.Message):
   r"""Represents a Target HTTP Proxy resource.  Google Compute Engine has two
   Target HTTP Proxy resources:  *
-  [Global](/compute/docs/reference/rest/latest/targetHttpProxies) *
-  [Regional](/compute/docs/reference/rest/latest/regionTargetHttpProxies)  A
-  target HTTP proxy is a component of GCP HTTP load balancers.  *
+  [Global](/compute/docs/reference/rest/{$api_version}/targetHttpProxies) * [R
+  egional](/compute/docs/reference/rest/{$api_version}/regionTargetHttpProxies
+  )  A target HTTP proxy is a component of GCP HTTP load balancers.  *
   targetHttpProxies are used by external HTTP load balancers and Traffic
   Director. * regionTargetHttpProxies are used by internal HTTP load
   balancers.  Forwarding rules reference a target HTTP proxy, and the target
@@ -45131,9 +45271,9 @@ class TargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
 class TargetHttpsProxy(_messages.Message):
   r"""Represents a Target HTTPS Proxy resource.  Google Compute Engine has two
   Target HTTPS Proxy resources:  *
-  [Global](/compute/docs/reference/rest/latest/targetHttpsProxies) *
-  [Regional](/compute/docs/reference/rest/latest/regionTargetHttpsProxies)  A
-  target HTTPS proxy is a component of GCP HTTPS load balancers.  *
+  [Global](/compute/docs/reference/rest/{$api_version}/targetHttpsProxies) * [
+  Regional](/compute/docs/reference/rest/{$api_version}/regionTargetHttpsProxi
+  es)  A target HTTPS proxy is a component of GCP HTTPS load balancers.  *
   targetHttpsProxies are used by external HTTPS load balancers. *
   regionTargetHttpsProxies are used by internal HTTPS load balancers.
   Forwarding rules reference a target HTTPS proxy, and the target proxy then
@@ -47523,17 +47663,17 @@ class TestPermissionsResponse(_messages.Message):
 
 class UrlMap(_messages.Message):
   r"""Represents a URL Map resource.  Google Compute Engine has two URL Map
-  resources:  * [Global](/compute/docs/reference/rest/latest/urlMaps) *
-  [Regional](/compute/docs/reference/rest/latest/regionUrlMaps)  A URL map
-  resource is a component of certain types of GCP load balancers and Traffic
-  Director.  * urlMaps are used by external HTTP(S) load balancers and Traffic
-  Director. * regionUrlMaps are used by internal HTTP(S) load balancers.  This
-  resource defines mappings from host names and URL paths to either a backend
-  service or a backend bucket.  To use the global urlMaps resource, the
-  backend service must have a loadBalancingScheme of either EXTERNAL or
-  INTERNAL_SELF_MANAGED. To use the regionUrlMaps resource, the backend
-  service must have a loadBalancingScheme of INTERNAL_MANAGED. For more
-  information, read URL Map Concepts.
+  resources:  * [Global](/compute/docs/reference/rest/{$api_version}/urlMaps)
+  * [Regional](/compute/docs/reference/rest/{$api_version}/regionUrlMaps)  A
+  URL map resource is a component of certain types of GCP load balancers and
+  Traffic Director.  * urlMaps are used by external HTTP(S) load balancers and
+  Traffic Director. * regionUrlMaps are used by internal HTTP(S) load
+  balancers.  This resource defines mappings from host names and URL paths to
+  either a backend service or a backend bucket.  To use the global urlMaps
+  resource, the backend service must have a loadBalancingScheme of either
+  EXTERNAL or INTERNAL_SELF_MANAGED. To use the regionUrlMaps resource, the
+  backend service must have a loadBalancingScheme of INTERNAL_MANAGED. For
+  more information, read URL Map Concepts.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text

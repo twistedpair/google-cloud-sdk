@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/tpu/",
   "protocol": "rest",
   "rootUrl": "https://tpu.googleapis.com/",
+  "mtlsRootUrl": "https://tpu.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://tpu.googleapis.com/",
   "batchPath": "batch",

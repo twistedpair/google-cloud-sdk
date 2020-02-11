@@ -221,13 +221,15 @@ class Attribute(_Attribute):
   def __eq__(self, other):
     """Overrides."""
     return (super(Attribute, self).__eq__(other)
+            and self.completer == other.completer
             and self.completion_request_params
             == other.completion_request_params
             and self.completion_id_field == other.completion_id_field)
 
   def __hash__(self):
     return super(Attribute, self).__hash__() + sum(
-        map(hash, [six.text_type(self.completion_request_params),
+        map(hash, [six.text_type(self.completer),
+                   six.text_type(self.completion_request_params),
                    self.completion_id_field]))
 
 
@@ -321,6 +323,7 @@ class ResourceSpec(ConceptSpec):
                                     ResourceParameterAttributeConfig())
       attribute_name = self._AttributeName(param_name, attribute_config,
                                            anchor=anchor)
+
       new_attribute = Attribute(
           name=attribute_name,
           help_text=attribute_config.help_text,
@@ -649,6 +652,7 @@ class ResourceParameterAttributeConfig(object):
     attribute_name = data['attribute_name']
     parameter_name = data['parameter_name']
     help_text = data['help']
+    completer = util.Hook.FromData(data, 'completer')
     completion_id_field = data.get('completion_id_field', None)
     completion_request_params_list = data.get('completion_request_params', [])
     completion_request_params = {
@@ -676,6 +680,7 @@ class ResourceParameterAttributeConfig(object):
         name=attribute_name,
         help_text=help_text,
         fallthroughs=fallthroughs,
+        completer=completer,
         completion_id_field=completion_id_field,
         completion_request_params=completion_request_params,
         parameter_name=parameter_name)
@@ -711,8 +716,9 @@ class ResourceParameterAttributeConfig(object):
     self.attribute_name = name
     self.help_text = help_text
     self.fallthroughs = fallthroughs or []
-    # The completer is always None because neither the surface nor the yaml
-    # schema allow for specifying completers currently.
+    if completer and (completion_request_params or completion_id_field):
+      raise ValueError('Custom completer and auto-completer should not be '
+                       'specified at the same time')
     self.completer = completer
     self.completion_request_params = completion_request_params
     self.completion_id_field = completion_id_field

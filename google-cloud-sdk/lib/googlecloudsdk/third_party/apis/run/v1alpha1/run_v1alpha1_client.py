@@ -38,23 +38,25 @@ class RunV1alpha1(base_api.BaseApiClient):
     self.namespaces_authorizeddomains = self.NamespacesAuthorizeddomainsService(self)
     self.namespaces_cloudauditlogssources = self.NamespacesCloudauditlogssourcesService(self)
     self.namespaces_cloudpubsubsources = self.NamespacesCloudpubsubsourcesService(self)
+    self.namespaces_cloudschedulersources = self.NamespacesCloudschedulersourcesService(self)
+    self.namespaces_cloudstoragesources = self.NamespacesCloudstoragesourcesService(self)
     self.namespaces_configurations = self.NamespacesConfigurationsService(self)
     self.namespaces_domainmappings = self.NamespacesDomainmappingsService(self)
     self.namespaces_revisions = self.NamespacesRevisionsService(self)
     self.namespaces_routes = self.NamespacesRoutesService(self)
     self.namespaces_services = self.NamespacesServicesService(self)
-    self.namespaces_storages = self.NamespacesStoragesService(self)
     self.namespaces_triggers = self.NamespacesTriggersService(self)
     self.namespaces = self.NamespacesService(self)
     self.projects_locations_authorizeddomains = self.ProjectsLocationsAuthorizeddomainsService(self)
     self.projects_locations_cloudauditlogssources = self.ProjectsLocationsCloudauditlogssourcesService(self)
     self.projects_locations_cloudpubsubsources = self.ProjectsLocationsCloudpubsubsourcesService(self)
+    self.projects_locations_cloudschedulersources = self.ProjectsLocationsCloudschedulersourcesService(self)
+    self.projects_locations_cloudstoragesources = self.ProjectsLocationsCloudstoragesourcesService(self)
     self.projects_locations_configurations = self.ProjectsLocationsConfigurationsService(self)
     self.projects_locations_domainmappings = self.ProjectsLocationsDomainmappingsService(self)
     self.projects_locations_revisions = self.ProjectsLocationsRevisionsService(self)
     self.projects_locations_routes = self.ProjectsLocationsRoutesService(self)
     self.projects_locations_services = self.ProjectsLocationsServicesService(self)
-    self.projects_locations_storages = self.ProjectsLocationsStoragesService(self)
     self.projects_locations_triggers = self.ProjectsLocationsTriggersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -329,6 +331,310 @@ class RunV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'RunNamespacesCloudpubsubsourcesListRequest',
         response_type_name=u'ListCloudPubSubSourcesResponse',
+        supports_download=False,
+    )
+
+  class NamespacesCloudschedulersourcesService(base_api.BaseApiService):
+    """Service class for the namespaces_cloudschedulersources resource."""
+
+    _NAME = u'namespaces_cloudschedulersources'
+
+    def __init__(self, client):
+      super(RunV1alpha1.NamespacesCloudschedulersourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new cloudschedulersource.
+
+      Args:
+        request: (RunNamespacesCloudschedulersourcesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudSchedulerSource) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudschedulersources',
+        http_method=u'POST',
+        method_id=u'run.namespaces.cloudschedulersources.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+parent}/cloudschedulersources',
+        request_field=u'cloudSchedulerSource',
+        request_type_name=u'RunNamespacesCloudschedulersourcesCreateRequest',
+        response_type_name=u'CloudSchedulerSource',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a cloudschedulersource.
+
+      Args:
+        request: (RunNamespacesCloudschedulersourcesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudschedulersources/{cloudschedulersourcesId}',
+        http_method=u'DELETE',
+        method_id=u'run.namespaces.cloudschedulersources.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunNamespacesCloudschedulersourcesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a cloudschedulersource.
+
+      Args:
+        request: (RunNamespacesCloudschedulersourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudSchedulerSource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudschedulersources/{cloudschedulersourcesId}',
+        http_method=u'GET',
+        method_id=u'run.namespaces.cloudschedulersources.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunNamespacesCloudschedulersourcesGetRequest',
+        response_type_name=u'CloudSchedulerSource',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list cloudschedulersources.
+
+      Args:
+        request: (RunNamespacesCloudschedulersourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListCloudSchedulerSourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudschedulersources',
+        http_method=u'GET',
+        method_id=u'run.namespaces.cloudschedulersources.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+parent}/cloudschedulersources',
+        request_field='',
+        request_type_name=u'RunNamespacesCloudschedulersourcesListRequest',
+        response_type_name=u'ListCloudSchedulerSourcesResponse',
+        supports_download=False,
+    )
+
+    def ReplaceCloudSchedulerSource(self, request, global_params=None):
+      r"""Rpc to replace a cloudschedulersource.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
+
+      Args:
+        request: (RunNamespacesCloudschedulersourcesReplaceCloudSchedulerSourceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudSchedulerSource) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceCloudSchedulerSource')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceCloudSchedulerSource.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudschedulersources/{cloudschedulersourcesId}',
+        http_method=u'PUT',
+        method_id=u'run.namespaces.cloudschedulersources.replaceCloudSchedulerSource',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
+        request_field=u'cloudSchedulerSource',
+        request_type_name=u'RunNamespacesCloudschedulersourcesReplaceCloudSchedulerSourceRequest',
+        response_type_name=u'CloudSchedulerSource',
+        supports_download=False,
+    )
+
+  class NamespacesCloudstoragesourcesService(base_api.BaseApiService):
+    """Service class for the namespaces_cloudstoragesources resource."""
+
+    _NAME = u'namespaces_cloudstoragesources'
+
+    def __init__(self, client):
+      super(RunV1alpha1.NamespacesCloudstoragesourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new cloudstoragesource.
+
+      Args:
+        request: (RunNamespacesCloudstoragesourcesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudStorageSource) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudstoragesources',
+        http_method=u'POST',
+        method_id=u'run.namespaces.cloudstoragesources.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+parent}/cloudstoragesources',
+        request_field=u'cloudStorageSource',
+        request_type_name=u'RunNamespacesCloudstoragesourcesCreateRequest',
+        response_type_name=u'CloudStorageSource',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a cloudstoragesource.
+
+      Args:
+        request: (RunNamespacesCloudstoragesourcesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudstoragesources/{cloudstoragesourcesId}',
+        http_method=u'DELETE',
+        method_id=u'run.namespaces.cloudstoragesources.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunNamespacesCloudstoragesourcesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a cloudstoragesource.
+
+      Args:
+        request: (RunNamespacesCloudstoragesourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudStorageSource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudstoragesources/{cloudstoragesourcesId}',
+        http_method=u'GET',
+        method_id=u'run.namespaces.cloudstoragesources.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunNamespacesCloudstoragesourcesGetRequest',
+        response_type_name=u'CloudStorageSource',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list cloudstoragesources.
+
+      Args:
+        request: (RunNamespacesCloudstoragesourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListCloudStorageSourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudstoragesources',
+        http_method=u'GET',
+        method_id=u'run.namespaces.cloudstoragesources.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+parent}/cloudstoragesources',
+        request_field='',
+        request_type_name=u'RunNamespacesCloudstoragesourcesListRequest',
+        response_type_name=u'ListCloudStorageSourcesResponse',
+        supports_download=False,
+    )
+
+    def ReplaceCloudStorageSource(self, request, global_params=None):
+      r"""Rpc to replace a cloudstoragesource.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
+
+      Args:
+        request: (RunNamespacesCloudstoragesourcesReplaceCloudStorageSourceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudStorageSource) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceCloudStorageSource')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceCloudStorageSource.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudstoragesources/{cloudstoragesourcesId}',
+        http_method=u'PUT',
+        method_id=u'run.namespaces.cloudstoragesources.replaceCloudStorageSource',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
+        request_field=u'cloudStorageSource',
+        request_type_name=u'RunNamespacesCloudstoragesourcesReplaceCloudStorageSourceRequest',
+        response_type_name=u'CloudStorageSource',
         supports_download=False,
     )
 
@@ -823,158 +1129,6 @@ optimistic concurrency control.
         supports_download=False,
     )
 
-  class NamespacesStoragesService(base_api.BaseApiService):
-    """Service class for the namespaces_storages resource."""
-
-    _NAME = u'namespaces_storages'
-
-    def __init__(self, client):
-      super(RunV1alpha1.NamespacesStoragesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new storage.
-
-      Args:
-        request: (RunNamespacesStoragesCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Storage) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/storages',
-        http_method=u'POST',
-        method_id=u'run.namespaces.storages.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[],
-        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+parent}/storages',
-        request_field=u'storage',
-        request_type_name=u'RunNamespacesStoragesCreateRequest',
-        response_type_name=u'Storage',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Rpc to delete a storage.
-
-      Args:
-        request: (RunNamespacesStoragesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/storages/{storagesId}',
-        http_method=u'DELETE',
-        method_id=u'run.namespaces.storages.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
-        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
-        request_field='',
-        request_type_name=u'RunNamespacesStoragesDeleteRequest',
-        response_type_name=u'Empty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Rpc to get information about a storage.
-
-      Args:
-        request: (RunNamespacesStoragesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Storage) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/storages/{storagesId}',
-        http_method=u'GET',
-        method_id=u'run.namespaces.storages.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
-        request_field='',
-        request_type_name=u'RunNamespacesStoragesGetRequest',
-        response_type_name=u'Storage',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Rpc to list storages.
-
-      Args:
-        request: (RunNamespacesStoragesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListStoragesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/storages',
-        http_method=u'GET',
-        method_id=u'run.namespaces.storages.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+parent}/storages',
-        request_field='',
-        request_type_name=u'RunNamespacesStoragesListRequest',
-        response_type_name=u'ListStoragesResponse',
-        supports_download=False,
-    )
-
-    def ReplaceStorage(self, request, global_params=None):
-      r"""Rpc to replace a storage.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
-
-      Args:
-        request: (RunNamespacesStoragesReplaceStorageRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Storage) The response message.
-      """
-      config = self.GetMethodConfig('ReplaceStorage')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ReplaceStorage.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'apis/events.cloud.google.com/v1alpha1/namespaces/{namespacesId}/storages/{storagesId}',
-        http_method=u'PUT',
-        method_id=u'run.namespaces.storages.replaceStorage',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'apis/events.cloud.google.com/v1alpha1/{+name}',
-        request_field=u'storage',
-        request_type_name=u'RunNamespacesStoragesReplaceStorageRequest',
-        response_type_name=u'Storage',
-        supports_download=False,
-    )
-
   class NamespacesTriggersService(base_api.BaseApiService):
     """Service class for the namespaces_triggers resource."""
 
@@ -1373,6 +1527,310 @@ optimistic concurrency control.
         request_field='',
         request_type_name=u'RunProjectsLocationsCloudpubsubsourcesListRequest',
         response_type_name=u'ListCloudPubSubSourcesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsCloudschedulersourcesService(base_api.BaseApiService):
+    """Service class for the projects_locations_cloudschedulersources resource."""
+
+    _NAME = u'projects_locations_cloudschedulersources'
+
+    def __init__(self, client):
+      super(RunV1alpha1.ProjectsLocationsCloudschedulersourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new cloudschedulersource.
+
+      Args:
+        request: (RunProjectsLocationsCloudschedulersourcesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudSchedulerSource) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudschedulersources',
+        http_method=u'POST',
+        method_id=u'run.projects.locations.cloudschedulersources.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+parent}/cloudschedulersources',
+        request_field=u'cloudSchedulerSource',
+        request_type_name=u'RunProjectsLocationsCloudschedulersourcesCreateRequest',
+        response_type_name=u'CloudSchedulerSource',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a cloudschedulersource.
+
+      Args:
+        request: (RunProjectsLocationsCloudschedulersourcesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudschedulersources/{cloudschedulersourcesId}',
+        http_method=u'DELETE',
+        method_id=u'run.projects.locations.cloudschedulersources.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsCloudschedulersourcesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a cloudschedulersource.
+
+      Args:
+        request: (RunProjectsLocationsCloudschedulersourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudSchedulerSource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudschedulersources/{cloudschedulersourcesId}',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.cloudschedulersources.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsCloudschedulersourcesGetRequest',
+        response_type_name=u'CloudSchedulerSource',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list cloudschedulersources.
+
+      Args:
+        request: (RunProjectsLocationsCloudschedulersourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListCloudSchedulerSourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudschedulersources',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.cloudschedulersources.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
+        relative_path=u'v1alpha1/{+parent}/cloudschedulersources',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsCloudschedulersourcesListRequest',
+        response_type_name=u'ListCloudSchedulerSourcesResponse',
+        supports_download=False,
+    )
+
+    def ReplaceCloudSchedulerSource(self, request, global_params=None):
+      r"""Rpc to replace a cloudschedulersource.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
+
+      Args:
+        request: (RunProjectsLocationsCloudschedulersourcesReplaceCloudSchedulerSourceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudSchedulerSource) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceCloudSchedulerSource')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceCloudSchedulerSource.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudschedulersources/{cloudschedulersourcesId}',
+        http_method=u'PUT',
+        method_id=u'run.projects.locations.cloudschedulersources.replaceCloudSchedulerSource',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'cloudSchedulerSource',
+        request_type_name=u'RunProjectsLocationsCloudschedulersourcesReplaceCloudSchedulerSourceRequest',
+        response_type_name=u'CloudSchedulerSource',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsCloudstoragesourcesService(base_api.BaseApiService):
+    """Service class for the projects_locations_cloudstoragesources resource."""
+
+    _NAME = u'projects_locations_cloudstoragesources'
+
+    def __init__(self, client):
+      super(RunV1alpha1.ProjectsLocationsCloudstoragesourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new cloudstoragesource.
+
+      Args:
+        request: (RunProjectsLocationsCloudstoragesourcesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudStorageSource) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudstoragesources',
+        http_method=u'POST',
+        method_id=u'run.projects.locations.cloudstoragesources.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+parent}/cloudstoragesources',
+        request_field=u'cloudStorageSource',
+        request_type_name=u'RunProjectsLocationsCloudstoragesourcesCreateRequest',
+        response_type_name=u'CloudStorageSource',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a cloudstoragesource.
+
+      Args:
+        request: (RunProjectsLocationsCloudstoragesourcesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudstoragesources/{cloudstoragesourcesId}',
+        http_method=u'DELETE',
+        method_id=u'run.projects.locations.cloudstoragesources.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsCloudstoragesourcesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a cloudstoragesource.
+
+      Args:
+        request: (RunProjectsLocationsCloudstoragesourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudStorageSource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudstoragesources/{cloudstoragesourcesId}',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.cloudstoragesources.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsCloudstoragesourcesGetRequest',
+        response_type_name=u'CloudStorageSource',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list cloudstoragesources.
+
+      Args:
+        request: (RunProjectsLocationsCloudstoragesourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListCloudStorageSourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudstoragesources',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.cloudstoragesources.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
+        relative_path=u'v1alpha1/{+parent}/cloudstoragesources',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsCloudstoragesourcesListRequest',
+        response_type_name=u'ListCloudStorageSourcesResponse',
+        supports_download=False,
+    )
+
+    def ReplaceCloudStorageSource(self, request, global_params=None):
+      r"""Rpc to replace a cloudstoragesource.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
+
+      Args:
+        request: (RunProjectsLocationsCloudstoragesourcesReplaceCloudStorageSourceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CloudStorageSource) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceCloudStorageSource')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceCloudStorageSource.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/cloudstoragesources/{cloudstoragesourcesId}',
+        http_method=u'PUT',
+        method_id=u'run.projects.locations.cloudstoragesources.replaceCloudStorageSource',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'cloudStorageSource',
+        request_type_name=u'RunProjectsLocationsCloudstoragesourcesReplaceCloudStorageSourceRequest',
+        response_type_name=u'CloudStorageSource',
         supports_download=False,
     )
 
@@ -1949,158 +2407,6 @@ There are no permissions required for making this API call.
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'RunProjectsLocationsServicesTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsStoragesService(base_api.BaseApiService):
-    """Service class for the projects_locations_storages resource."""
-
-    _NAME = u'projects_locations_storages'
-
-    def __init__(self, client):
-      super(RunV1alpha1.ProjectsLocationsStoragesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new storage.
-
-      Args:
-        request: (RunProjectsLocationsStoragesCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Storage) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/storages',
-        http_method=u'POST',
-        method_id=u'run.projects.locations.storages.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+parent}/storages',
-        request_field=u'storage',
-        request_type_name=u'RunProjectsLocationsStoragesCreateRequest',
-        response_type_name=u'Storage',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Rpc to delete a storage.
-
-      Args:
-        request: (RunProjectsLocationsStoragesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/storages/{storagesId}',
-        http_method=u'DELETE',
-        method_id=u'run.projects.locations.storages.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'apiVersion', u'kind', u'propagationPolicy'],
-        relative_path=u'v1alpha1/{+name}',
-        request_field='',
-        request_type_name=u'RunProjectsLocationsStoragesDeleteRequest',
-        response_type_name=u'Empty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Rpc to get information about a storage.
-
-      Args:
-        request: (RunProjectsLocationsStoragesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Storage) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/storages/{storagesId}',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.storages.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+name}',
-        request_field='',
-        request_type_name=u'RunProjectsLocationsStoragesGetRequest',
-        response_type_name=u'Storage',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Rpc to list storages.
-
-      Args:
-        request: (RunProjectsLocationsStoragesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListStoragesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/storages',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.storages.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
-        relative_path=u'v1alpha1/{+parent}/storages',
-        request_field='',
-        request_type_name=u'RunProjectsLocationsStoragesListRequest',
-        response_type_name=u'ListStoragesResponse',
-        supports_download=False,
-    )
-
-    def ReplaceStorage(self, request, global_params=None):
-      r"""Rpc to replace a storage.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
-
-      Args:
-        request: (RunProjectsLocationsStoragesReplaceStorageRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Storage) The response message.
-      """
-      config = self.GetMethodConfig('ReplaceStorage')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ReplaceStorage.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/storages/{storagesId}',
-        http_method=u'PUT',
-        method_id=u'run.projects.locations.storages.replaceStorage',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'storage',
-        request_type_name=u'RunProjectsLocationsStoragesReplaceStorageRequest',
-        response_type_name=u'Storage',
         supports_download=False,
     )
 
