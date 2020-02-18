@@ -267,13 +267,15 @@ def ReadServiceConfigFile(file_path):
         'Could not open service config file [{0}]: {1}'.format(file_path, ex))
 
 
-def PushNormalizedGoogleServiceConfig(service_name, project, config_dict):
+def PushNormalizedGoogleServiceConfig(service_name, project, config_dict,
+                                      config_id=None):
   """Pushes a given normalized Google service configuration.
 
   Args:
     service_name: name of the service
     project: the producer project Id
     config_dict: the parsed contents of the Google Service Config file.
+    config_id: The id name for the config
 
   Returns:
     Result of the ServicesConfigsCreate request (a Service object)
@@ -285,6 +287,7 @@ def PushNormalizedGoogleServiceConfig(service_name, project, config_dict):
   # JsonToMessage takes the message first and value second
   service_config = encoding.DictToMessage(config_dict, messages.Service)
   service_config.producerProjectId = project
+  service_config.id = config_id
   create_request = (
       messages.ServicemanagementServicesConfigsCreateRequest(
           serviceName=service_name,
@@ -298,7 +301,7 @@ def GetServiceConfigIdFromSubmitConfigSourceResponse(response):
 
 
 def PushMultipleServiceConfigFiles(service_name, config_files, is_async,
-                                   validate_only=False):
+                                   validate_only=False, config_id=None):
   """Pushes a given set of service configuration files.
 
   Args:
@@ -307,6 +310,7 @@ def PushMultipleServiceConfigFiles(service_name, config_files, is_async,
     is_async: whether to wait for aync operations or not.
     validate_only: whether to perform a validate-only run of the operation
                      or not.
+    config_id: an optional name for the config
 
   Returns:
     Full response from the SubmitConfigSource request.
@@ -318,7 +322,7 @@ def PushMultipleServiceConfigFiles(service_name, config_files, is_async,
   messages = GetMessagesModule()
   client = GetClientInstance()
 
-  config_source = messages.ConfigSource()
+  config_source = messages.ConfigSource(id=config_id)
   config_source.files.extend(config_files)
 
   config_source_request = messages.SubmitConfigSourceRequest(
@@ -598,3 +602,36 @@ def LoadJsonOrYaml(input_string):
 
   # First, try to decode JSON. If that fails, try to decode YAML.
   return TryJson() or TryYaml()
+
+
+def CreateRollout(service_config_id, service_name, is_async=False):
+  """Creates a Rollout for a Service Config within it's service.
+
+  Args:
+    service_config_id: The service config id
+    service_name: The name of the service
+    is_async: (Optional) Wheter or not operation should be asynchronous
+
+  Returns:
+    The rollout object or long running operation if is_async is true
+  """
+  messages = GetMessagesModule()
+  client = GetClientInstance()
+
+  percentages = messages.TrafficPercentStrategy.PercentagesValue()
+  percentages.additionalProperties.append(
+      (messages.TrafficPercentStrategy.PercentagesValue.AdditionalProperty(
+          key=service_config_id, value=100.0)))
+  traffic_percent_strategy = messages.TrafficPercentStrategy(
+      percentages=percentages)
+  rollout = messages.Rollout(
+      serviceName=service_name,
+      trafficPercentStrategy=traffic_percent_strategy,)
+  rollout_create = messages.ServicemanagementServicesRolloutsCreateRequest(
+      rollout=rollout,
+      serviceName=service_name,
+  )
+  rollout_operation = client.services_rollouts.Create(rollout_create)
+  op = ProcessOperationResult(rollout_operation, is_async)
+
+  return op.get('response', None)

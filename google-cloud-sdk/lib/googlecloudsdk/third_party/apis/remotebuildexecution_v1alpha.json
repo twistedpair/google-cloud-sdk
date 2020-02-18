@@ -1023,7 +1023,11 @@
             "The command failed with \"no cuda-capable device is detected\" error.",
             "The bot encountered errors from remote CAS when downloading blobs.",
             "The bot encountered errors from remote CAS when uploading blobs.",
-            "The local casproxy is not running."
+            "The local casproxy is not running.",
+            "The bot couldn't start the container.",
+            "The docker ulimit is not valid.",
+            "The docker runtime is unknown.",
+            "The docker capability is unknown."
           ],
           "type": "string",
           "enum": [
@@ -1050,7 +1054,11 @@
             "NO_CUDA_CAPABLE_DEVICE",
             "REMOTE_CAS_DOWNLOAD_ERROR",
             "REMOTE_CAS_UPLOAD_ERROR",
-            "LOCAL_CASPROXY_NOT_RUNNING"
+            "LOCAL_CASPROXY_NOT_RUNNING",
+            "DOCKER_CREATE_CONTAINER_ERROR",
+            "DOCKER_INVALID_ULIMIT",
+            "DOCKER_UNKNOWN_RUNTIME",
+            "DOCKER_UNKNOWN_CAPABILITY"
           ]
         },
         "message": {

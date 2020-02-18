@@ -20,9 +20,12 @@ from __future__ import unicode_literals
 
 import sys
 
+from googlecloudsdk.api_lib import tasks as tasks_api_lib
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.tasks import constants
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
 def AddQueueResourceArg(parser, verb):
@@ -454,3 +457,15 @@ def _GetAppEngineRoutingKeysValidator():
 def _GetHeaderArgValidator():
   return arg_parsers.RegexpValidator(
       r'^(\S+):(.+)$', 'Must be of the form: "HEADER_FIELD: HEADER_VALUE".')
+
+
+def GetTaskResponseViewMapper(release_track):
+  return arg_utils.ChoiceEnumMapper(
+      '--response-view',
+      apis.GetMessagesModule(
+          tasks_api_lib.API_NAME,
+          tasks_api_lib.ApiVersionFromReleaseTrack(
+              release_track)).CloudtasksProjectsLocationsQueuesTasksGetRequest
+      .ResponseViewValueValuesEnum,
+      default='basic',
+      help_str='Task response view.')

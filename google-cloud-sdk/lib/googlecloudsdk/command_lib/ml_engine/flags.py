@@ -548,7 +548,7 @@ def AddExplainabilityFlags(parser):
   """Add args that configure explainability."""
   base.ChoiceArgument(
       '--explanation-method',
-      choices=['integrated-gradients', 'sampled-shapley'],
+      choices=['integrated-gradients', 'sampled-shapley', 'xrai'],
       required=False,
       help_str="""\
           Enable explanations and select the explanation method to use.
@@ -556,6 +556,7 @@ def AddExplainabilityFlags(parser):
           The valid options are:
             integrated-gradients: Use Integrated Gradients.
             sampled-shapley: Use Sampled Shapley.
+            xrai: Use XRAI.
       """
   ).AddToParser(parser)
   base.Argument(
@@ -565,7 +566,8 @@ def AddExplainabilityFlags(parser):
       required=False,
       help="""\
           Number of integral steps for Integrated Gradients. Only valid when
-          `--explanation-method=integrated-gradients` is specified.
+          `--explanation-method=integrated-gradients` or
+          `--explanation-method=xrai` is specified.
       """
   ).AddToParser(parser)
   base.Argument(

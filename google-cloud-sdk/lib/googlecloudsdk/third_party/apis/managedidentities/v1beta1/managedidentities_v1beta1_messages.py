@@ -17,7 +17,7 @@ class AttachTrustRequest(_messages.Message):
   r"""Request message for AttachTrust
 
   Fields:
-    trust: The domain trust resource.
+    trust: Required. The domain trust resource.
   """
 
   trust = _messages.MessageField('Trust', 1)
@@ -78,7 +78,7 @@ class DetachTrustRequest(_messages.Message):
   r"""Request message for DetachTrust
 
   Fields:
-    trust: The domain trust resource to removed.
+    trust: Required. The domain trust resource to removed.
   """
 
   trust = _messages.MessageField('Trust', 1)
@@ -289,17 +289,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
   "software_update": "cloud-sql-09-28-2018",   },
   "maintenance_policy_names": {     "UpdatePolicy":
   "projects/snapchat/locations/us-east1/maintenancePolicies/prod-update-
-  policy",   }   "rollout_metadata": {     "projects/cloud-
-  sql/locations/global/rolloutTypes/software_update": {       "release":
-  "projects/cloud-sql/locations/global/releases/cloud-sql-09-28-2018",
-  "rollout":       "projects/cloud-sql/locations/us-east1/rollouts/cloud-
-  sql-09-28-2018-canary",     },     "projects/cloud-
-  sql/locations/global/rolloutTypes/instance_restart": {       "release":
-  "projects/cloud-sql/locations/global/releases/cloud-sql-09-20-repair",
-  "rollout":       "projects/cloud-sql/locations/us-east1/rollouts/cloud-
-  sql-09-20-repair-100-percent",     }   }   "tenant_project_id": "cloud-sql-
-  test-tenant",   "producer_metadata": {     "cloud-sql-tier": "basic",
-  "cloud-sql-instance-size": "1G",   },   "provisioned_resources": [     {
+  policy",   }   "tenant_project_id": "cloud-sql-test-tenant",
+  "producer_metadata": {     "cloud-sql-tier": "basic",     "cloud-sql-
+  instance-size": "1G",   },   "provisioned_resources": [     {
   "resource-type": "compute-instance",       "resource-url":
   "https://www.googleapis.com/compute/v1/projects/cloud-sql/zones/us-
   east1-b/instances/vm-1",     }   ],   "maintenance_schedules": {
@@ -636,7 +628,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.M
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1NotificationMetadata(_messages.Message):
-  r"""NotificationMetadata is the notification state for an instance.
+  r"""This message has been deprecated. NotificationMetadata is the
+  notification state for an instance.
 
   Fields:
     rescheduled: Whether the instance update has been rescheduled.
@@ -672,8 +665,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource(_messag
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1RolloutMetadata(_messages.Message):
-  r"""RolloutMetadata for an actuation instance. It maps to a single
-  RolloutType.
+  r"""This message has been deprecated. RolloutMetadata for an actuation
+  instance. It maps to a single RolloutType.
 
   Fields:
     notification: Instance level notification metadata.
@@ -900,8 +893,8 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsAttachTrustRequest(_message
   Fields:
     attachTrustRequest: A AttachTrustRequest resource to be passed as the
       request body.
-    name: The resource domain name, project name and location using the form:
-      `projects/{project_id}/locations/global/domains/{domain_name}`
+    name: Required. The resource domain name, project name and location using
+      the form: `projects/{project_id}/locations/global/domains/{domain_name}`
   """
 
   attachTrustRequest = _messages.MessageField('AttachTrustRequest', 1)
@@ -913,14 +906,14 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsCreateRequest(_messages.Mes
 
   Fields:
     domain: A Domain resource to be passed as the request body.
-    domainName: A domain name, e.g. mydomain.myorg.com, with the following
-      restrictions:  * Must contain only lowercase letters, numbers, periods
-      and hyphens.  * Must start with a letter.  * Must contain between 2-64
-      characters.  * Must end with a number or a letter.  * Must not start
-      with period.  * First segement length (mydomain form example above)
-      shouldn't exceed    15 chars.  * The last segment cannot be fully
+    domainName: Required. A domain name, e.g. mydomain.myorg.com, with the
+      following restrictions:  * Must contain only lowercase letters, numbers,
+      periods and hyphens.  * Must start with a letter.  * Must contain
+      between 2-64 characters.  * Must end with a number or a letter.  * Must
+      not start with period.  * First segement length (mydomain form example
+      above) shouldn't exceed    15 chars.  * The last segment cannot be fully
       numeric.  * Must be unique within the customer project.
-    parent: The resource project name and location using the form:
+    parent: Required. The resource project name and location using the form:
       `projects/{project_id}/locations/global`
   """
 
@@ -933,7 +926,7 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsDeleteRequest(_messages.Mes
   r"""A ManagedidentitiesProjectsLocationsGlobalDomainsDeleteRequest object.
 
   Fields:
-    name: The domain resource name using the form:
+    name: Required. The domain resource name using the form:
       `projects/{project_id}/locations/global/domains/{domain_name}`
   """
 
@@ -947,8 +940,8 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsDetachTrustRequest(_message
   Fields:
     detachTrustRequest: A DetachTrustRequest resource to be passed as the
       request body.
-    name: The resource domain name, project name, and location using the form:
-      `projects/{project_id}/locations/global/domains/{domain_name}`
+    name: Required. The resource domain name, project name, and location using
+      the form: `projects/{project_id}/locations/global/domains/{domain_name}`
   """
 
   detachTrustRequest = _messages.MessageField('DetachTrustRequest', 1)
@@ -978,7 +971,7 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsGetRequest(_messages.Messag
   r"""A ManagedidentitiesProjectsLocationsGlobalDomainsGetRequest object.
 
   Fields:
-    name: The domain resource name using the form:
+    name: Required. The domain resource name using the form:
       `projects/{project_id}/locations/global/domains/{domain_name}`
   """
 
@@ -1019,9 +1012,10 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsPatchRequest(_messages.Mess
     domain: A Domain resource to be passed as the request body.
     name: Output only. The unique name of the domain using the form:
       `projects/{project_id}/locations/global/domains/{domain_name}`.
-    updateMask: Mask of fields to update. At least one path must be supplied
-      in this field. The elements of the repeated paths field may only include
-      fields from Domain:  * `labels`  * `locations`  * `authorized_networks`
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. The elements of the repeated paths field may
+      only include fields from Domain:  * `labels`  * `locations`  *
+      `authorized_networks`
   """
 
   domain = _messages.MessageField('Domain', 1)
@@ -1034,8 +1028,8 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsReconfigureTrustRequest(_me
   object.
 
   Fields:
-    name: The resource domain name, project name and location using the form:
-      `projects/{project_id}/locations/global/domains/{domain_name}`
+    name: Required. The resource domain name, project name and location using
+      the form: `projects/{project_id}/locations/global/domains/{domain_name}`
     reconfigureTrustRequest: A ReconfigureTrustRequest resource to be passed
       as the request body.
   """
@@ -1050,7 +1044,7 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsResetAdminPasswordRequest(_
   object.
 
   Fields:
-    name: The domain resource name using the form:
+    name: Required. The domain resource name using the form:
       `projects/{project_id}/locations/global/domains/{domain_name}`
     resetAdminPasswordRequest: A ResetAdminPasswordRequest resource to be
       passed as the request body.
@@ -1098,8 +1092,8 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsValidateTrustRequest(_messa
   object.
 
   Fields:
-    name: The resource domain name, project name, and location using the form:
-      `projects/{project_id}/locations/global/domains/{domain_name}`
+    name: Required. The resource domain name, project name, and location using
+      the form: `projects/{project_id}/locations/global/domains/{domain_name}`
     validateTrustRequest: A ValidateTrustRequest resource to be passed as the
       request body.
   """
@@ -1385,10 +1379,10 @@ class ReconfigureTrustRequest(_messages.Message):
   r"""Request message for ReconfigureTrust
 
   Fields:
-    targetDnsIpAddresses: The target DNS server IP addresses to resolve the
-      remote domain involved in the trust.
-    targetDomainName: The fully-qualified target domain name which will be in
-      trust with current domain.
+    targetDnsIpAddresses: Required. The target DNS server IP addresses to
+      resolve the remote domain involved in the trust.
+    targetDomainName: Required. The fully-qualified target domain name which
+      will be in trust with current domain.
   """
 
   targetDnsIpAddresses = _messages.StringField(1, repeated=True)
@@ -1657,7 +1651,7 @@ class ValidateTrustRequest(_messages.Message):
   r"""Request message for ValidateTrust
 
   Fields:
-    trust: The domain trust to validate trust state for.
+    trust: Required. The domain trust to validate trust state for.
   """
 
   trust = _messages.MessageField('Trust', 1)

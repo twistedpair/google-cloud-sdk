@@ -640,8 +640,8 @@ class RecognitionConfig(_messages.Message):
         with a single byte containing the block length. Only Speex wideband is
         supported. `sample_rate_hertz` must be 16000.
       MP3: MP3 audio. Support all standard MP3 bitrates (which range from
-        32-320 kbps). When using this encoding, `sample_rate_hertz` can be
-        optionally unset if not known.
+        32-320 kbps). When using this encoding, `sample_rate_hertz` has to
+        match the sample rate of the file being used.
     """
     ENCODING_UNSPECIFIED = 0
     LINEAR16 = 1

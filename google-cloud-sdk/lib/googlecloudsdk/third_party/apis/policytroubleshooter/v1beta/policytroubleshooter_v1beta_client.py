@@ -9,6 +9,7 @@ class PolicytroubleshooterV1beta(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://policytroubleshooter.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'policytroubleshooter'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

@@ -105,7 +105,7 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
   Fields:
     instance: A Instance resource to be passed as the request body.
     name: Output only. The resource name of the instance, in the format
-      projects/{project_id}/locations/{location_id}/instances/{instance_id}.
+      projects/{project}/locations/{location}/instances/{instance}.
     updateMask: Mask of fields to update.  At least one path must be supplied
       in this field.  The elements of the repeated paths field may only
       include these fields:  * "description" * "file_shares" * "labels"
@@ -207,17 +207,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
   "software_update": "cloud-sql-09-28-2018",   },
   "maintenance_policy_names": {     "UpdatePolicy":
   "projects/snapchat/locations/us-east1/maintenancePolicies/prod-update-
-  policy",   }   "rollout_metadata": {     "projects/cloud-
-  sql/locations/global/rolloutTypes/software_update": {       "release":
-  "projects/cloud-sql/locations/global/releases/cloud-sql-09-28-2018",
-  "rollout":       "projects/cloud-sql/locations/us-east1/rollouts/cloud-
-  sql-09-28-2018-canary",     },     "projects/cloud-
-  sql/locations/global/rolloutTypes/instance_restart": {       "release":
-  "projects/cloud-sql/locations/global/releases/cloud-sql-09-20-repair",
-  "rollout":       "projects/cloud-sql/locations/us-east1/rollouts/cloud-
-  sql-09-20-repair-100-percent",     }   }   "tenant_project_id": "cloud-sql-
-  test-tenant",   "producer_metadata": {     "cloud-sql-tier": "basic",
-  "cloud-sql-instance-size": "1G",   },   "provisioned_resources": [     {
+  policy",   }   "tenant_project_id": "cloud-sql-test-tenant",
+  "producer_metadata": {     "cloud-sql-tier": "basic",     "cloud-sql-
+  instance-size": "1G",   },   "provisioned_resources": [     {
   "resource-type": "compute-instance",       "resource-url":
   "https://www.googleapis.com/compute/v1/projects/cloud-sql/zones/us-
   east1-b/instances/vm-1",     }   ],   "maintenance_schedules": {
@@ -554,7 +546,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.M
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1NotificationMetadata(_messages.Message):
-  r"""NotificationMetadata is the notification state for an instance.
+  r"""This message has been deprecated. NotificationMetadata is the
+  notification state for an instance.
 
   Fields:
     rescheduled: Whether the instance update has been rescheduled.
@@ -590,8 +583,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource(_messag
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1RolloutMetadata(_messages.Message):
-  r"""RolloutMetadata for an actuation instance. It maps to a single
-  RolloutType.
+  r"""This message has been deprecated. RolloutMetadata for an actuation
+  instance. It maps to a single RolloutType.
 
   Fields:
     notification: Instance level notification metadata.
@@ -692,7 +685,7 @@ class Instance(_messages.Message):
 
   Fields:
     createTime: Output only. The time when the instance was created.
-    description: Optional. A description of the instance (2048 characters or
+    description: Optional. The description of the instance (2048 characters or
       less).
     etag: Server-specified ETag for the instance resource to prevent
       simultaneous updates from overwriting each other.
@@ -700,7 +693,7 @@ class Instance(_messages.Message):
       single file share is supported.
     labels: Resource labels to represent user provided metadata.
     name: Output only. The resource name of the instance, in the format
-      projects/{project_id}/locations/{location_id}/instances/{instance_id}.
+      projects/{project}/locations/{location}/instances/{instance}.
     networks: VPC networks to which the instance is connected. For this
       version, only a single network is supported.
     state: Output only. The instance state.
@@ -735,12 +728,23 @@ class Instance(_messages.Message):
 
     Values:
       TIER_UNSPECIFIED: Not set.
-      STANDARD: STANDARD tier.
-      PREMIUM: PREMIUM tier.
+      STANDARD: STANDARD tier. BASIC_HDD is the preferred term for this tier.
+      PREMIUM: PREMIUM tier. BASIC_SSD is the preferred term for this tier.
+      BASIC_HDD: BASIC instances offer a maximum capacity of 63.9 TB.
+        BASIC_HDD is an alias for STANDARD Tier, offering economical
+        performance backed by Persistent Disk HDD.
+      BASIC_SSD: BASIC instances offer a maximum capacity of 63.9 TB.
+        BASIC_SSD is an alias for PREMIUM Tier, and offers improved
+        performance backed by Persistent Disk SSD.
+      HIGH_SCALE_SSD: HIGH_SCALE instances offer larger capacity and
+        professional performance backed by Persistent Disk SSD.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
     PREMIUM = 2
+    BASIC_HDD = 3
+    BASIC_SSD = 4
+    HIGH_SCALE_SSD = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

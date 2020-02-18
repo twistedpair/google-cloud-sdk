@@ -41,10 +41,11 @@ class BaseTasks(object):
         self.tasks_service, request, batch_size=page_size, limit=limit,
         field='tasks', batch_size_attribute='pageSize')
 
-  def Get(self, task_ref):
+  def Get(self, task_ref, response_view=None):
     request = (
         self.messages.CloudtasksProjectsLocationsQueuesTasksGetRequest(
-            name=task_ref.RelativeName()))
+            name=task_ref.RelativeName(),
+            responseView=response_view))
     return self.tasks_service.Get(request)
 
   def Delete(self, task_ref):

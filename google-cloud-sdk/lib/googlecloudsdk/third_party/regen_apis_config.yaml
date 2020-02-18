@@ -35,6 +35,10 @@
 root_dir: googlecloudsdk/third_party/apis
 
 apis:
+  accessapproval:
+    v1:
+      discovery_doc: accessapproval_v1.json
+      default: true
   accesscontextmanager:
     v1alpha:
       discovery_doc: accesscontextmanager_v1alpha.json
@@ -55,6 +59,10 @@ apis:
   apikeys:
     v2alpha1:
       discovery_doc: apikeys_v2alpha1.json
+      default: true
+  apigateway:
+    v1alpha1:
+      discovery_doc: apigateway_v1alpha1.json
       default: true
   appengine:
     v1alpha:
@@ -431,10 +439,9 @@ apis:
       discovery_doc: gkehub_v1alpha1.json
     v1beta1:
       discovery_doc: gkehub_v1beta1.json
-      # TODO(b/144528144): Make v1 as default api at GA launch.
-      default: true
     v1:
       discovery_doc: gkehub_v1.json
+      default: true
       resources:
         projects.locations.memberships:
           path: projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}

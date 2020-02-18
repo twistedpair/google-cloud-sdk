@@ -9,6 +9,7 @@ class FileV1p1alpha1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://file.googleapis.com/'
+  MTLS_BASE_URL = u'https://file.mtls.googleapis.com/'
 
   _PACKAGE = u'file'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

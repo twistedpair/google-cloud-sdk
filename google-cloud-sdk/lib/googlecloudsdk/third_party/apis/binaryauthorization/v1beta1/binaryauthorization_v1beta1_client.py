@@ -9,6 +9,7 @@ class BinaryauthorizationV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://binaryauthorization.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'binaryauthorization'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

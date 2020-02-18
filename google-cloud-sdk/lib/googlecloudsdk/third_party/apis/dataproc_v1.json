@@ -943,27 +943,35 @@
           "$ref": "JobPlacement"
         },
         "hadoopJob": {
+          "description": "Optional. Job is a Hadoop job.",
           "$ref": "HadoopJob"
         },
         "sparkJob": {
+          "description": "Optional. Job is a Spark job.",
           "$ref": "SparkJob"
         },
         "pysparkJob": {
+          "description": "Optional. Job is a PySpark job.",
           "$ref": "PySparkJob"
         },
         "hiveJob": {
+          "description": "Optional. Job is a Hive job.",
           "$ref": "HiveJob"
         },
         "pigJob": {
+          "description": "Optional. Job is a Pig job.",
           "$ref": "PigJob"
         },
         "sparkRJob": {
+          "description": "Optional. Job is a SparkR job.",
           "$ref": "SparkRJob"
         },
         "sparkSqlJob": {
+          "description": "Optional. Job is a SparkSql job.",
           "$ref": "SparkSqlJob"
         },
         "prestoJob": {
+          "description": "Optional. Job is a Presto job.",
           "$ref": "PrestoJob"
         },
         "status": {

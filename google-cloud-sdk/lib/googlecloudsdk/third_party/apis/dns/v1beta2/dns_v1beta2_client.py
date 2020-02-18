@@ -9,6 +9,7 @@ class DnsV1beta2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://dns.googleapis.com/dns/v1beta2/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'dns'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/ndev.clouddns.readonly', u'https://www.googleapis.com/auth/ndev.clouddns.readwrite']

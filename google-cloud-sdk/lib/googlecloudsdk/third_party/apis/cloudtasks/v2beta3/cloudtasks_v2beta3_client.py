@@ -9,6 +9,7 @@ class CloudtasksV2beta3(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://cloudtasks.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'cloudtasks'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

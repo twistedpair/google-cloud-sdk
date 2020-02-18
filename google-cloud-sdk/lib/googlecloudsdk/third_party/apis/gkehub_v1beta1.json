@@ -231,7 +231,7 @@
     },
     "Membership": {
       "id": "Membership",
-      "description": "Membership contains information about a member cluster.\nNext tag: 11",
+      "description": "Membership contains information about a member cluster.\nNext tag: 12",
       "type": "object",
       "properties": {
         "name": {
@@ -278,6 +278,11 @@
         "externalId": {
           "description": "An externally-generated and managed ID for this Membership. This ID may\nstill be modified after creation but it is not recommended to do so.\nThe ID must match the regex: `a-zA-Z0-9*`",
           "type": "string"
+        },
+        "lastConnectionTime": {
+          "description": "Output only. For clusters using Connect, the timestamp of the most recent connection\nestablished with Google Cloud. This time is updated every several minutes,\nnot continuously. For clusters that do not use GKE Connect, or that have\nnever connected successfully, this field will be unset.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

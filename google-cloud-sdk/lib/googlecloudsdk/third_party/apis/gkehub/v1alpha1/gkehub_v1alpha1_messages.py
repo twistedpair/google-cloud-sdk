@@ -194,11 +194,10 @@ class Feature(_messages.Message):
     authorizerFeatureSpec: A AuthorizerFeatureSpec attribute.
     createTime: Output only. Timestamp for when the Feature was created.
     deleteTime: Output only. Timestamp for when the Feature was deleted.
-    description: An optional description of the feature, limited to 2048
-      characters.
+    description: Description of the feature, limited to 63 characters.
     featureState: Output only. State of the resource itself.
     labels: GCP labels for this feature.
-    meteringFeatureSpec: A MeteringFeatureSpec attribute.
+    meteringFeatureSpec: The specification for the metering feature.
     multiclusteringressFeatureSpec: A MultiClusterIngressFeatureSpec
       attribute.
     multiclusterservicediscoveryFeatureSpec: An EAP feature for GKE multi-
@@ -254,17 +253,17 @@ class FeatureState(_messages.Message):
   Messages:
     DetailsByMembershipValue: Messages pertaining to the current status of the
       feature for a given member, keyed by the fully-qualified member name.
-      Example member name looks like `projects/foo-
-      proj/locations/global/memberships/bar`. This is scoped to feature-level
-      messages (e.g. CSM state on clusters)
+      Example member name looks like
+      `projects/12345/locations/global/memberships/bar`. This is scoped to
+      feature-level messages (e.g. CSM state on clusters)
 
   Fields:
     details: Aggregate status message of the feature.
     detailsByMembership: Messages pertaining to the current status of the
       feature for a given member, keyed by the fully-qualified member name.
-      Example member name looks like `projects/foo-
-      proj/locations/global/memberships/bar`. This is scoped to feature-level
-      messages (e.g. CSM state on clusters)
+      Example member name looks like
+      `projects/12345/locations/global/memberships/bar`. This is scoped to
+      feature-level messages (e.g. CSM state on clusters)
     lifecycleState: A LifecycleStateValueValuesEnum attribute.
   """
 
@@ -287,8 +286,8 @@ class FeatureState(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsByMembershipValue(_messages.Message):
     r"""Messages pertaining to the current status of the feature for a given
-    member, keyed by the fully-qualified member name. Example member name
-    looks like `projects/foo-proj/locations/global/memberships/bar`. This is
+    member, keyed by the fully-qualified member name.  Example member name
+    looks like `projects/12345/locations/global/memberships/bar`. This is
     scoped to feature-level messages (e.g. CSM state on clusters)
 
     Messages:

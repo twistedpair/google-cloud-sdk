@@ -25,8 +25,8 @@ class CloudSqlConnectionProfile(_messages.Message):
       profile is associated with.
     privateIp: Output only. The Cloud SQL database instance's private IP.
     publicIp: Output only. The Cloud SQL database instance's public IP.
-    settings: Optional. Immutable. Metadata used to create the destination
-      Cloud SQL database.
+    settings: Immutable. Metadata used to create the destination Cloud SQL
+      database.
   """
 
   cloudSqlId = _messages.StringField(1)
@@ -36,46 +36,34 @@ class CloudSqlConnectionProfile(_messages.Message):
 
 
 class CloudSqlSettings(_messages.Message):
-  r"""Settings for creating a Cloud SQL database instance. NEXT_TAG = 13.
+  r"""Settings for creating a Cloud SQL database instance. -- NEXT_TAG = 13 --
 
   Enums:
     ActivationPolicyValueValuesEnum: The activation policy specifies when the
       instance is activated; it is applicable only when the instance state is
-      <code>RUNNABLE</code>. Valid values: <br><code>ALWAYS</code>: The
-      instance is on, and remains so even in the absence of connection
-      requests. <br><code>NEVER</code>: The instance is off; it is not
-      activated, even if a connection request arrives.
-      <br><code>ON_DEMAND</code>: First Generation instances only. The
-      instance responds to incoming requests, and turns itself off when not in
-      use. Instances with <code>PER_USE</code> pricing turn off after 15
-      minutes of inactivity. Instances with <code>PER_PACKAGE</code> pricing
-      turn off after 12 hours of inactivity.
-    DataDiskTypeValueValuesEnum: The type of storage: <code>PD_SSD</code>
-      (default) or <code>PD_HDD</code>.
-    DatabaseVersionValueValuesEnum: The database engine type and version.
-      instances: <code>MYSQL_5_7</code> or <code>MYSQL_5_6</code>.
+      'RUNNABLE'. Valid values:  'ALWAYS': The instance is on, and remains so
+      even in the absence of connection requests.  `NEVER`: The instance is
+      off; it is not activated, even if a connection request arrives.
+    DataDiskTypeValueValuesEnum: The type of storage: `PD_SSD` (default) or
+      `PD_HDD`.
+    DatabaseVersionValueValuesEnum: The database engine type and version
+      (`MYSQL_5_7` or `MYSQL_5_6`).
 
   Messages:
     DatabaseFlagsValue: The database flags passed to the Cloud SQL instance at
       startup. An object containing a list of "key": value pairs. Example: {
       "name": "wrench", "mass": "1.3kg", "count": "3" }.
-    UserLabelsValue: Optional. The resource labels for a Cloud SQL instance to
-      use to annotate any related underlying resources such as Compute Engine
-      VMs. An object containing a list of "key": "value" pairs.  Example: `{
-      "name": "wrench", "mass": "1.3kg", "count": "3" }`.
+    UserLabelsValue: The resource labels for a Cloud SQL instance to use to
+      annotate any related underlying resources such as Compute Engine VMs. An
+      object containing a list of "key": "value" pairs.  Example: `{ "name":
+      "wrench", "mass": "1.3kg", "count": "3" }`.
 
   Fields:
     activationPolicy: The activation policy specifies when the instance is
-      activated; it is applicable only when the instance state is
-      <code>RUNNABLE</code>. Valid values: <br><code>ALWAYS</code>: The
-      instance is on, and remains so even in the absence of connection
-      requests. <br><code>NEVER</code>: The instance is off; it is not
+      activated; it is applicable only when the instance state is 'RUNNABLE'.
+      Valid values:  'ALWAYS': The instance is on, and remains so even in the
+      absence of connection requests.  `NEVER`: The instance is off; it is not
       activated, even if a connection request arrives.
-      <br><code>ON_DEMAND</code>: First Generation instances only. The
-      instance responds to incoming requests, and turns itself off when not in
-      use. Instances with <code>PER_USE</code> pricing turn off after 15
-      minutes of inactivity. Instances with <code>PER_PACKAGE</code> pricing
-      turn off after 12 hours of inactivity.
     autoStorageIncrease: [default: ON] If you enable this setting, Cloud SQL
       checks your available storage every 30 seconds. If the available storage
       falls below a threshold size, Cloud SQL automatically adds additional
@@ -84,61 +72,51 @@ class CloudSqlSettings(_messages.Message):
       maximum of 30 TB.
     dataDiskSizeGb: The storage capacity available to the database, in GB. The
       minimum (and default) size is 10GB.
-    dataDiskType: The type of storage: <code>PD_SSD</code> (default) or
-      <code>PD_HDD</code>.
+    dataDiskType: The type of storage: `PD_SSD` (default) or `PD_HDD`.
     databaseFlags: The database flags passed to the Cloud SQL instance at
       startup. An object containing a list of "key": value pairs. Example: {
       "name": "wrench", "mass": "1.3kg", "count": "3" }.
-    databaseVersion: The database engine type and version. instances:
-      <code>MYSQL_5_7</code> or <code>MYSQL_5_6</code>.
+    databaseVersion: The database engine type and version (`MYSQL_5_7` or
+      `MYSQL_5_6`).
     ipConfig: The settings for IP Management. This allows to enable or disable
       the instance IP and manage which external networks can connect to the
       instance. The IPv4 address cannot be disabled.
     sourceId: The Database Migration Service source connection profile ID, in
-      the format: <code>projects/my_project_name/locations/us-
-      central1/connectionProfiles/connection_profile_ID</code>
+      the format: `projects/my_project_name/locations/us-
+      central1/connectionProfiles/connection_profile_ID`
     storageAutoResizeLimit: The maximum size to which storage capacity can be
       automatically increased. The default value is 0, which specifies that
       there is no limit.
     tier: The tier (or machine type) for this instance, for example:
-      <code>db-n1-standard-1</code> (MySQL instances) or <code>db-
-      custom-1-3840</code> (PostgreSQL instances). For more information, see
-      <a href="/sql/docs/db_path/instance-settings">Cloud SQL Instance
-      Settings</a>.
-    userLabels: Optional. The resource labels for a Cloud SQL instance to use
-      to annotate any related underlying resources such as Compute Engine VMs.
-      An object containing a list of "key": "value" pairs.  Example: `{
-      "name": "wrench", "mass": "1.3kg", "count": "3" }`.
+      `db-n1-standard-1` (MySQL instances) or `db-custom-1-3840` (PostgreSQL
+      instances). For more information, see [Cloud SQL Instance
+      Settings](/sql/docs/db_path/instance-settings).
+    userLabels: The resource labels for a Cloud SQL instance to use to
+      annotate any related underlying resources such as Compute Engine VMs. An
+      object containing a list of "key": "value" pairs.  Example: `{ "name":
+      "wrench", "mass": "1.3kg", "count": "3" }`.
     zone: The Google Cloud Platform zone where your Cloud SQL datdabse
       instance is located.
   """
 
   class ActivationPolicyValueValuesEnum(_messages.Enum):
     r"""The activation policy specifies when the instance is activated; it is
-    applicable only when the instance state is <code>RUNNABLE</code>. Valid
-    values: <br><code>ALWAYS</code>: The instance is on, and remains so even
-    in the absence of connection requests. <br><code>NEVER</code>: The
-    instance is off; it is not activated, even if a connection request
-    arrives. <br><code>ON_DEMAND</code>: First Generation instances only. The
-    instance responds to incoming requests, and turns itself off when not in
-    use. Instances with <code>PER_USE</code> pricing turn off after 15 minutes
-    of inactivity. Instances with <code>PER_PACKAGE</code> pricing turn off
-    after 12 hours of inactivity.
+    applicable only when the instance state is 'RUNNABLE'. Valid values:
+    'ALWAYS': The instance is on, and remains so even in the absence of
+    connection requests.  `NEVER`: The instance is off; it is not activated,
+    even if a connection request arrives.
 
     Values:
       SQL_ACTIVATION_POLICY_UNSPECIFIED: unspecified policy.
       ALWAYS: The instance is always up and running.
       NEVER: The instance should never spin up.
-      ON_DEMAND: The instance spins up upon receiving requests.
     """
     SQL_ACTIVATION_POLICY_UNSPECIFIED = 0
     ALWAYS = 1
     NEVER = 2
-    ON_DEMAND = 3
 
   class DataDiskTypeValueValuesEnum(_messages.Enum):
-    r"""The type of storage: <code>PD_SSD</code> (default) or
-    <code>PD_HDD</code>.
+    r"""The type of storage: `PD_SSD` (default) or `PD_HDD`.
 
     Values:
       SQL_DATA_DISK_TYPE_UNSPECIFIED: Unspecified.
@@ -150,8 +128,7 @@ class CloudSqlSettings(_messages.Message):
     PD_HDD = 2
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
-    r"""The database engine type and version. instances:
-    <code>MYSQL_5_7</code> or <code>MYSQL_5_6</code>.
+    r"""The database engine type and version (`MYSQL_5_7` or `MYSQL_5_6`).
 
     Values:
       SQL_DATABASE_VERSION_UNSPECIFIED: Unspecified version.
@@ -195,10 +172,10 @@ class CloudSqlSettings(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class UserLabelsValue(_messages.Message):
-    r"""Optional. The resource labels for a Cloud SQL instance to use to
-    annotate any related underlying resources such as Compute Engine VMs. An
-    object containing a list of "key": "value" pairs.  Example: `{ "name":
-    "wrench", "mass": "1.3kg", "count": "3" }`.
+    r"""The resource labels for a Cloud SQL instance to use to annotate any
+    related underlying resources such as Compute Engine VMs. An object
+    containing a list of "key": "value" pairs.  Example: `{ "name": "wrench",
+    "mass": "1.3kg", "count": "3" }`.
 
     Messages:
       AdditionalProperty: An additional property for a UserLabelsValue object.
@@ -235,10 +212,10 @@ class CloudSqlSettings(_messages.Message):
 
 
 class ConnectionProfile(_messages.Message):
-  r"""A connection profile definition. NEXT_TAG = 10.
+  r"""A connection profile definition. -- NEXT_TAG = 10 --
 
   Enums:
-    ProviderValueValuesEnum: Optional. The database provider.
+    ProviderValueValuesEnum: The database provider.
     StateValueValuesEnum: The current connection profile state (e.g. DRAFT,
       READY, or FAILED).
 
@@ -263,18 +240,16 @@ class ConnectionProfile(_messages.Message):
     name: The name of this connection profile resource in the form of
       projects/{project}/locations/{location}/instances/{instance}.
     postgresql: A PostgreSQL database connection profile.
-    provider: Optional. The database provider.
+    provider: The database provider.
     state: The current connection profile state (e.g. DRAFT, READY, or
       FAILED).
     updateTime: Output only. The timestamp when the resource was last updated.
       A timestamp in RFC3339 UTC "Zulu" format, accurate to nanoseconds.
       Example: "2014-10-02T15:01:23.045123456Z".
-    visible: Optional. A boolean that specifies if the connection profile is
-      visible in the UI list.
   """
 
   class ProviderValueValuesEnum(_messages.Enum):
-    r"""Optional. The database provider.
+    r"""The database provider.
 
     Values:
       DATABASE_PROVIDER_UNSPECIFIED: The database provider is unknown.
@@ -345,7 +320,6 @@ class ConnectionProfile(_messages.Message):
   provider = _messages.EnumField('ProviderValueValuesEnum', 9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
   updateTime = _messages.StringField(11)
-  visible = _messages.BooleanField(12)
 
 
 class DatabaseType(_messages.Message):
@@ -395,19 +369,13 @@ class DatamigrationProjectsLocationsConnectionProfilesCreateRequest(_messages.Me
   Fields:
     connectionProfile: A ConnectionProfile resource to be passed as the
       request body.
-    connectionProfileId: Required. Th connection profile ident.
+    connectionProfileId: Required. The connection profile identifier.
     parent: The parent, which owns this collection of connection profiles.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request.  For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.  The request
-      ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
+    requestId: A unique id used to identify the request. If the server
+      receives two requests with the same id, then the second request will be
+      ignored.  It is recommended to always set this value to a UUID.  The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
   """
 
   connectionProfile = _messages.MessageField('ConnectionProfile', 1)
@@ -420,20 +388,14 @@ class DatamigrationProjectsLocationsConnectionProfilesDeleteRequest(_messages.Me
   r"""A DatamigrationProjectsLocationsConnectionProfilesDeleteRequest object.
 
   Fields:
-    force: Optional. In case of force delete, the CloudSQL replica database is
-      also deleted (only for CloudSQL connection profile).
+    force: In case of force delete, the CloudSQL replica database is also
+      deleted (only for CloudSQL connection profile).
     name: Name of the connection profile resource to delete.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request.  For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.  The request
-      ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
+    requestId: A unique id used to identify the request. If the server
+      receives two requests with the same id, then the second request will be
+      ignored.  It is recommended to always set this value to a UUID.  The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
   """
 
   force = _messages.BooleanField(1)
@@ -455,7 +417,16 @@ class DatamigrationProjectsLocationsConnectionProfilesListRequest(_messages.Mess
   r"""A DatamigrationProjectsLocationsConnectionProfilesListRequest object.
 
   Fields:
-    filter: The filter request.
+    filter: A filter expression that filters connection profiles listed in the
+      response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering. The value
+      must be a string, a number, or a boolean. The comparison operator must
+      be either =, !=, >, or <. For example, list connection profiles created
+      this year by specifying <b>createTime %gt;
+      2020-01-01T00:00:00.000000000Z</b>. You can also filter nested fields.
+      For example, you could specify <b>mySql.username =
+      %lt;my_username%gt;</b> to list all connection profiles configured to
+      connect with a specific username.
     orderBy: the order by fields for the result.
     pageSize: The maximum number of connection profiles to return. The service
       may return fewer than this value. If unspecified, at most 50 connection
@@ -483,22 +454,13 @@ class DatamigrationProjectsLocationsConnectionProfilesPatchRequest(_messages.Mes
       request body.
     name: The name of this connection profile resource in the form of
       projects/{project}/locations/{location}/instances/{instance}.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request.  For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.  The request
-      ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
+    requestId: A unique id used to identify the request. If the server
+      receives two requests with the same id, then the second request will be
+      ignored.  It is recommended to always set this value to a UUID.  The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
     updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the connection profile resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      overwritten in the connection profile resource by the update.
   """
 
   connectionProfile = _messages.MessageField('ConnectionProfile', 1)
@@ -541,19 +503,13 @@ class DatamigrationProjectsLocationsMigrationJobsCreateRequest(_messages.Message
 
   Fields:
     migrationJob: A MigrationJob resource to be passed as the request body.
-    migrationJobId: Required. The migration job ident.
+    migrationJobId: Required. The ID of the instance to create.
     parent: The parent, which owns this collection of migration jobs.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request.  For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.  The request
-      ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
+    requestId: A unique id used to identify the request. If the server
+      receives two requests with the same id, then the second request will be
+      ignored.  It is recommended to always set this value to a UUID.  The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
   """
 
   migrationJob = _messages.MessageField('MigrationJob', 1)
@@ -566,21 +522,15 @@ class DatamigrationProjectsLocationsMigrationJobsDeleteRequest(_messages.Message
   r"""A DatamigrationProjectsLocationsMigrationJobsDeleteRequest object.
 
   Fields:
-    force: Optional. The destination CloudSQL connection profile is always
-      deleted with the migration job. In case of force delete, the destination
-      CloudSQL replica database is also deleted.
+    force: The destination CloudSQL connection profile is always deleted with
+      the migration job. In case of force delete, the destination CloudSQL
+      replica database is also deleted.
     name: Name of the migration job resource to delete.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request.  For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.  The request
-      ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
+    requestId: A unique id used to identify the request. If the server
+      receives two requests with the same id, then the second request will be
+      ignored.  It is recommended to always set this value to a UUID.  The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
   """
 
   force = _messages.BooleanField(1)
@@ -616,16 +566,27 @@ class DatamigrationProjectsLocationsMigrationJobsListRequest(_messages.Message):
   r"""A DatamigrationProjectsLocationsMigrationJobsListRequest object.
 
   Fields:
-    filter: The filter request.
-    orderBy: the order by fields for the result.
+    filter: A filter expression that filters migration jobs listed in the
+      response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering. The value
+      must be a string, a number, or a boolean. The comparison operator must
+      be either =, !=, >, or <. For example, list migration jobs created this
+      year by specifying <b>createTime %gt;
+      2020-01-01T00:00:00.000000000Z.</b> You can also filter nested fields.
+      For example, you could specify <b>reverseSshConnectivity.vmIp =
+      "1.2.3.4"</b> to select all migration jobs connecting through the
+      specific SSH tunnel bastion.
+    orderBy: Sort the results based on the migration job name. Valid values
+      are: "name", "name asc", and "name desc".
     pageSize: The maximum number of migration jobs to return. The service may
       return fewer than this value. If unspecified, at most 50 migration jobs
       will be returned. The maximum value is 1000; values above 1000 will be
       coerced to 1000.
-    pageToken: A page token, received from a previous `ListMigrationJobs`
-      call. Provide this to retrieve the subsequent page.  When paginating,
-      all other parameters provided to `ListMigrationJobs` must match the call
-      that provided the page token.
+    pageToken: The nextPageToken value received in the previous call to
+      migrationJobs.list, used in the subsequent request to retrieve the next
+      page of results. On first call this should be left blank. When
+      paginating, all other parameters provided to migrationJobs.list must
+      match the call that provided the page token.
     parent: The parent, which owns this collection of migrationJobs.
   """
 
@@ -643,22 +604,13 @@ class DatamigrationProjectsLocationsMigrationJobsPatchRequest(_messages.Message)
     migrationJob: A MigrationJob resource to be passed as the request body.
     name: The name (URI) of this migration job resource, in the form of:
       projects/{project}/locations/{location}/instances/{instance}.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request.  For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.  The request
-      ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
+    requestId: A unique id used to identify the request. If the server
+      receives two requests with the same id, then the second request will be
+      ignored.  It is recommended to always set this value to a UUID.  The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
     updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the migration job resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      overwritten in the migration job resource by the update.
   """
 
   migrationJob = _messages.MessageField('MigrationJob', 1)
@@ -737,9 +689,12 @@ class DatamigrationProjectsLocationsMigrationJobsVerifyRequest(_messages.Message
 
   Fields:
     name: Name of the migration job resource to verify.
+    verifyMigrationJobRequest: A VerifyMigrationJobRequest resource to be
+      passed as the request body.
   """
 
   name = _messages.StringField(1, required=True)
+  verifyMigrationJobRequest = _messages.MessageField('VerifyMigrationJobRequest', 2)
 
 
 class DatamigrationProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -805,14 +760,14 @@ class GenerateSshScriptRequest(_messages.Message):
   r"""Request message for 'GenerateSshScript' request.
 
   Fields:
+    vm: Required. Bastion VM Instance name to use or to create.
     vmCreationConfig: A VmCreationConfig attribute.
-    vmName: Required. Bastion VM Instance name to use or to create.
-    vmPort: Optional. The port that will be open on the bastion host
+    vmPort: The port that will be open on the bastion host
     vmSelectionConfig: A VmSelectionConfig attribute.
   """
 
-  vmCreationConfig = _messages.MessageField('VmCreationConfig', 1)
-  vmName = _messages.StringField(2)
+  vm = _messages.StringField(1)
+  vmCreationConfig = _messages.MessageField('VmCreationConfig', 2)
   vmPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   vmSelectionConfig = _messages.MessageField('VmSelectionConfig', 4)
 
@@ -876,7 +831,7 @@ class ListMigrationJobsResponse(_messages.Message):
   r"""Response message for 'ListMigrationJobs' request.
 
   Fields:
-    migrationJobs: The list of migration jobs response.
+    migrationJobs: The list of migration jobs objects.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
     unreachable: Locations that could not be reached.
@@ -981,7 +936,8 @@ class Location(_messages.Message):
 
 
 class MigrationJob(_messages.Message):
-  r"""A migration job Entity. NEXT_TAG = 17.
+  r"""Represents a Database Migration Service migration job object. --
+  NEXT_TAG = 17 --
 
   Enums:
     PhaseValueValuesEnum: Output only. The current migration job phase.
@@ -1000,10 +956,11 @@ class MigrationJob(_messages.Message):
       nanoseconds. Example: "2014-10-02T15:01:23.045123456Z".
     destination: Required. The resource name (URI) of the destination
       connection profile.
-    destinationDatabase: The indicative destination database type.
+    destinationDatabase: The database engine type and provider of the
+      destination.
     displayName: The migration job display name.
-    dumpPath: Optional. The path to the dump file in Google Cloud Storage, in
-      the format: (gs://[BUCKET_NAME]/[OBJECT_NAME]).
+    dumpPath: The path to the dump file in Google Cloud Storage, in the
+      format: (gs://[BUCKET_NAME]/[OBJECT_NAME]).
     duration: Output only. The duration of the migration job (in seconds). A
       duration in seconds with up to nine fractional digits, terminated by
       's'. Example: "3.5s".
@@ -1021,7 +978,7 @@ class MigrationJob(_messages.Message):
       over Reverse SSH tunnel connectivity.
     source: Required. The resource name (URI) of the source connection
       profile.
-    sourceDatabase: The indicative source database type.
+    sourceDatabase: The database engine type and provider of the source.
     state: The current migration job state.
     staticIpConnectivity: static ip connectivity data (default, no additional
       details needed).
@@ -1193,16 +1150,16 @@ class MySqlConnectionProfile(_messages.Message):
   databases.
 
   Fields:
-    cloudSqlId: Optional. If the source is a Cloud SQL database, use this
-      field to provide the Cloud SQL instance ID of the source.
+    cloudSqlId: If the source is a Cloud SQL database, use this field to
+      provide the Cloud SQL instance ID of the source.
     host: Required. The IP or hostname of the source MySQL database.
     password: Required. The password for the user that Database Migration
       Service will be using to connect to the database. This field is not
       returned on request, and the value is encrypted when stored in Database
       Migration Service.
     port: Required. The network port of the source MySQL database.
-    ssl: Optional. SSL configuration for the destination to connect to the
-      source database.
+    ssl: SSL configuration for the destination to connect to the source
+      database.
     username: Required. The username that Database Migration Service will use
       to connect to the database. The value is encrypted when stored in
       Database Migration Service.
@@ -1329,8 +1286,8 @@ class PostgreSqlConnectionProfile(_messages.Message):
   databases.
 
   Fields:
-    cloudSqlId: Optional. If the source is a Cloud SQL database, use this
-      field to provide the Cloud SQL instance ID of the source.
+    cloudSqlId: If the source is a Cloud SQL database, use this field to
+      provide the Cloud SQL instance ID of the source.
     database: Required. The database name.
     host: Required. The IP or hostname of the source PostgreSQL database.
     password: Required. The password for the user that Database Migration
@@ -1338,8 +1295,8 @@ class PostgreSqlConnectionProfile(_messages.Message):
       returned on request, and the value is encrypted when stored in Database
       Migration Service.
     port: Required. The network port of the source PostgreSQL database.
-    ssl: Optional. SSL configuration for the destination to connect to the
-      source database.
+    ssl: SSL configuration for the destination to connect to the source
+      database.
     username: Required. The username that Database Migration Service will use
       to connect to the database. The value is encrypted when stored in
       Database Migration Service.
@@ -1368,36 +1325,38 @@ class ResumeMigrationJobRequest(_messages.Message):
 
 class ReverseSshConnectivity(_messages.Message):
   r"""The details needed to configure a reverse SSH tunnel between the source
-  and destination databases. These details will be used when calling the <a
-  href="https://docs.google.com/document/d
-  /17oOEqp6yOFsFZt4o89j6ApRFY613s1JrDnzvZ0TT-
-  Do/edit#heading=h.lxsgirvd4wcf">generateSshScript</a> method to produce the
-  script that will help set up the reverse SSH tunnel.
+  and destination databases. These details will be used when calling the
+  generateSshScript method (see https://cloud.google.com/database-migration/do
+  cs/reference/rest/v1alpha2/projects.locations.migrationJobs/generateSshScrip
+  t) to produce the script that will help set up the reverse SSH tunnel, and
+  to set up the VPC peering between the Cloud SQL private network and the VPC.
 
   Fields:
-    vmIp: Required. The Bastion Virtual Machine IP.
-    vmName: Optional. The name of the VM that will host the SSH tunnel
-      bastion.
-    vmPort: Required. The forwarding port for the SSH tunnel
+    vm: The name of the virtual machine (Compute Engine) used as the bastion
+      server for the SSH tunnel.
+    vmIp: Required. The IP of the virtual machine (Compute Engine) used as the
+      bastion server for the SSH tunnel.
+    vmPort: Required. The forwarding port of the virtual machine (Compute
+      Engine) used as the bastion server for the SSH tunnel.
     vmZone: Required. The Google Cloud Platform zone where the VM is located.
-    vpcName: Optional. The name of the VPC network where the VM is hosted.
+    vpc: The name of the VPC to peer with the Cloud SQL private network.
   """
 
-  vmIp = _messages.StringField(1)
-  vmName = _messages.StringField(2)
+  vm = _messages.StringField(1)
+  vmIp = _messages.StringField(2)
   vmPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   vmZone = _messages.StringField(4)
-  vpcName = _messages.StringField(5)
+  vpc = _messages.StringField(5)
 
 
 class SqlAclEntry(_messages.Message):
   r"""An entry for an Access Control list.
 
   Fields:
-    expireTime: The time when this access control entry expires in <a
-      href="https://tools.ietf.org/html/rfc3339">RFC 3339</a> format, for
-      example <code>2012-11-15T16:19:00.094Z</code>.
-    label: Optional. A label to identify this entry.
+    expireTime: The time when this access control entry expires in [RFC
+      3339](https://tools.ietf.org/html/rfc3339) format, for example:
+      `2012-11-15T16:19:00.094Z`.
+    label: A label to identify this entry.
     value: The whitelisted value for the access control list.
   """
 
@@ -1411,16 +1370,15 @@ class SqlIpConfig(_messages.Message):
 
   Fields:
     authorizedNetworks: The list of external networks that are allowed to
-      connect to the instance using the IP. In <a
-      href="http://en.wikipedia.org/wiki/CIDR_notation#CIDR_notation">CIDR
-      notation</a>, also known as 'slash' notation (e.g.
-      <code>192.168.100.0/24</code>).
+      connect to the instance using the IP. see
+      http://en.wikipedia.org/wiki/CIDR_notation#CIDR_notation, also known as
+      'slash' notation (e.g. `192.168.100.0/24`).
     enableIpv4: Whether the instance should be assigned an IPv4 address or
       not.
     privateNetwork: The resource link for the VPC network from which the Cloud
       SQL instance is accessible for private IP. For example,
-      <code>/projects/myProject/global/networks/default</code>. This setting
-      can be updated, but it cannot be removed after it is set.
+      `/projects/myProject/global/networks/default`. This setting can be
+      updated, but it cannot be removed after it is set.
     requireSsl: Whether SSL connections over IP should be enforced or not.
   """
 
@@ -1443,6 +1401,10 @@ class SshScript(_messages.Message):
 class SslConfig(_messages.Message):
   r"""SSL configuration information.
 
+  Enums:
+    TypeValueValuesEnum: Output only. The ssl config type according to
+      'client_key', 'client_certificate' and 'ca_certificate'.
+
   Fields:
     caCertificate: Required. The x509 PEM-encoded certificate of the CA that
       signed the source database server's certificate. The replica will use
@@ -1453,11 +1415,28 @@ class SslConfig(_messages.Message):
     clientKey: The unencrypted PKCS#1 or PKCS#8 PEM-encoded private key
       associated with the Client Certificate. If this field is used then the
       'client_certificate' field is mandatory
+    type: Output only. The ssl config type according to 'client_key',
+      'client_certificate' and 'ca_certificate'.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The ssl config type according to 'client_key',
+    'client_certificate' and 'ca_certificate'.
+
+    Values:
+      SSL_TYPE_UNSPECIFIED: Unspecified.
+      SERVER_ONLY: Only 'ca_certificate' specified.
+      SERVER_CLIENT: Both server ('ca_certificate'), and client ('client_key',
+        'client_certificate') specified.
+    """
+    SSL_TYPE_UNSPECIFIED = 0
+    SERVER_ONLY = 1
+    SERVER_CLIENT = 2
 
   caCertificate = _messages.StringField(1)
   clientCertificate = _messages.StringField(2)
   clientKey = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1591,18 +1570,32 @@ class StopMigrationJobRequest(_messages.Message):
   r"""Request message for 'StopMigrationJob' request."""
 
 
+class VerifyMigrationJobRequest(_messages.Message):
+  r"""Request message for 'VerifyMigrationJob' request."""
+
+
+class VerifyMigrationJobResponse(_messages.Message):
+  r"""A VerifyMigrationJobResponse object.
+
+  Fields:
+    errors: A list of any errors that were found during the verification.
+  """
+
+  errors = _messages.MessageField('MigrationJobError', 1, repeated=True)
+
+
 class VmCreationConfig(_messages.Message):
   r"""A VmCreationConfig object.
 
   Fields:
     vmMachineType: Required. VM instance machine type to create.
-    vmZone: Optional. The Google Cloud Platform zone to create the VM in.
-    vpcName: Required. The VPC name the vm needs to be created in.
+    vmZone: The Google Cloud Platform zone to create the VM in.
+    vpc: Required. The VPC name the vm needs to be created in.
   """
 
   vmMachineType = _messages.StringField(1)
   vmZone = _messages.StringField(2)
-  vpcName = _messages.StringField(3)
+  vpc = _messages.StringField(3)
 
 
 class VmSelectionConfig(_messages.Message):
@@ -1621,11 +1614,11 @@ class VpcPeeringConnectivity(_messages.Message):
   between Cloud SQL and this VPC.
 
   Fields:
-    vpcName: The name of the VPC network to peer with the Cloud SQL private
+    vpc: The name of the VPC network to peer with the Cloud SQL private
       network.
   """
 
-  vpcName = _messages.StringField(1)
+  vpc = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

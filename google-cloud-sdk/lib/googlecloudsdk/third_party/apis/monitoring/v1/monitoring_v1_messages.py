@@ -705,7 +705,7 @@ class ListDashboardsResponse(_messages.Message):
     dashboards: The list of requested dashboards.
     nextPageToken: If there are more results than have been returned, then
       this field is set to a non-empty value. To see the additional results,
-      use that value as pageToken in the next call to this method.
+      use that value as page_token in the next call to this method.
   """
 
   dashboards = _messages.MessageField('Dashboard', 1, repeated=True)
@@ -718,7 +718,7 @@ class MonitoringProjectsDashboardsCreateRequest(_messages.Message):
   Fields:
     dashboard: A Dashboard resource to be passed as the request body.
     parent: Required. The project on which to execute the request. The format
-      is "projects/{project_id_or_number}". The {project_id_or_number} must
+      is: projects/[PROJECT_ID_OR_NUMBER] The [PROJECT_ID_OR_NUMBER] must
       match the dashboard resource name.
   """
 
@@ -730,8 +730,8 @@ class MonitoringProjectsDashboardsDeleteRequest(_messages.Message):
   r"""A MonitoringProjectsDashboardsDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the Dashboard. The format is
-      "projects/{project_id_or_number}/dashboards/{dashboard_id}".
+    name: Required. The resource name of the Dashboard. The format is:
+      projects/[PROJECT_ID_OR_NUMBER]/dashboards/[DASHBOARD_ID]
   """
 
   name = _messages.StringField(1, required=True)
@@ -741,9 +741,9 @@ class MonitoringProjectsDashboardsGetRequest(_messages.Message):
   r"""A MonitoringProjectsDashboardsGetRequest object.
 
   Fields:
-    name: Required. The resource name of the Dashboard. The format is one of
-      "dashboards/{dashboard_id}" (for system dashboards) or
-      "projects/{project_id_or_number}/dashboards/{dashboard_id}" (for custom
+    name: Required. The resource name of the Dashboard. The format is one of:
+      dashboards/[DASHBOARD_ID] (for system dashboards)
+      projects/[PROJECT_ID_OR_NUMBER]/dashboards/[DASHBOARD_ID]  (for custom
       dashboards).
   """
 
@@ -760,8 +760,8 @@ class MonitoringProjectsDashboardsListRequest(_messages.Message):
       nextPageToken value returned by a previous call to this method. Using
       this field causes the method to return additional results from the
       previous method call.
-    parent: Required. The scope of the dashboards to list. A project scope
-      must be specified in the form of "projects/{project_id_or_number}".
+    parent: Required. The scope of the dashboards to list. The format is:
+      projects/[PROJECT_ID_OR_NUMBER]
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -989,17 +989,17 @@ class SourceContext(_messages.Message):
 
 
 class SpanContext(_messages.Message):
-  r"""The context of a span, attached to google.api.Distribution.Exemplars in
-  google.api.Distribution values during aggregation.It contains the name of a
-  span with format:  projects/PROJECT_ID/traces/TRACE_ID/spans/SPAN_ID
+  r"""The context of a span, attached to Exemplars in Distribution values
+  during aggregation.It contains the name of a span with format:
+  projects/[PROJECT_ID_OR_NUMBER]/traces/[TRACE_ID]/spans/[SPAN_ID]
 
   Fields:
-    spanName: The resource name of the span in the following format:
-      projects/[PROJECT_ID]/traces/[TRACE_ID]/spans/[SPAN_ID] TRACE_ID is a
-      unique identifier for a trace within a project; it is a 32-character
-      hexadecimal encoding of a 16-byte array.SPAN_ID is a unique identifier
-      for a span within a trace; it is a 16-character hexadecimal encoding of
-      an 8-byte array.
+    spanName: The resource name of the span. The format is:
+      projects/[PROJECT_ID_OR_NUMBER]/traces/[TRACE_ID]/spans/[SPAN_ID]
+      [TRACE_ID] is a unique identifier for a trace within a project; it is a
+      32-character hexadecimal encoding of a 16-byte array.[SPAN_ID] is a
+      unique identifier for a span within a trace; it is a 16-character
+      hexadecimal encoding of an 8-byte array.
   """
 
   spanName = _messages.StringField(1)

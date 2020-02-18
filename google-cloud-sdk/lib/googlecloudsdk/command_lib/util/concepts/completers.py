@@ -450,7 +450,6 @@ def _GetCompleterCollectionInfo(resource_spec, attribute):
     # pylint: disable=protected-access
     full_collection_name = (
         resource_spec._collection_info.api_name + '.' + collection)
-    # TODO(b/109799172): add a unit test where api_version is not the default
     api_version = resource_spec._collection_info.api_version
   # The CloudResourceManager projects collection can be used for "synthetic"
   # project resources that don't have their own method.

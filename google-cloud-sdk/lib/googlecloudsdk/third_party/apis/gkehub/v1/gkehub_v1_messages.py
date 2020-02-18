@@ -341,11 +341,11 @@ class GkehubProjectsLocationsMembershipsListRequest(_messages.Message):
   Fields:
     filter: Optional. Lists the Memberships that match the filter expression.
       A filter expression filters the resources listed in the response. The
-      expression must be of the form `<field> <operator> <value>` where
-      operators: `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:`
+      expression must be of the form `{field} {operator} {value}` where
+      operators: `<`, `>`, `<=`,`>=`, `!=`, `=`, `:` are supported (colon `:`
       represents a HAS operator which is roughly synonymous with equality).
-      <field> can refer to a proto or JSON field, or a synthetic field. Field
-      names can be camelCase or snake_case.  Examples: - Filter by name:
+      `{field}` can refer to a proto or JSON field, or a synthetic field.
+      Field names can be camelCase or snake_case.  Examples: - Filter by name:
       name = "projects/foo-proj/locations/global/membership/bar  - Filter by
       labels:   - Resources that have a key called `foo`     labels.foo:*   -
       Resources that have a key called `foo` whose value is `bar`
@@ -640,7 +640,7 @@ class Location(_messages.Message):
 
 
 class Membership(_messages.Message):
-  r"""Membership contains information about a member cluster. Next tag: 10
+  r"""Membership contains information about a member cluster.
 
   Messages:
     LabelsValue: Optional. GCP labels for this membership.
@@ -651,11 +651,16 @@ class Membership(_messages.Message):
     description: Output only. Description of this membership, limited to 63
       characters. It will match the regex: `a-zA-Z0-9*` This field is present
       for legacy purposes.
-    endpoint: A MembershipEndpoint attribute.
+    endpoint: Optional. Endpoint information to reach this member.
     externalId: Optional. An externally-generated and managed ID for this
       Membership. This ID may still be modified after creation but it is not
       recommended to do so. The ID must match the regex: `a-zA-Z0-9*`
     labels: Optional. GCP labels for this membership.
+    lastConnectionTime: Output only. For clusters using Connect, the timestamp
+      of the most recent connection established with Google Cloud. This time
+      is updated every several minutes, not continuously. For clusters that do
+      not use GKE Connect, or that have never connected successfully, this
+      field will be unset.
     name: Output only. The unique name of this domain resource in the format:
       `projects/[project_id]/locations/global/memberships/[membership_id]`.
       `membership_id` can only be set at creation time using the
@@ -700,9 +705,10 @@ class Membership(_messages.Message):
   endpoint = _messages.MessageField('MembershipEndpoint', 4)
   externalId = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  state = _messages.MessageField('MembershipState', 8)
-  updateTime = _messages.StringField(9)
+  lastConnectionTime = _messages.StringField(7)
+  name = _messages.StringField(8)
+  state = _messages.MessageField('MembershipState', 9)
+  updateTime = _messages.StringField(10)
 
 
 class MembershipEndpoint(_messages.Message):

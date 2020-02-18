@@ -9,6 +9,7 @@ class CloudbillingV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://cloudbilling.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'cloudbilling'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

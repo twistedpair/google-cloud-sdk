@@ -370,6 +370,14 @@
           "description": "Required. The size of the desired subnet. Use usual CIDR range notation. For example,\n'30' to find unused x.x.x.x\/30 CIDR range. The goal is to determine if one\nof the allocated ranges has enough free space for a subnet of the requested\nsize.",
           "type": "integer",
           "format": "int32"
+        },
+        "secondaryRangeIpPrefixLengths": {
+          "description": "Optional. DO NOT USE - Under development.\nThe size of the desired secondary ranges for the subnet. Use usual CIDR\nrange notation. For example, '30' to find unused x.x.x.x\/30 CIDR range. The\ngoal is to determine that the allocated ranges have enough free space for\nall the requested secondary ranges.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
         }
       }
     },
@@ -1018,7 +1026,7 @@
           "type": "string"
         },
         "address": {
-          "description": "The address of the API backend.",
+          "description": "The address of the API backend.\n\nThe scheme is used to determine the backend protocol and security.\nThe following schemes are accepted:\n\n   SCHEME        PROTOCOL    SECURITY\n   http:\/\/       HTTP        None\n   https:\/\/      HTTP        TLS\n   grpc:\/\/       gRPC        None\n   grpcs:\/\/      gRPC        TLS\n\nIt is recommended to explicitly include a scheme. Leaving out the scheme\nmay cause constrasting behaviors across platforms.\n\nIf the port is unspecified, the default is:\n- 80 for schemes without TLS\n- 443 for schemes with TLS\n\nFor HTTP backends, use protocol\nto specify the protocol version.",
           "type": "string"
         },
         "deadline": {
@@ -1054,8 +1062,12 @@
           "type": "string"
         },
         "disableAuth": {
-          "description": "When disable_auth is false,  a JWT ID token will be generated with the\nvalue from BackendRule.address as jwt_audience, overrode to the HTTP\n\"Authorization\" request header and sent to the backend.\n\nWhen disable_auth is true, a JWT ID token won't be generated and the\noriginal \"Authorization\" HTTP header will be preserved. If the header is\nused to carry the original token and is expected by the backend, this\nfield must be set to true to preserve the header.",
+          "description": "When disable_auth is true, a JWT ID token won't be generated and the\noriginal \"Authorization\" HTTP header will be preserved. If the header is\nused to carry the original token and is expected by the backend, this\nfield must be set to true to preserve the header.",
           "type": "boolean"
+        },
+        "protocol": {
+          "description": "The protocol used for sending a request to the backend.\nThe supported values are \"http\/1.1\" and \"h2\".\n\nThe default value is inferred from the scheme in the\naddress field:\n\n   SCHEME        PROTOCOL\n   http:\/\/       http\/1.1\n   https:\/\/      http\/1.1\n   grpc:\/\/       h2\n   grpcs:\/\/      h2\n\nFor secure HTTP backends (https:\/\/) that support HTTP\/2, set this field\nto \"h2\" for improved performance.\n\nConfiguring this field to non-default values is only supported for secure\nHTTP backends. This field will be ignored for all other backends.\n\nSee\nhttps:\/\/www.iana.org\/assignments\/tls-extensiontype-values\/tls-extensiontype-values.xhtml#alpn-protocol-ids\nfor more details on the supported values.",
+          "type": "string"
         }
       }
     },

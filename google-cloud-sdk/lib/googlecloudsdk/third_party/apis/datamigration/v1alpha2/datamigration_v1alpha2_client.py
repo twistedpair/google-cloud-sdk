@@ -9,6 +9,7 @@ class DatamigrationV1alpha2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://datamigration.googleapis.com/'
+  MTLS_BASE_URL = u'https://datamigration.mtls.googleapis.com/'
 
   _PACKAGE = u'datamigration'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -79,7 +80,9 @@ class DatamigrationV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single connection profile.
+      r"""Deletes a single Database Migration Service connection profile.
+A connection profile can only be deleted if it is not in use by any
+active migration jobs.
 
       Args:
         request: (DatamigrationProjectsLocationsConnectionProfilesDeleteRequest) input message
@@ -133,7 +136,7 @@ class DatamigrationV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists connection profiles in a given project and location.
+      r"""Retrieve a list of all connection profiles in a given project and location.
 
       Args:
         request: (DatamigrationProjectsLocationsConnectionProfilesListRequest) input message
@@ -160,7 +163,7 @@ class DatamigrationV1alpha2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single connection profile.
+      r"""Update the configuration of a single connection profile.
 
       Args:
         request: (DatamigrationProjectsLocationsConnectionProfilesPatchRequest) input message
@@ -360,7 +363,8 @@ connectivity.
     )
 
     def Promote(self, request, global_params=None):
-      r"""Promote a migration job.
+      r"""Promote a migration job, stopping replication to the destination and.
+promoting the destination to be a standalone database.
 
       Args:
         request: (DatamigrationProjectsLocationsMigrationJobsPromoteRequest) input message
@@ -387,7 +391,9 @@ connectivity.
     )
 
     def Restart(self, request, global_params=None):
-      r"""Restarts a migration job.
+      r"""Restart a stopped or failed migration job, resetting the destination.
+instance to its original state and starting the migration process from
+scratch.
 
       Args:
         request: (DatamigrationProjectsLocationsMigrationJobsRestartRequest) input message
@@ -414,7 +420,8 @@ connectivity.
     )
 
     def Resume(self, request, global_params=None):
-      r"""Resumes a migration job.
+      r"""Resume a migration job that is currently stopped and is resumable (was.
+stopped during CDC phase).
 
       Args:
         request: (DatamigrationProjectsLocationsMigrationJobsResumeRequest) input message
@@ -441,7 +448,7 @@ connectivity.
     )
 
     def Start(self, request, global_params=None):
-      r"""Starts a migration job.
+      r"""Start an already created migration job.
 
       Args:
         request: (DatamigrationProjectsLocationsMigrationJobsStartRequest) input message
@@ -468,7 +475,7 @@ connectivity.
     )
 
     def Stop(self, request, global_params=None):
-      r"""Stops a migration job.
+      r"""Stops a running migration job.
 
       Args:
         request: (DatamigrationProjectsLocationsMigrationJobsStopRequest) input message
@@ -495,7 +502,8 @@ connectivity.
     )
 
     def Verify(self, request, global_params=None):
-      r"""Verifies a migration job.
+      r"""Verify a migration job, making sure the destination can reach the source.
+and that all configuration and prerequisites are met.
 
       Args:
         request: (DatamigrationProjectsLocationsMigrationJobsVerifyRequest) input message
@@ -509,13 +517,13 @@ connectivity.
 
     Verify.method_config = lambda: base_api.ApiMethodInfo(
         flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:verify',
-        http_method=u'GET',
+        http_method=u'POST',
         method_id=u'datamigration.projects.locations.migrationJobs.verify',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v1alpha2/{+name}:verify',
-        request_field='',
+        request_field=u'verifyMigrationJobRequest',
         request_type_name=u'DatamigrationProjectsLocationsMigrationJobsVerifyRequest',
         response_type_name=u'Operation',
         supports_download=False,

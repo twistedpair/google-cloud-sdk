@@ -239,7 +239,7 @@
           }
         },
         "description": {
-          "description": "An optional description of the feature, limited to 2048 characters.",
+          "description": "Description of the feature, limited to 63 characters.",
           "type": "string"
         },
         "authorizerFeatureSpec": {
@@ -249,6 +249,7 @@
           "$ref": "MultiClusterIngressFeatureSpec"
         },
         "meteringFeatureSpec": {
+          "description": "The specification for the metering feature.",
           "$ref": "MeteringFeatureSpec"
         },
         "multiclusterservicediscoveryFeatureSpec": {
@@ -334,7 +335,7 @@
           "$ref": "FeatureStateDetails"
         },
         "detailsByMembership": {
-          "description": "Messages pertaining to the current status of the feature for a given\nmember, keyed by the fully-qualified member name. Example member name\nlooks like `projects\/foo-proj\/locations\/global\/memberships\/bar`.\nThis is scoped to feature-level messages (e.g. CSM state on clusters)",
+          "description": "Messages pertaining to the current status of the feature for a given\nmember, keyed by the fully-qualified member name.  Example member name\nlooks like `projects\/12345\/locations\/global\/memberships\/bar`.\nThis is scoped to feature-level messages (e.g. CSM state on clusters)",
           "type": "object",
           "additionalProperties": {
             "$ref": "FeatureStateDetails"

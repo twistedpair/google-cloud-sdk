@@ -9,6 +9,7 @@ class OsloginV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://oslogin.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'oslogin'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/compute']

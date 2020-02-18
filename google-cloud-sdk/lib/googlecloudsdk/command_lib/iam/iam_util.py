@@ -39,6 +39,7 @@ import six
 
 
 # TODO: (b/124063772) Kluge for fixing inconsistency in python message
+# TODO: (b/149522784) fix some help text wording.
 # generation from proto.
 kms_message = core_apis.GetMessagesModule('cloudkms', 'v1')
 encoding.AddCustomJsonFieldMapping(

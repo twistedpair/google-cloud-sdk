@@ -2356,20 +2356,22 @@ class Backend(_messages.Message):
       mode if the protocol for the backend service is SSL, TCP, or UDP.  If
       the loadBalancingScheme for the backend service is EXTERNAL (SSL Proxy
       and TCP Proxy load balancers), you must also specify exactly one of the
-      following parameters: maxConnections, maxConnectionsPerInstance, or
+      following parameters: maxConnections (except for regional managed
+      instance groups), maxConnectionsPerInstance, or
       maxConnectionsPerEndpoint.  If the loadBalancingScheme for the backend
       service is INTERNAL (internal TCP/UDP load balancers), you cannot
       specify any additional parameters.   - If the load balancing mode is
       RATE, the load is spread based on the rate of HTTP requests per second
       (RPS). You can use the RATE balancing mode if the protocol for the
       backend service is HTTP or HTTPS. You must specify exactly one of the
-      following parameters: maxRate, maxRatePerInstance, or
-      maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
-      load is spread based on the CPU utilization of instances in an instance
-      group. You can use the UTILIZATION balancing mode if the
-      loadBalancingScheme of the backend service is EXTERNAL,
-      INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance
-      groups. There are no restrictions on the backend service protocol.
+      following parameters: maxRate (except for regional managed instance
+      groups), maxRatePerInstance, or maxRatePerEndpoint.   - If the load
+      balancing mode is UTILIZATION, the load is spread based on the backend
+      utilization of instances in an instance group. You can use the
+      UTILIZATION balancing mode if the loadBalancingScheme of the backend
+      service is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the
+      backends are instance groups. There are no restrictions on the backend
+      service protocol.
 
   Fields:
     balancingMode: Specifies the balancing mode for the backend.  When
@@ -2381,20 +2383,22 @@ class Backend(_messages.Message):
       protocol for the backend service is SSL, TCP, or UDP.  If the
       loadBalancingScheme for the backend service is EXTERNAL (SSL Proxy and
       TCP Proxy load balancers), you must also specify exactly one of the
-      following parameters: maxConnections, maxConnectionsPerInstance, or
+      following parameters: maxConnections (except for regional managed
+      instance groups), maxConnectionsPerInstance, or
       maxConnectionsPerEndpoint.  If the loadBalancingScheme for the backend
       service is INTERNAL (internal TCP/UDP load balancers), you cannot
       specify any additional parameters.   - If the load balancing mode is
       RATE, the load is spread based on the rate of HTTP requests per second
       (RPS). You can use the RATE balancing mode if the protocol for the
       backend service is HTTP or HTTPS. You must specify exactly one of the
-      following parameters: maxRate, maxRatePerInstance, or
-      maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
-      load is spread based on the CPU utilization of instances in an instance
-      group. You can use the UTILIZATION balancing mode if the
-      loadBalancingScheme of the backend service is EXTERNAL,
-      INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance
-      groups. There are no restrictions on the backend service protocol.
+      following parameters: maxRate (except for regional managed instance
+      groups), maxRatePerInstance, or maxRatePerEndpoint.   - If the load
+      balancing mode is UTILIZATION, the load is spread based on the backend
+      utilization of instances in an instance group. You can use the
+      UTILIZATION balancing mode if the loadBalancingScheme of the backend
+      service is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the
+      backends are instance groups. There are no restrictions on the backend
+      service protocol.
     capacityScaler: A multiplier applied to the group's maximum servicing
       capacity (based on UTILIZATION, RATE or CONNECTION). Default value is 1,
       which means the group will serve up to 100% of its configured capacity
@@ -2416,17 +2420,18 @@ class Backend(_messages.Message):
       NEGs are not supported.    You must use the fully-qualified URL
       (starting with https://www.googleapis.com/) to specify the instance
       group or NEG. Partial URLs are not supported.
-    maxConnections: Defines a maximum target for simultaneous connections for
-      the entire backend (instance group or NEG). If the backend's
-      balancingMode is UTILIZATION, this is an optional parameter. If the
-      backend's balancingMode is CONNECTION, and backend is attached to a
-      backend service whose loadBalancingScheme is EXTERNAL, you must specify
-      either this parameter, maxConnectionsPerInstance, or
-      maxConnectionsPerEndpoint.  Not available if the backend's balancingMode
-      is RATE. If the loadBalancingScheme is INTERNAL, then maxConnections is
-      not supported, even though the backend requires a balancing mode of
-      CONNECTION.
-    maxConnectionsPerEndpoint: Defines a maximum target for simultaneous
+    maxConnections: Defines a target maximum number of simultaneous
+      connections that the backend can handle. Valid for network endpoint
+      group and instance group backends (except for regional managed instance
+      groups). If the backend's balancingMode is UTILIZATION, this is an
+      optional parameter. If the backend's balancingMode is CONNECTION, and
+      backend is attached to a backend service whose loadBalancingScheme is
+      EXTERNAL, you must specify either this parameter,
+      maxConnectionsPerInstance, or maxConnectionsPerEndpoint.  Not available
+      if the backend's balancingMode is RATE. If the loadBalancingScheme is
+      INTERNAL, then maxConnections is not supported, even though the backend
+      requires a balancing mode of CONNECTION.
+    maxConnectionsPerEndpoint: Defines a target maximum number of simultaneous
       connections for an endpoint of a NEG. This is multiplied by the number
       of endpoints in the NEG to implicitly calculate a maximum number of
       target maximum simultaneous connections for the NEG. If the backend's
@@ -2436,7 +2441,7 @@ class Backend(_messages.Message):
       available if the backend's balancingMode is RATE. Internal TCP/UDP load
       balancing does not support setting maxConnectionsPerEndpoint even though
       its backends require a balancing mode of CONNECTION.
-    maxConnectionsPerInstance: Defines a maximum target for simultaneous
+    maxConnectionsPerInstance: Defines a target maximum number of simultaneous
       connections for a single VM in a backend instance group. This is
       multiplied by the number of instances in the instance group to
       implicitly calculate a target maximum number of simultaneous connections
@@ -2448,29 +2453,37 @@ class Backend(_messages.Message):
       available if the backend's balancingMode is RATE. Internal TCP/UDP load
       balancing does not support setting maxConnectionsPerInstance even though
       its backends require a balancing mode of CONNECTION.
-    maxRate: The max requests per second (RPS) of the group. Can be used with
-      either RATE or UTILIZATION balancing modes, but required if RATE mode.
-      For RATE mode, either maxRate or maxRatePerInstance must be set.  This
-      cannot be used for internal load balancing.
+    maxRate: Defines a maximum number of HTTP requests per second (RPS) that
+      the backend can handle. Valid for network endpoint group and instance
+      group backends (except for regional managed instance groups). Must not
+      be defined if the backend is a managed instance group that uses
+      autoscaling based on load balancing.  If the backend's balancingMode is
+      UTILIZATION, this is an optional parameter. If the backend's
+      balancingMode is RATE, you must specify maxRate, maxRatePerInstance, or
+      maxRatePerEndpoint.  Not available if the backend's balancingMode is
+      CONNECTION.
     maxRatePerEndpoint: Defines a maximum target for requests per second (RPS)
       for an endpoint of a NEG. This is multiplied by the number of endpoints
       in the NEG to implicitly calculate a target maximum rate for the NEG.
       If the backend's balancingMode is RATE, you must specify either this
-      parameter, maxRate, or maxRatePerInstance.  Not available if the
-      backend's balancingMode is CONNECTION.
+      parameter, maxRate (except for regional managed instance groups), or
+      maxRatePerInstance.  Not available if the backend's balancingMode is
+      CONNECTION.
     maxRatePerInstance: Defines a maximum target for requests per second (RPS)
       for a single VM in a backend instance group. This is multiplied by the
       number of instances in the instance group to implicitly calculate a
       target maximum rate for the whole instance group.  If the backend's
       balancingMode is UTILIZATION, this is an optional parameter. If the
       backend's balancingMode is RATE, you must specify either this parameter,
-      maxRate, or maxRatePerEndpoint.  Not available if the backend's
-      balancingMode is CONNECTION.
-    maxUtilization: Defines the maximum average CPU utilization of a backend
-      VM in an instance group. The valid range is [0.0, 1.0]. This is an
-      optional parameter if the backend's balancingMode is UTILIZATION.  This
-      parameter can be used in conjunction with maxRate, maxRatePerInstance,
-      maxConnections, or maxConnectionsPerInstance.
+      maxRate (except for regional managed instance groups), or
+      maxRatePerEndpoint.  Not available if the backend's balancingMode is
+      CONNECTION.
+    maxUtilization: Defines the maximum average backend utilization of a
+      backend VM in an instance group. The valid range is [0.0, 1.0]. This is
+      an optional parameter if the backend's balancingMode is UTILIZATION.
+      This parameter can be used in conjunction with maxRate,
+      maxRatePerInstance, maxConnections (except for regional managed instance
+      groups), or maxConnectionsPerInstance.
   """
 
   class BalancingModeValueValuesEnum(_messages.Enum):
@@ -2482,17 +2495,18 @@ class Backend(_messages.Message):
     You can use the CONNECTION balancing mode if the protocol for the backend
     service is SSL, TCP, or UDP.  If the loadBalancingScheme for the backend
     service is EXTERNAL (SSL Proxy and TCP Proxy load balancers), you must
-    also specify exactly one of the following parameters: maxConnections,
-    maxConnectionsPerInstance, or maxConnectionsPerEndpoint.  If the
-    loadBalancingScheme for the backend service is INTERNAL (internal TCP/UDP
-    load balancers), you cannot specify any additional parameters.   - If the
-    load balancing mode is RATE, the load is spread based on the rate of HTTP
-    requests per second (RPS). You can use the RATE balancing mode if the
-    protocol for the backend service is HTTP or HTTPS. You must specify
-    exactly one of the following parameters: maxRate, maxRatePerInstance, or
-    maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
-    load is spread based on the CPU utilization of instances in an instance
-    group. You can use the UTILIZATION balancing mode if the
+    also specify exactly one of the following parameters: maxConnections
+    (except for regional managed instance groups), maxConnectionsPerInstance,
+    or maxConnectionsPerEndpoint.  If the loadBalancingScheme for the backend
+    service is INTERNAL (internal TCP/UDP load balancers), you cannot specify
+    any additional parameters.   - If the load balancing mode is RATE, the
+    load is spread based on the rate of HTTP requests per second (RPS). You
+    can use the RATE balancing mode if the protocol for the backend service is
+    HTTP or HTTPS. You must specify exactly one of the following parameters:
+    maxRate (except for regional managed instance groups), maxRatePerInstance,
+    or maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
+    load is spread based on the backend utilization of instances in an
+    instance group. You can use the UTILIZATION balancing mode if the
     loadBalancingScheme of the backend service is EXTERNAL,
     INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance
     groups. There are no restrictions on the backend service protocol.
@@ -2796,14 +2810,13 @@ class BackendService(_messages.Message):
       otherwise the request will fail with error 412 conditionNotMet.  To see
       the latest fingerprint, make a get() request to retrieve a
       BackendService.
-    healthChecks: The list of URLs to the HttpHealthCheck or HttpsHealthCheck
-      resource for health checking this BackendService. Currently at most one
-      health check can be specified. Health check is optional for Compute
-      Engine backend services if there is no backend. A health check must not
-      be specified when adding Internet Network Endpoint Group or Serverless
-      Network Endpoint Group as backends. In all other cases, a health check
-      is required for Compute Engine backend services.  For internal load
-      balancing, a URL to a HealthCheck resource must be specified instead.
+    healthChecks: The list of URLs to the healthChecks, httpHealthChecks
+      (legacy), or httpsHealthChecks (legacy) resource for health checking
+      this backend service. Not all backend services support legacy health
+      checks. See  Load balancer guide. Currently at most one health check can
+      be specified. Backend services with instance group or zonal NEG backends
+      must have a health check. Backend services with internet NEG backends
+      must not have a health check. A health check must
     iap: A BackendServiceIAP attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -2864,11 +2877,11 @@ class BackendService(_messages.Message):
       loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).
     portName: A named port on a backend instance group representing the port
       for communication to the backend VMs in that group. Required when the
-      loadBalancingScheme is EXTERNAL and the backends are instance groups.
-      The named port must be defined on each backend instance group. This
-      parameter has no meaning if the backends are NEGs.    Must be omitted
-      when the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load
-      Blaancing).
+      loadBalancingScheme is EXTERNAL, INTERNAL_MANAGED, or
+      INTERNAL_SELF_MANAGED and the backends are instance groups. The named
+      port must be defined on each backend instance group. This parameter has
+      no meaning if the backends are NEGs.    Must be omitted when the
+      loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Blaancing).
     protocol: The protocol this BackendService uses to communicate with
       backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP.
       depending on the chosen load balancer or Traffic Director configuration.
@@ -7390,6 +7403,60 @@ class ComputeInstanceGroupManagersInsertRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstanceGroupManagersListErrorsRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersListErrorsRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    instanceGroupManager: The name of the managed instance group. It must be a
+      string that meets the requirements in RFC1035, or an unsigned long
+      integer: must match regexp pattern:
+      (?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?)|[1-9][0-9]{0,19}.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    zone: The name of the zone where the managed instance group is located. It
+      should conform to RFC1035.
+  """
+
+  filter = _messages.StringField(1)
+  instanceGroupManager = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message):
@@ -12755,6 +12822,60 @@ class ComputeRegionInstanceGroupManagersInsertRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeRegionInstanceGroupManagersListErrorsRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersListErrorsRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    instanceGroupManager: The name of the managed instance group. It must be a
+      string that meets the requirements in RFC1035, or an unsigned long
+      integer: must match regexp pattern:
+      (?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?)|[1-9][0-9]{0,19}.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request. This should conform to
+      RFC1035.
+  """
+
+  filter = _messages.StringField(1)
+  instanceGroupManager = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  region = _messages.StringField(7, required=True)
 
 
 class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Message):
@@ -20245,7 +20366,7 @@ class ForwardingRule(_messages.Message):
       forwarding rules, refer to Forwarding rule concepts.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this load balancer and can only take the following values:
-      PREMIUM , STANDARD.  For regional ForwardingRule, the valid values are
+      PREMIUM, STANDARD.  For regional ForwardingRule, the valid values are
       PREMIUM and STANDARD. For GlobalForwardingRule, the valid value is
       PREMIUM.  If this field is not specified, it is assumed to be PREMIUM.
       If IPAddress is specified, this value must be equal to the networkTier
@@ -20349,11 +20470,11 @@ class ForwardingRule(_messages.Message):
       network that the load balanced IP should belong to for this Forwarding
       Rule. If this field is not specified, the default network will be used.
     networkTier: This signifies the networking tier used for configuring this
-      load balancer and can only take the following values: PREMIUM ,
-      STANDARD.  For regional ForwardingRule, the valid values are PREMIUM and
-      STANDARD. For GlobalForwardingRule, the valid value is PREMIUM.  If this
-      field is not specified, it is assumed to be PREMIUM. If IPAddress is
-      specified, this value must be equal to the networkTier of the Address.
+      load balancer and can only take the following values: PREMIUM, STANDARD.
+      For regional ForwardingRule, the valid values are PREMIUM and STANDARD.
+      For GlobalForwardingRule, the valid value is PREMIUM.  If this field is
+      not specified, it is assumed to be PREMIUM. If IPAddress is specified,
+      this value must be equal to the networkTier of the Address.
     portRange: When the load balancing scheme is EXTERNAL,
       INTERNAL_SELF_MANAGED and INTERNAL_MANAGED, you can specify a
       port_range. Use with a forwarding rule that points to a target proxy or
@@ -20475,7 +20596,7 @@ class ForwardingRule(_messages.Message):
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     r"""This signifies the networking tier used for configuring this load
-    balancer and can only take the following values: PREMIUM , STANDARD.  For
+    balancer and can only take the following values: PREMIUM, STANDARD.  For
     regional ForwardingRule, the valid values are PREMIUM and STANDARD. For
     GlobalForwardingRule, the valid value is PREMIUM.  If this field is not
     specified, it is assumed to be PREMIUM. If IPAddress is specified, this
@@ -24226,6 +24347,8 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       However, if the Updater determines that the minimal action you specify
       is not enough to perform the update, it might perform a more disruptive
       action.
+    ReplacementMethodValueValuesEnum: What action should be used to replace
+      instances. See minimal_action.REPLACE
     TypeValueValuesEnum: The type of update process. You can specify either
       PROACTIVE so that the instance group manager proactively executes
       actions in order to bring instances to their target versions or
@@ -24264,6 +24387,8 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       the Updater will attempt to perform that action only. However, if the
       Updater determines that the minimal action you specify is not enough to
       perform the update, it might perform a more disruptive action.
+    replacementMethod: What action should be used to replace instances. See
+      minimal_action.REPLACE
     type: The type of update process. You can specify either PROACTIVE so that
       the instance group manager proactively executes actions in order to
       bring instances to their target versions or OPPORTUNISTIC so that no
@@ -24303,6 +24428,17 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     REPLACE = 2
     RESTART = 3
 
+  class ReplacementMethodValueValuesEnum(_messages.Enum):
+    r"""What action should be used to replace instances. See
+    minimal_action.REPLACE
+
+    Values:
+      RECREATE: <no description>
+      SUBSTITUTE: <no description>
+    """
+    RECREATE = 0
+    SUBSTITUTE = 1
+
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of update process. You can specify either PROACTIVE so that
     the instance group manager proactively executes actions in order to bring
@@ -24321,7 +24457,8 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
   maxSurge = _messages.MessageField('FixedOrPercent', 2)
   maxUnavailable = _messages.MessageField('FixedOrPercent', 3)
   minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  replacementMethod = _messages.EnumField('ReplacementMethodValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class InstanceGroupManagerVersion(_messages.Message):
@@ -24466,6 +24603,22 @@ class InstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   """
 
   instances = _messages.StringField(1, repeated=True)
+
+
+class InstanceGroupManagersListErrorsResponse(_messages.Message):
+  r"""A InstanceGroupManagersListErrorsResponse object.
+
+  Fields:
+    items: [Output Only] The list of errors of the managed instance group.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+  """
+
+  items = _messages.MessageField('InstanceManagedByIgmError', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class InstanceGroupManagersListManagedInstancesResponse(_messages.Message):
@@ -25197,6 +25350,83 @@ class InstanceListReferrers(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class InstanceManagedByIgmError(_messages.Message):
+  r"""A InstanceManagedByIgmError object.
+
+  Fields:
+    error: [Output Only] Contents of the error.
+    instanceActionDetails: [Output Only] Details of the instance action that
+      triggered this error. May be null, if the error was not caused by an
+      action on an instance. This field is optional.
+    timestamp: [Output Only] The time that this error occurred. This value is
+      in RFC3339 text format.
+  """
+
+  error = _messages.MessageField('InstanceManagedByIgmErrorManagedInstanceError', 1)
+  instanceActionDetails = _messages.MessageField('InstanceManagedByIgmErrorInstanceActionDetails', 2)
+  timestamp = _messages.StringField(3)
+
+
+class InstanceManagedByIgmErrorInstanceActionDetails(_messages.Message):
+  r"""A InstanceManagedByIgmErrorInstanceActionDetails object.
+
+  Enums:
+    ActionValueValuesEnum: [Output Only] Action that managed instance group
+      was executing on the instance when the error occurred. Possible values:
+
+  Fields:
+    action: [Output Only] Action that managed instance group was executing on
+      the instance when the error occurred. Possible values:
+    instance: [Output Only] The URL of the instance. The URL can be set even
+      if the instance has not yet been created.
+    version: [Output Only] Version this instance was created from, or was
+      being created from, but the creation failed. Corresponds to one of the
+      versions that were set on the Instance Group Manager resource at the
+      time this instance was being created.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Action that managed instance group was executing on the
+    instance when the error occurred. Possible values:
+
+    Values:
+      ABANDONING: <no description>
+      CREATING: <no description>
+      CREATING_WITHOUT_RETRIES: <no description>
+      DELETING: <no description>
+      NONE: <no description>
+      RECREATING: <no description>
+      REFRESHING: <no description>
+      RESTARTING: <no description>
+      VERIFYING: <no description>
+    """
+    ABANDONING = 0
+    CREATING = 1
+    CREATING_WITHOUT_RETRIES = 2
+    DELETING = 3
+    NONE = 4
+    RECREATING = 5
+    REFRESHING = 6
+    RESTARTING = 7
+    VERIFYING = 8
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  instance = _messages.StringField(2)
+  version = _messages.MessageField('ManagedInstanceVersion', 3)
+
+
+class InstanceManagedByIgmErrorManagedInstanceError(_messages.Message):
+  r"""A InstanceManagedByIgmErrorManagedInstanceError object.
+
+  Fields:
+    code: [Output Only] Error code.
+    message: [Output Only] Error message.
+  """
+
+  code = _messages.StringField(1)
+  message = _messages.StringField(2)
+
+
 class InstanceMoveRequest(_messages.Message):
   r"""A InstanceMoveRequest object.
 
@@ -25254,6 +25484,8 @@ class InstanceProperties(_messages.Message):
       interface.
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
+    resourcePolicies: Resource policies (names, not ULRs) applied to instances
+      created from this template.
     scheduling: Specifies the scheduling options for the instances that are
       created from this template.
     serviceAccounts: A list of service accounts with specified scopes. Access
@@ -25301,10 +25533,11 @@ class InstanceProperties(_messages.Message):
   minCpuPlatform = _messages.StringField(8)
   networkInterfaces = _messages.MessageField('NetworkInterface', 9, repeated=True)
   reservationAffinity = _messages.MessageField('ReservationAffinity', 10)
-  scheduling = _messages.MessageField('Scheduling', 11)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 12, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 13)
-  tags = _messages.MessageField('Tags', 14)
+  resourcePolicies = _messages.StringField(11, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 12)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 13, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 14)
+  tags = _messages.MessageField('Tags', 15)
 
 
 class InstanceReference(_messages.Message):
@@ -27383,7 +27616,10 @@ class InterconnectsGetDiagnosticsResponse(_messages.Message):
 
 
 class License(_messages.Message):
-  r"""A license resource.
+  r"""Represents a License resource.  A License represents billing and
+  aggregate usage data for public and marketplace images.  Caution This
+  resource is intended for use only by third-party partners who are creating
+  Cloud Marketplace images. (== resource_for {$api_version}.licenses ==)
 
   Fields:
     chargesUseFee: [Output Only] Deprecated. This field no longer reflects
@@ -27419,7 +27655,10 @@ class License(_messages.Message):
 
 
 class LicenseCode(_messages.Message):
-  r"""A LicenseCode object.
+  r"""Represents a License Code resource.  A License Code is a unique
+  identifier used to represent a license resource.  Caution This resource is
+  intended for use only by third-party partners who are creating Cloud
+  Marketplace images. (== resource_for {$api_version}.licenseCodes ==)
 
   Enums:
     StateValueValuesEnum: [Output Only] Current state of this License Code.
@@ -28623,13 +28862,12 @@ class NetworkEndpoint(_messages.Message):
 
 class NetworkEndpointGroup(_messages.Message):
   r"""Represents a collection of network endpoints.  For more information read
-  Setting up network endpoint groups in load balancing. (== resource_for
+  Network endpoint groups overview. (== resource_for
   {$api_version}.networkEndpointGroups ==) Next ID: 21
 
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
-      network endpoint group. Currently the only supported value is
-      GCE_VM_IP_PORT.
+      network endpoint group.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -28652,7 +28890,7 @@ class NetworkEndpointGroup(_messages.Message):
     network: The URL of the network to which all network endpoints in the NEG
       belong. Uses "default" project network if unspecified.
     networkEndpointType: Type of network endpoints in this network endpoint
-      group. Currently the only supported value is GCE_VM_IP_PORT.
+      group.
     selfLink: [Output Only] Server-defined URL for the resource.
     size: [Output only] Number of network endpoints in the network endpoint
       group.
@@ -28663,8 +28901,7 @@ class NetworkEndpointGroup(_messages.Message):
   """
 
   class NetworkEndpointTypeValueValuesEnum(_messages.Enum):
-    r"""Type of network endpoints in this network endpoint group. Currently
-    the only supported value is GCE_VM_IP_PORT.
+    r"""Type of network endpoints in this network endpoint group.
 
     Values:
       GCE_VM_IP_PORT: <no description>
@@ -32808,6 +33045,7 @@ class Quota(_messages.Message):
     r"""[Output Only] Name of the quota metric.
 
     Values:
+      AFFINITY_GROUPS: <no description>
       AUTOSCALERS: <no description>
       BACKEND_BUCKETS: <no description>
       BACKEND_SERVICES: <no description>
@@ -32852,6 +33090,8 @@ class Quota(_messages.Message):
       N2_CPUS: <no description>
       NETWORKS: <no description>
       NETWORK_ENDPOINT_GROUPS: <no description>
+      NODE_GROUPS: <no description>
+      NODE_TEMPLATES: <no description>
       NVIDIA_K80_GPUS: <no description>
       NVIDIA_P100_GPUS: <no description>
       NVIDIA_P100_VWS_GPUS: <no description>
@@ -32896,93 +33136,96 @@ class Quota(_messages.Message):
       VPN_GATEWAYS: <no description>
       VPN_TUNNELS: <no description>
     """
-    AUTOSCALERS = 0
-    BACKEND_BUCKETS = 1
-    BACKEND_SERVICES = 2
-    C2_CPUS = 3
-    COMMITMENTS = 4
-    COMMITTED_C2_CPUS = 5
-    COMMITTED_CPUS = 6
-    COMMITTED_LICENSES = 7
-    COMMITTED_LOCAL_SSD_TOTAL_GB = 8
-    COMMITTED_N2D_CPUS = 9
-    COMMITTED_N2_CPUS = 10
-    COMMITTED_NVIDIA_K80_GPUS = 11
-    COMMITTED_NVIDIA_P100_GPUS = 12
-    COMMITTED_NVIDIA_P4_GPUS = 13
-    COMMITTED_NVIDIA_T4_GPUS = 14
-    COMMITTED_NVIDIA_V100_GPUS = 15
-    CPUS = 16
-    CPUS_ALL_REGIONS = 17
-    DISKS_TOTAL_GB = 18
-    EXTERNAL_VPN_GATEWAYS = 19
-    FIREWALLS = 20
-    FORWARDING_RULES = 21
-    GLOBAL_INTERNAL_ADDRESSES = 22
-    GPUS_ALL_REGIONS = 23
-    HEALTH_CHECKS = 24
-    IMAGES = 25
-    INSTANCES = 26
-    INSTANCE_GROUPS = 27
-    INSTANCE_GROUP_MANAGERS = 28
-    INSTANCE_TEMPLATES = 29
-    INTERCONNECTS = 30
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 31
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 32
-    INTERCONNECT_TOTAL_GBPS = 33
-    INTERNAL_ADDRESSES = 34
-    IN_USE_ADDRESSES = 35
-    IN_USE_BACKUP_SCHEDULES = 36
-    IN_USE_SNAPSHOT_SCHEDULES = 37
-    LOCAL_SSD_TOTAL_GB = 38
-    MACHINE_IMAGES = 39
-    N2D_CPUS = 40
-    N2_CPUS = 41
-    NETWORKS = 42
-    NETWORK_ENDPOINT_GROUPS = 43
-    NVIDIA_K80_GPUS = 44
-    NVIDIA_P100_GPUS = 45
-    NVIDIA_P100_VWS_GPUS = 46
-    NVIDIA_P4_GPUS = 47
-    NVIDIA_P4_VWS_GPUS = 48
-    NVIDIA_T4_GPUS = 49
-    NVIDIA_T4_VWS_GPUS = 50
-    NVIDIA_V100_GPUS = 51
-    PACKET_MIRRORINGS = 52
-    PREEMPTIBLE_CPUS = 53
-    PREEMPTIBLE_LOCAL_SSD_GB = 54
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 55
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 56
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 57
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 58
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 59
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 60
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 61
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 62
-    REGIONAL_AUTOSCALERS = 63
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 64
-    RESERVATIONS = 65
-    RESOURCE_POLICIES = 66
-    ROUTERS = 67
-    ROUTES = 68
-    SECURITY_POLICIES = 69
-    SECURITY_POLICY_CEVAL_RULES = 70
-    SECURITY_POLICY_RULES = 71
-    SNAPSHOTS = 72
-    SSD_TOTAL_GB = 73
-    SSL_CERTIFICATES = 74
-    STATIC_ADDRESSES = 75
-    SUBNETWORKS = 76
-    TARGET_HTTPS_PROXIES = 77
-    TARGET_HTTP_PROXIES = 78
-    TARGET_INSTANCES = 79
-    TARGET_POOLS = 80
-    TARGET_SSL_PROXIES = 81
-    TARGET_TCP_PROXIES = 82
-    TARGET_VPN_GATEWAYS = 83
-    URL_MAPS = 84
-    VPN_GATEWAYS = 85
-    VPN_TUNNELS = 86
+    AFFINITY_GROUPS = 0
+    AUTOSCALERS = 1
+    BACKEND_BUCKETS = 2
+    BACKEND_SERVICES = 3
+    C2_CPUS = 4
+    COMMITMENTS = 5
+    COMMITTED_C2_CPUS = 6
+    COMMITTED_CPUS = 7
+    COMMITTED_LICENSES = 8
+    COMMITTED_LOCAL_SSD_TOTAL_GB = 9
+    COMMITTED_N2D_CPUS = 10
+    COMMITTED_N2_CPUS = 11
+    COMMITTED_NVIDIA_K80_GPUS = 12
+    COMMITTED_NVIDIA_P100_GPUS = 13
+    COMMITTED_NVIDIA_P4_GPUS = 14
+    COMMITTED_NVIDIA_T4_GPUS = 15
+    COMMITTED_NVIDIA_V100_GPUS = 16
+    CPUS = 17
+    CPUS_ALL_REGIONS = 18
+    DISKS_TOTAL_GB = 19
+    EXTERNAL_VPN_GATEWAYS = 20
+    FIREWALLS = 21
+    FORWARDING_RULES = 22
+    GLOBAL_INTERNAL_ADDRESSES = 23
+    GPUS_ALL_REGIONS = 24
+    HEALTH_CHECKS = 25
+    IMAGES = 26
+    INSTANCES = 27
+    INSTANCE_GROUPS = 28
+    INSTANCE_GROUP_MANAGERS = 29
+    INSTANCE_TEMPLATES = 30
+    INTERCONNECTS = 31
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 32
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 33
+    INTERCONNECT_TOTAL_GBPS = 34
+    INTERNAL_ADDRESSES = 35
+    IN_USE_ADDRESSES = 36
+    IN_USE_BACKUP_SCHEDULES = 37
+    IN_USE_SNAPSHOT_SCHEDULES = 38
+    LOCAL_SSD_TOTAL_GB = 39
+    MACHINE_IMAGES = 40
+    N2D_CPUS = 41
+    N2_CPUS = 42
+    NETWORKS = 43
+    NETWORK_ENDPOINT_GROUPS = 44
+    NODE_GROUPS = 45
+    NODE_TEMPLATES = 46
+    NVIDIA_K80_GPUS = 47
+    NVIDIA_P100_GPUS = 48
+    NVIDIA_P100_VWS_GPUS = 49
+    NVIDIA_P4_GPUS = 50
+    NVIDIA_P4_VWS_GPUS = 51
+    NVIDIA_T4_GPUS = 52
+    NVIDIA_T4_VWS_GPUS = 53
+    NVIDIA_V100_GPUS = 54
+    PACKET_MIRRORINGS = 55
+    PREEMPTIBLE_CPUS = 56
+    PREEMPTIBLE_LOCAL_SSD_GB = 57
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 58
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 59
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 60
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 61
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 62
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 63
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 64
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 65
+    REGIONAL_AUTOSCALERS = 66
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 67
+    RESERVATIONS = 68
+    RESOURCE_POLICIES = 69
+    ROUTERS = 70
+    ROUTES = 71
+    SECURITY_POLICIES = 72
+    SECURITY_POLICY_CEVAL_RULES = 73
+    SECURITY_POLICY_RULES = 74
+    SNAPSHOTS = 75
+    SSD_TOTAL_GB = 76
+    SSL_CERTIFICATES = 77
+    STATIC_ADDRESSES = 78
+    SUBNETWORKS = 79
+    TARGET_HTTPS_PROXIES = 80
+    TARGET_HTTP_PROXIES = 81
+    TARGET_INSTANCES = 82
+    TARGET_POOLS = 83
+    TARGET_SSL_PROXIES = 84
+    TARGET_TCP_PROXIES = 85
+    TARGET_VPN_GATEWAYS = 86
+    URL_MAPS = 87
+    VPN_GATEWAYS = 88
+    VPN_TUNNELS = 89
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -33703,6 +33946,22 @@ class RegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   """
 
   instances = _messages.StringField(1, repeated=True)
+
+
+class RegionInstanceGroupManagersListErrorsResponse(_messages.Message):
+  r"""A RegionInstanceGroupManagersListErrorsResponse object.
+
+  Fields:
+    items: [Output Only] The list of errors of the managed instance group.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+  """
+
+  items = _messages.MessageField('InstanceManagedByIgmError', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class RegionInstanceGroupManagersListInstancesResponse(_messages.Message):
@@ -34839,6 +35098,8 @@ class ResourcePolicy(_messages.Message):
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: A string attribute.
+    groupPlacementPolicy: Resource policy for instacnes for placement
+      configuration.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#resource_policies
@@ -34874,13 +35135,14 @@ class ResourcePolicy(_messages.Message):
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#resourcePolicy')
-  name = _messages.StringField(5)
-  region = _messages.StringField(6)
-  selfLink = _messages.StringField(7)
-  snapshotSchedulePolicy = _messages.MessageField('ResourcePolicySnapshotSchedulePolicy', 8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  groupPlacementPolicy = _messages.MessageField('ResourcePolicyGroupPlacementPolicy', 3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#resourcePolicy')
+  name = _messages.StringField(6)
+  region = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  snapshotSchedulePolicy = _messages.MessageField('ResourcePolicySnapshotSchedulePolicy', 9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
 
 
 class ResourcePolicyAggregatedList(_messages.Message):
@@ -35051,6 +35313,36 @@ class ResourcePolicyDailyCycle(_messages.Message):
   daysInCycle = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   duration = _messages.StringField(2)
   startTime = _messages.StringField(3)
+
+
+class ResourcePolicyGroupPlacementPolicy(_messages.Message):
+  r"""A GroupPlacementPolicy specifies resource placement configuration. It
+  specifies the failure bucket separation as well as network locality
+
+  Enums:
+    CollocationValueValuesEnum: Specifies network collocation
+
+  Fields:
+    availabilityDomainCount: The number of availability domains instances will
+      be spread across. If two instances are in different availability domain,
+      they will not be put in the same low latency network
+    collocation: Specifies network collocation
+    vmCount: Number of vms in this placement group
+  """
+
+  class CollocationValueValuesEnum(_messages.Enum):
+    r"""Specifies network collocation
+
+    Values:
+      COLLOCATED: <no description>
+      UNSPECIFIED_COLLOCATION: <no description>
+    """
+    COLLOCATED = 0
+    UNSPECIFIED_COLLOCATION = 1
+
+  availabilityDomainCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  collocation = _messages.EnumField('CollocationValueValuesEnum', 2)
+  vmCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class ResourcePolicyHourlyCycle(_messages.Message):
@@ -37556,10 +37848,12 @@ class SslCertificate(_messages.Message):
   ional](/compute/docs/reference/rest/{$api_version}/regionSslCertificates)
   The sslCertificates are used by:   - external HTTPS load balancers  - SSL
   proxy load balancers    The regionSslCertificates are used by internal HTTPS
-  load balancers.  This SSL certificate resource also contains a private key.
-  You can use SSL keys and certificates to secure connections to a load
-  balancer. For more information, read  Creating and Using SSL Certificates.
-  (== resource_for {$api_version}.sslCertificates ==) (== resource_for
+  load balancers.  Optionally, certificate file contents that you upload can
+  contain a set of up to five PEM-encoded certificates. The API call creates
+  an object (sslCertificate) that holds this data. You can use SSL keys and
+  certificates to secure connections to a load balancer. For more information,
+  read  Creating and using SSL certificates and SSL certificates quotas and
+  limits. (== resource_for {$api_version}.sslCertificates ==) (== resource_for
   {$api_version}.regionSslCertificates ==)
 
   Fields:

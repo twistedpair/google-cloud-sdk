@@ -9,6 +9,7 @@ class DiscoveryV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://www.googleapis.com/discovery/v1/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'discovery'
   _SCOPES = ['https://www.googleapis.com/auth/userinfo.email']

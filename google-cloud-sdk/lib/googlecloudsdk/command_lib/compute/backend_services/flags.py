@@ -473,8 +473,18 @@ def AddIap(parser, help=None):  # pylint: disable=redefined-builtin
       help=help or 'Specifies a list of settings for IAP service.')
 
 
-def AddSessionAffinity(parser, target_pools=False, hidden=False):
-  """Adds session affinity flag to the argparse."""
+def AddSessionAffinity(parser,
+                       target_pools=False,
+                       hidden=False,
+                       support_client_only=False):
+  """Adds session affinity flag to the argparse.
+
+  Args:
+    parser: An argparse.ArgumentParser instance.
+    target_pools: Indicates if the backend pool is target pool.
+    hidden: if hidden=True, retains help but does not display it.
+    support_client_only: Indicates if CLIENT_IP_NO_DESTINATION is valid choice.
+  """
   choices = {
       'CLIENT_IP': (
           "Route requests to instances based on the hash of the client's IP "
@@ -534,6 +544,16 @@ def AddSessionAffinity(parser, target_pools=False, hidden=False):
             ' is either RING_HASH or MAGLEV and the backend service\'s '
             ' consistent hash specifies the name of the HTTP header.'),
     })
+    if support_client_only:
+      choices.update({
+          'CLIENT_IP_NO_DESTINATION': (
+              'Directs a particular client\'s request to the same backend VM '
+              'based on a hash created on the client\'s IP address only. This '
+              'is used in L4 ILB as Next-Hop scenarios. It differs from the '
+              'Client-IP option in that Client-IP uses a hash based on both '
+              'client-IP\'s address and destination address.'
+              )
+      })
   help_str = 'The type of TCP session affinity to use. Not supported for UDP.'
   parser.add_argument(
       '--session-affinity',

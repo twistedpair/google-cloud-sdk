@@ -9,6 +9,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://www.googleapis.com/deploymentmanager/v2/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'deploymentmanager'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/ndev.cloudman', u'https://www.googleapis.com/auth/ndev.cloudman.readonly']

@@ -272,7 +272,7 @@
           "description": "A token to retrieve next page of results. Pass this value in\nListCertificateAuthoritiesRequest.next_page_token to retrieve the next\npage of results.",
           "type": "string"
         },
-        "unreachableLocations": {
+        "unreachable": {
           "description": "A list of locations (e.g. \"us-west1\") that could not be reached.",
           "type": "array",
           "items": {
@@ -307,6 +307,11 @@
         "config": {
           "description": "Immutable. The config used to create a self-signed X.509 certificate or CSR.",
           "$ref": "CertificateConfig"
+        },
+        "lifetime": {
+          "description": "Required. The desired lifetime of the CA certificate. Used to create the\n\"not_before_time\" and \"not_after_time\" fields inside an X.509\ncertificate.",
+          "type": "string",
+          "format": "google-duration"
         },
         "cloudKmsKeyVersion": {
           "description": "Immutable. The resource name for the Cloud KMS CryptoKeyVersion in the\nformat\n`projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*\/cryptoKeyVersions\/*`. Used\nwhen issuing certificates for this CertificateAuthority. If this\nCertificateAuthority is a self-signed CertificateAuthority, this key\nversion is also used to sign the self-signed CA certificate. Otherwise,\nit is used to sign a CSR.",
@@ -352,6 +357,14 @@
         "caCertificateDescription": {
           "description": "Output only. A structured description of this CertificateAuthority's CA cert.",
           "$ref": "CertificateDescription"
+        },
+        "gcsBucket": {
+          "description": "Immutable. The name of a GCS bucket where this CertificateAuthority will publish\ncontent, such as the CA certificate and CRLs. This must be a bucket name,\nwithout any prefixes (such as `gs:\/\/`) or suffixes (such as\n`.googleapis.com`). For example, to use a bucket named `my-bucket`, you\nwould simply specify `my-bucket`.",
+          "type": "string"
+        },
+        "accessUrls": {
+          "description": "Output only. URLs for accessing content published by this CA, such as the CA certificate\nand CRLs.",
+          "$ref": "AccessUrls"
         },
         "createTime": {
           "description": "Output only. The time at which this CertificateAuthority was created.",
@@ -407,11 +420,6 @@
         "subjectAltName": {
           "description": "Optional. The subject alternative name fields.",
           "$ref": "SubjectAltNames"
-        },
-        "lifetime": {
-          "description": "Required. The desired lifetime of a certificate. Used to create the\n\"not_before_time\" and \"not_after_time\" fields inside an X.509\ncertificate. Note that the lifetime may be truncated if it would extend\npast the life of any certificate authority in the issuing chain.",
-          "type": "string",
-          "format": "google-duration"
         }
       }
     },
@@ -420,8 +428,8 @@
       "description": "Subject describes parts of a distinguished name that, in turn,\ndescribes the subject of the certificate.",
       "type": "object",
       "properties": {
-        "country": {
-          "description": "The country of the subject.",
+        "countryCode": {
+          "description": "The country code of the subject.",
           "type": "string"
         },
         "organization": {
@@ -568,6 +576,17 @@
           "items": {
             "$ref": "X509Extension"
           }
+        },
+        "crlDistributionPoints": {
+          "description": "Optional. Describes a list of locations to obtain CRL information, i.e.\nthe DistributionPoint.fullName described by\nhttps:\/\/tools.ietf.org\/html\/rfc5280#section-4.2.1.13",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "authorityInformationAccess": {
+          "description": "Optional. Describes how to access information and services for the issuer of the\n certificate.",
+          "$ref": "AuthorityInformationAccess"
         }
       }
     },
@@ -677,9 +696,30 @@
           "type": "boolean"
         },
         "maxIssuerPathLength": {
-          "description": "Optional. Refers to the path length restriction X.509 extension. For a CA\ncertificate, this value describes the depth of subordinate CA\ncertificates that are allowed.",
+          "description": "Optional. Refers to the path length restriction X.509 extension. For a CA\ncertificate, this value describes the depth of subordinate CA\ncertificates that are allowed.\nIf this value is less than 0, the request will fail.\nIf this values is missing, the max path length will be omitted from\nthe CA certificate.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "AuthorityInformationAccess": {
+      "id": "AuthorityInformationAccess",
+      "description": "Describes how to access information and services for the issuer of the\ncertificate, per https:\/\/tools.ietf.org\/html\/rfc5280#section-4.2.2.1",
+      "type": "object",
+      "properties": {
+        "issuingCertificateUrls": {
+          "description": "Optional. The referenced CA issuers description is intended to aid certificate\nusers in the selection of a certification path that terminates at a\npoint trusted by the certificate user.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "oscpServers": {
+          "description": "Optional. Used when revocation information for the\ncertificate containing this extension is available using the Online\nCertificate Status Protocol (OCSP)",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -768,7 +808,11 @@
           "$ref": "PublicKey"
         },
         "subjectKeyId": {
-          "description": "Optional. Provides a means of identifiying certificates that contain a particular\npublic key, per https:\/\/tools.ietf.org\/html\/rfc5280#section-4.2.1.2.",
+          "description": "Provides a means of identifiying certificates that contain a particular\npublic key, per https:\/\/tools.ietf.org\/html\/rfc5280#section-4.2.1.2.",
+          "$ref": "KeyId"
+        },
+        "authorityKeyId": {
+          "description": "Identifies the subject_key_id of the parent certificate, per\nhttps:\/\/tools.ietf.org\/html\/rfc5280#section-4.2.1.1",
           "$ref": "KeyId"
         }
       }
@@ -822,6 +866,21 @@
         }
       }
     },
+    "AccessUrls": {
+      "id": "AccessUrls",
+      "description": "URLs where a CertificateAuthority will publish content.",
+      "type": "object",
+      "properties": {
+        "caCertificateAccessUrl": {
+          "description": "The URL where this CertificateAuthority's CA certificate is\npublished. This will only be set for CAs that have been activated.",
+          "type": "string"
+        },
+        "crlAccessUrl": {
+          "description": "The URL where this CertificateAuthority's CRLs are published. This\nwill only be set for CAs that have been activated.",
+          "type": "string"
+        }
+      }
+    },
     "ListCertificateRevocationListsResponse": {
       "id": "ListCertificateRevocationListsResponse",
       "description": "Response message for\nCertificateAuthorityService.ListCertificateRevocationLists.",
@@ -838,7 +897,7 @@
           "description": "A token to retrieve next page of results. Pass this value in\nListCertificateRevocationListsRequest.next_page_token to retrieve the\nnext page of results.",
           "type": "string"
         },
-        "unreachableLocations": {
+        "unreachable": {
           "description": "A list of locations (e.g. \"us-west1\") that could not be reached.",
           "type": "array",
           "items": {
@@ -877,7 +936,7 @@
           "type": "string"
         },
         "state": {
-          "description": "Output only. The CertificateRevocationListState for this\nCertificateRevocationList.",
+          "description": "Output only. The State for this CertificateRevocationList.",
           "enumDescriptions": [
             "Not specified.",
             "The CertificateRevocationList is up to date.",
@@ -885,7 +944,7 @@
           ],
           "type": "string",
           "enum": [
-            "CERTIFICATE_REVOCATION_LIST_STATE_UNSPECIFIED",
+            "STATE_UNSPECIFIED",
             "ACTIVE",
             "SUPERSEDED"
           ]
@@ -966,7 +1025,7 @@
           "description": "A token to retrieve next page of results. Pass this value in\nListCertificatesRequest.next_page_token to retrieve the\nnext page of results.",
           "type": "string"
         },
-        "unreachableLocations": {
+        "unreachable": {
           "description": "A list of locations (e.g. \"us-west1\") that could not be reached.",
           "type": "array",
           "items": {
@@ -992,8 +1051,13 @@
           "description": "Immutable. A description of the certificate and key that does not require X.509 or\nASN.1.",
           "$ref": "CertificateConfig"
         },
+        "lifetime": {
+          "description": "Required. The desired lifetime of a certificate. Used to create the\n\"not_before_time\" and \"not_after_time\" fields inside an X.509\ncertificate. Note that the lifetime may be truncated if it would extend\npast the life of any certificate authority in the issuing chain.",
+          "type": "string",
+          "format": "google-duration"
+        },
         "revocationDetails": {
-          "description": "Optional. Details regarding the revocation of this Certificate. This\nCertificate is considered revoked if and only if this field is present.\nSetting this field will revoke a Certificate.",
+          "description": "Output only. Details regarding the revocation of this Certificate. This\nCertificate is considered revoked if and only if this field is present.",
           "$ref": "RevocationDetails"
         },
         "pemCertificate": {
@@ -1036,7 +1100,7 @@
       "type": "object",
       "properties": {
         "revocationState": {
-          "description": "Required. Indicates why a Certificate was revoked.",
+          "description": "Indicates why a Certificate was revoked.",
           "enumDescriptions": [
             "Default unspecified value. This value does indicate that a Certificate\nhas been revoked, but that a reason has not been recorded.",
             "Key material for this Certificate may have leaked.",
@@ -1062,7 +1126,7 @@
           ]
         },
         "revocationTime": {
-          "description": "Output only. The time at which this Certificate was revoked.",
+          "description": "The time at which this Certificate was revoked.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -1084,7 +1148,7 @@
           "description": "A token to retrieve next page of results. Pass this value in\nListReusableConfigsRequest.next_page_token to retrieve\nthe next page of results.",
           "type": "string"
         },
-        "unreachableLocations": {
+        "unreachable": {
           "description": "A list of locations (e.g. \"us-west1\") that could not be reached.",
           "type": "array",
           "items": {
@@ -1739,6 +1803,36 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Update a CertificateAuthority."
+                },
+                "delete": {
+                  "id": "privateca.projects.locations.certificateAuthorities.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name for this CertificateAuthority in the\nformat `projects\/*\/locations\/*\/certificateAuthorities\/*`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateAuthorities\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An ID to identify requests. Specify a unique request ID so that if you must\nretry your request, the server will know to ignore the request if it has\nalready been completed. The server will guarantee that for at least 60\nminutes since the first request.\n\nFor example, consider a situation where you make an initial request and t\nhe request times out. If you make the request again with the same request\nID, the server can check if original operation with the same request ID\nwas received, and if so, will ignore the second request. This prevents\nclients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is\nnot supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a specific CertificateAuthority. Once deleted, the\nCertificateAuthority will no longer issue Certificates\nand CertificateRevocationLists."
                 },
                 "getCsr": {
                   "id": "privateca.projects.locations.certificateAuthorities.getCsr",

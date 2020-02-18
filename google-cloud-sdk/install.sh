@@ -38,8 +38,8 @@ order_python() {
   for python_version in "$@"
   do
     if [ -z "$selected_version" ]; then
-      if _cloudsdk_which $python_version >/dev/null; then
-      selected_version=$python_version
+      if _cloudsdk_which $python_version > /dev/null && "$python_version" -c "import sys; print(sys.version)" > /dev/null; then
+        selected_version=$python_version
       fi
     fi
   done

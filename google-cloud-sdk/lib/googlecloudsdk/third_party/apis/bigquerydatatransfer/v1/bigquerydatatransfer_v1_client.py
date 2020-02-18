@@ -9,6 +9,7 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://bigquerydatatransfer.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'bigquerydatatransfer'
   _SCOPES = [u'https://www.googleapis.com/auth/bigquery', u'https://www.googleapis.com/auth/bigquery.readonly', u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']

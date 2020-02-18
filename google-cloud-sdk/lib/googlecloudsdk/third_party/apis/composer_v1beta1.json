@@ -282,6 +282,10 @@
           "description": "The configuration used for the Private IP Cloud Composer environment.",
           "$ref": "PrivateEnvironmentConfig"
         },
+        "webServerNetworkAccessControl": {
+          "description": "Optional. The network-level access control policy for the Airflow web server. If\nunspecified, no network-level access restrictions will be applied.",
+          "$ref": "WebServerNetworkAccessControl"
+        },
         "airflowUri": {
           "description": "Output only. The URI of the Apache Airflow Web UI hosted within this environment (see\n[Airflow web\ninterface](\/composer\/docs\/how-to\/accessing\/airflow-web-interface)).",
           "type": "string"
@@ -413,6 +417,10 @@
         "privateClusterConfig": {
           "description": "Optional. Configuration for the private GKE cluster for a Private IP\nCloud Composer environment.",
           "$ref": "PrivateClusterConfig"
+        },
+        "webServerIpv4ReservedRange": {
+          "description": "Output only. The IP range reserved for the tenant project's App Engine VMs.",
+          "type": "string"
         }
       }
     },
@@ -426,7 +434,36 @@
           "type": "boolean"
         },
         "masterIpv4CidrBlock": {
-          "description": "The IP range in CIDR notation to use for the hosted master network. This\nrange is used for assigning internal IP addresses to the cluster\nmaster or set of masters and to the internal load balancer virtual IP.\nThis range must not overlap with any other ranges in use\nwithin the cluster's network. If left blank, the default value of\n'172.16.0.0\/28' is used.",
+          "description": "Optional. The CIDR block from which IPv4 range for GKE master will be reserved. If\nleft blank, the default value of '172.16.0.0\/23' is used.",
+          "type": "string"
+        }
+      }
+    },
+    "WebServerNetworkAccessControl": {
+      "id": "WebServerNetworkAccessControl",
+      "description": "Network-level access control policy for the Airflow web server.",
+      "type": "object",
+      "properties": {
+        "allowedIpRanges": {
+          "description": "A collection of allowed IP ranges with descriptions.",
+          "type": "array",
+          "items": {
+            "$ref": "AllowedIpRange"
+          }
+        }
+      }
+    },
+    "AllowedIpRange": {
+      "id": "AllowedIpRange",
+      "description": "Allowed IP range with user-provided description.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "IP address or range, defined using CIDR notation, of requests that this\nrule applies to. You can use the wildcard character \"*\" to match all IPs\nequivalent to \"0\/0\" and \"::\/0\" together.\nExamples: `192.168.1.1` or `192.168.0.0\/16` or `2001:db8::\/32`\n          or `2001:0db8:0000:0042:0000:8a2e:0370:7334`.\n\n\n<p>IP range prefixes should be properly truncated. For example,\n`1.2.3.4\/24` should be truncated to `1.2.3.0\/24`. Similarly, for IPv6,\n`2001:db8::1\/32` should be truncated to `2001:db8::\/32`.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. User-provided description.",
           "type": "string"
         }
       }

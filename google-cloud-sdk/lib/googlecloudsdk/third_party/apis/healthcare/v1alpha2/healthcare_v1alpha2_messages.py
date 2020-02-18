@@ -2725,14 +2725,17 @@ class StreamConfig(_messages.Message):
       schema or out of band incompatible modification, the server does not
       stream in new data.  One resolution in this case is to delete the
       incompatible table and let the server recreate one, though the newly
-      created table only contains data after the table recreation.  Results
-      are appended to the corresponding BigQuery tables. Different versions of
-      the same resource are distinguishable by the meta.versionId and
-      meta.lastUpdated columns. The operation (CREATE/UPDATE/DELETE) that
-      results in the new version is recorded in the meta.tag.  The tables
-      contain all historical resource versions since streaming was enabled.
-      For query convenience, the server also creates one view per table of the
-      same name containing only the current resource version.
+      created table only contains data after the table recreation.  BigQuery
+      imposes a 1 MB limit on streaming insert row size, therefore any
+      resource mutation that generates more than 1 MB of BigQuery data will
+      not be streamed.  Results are appended to the corresponding BigQuery
+      tables. Different versions of the same resource are distinguishable by
+      the meta.versionId and meta.lastUpdated columns. The operation
+      (CREATE/UPDATE/DELETE) that results in the new version is recorded in
+      the meta.tag.  The tables contain all historical resource versions since
+      streaming was enabled. For query convenience, the server also creates
+      one view per table of the same name containing only the current resource
+      version.
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an

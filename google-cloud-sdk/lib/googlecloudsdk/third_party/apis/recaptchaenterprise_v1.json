@@ -115,7 +115,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name for the Assessment in the format\n\"projects\/{project_number}\/assessments\/{assessment_id}\".",
+          "description": "Output only. The resource name for the Assessment in the format\n\"projects\/{project}\/assessments\/{assessment}\".",
           "type": "string"
         },
         "event": {
@@ -274,7 +274,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name for the Key in the format\n\"projects\/{project_number}\/keys\/{key_id}\".",
+          "description": "The resource name for the Key in the format\n\"projects\/{project}\/keys\/{key}\".",
           "type": "string"
         },
         "displayName": {
@@ -342,7 +342,7 @@
           ]
         },
         "challengeSecurityPreference": {
-          "description": "Settings for the frequency and difficulty at which this key triggers\ncaptcha challenges. This should only be specified for IntegrationType\nCHECKBOX_CHALLENGE.",
+          "description": "Settings for the frequency and difficulty at which this key triggers\ncaptcha challenges. This should only be specified for IntegrationType\nCHECKBOX.",
           "enumDescriptions": [
             "Default type that indicates this enum hasn't been specified.",
             "Key tends to show fewer and easier challenges.",
@@ -425,7 +425,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The name of the project in which the assessment will be created,\nin the format \"projects\/{project_number}\".",
+                  "description": "Required. The name of the project in which the assessment will be created,\nin the format \"projects\/{project}\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -453,7 +453,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of the Assessment, in the format\n\"projects\/{project_number}\/assessments\/{assessment_id}\".",
+                  "description": "Required. The resource name of the Assessment, in the format\n\"projects\/{project}\/assessments\/{assessment}\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/assessments\/[^\/]+$",
@@ -485,7 +485,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The name of the project in which the key will be created, in the\nformat \"projects\/{project_number}\".",
+                  "description": "Required. The name of the project in which the key will be created, in the\nformat \"projects\/{project}\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -513,7 +513,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The name of the project that contains the keys that will be\nlisted, in the format \"projects\/{project_number}\".",
+                  "description": "Required. The name of the project that contains the keys that will be\nlisted, in the format \"projects\/{project}\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -549,7 +549,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the requested key, in the format\n\"projects\/{project_number}\/keys\/{key_id}\".",
+                  "description": "Required. The name of the requested key, in the format\n\"projects\/{project}\/keys\/{key}\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
@@ -574,7 +574,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The resource name for the Key in the format\n\"projects\/{project_number}\/keys\/{key_id}\".",
+                  "description": "The resource name for the Key in the format\n\"projects\/{project}\/keys\/{key}\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
@@ -608,7 +608,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the key to be deleted, in the format\n\"projects\/{project_number}\/keys\/{key_id}\".",
+                  "description": "Required. The name of the key to be deleted, in the format\n\"projects\/{project}\/keys\/{key}\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",

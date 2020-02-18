@@ -2468,20 +2468,22 @@ class Backend(_messages.Message):
       mode if the protocol for the backend service is SSL, TCP, or UDP.  If
       the loadBalancingScheme for the backend service is EXTERNAL (SSL Proxy
       and TCP Proxy load balancers), you must also specify exactly one of the
-      following parameters: maxConnections, maxConnectionsPerInstance, or
+      following parameters: maxConnections (except for regional managed
+      instance groups), maxConnectionsPerInstance, or
       maxConnectionsPerEndpoint.  If the loadBalancingScheme for the backend
       service is INTERNAL (internal TCP/UDP load balancers), you cannot
       specify any additional parameters.   - If the load balancing mode is
       RATE, the load is spread based on the rate of HTTP requests per second
       (RPS). You can use the RATE balancing mode if the protocol for the
       backend service is HTTP or HTTPS. You must specify exactly one of the
-      following parameters: maxRate, maxRatePerInstance, or
-      maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
-      load is spread based on the CPU utilization of instances in an instance
-      group. You can use the UTILIZATION balancing mode if the
-      loadBalancingScheme of the backend service is EXTERNAL,
-      INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance
-      groups. There are no restrictions on the backend service protocol.
+      following parameters: maxRate (except for regional managed instance
+      groups), maxRatePerInstance, or maxRatePerEndpoint.   - If the load
+      balancing mode is UTILIZATION, the load is spread based on the backend
+      utilization of instances in an instance group. You can use the
+      UTILIZATION balancing mode if the loadBalancingScheme of the backend
+      service is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the
+      backends are instance groups. There are no restrictions on the backend
+      service protocol.
 
   Fields:
     balancingMode: Specifies the balancing mode for the backend.  When
@@ -2493,20 +2495,22 @@ class Backend(_messages.Message):
       protocol for the backend service is SSL, TCP, or UDP.  If the
       loadBalancingScheme for the backend service is EXTERNAL (SSL Proxy and
       TCP Proxy load balancers), you must also specify exactly one of the
-      following parameters: maxConnections, maxConnectionsPerInstance, or
+      following parameters: maxConnections (except for regional managed
+      instance groups), maxConnectionsPerInstance, or
       maxConnectionsPerEndpoint.  If the loadBalancingScheme for the backend
       service is INTERNAL (internal TCP/UDP load balancers), you cannot
       specify any additional parameters.   - If the load balancing mode is
       RATE, the load is spread based on the rate of HTTP requests per second
       (RPS). You can use the RATE balancing mode if the protocol for the
       backend service is HTTP or HTTPS. You must specify exactly one of the
-      following parameters: maxRate, maxRatePerInstance, or
-      maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
-      load is spread based on the CPU utilization of instances in an instance
-      group. You can use the UTILIZATION balancing mode if the
-      loadBalancingScheme of the backend service is EXTERNAL,
-      INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance
-      groups. There are no restrictions on the backend service protocol.
+      following parameters: maxRate (except for regional managed instance
+      groups), maxRatePerInstance, or maxRatePerEndpoint.   - If the load
+      balancing mode is UTILIZATION, the load is spread based on the backend
+      utilization of instances in an instance group. You can use the
+      UTILIZATION balancing mode if the loadBalancingScheme of the backend
+      service is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the
+      backends are instance groups. There are no restrictions on the backend
+      service protocol.
     capacityScaler: A multiplier applied to the group's maximum servicing
       capacity (based on UTILIZATION, RATE or CONNECTION). Default value is 1,
       which means the group will serve up to 100% of its configured capacity
@@ -2530,17 +2534,18 @@ class Backend(_messages.Message):
       NEGs are not supported.    You must use the fully-qualified URL
       (starting with https://www.googleapis.com/) to specify the instance
       group or NEG. Partial URLs are not supported.
-    maxConnections: Defines a maximum target for simultaneous connections for
-      the entire backend (instance group or NEG). If the backend's
-      balancingMode is UTILIZATION, this is an optional parameter. If the
-      backend's balancingMode is CONNECTION, and backend is attached to a
-      backend service whose loadBalancingScheme is EXTERNAL, you must specify
-      either this parameter, maxConnectionsPerInstance, or
-      maxConnectionsPerEndpoint.  Not available if the backend's balancingMode
-      is RATE. If the loadBalancingScheme is INTERNAL, then maxConnections is
-      not supported, even though the backend requires a balancing mode of
-      CONNECTION.
-    maxConnectionsPerEndpoint: Defines a maximum target for simultaneous
+    maxConnections: Defines a target maximum number of simultaneous
+      connections that the backend can handle. Valid for network endpoint
+      group and instance group backends (except for regional managed instance
+      groups). If the backend's balancingMode is UTILIZATION, this is an
+      optional parameter. If the backend's balancingMode is CONNECTION, and
+      backend is attached to a backend service whose loadBalancingScheme is
+      EXTERNAL, you must specify either this parameter,
+      maxConnectionsPerInstance, or maxConnectionsPerEndpoint.  Not available
+      if the backend's balancingMode is RATE. If the loadBalancingScheme is
+      INTERNAL, then maxConnections is not supported, even though the backend
+      requires a balancing mode of CONNECTION.
+    maxConnectionsPerEndpoint: Defines a target maximum number of simultaneous
       connections for an endpoint of a NEG. This is multiplied by the number
       of endpoints in the NEG to implicitly calculate a maximum number of
       target maximum simultaneous connections for the NEG. If the backend's
@@ -2550,7 +2555,7 @@ class Backend(_messages.Message):
       available if the backend's balancingMode is RATE. Internal TCP/UDP load
       balancing does not support setting maxConnectionsPerEndpoint even though
       its backends require a balancing mode of CONNECTION.
-    maxConnectionsPerInstance: Defines a maximum target for simultaneous
+    maxConnectionsPerInstance: Defines a target maximum number of simultaneous
       connections for a single VM in a backend instance group. This is
       multiplied by the number of instances in the instance group to
       implicitly calculate a target maximum number of simultaneous connections
@@ -2562,29 +2567,37 @@ class Backend(_messages.Message):
       available if the backend's balancingMode is RATE. Internal TCP/UDP load
       balancing does not support setting maxConnectionsPerInstance even though
       its backends require a balancing mode of CONNECTION.
-    maxRate: The max requests per second (RPS) of the group. Can be used with
-      either RATE or UTILIZATION balancing modes, but required if RATE mode.
-      For RATE mode, either maxRate or maxRatePerInstance must be set.  This
-      cannot be used for internal load balancing.
+    maxRate: Defines a maximum number of HTTP requests per second (RPS) that
+      the backend can handle. Valid for network endpoint group and instance
+      group backends (except for regional managed instance groups). Must not
+      be defined if the backend is a managed instance group that uses
+      autoscaling based on load balancing.  If the backend's balancingMode is
+      UTILIZATION, this is an optional parameter. If the backend's
+      balancingMode is RATE, you must specify maxRate, maxRatePerInstance, or
+      maxRatePerEndpoint.  Not available if the backend's balancingMode is
+      CONNECTION.
     maxRatePerEndpoint: Defines a maximum target for requests per second (RPS)
       for an endpoint of a NEG. This is multiplied by the number of endpoints
       in the NEG to implicitly calculate a target maximum rate for the NEG.
       If the backend's balancingMode is RATE, you must specify either this
-      parameter, maxRate, or maxRatePerInstance.  Not available if the
-      backend's balancingMode is CONNECTION.
+      parameter, maxRate (except for regional managed instance groups), or
+      maxRatePerInstance.  Not available if the backend's balancingMode is
+      CONNECTION.
     maxRatePerInstance: Defines a maximum target for requests per second (RPS)
       for a single VM in a backend instance group. This is multiplied by the
       number of instances in the instance group to implicitly calculate a
       target maximum rate for the whole instance group.  If the backend's
       balancingMode is UTILIZATION, this is an optional parameter. If the
       backend's balancingMode is RATE, you must specify either this parameter,
-      maxRate, or maxRatePerEndpoint.  Not available if the backend's
-      balancingMode is CONNECTION.
-    maxUtilization: Defines the maximum average CPU utilization of a backend
-      VM in an instance group. The valid range is [0.0, 1.0]. This is an
-      optional parameter if the backend's balancingMode is UTILIZATION.  This
-      parameter can be used in conjunction with maxRate, maxRatePerInstance,
-      maxConnections, or maxConnectionsPerInstance.
+      maxRate (except for regional managed instance groups), or
+      maxRatePerEndpoint.  Not available if the backend's balancingMode is
+      CONNECTION.
+    maxUtilization: Defines the maximum average backend utilization of a
+      backend VM in an instance group. The valid range is [0.0, 1.0]. This is
+      an optional parameter if the backend's balancingMode is UTILIZATION.
+      This parameter can be used in conjunction with maxRate,
+      maxRatePerInstance, maxConnections (except for regional managed instance
+      groups), or maxConnectionsPerInstance.
   """
 
   class BalancingModeValueValuesEnum(_messages.Enum):
@@ -2596,17 +2609,18 @@ class Backend(_messages.Message):
     You can use the CONNECTION balancing mode if the protocol for the backend
     service is SSL, TCP, or UDP.  If the loadBalancingScheme for the backend
     service is EXTERNAL (SSL Proxy and TCP Proxy load balancers), you must
-    also specify exactly one of the following parameters: maxConnections,
-    maxConnectionsPerInstance, or maxConnectionsPerEndpoint.  If the
-    loadBalancingScheme for the backend service is INTERNAL (internal TCP/UDP
-    load balancers), you cannot specify any additional parameters.   - If the
-    load balancing mode is RATE, the load is spread based on the rate of HTTP
-    requests per second (RPS). You can use the RATE balancing mode if the
-    protocol for the backend service is HTTP or HTTPS. You must specify
-    exactly one of the following parameters: maxRate, maxRatePerInstance, or
-    maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
-    load is spread based on the CPU utilization of instances in an instance
-    group. You can use the UTILIZATION balancing mode if the
+    also specify exactly one of the following parameters: maxConnections
+    (except for regional managed instance groups), maxConnectionsPerInstance,
+    or maxConnectionsPerEndpoint.  If the loadBalancingScheme for the backend
+    service is INTERNAL (internal TCP/UDP load balancers), you cannot specify
+    any additional parameters.   - If the load balancing mode is RATE, the
+    load is spread based on the rate of HTTP requests per second (RPS). You
+    can use the RATE balancing mode if the protocol for the backend service is
+    HTTP or HTTPS. You must specify exactly one of the following parameters:
+    maxRate (except for regional managed instance groups), maxRatePerInstance,
+    or maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
+    load is spread based on the backend utilization of instances in an
+    instance group. You can use the UTILIZATION balancing mode if the
     loadBalancingScheme of the backend service is EXTERNAL,
     INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance
     groups. There are no restrictions on the backend service protocol.
@@ -2914,14 +2928,13 @@ class BackendService(_messages.Message):
       otherwise the request will fail with error 412 conditionNotMet.  To see
       the latest fingerprint, make a get() request to retrieve a
       BackendService.
-    healthChecks: The list of URLs to the HttpHealthCheck or HttpsHealthCheck
-      resource for health checking this BackendService. Currently at most one
-      health check can be specified. Health check is optional for Compute
-      Engine backend services if there is no backend. A health check must not
-      be specified when adding Internet Network Endpoint Group or Serverless
-      Network Endpoint Group as backends. In all other cases, a health check
-      is required for Compute Engine backend services.  For internal load
-      balancing, a URL to a HealthCheck resource must be specified instead.
+    healthChecks: The list of URLs to the healthChecks, httpHealthChecks
+      (legacy), or httpsHealthChecks (legacy) resource for health checking
+      this backend service. Not all backend services support legacy health
+      checks. See  Load balancer guide. Currently at most one health check can
+      be specified. Backend services with instance group or zonal NEG backends
+      must have a health check. Backend services with internet NEG backends
+      must not have a health check. A health check must
     iap: A BackendServiceIAP attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -2982,11 +2995,11 @@ class BackendService(_messages.Message):
       loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).
     portName: A named port on a backend instance group representing the port
       for communication to the backend VMs in that group. Required when the
-      loadBalancingScheme is EXTERNAL and the backends are instance groups.
-      The named port must be defined on each backend instance group. This
-      parameter has no meaning if the backends are NEGs.    Must be omitted
-      when the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load
-      Blaancing).
+      loadBalancingScheme is EXTERNAL, INTERNAL_MANAGED, or
+      INTERNAL_SELF_MANAGED and the backends are instance groups. The named
+      port must be defined on each backend instance group. This parameter has
+      no meaning if the backends are NEGs.    Must be omitted when the
+      loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Blaancing).
     protocol: The protocol this BackendService uses to communicate with
       backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP.
       depending on the chosen load balancer or Traffic Director configuration.
@@ -7389,6 +7402,80 @@ class ComputeGlobalOperationsWaitRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class ComputeGlobalOrganizationOperationsDeleteRequest(_messages.Message):
+  r"""A ComputeGlobalOrganizationOperationsDeleteRequest object.
+
+  Fields:
+    operation: Name of the Operations resource to delete.
+    parentId: Parent ID for this request.
+  """
+
+  operation = _messages.StringField(1, required=True)
+  parentId = _messages.StringField(2)
+
+
+class ComputeGlobalOrganizationOperationsDeleteResponse(_messages.Message):
+  r"""An empty ComputeGlobalOrganizationOperationsDelete response."""
+
+
+class ComputeGlobalOrganizationOperationsGetRequest(_messages.Message):
+  r"""A ComputeGlobalOrganizationOperationsGetRequest object.
+
+  Fields:
+    operation: Name of the Operations resource to return.
+    parentId: Parent ID for this request.
+  """
+
+  operation = _messages.StringField(1, required=True)
+  parentId = _messages.StringField(2)
+
+
+class ComputeGlobalOrganizationOperationsListRequest(_messages.Message):
+  r"""A ComputeGlobalOrganizationOperationsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    parentId: Parent ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  parentId = _messages.StringField(5)
+
+
 class ComputeHealthChecksAggregatedListRequest(_messages.Message):
   r"""A ComputeHealthChecksAggregatedListRequest object.
 
@@ -9595,6 +9682,23 @@ class ComputeInstancesDetachDiskRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstancesGetEffectiveFirewallsRequest(_messages.Message):
+  r"""A ComputeInstancesGetEffectiveFirewallsRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    networkInterface: The name of the network interface to get the effective
+      firewalls.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  networkInterface = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstancesGetGuestAttributesRequest(_messages.Message):
   r"""A ComputeInstancesGetGuestAttributesRequest object.
 
@@ -9634,6 +9738,20 @@ class ComputeInstancesGetRequest(_messages.Message):
 
   Fields:
     instance: Name of the instance resource to return.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ComputeInstancesGetScreenshotRequest(_messages.Message):
+  r"""A ComputeInstancesGetScreenshotRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
     project: Project ID for this request.
     zone: The name of the zone for this request.
   """
@@ -11839,6 +11957,18 @@ class ComputeNetworksDeleteRequest(_messages.Message):
   requestId = _messages.StringField(3)
 
 
+class ComputeNetworksGetEffectiveFirewallsRequest(_messages.Message):
+  r"""A ComputeNetworksGetEffectiveFirewallsRequest object.
+
+  Fields:
+    network: Name of the network for this request.
+    project: Project ID for this request.
+  """
+
+  network = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
 class ComputeNetworksGetRequest(_messages.Message):
   r"""A ComputeNetworksGetRequest object.
 
@@ -12814,6 +12944,338 @@ class ComputeNodeTypesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputeOrganizationSecurityPoliciesAddAssociationRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesAddAssociationRequest object.
+
+  Fields:
+    replaceExistingAssociation: Indicates whether or not to replace it if an
+      association of the attachment already exists. This is false by default,
+      in which case an error will be returned if an assocation already exists.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+    securityPolicyAssociation: A SecurityPolicyAssociation resource to be
+      passed as the request body.
+  """
+
+  replaceExistingAssociation = _messages.BooleanField(1)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3, required=True)
+  securityPolicyAssociation = _messages.MessageField('SecurityPolicyAssociation', 4)
+
+
+class ComputeOrganizationSecurityPoliciesAddRuleRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesAddRuleRequest object.
+
+  Fields:
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+  """
+
+  requestId = _messages.StringField(1)
+  securityPolicy = _messages.StringField(2, required=True)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 3)
+
+
+class ComputeOrganizationSecurityPoliciesCopyRulesRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesCopyRulesRequest object.
+
+  Fields:
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+    sourceSecurityPolicy: The security policy from which to copy rules.
+  """
+
+  requestId = _messages.StringField(1)
+  securityPolicy = _messages.StringField(2, required=True)
+  sourceSecurityPolicy = _messages.StringField(3)
+
+
+class ComputeOrganizationSecurityPoliciesDeleteRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesDeleteRequest object.
+
+  Fields:
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to delete.
+  """
+
+  requestId = _messages.StringField(1)
+  securityPolicy = _messages.StringField(2, required=True)
+
+
+class ComputeOrganizationSecurityPoliciesGetAssociationRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesGetAssociationRequest object.
+
+  Fields:
+    name: The name of the association to get from the security policy.
+    securityPolicy: Name of the security policy to which the queried rule
+      belongs.
+  """
+
+  name = _messages.StringField(1)
+  securityPolicy = _messages.StringField(2, required=True)
+
+
+class ComputeOrganizationSecurityPoliciesGetRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesGetRequest object.
+
+  Fields:
+    securityPolicy: Name of the security policy to get.
+  """
+
+  securityPolicy = _messages.StringField(1, required=True)
+
+
+class ComputeOrganizationSecurityPoliciesGetRuleRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesGetRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to get from the security policy.
+    securityPolicy: Name of the security policy to which the queried rule
+      belongs.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  securityPolicy = _messages.StringField(2, required=True)
+
+
+class ComputeOrganizationSecurityPoliciesInsertRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesInsertRequest object.
+
+  Fields:
+    parentId: Parent ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: A SecurityPolicy resource to be passed as the request
+      body.
+  """
+
+  parentId = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.MessageField('SecurityPolicy', 3)
+
+
+class ComputeOrganizationSecurityPoliciesListAssociationsRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesListAssociationsRequest object.
+
+  Fields:
+    targetResource: The target resource to list associations. It is an
+      organization, or a folder.
+  """
+
+  targetResource = _messages.StringField(1)
+
+
+class ComputeOrganizationSecurityPoliciesListRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    parentId: Parent ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  parentId = _messages.StringField(5)
+
+
+class ComputeOrganizationSecurityPoliciesMoveRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesMoveRequest object.
+
+  Fields:
+    parentId: The new parent of the security policy.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+  """
+
+  parentId = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeOrganizationSecurityPoliciesPatchRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesPatchRequest object.
+
+  Fields:
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+    securityPolicyResource: A SecurityPolicy resource to be passed as the
+      request body.
+  """
+
+  requestId = _messages.StringField(1)
+  securityPolicy = _messages.StringField(2, required=True)
+  securityPolicyResource = _messages.MessageField('SecurityPolicy', 3)
+
+
+class ComputeOrganizationSecurityPoliciesPatchRuleRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesPatchRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to patch.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3, required=True)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 4)
+
+
+class ComputeOrganizationSecurityPoliciesRemoveAssociationRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesRemoveAssociationRequest object.
+
+  Fields:
+    name: Name for the attachment that will be removed.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+  """
+
+  name = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeOrganizationSecurityPoliciesRemoveRuleRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesRemoveRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to remove from the security policy.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3, required=True)
 
 
 class ComputePacketMirroringsAggregatedListRequest(_messages.Message):
@@ -23153,7 +23615,7 @@ class ForwardingRule(_messages.Message):
       forwarding rules, refer to Forwarding rule concepts.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this load balancer and can only take the following values:
-      PREMIUM , STANDARD.  For regional ForwardingRule, the valid values are
+      PREMIUM, STANDARD.  For regional ForwardingRule, the valid values are
       PREMIUM and STANDARD. For GlobalForwardingRule, the valid value is
       PREMIUM.  If this field is not specified, it is assumed to be PREMIUM.
       If IPAddress is specified, this value must be equal to the networkTier
@@ -23273,11 +23735,11 @@ class ForwardingRule(_messages.Message):
       network that the load balanced IP should belong to for this Forwarding
       Rule. If this field is not specified, the default network will be used.
     networkTier: This signifies the networking tier used for configuring this
-      load balancer and can only take the following values: PREMIUM ,
-      STANDARD.  For regional ForwardingRule, the valid values are PREMIUM and
-      STANDARD. For GlobalForwardingRule, the valid value is PREMIUM.  If this
-      field is not specified, it is assumed to be PREMIUM. If IPAddress is
-      specified, this value must be equal to the networkTier of the Address.
+      load balancer and can only take the following values: PREMIUM, STANDARD.
+      For regional ForwardingRule, the valid values are PREMIUM and STANDARD.
+      For GlobalForwardingRule, the valid value is PREMIUM.  If this field is
+      not specified, it is assumed to be PREMIUM. If IPAddress is specified,
+      this value must be equal to the networkTier of the Address.
     portRange: When the load balancing scheme is EXTERNAL,
       INTERNAL_SELF_MANAGED and INTERNAL_MANAGED, you can specify a
       port_range. Use with a forwarding rule that points to a target proxy or
@@ -23399,7 +23861,7 @@ class ForwardingRule(_messages.Message):
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     r"""This signifies the networking tier used for configuring this load
-    balancer and can only take the following values: PREMIUM , STANDARD.  For
+    balancer and can only take the following values: PREMIUM, STANDARD.  For
     regional ForwardingRule, the valid values are PREMIUM and STANDARD. For
     GlobalForwardingRule, the valid value is PREMIUM.  If this field is not
     specified, it is assumed to be PREMIUM. If IPAddress is specified, this
@@ -24691,6 +25153,21 @@ class HealthCheckService(_messages.Message):
   selfLink = _messages.StringField(13)
 
 
+class HealthCheckServiceReference(_messages.Message):
+  r"""A full or valid partial URL to a health check service. For example, the
+  following are valid URLs:   -
+  https://www.googleapis.com/compute/beta/projects/project-id/regions/us-
+  west1/healthCheckServices/health-check-service  - projects/project-
+  id/regions/us-west1/healthCheckServices/health-check-service  - regions/us-
+  west1/healthCheckServices/health-check-service
+
+  Fields:
+    healthCheckService: A string attribute.
+  """
+
+  healthCheckService = _messages.StringField(1)
+
+
 class HealthCheckServicesList(_messages.Message):
   r"""A HealthCheckServicesList object.
 
@@ -25154,6 +25631,8 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
       state of the network endpoint.
     healthCheck: URL of the health check associated with the health state of
       the network endpoint.
+    healthCheckService: URL of the health check service associated with the
+      health state of the network endpoint.
     healthState: Health state of the network endpoint determined based on the
       health checks configured.
   """
@@ -25176,7 +25655,8 @@ class HealthStatusForNetworkEndpoint(_messages.Message):
   backendService = _messages.MessageField('BackendServiceReference', 1)
   forwardingRule = _messages.MessageField('ForwardingRuleReference', 2)
   healthCheck = _messages.MessageField('HealthCheckReference', 3)
-  healthState = _messages.EnumField('HealthStateValueValuesEnum', 4)
+  healthCheckService = _messages.MessageField('HealthCheckServiceReference', 4)
+  healthState = _messages.EnumField('HealthStateValueValuesEnum', 5)
 
 
 class HostRule(_messages.Message):
@@ -27577,14 +28057,21 @@ class InstanceGroupManagerStatusStateful(_messages.Message):
   r"""A InstanceGroupManagerStatusStateful object.
 
   Fields:
+    hasStatefulConfig: [Output Only] A bit indicating whether the managed
+      instance group is stateful, i.e. has any disks in Stateful Policy or at
+      least one per-instance config. This is determined based on the user
+      intent, the group may be reported as not stateful even when there is
+      still some preserved state on managed instances.
     isStateful: [Output Only] A bit indicating whether the managed instance
       group is stateful, i.e. has any disks in Stateful Policy or at least one
       per-instance config. This is determined based on the user intent, the
       group may be reported as not stateful even when there is still some
-      preserved state on managed instances.
+      preserved state on managed instances. This field is deprecated in favor
+      of has_stateful_config
   """
 
-  isStateful = _messages.BooleanField(1)
+  hasStatefulConfig = _messages.BooleanField(1)
+  isStateful = _messages.BooleanField(2)
 
 
 class InstanceGroupManagerStatusVersionTarget(_messages.Message):
@@ -28954,7 +29441,7 @@ class InstanceProperties(_messages.Message):
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
     resourcePolicies: Resource policies (names, not ULRs) applied to instances
-      created from this templae.
+      created from this template.
     scheduling: Specifies the scheduling options for the instances that are
       created from this template.
     serviceAccounts: A list of service accounts with specified scopes. Access
@@ -29233,6 +29720,31 @@ class InstanceWithNamedPorts(_messages.Message):
   instance = _messages.StringField(1)
   namedPorts = _messages.MessageField('NamedPort', 2, repeated=True)
   status = _messages.EnumField('StatusValueValuesEnum', 3)
+
+
+class InstancesGetEffectiveFirewallsResponse(_messages.Message):
+  r"""A InstancesGetEffectiveFirewallsResponse object.
+
+  Fields:
+    firewalls: Effective firewalls on the instance.
+    organizationFirewalls: Effective firewalls from organization policies.
+  """
+
+  firewalls = _messages.MessageField('Firewall', 1, repeated=True)
+  organizationFirewalls = _messages.MessageField('InstancesGetEffectiveFirewallsResponseOrganizationFirewallPolicy', 2, repeated=True)
+
+
+class InstancesGetEffectiveFirewallsResponseOrganizationFirewallPolicy(_messages.Message):
+  r"""A pruned SecurityPolicy containing ID and any applicable firewall rules.
+
+  Fields:
+    id: The unique identifier for the security policy. This identifier is
+      defined by the server.
+    rules: The rules that apply to the network.
+  """
+
+  id = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
+  rules = _messages.MessageField('SecurityPolicyRule', 2, repeated=True)
 
 
 class InstancesResumeRequest(_messages.Message):
@@ -31197,7 +31709,10 @@ class InterconnectsGetDiagnosticsResponse(_messages.Message):
 
 
 class License(_messages.Message):
-  r"""A license resource.
+  r"""Represents a License resource.  A License represents billing and
+  aggregate usage data for public and marketplace images.  Caution This
+  resource is intended for use only by third-party partners who are creating
+  Cloud Marketplace images. (== resource_for {$api_version}.licenses ==)
 
   Fields:
     chargesUseFee: [Output Only] Deprecated. This field no longer reflects
@@ -31233,7 +31748,10 @@ class License(_messages.Message):
 
 
 class LicenseCode(_messages.Message):
-  r"""A LicenseCode object.
+  r"""Represents a License Code resource.  A License Code is a unique
+  identifier used to represent a license resource.  Caution This resource is
+  intended for use only by third-party partners who are creating Cloud
+  Marketplace images. (== resource_for {$api_version}.licenseCodes ==)
 
   Enums:
     StateValueValuesEnum: [Output Only] Current state of this License Code.
@@ -32678,13 +33196,12 @@ class NetworkEndpoint(_messages.Message):
 
 class NetworkEndpointGroup(_messages.Message):
   r"""Represents a collection of network endpoints.  For more information read
-  Setting up network endpoint groups in load balancing. (== resource_for
+  Network endpoint groups overview. (== resource_for
   {$api_version}.networkEndpointGroups ==) Next ID: 21
 
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
-      network endpoint group. Currently the only supported value is
-      GCE_VM_IP_PORT.
+      network endpoint group.
 
   Messages:
     AnnotationsValue: Metadata defined as annotations on the network endpoint
@@ -32715,7 +33232,7 @@ class NetworkEndpointGroup(_messages.Message):
     network: The URL of the network to which all network endpoints in the NEG
       belong. Uses "default" project network if unspecified.
     networkEndpointType: Type of network endpoints in this network endpoint
-      group. Currently the only supported value is GCE_VM_IP_PORT.
+      group.
     selfLink: [Output Only] Server-defined URL for the resource.
     size: [Output only] Number of network endpoints in the network endpoint
       group.
@@ -32726,8 +33243,7 @@ class NetworkEndpointGroup(_messages.Message):
   """
 
   class NetworkEndpointTypeValueValuesEnum(_messages.Enum):
-    r"""Type of network endpoints in this network endpoint group. Currently
-    the only supported value is GCE_VM_IP_PORT.
+    r"""Type of network endpoints in this network endpoint group.
 
     Values:
       GCE_VM_IP_PORT: <no description>
@@ -33694,6 +34210,31 @@ class NetworksAddPeeringRequest(_messages.Message):
   name = _messages.StringField(2)
   networkPeering = _messages.MessageField('NetworkPeering', 3)
   peerNetwork = _messages.StringField(4)
+
+
+class NetworksGetEffectiveFirewallsResponse(_messages.Message):
+  r"""A NetworksGetEffectiveFirewallsResponse object.
+
+  Fields:
+    firewalls: Effective firewalls on the network.
+    organizationFirewalls: Effective firewalls from organization policies.
+  """
+
+  firewalls = _messages.MessageField('Firewall', 1, repeated=True)
+  organizationFirewalls = _messages.MessageField('NetworksGetEffectiveFirewallsResponseOrganizationFirewallPolicy', 2, repeated=True)
+
+
+class NetworksGetEffectiveFirewallsResponseOrganizationFirewallPolicy(_messages.Message):
+  r"""A pruned SecurityPolicy containing ID and any applicable firewall rules.
+
+  Fields:
+    id: [Output Only] The unique identifier for the security policy. This
+      identifier is defined by the server.
+    rules: The rules that apply to the network.
+  """
+
+  id = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
+  rules = _messages.MessageField('SecurityPolicyRule', 2, repeated=True)
 
 
 class NetworksRemovePeeringRequest(_messages.Message):
@@ -36222,6 +36763,20 @@ class OperationsScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class OrganizationSecurityPoliciesListAssociationsResponse(_messages.Message):
+  r"""A OrganizationSecurityPoliciesListAssociationsResponse object.
+
+  Fields:
+    associations: A list of associations.
+    kind: [Output Only] Type of securityPolicy associations. Always
+      compute#organizationSecurityPoliciesListAssociations for lists of
+      securityPolicy associations.
+  """
+
+  associations = _messages.MessageField('SecurityPolicyAssociation', 1, repeated=True)
+  kind = _messages.StringField(2, default=u'compute#organizationSecurityPoliciesListAssociationsResponse')
+
+
 class OutlierDetection(_messages.Message):
   r"""Settings controlling the eviction of unhealthy hosts from the load
   balancing pool for the backend service.
@@ -37409,6 +37964,7 @@ class Quota(_messages.Message):
     r"""[Output Only] Name of the quota metric.
 
     Values:
+      AFFINITY_GROUPS: <no description>
       AUTOSCALERS: <no description>
       BACKEND_BUCKETS: <no description>
       BACKEND_SERVICES: <no description>
@@ -37453,6 +38009,8 @@ class Quota(_messages.Message):
       N2_CPUS: <no description>
       NETWORKS: <no description>
       NETWORK_ENDPOINT_GROUPS: <no description>
+      NODE_GROUPS: <no description>
+      NODE_TEMPLATES: <no description>
       NVIDIA_K80_GPUS: <no description>
       NVIDIA_P100_GPUS: <no description>
       NVIDIA_P100_VWS_GPUS: <no description>
@@ -37498,94 +38056,97 @@ class Quota(_messages.Message):
       VPN_GATEWAYS: <no description>
       VPN_TUNNELS: <no description>
     """
-    AUTOSCALERS = 0
-    BACKEND_BUCKETS = 1
-    BACKEND_SERVICES = 2
-    C2_CPUS = 3
-    COMMITMENTS = 4
-    COMMITTED_C2_CPUS = 5
-    COMMITTED_CPUS = 6
-    COMMITTED_LICENSES = 7
-    COMMITTED_LOCAL_SSD_TOTAL_GB = 8
-    COMMITTED_N2D_CPUS = 9
-    COMMITTED_N2_CPUS = 10
-    COMMITTED_NVIDIA_K80_GPUS = 11
-    COMMITTED_NVIDIA_P100_GPUS = 12
-    COMMITTED_NVIDIA_P4_GPUS = 13
-    COMMITTED_NVIDIA_T4_GPUS = 14
-    COMMITTED_NVIDIA_V100_GPUS = 15
-    CPUS = 16
-    CPUS_ALL_REGIONS = 17
-    DISKS_TOTAL_GB = 18
-    EXTERNAL_VPN_GATEWAYS = 19
-    FIREWALLS = 20
-    FORWARDING_RULES = 21
-    GLOBAL_INTERNAL_ADDRESSES = 22
-    GPUS_ALL_REGIONS = 23
-    HEALTH_CHECKS = 24
-    IMAGES = 25
-    INSTANCES = 26
-    INSTANCE_GROUPS = 27
-    INSTANCE_GROUP_MANAGERS = 28
-    INSTANCE_TEMPLATES = 29
-    INTERCONNECTS = 30
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 31
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 32
-    INTERCONNECT_TOTAL_GBPS = 33
-    INTERNAL_ADDRESSES = 34
-    IN_USE_ADDRESSES = 35
-    IN_USE_BACKUP_SCHEDULES = 36
-    IN_USE_SNAPSHOT_SCHEDULES = 37
-    LOCAL_SSD_TOTAL_GB = 38
-    MACHINE_IMAGES = 39
-    N2D_CPUS = 40
-    N2_CPUS = 41
-    NETWORKS = 42
-    NETWORK_ENDPOINT_GROUPS = 43
-    NVIDIA_K80_GPUS = 44
-    NVIDIA_P100_GPUS = 45
-    NVIDIA_P100_VWS_GPUS = 46
-    NVIDIA_P4_GPUS = 47
-    NVIDIA_P4_VWS_GPUS = 48
-    NVIDIA_T4_GPUS = 49
-    NVIDIA_T4_VWS_GPUS = 50
-    NVIDIA_V100_GPUS = 51
-    PACKET_MIRRORINGS = 52
-    PREEMPTIBLE_CPUS = 53
-    PREEMPTIBLE_LOCAL_SSD_GB = 54
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 55
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 56
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 57
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 58
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 59
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 60
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 61
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 62
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 63
-    REGIONAL_AUTOSCALERS = 64
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 65
-    RESERVATIONS = 66
-    RESOURCE_POLICIES = 67
-    ROUTERS = 68
-    ROUTES = 69
-    SECURITY_POLICIES = 70
-    SECURITY_POLICY_CEVAL_RULES = 71
-    SECURITY_POLICY_RULES = 72
-    SNAPSHOTS = 73
-    SSD_TOTAL_GB = 74
-    SSL_CERTIFICATES = 75
-    STATIC_ADDRESSES = 76
-    SUBNETWORKS = 77
-    TARGET_HTTPS_PROXIES = 78
-    TARGET_HTTP_PROXIES = 79
-    TARGET_INSTANCES = 80
-    TARGET_POOLS = 81
-    TARGET_SSL_PROXIES = 82
-    TARGET_TCP_PROXIES = 83
-    TARGET_VPN_GATEWAYS = 84
-    URL_MAPS = 85
-    VPN_GATEWAYS = 86
-    VPN_TUNNELS = 87
+    AFFINITY_GROUPS = 0
+    AUTOSCALERS = 1
+    BACKEND_BUCKETS = 2
+    BACKEND_SERVICES = 3
+    C2_CPUS = 4
+    COMMITMENTS = 5
+    COMMITTED_C2_CPUS = 6
+    COMMITTED_CPUS = 7
+    COMMITTED_LICENSES = 8
+    COMMITTED_LOCAL_SSD_TOTAL_GB = 9
+    COMMITTED_N2D_CPUS = 10
+    COMMITTED_N2_CPUS = 11
+    COMMITTED_NVIDIA_K80_GPUS = 12
+    COMMITTED_NVIDIA_P100_GPUS = 13
+    COMMITTED_NVIDIA_P4_GPUS = 14
+    COMMITTED_NVIDIA_T4_GPUS = 15
+    COMMITTED_NVIDIA_V100_GPUS = 16
+    CPUS = 17
+    CPUS_ALL_REGIONS = 18
+    DISKS_TOTAL_GB = 19
+    EXTERNAL_VPN_GATEWAYS = 20
+    FIREWALLS = 21
+    FORWARDING_RULES = 22
+    GLOBAL_INTERNAL_ADDRESSES = 23
+    GPUS_ALL_REGIONS = 24
+    HEALTH_CHECKS = 25
+    IMAGES = 26
+    INSTANCES = 27
+    INSTANCE_GROUPS = 28
+    INSTANCE_GROUP_MANAGERS = 29
+    INSTANCE_TEMPLATES = 30
+    INTERCONNECTS = 31
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 32
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 33
+    INTERCONNECT_TOTAL_GBPS = 34
+    INTERNAL_ADDRESSES = 35
+    IN_USE_ADDRESSES = 36
+    IN_USE_BACKUP_SCHEDULES = 37
+    IN_USE_SNAPSHOT_SCHEDULES = 38
+    LOCAL_SSD_TOTAL_GB = 39
+    MACHINE_IMAGES = 40
+    N2D_CPUS = 41
+    N2_CPUS = 42
+    NETWORKS = 43
+    NETWORK_ENDPOINT_GROUPS = 44
+    NODE_GROUPS = 45
+    NODE_TEMPLATES = 46
+    NVIDIA_K80_GPUS = 47
+    NVIDIA_P100_GPUS = 48
+    NVIDIA_P100_VWS_GPUS = 49
+    NVIDIA_P4_GPUS = 50
+    NVIDIA_P4_VWS_GPUS = 51
+    NVIDIA_T4_GPUS = 52
+    NVIDIA_T4_VWS_GPUS = 53
+    NVIDIA_V100_GPUS = 54
+    PACKET_MIRRORINGS = 55
+    PREEMPTIBLE_CPUS = 56
+    PREEMPTIBLE_LOCAL_SSD_GB = 57
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 58
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 59
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 60
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 61
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 62
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 63
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 64
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 65
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 66
+    REGIONAL_AUTOSCALERS = 67
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 68
+    RESERVATIONS = 69
+    RESOURCE_POLICIES = 70
+    ROUTERS = 71
+    ROUTES = 72
+    SECURITY_POLICIES = 73
+    SECURITY_POLICY_CEVAL_RULES = 74
+    SECURITY_POLICY_RULES = 75
+    SNAPSHOTS = 76
+    SSD_TOTAL_GB = 77
+    SSL_CERTIFICATES = 78
+    STATIC_ADDRESSES = 79
+    SUBNETWORKS = 80
+    TARGET_HTTPS_PROXIES = 81
+    TARGET_HTTP_PROXIES = 82
+    TARGET_INSTANCES = 83
+    TARGET_POOLS = 84
+    TARGET_SSL_PROXIES = 85
+    TARGET_TCP_PROXIES = 86
+    TARGET_VPN_GATEWAYS = 87
+    URL_MAPS = 88
+    VPN_GATEWAYS = 89
+    VPN_TUNNELS = 90
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -41897,6 +42458,19 @@ class SchedulingNodeAffinity(_messages.Message):
   values = _messages.StringField(3, repeated=True)
 
 
+class Screenshot(_messages.Message):
+  r"""An instance's screenshot.
+
+  Fields:
+    contents: [Output Only] The Base64-encoded screenshot data.
+    kind: [Output Only] Type of the resource. Always compute#screenshot for
+      the screenshots.
+  """
+
+  contents = _messages.StringField(1)
+  kind = _messages.StringField(2, default=u'compute#screenshot')
+
+
 class SecurityPoliciesListPreconfiguredExpressionSetsResponse(_messages.Message):
   r"""A SecurityPoliciesListPreconfiguredExpressionSetsResponse object.
 
@@ -41923,16 +42497,31 @@ class SecurityPolicy(_messages.Message):
   For more information, read  Cloud Armor Security Policy Concepts. (==
   resource_for {$api_version}.securityPolicies ==)
 
+  Enums:
+    TypeValueValuesEnum: The type indicates the intended use of the security
+      policy. CLOUD_ARMOR policies apply to backend services. FIREWALL
+      policies apply to organizations.
+
   Messages:
     LabelsValue: Labels to apply to this security policy resource. These can
       be later modified by the setLabels method. Each label key/value must
       comply with RFC1035. Label values may be empty.
 
   Fields:
+    associations: A list of associations that belong to this policy.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    displayName: User-provided name of the Organization security plicy. The
+      name should be unique in the organization in which the security policy
+      is created. This should only be used when SecurityPolicyType is
+      FIREWALL. The name must be 1-63 characters long, and comply with
+      RFC1035. Specifically, the name must be 1-63 characters long and match
+      the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the
+      first character must be a lowercase letter, and all following characters
+      must be a dash, lowercase letter, or digit, except the last character,
+      which cannot be a dash.
     fingerprint: Specifies a fingerprint for this resource, which is
       essentially a hash of the metadata's contents and used for optimistic
       locking. The fingerprint is initially generated by Compute Engine and
@@ -41962,12 +42551,32 @@ class SecurityPolicy(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    parent: [Output Only] The parent of the security policy.
+    ruleTupleCount: [Output Only] Total count of all security policy rule
+      tuples. A security policy can not exceed a set number of tuples.
     rules: A list of rules that belong to this policy. There must always be a
       default rule (rule with priority 2147483647 and match "*"). If no rules
       are provided when creating a security policy, a default rule with action
       "allow" will be added.
     selfLink: [Output Only] Server-defined URL for the resource.
+    selfLinkWithId: [Output Only] Server-defined URL for this resource with
+      the resource id.
+    type: The type indicates the intended use of the security policy.
+      CLOUD_ARMOR policies apply to backend services. FIREWALL policies apply
+      to organizations.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type indicates the intended use of the security policy.
+    CLOUD_ARMOR policies apply to backend services. FIREWALL policies apply to
+    organizations.
+
+    Values:
+      CLOUD_ARMOR: <no description>
+      FIREWALL: <no description>
+    """
+    CLOUD_ARMOR = 0
+    FIREWALL = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -41995,16 +42604,39 @@ class SecurityPolicy(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  fingerprint = _messages.BytesField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#securityPolicy')
-  labelFingerprint = _messages.BytesField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  rules = _messages.MessageField('SecurityPolicyRule', 9, repeated=True)
-  selfLink = _messages.StringField(10)
+  associations = _messages.MessageField('SecurityPolicyAssociation', 1, repeated=True)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  fingerprint = _messages.BytesField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#securityPolicy')
+  labelFingerprint = _messages.BytesField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  parent = _messages.StringField(11)
+  ruleTupleCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('SecurityPolicyRule', 13, repeated=True)
+  selfLink = _messages.StringField(14)
+  selfLinkWithId = _messages.StringField(15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
+
+
+class SecurityPolicyAssociation(_messages.Message):
+  r"""A SecurityPolicyAssociation object.
+
+  Fields:
+    attachmentId: The resource that the security policy is attached to.
+    displayName: [Output Only] The display name of the security policy of the
+      association.
+    name: The name for an association.
+    securityPolicyId: [Output Only] The security policy ID of the association.
+  """
+
+  attachmentId = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  securityPolicyId = _messages.StringField(4)
 
 
 class SecurityPolicyList(_messages.Message):
@@ -42144,12 +42776,23 @@ class SecurityPolicyRule(_messages.Message):
   r"""Represents a rule that describes one or more match conditions along with
   the action to be taken when traffic matches this condition (allow or deny).
 
+  Enums:
+    DirectionValueValuesEnum: The direction in which this rule applies. This
+      field may only be specified when versioned_expr is set to FIREWALL.
+
   Fields:
     action: The Action to preform when the client connection triggers the
       rule. Can currently be either "allow" or "deny()" where valid values for
       status are 403, 404, and 502.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    direction: The direction in which this rule applies. This field may only
+      be specified when versioned_expr is set to FIREWALL.
+    enableLogging: Denotes whether to enable logging for a particular rule. If
+      logging is enabled, logs will be exported to the configured export
+      destination in Stackdriver. Logs may be exported to BigQuery or Pub/Sub.
+      Note: you cannot enable logging on "goto_next" rules.  This field may
+      only be specified when the versioned_expr is set to FIREWALL.
     kind: [Output only] Type of the resource. Always
       compute#securityPolicyRule for security policy rules
     match: A match condition that incoming traffic is evaluated against. If it
@@ -42159,14 +42802,39 @@ class SecurityPolicyRule(_messages.Message):
       priority must be a positive value between 0 and 2147483647. Rules are
       evaluated from highest to lowest priority where 0 is the highest
       priority and 2147483647 is the lowest prority.
+    ruleTupleCount: [Output Only] Calculation of the complexity of a single
+      firewall security policy rule.
+    targetResources: A list of network resource URLs to which this rule
+      applies. This field allows you to control which network's VMs get this
+      rule. If this field is left blank, all VMs within the organization will
+      receive the rule.  This field may only be specified when versioned_expr
+      is set to FIREWALL.
+    targetServiceAccounts: A list of service accounts indicating the sets of
+      instances that are applied with this rule.
   """
+
+  class DirectionValueValuesEnum(_messages.Enum):
+    r"""The direction in which this rule applies. This field may only be
+    specified when versioned_expr is set to FIREWALL.
+
+    Values:
+      EGRESS: <no description>
+      INGRESS: <no description>
+    """
+    EGRESS = 0
+    INGRESS = 1
 
   action = _messages.StringField(1)
   description = _messages.StringField(2)
-  kind = _messages.StringField(3, default=u'compute#securityPolicyRule')
-  match = _messages.MessageField('SecurityPolicyRuleMatcher', 4)
-  preview = _messages.BooleanField(5)
-  priority = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  direction = _messages.EnumField('DirectionValueValuesEnum', 3)
+  enableLogging = _messages.BooleanField(4)
+  kind = _messages.StringField(5, default=u'compute#securityPolicyRule')
+  match = _messages.MessageField('SecurityPolicyRuleMatcher', 6)
+  preview = _messages.BooleanField(7)
+  priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  ruleTupleCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  targetResources = _messages.StringField(10, repeated=True)
+  targetServiceAccounts = _messages.StringField(11, repeated=True)
 
 
 class SecurityPolicyRuleMatcher(_messages.Message):
@@ -42199,9 +42867,11 @@ class SecurityPolicyRuleMatcher(_messages.Message):
     src_ip_range field in config.
 
     Values:
+      FIREWALL: <no description>
       SRC_IPS_V1: <no description>
     """
-    SRC_IPS_V1 = 0
+    FIREWALL = 0
+    SRC_IPS_V1 = 1
 
   config = _messages.MessageField('SecurityPolicyRuleMatcherConfig', 1)
   expr = _messages.MessageField('Expr', 2)
@@ -42212,10 +42882,36 @@ class SecurityPolicyRuleMatcherConfig(_messages.Message):
   r"""A SecurityPolicyRuleMatcherConfig object.
 
   Fields:
+    destIpRanges: CIDR IP address range.  This field may only be specified
+      when versioned_expr is set to FIREWALL.
+    layer4Configs: Pairs of IP protocols and ports that the rule should match.
+      This field may only be specified when versioned_expr is set to FIREWALL.
     srcIpRanges: CIDR IP address range.
   """
 
-  srcIpRanges = _messages.StringField(1, repeated=True)
+  destIpRanges = _messages.StringField(1, repeated=True)
+  layer4Configs = _messages.MessageField('SecurityPolicyRuleMatcherConfigLayer4Config', 2, repeated=True)
+  srcIpRanges = _messages.StringField(3, repeated=True)
+
+
+class SecurityPolicyRuleMatcherConfigLayer4Config(_messages.Message):
+  r"""A SecurityPolicyRuleMatcherConfigLayer4Config object.
+
+  Fields:
+    ipProtocol: The IP protocol to which this rule applies. The protocol type
+      is required when creating a firewall rule. This value can either be one
+      of the following well known protocol strings (tcp, udp, icmp, esp, ah,
+      ipip, sctp), or the IP protocol number.
+    ports: An optional list of ports to which this rule applies. This field is
+      only applicable for UDP or TCP protocol. Each entry must be either an
+      integer or a range. If not specified, this rule applies to connections
+      through any port.  Example inputs include: ["22"], ["80","443"], and
+      ["12345-12349"].  This field may only be specified when versioned_expr
+      is set to FIREWALL.
+  """
+
+  ipProtocol = _messages.StringField(1)
+  ports = _messages.StringField(2, repeated=True)
 
 
 class SerialPortOutput(_messages.Message):
@@ -42822,10 +43518,12 @@ class SslCertificate(_messages.Message):
   ional](/compute/docs/reference/rest/{$api_version}/regionSslCertificates)
   The sslCertificates are used by:   - external HTTPS load balancers  - SSL
   proxy load balancers    The regionSslCertificates are used by internal HTTPS
-  load balancers.  This SSL certificate resource also contains a private key.
-  You can use SSL keys and certificates to secure connections to a load
-  balancer. For more information, read  Creating and Using SSL Certificates.
-  (== resource_for {$api_version}.sslCertificates ==) (== resource_for
+  load balancers.  Optionally, certificate file contents that you upload can
+  contain a set of up to five PEM-encoded certificates. The API call creates
+  an object (sslCertificate) that holds this data. You can use SSL keys and
+  certificates to secure connections to a load balancer. For more information,
+  read  Creating and using SSL certificates and SSL certificates quotas and
+  limits. (== resource_for {$api_version}.sslCertificates ==) (== resource_for
   {$api_version}.regionSslCertificates ==)
 
   Enums:

@@ -9,6 +9,7 @@ class LoggingV2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://logging.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'logging'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/logging.admin', u'https://www.googleapis.com/auth/logging.read', u'https://www.googleapis.com/auth/logging.write']
@@ -124,7 +125,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets a bucket.
+      r"""Gets a bucket (Beta).
 
       Args:
         request: (LoggingBillingAccountsBucketsGetRequest) input message
@@ -478,7 +479,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists buckets.
+      r"""Lists buckets (Beta).
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsListRequest) input message
@@ -505,7 +506,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created.
+      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created. This method is in Beta.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsPatchRequest) input message
@@ -1376,7 +1377,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a bucket.
+      r"""Gets a bucket (Beta).
 
       Args:
         request: (LoggingFoldersLocationsBucketsGetRequest) input message
@@ -1403,7 +1404,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists buckets.
+      r"""Lists buckets (Beta).
 
       Args:
         request: (LoggingFoldersLocationsBucketsListRequest) input message
@@ -1430,7 +1431,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created.
+      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created. This method is in Beta.
 
       Args:
         request: (LoggingFoldersLocationsBucketsPatchRequest) input message
@@ -1949,7 +1950,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a bucket.
+      r"""Gets a bucket (Beta).
 
       Args:
         request: (LoggingLocationsBucketsGetRequest) input message
@@ -1976,7 +1977,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists buckets.
+      r"""Lists buckets (Beta).
 
       Args:
         request: (LoggingLocationsBucketsListRequest) input message
@@ -2003,7 +2004,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created.
+      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created. This method is in Beta.
 
       Args:
         request: (LoggingLocationsBucketsPatchRequest) input message
@@ -2521,7 +2522,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a bucket.
+      r"""Gets a bucket (Beta).
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsGetRequest) input message
@@ -2548,7 +2549,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists buckets.
+      r"""Lists buckets (Beta).
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsListRequest) input message
@@ -2575,7 +2576,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created.
+      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created. This method is in Beta.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsPatchRequest) input message
@@ -3293,7 +3294,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a bucket.
+      r"""Gets a bucket (Beta).
 
       Args:
         request: (LoggingProjectsLocationsBucketsGetRequest) input message
@@ -3320,7 +3321,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists buckets.
+      r"""Lists buckets (Beta).
 
       Args:
         request: (LoggingProjectsLocationsBucketsListRequest) input message
@@ -3347,7 +3348,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created.
+      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created. This method is in Beta.
 
       Args:
         request: (LoggingProjectsLocationsBucketsPatchRequest) input message

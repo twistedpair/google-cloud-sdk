@@ -207,17 +207,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
   "software_update": "cloud-sql-09-28-2018",   },
   "maintenance_policy_names": {     "UpdatePolicy":
   "projects/snapchat/locations/us-east1/maintenancePolicies/prod-update-
-  policy",   }   "rollout_metadata": {     "projects/cloud-
-  sql/locations/global/rolloutTypes/software_update": {       "release":
-  "projects/cloud-sql/locations/global/releases/cloud-sql-09-28-2018",
-  "rollout":       "projects/cloud-sql/locations/us-east1/rollouts/cloud-
-  sql-09-28-2018-canary",     },     "projects/cloud-
-  sql/locations/global/rolloutTypes/instance_restart": {       "release":
-  "projects/cloud-sql/locations/global/releases/cloud-sql-09-20-repair",
-  "rollout":       "projects/cloud-sql/locations/us-east1/rollouts/cloud-
-  sql-09-20-repair-100-percent",     }   }   "tenant_project_id": "cloud-sql-
-  test-tenant",   "producer_metadata": {     "cloud-sql-tier": "basic",
-  "cloud-sql-instance-size": "1G",   },   "provisioned_resources": [     {
+  policy",   }   "tenant_project_id": "cloud-sql-test-tenant",
+  "producer_metadata": {     "cloud-sql-tier": "basic",     "cloud-sql-
+  instance-size": "1G",   },   "provisioned_resources": [     {
   "resource-type": "compute-instance",       "resource-url":
   "https://www.googleapis.com/compute/v1/projects/cloud-sql/zones/us-
   east1-b/instances/vm-1",     }   ],   "maintenance_schedules": {
@@ -554,7 +546,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.M
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1NotificationMetadata(_messages.Message):
-  r"""NotificationMetadata is the notification state for an instance.
+  r"""This message has been deprecated. NotificationMetadata is the
+  notification state for an instance.
 
   Fields:
     rescheduled: Whether the instance update has been rescheduled.
@@ -590,8 +583,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource(_messag
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1RolloutMetadata(_messages.Message):
-  r"""RolloutMetadata for an actuation instance. It maps to a single
-  RolloutType.
+  r"""This message has been deprecated. RolloutMetadata for an actuation
+  instance. It maps to a single RolloutType.
 
   Fields:
     notification: Instance level notification metadata.

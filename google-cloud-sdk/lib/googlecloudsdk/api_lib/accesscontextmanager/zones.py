@@ -44,10 +44,11 @@ def _CreateServiceRestriction(restriction_message_type, mask_prefix,
   return message, ['{}.{}'.format(mask_prefix, item) for item in update_mask]
 
 
-def _CreateServicePerimeterConfig(
-    messages, mask_prefix, include_unrestricted_services, resources,
-    restricted_services, unrestricted_services, levels,
-    vpc_allowed_services, enable_vpc_service_restriction):
+def _CreateServicePerimeterConfig(messages, mask_prefix,
+                                  include_unrestricted_services, resources,
+                                  restricted_services, unrestricted_services,
+                                  levels, vpc_allowed_services,
+                                  enable_vpc_accessible_services):
   """Returns a ServicePerimeterConfig and its update mask."""
 
   config = messages.ServicePerimeterConfig()
@@ -65,12 +66,12 @@ def _CreateServicePerimeterConfig(
     mask.append('accessLevels')
     config.accessLevels = [l.RelativeName() for l in levels]
 
-  if (enable_vpc_service_restriction is not None or
+  if (enable_vpc_accessible_services is not None or
       vpc_allowed_services is not None):
-    config.vpcServiceRestriction, mask_updates = _CreateServiceRestriction(
-        messages.VpcServiceRestriction,
-        'vpcServiceRestriction',
-        enable_restriction=enable_vpc_service_restriction,
+    config.vpcAccessibleServices, mask_updates = _CreateServiceRestriction(
+        messages.VpcAccessibleServices,
+        'vpcAccessibleServices',
+        enable_restriction=enable_vpc_accessible_services,
         allowed_services=vpc_allowed_services)
     mask += mask_updates
 
@@ -108,7 +109,7 @@ class Client(object):
             unrestricted_services=None,
             levels=None,
             vpc_allowed_services=None,
-            enable_vpc_service_restriction=None,
+            enable_vpc_accessible_services=None,
             apply_to_dry_run_config=False,
             clear_dry_run=False):
     """Patch a service perimeter.
@@ -132,7 +133,7 @@ class Client(object):
       vpc_allowed_services: list of str, the names of services
         ('example.googleapis.com') that *are* allowed to be made within the
         access zone, or None if not updating.
-      enable_vpc_service_restriction: bool, whether to restrict the set of APIs
+      enable_vpc_accessible_services: bool, whether to restrict the set of APIs
         callable within the access zone, or None if not updating.
       apply_to_dry_run_config: When true, the configuration will be place in the
         'spec' field instead of the 'status' field of the Service Perimeter.
@@ -163,8 +164,7 @@ class Client(object):
       config, config_mask_additions = _CreateServicePerimeterConfig(
           m, mask_prefix, self.include_unrestricted_services, resources,
           restricted_services, unrestricted_services, levels,
-          vpc_allowed_services,
-          enable_vpc_service_restriction)
+          vpc_allowed_services, enable_vpc_accessible_services)
 
       if not apply_to_dry_run_config:
         perimeter.status = config

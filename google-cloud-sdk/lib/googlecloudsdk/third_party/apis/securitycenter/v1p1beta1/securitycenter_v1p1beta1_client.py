@@ -9,6 +9,7 @@ class SecuritycenterV1p1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://securitycenter.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'securitycenter'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

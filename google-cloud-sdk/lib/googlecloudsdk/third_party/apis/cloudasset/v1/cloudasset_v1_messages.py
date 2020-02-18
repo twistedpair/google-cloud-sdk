@@ -760,9 +760,9 @@ class GoogleCloudOrgpolicyV1RestoreDefault(_messages.Message):
 
 
 class GoogleIdentityAccesscontextmanagerV1AccessLevel(_messages.Message):
-  r"""An `AccessLevel` is a label that can be applied to requests to GCP
-  services, along with a list of requirements necessary for the label to be
-  applied.
+  r"""An `AccessLevel` is a label that can be applied to requests to Google
+  Cloud services, along with a list of requirements necessary for the label to
+  be applied.
 
   Fields:
     basic: A `BasicLevel` composed of `Conditions`.
@@ -788,10 +788,10 @@ class GoogleIdentityAccesscontextmanagerV1AccessLevel(_messages.Message):
 
 class GoogleIdentityAccesscontextmanagerV1AccessPolicy(_messages.Message):
   r"""`AccessPolicy` is a container for `AccessLevels` (which define the
-  necessary attributes to use GCP services) and `ServicePerimeters` (which
-  define regions of services able to freely pass data within a perimeter). An
-  access policy is globally visible within an organization, and the
-  restrictions it specifies apply to all projects within an organization.
+  necessary attributes to use Google Cloud services) and `ServicePerimeters`
+  (which define regions of services able to freely pass data within a
+  perimeter). An access policy is globally visible within an organization, and
+  the restrictions it specifies apply to all projects within an organization.
 
   Fields:
     createTime: Output only. Time the `AccessPolicy` was created in UTC.
@@ -997,12 +997,16 @@ class GoogleIdentityAccesscontextmanagerV1OsConstraint(_messages.Message):
       DESKTOP_WINDOWS: A desktop Windows operating system.
       DESKTOP_LINUX: A desktop Linux operating system.
       DESKTOP_CHROME_OS: A desktop ChromeOS operating system.
+      ANDROID: An Android operating system.
+      IOS: An iOS operating system.
     """
     OS_UNSPECIFIED = 0
     DESKTOP_MAC = 1
     DESKTOP_WINDOWS = 2
     DESKTOP_LINUX = 3
     DESKTOP_CHROME_OS = 4
+    ANDROID = 5
+    IOS = 6
 
   minimumVersion = _messages.StringField(1)
   osType = _messages.EnumField('OsTypeValueValuesEnum', 2)
@@ -1010,16 +1014,16 @@ class GoogleIdentityAccesscontextmanagerV1OsConstraint(_messages.Message):
 
 
 class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
-  r"""`ServicePerimeter` describes a set of GCP resources which can freely
-  import and export data amongst themselves, but not export outside of the
-  `ServicePerimeter`. If a request with a source within this
+  r"""`ServicePerimeter` describes a set of Google Cloud resources which can
+  freely import and export data amongst themselves, but not export outside of
+  the `ServicePerimeter`. If a request with a source within this
   `ServicePerimeter` has a target outside of the `ServicePerimeter`, the
   request will be blocked. Otherwise the request is allowed. There are two
   types of Service Perimeter - Regular and Bridge. Regular Service Perimeters
-  cannot overlap, a single GCP project can only belong to a single regular
-  Service Perimeter. Service Perimeter Bridges can contain only GCP projects
-  as members, a single GCP project may belong to multiple Service Perimeter
-  Bridges.
+  cannot overlap, a single Google Cloud project can only belong to a single
+  regular Service Perimeter. Service Perimeter Bridges can contain only Google
+  Cloud projects as members, a single Google Cloud project may belong to
+  multiple Service Perimeter Bridges.
 
   Enums:
     PerimeterTypeValueValuesEnum: Perimeter type indicator. A single project
@@ -1072,8 +1076,8 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
 
 
 class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig(_messages.Message):
-  r"""`ServicePerimeterConfig` specifies a set of GCP resources that describe
-  specific Service Perimeter configuration.
+  r"""`ServicePerimeterConfig` specifies a set of Google Cloud resources that
+  describe specific Service Perimeter configuration.
 
   Fields:
     accessLevels: A list of `AccessLevel` resource names that allow resources
@@ -1081,17 +1085,17 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig(_messages.Messa
       `AccessLevels` listed must be in the same policy as this
       `ServicePerimeter`. Referencing a nonexistent `AccessLevel` is a syntax
       error. If no `AccessLevel` names are listed, resources within the
-      perimeter can only be accessed via GCP calls with request origins within
-      the perimeter. Example:
+      perimeter can only be accessed via Google Cloud calls with request
+      origins within the perimeter. Example:
       `"accessPolicies/MY_POLICY/accessLevels/MY_LEVEL"`. For Service
       Perimeter Bridge, must be empty.
-    resources: A list of GCP resources that are inside of the service
+    resources: A list of Google Cloud resources that are inside of the service
       perimeter. Currently only projects are allowed. Format:
       `projects/{project_number}`
-    restrictedServices: GCP services that are subject to the Service Perimeter
-      restrictions. For example, if `storage.googleapis.com` is specified,
-      access to the storage buckets inside the perimeter must meet the
-      perimeter's access restrictions.
+    restrictedServices: Google Cloud services that are subject to the Service
+      Perimeter restrictions. For example, if `storage.googleapis.com` is
+      specified, access to the storage buckets inside the perimeter must meet
+      the perimeter's access restrictions.
   """
 
   accessLevels = _messages.StringField(1, repeated=True)

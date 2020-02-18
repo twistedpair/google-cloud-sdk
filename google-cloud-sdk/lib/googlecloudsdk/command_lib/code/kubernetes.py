@@ -54,7 +54,7 @@ def _FindExecutable(exe):
   Raises:
     EnvironmentError: The exeuctable can't be found.
   """
-  path = file_utils.FindExecutableOnPath(exe) or _FindOrInstallComponent(exe)
+  path = _FindOrInstallComponent(exe) or file_utils.FindExecutableOnPath(exe)
   if not path:
     raise EnvironmentError('Unable to locate %s.' % exe)
   return path

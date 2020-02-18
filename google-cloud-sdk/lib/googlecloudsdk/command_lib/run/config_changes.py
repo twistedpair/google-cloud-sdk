@@ -639,14 +639,22 @@ class NoTrafficChange(ConfigChanger):
 
 
 class TrafficChanges(ConfigChanger):
-  """Represents the user intent to change a services traffic assignments."""
+  """Represents the user intent to change a service's traffic assignments."""
 
-  def __init__(self, new_percentages):
+  def __init__(self, new_percentages, tags_to_update=None, tags_to_remove=None,
+               clear_other_tags=False):
     self._new_percentages = new_percentages
+    self._tags_to_update = tags_to_update or {}
+    self._tags_to_remove = tags_to_remove or []
+    self._clear_other_tags = clear_other_tags
 
   def Adjust(self, resource):
-    """Mutates the given services traffic assignments."""
-    resource.traffic.UpdateTraffic(self._new_percentages)
+    """Mutates the given service's traffic assignments."""
+    if self._tags_to_update or self._tags_to_remove or self._clear_other_tags:
+      resource.traffic.UpdateTags(self._tags_to_update, self._tags_to_remove,
+                                  self._clear_other_tags)
+    if self._new_percentages:
+      resource.traffic.UpdateTraffic(self._new_percentages)
     return resource
 
 

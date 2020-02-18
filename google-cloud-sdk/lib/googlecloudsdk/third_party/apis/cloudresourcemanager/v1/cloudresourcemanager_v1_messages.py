@@ -285,7 +285,8 @@ class CloudresourcemanagerLiensDeleteRequest(_messages.Message):
   r"""A CloudresourcemanagerLiensDeleteRequest object.
 
   Fields:
-    liensId: Part of `name`. The name/identifier of the Lien to delete.
+    liensId: Part of `name`. Required. The name/identifier of the Lien to
+      delete.
   """
 
   liensId = _messages.StringField(1, required=True)
@@ -295,7 +296,7 @@ class CloudresourcemanagerLiensGetRequest(_messages.Message):
   r"""A CloudresourcemanagerLiensGetRequest object.
 
   Fields:
-    liensId: Part of `name`. The name/identifier of the Lien.
+    liensId: Part of `name`. Required. The name/identifier of the Lien.
   """
 
   liensId = _messages.StringField(1, required=True)
@@ -309,8 +310,8 @@ class CloudresourcemanagerLiensListRequest(_messages.Message):
       the server.
     pageToken: The `next_page_token` value returned from a previous List
       request, if any.
-    parent: The name of the resource to list all attached Liens. For example,
-      `projects/1234`.
+    parent: Required. The name of the resource to list all attached Liens. For
+      example, `projects/1234`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

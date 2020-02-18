@@ -9,6 +9,7 @@ class CloudresourcemanagerV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://cloudresourcemanager.googleapis.com/'
+  MTLS_BASE_URL = u'https://cloudresourcemanager.mtls.googleapis.com/'
 
   _PACKAGE = u'cloudresourcemanager'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']

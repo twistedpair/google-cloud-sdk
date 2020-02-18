@@ -68,10 +68,11 @@ class APIAdapter(object):
     self.api_version = api_version
 
   def GenerateConnectAgentManifest(self, option):
-    """Generate the YAML manifest to deploy the GKE Connect agent.
+    """Generate the YAML manifest to deploy the Connect Agent.
 
     Args:
       option: an instance of ConnectAgentOption.
+
     Returns:
       A slice of connect agent manifest resources.
     Raises:

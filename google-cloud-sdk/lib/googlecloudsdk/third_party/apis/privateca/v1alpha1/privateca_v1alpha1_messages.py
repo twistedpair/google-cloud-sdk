@@ -11,6 +11,21 @@ from apitools.base.py import extra_types
 package = 'privateca'
 
 
+class AccessUrls(_messages.Message):
+  r"""URLs where a CertificateAuthority will publish content.
+
+  Fields:
+    caCertificateAccessUrl: The URL where this CertificateAuthority's CA
+      certificate is published. This will only be set for CAs that have been
+      activated.
+    crlAccessUrl: The URL where this CertificateAuthority's CRLs are
+      published. This will only be set for CAs that have been activated.
+  """
+
+  caCertificateAccessUrl = _messages.StringField(1)
+  crlAccessUrl = _messages.StringField(2)
+
+
 class ActivateCertificateAuthorityRequest(_messages.Message):
   r"""Request message for
   CertificateAuthorityService.ActivateCertificateAuthority.
@@ -94,6 +109,23 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AuthorityInformationAccess(_messages.Message):
+  r"""Describes how to access information and services for the issuer of the
+  certificate, per https://tools.ietf.org/html/rfc5280#section-4.2.2.1
+
+  Fields:
+    issuingCertificateUrls: Optional. The referenced CA issuers description is
+      intended to aid certificate users in the selection of a certification
+      path that terminates at a point trusted by the certificate user.
+    oscpServers: Optional. Used when revocation information for the
+      certificate containing this extension is available using the Online
+      Certificate Status Protocol (OCSP)
+  """
+
+  issuingCertificateUrls = _messages.StringField(1, repeated=True)
+  oscpServers = _messages.StringField(2, repeated=True)
+
+
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
@@ -149,7 +181,9 @@ class CaOptions(_messages.Message):
       value.
     maxIssuerPathLength: Optional. Refers to the path length restriction X.509
       extension. For a CA certificate, this value describes the depth of
-      subordinate CA certificates that are allowed.
+      subordinate CA certificates that are allowed. If this value is less than
+      0, the request will fail. If this values is missing, the max path length
+      will be omitted from the CA certificate.
   """
 
   isCa = _messages.BooleanField(1)
@@ -174,15 +208,19 @@ class Certificate(_messages.Message):
       require X.509 or ASN.1.
     createTime: Output only. The time at which this Certificate was created.
     labels: Optional. Labels with user-defined metadata.
+    lifetime: Required. The desired lifetime of a certificate. Used to create
+      the "not_before_time" and "not_after_time" fields inside an X.509
+      certificate. Note that the lifetime may be truncated if it would extend
+      past the life of any certificate authority in the issuing chain.
     name: Output only. The resource path for this Certificate in the format
       `projects/*/locations/*/certificateAuthorities/*/certificates/*`.
     pemCertificate: Output only. The pem-encoded, signed X.509 certificate.
     pemCertificateChain: Output only. The chain that may be used to verify the
       X.509 certificate.
     pemCsr: Immutable. A pem-encoded X.509 certificate signing request (CSR).
-    revocationDetails: Optional. Details regarding the revocation of this
+    revocationDetails: Output only. Details regarding the revocation of this
       Certificate. This Certificate is considered revoked if and only if this
-      field is present. Setting this field will revoke a Certificate.
+      field is present.
     updateTime: Output only. The time at which this Certificate was updated.
   """
 
@@ -214,12 +252,13 @@ class Certificate(_messages.Message):
   config = _messages.MessageField('CertificateConfig', 2)
   createTime = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  pemCertificate = _messages.StringField(6)
-  pemCertificateChain = _messages.StringField(7, repeated=True)
-  pemCsr = _messages.StringField(8)
-  revocationDetails = _messages.MessageField('RevocationDetails', 9)
-  updateTime = _messages.StringField(10)
+  lifetime = _messages.StringField(5)
+  name = _messages.StringField(6)
+  pemCertificate = _messages.StringField(7)
+  pemCertificateChain = _messages.StringField(8, repeated=True)
+  pemCsr = _messages.StringField(9)
+  revocationDetails = _messages.MessageField('RevocationDetails', 10)
+  updateTime = _messages.StringField(11)
 
 
 class CertificateAuthority(_messages.Message):
@@ -235,6 +274,8 @@ class CertificateAuthority(_messages.Message):
     LabelsValue: Optional. Labels with user-defined metadata.
 
   Fields:
+    accessUrls: Output only. URLs for accessing content published by this CA,
+      such as the CA certificate and CRLs.
     caCertificateDescription: Output only. A structured description of this
       CertificateAuthority's CA cert.
     certificatePolicy: Optional. The CertificateAuthorityPolicy to enforce
@@ -250,9 +291,17 @@ class CertificateAuthority(_messages.Message):
       certificate or CSR.
     createTime: Output only. The time at which this CertificateAuthority was
       created.
+    gcsBucket: Immutable. The name of a GCS bucket where this
+      CertificateAuthority will publish content, such as the CA certificate
+      and CRLs. This must be a bucket name, without any prefixes (such as
+      `gs://`) or suffixes (such as `.googleapis.com`). For example, to use a
+      bucket named `my-bucket`, you would simply specify `my-bucket`.
     issuingOptions: Optional. The IssuingOptions to follow when issuing
       Certificates from this CertificateAuthority.
     labels: Optional. Labels with user-defined metadata.
+    lifetime: Required. The desired lifetime of the CA certificate. Used to
+      create the "not_before_time" and "not_after_time" fields inside an X.509
+      certificate.
     name: Output only. The resource name for this CertificateAuthority in the
       format `projects/*/locations/*/certificateAuthorities/*`.
     pemCert: Output only. This CertificateAuthority's CA cert.
@@ -322,19 +371,22 @@ class CertificateAuthority(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  caCertificateDescription = _messages.MessageField('CertificateDescription', 1)
-  certificatePolicy = _messages.MessageField('CertificateAuthorityPolicy', 2)
-  cloudKmsKeyVersion = _messages.StringField(3)
-  config = _messages.MessageField('CertificateConfig', 4)
-  createTime = _messages.StringField(5)
-  issuingOptions = _messages.MessageField('IssuingOptions', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  pemCert = _messages.StringField(9)
-  pemIssuerCertChain = _messages.StringField(10, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  type = _messages.EnumField('TypeValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
+  accessUrls = _messages.MessageField('AccessUrls', 1)
+  caCertificateDescription = _messages.MessageField('CertificateDescription', 2)
+  certificatePolicy = _messages.MessageField('CertificateAuthorityPolicy', 3)
+  cloudKmsKeyVersion = _messages.StringField(4)
+  config = _messages.MessageField('CertificateConfig', 5)
+  createTime = _messages.StringField(6)
+  gcsBucket = _messages.StringField(7)
+  issuingOptions = _messages.MessageField('IssuingOptions', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  lifetime = _messages.StringField(10)
+  name = _messages.StringField(11)
+  pemCert = _messages.StringField(12)
+  pemIssuerCertChain = _messages.StringField(13, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  type = _messages.EnumField('TypeValueValuesEnum', 15)
+  updateTime = _messages.StringField(16)
 
 
 class CertificateAuthorityPolicy(_messages.Message):
@@ -387,19 +439,22 @@ class CertificateDescription(_messages.Message):
   been issued, as an alternative to using ASN.1 / X.509.
 
   Fields:
+    authorityKeyId: Identifies the subject_key_id of the parent certificate,
+      per https://tools.ietf.org/html/rfc5280#section-4.2.1.1
     configValues: Describes some of the technical fields in a certificate.
     publicKey: The public key that corresponds to an issued certificate.
     subjectDescription: Describes some of the values in a certificate that are
       related to the subject and lifetime.
-    subjectKeyId: Optional. Provides a means of identifiying certificates that
-      contain a particular public key, per
+    subjectKeyId: Provides a means of identifiying certificates that contain a
+      particular public key, per
       https://tools.ietf.org/html/rfc5280#section-4.2.1.2.
   """
 
-  configValues = _messages.MessageField('ReusableConfigValues', 1)
-  publicKey = _messages.MessageField('PublicKey', 2)
-  subjectDescription = _messages.MessageField('SubjectDescription', 3)
-  subjectKeyId = _messages.MessageField('KeyId', 4)
+  authorityKeyId = _messages.MessageField('KeyId', 1)
+  configValues = _messages.MessageField('ReusableConfigValues', 2)
+  publicKey = _messages.MessageField('PublicKey', 3)
+  subjectDescription = _messages.MessageField('SubjectDescription', 4)
+  subjectKeyId = _messages.MessageField('KeyId', 5)
 
 
 class CertificateRevocationList(_messages.Message):
@@ -408,8 +463,8 @@ class CertificateRevocationList(_messages.Message):
   that should no longer be trusted.
 
   Enums:
-    StateValueValuesEnum: Output only. The CertificateRevocationListState for
-      this CertificateRevocationList.
+    StateValueValuesEnum: Output only. The State for this
+      CertificateRevocationList.
 
   Messages:
     LabelsValue: Optional. Labels with user-defined metadata.
@@ -427,22 +482,20 @@ class CertificateRevocationList(_messages.Message):
       in pem_crl.
     sequenceNumber: Output only. The CRL sequence number that appears in
       pem_crl.
-    state: Output only. The CertificateRevocationListState for this
-      CertificateRevocationList.
+    state: Output only. The State for this CertificateRevocationList.
     updateTime: Output only. The time at which this CertificateRevocationList
       was updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The CertificateRevocationListState for this
-    CertificateRevocationList.
+    r"""Output only. The State for this CertificateRevocationList.
 
     Values:
-      CERTIFICATE_REVOCATION_LIST_STATE_UNSPECIFIED: Not specified.
+      STATE_UNSPECIFIED: Not specified.
       ACTIVE: The CertificateRevocationList is up to date.
       SUPERSEDED: The CertificateRevocationList is no longer current.
     """
-    CERTIFICATE_REVOCATION_LIST_STATE_UNSPECIFIED = 0
+    STATE_UNSPECIFIED = 0
     ACTIVE = 1
     SUPERSEDED = 2
 
@@ -646,13 +699,13 @@ class ListCertificateAuthoritiesResponse(_messages.Message):
     nextPageToken: A token to retrieve next page of results. Pass this value
       in ListCertificateAuthoritiesRequest.next_page_token to retrieve the
       next page of results.
-    unreachableLocations: A list of locations (e.g. "us-west1") that could not
-      be reached.
+    unreachable: A list of locations (e.g. "us-west1") that could not be
+      reached.
   """
 
   certificateAuthorities = _messages.MessageField('CertificateAuthority', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-  unreachableLocations = _messages.StringField(3, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListCertificateRevocationListsResponse(_messages.Message):
@@ -664,13 +717,13 @@ class ListCertificateRevocationListsResponse(_messages.Message):
     nextPageToken: A token to retrieve next page of results. Pass this value
       in ListCertificateRevocationListsRequest.next_page_token to retrieve the
       next page of results.
-    unreachableLocations: A list of locations (e.g. "us-west1") that could not
-      be reached.
+    unreachable: A list of locations (e.g. "us-west1") that could not be
+      reached.
   """
 
   certificateRevocationLists = _messages.MessageField('CertificateRevocationList', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-  unreachableLocations = _messages.StringField(3, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListCertificatesResponse(_messages.Message):
@@ -681,13 +734,13 @@ class ListCertificatesResponse(_messages.Message):
     nextPageToken: A token to retrieve next page of results. Pass this value
       in ListCertificatesRequest.next_page_token to retrieve the next page of
       results.
-    unreachableLocations: A list of locations (e.g. "us-west1") that could not
-      be reached.
+    unreachable: A list of locations (e.g. "us-west1") that could not be
+      reached.
   """
 
   certificates = _messages.MessageField('Certificate', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-  unreachableLocations = _messages.StringField(3, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -724,13 +777,13 @@ class ListReusableConfigsResponse(_messages.Message):
       in ListReusableConfigsRequest.next_page_token to retrieve the next page
       of results.
     reusableConfigs: The list of ReusableConfigs.
-    unreachableLocations: A list of locations (e.g. "us-west1") that could not
-      be reached.
+    unreachable: A list of locations (e.g. "us-west1") that could not be
+      reached.
   """
 
   nextPageToken = _messages.StringField(1)
   reusableConfigs = _messages.MessageField('ReusableConfig', 2, repeated=True)
-  unreachableLocations = _messages.StringField(3, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -1389,6 +1442,29 @@ class PrivatecaProjectsLocationsCertificateAuthoritiesCreateRequest(_messages.Me
   requestId = _messages.StringField(4)
 
 
+class PrivatecaProjectsLocationsCertificateAuthoritiesDeleteRequest(_messages.Message):
+  r"""A PrivatecaProjectsLocationsCertificateAuthoritiesDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name for this CertificateAuthority in the
+      format `projects/*/locations/*/certificateAuthorities/*`.
+    requestId: Optional. An ID to identify requests. Specify a unique request
+      ID so that if you must retry your request, the server will know to
+      ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request.  For
+      example, consider a situation where you make an initial request and t he
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
 class PrivatecaProjectsLocationsCertificateAuthoritiesGetCsrRequest(_messages.Message):
   r"""A PrivatecaProjectsLocationsCertificateAuthoritiesGetCsrRequest object.
 
@@ -1818,8 +1894,13 @@ class ReusableConfigValues(_messages.Message):
 
   Fields:
     additionalExtensions: Optional. Describes custom X.509 extensions.
+    authorityInformationAccess: Optional. Describes how to access information
+      and services for the issuer of the  certificate.
     caOptions: Optional. Describes options in this ReusableConfigValues that
       are relevant in a CA certificate.
+    crlDistributionPoints: Optional. Describes a list of locations to obtain
+      CRL information, i.e. the DistributionPoint.fullName described by
+      https://tools.ietf.org/html/rfc5280#section-4.2.1.13
     keyUsage: Optional. Indicates the intended use for keys that correspond to
       a certificate.
     policyIds: Optional. Describes the X.509 certificate policy object
@@ -1828,9 +1909,11 @@ class ReusableConfigValues(_messages.Message):
   """
 
   additionalExtensions = _messages.MessageField('X509Extension', 1, repeated=True)
-  caOptions = _messages.MessageField('CaOptions', 2)
-  keyUsage = _messages.MessageField('KeyUsage', 3)
-  policyIds = _messages.MessageField('ObjectId', 4, repeated=True)
+  authorityInformationAccess = _messages.MessageField('AuthorityInformationAccess', 2)
+  caOptions = _messages.MessageField('CaOptions', 3)
+  crlDistributionPoints = _messages.StringField(4, repeated=True)
+  keyUsage = _messages.MessageField('KeyUsage', 5)
+  policyIds = _messages.MessageField('ObjectId', 6, repeated=True)
 
 
 class ReusableConfigWrapper(_messages.Message):
@@ -1851,17 +1934,15 @@ class RevocationDetails(_messages.Message):
   r"""Describes fields that are relavent to the revocation of a Certificate.
 
   Enums:
-    RevocationStateValueValuesEnum: Required. Indicates why a Certificate was
-      revoked.
+    RevocationStateValueValuesEnum: Indicates why a Certificate was revoked.
 
   Fields:
-    revocationState: Required. Indicates why a Certificate was revoked.
-    revocationTime: Output only. The time at which this Certificate was
-      revoked.
+    revocationState: Indicates why a Certificate was revoked.
+    revocationTime: The time at which this Certificate was revoked.
   """
 
   class RevocationStateValueValuesEnum(_messages.Enum):
-    r"""Required. Indicates why a Certificate was revoked.
+    r"""Indicates why a Certificate was revoked.
 
     Values:
       REVOCATION_REASON_UNSPECIFIED: Default unspecified value. This value
@@ -2129,7 +2210,7 @@ class Subject(_messages.Message):
   the subject of the certificate.
 
   Fields:
-    country: The country of the subject.
+    countryCode: The country code of the subject.
     locality: The locality or city of the subject.
     organization: The organization of the subject.
     organizationalUnit: The organizational_unit of the subject.
@@ -2138,7 +2219,7 @@ class Subject(_messages.Message):
     streetAddress: The street address of the subject.
   """
 
-  country = _messages.StringField(1)
+  countryCode = _messages.StringField(1)
   locality = _messages.StringField(2)
   organization = _messages.StringField(3)
   organizationalUnit = _messages.StringField(4)
@@ -2174,19 +2255,14 @@ class SubjectConfig(_messages.Message):
 
   Fields:
     commonName: Optional. The "common name" of the distinguished name.
-    lifetime: Required. The desired lifetime of a certificate. Used to create
-      the "not_before_time" and "not_after_time" fields inside an X.509
-      certificate. Note that the lifetime may be truncated if it would extend
-      past the life of any certificate authority in the issuing chain.
     subject: Required. Contains distinguished name fields such as the location
       and organization.
     subjectAltName: Optional. The subject alternative name fields.
   """
 
   commonName = _messages.StringField(1)
-  lifetime = _messages.StringField(2)
-  subject = _messages.MessageField('Subject', 3)
-  subjectAltName = _messages.MessageField('SubjectAltNames', 4)
+  subject = _messages.MessageField('Subject', 2)
+  subjectAltName = _messages.MessageField('SubjectAltNames', 3)
 
 
 class SubjectDescription(_messages.Message):

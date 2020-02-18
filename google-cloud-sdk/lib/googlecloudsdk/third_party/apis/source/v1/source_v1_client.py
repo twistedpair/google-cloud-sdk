@@ -9,6 +9,7 @@ class SourceV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://source.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'source'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

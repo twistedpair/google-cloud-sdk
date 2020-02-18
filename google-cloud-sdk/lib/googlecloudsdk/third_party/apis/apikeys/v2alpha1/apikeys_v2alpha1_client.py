@@ -9,6 +9,7 @@ class ApikeysV2alpha1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://apikeys.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'apikeys'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']

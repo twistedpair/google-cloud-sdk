@@ -671,7 +671,8 @@ class BinaryBackedCommand(six.with_metaclass(abc.ABCMeta, Command)):
       log.error(response.stderr)
       return None
 
-    log.status.Print(response.stderr)
+    if response.stderr:
+      log.status.Print(response.stderr)
     return response.stdout
 
 

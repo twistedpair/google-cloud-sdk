@@ -164,6 +164,14 @@ CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG = """\
 The CloudRun-on-GKE addon (--addons=CloudRun) requires HTTP Load Balancing to be enabled via the --addons=HttpLoadBalancing flag.
 """
 
+CONFIGCONNECTOR_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG = """\
+The ConfigConnector-on-GKE addon (--addons=ConfigConnector) requires Cloud Logging and Cloud Monitoring to be enabled via the --enable-stackdriver-kubernetes flag.
+"""
+
+CONFIGCONNECTOR_WORKLOAD_IDENTITY_DISABLED_ERROR_MSG = """\
+The ConfigConnector-on-GKE addon (--addons=ConfigConnector) requires workload identity to be enabled via the --identity-namespace=IDENTITY_NAMESPACE flag.
+"""
+
 CLOUDBUILD_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG = """\
 Cloud Build for Anthos (--addons=CloudBuild) requires Cloud Logging and Cloud Monitoring to be enabled via the --enable-stackdriver-kubernetes flag.
 """
@@ -246,9 +254,9 @@ SCOPES = 'scopes'
 AUTOPROVISIONING_LOCATIONS = 'autoprovisioningLocations'
 DEFAULT_ADDONS = [INGRESS, HPA]
 ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, NETWORK_POLICY, CLOUDRUN]
-BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [ISTIO, APPLICATIONMANAGER, NODELOCALDNS]
+BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [ISTIO, APPLICATIONMANAGER, NODELOCALDNS, GCEPDCSIDRIVER]
 ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [
-    CONFIGCONNECTOR, GCEPDCSIDRIVER, CLOUDBUILD
+    CONFIGCONNECTOR, CLOUDBUILD
 ]
 
 
@@ -1070,13 +1078,20 @@ class APIAdapter(object):
           disable_dashboard=DASHBOARD not in options.addons,
           disable_network_policy=(NETWORK_POLICY not in options.addons),
           enable_node_local_dns=(NODELOCALDNS in options.addons or None),
-          enable_config_connector=(CONFIGCONNECTOR in options.addons),
           enable_gcepd_csi_driver=(GCEPDCSIDRIVER in options.addons),
           enable_application_manager=(APPLICATIONMANAGER in options.addons),
           enable_cloud_build=(CLOUDBUILD in options.addons),
       )
+      # CONFIGCONNECTOR is disabled by default.
+      if CONFIGCONNECTOR in options.addons:
+        if not options.enable_stackdriver_kubernetes:
+          raise util.Error(
+              CONFIGCONNECTOR_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
+        if options.identity_namespace is None:
+          raise util.Error(CONFIGCONNECTOR_WORKLOAD_IDENTITY_DISABLED_ERROR_MSG)
+        addons.configConnectorConfig = self.messages.ConfigConnectorConfig(
+            enabled=True)
       cluster.addonsConfig = addons
-
     self.ParseMasterAuthorizedNetworkOptions(options, cluster)
 
     if options.enable_kubernetes_alpha:
@@ -1657,6 +1672,10 @@ class APIAdapter(object):
           disable_network_policy=options.disable_addons.get(NETWORK_POLICY),
           enable_node_local_dns=not disable_node_local_dns if \
              disable_node_local_dns is not None else None)
+      if options.disable_addons.get(CONFIGCONNECTOR) is not None:
+        addons.configConnectorConfig = (
+            self.messages.ConfigConnectorConfig(
+                enabled=(not options.disable_addons.get(CONFIGCONNECTOR))))
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
     elif options.enable_autoscaling is not None:
       # For update, we can either enable or disable.
@@ -1827,7 +1846,6 @@ class APIAdapter(object):
                     disable_dashboard=None,
                     disable_network_policy=None,
                     enable_node_local_dns=None,
-                    enable_config_connector=None,
                     enable_gcepd_csi_driver=None,
                     enable_application_manager=None,
                     enable_cloud_build=None):
@@ -1839,7 +1857,6 @@ class APIAdapter(object):
       disable_dashboard: whether to disable the Kuberntes Dashboard.
       disable_network_policy: whether to disable NetworkPolicy enforcement.
       enable_node_local_dns: whether to enable NodeLocalDNS cache.
-      enable_config_connector: whether to enable ConfigConnector.
       enable_gcepd_csi_driver: whether to enable GcePersistentDiskCsiDriver.
       enable_application_manager: whether to enable ApplicationManager.
       enable_cloud_build: whether to enable CloudBuild.
@@ -1865,10 +1882,6 @@ class APIAdapter(object):
     if enable_node_local_dns is not None:
       addons.dnsCacheConfig = self.messages.DnsCacheConfig(
           enabled=enable_node_local_dns)
-
-    if enable_config_connector:
-      addons.configConnectorConfig = self.messages.ConfigConnectorConfig(
-          enabled=True)
     if enable_gcepd_csi_driver:
       addons.gcePersistentDiskCsiDriverConfig = self.messages.GcePersistentDiskCsiDriverConfig(
           enabled=True)
@@ -2747,6 +2760,10 @@ class V1Beta1Adapter(V1Adapter):
         update.desiredAddonsConfig.cloudBuildConfig = (
             self.messages.CloudBuildConfig(
                 enabled=(not options.disable_addons.get(CLOUDBUILD))))
+      if options.disable_addons.get(GCEPDCSIDRIVER) is not None:
+        update.desiredAddonsConfig.gcePersistentDiskCsiDriverConfig = (
+            self.messages.GcePersistentDiskCsiDriverConfig(
+                enabled=not options.disable_addons.get(GCEPDCSIDRIVER)))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -3068,6 +3085,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         update.desiredAddonsConfig.cloudBuildConfig = (
             self.messages.CloudBuildConfig(
                 enabled=(not options.disable_addons.get(CLOUDBUILD))))
+      if options.disable_addons.get(GCEPDCSIDRIVER) is not None:
+        update.desiredAddonsConfig.gcePersistentDiskCsiDriverConfig = (
+            self.messages.GcePersistentDiskCsiDriverConfig(
+                enabled=not options.disable_addons.get(GCEPDCSIDRIVER)))
     if options.update_nodes and options.concurrent_node_count:
       update.concurrentNodeCount = options.concurrent_node_count
 

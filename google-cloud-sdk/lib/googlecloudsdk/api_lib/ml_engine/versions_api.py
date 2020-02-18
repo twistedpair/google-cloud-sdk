@@ -179,7 +179,8 @@ class VersionsClient(object):
         control.
       explanation_method: Enables explanations and selects the explanation
         method. Valid options are 'integrated-gradients' and 'sampled-shapley'.
-      num_integral_steps: Number of integral steps for Integrated Gradients.
+      num_integral_steps: Number of integral steps for Integrated Gradients and
+        XRAI.
       num_paths: Number of paths for Sampled Shapley.
 
 
@@ -240,6 +241,11 @@ class VersionsClient(object):
       shap_config = self.messages.GoogleCloudMlV1SampledShapleyAttribution()
       shap_config.numPaths = num_paths
       explanation_config.sampledShapleyAttribution = shap_config
+    elif explanation_method == 'xrai':
+      explanation_config = self.messages.GoogleCloudMlV1ExplanationConfig()
+      xrai_config = self.messages.GoogleCloudMlV1XraiAttribution()
+      xrai_config.numIntegralSteps = num_integral_steps
+      explanation_config.xraiAttribution = xrai_config
 
     if explanation_config is not None:
       additional_fields['explanationConfig'] = explanation_config

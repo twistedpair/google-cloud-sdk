@@ -20,12 +20,16 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+
+PREDEFINED_REUSABLE_CONFIG_LOCATION = 'us-west1'
+PREDEFINED_REUSABLE_CONFIG_PROJECT = 'private-ca-shared'
 
 
 def ReusableConfigAttributeConfig():
   # ReusableConfig is always an anchor attribute so help_text is unused.
-  return concepts.ResourceParameterAttributeConfig(name='reusableConfig')
+  return concepts.ResourceParameterAttributeConfig(name='reusable_config')
 
 
 def CertificateAttributeConfig():
@@ -33,42 +37,81 @@ def CertificateAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(name='certificate')
 
 
-def CertificateAuthorityAttributeConfig(arg_name='certificate-authority'):
+def CertificateAuthorityAttributeConfig(arg_name='certificate_authority'):
   return concepts.ResourceParameterAttributeConfig(
       name=arg_name,
-      help_text='The issuing certificate authority of the {resource}')
+      help_text='The issuing certificate authority of the {resource}.')
 
 
-def LocationAttributeConfig(arg_name='location'):
+def LocationAttributeConfig(arg_name='location', fallthroughs=None):
   return concepts.ResourceParameterAttributeConfig(
-      name=arg_name, help_text='The location of the {resource}.')
+      name=arg_name,
+      help_text='The location of the {resource}.',
+      fallthroughs=fallthroughs or [])
 
 
-def CreateReusableConfigResourceSpec(arg_name):
+def ProjectAttributeConfig(fallthroughs=None):
+  """DO NOT USE THIS for most flags.
+
+  This config is only useful when you want to provide an explicit project
+  fallthrough. For most cases, prefer concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG.
+
+  Args:
+    fallthroughs: List of deps.Fallthrough objects to provide project values.
+
+  Returns:
+    A concepts.ResourceParameterAttributeConfig for a project.
+  """
+  return concepts.ResourceParameterAttributeConfig(
+      name='project',
+      help_text='The project containing the {resource}.',
+      fallthroughs=fallthroughs or [])
+
+
+def CreateReusableConfigResourceSpec():
+  """Create a resource spec for a ReusableConfig.
+
+  Defaults to the predefined location + project for reusable configs.
+
+  Returns:
+    A concepts.ResourceSpec for a reusable config.
+  """
+
+  # For now, reusable configs exist in a single location and project.
+  location_fallthrough = deps.Fallthrough(
+      function=lambda: PREDEFINED_REUSABLE_CONFIG_LOCATION,
+      hint='location must be specified',
+      active=False,
+      plural=False)
+  project_fallthrough = deps.Fallthrough(
+      function=lambda: PREDEFINED_REUSABLE_CONFIG_PROJECT,
+      hint='project must be specified',
+      active=False,
+      plural=False)
   return concepts.ResourceSpec(
       'privateca.projects.locations.reusableConfigs',
-      # This will be formatted and used as {resource} in the help text.
-      resource_name=arg_name,
-      resourceConfigsId=ReusableConfigAttributeConfig(),
-      locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      resource_name='reusable config',
+      reusableConfigsId=ReusableConfigAttributeConfig(),
+      locationsId=LocationAttributeConfig(fallthroughs=[location_fallthrough]),
+      projectsId=ProjectAttributeConfig(fallthroughs=[project_fallthrough]))
 
 
-def CreateCertificateAuthorityResourceSpec(arg_name):
+def CreateCertificateAuthorityResourceSpec(display_name,
+                                           location_attribute='location'):
   return concepts.ResourceSpec(
       'privateca.projects.locations.certificateAuthorities',
       # This will be formatted and used as {resource} in the help text.
-      resource_name=arg_name,
+      resource_name=display_name,
       certificateAuthoritiesId=CertificateAuthorityAttributeConfig(),
-      locationsId=LocationAttributeConfig(),
+      locationsId=LocationAttributeConfig(location_attribute),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
-def CreateCertificateResourceSpec(arg_name):
+def CreateCertificateResourceSpec(display_name):
   return concepts.ResourceSpec(
       'privateca.projects.locations.certificateAuthorities.certificates',
       # This will be formatted and used as {resource} in the help text.
-      resource_name=arg_name,
+      resource_name=display_name,
       certificatesId=CertificateAttributeConfig(),
       certificateAuthoritiesId=CertificateAuthorityAttributeConfig('issuer'),
       locationsId=LocationAttributeConfig('issuer-location'),

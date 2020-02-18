@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20200131",
+ "revision": "20200213",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1878,7 +1878,7 @@
    "properties": {
     "balancingMode": {
      "type": "string",
-     "description": "Specifies the balancing mode for the backend.\n\nWhen choosing a balancing mode, you need to consider the loadBalancingScheme, and protocol for the backend service, as well as the type of backend (instance group or NEG).\n\n \n- If the load balancing mode is CONNECTION, then the load is spread based on how many concurrent connections the backend can handle.\nYou can use the CONNECTION balancing mode if the protocol for the backend service is SSL, TCP, or UDP.\n\nIf the loadBalancingScheme for the backend service is EXTERNAL (SSL Proxy and TCP Proxy load balancers), you must also specify exactly one of the following parameters: maxConnections, maxConnectionsPerInstance, or maxConnectionsPerEndpoint.\n\nIf the loadBalancingScheme for the backend service is INTERNAL (internal TCP/UDP load balancers), you cannot specify any additional parameters.\n \n- If the load balancing mode is RATE, the load is spread based on the rate of HTTP requests per second (RPS).\nYou can use the RATE balancing mode if the protocol for the backend service is HTTP or HTTPS. You must specify exactly one of the following parameters: maxRate, maxRatePerInstance, or maxRatePerEndpoint.\n \n- If the load balancing mode is UTILIZATION, the load is spread based on the CPU utilization of instances in an instance group.\nYou can use the UTILIZATION balancing mode if the loadBalancingScheme of the backend service is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance groups. There are no restrictions on the backend service protocol.",
+     "description": "Specifies the balancing mode for the backend.\n\nWhen choosing a balancing mode, you need to consider the loadBalancingScheme, and protocol for the backend service, as well as the type of backend (instance group or NEG).\n\n \n- If the load balancing mode is CONNECTION, then the load is spread based on how many concurrent connections the backend can handle.\nYou can use the CONNECTION balancing mode if the protocol for the backend service is SSL, TCP, or UDP.\n\nIf the loadBalancingScheme for the backend service is EXTERNAL (SSL Proxy and TCP Proxy load balancers), you must also specify exactly one of the following parameters: maxConnections (except for regional managed instance groups), maxConnectionsPerInstance, or maxConnectionsPerEndpoint.\n\nIf the loadBalancingScheme for the backend service is INTERNAL (internal TCP/UDP load balancers), you cannot specify any additional parameters.\n \n- If the load balancing mode is RATE, the load is spread based on the rate of HTTP requests per second (RPS).\nYou can use the RATE balancing mode if the protocol for the backend service is HTTP or HTTPS. You must specify exactly one of the following parameters: maxRate (except for regional managed instance groups), maxRatePerInstance, or maxRatePerEndpoint.\n \n- If the load balancing mode is UTILIZATION, the load is spread based on the backend utilization of instances in an instance group.\nYou can use the UTILIZATION balancing mode if the loadBalancingScheme of the backend service is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance groups. There are no restrictions on the backend service protocol.",
      "enum": [
       "CONNECTION",
       "RATE",
@@ -1905,37 +1905,37 @@
     },
     "maxConnections": {
      "type": "integer",
-     "description": "Defines a maximum target for simultaneous connections for the entire backend (instance group or NEG). If the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is CONNECTION, and backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnectionsPerInstance, or maxConnectionsPerEndpoint.\n\nNot available if the backend's balancingMode is RATE. If the loadBalancingScheme is INTERNAL, then maxConnections is not supported, even though the backend requires a balancing mode of CONNECTION.",
+     "description": "Defines a target maximum number of simultaneous connections that the backend can handle. Valid for network endpoint group and instance group backends (except for regional managed instance groups). If the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is CONNECTION, and backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnectionsPerInstance, or maxConnectionsPerEndpoint.\n\nNot available if the backend's balancingMode is RATE. If the loadBalancingScheme is INTERNAL, then maxConnections is not supported, even though the backend requires a balancing mode of CONNECTION.",
      "format": "int32"
     },
     "maxConnectionsPerEndpoint": {
      "type": "integer",
-     "description": "Defines a maximum target for simultaneous connections for an endpoint of a NEG. This is multiplied by the number of endpoints in the NEG to implicitly calculate a maximum number of target maximum simultaneous connections for the NEG. If the backend's balancingMode is CONNECTION, and the backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnections, or maxConnectionsPerInstance.\n\nNot available if the backend's balancingMode is RATE. Internal TCP/UDP load balancing does not support setting maxConnectionsPerEndpoint even though its backends require a balancing mode of CONNECTION.",
+     "description": "Defines a target maximum number of simultaneous connections for an endpoint of a NEG. This is multiplied by the number of endpoints in the NEG to implicitly calculate a maximum number of target maximum simultaneous connections for the NEG. If the backend's balancingMode is CONNECTION, and the backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnections, or maxConnectionsPerInstance.\n\nNot available if the backend's balancingMode is RATE. Internal TCP/UDP load balancing does not support setting maxConnectionsPerEndpoint even though its backends require a balancing mode of CONNECTION.",
      "format": "int32"
     },
     "maxConnectionsPerInstance": {
      "type": "integer",
-     "description": "Defines a maximum target for simultaneous connections for a single VM in a backend instance group. This is multiplied by the number of instances in the instance group to implicitly calculate a target maximum number of simultaneous connections for the whole instance group. If the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is CONNECTION, and backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnections, or maxConnectionsPerEndpoint.\n\nNot available if the backend's balancingMode is RATE. Internal TCP/UDP load balancing does not support setting maxConnectionsPerInstance even though its backends require a balancing mode of CONNECTION.",
+     "description": "Defines a target maximum number of simultaneous connections for a single VM in a backend instance group. This is multiplied by the number of instances in the instance group to implicitly calculate a target maximum number of simultaneous connections for the whole instance group. If the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is CONNECTION, and backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnections, or maxConnectionsPerEndpoint.\n\nNot available if the backend's balancingMode is RATE. Internal TCP/UDP load balancing does not support setting maxConnectionsPerInstance even though its backends require a balancing mode of CONNECTION.",
      "format": "int32"
     },
     "maxRate": {
      "type": "integer",
-     "description": "The max requests per second (RPS) of the group. Can be used with either RATE or UTILIZATION balancing modes, but required if RATE mode. For RATE mode, either maxRate or maxRatePerInstance must be set.\n\nThis cannot be used for internal load balancing.",
+     "description": "Defines a maximum number of HTTP requests per second (RPS) that the backend can handle. Valid for network endpoint group and instance group backends (except for regional managed instance groups). Must not be defined if the backend is a managed instance group that uses autoscaling based on load balancing.\n\nIf the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is RATE, you must specify maxRate, maxRatePerInstance, or maxRatePerEndpoint.\n\nNot available if the backend's balancingMode is CONNECTION.",
      "format": "int32"
     },
     "maxRatePerEndpoint": {
      "type": "number",
-     "description": "Defines a maximum target for requests per second (RPS) for an endpoint of a NEG. This is multiplied by the number of endpoints in the NEG to implicitly calculate a target maximum rate for the NEG.\n\nIf the backend's balancingMode is RATE, you must specify either this parameter, maxRate, or maxRatePerInstance.\n\nNot available if the backend's balancingMode is CONNECTION.",
+     "description": "Defines a maximum target for requests per second (RPS) for an endpoint of a NEG. This is multiplied by the number of endpoints in the NEG to implicitly calculate a target maximum rate for the NEG.\n\nIf the backend's balancingMode is RATE, you must specify either this parameter, maxRate (except for regional managed instance groups), or maxRatePerInstance.\n\nNot available if the backend's balancingMode is CONNECTION.",
      "format": "float"
     },
     "maxRatePerInstance": {
      "type": "number",
-     "description": "Defines a maximum target for requests per second (RPS) for a single VM in a backend instance group. This is multiplied by the number of instances in the instance group to implicitly calculate a target maximum rate for the whole instance group.\n\nIf the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is RATE, you must specify either this parameter, maxRate, or maxRatePerEndpoint.\n\nNot available if the backend's balancingMode is CONNECTION.",
+     "description": "Defines a maximum target for requests per second (RPS) for a single VM in a backend instance group. This is multiplied by the number of instances in the instance group to implicitly calculate a target maximum rate for the whole instance group.\n\nIf the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is RATE, you must specify either this parameter, maxRate (except for regional managed instance groups), or maxRatePerEndpoint.\n\nNot available if the backend's balancingMode is CONNECTION.",
      "format": "float"
     },
     "maxUtilization": {
      "type": "number",
-     "description": "Defines the maximum average CPU utilization of a backend VM in an instance group. The valid range is [0.0, 1.0]. This is an optional parameter if the backend's balancingMode is UTILIZATION.\n\nThis parameter can be used in conjunction with maxRate, maxRatePerInstance, maxConnections, or maxConnectionsPerInstance.",
+     "description": "Defines the maximum average backend utilization of a backend VM in an instance group. The valid range is [0.0, 1.0]. This is an optional parameter if the backend's balancingMode is UTILIZATION.\n\nThis parameter can be used in conjunction with maxRate, maxRatePerInstance, maxConnections (except for regional managed instance groups), or maxConnectionsPerInstance.",
      "format": "float"
     }
    }
@@ -2175,7 +2175,7 @@
     },
     "healthChecks": {
      "type": "array",
-     "description": "The list of URLs to the HttpHealthCheck or HttpsHealthCheck resource for health checking this BackendService. Currently at most one health check can be specified. Health check is optional for Compute Engine backend services if there is no backend. A health check must not be specified when adding Internet Network Endpoint Group or Serverless Network Endpoint Group as backends. In all other cases, a health check is required for Compute Engine backend services.\n\nFor internal load balancing, a URL to a HealthCheck resource must be specified instead.",
+     "description": "The list of URLs to the healthChecks, httpHealthChecks (legacy), or httpsHealthChecks (legacy) resource for health checking this backend service. Not all backend services support legacy health checks. See  Load balancer guide. Currently at most one health check can be specified. Backend services with instance group or zonal NEG backends must have a health check. Backend services with internet NEG backends must not have a health check. A health check must",
      "items": {
       "type": "string"
      }
@@ -2257,7 +2257,7 @@
     },
     "portName": {
      "type": "string",
-     "description": "A named port on a backend instance group representing the port for communication to the backend VMs in that group. Required when the loadBalancingScheme is EXTERNAL and the backends are instance groups. The named port must be defined on each backend instance group. This parameter has no meaning if the backends are NEGs.\n\n\n\nMust be omitted when the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Blaancing)."
+     "description": "A named port on a backend instance group representing the port for communication to the backend VMs in that group. Required when the loadBalancingScheme is EXTERNAL, INTERNAL_MANAGED, or INTERNAL_SELF_MANAGED and the backends are instance groups. The named port must be defined on each backend instance group. This parameter has no meaning if the backends are NEGs.\n\n\n\nMust be omitted when the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Blaancing)."
     },
     "protocol": {
      "type": "string",
@@ -5294,7 +5294,7 @@
     },
     "networkTier": {
      "type": "string",
-     "description": "This signifies the networking tier used for configuring this load balancer and can only take the following values: PREMIUM , STANDARD.\n\nFor regional ForwardingRule, the valid values are PREMIUM and STANDARD. For GlobalForwardingRule, the valid value is PREMIUM.\n\nIf this field is not specified, it is assumed to be PREMIUM. If IPAddress is specified, this value must be equal to the networkTier of the Address.",
+     "description": "This signifies the networking tier used for configuring this load balancer and can only take the following values: PREMIUM, STANDARD.\n\nFor regional ForwardingRule, the valid values are PREMIUM and STANDARD. For GlobalForwardingRule, the valid value is PREMIUM.\n\nIf this field is not specified, it is assumed to be PREMIUM. If IPAddress is specified, this value must be equal to the networkTier of the Address.",
      "enum": [
       "PREMIUM",
       "STANDARD"
@@ -8553,6 +8553,18 @@
       ""
      ]
     },
+    "replacementMethod": {
+     "type": "string",
+     "description": "What action should be used to replace instances. See minimal_action.REPLACE",
+     "enum": [
+      "RECREATE",
+      "SUBSTITUTE"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
     "type": {
      "type": "string",
      "description": "The type of update process. You can specify either PROACTIVE so that the instance group manager proactively executes actions in order to bring instances to their target versions or OPPORTUNISTIC so that no action is proactively executed but the update will be performed as part of other actions (for example, resizes or recreateInstances calls).",
@@ -8668,6 +8680,23 @@
      "items": {
       "type": "string"
      }
+    }
+   }
+  },
+  "InstanceGroupManagersListErrorsResponse": {
+   "id": "InstanceGroupManagersListErrorsResponse",
+   "type": "object",
+   "properties": {
+    "items": {
+     "type": "array",
+     "description": "[Output Only] The list of errors of the managed instance group.",
+     "items": {
+      "$ref": "InstanceManagedByIgmError"
+     }
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
     }
    }
   },
@@ -9310,6 +9339,78 @@
     }
    }
   },
+  "InstanceManagedByIgmError": {
+   "id": "InstanceManagedByIgmError",
+   "type": "object",
+   "properties": {
+    "error": {
+     "$ref": "InstanceManagedByIgmErrorManagedInstanceError",
+     "description": "[Output Only] Contents of the error."
+    },
+    "instanceActionDetails": {
+     "$ref": "InstanceManagedByIgmErrorInstanceActionDetails",
+     "description": "[Output Only] Details of the instance action that triggered this error. May be null, if the error was not caused by an action on an instance. This field is optional."
+    },
+    "timestamp": {
+     "type": "string",
+     "description": "[Output Only] The time that this error occurred. This value is in RFC3339 text format."
+    }
+   }
+  },
+  "InstanceManagedByIgmErrorInstanceActionDetails": {
+   "id": "InstanceManagedByIgmErrorInstanceActionDetails",
+   "type": "object",
+   "properties": {
+    "action": {
+     "type": "string",
+     "description": "[Output Only] Action that managed instance group was executing on the instance when the error occurred. Possible values:",
+     "enum": [
+      "ABANDONING",
+      "CREATING",
+      "CREATING_WITHOUT_RETRIES",
+      "DELETING",
+      "NONE",
+      "RECREATING",
+      "REFRESHING",
+      "RESTARTING",
+      "VERIFYING"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "instance": {
+     "type": "string",
+     "description": "[Output Only] The URL of the instance. The URL can be set even if the instance has not yet been created."
+    },
+    "version": {
+     "$ref": "ManagedInstanceVersion",
+     "description": "[Output Only] Version this instance was created from, or was being created from, but the creation failed. Corresponds to one of the versions that were set on the Instance Group Manager resource at the time this instance was being created."
+    }
+   }
+  },
+  "InstanceManagedByIgmErrorManagedInstanceError": {
+   "id": "InstanceManagedByIgmErrorManagedInstanceError",
+   "type": "object",
+   "properties": {
+    "code": {
+     "type": "string",
+     "description": "[Output Only] Error code."
+    },
+    "message": {
+     "type": "string",
+     "description": "[Output Only] Error message."
+    }
+   }
+  },
   "InstanceMoveRequest": {
    "id": "InstanceMoveRequest",
    "type": "object",
@@ -9385,6 +9486,13 @@
     "reservationAffinity": {
      "$ref": "ReservationAffinity",
      "description": "Specifies the reservations that this instance can consume from."
+    },
+    "resourcePolicies": {
+     "type": "array",
+     "description": "Resource policies (names, not ULRs) applied to instances created from this template.",
+     "items": {
+      "type": "string"
+     }
     },
     "scheduling": {
      "$ref": "Scheduling",
@@ -11092,7 +11200,7 @@
   "License": {
    "id": "License",
    "type": "object",
-   "description": "A license resource.",
+   "description": "Represents a License resource.\n\nA License represents billing and aggregate usage data for public and marketplace images.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. (== resource_for {$api_version}.licenses ==)",
    "properties": {
     "chargesUseFee": {
      "type": "boolean",
@@ -11147,6 +11255,7 @@
   "LicenseCode": {
    "id": "LicenseCode",
    "type": "object",
+   "description": "Represents a License Code resource.\n\nA License Code is a unique identifier used to represent a license resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. (== resource_for {$api_version}.licenseCodes ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -12208,7 +12317,7 @@
   "NetworkEndpointGroup": {
    "id": "NetworkEndpointGroup",
    "type": "object",
-   "description": "Represents a collection of network endpoints.\n\nFor more information read Setting up network endpoint groups in load balancing. (== resource_for {$api_version}.networkEndpointGroups ==) Next ID: 21",
+   "description": "Represents a collection of network endpoints.\n\nFor more information read Network endpoint groups overview. (== resource_for {$api_version}.networkEndpointGroups ==) Next ID: 21",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -12243,7 +12352,7 @@
     },
     "networkEndpointType": {
      "type": "string",
-     "description": "Type of network endpoints in this network endpoint group. Currently the only supported value is GCE_VM_IP_PORT.",
+     "description": "Type of network endpoints in this network endpoint group.",
      "enum": [
       "GCE_VM_IP_PORT"
      ],
@@ -15773,6 +15882,7 @@
      "type": "string",
      "description": "[Output Only] Name of the quota metric.",
      "enum": [
+      "AFFINITY_GROUPS",
       "AUTOSCALERS",
       "BACKEND_BUCKETS",
       "BACKEND_SERVICES",
@@ -15817,6 +15927,8 @@
       "N2_CPUS",
       "NETWORKS",
       "NETWORK_ENDPOINT_GROUPS",
+      "NODE_GROUPS",
+      "NODE_TEMPLATES",
       "NVIDIA_K80_GPUS",
       "NVIDIA_P100_GPUS",
       "NVIDIA_P100_VWS_GPUS",
@@ -15862,6 +15974,9 @@
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
+      "",
+      "",
       "",
       "",
       "",
@@ -16616,6 +16731,23 @@
      "items": {
       "type": "string"
      }
+    }
+   }
+  },
+  "RegionInstanceGroupManagersListErrorsResponse": {
+   "id": "RegionInstanceGroupManagersListErrorsResponse",
+   "type": "object",
+   "properties": {
+    "items": {
+     "type": "array",
+     "description": "[Output Only] The list of errors of the managed instance group.",
+     "items": {
+      "$ref": "InstanceManagedByIgmError"
+     }
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
     }
    }
   },
@@ -17597,6 +17729,10 @@
     "description": {
      "type": "string"
     },
+    "groupPlacementPolicy": {
+     "$ref": "ResourcePolicyGroupPlacementPolicy",
+     "description": "Resource policy for instacnes for placement configuration."
+    },
     "id": {
      "type": "string",
      "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
@@ -17779,6 +17915,35 @@
     "startTime": {
      "type": "string",
      "description": "Start time of the window. This must be in UTC format that resolves to one of 00:00, 04:00, 08:00, 12:00, 16:00, or 20:00. For example, both 13:00-5 and 08:00 are valid."
+    }
+   }
+  },
+  "ResourcePolicyGroupPlacementPolicy": {
+   "id": "ResourcePolicyGroupPlacementPolicy",
+   "type": "object",
+   "description": "A GroupPlacementPolicy specifies resource placement configuration. It specifies the failure bucket separation as well as network locality",
+   "properties": {
+    "availabilityDomainCount": {
+     "type": "integer",
+     "description": "The number of availability domains instances will be spread across. If two instances are in different availability domain, they will not be put in the same low latency network",
+     "format": "int32"
+    },
+    "collocation": {
+     "type": "string",
+     "description": "Specifies network collocation",
+     "enum": [
+      "COLLOCATED",
+      "UNSPECIFIED_COLLOCATION"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "vmCount": {
+     "type": "integer",
+     "description": "Number of vms in this placement group",
+     "format": "int32"
     }
    }
   },
@@ -20086,7 +20251,7 @@
   "SslCertificate": {
    "id": "SslCertificate",
    "type": "object",
-   "description": "Represents an SSL Certificate resource.\n\nGoogle Compute Engine has two SSL Certificate resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/sslCertificates) * [Regional](/compute/docs/reference/rest/{$api_version}/regionSslCertificates)\n\n\n\nThe sslCertificates are used by:  \n- external HTTPS load balancers \n- SSL proxy load balancers  \n\nThe regionSslCertificates are used by internal HTTPS load balancers.\n\nThis SSL certificate resource also contains a private key. You can use SSL keys and certificates to secure connections to a load balancer. For more information, read  Creating and Using SSL Certificates. (== resource_for {$api_version}.sslCertificates ==) (== resource_for {$api_version}.regionSslCertificates ==)",
+   "description": "Represents an SSL Certificate resource.\n\nGoogle Compute Engine has two SSL Certificate resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/sslCertificates) * [Regional](/compute/docs/reference/rest/{$api_version}/regionSslCertificates)\n\n\n\nThe sslCertificates are used by:  \n- external HTTPS load balancers \n- SSL proxy load balancers  \n\nThe regionSslCertificates are used by internal HTTPS load balancers.\n\nOptionally, certificate file contents that you upload can contain a set of up to five PEM-encoded certificates. The API call creates an object (sslCertificate) that holds this data. You can use SSL keys and certificates to secure connections to a load balancer. For more information, read  Creating and using SSL certificates and SSL certificates quotas and limits. (== resource_for {$api_version}.sslCertificates ==) (== resource_for {$api_version}.regionSslCertificates ==)",
    "properties": {
     "certificate": {
      "type": "string",
@@ -27173,7 +27338,7 @@
      "id": "compute.backendServices.insert",
      "path": "{project}/global/backendServices",
      "httpMethod": "POST",
-     "description": "Creates a BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a backend service. Read  Restrictions and Guidelines for more information.",
+     "description": "Creates a BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a backend service. Read  Understanding backend services for more information.",
      "parameters": {
       "project": {
        "type": "string",
@@ -27255,7 +27420,7 @@
      "id": "compute.backendServices.patch",
      "path": "{project}/global/backendServices/{backendService}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
+     "description": "Patches the specified BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -27336,7 +27501,7 @@
      "id": "compute.backendServices.update",
      "path": "{project}/global/backendServices/{backendService}",
      "httpMethod": "PUT",
-     "description": "Updates the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.",
+     "description": "Updates the specified BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -30812,7 +30977,7 @@
      "id": "compute.instanceGroupManagers.applyUpdatesToInstances",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/applyUpdatesToInstances",
      "httpMethod": "POST",
-     "description": "Apply changes to selected instances on the managed instance group. This method can be used to apply new overrides and/or new versions.",
+     "description": "Applies changes to selected instances on the managed instance group. This method can be used to apply new overrides and/or new versions.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -31117,6 +31282,69 @@
      ],
      "response": {
       "$ref": "InstanceGroupManagerList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "listErrors": {
+     "id": "compute.instanceGroupManagers.listErrors",
+     "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listErrors",
+     "httpMethod": "GET",
+     "description": "Lists all errors thrown by actions on instances for a given managed instance group.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the managed instance group. It must be a string that meets the requirements in RFC1035, or an unsigned long integer: must match regexp pattern: (?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?)|[1-9][0-9]{0,19}.",
+       "required": true,
+       "location": "path"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone where the managed instance group is located. It should conform to RFC1035.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instanceGroupManager"
+     ],
+     "response": {
+      "$ref": "InstanceGroupManagersListErrorsResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -34642,7 +34870,7 @@
      "id": "compute.licenseCodes.get",
      "path": "{project}/global/licenseCodes/{licenseCode}",
      "httpMethod": "GET",
-     "description": "Return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code.",
+     "description": "Return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "licenseCode": {
        "type": "string",
@@ -34676,7 +34904,7 @@
      "id": "compute.licenseCodes.testIamPermissions",
      "path": "{project}/global/licenseCodes/{resource}/testIamPermissions",
      "httpMethod": "POST",
-     "description": "Returns permissions that a caller has on the specified resource.",
+     "description": "Returns permissions that a caller has on the specified resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "project": {
        "type": "string",
@@ -34717,7 +34945,7 @@
      "id": "compute.licenses.delete",
      "path": "{project}/global/licenses/{license}",
      "httpMethod": "DELETE",
-     "description": "Deletes the specified license.",
+     "description": "Deletes the specified license.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "license": {
        "type": "string",
@@ -34755,7 +34983,7 @@
      "id": "compute.licenses.get",
      "path": "{project}/global/licenses/{license}",
      "httpMethod": "GET",
-     "description": "Returns the specified License resource.",
+     "description": "Returns the specified License resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "license": {
        "type": "string",
@@ -34789,7 +35017,7 @@
      "id": "compute.licenses.getIamPolicy",
      "path": "{project}/global/licenses/{resource}/getIamPolicy",
      "httpMethod": "GET",
-     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "project": {
        "type": "string",
@@ -34823,7 +35051,7 @@
      "id": "compute.licenses.insert",
      "path": "{project}/global/licenses",
      "httpMethod": "POST",
-     "description": "Create a License resource in the specified project.",
+     "description": "Create a License resource in the specified project.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "project": {
        "type": "string",
@@ -34859,7 +35087,7 @@
      "id": "compute.licenses.list",
      "path": "{project}/global/licenses",
      "httpMethod": "GET",
-     "description": "Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.",
+     "description": "Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -34908,7 +35136,7 @@
      "id": "compute.licenses.setIamPolicy",
      "path": "{project}/global/licenses/{resource}/setIamPolicy",
      "httpMethod": "POST",
-     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "project": {
        "type": "string",
@@ -34944,7 +35172,7 @@
      "id": "compute.licenses.testIamPermissions",
      "path": "{project}/global/licenses/{resource}/testIamPermissions",
      "httpMethod": "POST",
-     "description": "Returns permissions that a caller has on the specified resource.",
+     "description": "Returns permissions that a caller has on the specified resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "project": {
        "type": "string",
@@ -38324,7 +38552,7 @@
      "id": "compute.regionBackendServices.insert",
      "path": "{project}/regions/{region}/backendServices",
      "httpMethod": "POST",
-     "description": "Creates a regional BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a regional backend service. Read  Restrictions and Guidelines for more information.",
+     "description": "Creates a regional BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a regional backend service. Read  Understanding backend services for more information.",
      "parameters": {
       "project": {
        "type": "string",
@@ -38422,7 +38650,7 @@
      "id": "compute.regionBackendServices.patch",
      "path": "{project}/regions/{region}/backendServices/{backendService}",
      "httpMethod": "PATCH",
-     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
+     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -38471,7 +38699,7 @@
      "id": "compute.regionBackendServices.update",
      "path": "{project}/regions/{region}/backendServices/{backendService}",
      "httpMethod": "PUT",
-     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.",
+     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -39944,6 +40172,69 @@
      ],
      "response": {
       "$ref": "RegionInstanceGroupManagerList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "listErrors": {
+     "id": "compute.regionInstanceGroupManagers.listErrors",
+     "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listErrors",
+     "httpMethod": "GET",
+     "description": "Lists all errors thrown by actions on instances for a given regional managed instance group.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the managed instance group. It must be a string that meets the requirements in RFC1035, or an unsigned long integer: must match regexp pattern: (?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?)|[1-9][0-9]{0,19}.",
+       "required": true,
+       "location": "path"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request. This should conform to RFC1035.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "instanceGroupManager"
+     ],
+     "response": {
+      "$ref": "RegionInstanceGroupManagersListErrorsResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",

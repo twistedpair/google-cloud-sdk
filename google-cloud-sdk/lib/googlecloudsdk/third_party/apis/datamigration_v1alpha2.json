@@ -210,7 +210,7 @@
       "type": "object",
       "properties": {
         "migrationJobs": {
-          "description": "The list of migration jobs response.",
+          "description": "The list of migration jobs objects.",
           "type": "array",
           "items": {
             "$ref": "MigrationJob"
@@ -231,7 +231,7 @@
     },
     "MigrationJob": {
       "id": "MigrationJob",
-      "description": "A migration job Entity.\nNEXT_TAG = 17.",
+      "description": "Represents a Database Migration Service migration job object.\n-- NEXT_TAG = 17 --",
       "type": "object",
       "properties": {
         "name": {
@@ -330,7 +330,7 @@
           ]
         },
         "dumpPath": {
-          "description": "Optional. The path to the dump file in Google Cloud Storage,\nin the format: (gs:\/\/[BUCKET_NAME]\/[OBJECT_NAME]).",
+          "description": "The path to the dump file in Google Cloud Storage,\nin the format: (gs:\/\/[BUCKET_NAME]\/[OBJECT_NAME]).",
           "type": "string"
         },
         "source": {
@@ -363,11 +363,11 @@
           "$ref": "Status"
         },
         "sourceDatabase": {
-          "description": "The indicative source database type.",
+          "description": "The database engine type and provider of the source.",
           "$ref": "DatabaseType"
         },
         "destinationDatabase": {
-          "description": "The indicative destination database type.",
+          "description": "The database engine type and provider of the destination.",
           "$ref": "DatabaseType"
         },
         "endTime": {
@@ -379,24 +379,24 @@
     },
     "ReverseSshConnectivity": {
       "id": "ReverseSshConnectivity",
-      "description": "The details needed to configure a reverse SSH tunnel between the source and\ndestination databases. These details will be used when calling the\n<a\nhref=\"https:\/\/docs.google.com\/document\/d\/17oOEqp6yOFsFZt4o89j6ApRFY613s1JrDnzvZ0TT-Do\/edit#heading=h.lxsgirvd4wcf\">generateSshScript<\/a>\nmethod to produce the script that will help set up the reverse SSH tunnel.",
+      "description": "The details needed to configure a reverse SSH tunnel between the source and\ndestination databases. These details will be used when calling the\ngenerateSshScript method (see\nhttps:\/\/cloud.google.com\/database-migration\/docs\/reference\/rest\/v1alpha2\/projects.locations.migrationJobs\/generateSshScript)\nto produce the script that will help set up the reverse SSH tunnel, and to\nset up the VPC peering between the Cloud SQL private network and the VPC.",
       "type": "object",
       "properties": {
         "vmIp": {
-          "description": "Required. The Bastion Virtual Machine IP.",
+          "description": "Required. The IP of the virtual machine (Compute Engine) used as the bastion server\nfor the SSH tunnel.",
           "type": "string"
         },
         "vmPort": {
-          "description": "Required. The forwarding port for the SSH tunnel",
+          "description": "Required. The forwarding port of the virtual machine (Compute Engine) used as the\nbastion server for the SSH tunnel.",
           "type": "integer",
           "format": "int32"
         },
-        "vmName": {
-          "description": "Optional. The name of the VM that will host the SSH tunnel bastion.",
+        "vm": {
+          "description": "The name of the virtual machine (Compute Engine) used as the bastion server\nfor the SSH tunnel.",
           "type": "string"
         },
-        "vpcName": {
-          "description": "Optional. The name of the VPC network where the VM is hosted.",
+        "vpc": {
+          "description": "The name of the VPC to peer with the Cloud SQL private network.",
           "type": "string"
         },
         "vmZone": {
@@ -410,7 +410,7 @@
       "description": "The details of the VPC where the source database is located in Google Cloud.\nWe will use this information to set up the VPC peering connection between\nCloud SQL and this VPC.",
       "type": "object",
       "properties": {
-        "vpcName": {
+        "vpc": {
           "description": "The name of the VPC network to peer with the Cloud SQL private network.",
           "type": "string"
         }
@@ -486,6 +486,13 @@
       "properties": {
       }
     },
+    "VerifyMigrationJobRequest": {
+      "id": "VerifyMigrationJobRequest",
+      "description": "Request message for 'VerifyMigrationJob' request.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "RestartMigrationJobRequest": {
       "id": "RestartMigrationJobRequest",
       "description": "Request message for 'RestartMigrationJob' request.",
@@ -498,7 +505,7 @@
       "description": "Request message for 'GenerateSshScript' request.",
       "type": "object",
       "properties": {
-        "vmName": {
+        "vm": {
           "description": "Required. Bastion VM Instance name to use or to create.",
           "type": "string"
         },
@@ -509,7 +516,7 @@
           "$ref": "VmSelectionConfig"
         },
         "vmPort": {
-          "description": "Optional. The port that will be open on the bastion host",
+          "description": "The port that will be open on the bastion host",
           "type": "integer",
           "format": "int32"
         }
@@ -524,10 +531,10 @@
           "type": "string"
         },
         "vmZone": {
-          "description": "Optional. The Google Cloud Platform zone to create the VM in.",
+          "description": "The Google Cloud Platform zone to create the VM in.",
           "type": "string"
         },
-        "vpcName": {
+        "vpc": {
           "description": "Required. The VPC name the vm needs to be created in.",
           "type": "string"
         }
@@ -581,7 +588,7 @@
     },
     "ConnectionProfile": {
       "id": "ConnectionProfile",
-      "description": "A connection profile definition.\nNEXT_TAG = 10.",
+      "description": "A connection profile definition.\n-- NEXT_TAG = 10 --",
       "type": "object",
       "properties": {
         "name": {
@@ -649,12 +656,8 @@
           "description": "Output only. The error details in case of state FAILED.",
           "$ref": "Status"
         },
-        "visible": {
-          "description": "Optional. A boolean that specifies if the connection profile is visible in the UI\nlist.",
-          "type": "boolean"
-        },
         "provider": {
-          "description": "Optional. The database provider.",
+          "description": "The database provider.",
           "enumDescriptions": [
             "The database provider is unknown.",
             "CloudSQL runs the database.",
@@ -692,11 +695,11 @@
           "type": "string"
         },
         "ssl": {
-          "description": "Optional. SSL configuration for the destination to connect to the source database.",
+          "description": "SSL configuration for the destination to connect to the source database.",
           "$ref": "SslConfig"
         },
         "cloudSqlId": {
-          "description": "Optional. If the source is a Cloud SQL database, use this field to\nprovide the Cloud SQL instance ID of the source.",
+          "description": "If the source is a Cloud SQL database, use this field to\nprovide the Cloud SQL instance ID of the source.",
           "type": "string"
         }
       }
@@ -706,6 +709,20 @@
       "description": "SSL configuration information.",
       "type": "object",
       "properties": {
+        "type": {
+          "description": "Output only. The ssl config type according to 'client_key', 'client_certificate' and\n'ca_certificate'.",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Only 'ca_certificate' specified.",
+            "Both server ('ca_certificate'), and client ('client_key',\n'client_certificate') specified."
+          ],
+          "type": "string",
+          "enum": [
+            "SSL_TYPE_UNSPECIFIED",
+            "SERVER_ONLY",
+            "SERVER_CLIENT"
+          ]
+        },
         "clientKey": {
           "description": "The unencrypted PKCS#1 or PKCS#8 PEM-encoded private key associated with\nthe Client Certificate. If this field is used then the 'client_certificate'\nfield is mandatory",
           "type": "string"
@@ -747,11 +764,11 @@
           "type": "string"
         },
         "ssl": {
-          "description": "Optional. SSL configuration for the destination to connect to the source database.",
+          "description": "SSL configuration for the destination to connect to the source database.",
           "$ref": "SslConfig"
         },
         "cloudSqlId": {
-          "description": "Optional. If the source is a Cloud SQL database, use this field to\nprovide the Cloud SQL instance ID of the source.",
+          "description": "If the source is a Cloud SQL database, use this field to\nprovide the Cloud SQL instance ID of the source.",
           "type": "string"
         }
       }
@@ -766,7 +783,7 @@
           "type": "string"
         },
         "settings": {
-          "description": "Optional. Immutable. Metadata used to create the destination Cloud SQL database.",
+          "description": "Immutable. Metadata used to create the destination Cloud SQL database.",
           "$ref": "CloudSqlSettings"
         },
         "privateIp": {
@@ -781,11 +798,11 @@
     },
     "CloudSqlSettings": {
       "id": "CloudSqlSettings",
-      "description": "Settings for creating a Cloud SQL database instance.\nNEXT_TAG = 13.",
+      "description": "Settings for creating a Cloud SQL database instance.\n-- NEXT_TAG = 13 --",
       "type": "object",
       "properties": {
         "databaseVersion": {
-          "description": "The database engine type and version.\ninstances: <code>MYSQL_5_7<\/code> or <code>MYSQL_5_6<\/code>.",
+          "description": "The database engine type and version (`MYSQL_5_7` or `MYSQL_5_6`).",
           "enumDescriptions": [
             "Unspecified version.",
             "MySQL 5.6.",
@@ -803,14 +820,14 @@
           ]
         },
         "userLabels": {
-          "description": "Optional. The resource labels for a Cloud SQL instance to use to annotate any related\nunderlying resources such as Compute Engine VMs.\nAn object containing a list of \"key\": \"value\" pairs.\n\nExample: `{ \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }`.",
+          "description": "The resource labels for a Cloud SQL instance to use to annotate any related\nunderlying resources such as Compute Engine VMs.\nAn object containing a list of \"key\": \"value\" pairs.\n\nExample: `{ \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }`.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "tier": {
-          "description": "The tier (or machine type) for this instance, for example:\n<code>db-n1-standard-1<\/code> (MySQL instances) or\n<code>db-custom-1-3840<\/code> (PostgreSQL instances).\nFor more information, see\n<a href=\"\/sql\/docs\/db_path\/instance-settings\">Cloud SQL Instance\nSettings<\/a>.",
+          "description": "The tier (or machine type) for this instance, for example:\n`db-n1-standard-1` (MySQL instances) or\n`db-custom-1-3840` (PostgreSQL instances).\nFor more information, see\n[Cloud SQL Instance Settings](\/sql\/docs\/db_path\/instance-settings).",
           "type": "string"
         },
         "storageAutoResizeLimit": {
@@ -819,19 +836,17 @@
           "format": "int64"
         },
         "activationPolicy": {
-          "description": "The activation policy specifies when the instance is activated; it is\napplicable only when the instance state is <code>RUNNABLE<\/code>. Valid\nvalues: <br><code>ALWAYS<\/code>: The instance is on, and remains so even in\nthe absence of connection requests. <br><code>NEVER<\/code>: The instance is\noff; it is not activated, even if a connection request arrives.\n<br><code>ON_DEMAND<\/code>: First Generation instances only. The instance\nresponds to incoming requests, and turns itself off when not in use.\nInstances with <code>PER_USE<\/code> pricing turn off after 15 minutes of\ninactivity. Instances with <code>PER_PACKAGE<\/code> pricing turn off after\n12 hours of inactivity.",
+          "description": "The activation policy specifies when the instance is activated; it is\napplicable only when the instance state is 'RUNNABLE'. Valid values:\n\n'ALWAYS': The instance is on, and remains so even in\nthe absence of connection requests.\n\n`NEVER`: The instance is off; it is not activated, even if a\nconnection request arrives.",
           "enumDescriptions": [
             "unspecified policy.",
             "The instance is always up and running.",
-            "The instance should never spin up.",
-            "The instance spins up upon receiving requests."
+            "The instance should never spin up."
           ],
           "type": "string",
           "enum": [
             "SQL_ACTIVATION_POLICY_UNSPECIFIED",
             "ALWAYS",
-            "NEVER",
-            "ON_DEMAND"
+            "NEVER"
           ]
         },
         "ipConfig": {
@@ -850,7 +865,7 @@
           }
         },
         "dataDiskType": {
-          "description": "The type of storage: <code>PD_SSD<\/code> (default) or\n<code>PD_HDD<\/code>.",
+          "description": "The type of storage: `PD_SSD` (default) or `PD_HDD`.",
           "enumDescriptions": [
             "Unspecified.",
             "SSD disk.",
@@ -873,7 +888,7 @@
           "type": "string"
         },
         "sourceId": {
-          "description": "The Database Migration Service source connection profile ID,\nin the format:\n<code>projects\/my_project_name\/locations\/us-central1\/connectionProfiles\/connection_profile_ID<\/code>",
+          "description": "The Database Migration Service source connection profile ID,\nin the format:\n`projects\/my_project_name\/locations\/us-central1\/connectionProfiles\/connection_profile_ID`",
           "type": "string"
         }
       }
@@ -888,7 +903,7 @@
           "type": "boolean"
         },
         "privateNetwork": {
-          "description": "The resource link for the VPC network from which the Cloud SQL instance is\naccessible for private IP. For example,\n<code>\/projects\/myProject\/global\/networks\/default<\/code>. This setting can\nbe updated, but it cannot be removed after it is set.",
+          "description": "The resource link for the VPC network from which the Cloud SQL instance is\naccessible for private IP. For example,\n`\/projects\/myProject\/global\/networks\/default`. This setting can\nbe updated, but it cannot be removed after it is set.",
           "type": "string"
         },
         "requireSsl": {
@@ -896,7 +911,7 @@
           "type": "boolean"
         },
         "authorizedNetworks": {
-          "description": "The list of external networks that are allowed to connect to the instance\nusing the IP. In <a\nhref=\"http:\/\/en.wikipedia.org\/wiki\/CIDR_notation#CIDR_notation\">CIDR\nnotation<\/a>, also known as 'slash' notation (e.g.\n<code>192.168.100.0\/24<\/code>).",
+          "description": "The list of external networks that are allowed to connect to the instance\nusing the IP. see http:\/\/en.wikipedia.org\/wiki\/CIDR_notation#CIDR_notation,\nalso known as 'slash' notation (e.g. `192.168.100.0\/24`).",
           "type": "array",
           "items": {
             "$ref": "SqlAclEntry"
@@ -914,12 +929,12 @@
           "type": "string"
         },
         "expireTime": {
-          "description": "The time when this access control entry expires in <a\nhref=\"https:\/\/tools.ietf.org\/html\/rfc3339\">RFC 3339<\/a> format, for example\n<code>2012-11-15T16:19:00.094Z<\/code>.",
+          "description": "The time when this access control entry expires in\n[RFC 3339](https:\/\/tools.ietf.org\/html\/rfc3339) format, for example:\n`2012-11-15T16:19:00.094Z`.",
           "type": "string",
           "format": "google-datetime"
         },
         "label": {
-          "description": "Optional. A label to identify this entry.",
+          "description": "A label to identify this entry.",
           "type": "string"
         }
       }
@@ -1040,6 +1055,19 @@
         "errorMessage": {
           "description": "A formatted message with further details about the error and a CTA,",
           "type": "string"
+        }
+      }
+    },
+    "VerifyMigrationJobResponse": {
+      "id": "VerifyMigrationJobResponse",
+      "type": "object",
+      "properties": {
+        "errors": {
+          "description": "A list of any errors that were found during the verification.",
+          "type": "array",
+          "items": {
+            "$ref": "MigrationJobError"
+          }
         }
       }
     }
@@ -1268,17 +1296,17 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A page token, received from a previous `ListMigrationJobs` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListMigrationJobs` must\nmatch the call that provided the page token.",
+                      "description": "The nextPageToken value received in the previous call to\nmigrationJobs.list, used in the subsequent request to retrieve the next\npage of results. On first call this should be left blank. When paginating,\nall other parameters provided to migrationJobs.list must match the call\nthat provided the page token.",
                       "location": "query",
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The filter request.",
+                      "description": "A filter expression that filters migration jobs listed in the response.\nThe expression must specify the field name, a comparison operator, and the\nvalue that you want to use for filtering. The value must be a string,\na number, or a boolean. The comparison operator must be\neither =, !=, >, or <. For example, list migration jobs created this year\nby specifying <b>createTime %gt; 2020-01-01T00:00:00.000000000Z.<\/b>\nYou can also filter nested fields. For example, you could specify\n<b>reverseSshConnectivity.vmIp = \u201C1.2.3.4\u201D<\/b> to select all migration\njobs connecting through the specific SSH tunnel bastion.",
                       "location": "query",
                       "type": "string"
                     },
                     "orderBy": {
-                      "description": "the order by fields for the result.",
+                      "description": "Sort the results based on the migration job name.\nValid values are: \u201Cname\u201D, \u201Cname asc\u201D, and \u201Cname desc\u201D.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1333,12 +1361,12 @@
                       "type": "string"
                     },
                     "migrationJobId": {
-                      "description": "Required. The migration job ident.",
+                      "description": "Required. The ID of the instance to create.",
                       "location": "query",
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "Optional. A request ID to identify requests. Specify a unique request ID\nso that if you must retry your request, the server will know to ignore\nthe request if it has already been completed. The server will guarantee\nthat for at least 60 minutes since the first request.\n\nFor example, consider a situation where you make an initial request and t\nhe request times out. If you make the request again with the same request\nID, the server can check if original operation with the same request ID\nwas received, and if so, will ignore the second request. This prevents\nclients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is\nnot supported (00000000-0000-0000-0000-000000000000).",
+                      "description": "A unique id used to identify the request. If the server receives two\nrequests with the same id, then the second request will be ignored.\n\nIt is recommended to always set this value to a UUID.\n\nThe id must contain only letters (a-z, A-Z), numbers (0-9), underscores\n(_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1371,13 +1399,13 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask is used to specify the fields to be overwritten in the\nmigration job resource by the update.\nThe fields specified in the update_mask are relative to the resource, not\nthe full request. A field will be overwritten if it is in the mask. If the\nuser does not provide a mask then all fields will be overwritten.",
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the\nmigration job resource by the update.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
                     },
                     "requestId": {
-                      "description": "Optional. A request ID to identify requests. Specify a unique request ID\nso that if you must retry your request, the server will know to ignore\nthe request if it has already been completed. The server will guarantee\nthat for at least 60 minutes since the first request.\n\nFor example, consider a situation where you make an initial request and t\nhe request times out. If you make the request again with the same request\nID, the server can check if original operation with the same request ID\nwas received, and if so, will ignore the second request. This prevents\nclients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is\nnot supported (00000000-0000-0000-0000-000000000000).",
+                      "description": "A unique id used to identify the request. If the server receives two\nrequests with the same id, then the second request will be ignored.\n\nIt is recommended to always set this value to a UUID.\n\nThe id must contain only letters (a-z, A-Z), numbers (0-9), underscores\n(_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1410,12 +1438,12 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "Optional. A request ID to identify requests. Specify a unique request ID\nso that if you must retry your request, the server will know to ignore\nthe request if it has already been completed. The server will guarantee\nthat for at least 60 minutes after the first request.\n\nFor example, consider a situation where you make an initial request and t\nhe request times out. If you make the request again with the same request\nID, the server can check if original operation with the same request ID\nwas received, and if so, will ignore the second request. This prevents\nclients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is\nnot supported (00000000-0000-0000-0000-000000000000).",
+                      "description": "A unique id used to identify the request. If the server receives two\nrequests with the same id, then the second request will be ignored.\n\nIt is recommended to always set this value to a UUID.\n\nThe id must contain only letters (a-z, A-Z), numbers (0-9), underscores\n(_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     },
                     "force": {
-                      "description": "Optional. The destination CloudSQL connection profile is always deleted with the\nmigration job. In case of force delete, the destination CloudSQL replica\ndatabase is also deleted.",
+                      "description": "The destination CloudSQL connection profile is always deleted with the\nmigration job. In case of force delete, the destination CloudSQL replica\ndatabase is also deleted.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -1457,7 +1485,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Starts a migration job."
+                  "description": "Start an already created migration job."
                 },
                 "stop": {
                   "id": "datamigration.projects.locations.migrationJobs.stop",
@@ -1485,7 +1513,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Stops a migration job."
+                  "description": "Stops a running migration job."
                 },
                 "resume": {
                   "id": "datamigration.projects.locations.migrationJobs.resume",
@@ -1513,7 +1541,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Resumes a migration job."
+                  "description": "Resume a migration job that is currently stopped and is resumable (was\nstopped during CDC phase)."
                 },
                 "promote": {
                   "id": "datamigration.projects.locations.migrationJobs.promote",
@@ -1541,13 +1569,13 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Promote a migration job."
+                  "description": "Promote a migration job, stopping replication to the destination and\npromoting the destination to be a standalone database."
                 },
                 "verify": {
                   "id": "datamigration.projects.locations.migrationJobs.verify",
                   "path": "v1alpha2/{+name}:verify",
                   "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/migrationJobs/{migrationJobsId}:verify",
-                  "httpMethod": "GET",
+                  "httpMethod": "POST",
                   "parameters": {
                     "name": {
                       "description": "Name of the migration job resource to verify.",
@@ -1560,13 +1588,16 @@
                   "parameterOrder": [
                     "name"
                   ],
+                  "request": {
+                    "$ref": "VerifyMigrationJobRequest"
+                  },
                   "response": {
                     "$ref": "Operation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Verifies a migration job."
+                  "description": "Verify a migration job, making sure the destination can reach the source\nand that all configuration and prerequisites are met."
                 },
                 "restart": {
                   "id": "datamigration.projects.locations.migrationJobs.restart",
@@ -1594,7 +1625,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Restarts a migration job."
+                  "description": "Restart a stopped or failed migration job, resetting the destination\ninstance to its original state and starting the migration process from\nscratch."
                 },
                 "generateSshScript": {
                   "id": "datamigration.projects.locations.migrationJobs.generateSshScript",
@@ -1653,7 +1684,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The filter request.",
+                      "description": "A filter expression that filters connection profiles listed in the\nresponse. The expression must specify the field name, a comparison\noperator, and the value that you want to use for filtering. The value must\nbe a string, a number, or a boolean. The comparison operator must be either\n=, !=, >, or <. For example, list connection profiles created this year by\nspecifying <b>createTime %gt; 2020-01-01T00:00:00.000000000Z<\/b>. You can\nalso filter nested fields. For example, you could specify <b>mySql.username\n= %lt;my_username%gt;<\/b> to list all connection profiles configured to\nconnect with a specific username.",
                       "location": "query",
                       "type": "string"
                     },
@@ -1672,7 +1703,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists connection profiles in a given project and location."
+                  "description": "Retrieve a list of all connection profiles in a given project and location."
                 },
                 "get": {
                   "id": "datamigration.projects.locations.connectionProfiles.get",
@@ -1713,12 +1744,12 @@
                       "type": "string"
                     },
                     "connectionProfileId": {
-                      "description": "Required. Th connection profile ident.",
+                      "description": "Required. The connection profile identifier.",
                       "location": "query",
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "Optional. A request ID to identify requests. Specify a unique request ID\nso that if you must retry your request, the server will know to ignore\nthe request if it has already been completed. The server will guarantee\nthat for at least 60 minutes since the first request.\n\nFor example, consider a situation where you make an initial request and t\nhe request times out. If you make the request again with the same request\nID, the server can check if original operation with the same request ID\nwas received, and if so, will ignore the second request. This prevents\nclients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is\nnot supported (00000000-0000-0000-0000-000000000000).",
+                      "description": "A unique id used to identify the request. If the server receives two\nrequests with the same id, then the second request will be ignored.\n\nIt is recommended to always set this value to a UUID.\n\nThe id must contain only letters (a-z, A-Z), numbers (0-9), underscores\n(_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1751,13 +1782,13 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask is used to specify the fields to be overwritten in the\nconnection profile resource by the update.\nThe fields specified in the update_mask are relative to the resource, not\nthe full request. A field will be overwritten if it is in the mask. If the\nuser does not provide a mask then all fields will be overwritten.",
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the\nconnection profile resource by the update.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
                     },
                     "requestId": {
-                      "description": "Optional. A request ID to identify requests. Specify a unique request ID\nso that if you must retry your request, the server will know to ignore\nthe request if it has already been completed. The server will guarantee\nthat for at least 60 minutes since the first request.\n\nFor example, consider a situation where you make an initial request and t\nhe request times out. If you make the request again with the same request\nID, the server can check if original operation with the same request ID\nwas received, and if so, will ignore the second request. This prevents\nclients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is\nnot supported (00000000-0000-0000-0000-000000000000).",
+                      "description": "A unique id used to identify the request. If the server receives two\nrequests with the same id, then the second request will be ignored.\n\nIt is recommended to always set this value to a UUID.\n\nThe id must contain only letters (a-z, A-Z), numbers (0-9), underscores\n(_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1774,7 +1805,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the parameters of a single connection profile."
+                  "description": "Update the configuration of a single connection profile."
                 },
                 "delete": {
                   "id": "datamigration.projects.locations.connectionProfiles.delete",
@@ -1790,12 +1821,12 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "Optional. A request ID to identify requests. Specify a unique request ID\nso that if you must retry your request, the server will know to ignore\nthe request if it has already been completed. The server will guarantee\nthat for at least 60 minutes after the first request.\n\nFor example, consider a situation where you make an initial request and t\nhe request times out. If you make the request again with the same request\nID, the server can check if original operation with the same request ID\nwas received, and if so, will ignore the second request. This prevents\nclients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is\nnot supported (00000000-0000-0000-0000-000000000000).",
+                      "description": "A unique id used to identify the request. If the server receives two\nrequests with the same id, then the second request will be ignored.\n\nIt is recommended to always set this value to a UUID.\n\nThe id must contain only letters (a-z, A-Z), numbers (0-9), underscores\n(_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     },
                     "force": {
-                      "description": "Optional. In case of force delete, the CloudSQL replica database is also deleted\n(only for CloudSQL connection profile).",
+                      "description": "In case of force delete, the CloudSQL replica database is also deleted\n(only for CloudSQL connection profile).",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -1809,7 +1840,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a single connection profile."
+                  "description": "Deletes a single Database Migration Service connection profile.\nA connection profile can only be deleted if it is not in use by any\nactive migration jobs."
                 }
               }
             }

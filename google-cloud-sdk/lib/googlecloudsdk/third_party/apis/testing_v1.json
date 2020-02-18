@@ -404,6 +404,10 @@
           "items": {
             "$ref": "EnvironmentVariable"
           }
+        },
+        "systrace": {
+          "description": "Systrace configuration for the run.\nIf set a systrace will be taken, starting on test start and lasting for the\nconfigured duration. The systrace file thus obtained is put in the results\nbucket together with the other artifacts from the run.",
+          "$ref": "SystraceSetup"
         }
       }
     },
@@ -508,6 +512,17 @@
         "value": {
           "description": "Value for the environment variable.",
           "type": "string"
+        }
+      }
+    },
+    "SystraceSetup": {
+      "id": "SystraceSetup",
+      "type": "object",
+      "properties": {
+        "durationSeconds": {
+          "description": "Systrace duration in seconds.\nShould be between 1 and 30 seconds. 0 disables systrace.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

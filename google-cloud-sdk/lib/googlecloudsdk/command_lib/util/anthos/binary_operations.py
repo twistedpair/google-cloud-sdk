@@ -23,7 +23,6 @@ import abc
 import collections
 import os
 
-
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import execution_utils as exec_utils
@@ -117,6 +116,31 @@ def DefaultFailureHandler(result_holder, show_exec_error=False):
     result_holder.failed = True
   if show_exec_error and result_holder.failed:
     _LogDefaultFailure(result_holder)
+
+
+def DefaultStreamOutHandler(result_holder, do_capture=False):
+  """Default processing for streaming stdout from subprocess."""
+  def HandleStdOut(line):
+    if line:
+      line.rstrip()
+      log.Print(line)
+    if do_capture:
+      if not result_holder.stdout:
+        result_holder.stdout = []
+      result_holder.stdout.append(line)
+  return HandleStdOut
+
+
+def DefaultStreamErrHandler(result_holder, do_capture=False):
+  """Default processing for streaming stderr from subprocess."""
+  def HandleStdErr(line):
+    if line:
+      log.status.Print(line)
+    if do_capture:
+      if not result_holder.stderr:
+        result_holder.stderr = []
+      result_holder.stderr.append(line)
+  return HandleStdErr
 
 
 # Some golang binary commands (e.g. kubectl diff) behave this way
@@ -341,3 +365,72 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
     cmd = [self.executable]
     cmd.extend(self._ParseArgsForCommand(**kwargs))
     return self._Execute(cmd, **kwargs)
+
+
+class StreamingBinaryBackedOperation(six.with_metaclass(abc.ABCMeta,
+                                                        BinaryBackedOperation)):
+  """Extend Binary Operations for binaries which require streaming output."""
+
+  def __init__(self, binary, binary_version=None, std_out_func=None,
+               std_err_func=None, failure_func=None, default_args=None,
+               custom_errors=None, capture_output=False):
+    super(StreamingBinaryBackedOperation, self).__init__(binary,
+                                                         binary_version,
+                                                         std_out_func,
+                                                         std_err_func,
+                                                         failure_func,
+                                                         default_args,
+                                                         custom_errors)
+    self.capture_output = capture_output
+
+  def _Execute(self, cmd, stdin=None, env=None, **kwargs):
+    """Execute binary and return operation result.
+
+     Will parse args from kwargs into a list of args to pass to underlying
+     binary and then attempt to execute it. Will use configured stdout, stderr
+     and failure handlers for this operation if configured or module defaults.
+
+    Args:
+      cmd: [str], command to be executed with args
+      stdin: str, data to send to binary on stdin
+      env: {str, str}, environment vars to send to binary.
+      **kwargs: mapping of additional arguments to pass to the underlying
+        executor.
+
+    Returns:
+      OperationResult: execution result for this invocation of the binary.
+
+    Raises:
+      ArgumentError, if there is an error parsing the supplied arguments.
+      BinaryOperationError, if there is an error executing the binary.
+    """
+    op_context = {'env': env, 'stdin': stdin,
+                  'exec_dir': kwargs.get('execution_dir')}
+    result_holder = self.OperationResult(command_str=cmd,
+                                         execution_context=op_context)
+
+    std_out_handler = (self.std_out_handler or
+                       DefaultStreamOutHandler(result_holder,
+                                               self.capture_output))
+    std_err_handler = (self.std_out_handler or
+                       DefaultStreamErrHandler(result_holder,
+                                               self.capture_output))
+    failure_handler = (self.set_failure_status or DefaultFailureHandler)
+    short_cmd_name = os.path.basename(cmd[0])  # useful for error messages
+
+    try:
+      working_dir = kwargs.get('execution_dir')
+      if working_dir and not os.path.isdir(working_dir):
+        raise InvalidWorkingDirectoryError(short_cmd_name, working_dir)
+      exit_code = exec_utils.ExecWithStreamingOutput(args=cmd,
+                                                     no_exit=True,
+                                                     out_func=std_out_handler,
+                                                     err_func=std_err_handler,
+                                                     in_str=stdin,
+                                                     cwd=working_dir,
+                                                     env=env)
+    except (exec_utils.PermissionError, exec_utils.InvalidCommandError) as e:
+      raise ExecutionError(short_cmd_name, e)
+    result_holder.exit_code = exit_code
+    failure_handler(result_holder, kwargs.get('show_exec_error', False))
+    return result_holder

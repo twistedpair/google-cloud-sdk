@@ -9,6 +9,7 @@ class RemotebuildexecutionV1alpha(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://admin-remotebuildexecution.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'remotebuildexecution'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

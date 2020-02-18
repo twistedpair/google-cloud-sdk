@@ -2244,8 +2244,8 @@ class Job(_messages.Message):
       location as driver_output_uri.
     driverOutputResourceUri: Output only. A URI pointing to the location of
       the stdout of the job's driver program.
-    hadoopJob: A HadoopJob attribute.
-    hiveJob: A HiveJob attribute.
+    hadoopJob: Optional. Job is a Hadoop job.
+    hiveJob: Optional. Job is a Hive job.
     jobUuid: Output only. A UUID that uniquely identifies a job within the
       project over time. This is in contrast to a user-settable
       reference.job_id that may be reused over time.
@@ -2255,19 +2255,19 @@ class Job(_messages.Message):
       if present, must contain 1 to 63 characters, and must conform to RFC
       1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
       be associated with a job.
-    pigJob: A PigJob attribute.
+    pigJob: Optional. Job is a Pig job.
     placement: Required. Job information, including how, when, and where to
       run the job.
-    prestoJob: A PrestoJob attribute.
-    pysparkJob: A PySparkJob attribute.
+    prestoJob: Optional. Job is a Presto job.
+    pysparkJob: Optional. Job is a PySpark job.
     reference: Optional. The fully qualified reference to the job, which can
       be used to obtain the equivalent REST path of the job resource. If this
       property is not specified when a job is created, the server generates a
       <code>job_id</code>.
     scheduling: Optional. Job scheduling configuration.
-    sparkJob: A SparkJob attribute.
-    sparkRJob: A SparkRJob attribute.
-    sparkSqlJob: A SparkSqlJob attribute.
+    sparkJob: Optional. Job is a Spark job.
+    sparkRJob: Optional. Job is a SparkR job.
+    sparkSqlJob: Optional. Job is a SparkSql job.
     status: Output only. The job status. Additional application-specific
       status information may be contained in the <code>type_job</code> and
       <code>yarn_applications</code> fields.

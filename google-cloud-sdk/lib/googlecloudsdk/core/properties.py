@@ -304,6 +304,8 @@ class _Sections(object):
       SDK.
     ml_engine: Section, The section containing ml_engine properties for the
       Cloud SDK.
+    notebooks: Section, The section containing notebook properties for the
+      Cloud SDK.
     proxy: Section, The section containing proxy properties for the Cloud SDK.
     pubsub: Section, The section containing pubsub properties for the Cloud SDK.
     redis: Section, The section containing redis properties for the Cloud SDK.
@@ -361,6 +363,7 @@ class _Sections(object):
     self.lifesciences = _SectionLifeSciences()
     self.metrics = _SectionMetrics()
     self.ml_engine = _SectionMlEngine()
+    self.notebooks = _SectionNotebooks()
     self.proxy = _SectionProxy()
     self.pubsub = _SectionPubsub()
     self.redis = _SectionRedis()
@@ -407,6 +410,7 @@ class _Sections(object):
         self.lifesciences,
         self.metrics,
         self.ml_engine,
+        self.notebooks,
         self.proxy,
         self.redis,
         self.run,
@@ -1512,6 +1516,19 @@ class _SectionMlEngine(_Section):
                    'interpreter found on system `PATH`.'))
 
 
+class _SectionNotebooks(_Section):
+  """Contains the properties for the 'notebooks' section."""
+
+  def __init__(self):
+    super(_SectionNotebooks, self).__init__('notebooks')
+
+    self.location = self._Add(
+        'location',
+        help_text='Default location to use when working with Notebook '
+        'resources. When a `location` value is required but not provided, the '
+        'command will fall back to this value, if set.')
+
+
 class _SectionPubsub(_Section):
   """Contains the properties for the 'pubsub' section."""
 
@@ -1747,13 +1764,16 @@ class _SectionApiEndpointOverrides(_Section):
     super(_SectionApiEndpointOverrides, self).__init__(
         'api_endpoint_overrides', hidden=True)
     self.remotebuildexecution = self._Add('remotebuildexecution')
+    self.accessapproval = self._Add('accessapproval')
     self.accesscontextmanager = self._Add('accesscontextmanager')
+    self.apigateway = self._Add('apigateway')
     self.appengine = self._Add('appengine')
     self.bigtableadmin = self._Add('bigtableadmin')
     self.binaryauthorization = self._Add('binaryauthorization')
     self.buildartifacts = self._Add('buildartifacts')
     self.artifactregistry = self._Add('artifactregistry')
     self.categorymanager = self._Add('categorymanager')
+    self.cloudasset = self._Add('cloudasset')
     self.cloudbilling = self._Add('cloudbilling')
     self.cloudbuild = self._Add('cloudbuild')
     self.clouddebugger = self._Add('clouddebugger')
@@ -1802,6 +1822,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.osconfig = self._Add('osconfig')
     self.oslogin = self._Add('oslogin')
     self.policytroubleshooter = self._Add('policytroubleshooter')
+    self.privateca = self._Add('privateca')
     self.pubsub = self._Add('pubsub')
     self.recommender = self._Add('recommender')
     self.replicapoolupdater = self._Add('replicapoolupdater')

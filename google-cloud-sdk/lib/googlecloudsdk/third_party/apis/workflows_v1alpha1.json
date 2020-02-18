@@ -606,10 +606,12 @@
                       "type": "string"
                     },
                     "filter": {
+                      "description": "Filter to restrict results to specific workflows.",
                       "location": "query",
                       "type": "string"
                     },
                     "orderBy": {
+                      "description": "Specify how the results should be sorted. If not specified, the results\nwill be sorted in the default order.",
                       "location": "query",
                       "type": "string"
                     }

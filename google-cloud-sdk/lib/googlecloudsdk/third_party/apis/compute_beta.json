@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20200131",
+ "revision": "20200213",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1926,7 +1926,7 @@
    "properties": {
     "balancingMode": {
      "type": "string",
-     "description": "Specifies the balancing mode for the backend.\n\nWhen choosing a balancing mode, you need to consider the loadBalancingScheme, and protocol for the backend service, as well as the type of backend (instance group or NEG).\n\n \n- If the load balancing mode is CONNECTION, then the load is spread based on how many concurrent connections the backend can handle.\nYou can use the CONNECTION balancing mode if the protocol for the backend service is SSL, TCP, or UDP.\n\nIf the loadBalancingScheme for the backend service is EXTERNAL (SSL Proxy and TCP Proxy load balancers), you must also specify exactly one of the following parameters: maxConnections, maxConnectionsPerInstance, or maxConnectionsPerEndpoint.\n\nIf the loadBalancingScheme for the backend service is INTERNAL (internal TCP/UDP load balancers), you cannot specify any additional parameters.\n \n- If the load balancing mode is RATE, the load is spread based on the rate of HTTP requests per second (RPS).\nYou can use the RATE balancing mode if the protocol for the backend service is HTTP or HTTPS. You must specify exactly one of the following parameters: maxRate, maxRatePerInstance, or maxRatePerEndpoint.\n \n- If the load balancing mode is UTILIZATION, the load is spread based on the CPU utilization of instances in an instance group.\nYou can use the UTILIZATION balancing mode if the loadBalancingScheme of the backend service is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance groups. There are no restrictions on the backend service protocol.",
+     "description": "Specifies the balancing mode for the backend.\n\nWhen choosing a balancing mode, you need to consider the loadBalancingScheme, and protocol for the backend service, as well as the type of backend (instance group or NEG).\n\n \n- If the load balancing mode is CONNECTION, then the load is spread based on how many concurrent connections the backend can handle.\nYou can use the CONNECTION balancing mode if the protocol for the backend service is SSL, TCP, or UDP.\n\nIf the loadBalancingScheme for the backend service is EXTERNAL (SSL Proxy and TCP Proxy load balancers), you must also specify exactly one of the following parameters: maxConnections (except for regional managed instance groups), maxConnectionsPerInstance, or maxConnectionsPerEndpoint.\n\nIf the loadBalancingScheme for the backend service is INTERNAL (internal TCP/UDP load balancers), you cannot specify any additional parameters.\n \n- If the load balancing mode is RATE, the load is spread based on the rate of HTTP requests per second (RPS).\nYou can use the RATE balancing mode if the protocol for the backend service is HTTP or HTTPS. You must specify exactly one of the following parameters: maxRate (except for regional managed instance groups), maxRatePerInstance, or maxRatePerEndpoint.\n \n- If the load balancing mode is UTILIZATION, the load is spread based on the backend utilization of instances in an instance group.\nYou can use the UTILIZATION balancing mode if the loadBalancingScheme of the backend service is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance groups. There are no restrictions on the backend service protocol.",
      "enum": [
       "CONNECTION",
       "RATE",
@@ -1957,37 +1957,37 @@
     },
     "maxConnections": {
      "type": "integer",
-     "description": "Defines a maximum target for simultaneous connections for the entire backend (instance group or NEG). If the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is CONNECTION, and backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnectionsPerInstance, or maxConnectionsPerEndpoint.\n\nNot available if the backend's balancingMode is RATE. If the loadBalancingScheme is INTERNAL, then maxConnections is not supported, even though the backend requires a balancing mode of CONNECTION.",
+     "description": "Defines a target maximum number of simultaneous connections that the backend can handle. Valid for network endpoint group and instance group backends (except for regional managed instance groups). If the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is CONNECTION, and backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnectionsPerInstance, or maxConnectionsPerEndpoint.\n\nNot available if the backend's balancingMode is RATE. If the loadBalancingScheme is INTERNAL, then maxConnections is not supported, even though the backend requires a balancing mode of CONNECTION.",
      "format": "int32"
     },
     "maxConnectionsPerEndpoint": {
      "type": "integer",
-     "description": "Defines a maximum target for simultaneous connections for an endpoint of a NEG. This is multiplied by the number of endpoints in the NEG to implicitly calculate a maximum number of target maximum simultaneous connections for the NEG. If the backend's balancingMode is CONNECTION, and the backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnections, or maxConnectionsPerInstance.\n\nNot available if the backend's balancingMode is RATE. Internal TCP/UDP load balancing does not support setting maxConnectionsPerEndpoint even though its backends require a balancing mode of CONNECTION.",
+     "description": "Defines a target maximum number of simultaneous connections for an endpoint of a NEG. This is multiplied by the number of endpoints in the NEG to implicitly calculate a maximum number of target maximum simultaneous connections for the NEG. If the backend's balancingMode is CONNECTION, and the backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnections, or maxConnectionsPerInstance.\n\nNot available if the backend's balancingMode is RATE. Internal TCP/UDP load balancing does not support setting maxConnectionsPerEndpoint even though its backends require a balancing mode of CONNECTION.",
      "format": "int32"
     },
     "maxConnectionsPerInstance": {
      "type": "integer",
-     "description": "Defines a maximum target for simultaneous connections for a single VM in a backend instance group. This is multiplied by the number of instances in the instance group to implicitly calculate a target maximum number of simultaneous connections for the whole instance group. If the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is CONNECTION, and backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnections, or maxConnectionsPerEndpoint.\n\nNot available if the backend's balancingMode is RATE. Internal TCP/UDP load balancing does not support setting maxConnectionsPerInstance even though its backends require a balancing mode of CONNECTION.",
+     "description": "Defines a target maximum number of simultaneous connections for a single VM in a backend instance group. This is multiplied by the number of instances in the instance group to implicitly calculate a target maximum number of simultaneous connections for the whole instance group. If the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is CONNECTION, and backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnections, or maxConnectionsPerEndpoint.\n\nNot available if the backend's balancingMode is RATE. Internal TCP/UDP load balancing does not support setting maxConnectionsPerInstance even though its backends require a balancing mode of CONNECTION.",
      "format": "int32"
     },
     "maxRate": {
      "type": "integer",
-     "description": "The max requests per second (RPS) of the group. Can be used with either RATE or UTILIZATION balancing modes, but required if RATE mode. For RATE mode, either maxRate or maxRatePerInstance must be set.\n\nThis cannot be used for internal load balancing.",
+     "description": "Defines a maximum number of HTTP requests per second (RPS) that the backend can handle. Valid for network endpoint group and instance group backends (except for regional managed instance groups). Must not be defined if the backend is a managed instance group that uses autoscaling based on load balancing.\n\nIf the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is RATE, you must specify maxRate, maxRatePerInstance, or maxRatePerEndpoint.\n\nNot available if the backend's balancingMode is CONNECTION.",
      "format": "int32"
     },
     "maxRatePerEndpoint": {
      "type": "number",
-     "description": "Defines a maximum target for requests per second (RPS) for an endpoint of a NEG. This is multiplied by the number of endpoints in the NEG to implicitly calculate a target maximum rate for the NEG.\n\nIf the backend's balancingMode is RATE, you must specify either this parameter, maxRate, or maxRatePerInstance.\n\nNot available if the backend's balancingMode is CONNECTION.",
+     "description": "Defines a maximum target for requests per second (RPS) for an endpoint of a NEG. This is multiplied by the number of endpoints in the NEG to implicitly calculate a target maximum rate for the NEG.\n\nIf the backend's balancingMode is RATE, you must specify either this parameter, maxRate (except for regional managed instance groups), or maxRatePerInstance.\n\nNot available if the backend's balancingMode is CONNECTION.",
      "format": "float"
     },
     "maxRatePerInstance": {
      "type": "number",
-     "description": "Defines a maximum target for requests per second (RPS) for a single VM in a backend instance group. This is multiplied by the number of instances in the instance group to implicitly calculate a target maximum rate for the whole instance group.\n\nIf the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is RATE, you must specify either this parameter, maxRate, or maxRatePerEndpoint.\n\nNot available if the backend's balancingMode is CONNECTION.",
+     "description": "Defines a maximum target for requests per second (RPS) for a single VM in a backend instance group. This is multiplied by the number of instances in the instance group to implicitly calculate a target maximum rate for the whole instance group.\n\nIf the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is RATE, you must specify either this parameter, maxRate (except for regional managed instance groups), or maxRatePerEndpoint.\n\nNot available if the backend's balancingMode is CONNECTION.",
      "format": "float"
     },
     "maxUtilization": {
      "type": "number",
-     "description": "Defines the maximum average CPU utilization of a backend VM in an instance group. The valid range is [0.0, 1.0]. This is an optional parameter if the backend's balancingMode is UTILIZATION.\n\nThis parameter can be used in conjunction with maxRate, maxRatePerInstance, maxConnections, or maxConnectionsPerInstance.",
+     "description": "Defines the maximum average backend utilization of a backend VM in an instance group. The valid range is [0.0, 1.0]. This is an optional parameter if the backend's balancingMode is UTILIZATION.\n\nThis parameter can be used in conjunction with maxRate, maxRatePerInstance, maxConnections (except for regional managed instance groups), or maxConnectionsPerInstance.",
      "format": "float"
     }
    }
@@ -2231,7 +2231,7 @@
     },
     "healthChecks": {
      "type": "array",
-     "description": "The list of URLs to the HttpHealthCheck or HttpsHealthCheck resource for health checking this BackendService. Currently at most one health check can be specified. Health check is optional for Compute Engine backend services if there is no backend. A health check must not be specified when adding Internet Network Endpoint Group or Serverless Network Endpoint Group as backends. In all other cases, a health check is required for Compute Engine backend services.\n\nFor internal load balancing, a URL to a HealthCheck resource must be specified instead.",
+     "description": "The list of URLs to the healthChecks, httpHealthChecks (legacy), or httpsHealthChecks (legacy) resource for health checking this backend service. Not all backend services support legacy health checks. See  Load balancer guide. Currently at most one health check can be specified. Backend services with instance group or zonal NEG backends must have a health check. Backend services with internet NEG backends must not have a health check. A health check must",
      "items": {
       "type": "string"
      }
@@ -2313,7 +2313,7 @@
     },
     "portName": {
      "type": "string",
-     "description": "A named port on a backend instance group representing the port for communication to the backend VMs in that group. Required when the loadBalancingScheme is EXTERNAL and the backends are instance groups. The named port must be defined on each backend instance group. This parameter has no meaning if the backends are NEGs.\n\n\n\nMust be omitted when the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Blaancing)."
+     "description": "A named port on a backend instance group representing the port for communication to the backend VMs in that group. Required when the loadBalancingScheme is EXTERNAL, INTERNAL_MANAGED, or INTERNAL_SELF_MANAGED and the backends are instance groups. The named port must be defined on each backend instance group. This parameter has no meaning if the backends are NEGs.\n\n\n\nMust be omitted when the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Blaancing)."
     },
     "protocol": {
      "type": "string",
@@ -5699,7 +5699,7 @@
     },
     "networkTier": {
      "type": "string",
-     "description": "This signifies the networking tier used for configuring this load balancer and can only take the following values: PREMIUM , STANDARD.\n\nFor regional ForwardingRule, the valid values are PREMIUM and STANDARD. For GlobalForwardingRule, the valid value is PREMIUM.\n\nIf this field is not specified, it is assumed to be PREMIUM. If IPAddress is specified, this value must be equal to the networkTier of the Address.",
+     "description": "This signifies the networking tier used for configuring this load balancer and can only take the following values: PREMIUM, STANDARD.\n\nFor regional ForwardingRule, the valid values are PREMIUM and STANDARD. For GlobalForwardingRule, the valid value is PREMIUM.\n\nIf this field is not specified, it is assumed to be PREMIUM. If IPAddress is specified, this value must be equal to the networkTier of the Address.",
      "enum": [
       "PREMIUM",
       "STANDARD"
@@ -6719,6 +6719,16 @@
     }
    }
   },
+  "HealthCheckServiceReference": {
+   "id": "HealthCheckServiceReference",
+   "type": "object",
+   "description": "A full or valid partial URL to a health check service. For example, the following are valid URLs:  \n- https://www.googleapis.com/compute/beta/projects/project-id/regions/us-west1/healthCheckServices/health-check-service \n- projects/project-id/regions/us-west1/healthCheckServices/health-check-service \n- regions/us-west1/healthCheckServices/health-check-service",
+   "properties": {
+    "healthCheckService": {
+     "type": "string"
+    }
+   }
+  },
   "HealthCheckServicesList": {
    "id": "HealthCheckServicesList",
    "type": "object",
@@ -7089,6 +7099,10 @@
     "healthCheck": {
      "$ref": "HealthCheckReference",
      "description": "URL of the health check associated with the health state of the network endpoint."
+    },
+    "healthCheckService": {
+     "$ref": "HealthCheckServiceReference",
+     "description": "URL of the health check service associated with the health state of the network endpoint."
     },
     "healthState": {
      "type": "string",
@@ -9249,9 +9263,13 @@
    "id": "InstanceGroupManagerStatusStateful",
    "type": "object",
    "properties": {
-    "isStateful": {
+    "hasStatefulConfig": {
      "type": "boolean",
      "description": "[Output Only] A bit indicating whether the managed instance group is stateful, i.e. has any disks in Stateful Policy or at least one per-instance config. This is determined based on the user intent, the group may be reported as not stateful even when there is still some preserved state on managed instances."
+    },
+    "isStateful": {
+     "type": "boolean",
+     "description": "[Output Only] A bit indicating whether the managed instance group is stateful, i.e. has any disks in Stateful Policy or at least one per-instance config. This is determined based on the user intent, the group may be reported as not stateful even when there is still some preserved state on managed instances. This field is deprecated in favor of has_stateful_config"
     }
    }
   },
@@ -10421,7 +10439,7 @@
     },
     "resourcePolicies": {
      "type": "array",
-     "description": "Resource policies (names, not ULRs) applied to instances created from this templae.",
+     "description": "Resource policies (names, not ULRs) applied to instances created from this template.",
      "items": {
       "type": "string"
      }
@@ -10663,6 +10681,45 @@
       "",
       ""
      ]
+    }
+   }
+  },
+  "InstancesGetEffectiveFirewallsResponse": {
+   "id": "InstancesGetEffectiveFirewallsResponse",
+   "type": "object",
+   "properties": {
+    "firewalls": {
+     "type": "array",
+     "description": "Effective firewalls on the instance.",
+     "items": {
+      "$ref": "Firewall"
+     }
+    },
+    "organizationFirewalls": {
+     "type": "array",
+     "description": "Effective firewalls from organization policies.",
+     "items": {
+      "$ref": "InstancesGetEffectiveFirewallsResponseOrganizationFirewallPolicy"
+     }
+    }
+   }
+  },
+  "InstancesGetEffectiveFirewallsResponseOrganizationFirewallPolicy": {
+   "id": "InstancesGetEffectiveFirewallsResponseOrganizationFirewallPolicy",
+   "type": "object",
+   "description": "A pruned SecurityPolicy containing ID and any applicable firewall rules.",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "The unique identifier for the security policy. This identifier is defined by the server.",
+     "format": "uint64"
+    },
+    "rules": {
+     "type": "array",
+     "description": "The rules that apply to the network.",
+     "items": {
+      "$ref": "SecurityPolicyRule"
+     }
     }
    }
   },
@@ -12177,7 +12234,7 @@
   "License": {
    "id": "License",
    "type": "object",
-   "description": "A license resource.",
+   "description": "Represents a License resource.\n\nA License represents billing and aggregate usage data for public and marketplace images.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. (== resource_for {$api_version}.licenses ==)",
    "properties": {
     "chargesUseFee": {
      "type": "boolean",
@@ -12232,6 +12289,7 @@
   "LicenseCode": {
    "id": "LicenseCode",
    "type": "object",
+   "description": "Represents a License Code resource.\n\nA License Code is a unique identifier used to represent a license resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. (== resource_for {$api_version}.licenseCodes ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -13497,7 +13555,7 @@
   "NetworkEndpointGroup": {
    "id": "NetworkEndpointGroup",
    "type": "object",
-   "description": "Represents a collection of network endpoints.\n\nFor more information read Setting up network endpoint groups in load balancing. (== resource_for {$api_version}.networkEndpointGroups ==) Next ID: 21",
+   "description": "Represents a collection of network endpoints.\n\nFor more information read Network endpoint groups overview. (== resource_for {$api_version}.networkEndpointGroups ==) Next ID: 21",
    "properties": {
     "annotations": {
      "type": "object",
@@ -13543,7 +13601,7 @@
     },
     "networkEndpointType": {
      "type": "string",
-     "description": "Type of network endpoints in this network endpoint group. Currently the only supported value is GCE_VM_IP_PORT.",
+     "description": "Type of network endpoints in this network endpoint group.",
      "enum": [
       "GCE_VM_IP_PORT",
       "INTERNET_FQDN_PORT",
@@ -14344,6 +14402,45 @@
     "peerNetwork": {
      "type": "string",
      "description": "URL of the peer network. It can be either full URL or partial URL. The peer network may belong to a different project. If the partial URL does not contain project, it is assumed that the peer network is in the same project as the current network."
+    }
+   }
+  },
+  "NetworksGetEffectiveFirewallsResponse": {
+   "id": "NetworksGetEffectiveFirewallsResponse",
+   "type": "object",
+   "properties": {
+    "firewalls": {
+     "type": "array",
+     "description": "Effective firewalls on the network.",
+     "items": {
+      "$ref": "Firewall"
+     }
+    },
+    "organizationFirewalls": {
+     "type": "array",
+     "description": "Effective firewalls from organization policies.",
+     "items": {
+      "$ref": "NetworksGetEffectiveFirewallsResponseOrganizationFirewallPolicy"
+     }
+    }
+   }
+  },
+  "NetworksGetEffectiveFirewallsResponseOrganizationFirewallPolicy": {
+   "id": "NetworksGetEffectiveFirewallsResponseOrganizationFirewallPolicy",
+   "type": "object",
+   "description": "A pruned SecurityPolicy containing ID and any applicable firewall rules.",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the security policy. This identifier is defined by the server.",
+     "format": "uint64"
+    },
+    "rules": {
+     "type": "array",
+     "description": "The rules that apply to the network.",
+     "items": {
+      "$ref": "SecurityPolicyRule"
+     }
     }
    }
   },
@@ -16524,6 +16621,24 @@
     }
    }
   },
+  "OrganizationSecurityPoliciesListAssociationsResponse": {
+   "id": "OrganizationSecurityPoliciesListAssociationsResponse",
+   "type": "object",
+   "properties": {
+    "associations": {
+     "type": "array",
+     "description": "A list of associations.",
+     "items": {
+      "$ref": "SecurityPolicyAssociation"
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of securityPolicy associations. Always compute#organizationSecurityPoliciesListAssociations for lists of securityPolicy associations.",
+     "default": "compute#organizationSecurityPoliciesListAssociationsResponse"
+    }
+   }
+  },
   "OutlierDetection": {
    "id": "OutlierDetection",
    "type": "object",
@@ -17513,6 +17628,7 @@
      "type": "string",
      "description": "[Output Only] Name of the quota metric.",
      "enum": [
+      "AFFINITY_GROUPS",
       "AUTOSCALERS",
       "BACKEND_BUCKETS",
       "BACKEND_SERVICES",
@@ -17557,6 +17673,8 @@
       "N2_CPUS",
       "NETWORKS",
       "NETWORK_ENDPOINT_GROUPS",
+      "NODE_GROUPS",
+      "NODE_TEMPLATES",
       "NVIDIA_K80_GPUS",
       "NVIDIA_P100_GPUS",
       "NVIDIA_P100_VWS_GPUS",
@@ -17603,6 +17721,9 @@
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
+      "",
+      "",
       "",
       "",
       "",
@@ -21585,6 +21706,22 @@
     }
    }
   },
+  "Screenshot": {
+   "id": "Screenshot",
+   "type": "object",
+   "description": "An instance's screenshot.",
+   "properties": {
+    "contents": {
+     "type": "string",
+     "description": "[Output Only] The Base64-encoded screenshot data."
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the resource. Always compute#screenshot for the screenshots.",
+     "default": "compute#screenshot"
+    }
+   }
+  },
   "SecurityPoliciesListPreconfiguredExpressionSetsResponse": {
    "id": "SecurityPoliciesListPreconfiguredExpressionSetsResponse",
    "type": "object",
@@ -21608,6 +21745,13 @@
    "type": "object",
    "description": "Represents a Cloud Armor Security Policy resource.\n\nOnly external backend services that use load balancers can reference a Security Policy. For more information, read  Cloud Armor Security Policy Concepts. (== resource_for {$api_version}.securityPolicies ==)",
    "properties": {
+    "associations": {
+     "type": "array",
+     "description": "A list of associations that belong to this policy.",
+     "items": {
+      "$ref": "SecurityPolicyAssociation"
+     }
+    },
     "creationTimestamp": {
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
@@ -21615,6 +21759,11 @@
     "description": {
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "displayName": {
+     "type": "string",
+     "description": "User-provided name of the Organization security plicy. The name should be unique in the organization in which the security policy is created. This should only be used when SecurityPolicyType is FIREWALL. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
     },
     "fingerprint": {
      "type": "string",
@@ -21648,6 +21797,15 @@
      "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
      "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
     },
+    "parent": {
+     "type": "string",
+     "description": "[Output Only] The parent of the security policy."
+    },
+    "ruleTupleCount": {
+     "type": "integer",
+     "description": "[Output Only] Total count of all security policy rule tuples. A security policy can not exceed a set number of tuples.",
+     "format": "int32"
+    },
     "rules": {
      "type": "array",
      "description": "A list of rules that belong to this policy. There must always be a default rule (rule with priority 2147483647 and match \"*\"). If no rules are provided when creating a security policy, a default rule with action \"allow\" will be added.",
@@ -21658,6 +21816,44 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "selfLinkWithId": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource with the resource id."
+    },
+    "type": {
+     "type": "string",
+     "description": "The type indicates the intended use of the security policy. CLOUD_ARMOR policies apply to backend services. FIREWALL policies apply to organizations.",
+     "enum": [
+      "CLOUD_ARMOR",
+      "FIREWALL"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "SecurityPolicyAssociation": {
+   "id": "SecurityPolicyAssociation",
+   "type": "object",
+   "properties": {
+    "attachmentId": {
+     "type": "string",
+     "description": "The resource that the security policy is attached to."
+    },
+    "displayName": {
+     "type": "string",
+     "description": "[Output Only] The display name of the security policy of the association."
+    },
+    "name": {
+     "type": "string",
+     "description": "The name for an association."
+    },
+    "securityPolicyId": {
+     "type": "string",
+     "description": "[Output Only] The security policy ID of the association."
     }
    }
   },
@@ -21790,6 +21986,22 @@
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
     },
+    "direction": {
+     "type": "string",
+     "description": "The direction in which this rule applies. This field may only be specified when versioned_expr is set to FIREWALL.",
+     "enum": [
+      "EGRESS",
+      "INGRESS"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "enableLogging": {
+     "type": "boolean",
+     "description": "Denotes whether to enable logging for a particular rule. If logging is enabled, logs will be exported to the configured export destination in Stackdriver. Logs may be exported to BigQuery or Pub/Sub. Note: you cannot enable logging on \"goto_next\" rules.\n\nThis field may only be specified when the versioned_expr is set to FIREWALL."
+    },
     "kind": {
      "type": "string",
      "description": "[Output only] Type of the resource. Always compute#securityPolicyRule for security policy rules",
@@ -21807,6 +22019,25 @@
      "type": "integer",
      "description": "An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest prority.",
      "format": "int32"
+    },
+    "ruleTupleCount": {
+     "type": "integer",
+     "description": "[Output Only] Calculation of the complexity of a single firewall security policy rule.",
+     "format": "int32"
+    },
+    "targetResources": {
+     "type": "array",
+     "description": "A list of network resource URLs to which this rule applies. This field allows you to control which network's VMs get this rule. If this field is left blank, all VMs within the organization will receive the rule.\n\nThis field may only be specified when versioned_expr is set to FIREWALL.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "targetServiceAccounts": {
+     "type": "array",
+     "description": "A list of service accounts indicating the sets of instances that are applied with this rule.",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },
@@ -21827,9 +22058,11 @@
      "type": "string",
      "description": "Preconfigured versioned expression. If this field is specified, config must also be specified. Available preconfigured expressions along with their requirements are: SRC_IPS_V1 - must specify the corresponding src_ip_range field in config.",
      "enum": [
+      "FIREWALL",
       "SRC_IPS_V1"
      ],
      "enumDescriptions": [
+      "",
       ""
      ]
     }
@@ -21839,9 +22072,40 @@
    "id": "SecurityPolicyRuleMatcherConfig",
    "type": "object",
    "properties": {
+    "destIpRanges": {
+     "type": "array",
+     "description": "CIDR IP address range.\n\nThis field may only be specified when versioned_expr is set to FIREWALL.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "layer4Configs": {
+     "type": "array",
+     "description": "Pairs of IP protocols and ports that the rule should match.\n\nThis field may only be specified when versioned_expr is set to FIREWALL.",
+     "items": {
+      "$ref": "SecurityPolicyRuleMatcherConfigLayer4Config"
+     }
+    },
     "srcIpRanges": {
      "type": "array",
      "description": "CIDR IP address range.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "SecurityPolicyRuleMatcherConfigLayer4Config": {
+   "id": "SecurityPolicyRuleMatcherConfigLayer4Config",
+   "type": "object",
+   "properties": {
+    "ipProtocol": {
+     "type": "string",
+     "description": "The IP protocol to which this rule applies. The protocol type is required when creating a firewall rule. This value can either be one of the following well known protocol strings (tcp, udp, icmp, esp, ah, ipip, sctp), or the IP protocol number."
+    },
+    "ports": {
+     "type": "array",
+     "description": "An optional list of ports to which this rule applies. This field is only applicable for UDP or TCP protocol. Each entry must be either an integer or a range. If not specified, this rule applies to connections through any port.\n\nExample inputs include: [\"22\"], [\"80\",\"443\"], and [\"12345-12349\"].\n\nThis field may only be specified when versioned_expr is set to FIREWALL.",
      "items": {
       "type": "string"
      }
@@ -22411,7 +22675,7 @@
   "SslCertificate": {
    "id": "SslCertificate",
    "type": "object",
-   "description": "Represents an SSL Certificate resource.\n\nGoogle Compute Engine has two SSL Certificate resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/sslCertificates) * [Regional](/compute/docs/reference/rest/{$api_version}/regionSslCertificates)\n\n\n\nThe sslCertificates are used by:  \n- external HTTPS load balancers \n- SSL proxy load balancers  \n\nThe regionSslCertificates are used by internal HTTPS load balancers.\n\nThis SSL certificate resource also contains a private key. You can use SSL keys and certificates to secure connections to a load balancer. For more information, read  Creating and Using SSL Certificates. (== resource_for {$api_version}.sslCertificates ==) (== resource_for {$api_version}.regionSslCertificates ==)",
+   "description": "Represents an SSL Certificate resource.\n\nGoogle Compute Engine has two SSL Certificate resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/sslCertificates) * [Regional](/compute/docs/reference/rest/{$api_version}/regionSslCertificates)\n\n\n\nThe sslCertificates are used by:  \n- external HTTPS load balancers \n- SSL proxy load balancers  \n\nThe regionSslCertificates are used by internal HTTPS load balancers.\n\nOptionally, certificate file contents that you upload can contain a set of up to five PEM-encoded certificates. The API call creates an object (sslCertificate) that holds this data. You can use SSL keys and certificates to secure connections to a load balancer. For more information, read  Creating and using SSL certificates and SSL certificates quotas and limits. (== resource_for {$api_version}.sslCertificates ==) (== resource_for {$api_version}.regionSslCertificates ==)",
    "properties": {
     "certificate": {
      "type": "string",
@@ -29975,7 +30239,7 @@
      "id": "compute.backendServices.insert",
      "path": "{project}/global/backendServices",
      "httpMethod": "POST",
-     "description": "Creates a BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a backend service. Read  Restrictions and Guidelines for more information.",
+     "description": "Creates a BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a backend service. Read  Understanding backend services for more information.",
      "parameters": {
       "project": {
        "type": "string",
@@ -30057,7 +30321,7 @@
      "id": "compute.backendServices.patch",
      "path": "{project}/global/backendServices/{backendService}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
+     "description": "Patches the specified BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -30175,7 +30439,7 @@
      "id": "compute.backendServices.update",
      "path": "{project}/global/backendServices/{backendService}",
      "httpMethod": "PUT",
-     "description": "Updates the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.",
+     "description": "Updates the specified BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -32991,6 +33255,112 @@
     }
    }
   },
+  "globalOrganizationOperations": {
+   "methods": {
+    "delete": {
+     "id": "compute.globalOrganizationOperations.delete",
+     "path": "locations/global/operations/{operation}",
+     "httpMethod": "DELETE",
+     "description": "Deletes the specified Operations resource.",
+     "parameters": {
+      "operation": {
+       "type": "string",
+       "description": "Name of the Operations resource to delete.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "parentId": {
+       "type": "string",
+       "description": "Parent ID for this request.",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "operation"
+     ],
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "get": {
+     "id": "compute.globalOrganizationOperations.get",
+     "path": "locations/global/operations/{operation}",
+     "httpMethod": "GET",
+     "description": "Retrieves the specified Operations resource. Gets a list of operations by making a list() request.",
+     "parameters": {
+      "operation": {
+       "type": "string",
+       "description": "Name of the Operations resource to return.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "parentId": {
+       "type": "string",
+       "description": "Parent ID for this request.",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "operation"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "list": {
+     "id": "compute.globalOrganizationOperations.list",
+     "path": "locations/global/operations",
+     "httpMethod": "GET",
+     "description": "Retrieves a list of Operation resources contained within the specified organization.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "parentId": {
+       "type": "string",
+       "description": "Parent ID for this request.",
+       "location": "query"
+      }
+     },
+     "response": {
+      "$ref": "OperationList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    }
+   }
+  },
   "healthChecks": {
    "methods": {
     "aggregatedList": {
@@ -34373,7 +34743,7 @@
      "id": "compute.instanceGroupManagers.applyUpdatesToInstances",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/applyUpdatesToInstances",
      "httpMethod": "POST",
-     "description": "Apply changes to selected instances on the managed instance group. This method can be used to apply new overrides and/or new versions.",
+     "description": "Applies changes to selected instances on the managed instance group. This method can be used to apply new overrides and/or new versions.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -34967,7 +35337,7 @@
      "id": "compute.instanceGroupManagers.patchPerInstanceConfigs",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/patchPerInstanceConfigs",
      "httpMethod": "POST",
-     "description": "Insert or patch (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch.",
+     "description": "Inserts or patches per-instance configs for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -35393,7 +35763,7 @@
      "id": "compute.instanceGroupManagers.updatePerInstanceConfigs",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/updatePerInstanceConfigs",
      "httpMethod": "POST",
-     "description": "Insert or update (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch.",
+     "description": "Inserts or updates per-instance configs for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -36566,6 +36936,55 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "getEffectiveFirewalls": {
+     "id": "compute.instances.getEffectiveFirewalls",
+     "path": "{project}/zones/{zone}/instances/{instance}/getEffectiveFirewalls",
+     "httpMethod": "GET",
+     "description": "Returns effective firewalls applied to an interface of the instance.",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "Name of the instance scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "networkInterface": {
+       "type": "string",
+       "description": "The name of the network interface to get the effective firewalls.",
+       "required": true,
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instance",
+      "networkInterface"
+     ],
+     "response": {
+      "$ref": "InstancesGetEffectiveFirewallsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "getGuestAttributes": {
      "id": "compute.instances.getGuestAttributes",
      "path": "{project}/zones/{zone}/instances/{instance}/getGuestAttributes",
@@ -36659,6 +37078,48 @@
      ],
      "response": {
       "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getScreenshot": {
+     "id": "compute.instances.getScreenshot",
+     "path": "{project}/zones/{zone}/instances/{instance}/screenshot",
+     "httpMethod": "GET",
+     "description": "Returns the screenshot from the specified instance.",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "Name of the instance scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instance"
+     ],
+     "response": {
+      "$ref": "Screenshot"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -39135,7 +39596,7 @@
      "id": "compute.licenseCodes.get",
      "path": "{project}/global/licenseCodes/{licenseCode}",
      "httpMethod": "GET",
-     "description": "Return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code.",
+     "description": "Return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "licenseCode": {
        "type": "string",
@@ -39173,7 +39634,7 @@
      "id": "compute.licenses.delete",
      "path": "{project}/global/licenses/{license}",
      "httpMethod": "DELETE",
-     "description": "Deletes the specified license.",
+     "description": "Deletes the specified license.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "license": {
        "type": "string",
@@ -39211,7 +39672,7 @@
      "id": "compute.licenses.get",
      "path": "{project}/global/licenses/{license}",
      "httpMethod": "GET",
-     "description": "Returns the specified License resource.",
+     "description": "Returns the specified License resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "license": {
        "type": "string",
@@ -39245,7 +39706,7 @@
      "id": "compute.licenses.getIamPolicy",
      "path": "{project}/global/licenses/{resource}/getIamPolicy",
      "httpMethod": "GET",
-     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "optionsRequestedPolicyVersion": {
        "type": "integer",
@@ -39285,7 +39746,7 @@
      "id": "compute.licenses.insert",
      "path": "{project}/global/licenses",
      "httpMethod": "POST",
-     "description": "Create a License resource in the specified project.",
+     "description": "Create a License resource in the specified project.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "project": {
        "type": "string",
@@ -39321,7 +39782,7 @@
      "id": "compute.licenses.list",
      "path": "{project}/global/licenses",
      "httpMethod": "GET",
-     "description": "Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.",
+     "description": "Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -39370,7 +39831,7 @@
      "id": "compute.licenses.setIamPolicy",
      "path": "{project}/global/licenses/{resource}/setIamPolicy",
      "httpMethod": "POST",
-     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "project": {
        "type": "string",
@@ -40388,6 +40849,40 @@
      ],
      "response": {
       "$ref": "Network"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getEffectiveFirewalls": {
+     "id": "compute.networks.getEffectiveFirewalls",
+     "path": "{project}/global/networks/{network}/getEffectiveFirewalls",
+     "httpMethod": "GET",
+     "description": "Returns the effective firewalls on a given network.",
+     "parameters": {
+      "network": {
+       "type": "string",
+       "description": "Name of the network for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "network"
+     ],
+     "response": {
+      "$ref": "NetworksGetEffectiveFirewallsResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -41945,6 +42440,505 @@
     }
    }
   },
+  "organizationSecurityPolicies": {
+   "methods": {
+    "addAssociation": {
+     "id": "compute.organizationSecurityPolicies.addAssociation",
+     "path": "locations/global/securityPolicies/{securityPolicy}/addAssociation",
+     "httpMethod": "POST",
+     "description": "Inserts an association for the specified security policy.",
+     "parameters": {
+      "replaceExistingAssociation": {
+       "type": "boolean",
+       "description": "Indicates whether or not to replace it if an association of the attachment already exists. This is false by default, in which case an error will be returned if an assocation already exists.",
+       "location": "query"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to update.",
+       "required": true,
+       "pattern": "(securityPolicies/)?[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "request": {
+      "$ref": "SecurityPolicyAssociation"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "addRule": {
+     "id": "compute.organizationSecurityPolicies.addRule",
+     "path": "locations/global/securityPolicies/{securityPolicy}/addRule",
+     "httpMethod": "POST",
+     "description": "Inserts a rule into a security policy.",
+     "parameters": {
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to update.",
+       "required": true,
+       "pattern": "(securityPolicies/)?[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "request": {
+      "$ref": "SecurityPolicyRule"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "copyRules": {
+     "id": "compute.organizationSecurityPolicies.copyRules",
+     "path": "locations/global/securityPolicies/{securityPolicy}/copyRules",
+     "httpMethod": "POST",
+     "description": "Copies rules to the specified security policy.",
+     "parameters": {
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to update.",
+       "required": true,
+       "pattern": "(securityPolicies/)?[0-9]{0,20}",
+       "location": "path"
+      },
+      "sourceSecurityPolicy": {
+       "type": "string",
+       "description": "The security policy from which to copy rules.",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "delete": {
+     "id": "compute.organizationSecurityPolicies.delete",
+     "path": "locations/global/securityPolicies/{securityPolicy}",
+     "httpMethod": "DELETE",
+     "description": "Deletes the specified policy.",
+     "parameters": {
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to delete.",
+       "required": true,
+       "pattern": "(securityPolicies/)?[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "get": {
+     "id": "compute.organizationSecurityPolicies.get",
+     "path": "locations/global/securityPolicies/{securityPolicy}",
+     "httpMethod": "GET",
+     "description": "List all of the ordered rules present in a single specified policy.",
+     "parameters": {
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to get.",
+       "required": true,
+       "pattern": "(securityPolicies/)?[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "response": {
+      "$ref": "SecurityPolicy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getAssociation": {
+     "id": "compute.organizationSecurityPolicies.getAssociation",
+     "path": "locations/global/securityPolicies/{securityPolicy}/getAssociation",
+     "httpMethod": "GET",
+     "description": "Gets an association with the specified name.",
+     "parameters": {
+      "name": {
+       "type": "string",
+       "description": "The name of the association to get from the security policy.",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to which the queried rule belongs.",
+       "required": true,
+       "pattern": "(securityPolicies/)?[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "response": {
+      "$ref": "SecurityPolicyAssociation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getRule": {
+     "id": "compute.organizationSecurityPolicies.getRule",
+     "path": "locations/global/securityPolicies/{securityPolicy}/getRule",
+     "httpMethod": "GET",
+     "description": "Gets a rule at the specified priority.",
+     "parameters": {
+      "priority": {
+       "type": "integer",
+       "description": "The priority of the rule to get from the security policy.",
+       "format": "int32",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to which the queried rule belongs.",
+       "required": true,
+       "pattern": "(securityPolicies/)?[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "response": {
+      "$ref": "SecurityPolicyRule"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "insert": {
+     "id": "compute.organizationSecurityPolicies.insert",
+     "path": "locations/global/securityPolicies",
+     "httpMethod": "POST",
+     "description": "Creates a new policy in the specified project using the data included in the request.",
+     "parameters": {
+      "parentId": {
+       "type": "string",
+       "description": "Parent ID for this request.",
+       "location": "query"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "request": {
+      "$ref": "SecurityPolicy"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "list": {
+     "id": "compute.organizationSecurityPolicies.list",
+     "path": "locations/global/securityPolicies",
+     "httpMethod": "GET",
+     "description": "List all the policies that have been configured for the specified project.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "parentId": {
+       "type": "string",
+       "description": "Parent ID for this request.",
+       "location": "query"
+      }
+     },
+     "response": {
+      "$ref": "SecurityPolicyList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "listAssociations": {
+     "id": "compute.organizationSecurityPolicies.listAssociations",
+     "path": "locations/global/securityPolicies/listAssociations",
+     "httpMethod": "GET",
+     "description": "Lists associations of a specified target, i.e., organization or folder.",
+     "parameters": {
+      "targetResource": {
+       "type": "string",
+       "description": "The target resource to list associations. It is an organization, or a folder.",
+       "location": "query"
+      }
+     },
+     "response": {
+      "$ref": "OrganizationSecurityPoliciesListAssociationsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "move": {
+     "id": "compute.organizationSecurityPolicies.move",
+     "path": "locations/global/securityPolicies/{securityPolicy}/move",
+     "httpMethod": "POST",
+     "description": "Moves the specified security policy.",
+     "parameters": {
+      "parentId": {
+       "type": "string",
+       "description": "The new parent of the security policy.",
+       "location": "query"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to update.",
+       "required": true,
+       "pattern": "(securityPolicies/)?[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "patch": {
+     "id": "compute.organizationSecurityPolicies.patch",
+     "path": "locations/global/securityPolicies/{securityPolicy}",
+     "httpMethod": "PATCH",
+     "description": "Patches the specified policy with the data included in the request.",
+     "parameters": {
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to update.",
+       "required": true,
+       "pattern": "(securityPolicies/)?[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "request": {
+      "$ref": "SecurityPolicy"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "patchRule": {
+     "id": "compute.organizationSecurityPolicies.patchRule",
+     "path": "locations/global/securityPolicies/{securityPolicy}/patchRule",
+     "httpMethod": "POST",
+     "description": "Patches a rule at the specified priority.",
+     "parameters": {
+      "priority": {
+       "type": "integer",
+       "description": "The priority of the rule to patch.",
+       "format": "int32",
+       "location": "query"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to update.",
+       "required": true,
+       "pattern": "(securityPolicies/)?[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "request": {
+      "$ref": "SecurityPolicyRule"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "removeAssociation": {
+     "id": "compute.organizationSecurityPolicies.removeAssociation",
+     "path": "locations/global/securityPolicies/{securityPolicy}/removeAssociation",
+     "httpMethod": "POST",
+     "description": "Removes an association for the specified security policy.",
+     "parameters": {
+      "name": {
+       "type": "string",
+       "description": "Name for the attachment that will be removed.",
+       "location": "query"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to update.",
+       "required": true,
+       "pattern": "(securityPolicies/)?[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "removeRule": {
+     "id": "compute.organizationSecurityPolicies.removeRule",
+     "path": "locations/global/securityPolicies/{securityPolicy}/removeRule",
+     "httpMethod": "POST",
+     "description": "Deletes a rule at the specified priority.",
+     "parameters": {
+      "priority": {
+       "type": "integer",
+       "description": "The priority of the rule to remove from the security policy.",
+       "format": "int32",
+       "location": "query"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to update.",
+       "required": true,
+       "pattern": "(securityPolicies/)?[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    }
+   }
+  },
   "packetMirrorings": {
    "methods": {
     "aggregatedList": {
@@ -43198,7 +44192,7 @@
      "id": "compute.regionBackendServices.insert",
      "path": "{project}/regions/{region}/backendServices",
      "httpMethod": "POST",
-     "description": "Creates a regional BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a regional backend service. Read  Restrictions and Guidelines for more information.",
+     "description": "Creates a regional BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a regional backend service. Read  Understanding backend services for more information.",
      "parameters": {
       "project": {
        "type": "string",
@@ -43296,7 +44290,7 @@
      "id": "compute.regionBackendServices.patch",
      "path": "{project}/regions/{region}/backendServices/{backendService}",
      "httpMethod": "PATCH",
-     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
+     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -43390,7 +44384,7 @@
      "id": "compute.regionBackendServices.update",
      "path": "{project}/regions/{region}/backendServices/{backendService}",
      "httpMethod": "PUT",
-     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.",
+     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information.",
      "parameters": {
       "backendService": {
        "type": "string",

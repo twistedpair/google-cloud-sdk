@@ -40,6 +40,14 @@ NAMESPACE_DELETION_MAX_POLL_INTERVAL_MS = 1000 * 15
 NAMESPACE_DELETION_INITIAL_POLL_INTERVAL_MS = 1000 * 5
 
 
+class RBACError(exceptions.Error):
+  """Class for errors raised by GKE Hub commands."""
+
+
+class KubectlError(exceptions.Error):
+  """Class for errors raised when shelling out to kubectl."""
+
+
 def GetClusterUUID(kube_client):
   """Gets the UUID of the kube-system namespace.
 
@@ -57,15 +65,15 @@ def GetClusterUUID(kube_client):
   return kube_client.GetNamespaceUID('kube-system')
 
 
-def DeleteNamespaceForReinstall(kube_client, namespace):
-  """Delete the existing connect namespace for reinstallation.
+def DeleteNamespace(kube_client, namespace):
+  """Delete a namespace from the cluster.
 
   Args:
     kube_client: The KubernetesClient towards the cluster.
     namespace: the namespace of connect agent deployment.
 
   Raises:
-    exceptions.Error: if failed to delete the namespace
+    exceptions.Error: if failed to delete the namespace.
   """
   if kube_client.NamespaceExists(namespace):
     try:
@@ -300,7 +308,7 @@ class OldKubernetesClient(object):
     return out
 
   def NamespacesWithLabelSelector(self, label):
-    """Get the GKE Connect namespace by label.
+    """Get the Connect Agent namespace by label.
 
     Args:
       label: the label used for namespace selection
@@ -510,6 +518,29 @@ class KubernetesClient(object):
     if self.temp_kubeconfig_dir is not None:
       self.temp_kubeconfig_dir.Close()
 
+  def CheckClusterAdminPermissions(self):
+    """Check to see if the user can perform all the actions in any namespace.
+
+    Raises:
+      KubectlError: if failing to get check for cluster-admin permissions.
+      RBACError: if cluster-admin permissions are not found.
+    """
+    out, err = self._RunKubectl(['auth', 'can-i', '*', '*', '--all-namespaces'],
+                                None)
+    if err:
+      raise KubectlError(
+          'Failed to check if the user is a cluster-admin: {}'.format(err))
+
+    if 'yes' not in out:
+      raise RBACError(
+          'Missing cluster-admin RBAC role: The cluster-admin role-based access'
+          'control (RBAC) ClusterRole grants you the cluster permissions '
+          'necessary to connect your clusters back to Google. \nTo create a '
+          'ClusterRoleBinding resource in the cluster, run the following '
+          'command:\n\n'
+          'kubectl create clusterrolebinding [BINDING_NAME]  --clusterrole '
+          'cluster-admin --user [USER]')
+
   def GetNamespaceUID(self, namespace):
     out, err = self._RunKubectl(
         ['get', 'namespace', namespace, '-o', 'jsonpath=\'{.metadata.uid}\''],
@@ -529,7 +560,7 @@ class KubernetesClient(object):
     return out
 
   def NamespacesWithLabelSelector(self, label):
-    """Get the GKE Connect namespace by label.
+    """Get the Connect Agent namespace by label.
 
     Args:
       label: the label used for namespace selection
@@ -562,7 +593,10 @@ class KubernetesClient(object):
     return err
 
   def MembershipCRDExists(self):
-    _, err = self._RunKubectl(['get', 'crds', 'memberships.hub.gke.io'], None)
+    _, err = self._RunKubectl(
+        ['get',
+         'customresourcedefinitions.v1beta1.apiextensions.k8s.io',
+         'memberships.hub.gke.io'], None)
     if err:
       if 'NotFound' in err:
         return False
@@ -582,8 +616,8 @@ class KubernetesClient(object):
   def GetMembershipCRD(self):
     """Get the YAML representation of the Membership CRD."""
     out, err = self._RunKubectl([
-        'get', 'customresourcedefinition', 'memberships.hub.gke.io', '-o',
-        'yaml'
+        'get', 'customresourcedefinitions.v1beta1.apiextensions.k8s.io',
+        'memberships.hub.gke.io', '-o', 'yaml'
     ], None)
     if err:
       if 'NotFound' in err:
@@ -801,7 +835,7 @@ class NamespaceDeleteOperation(object):
     self.error = None
 
   def __str__(self):
-    return '<deleting namespce {}>'.format(self.namespace)
+    return '<deleting namespace {}>'.format(self.namespace)
 
   def Update(self):
     """Updates this operation with the latest namespace deletion status."""
@@ -851,7 +885,11 @@ def _ParseGKEURI(gke_uri):
     return location_matcher.group(2), location_matcher.group(3)
 
   raise exceptions.Error(
-      'argument --gke-uri: {} is not a valid GKE URI'.format(gke_uri))
+      'argument --gke-uri: {} is invalid. '
+      '--gke-uri must be of format: `https://container.googleapis.com/projects/my-project/locations/us-central1-a/clusters/my-cluster`. '
+      'You can use command: `gcloud container clusters list --uri` to view the '
+      'current GKE clusters in your project.'
+      .format(gke_uri))
 
 
 def _ParseGKECluster(gke_cluster):
@@ -860,8 +898,8 @@ def _ParseGKECluster(gke_cluster):
   if cluster_matcher is not None:
     return cluster_matcher.group(1), cluster_matcher.group(2)
   raise exceptions.Error(
-      'argument --gke-cluster: {} is invalid. --gke-cluster must of format'
-      '{{REGION OR ZONE}}/{{CLUSTER_NAME`}}'.format(gke_cluster))
+      'argument --gke-cluster: {} is invalid. --gke-cluster must be of format: '
+      '`{{REGION OR ZONE}}/{{CLUSTER_NAME`}}`'.format(gke_cluster))
 
 
 def _GetGKEKubeconfig(location_id,
@@ -1004,4 +1042,3 @@ def IsGKECluster(kube_client):
   if not vm_instance_id:
     return False
   return True
-

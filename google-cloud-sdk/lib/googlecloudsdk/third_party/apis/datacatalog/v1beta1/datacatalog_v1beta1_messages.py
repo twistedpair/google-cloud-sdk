@@ -170,10 +170,6 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesGetRequest(_messages.Message
   Fields:
     name: Required. The name of the entry. Example:  * projects/{project_id}/l
       ocations/{location}/entryGroups/{entry_group_id}/entries/{entry_id}
-      Entry groups are logical groupings of entries. Currently, users cannot
-      create/modify entry groups. They are created by Data Catalog; they
-      include `@bigquery` for all BigQuery entries, and `@pubsub` for all
-      Cloud Pub/Sub entries.
   """
 
   name = _messages.StringField(1, required=True)
@@ -216,7 +212,10 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Messa
       modifiable fields are updated.  The following fields are modifiable: *
       For entries with type `DATA_STREAM`:    * `schema` * For entries with
       type `FILESET`    * `schema`    * `display_name`    * `description`    *
-      `gcs_fileset_spec`    * `gcs_fileset_spec.file_patterns`
+      `gcs_fileset_spec`    * `gcs_fileset_spec.file_patterns` * For entries
+      with `user_specified_type`    * `schema`    * `display_name`    *
+      `description`    * user_specified_type    * user_specified_system    *
+      linked_resource    * source_system_timestamps
   """
 
   googleCloudDatacatalogV1beta1Entry = _messages.MessageField('GoogleCloudDatacatalogV1beta1Entry', 1)
@@ -264,7 +263,10 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesTagsListRequest(_messages.Me
     pageToken: Token that specifies which page is requested. If empty, the
       first page is returned.
     parent: Required. The name of the Data Catalog resource to list the tags
-      of. The resource could be an Entry.
+      of. The resource could be an Entry or an EntryGroup.  Examples:  *
+      projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
+      * projects/{project_id}/locations/{location}/entryGroups/{entry_group_id
+      }/entries/{entry_id}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -373,6 +375,76 @@ class DatacatalogProjectsLocationsEntryGroupsSetIamPolicyRequest(_messages.Messa
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DatacatalogProjectsLocationsEntryGroupsTagsCreateRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsEntryGroupsTagsCreateRequest object.
+
+  Fields:
+    googleCloudDatacatalogV1beta1Tag: A GoogleCloudDatacatalogV1beta1Tag
+      resource to be passed as the request body.
+    parent: Required. The name of the resource to attach this tag to. Tags can
+      be attached to Entries. Example:  * projects/{project_id}/locations/{loc
+      ation}/entryGroups/{entry_group_id}/entries/{entry_id}  Note that this
+      Tag and its child resources may not actually be stored in the location
+      in this name.
+  """
+
+  googleCloudDatacatalogV1beta1Tag = _messages.MessageField('GoogleCloudDatacatalogV1beta1Tag', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DatacatalogProjectsLocationsEntryGroupsTagsDeleteRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsEntryGroupsTagsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the tag to delete. Example:  * projects/{proje
+      ct_id}/locations/{location}/entryGroups/{entry_group_id}/entries/{entry_
+      id}/tags/{tag_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatacatalogProjectsLocationsEntryGroupsTagsListRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsEntryGroupsTagsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of tags to return. Default is 10. Max limit
+      is 1000.
+    pageToken: Token that specifies which page is requested. If empty, the
+      first page is returned.
+    parent: Required. The name of the Data Catalog resource to list the tags
+      of. The resource could be an Entry or an EntryGroup.  Examples:  *
+      projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
+      * projects/{project_id}/locations/{location}/entryGroups/{entry_group_id
+      }/entries/{entry_id}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DatacatalogProjectsLocationsEntryGroupsTagsPatchRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsEntryGroupsTagsPatchRequest object.
+
+  Fields:
+    googleCloudDatacatalogV1beta1Tag: A GoogleCloudDatacatalogV1beta1Tag
+      resource to be passed as the request body.
+    name: The resource name of the tag in URL format. Example:  * projects/{pr
+      oject_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{ent
+      ry_id}/tags/{tag_id}  where `tag_id` is a system-generated identifier.
+      Note that this Tag may not actually be stored in the location in this
+      name.
+    updateMask: The fields to update on the Tag. If absent or empty, all
+      modifiable fields are updated. Currently the only modifiable field is
+      the field `fields`.
+  """
+
+  googleCloudDatacatalogV1beta1Tag = _messages.MessageField('GoogleCloudDatacatalogV1beta1Tag', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class DatacatalogProjectsLocationsEntryGroupsTestIamPermissionsRequest(_messages.Message):
@@ -1008,11 +1080,12 @@ class GoogleCloudDatacatalogV1beta1ColumnSchema(_messages.Message):
 
 class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
   r"""Entry Metadata.  A Data Catalog Entry resource represents another
-  resource in Google Cloud Platform, such as a BigQuery dataset or a Cloud
-  Pub/Sub topic. Clients can use the `linked_resource` field in the Entry
-  resource to refer to the original resource ID of the source system.  An
-  Entry resource contains resource details, such as its schema. An Entry can
-  also be used to attach flexible metadata, such as a Tag.
+  resource in Google Cloud Platform (such as a BigQuery dataset or a Cloud
+  Pub/Sub topic), or outside of Google Cloud Platform. Clients can use the
+  `linked_resource` field in the Entry resource to refer to the original
+  resource ID of the source system.  An Entry resource contains resource
+  details, such as its schema. An Entry can also be used to attach flexible
+  metadata, such as a Tag.
 
   Enums:
     IntegratedSystemValueValuesEnum: Output only. This field indicates the

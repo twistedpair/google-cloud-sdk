@@ -35,6 +35,17 @@ class UnsupportedReleaseTrackError(Exception):
   """Raised when requesting an api for an unsupported release track."""
 
 
+def ApiVersionFromReleaseTrack(release_track):
+  if release_track == base.ReleaseTrack.ALPHA:
+    return ALPHA_API_VERSION
+  if release_track == base.ReleaseTrack.BETA:
+    return BETA_API_VERSION
+  if release_track == base.ReleaseTrack.GA:
+    return GA_API_VERSION
+  else:
+    raise UnsupportedReleaseTrackError(release_track)
+
+
 def GetApiAdapter(release_track):
   if release_track == base.ReleaseTrack.ALPHA:
     return AlphaApiAdapter()

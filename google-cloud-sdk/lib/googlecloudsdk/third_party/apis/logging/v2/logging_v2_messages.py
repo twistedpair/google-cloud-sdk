@@ -281,7 +281,7 @@ class Linear(_messages.Message):
 
 
 class ListBucketsResponse(_messages.Message):
-  r"""The response from ListBuckets
+  r"""The response from ListBuckets (Beta).
 
   Fields:
     buckets: A list of buckets.
@@ -456,7 +456,7 @@ class ListViewsResponse(_messages.Message):
 
 
 class LogBucket(_messages.Message):
-  r"""Describes a repository of logs.
+  r"""Describes a repository of logs (Beta).
 
   Enums:
     LifecycleStateValueValuesEnum: The bucket lifecycle state.Output only.
@@ -498,9 +498,7 @@ class LogBucket(_messages.Message):
       LIFECYCLE_STATE_UNSPECIFIED: Unspecified state. This is only used/useful
         for distinguishing unset values.
       ACTIVE: The normal and active state.
-      DELETE_REQUESTED: The bucket has been marked for deletion by the user
-        (by invoking DeleteBucket). This can be reversed by invoking
-        UndeleteBucket.
+      DELETE_REQUESTED: The bucket has been marked for deletion by the user.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -3471,8 +3469,9 @@ class LoggingProjectsMetricsCreateRequest(_messages.Message):
 
   Fields:
     logMetric: A LogMetric resource to be passed as the request body.
-    parent: The resource name of the project in which to create the metric:
-      "projects/[PROJECT_ID]" The new metric must be provided in the request.
+    parent: Required. The resource name of the project in which to create the
+      metric: "projects/[PROJECT_ID]" The new metric must be provided in the
+      request.
   """
 
   logMetric = _messages.MessageField('LogMetric', 1)
@@ -3483,7 +3482,7 @@ class LoggingProjectsMetricsDeleteRequest(_messages.Message):
   r"""A LoggingProjectsMetricsDeleteRequest object.
 
   Fields:
-    metricName: The resource name of the metric to delete:
+    metricName: Required. The resource name of the metric to delete:
       "projects/[PROJECT_ID]/metrics/[METRIC_ID]"
   """
 
@@ -3494,7 +3493,7 @@ class LoggingProjectsMetricsGetRequest(_messages.Message):
   r"""A LoggingProjectsMetricsGetRequest object.
 
   Fields:
-    metricName: The resource name of the desired metric:
+    metricName: Required. The resource name of the desired metric:
       "projects/[PROJECT_ID]/metrics/[METRIC_ID]"
   """
 
@@ -3526,7 +3525,7 @@ class LoggingProjectsMetricsUpdateRequest(_messages.Message):
 
   Fields:
     logMetric: A LogMetric resource to be passed as the request body.
-    metricName: The resource name of the metric to update:
+    metricName: Required. The resource name of the metric to update:
       "projects/[PROJECT_ID]/metrics/[METRIC_ID]" The updated metric must be
       provided in the request and it's name field must be the same as
       [METRIC_ID] If the metric does not exist in [PROJECT_ID], then a new

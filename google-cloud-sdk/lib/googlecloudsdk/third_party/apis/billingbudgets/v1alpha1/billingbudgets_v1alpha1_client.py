@@ -9,6 +9,7 @@ class BillingbudgetsV1alpha1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://billingbudgets.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'billingbudgets'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

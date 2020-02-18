@@ -1318,7 +1318,10 @@ class Subscription(_messages.Message):
     filter: An expression written in the Cloud Pub/Sub filter language. If
       non-empty, then only `PubsubMessage`s whose `attributes` field matches
       the filter are delivered on this subscription. If empty, then no
-      messages are filtered out.
+      messages are filtered out. <b>EXPERIMENTAL:</b> This feature is part of
+      a closed alpha release. This API might be changed in backward-
+      incompatible ways and is not recommended for production use. It is not
+      subject to any SLA or deprecation policy.
     labels: See <a href="https://cloud.google.com/pubsub/docs/labels">
       Creating and managing labels</a>.
     messageRetentionDuration: How long to retain unacknowledged messages in

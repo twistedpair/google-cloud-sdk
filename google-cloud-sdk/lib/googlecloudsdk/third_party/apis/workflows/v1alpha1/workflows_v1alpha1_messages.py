@@ -599,8 +599,9 @@ class WorkflowsProjectsLocationsWorkflowsListRequest(_messages.Message):
   r"""A WorkflowsProjectsLocationsWorkflowsListRequest object.
 
   Fields:
-    filter: A string attribute.
-    orderBy: A string attribute.
+    filter: Filter to restrict results to specific workflows.
+    orderBy: Specify how the results should be sorted. If not specified, the
+      results will be sorted in the default order.
     pageSize: Maximum number of workflows to return per call.
     pageToken: The value returned by the last `ListWorkflowsResponse`
       indicates that this is a continuation of a prior `ListWorkflows` call,

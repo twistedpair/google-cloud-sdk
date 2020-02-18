@@ -12,6 +12,126 @@ from apitools.base.py import extra_types
 package = 'cloudidentity'
 
 
+class AndroidAttributes(_messages.Message):
+  r"""Resource representing the Android specific attributes of a Device.
+
+  Enums:
+    EncryptionStateValueValuesEnum: Device encryption state.
+    OwnershipPrivilegeValueValuesEnum: Ownership privileges on device.
+
+  Fields:
+    basebandVersion: Baseband version of Android device.
+    bootloaderVersion: Device bootloader version. Example: 0.6.7.
+    buildNumber: Build number of Android device.
+    enabledDeveloperOptions: Whether developer options is enabled on device.
+    enabledUnknownSources: Whether applications from unknown sources can be
+      installed on device.
+    enabledUsbDebugging: Whether adb (USB debugging) is enabled on device.
+    encryptionState: Device encryption state.
+    hardware: Device hardware. Example: Sprout.
+    kernelVersion: Kernel version of Android device.
+    otherAccounts: Domain name for Google accounts on device. Type for other
+      accounts on device. Will only be populated if |ownership_privilege| is
+      |PROFILE_OWNER| or |DEVICE_OWNER|. Does not include the account signed
+      in to the device policy app if that account's domain has only one
+      account. Examples: "com.example", "xyz.com".
+    ownerProfileAccount: Whether this account is on an owner/primary profile.
+      For phones, only true for owner profiles. Android 4+ devices can have
+      secondary or restricted user profiles.
+    ownershipPrivilege: Ownership privileges on device.
+    securityPatchTime: OS security patch update time on device.
+    supportsWorkProfile: Whether device supports Android work profiles. If
+      false, this service will not block access to corp data even if an
+      administrator turns on the "Enforce Work Profile" policy.
+  """
+
+  class EncryptionStateValueValuesEnum(_messages.Enum):
+    r"""Device encryption state.
+
+    Values:
+      ENCRYPTION_STATE_UNSPECIFIED: Encryption Status is not set.
+      UNSUPPORTED_BY_DEVICE: Device doesn't support encryption.
+      ENCRYPTED: Device is encrypted.
+      NOT_ENCRYPTED: Device is not encrypted.
+    """
+    ENCRYPTION_STATE_UNSPECIFIED = 0
+    UNSUPPORTED_BY_DEVICE = 1
+    ENCRYPTED = 2
+    NOT_ENCRYPTED = 3
+
+  class OwnershipPrivilegeValueValuesEnum(_messages.Enum):
+    r"""Ownership privileges on device.
+
+    Values:
+      OWNERSHIP_PRIVILEGE_UNSPECIFIED: Ownership privilege is not set.
+      DEVICE_ADMINISTRATOR: Active device administrator privileges on the
+        device.
+      PROFILE_OWNER: Profile Owner privileges. The account is in a managed
+        corporate profile.
+      DEVICE_OWNER: Device Owner privileges on the device.
+    """
+    OWNERSHIP_PRIVILEGE_UNSPECIFIED = 0
+    DEVICE_ADMINISTRATOR = 1
+    PROFILE_OWNER = 2
+    DEVICE_OWNER = 3
+
+  basebandVersion = _messages.StringField(1)
+  bootloaderVersion = _messages.StringField(2)
+  buildNumber = _messages.StringField(3)
+  enabledDeveloperOptions = _messages.BooleanField(4)
+  enabledUnknownSources = _messages.BooleanField(5)
+  enabledUsbDebugging = _messages.BooleanField(6)
+  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 7)
+  hardware = _messages.StringField(8)
+  kernelVersion = _messages.StringField(9)
+  otherAccounts = _messages.StringField(10, repeated=True)
+  ownerProfileAccount = _messages.BooleanField(11)
+  ownershipPrivilege = _messages.EnumField('OwnershipPrivilegeValueValuesEnum', 12)
+  securityPatchTime = _messages.StringField(13)
+  supportsWorkProfile = _messages.BooleanField(14)
+
+
+class ApproveDeviceUserResponse(_messages.Message):
+  r"""Response message for approving the device to access user data.
+
+  Fields:
+    deviceUser: Resultant DeviceUser object for the action.
+  """
+
+  deviceUser = _messages.MessageField('DeviceUser', 1)
+
+
+class BlockDeviceUserResponse(_messages.Message):
+  r"""Response message for blocking the device from accessing user data.
+
+  Fields:
+    deviceUser: Resultant DeviceUser object for the action.
+  """
+
+  deviceUser = _messages.MessageField('DeviceUser', 1)
+
+
+class CancelWipeDeviceResponse(_messages.Message):
+  r"""Response message for cancelling an unfinished device wipe.
+
+  Fields:
+    device: Resultant Device object for the action. Note that asset tags will
+      not be returned in the device object.
+  """
+
+  device = _messages.MessageField('Device', 1)
+
+
+class CancelWipeDeviceUserResponse(_messages.Message):
+  r"""Response message for cancelling an unfinished user account wipe.
+
+  Fields:
+    deviceUser: Resultant DeviceUser object for the action.
+  """
+
+  deviceUser = _messages.MessageField('DeviceUser', 1)
+
+
 class CloudidentityGroupsCreateRequest(_messages.Message):
   r"""A CloudidentityGroupsCreateRequest object.
 
@@ -111,14 +231,16 @@ class CloudidentityGroupsLookupRequest(_messages.Message):
 
   Fields:
     groupKey_id: Required. The ID of the entity.  For Google-managed entities,
-      the `id` must be the email address of a group or user.  For external-
-      identity-mapped entities, the `id` must be a string conforming to the
-      Identity Source's requirements.  Must be unique within a `namespace`.
+      the `id` must be the email address of an existing group or user.  For
+      external-identity-mapped entities, the `id` must be a string conforming
+      to the Identity Source's requirements.  Must be unique within a
+      `namespace`.
     groupKey_namespace: The namespace in which the entity exists.  If not
       specified, the `EntityKey` represents a Google-managed entity such as a
       Google user or a Google Group.  If specified, the `EntityKey` represents
-      an external-identity-mapped group created through Admin Console. Must be
-      of the form `identitysources/{identity_source_id}.
+      an external-identity-mapped group. The namespace must correspond to an
+      identity source created in Admin Console. Must be of the form
+      `identitysources/{identity_source_id}.
   """
 
   groupKey_id = _messages.StringField(1)
@@ -211,15 +333,16 @@ class CloudidentityGroupsMembershipsLookupRequest(_messages.Message):
 
   Fields:
     memberKey_id: Required. The ID of the entity.  For Google-managed
-      entities, the `id` must be the email address of a group or user.  For
-      external-identity-mapped entities, the `id` must be a string conforming
-      to the Identity Source's requirements.  Must be unique within a
-      `namespace`.
+      entities, the `id` must be the email address of an existing group or
+      user.  For external-identity-mapped entities, the `id` must be a string
+      conforming to the Identity Source's requirements.  Must be unique within
+      a `namespace`.
     memberKey_namespace: The namespace in which the entity exists.  If not
       specified, the `EntityKey` represents a Google-managed entity such as a
       Google user or a Google Group.  If specified, the `EntityKey` represents
-      an external-identity-mapped group created through Admin Console. Must be
-      of the form `identitysources/{identity_source_id}.
+      an external-identity-mapped group. The namespace must correspond to an
+      identity source created in Admin Console. Must be of the form
+      `identitysources/{identity_source_id}.
     parent: Required. The parent `Group` resource under which to lookup the
       `Membership` name.  Must be of the form `groups/{group_id}`.
   """
@@ -235,7 +358,7 @@ class CloudidentityGroupsMembershipsModifyMembershipRolesRequest(_messages.Messa
   Fields:
     modifyMembershipRolesRequest: A ModifyMembershipRolesRequest resource to
       be passed as the request body.
-    name: The [resource
+    name: Required. The [resource
       name](https://cloud.google.com/apis/design/resource_names) of the
       `Membership` whose roles are to be modified.  Must be of the form
       `groups/{group_id}/memberships/{membership_id}`.
@@ -254,7 +377,7 @@ class CloudidentityGroupsMembershipsPatchRequest(_messages.Message):
       name](https://cloud.google.com/apis/design/resource_names) of the
       `Membership`.  Shall be of the form
       `groups/{group_id}/memberships/{membership_id}`.
-    updateMask: The fully-qualified names of fields to update.
+    updateMask: Required. The fully-qualified names of fields to update.
   """
 
   membership = _messages.MessageField('Membership', 1)
@@ -296,12 +419,11 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
       or 500 for `View.FULL`.
     pageToken: The `next_page_token` value returned from a previous search
       request, if any.
-    query: Required. The search query.  Only queries on the parent and labels
-      of `Group`s are supported.  Must be specified in [Common Expression
-      Language](https://opensource.google/projects/cel). May only contain
-      equality operators on the parent (e.g. `parent ==
-      'customers/{customer_id}'`) and inclusion operators on labels (e.g.,
-      `'cloudidentity.googleapis.com/groups.discussion_forum' in labels`).
+    query: Required. The search query.  Must be specified in [Common
+      Expression Language](https://opensource.google/projects/cel). May only
+      contain equality operators on the parent and inclusion operators on
+      labels (e.g., `parent == 'customers/{customer_id}' &&
+      'cloudidentity.googleapis.com/groups.discussion_forum' in labels`).
     view: The level of detail to be returned.  If unspecified, defaults to
       `View.BASIC`.
   """
@@ -325,245 +447,9 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
-class DynamicGroupMetadata(_messages.Message):
-  r"""Dynamic group metadata like queries and status.
-
-  Fields:
-    queries: Only one entry is supported for now. Memberships will be the
-      union of all queries.
-    status: Status of the dynamic group. Output only.
-  """
-
-  queries = _messages.MessageField('DynamicGroupQuery', 1, repeated=True)
-  status = _messages.MessageField('DynamicGroupStatus', 2)
-
-
-class DynamicGroupQuery(_messages.Message):
-  r"""Defines a query on a resource.
-
-  Enums:
-    ResourceTypeValueValuesEnum:
-
-  Fields:
-    query: Query that determines the memberships of the dynamic group.
-    resourceType: A ResourceTypeValueValuesEnum attribute.
-  """
-
-  class ResourceTypeValueValuesEnum(_messages.Enum):
-    r"""ResourceTypeValueValuesEnum enum type.
-
-    Values:
-      RESOURCE_TYPE_UNSPECIFIED: <no description>
-      USER: <no description>
-    """
-    RESOURCE_TYPE_UNSPECIFIED = 0
-    USER = 1
-
-  query = _messages.StringField(1)
-  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
-
-
-class DynamicGroupStatus(_messages.Message):
-  r"""The current status of a dynamic group along with timestamp.
-
-  Enums:
-    StatusValueValuesEnum: Status of the dynamic group.
-
-  Fields:
-    status: Status of the dynamic group.
-    statusTime: The latest time at which the dynamic group is guaranteed to be
-      in the given status. For example, if status is: UP_TO_DATE - The latest
-      time at which this dynamic group was confirmed to be up to date.
-      UPDATING_MEMBERSHIPS - The time at which dynamic group was created.
-  """
-
-  class StatusValueValuesEnum(_messages.Enum):
-    r"""Status of the dynamic group.
-
-    Values:
-      STATUS_UNSPECIFIED: Default.
-      UP_TO_DATE: The dynamic group is up-to-date.
-      UPDATING_MEMBERSHIPS: The dynamic group has just been created and
-        memberships are being updated.
-    """
-    STATUS_UNSPECIFIED = 0
-    UP_TO_DATE = 1
-    UPDATING_MEMBERSHIPS = 2
-
-  status = _messages.EnumField('StatusValueValuesEnum', 1)
-  statusTime = _messages.StringField(2)
-
-
-class EntityKey(_messages.Message):
-  r"""A unique identifier for an entity in the Cloud Identity Groups API.  An
-  entity can represent either a group with an optional `namespace` or a user
-  without a `namespace`. The combination of `id` and `namespace` must be
-  unique; however, the same `id` can be used with different `namespace`s.
-
-  Fields:
-    id: Required. The ID of the entity.  For Google-managed entities, the `id`
-      must be the email address of a group or user.  For external-identity-
-      mapped entities, the `id` must be a string conforming to the Identity
-      Source's requirements.  Must be unique within a `namespace`.
-    namespace: The namespace in which the entity exists.  If not specified,
-      the `EntityKey` represents a Google-managed entity such as a Google user
-      or a Google Group.  If specified, the `EntityKey` represents an
-      external-identity-mapped group created through Admin Console. Must be of
-      the form `identitysources/{identity_source_id}.
-  """
-
-  id = _messages.StringField(1)
-  namespace = _messages.StringField(2)
-
-
-class ExpiryDetail(_messages.Message):
-  r"""Specifies Membership expiry attributes.
-
-  Fields:
-    expireTime: Expiration time for the Membership.
-  """
-
-  expireTime = _messages.StringField(1)
-
-
-class GetMembershipGraphResponse(_messages.Message):
-  r"""Response message for getting the membership graph of a member
-  conditionally constrained by a group.
-
-  Fields:
-    adjacencyList: The membership graph's path information represented as an
-      adjacency list.
-    groups: The resources representing each group in the adjacency list. Each
-      group in this list can be correlated to a 'group' of the
-      MembershipAdjacencyList using the 'name' of the Group resource.
-  """
-
-  adjacencyList = _messages.MessageField('MembershipAdjacencyList', 1, repeated=True)
-  groups = _messages.MessageField('Group', 2, repeated=True)
-
-
-class GoogleAppsCloudidentityDevicesV1alpha1AndroidAttributes(_messages.Message):
-  r"""Resource representing the Android specific attributes of a Device.
-
-  Enums:
-    EncryptionStateValueValuesEnum: Device encryption state.
-    OwnershipPrivilegeValueValuesEnum: Ownership privileges on device.
-
-  Fields:
-    basebandVersion: Baseband version of Android device.
-    bootloaderVersion: Device bootloader version. Example: 0.6.7.
-    buildNumber: Build number of Android device.
-    enabledDeveloperOptions: Whether developer options is enabled on device.
-    enabledUnknownSources: Whether applications from unknown sources can be
-      installed on device.
-    enabledUsbDebugging: Whether adb (USB debugging) is enabled on device.
-    encryptionState: Device encryption state.
-    hardware: Device hardware. Example: Sprout.
-    kernelVersion: Kernel version of Android device.
-    otherAccounts: Domain name for Google accounts on device. Type for other
-      accounts on device. Will only be populated if |ownership_privilege| is
-      |PROFILE_OWNER| or |DEVICE_OWNER|. Does not include the account signed
-      in to the device policy app if that account's domain has only one
-      account. Examples: "com.example", "xyz.com".
-    ownerProfileAccount: Whether this account is on an owner/primary profile.
-      For phones, only true for owner profiles. Android 4+ devices can have
-      secondary or restricted user profiles.
-    ownershipPrivilege: Ownership privileges on device.
-    securityPatchTime: OS security patch update time on device.
-    supportsWorkProfile: Whether device supports Android work profiles. If
-      false, this service will not block access to corp data even if an
-      administrator turns on the "Enforce Work Profile" policy.
-  """
-
-  class EncryptionStateValueValuesEnum(_messages.Enum):
-    r"""Device encryption state.
-
-    Values:
-      ENCRYPTION_STATE_UNSPECIFIED: Encryption Status is not set.
-      UNSUPPORTED_BY_DEVICE: Device doesn't support encryption.
-      ENCRYPTED: Device is encrypted.
-      NOT_ENCRYPTED: Device is not encrypted.
-    """
-    ENCRYPTION_STATE_UNSPECIFIED = 0
-    UNSUPPORTED_BY_DEVICE = 1
-    ENCRYPTED = 2
-    NOT_ENCRYPTED = 3
-
-  class OwnershipPrivilegeValueValuesEnum(_messages.Enum):
-    r"""Ownership privileges on device.
-
-    Values:
-      OWNERSHIP_PRIVILEGE_UNSPECIFIED: Ownership privilege is not set.
-      DEVICE_ADMINISTRATOR: Active device administrator privileges on the
-        device.
-      PROFILE_OWNER: Profile Owner privileges. The account is in a managed
-        corporate profile.
-      DEVICE_OWNER: Device Owner privileges on the device.
-    """
-    OWNERSHIP_PRIVILEGE_UNSPECIFIED = 0
-    DEVICE_ADMINISTRATOR = 1
-    PROFILE_OWNER = 2
-    DEVICE_OWNER = 3
-
-  basebandVersion = _messages.StringField(1)
-  bootloaderVersion = _messages.StringField(2)
-  buildNumber = _messages.StringField(3)
-  enabledDeveloperOptions = _messages.BooleanField(4)
-  enabledUnknownSources = _messages.BooleanField(5)
-  enabledUsbDebugging = _messages.BooleanField(6)
-  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 7)
-  hardware = _messages.StringField(8)
-  kernelVersion = _messages.StringField(9)
-  otherAccounts = _messages.StringField(10, repeated=True)
-  ownerProfileAccount = _messages.BooleanField(11)
-  ownershipPrivilege = _messages.EnumField('OwnershipPrivilegeValueValuesEnum', 12)
-  securityPatchTime = _messages.StringField(13)
-  supportsWorkProfile = _messages.BooleanField(14)
-
-
-class GoogleAppsCloudidentityDevicesV1alpha1ApproveDeviceUserResponse(_messages.Message):
-  r"""Response message for approving the device to access user data.
-
-  Fields:
-    deviceUser: Resultant DeviceUser object for the action.
-  """
-
-  deviceUser = _messages.MessageField('GoogleAppsCloudidentityDevicesV1alpha1DeviceUser', 1)
-
-
-class GoogleAppsCloudidentityDevicesV1alpha1BlockDeviceUserResponse(_messages.Message):
-  r"""Response message for blocking the device from accessing user data.
-
-  Fields:
-    deviceUser: Resultant DeviceUser object for the action.
-  """
-
-  deviceUser = _messages.MessageField('GoogleAppsCloudidentityDevicesV1alpha1DeviceUser', 1)
-
-
-class GoogleAppsCloudidentityDevicesV1alpha1CancelWipeDeviceResponse(_messages.Message):
-  r"""Response message for cancelling an unfinished device wipe.
-
-  Fields:
-    device: Resultant Device object for the action. Note that asset tags will
-      not be returned in the device object.
-  """
-
-  device = _messages.MessageField('GoogleAppsCloudidentityDevicesV1alpha1Device', 1)
-
-
-class GoogleAppsCloudidentityDevicesV1alpha1CancelWipeDeviceUserResponse(_messages.Message):
-  r"""Response message for cancelling an unfinished user account wipe.
-
-  Fields:
-    deviceUser: Resultant DeviceUser object for the action.
-  """
-
-  deviceUser = _messages.MessageField('GoogleAppsCloudidentityDevicesV1alpha1DeviceUser', 1)
-
-
-class GoogleAppsCloudidentityDevicesV1alpha1Device(_messages.Message):
-  r"""Resource representing a Device.
+class Device(_messages.Message):
+  r"""Represents a Device known to Google Cloud, independent of the device
+  ownership, type, and whether it is assigned or in use by a user.
 
   Enums:
     CompromisedStateValueValuesEnum: Output only. Represents whether the
@@ -673,7 +559,7 @@ class GoogleAppsCloudidentityDevicesV1alpha1Device(_messages.Message):
     COMPANY = 1
     BYOD = 2
 
-  androidSpecificAttributes = _messages.MessageField('GoogleAppsCloudidentityDevicesV1alpha1AndroidAttributes', 1)
+  androidSpecificAttributes = _messages.MessageField('AndroidAttributes', 1)
   assetTag = _messages.StringField(2)
   brand = _messages.StringField(3)
   compromisedState = _messages.EnumField('CompromisedStateValueValuesEnum', 4)
@@ -694,7 +580,7 @@ class GoogleAppsCloudidentityDevicesV1alpha1Device(_messages.Message):
   wifiMacAddresses = _messages.StringField(19, repeated=True)
 
 
-class GoogleAppsCloudidentityDevicesV1alpha1DeviceUser(_messages.Message):
+class DeviceUser(_messages.Message):
   r"""Resource representing a user's use of a Device
 
   Enums:
@@ -778,7 +664,76 @@ class GoogleAppsCloudidentityDevicesV1alpha1DeviceUser(_messages.Message):
   userEmail = _messages.StringField(9)
 
 
-class GoogleAppsCloudidentityDevicesV1alpha1EndpointApp(_messages.Message):
+class DynamicGroupMetadata(_messages.Message):
+  r"""Dynamic group metadata like queries and status.
+
+  Fields:
+    queries: Only one entry is supported for now. Memberships will be the
+      union of all queries.
+    status: Status of the dynamic group. Output only.
+  """
+
+  queries = _messages.MessageField('DynamicGroupQuery', 1, repeated=True)
+  status = _messages.MessageField('DynamicGroupStatus', 2)
+
+
+class DynamicGroupQuery(_messages.Message):
+  r"""Defines a query on a resource.
+
+  Enums:
+    ResourceTypeValueValuesEnum:
+
+  Fields:
+    query: Query that determines the memberships of the dynamic group.
+    resourceType: A ResourceTypeValueValuesEnum attribute.
+  """
+
+  class ResourceTypeValueValuesEnum(_messages.Enum):
+    r"""ResourceTypeValueValuesEnum enum type.
+
+    Values:
+      RESOURCE_TYPE_UNSPECIFIED: <no description>
+      USER: <no description>
+    """
+    RESOURCE_TYPE_UNSPECIFIED = 0
+    USER = 1
+
+  query = _messages.StringField(1)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
+
+
+class DynamicGroupStatus(_messages.Message):
+  r"""The current status of a dynamic group along with timestamp.
+
+  Enums:
+    StatusValueValuesEnum: Status of the dynamic group.
+
+  Fields:
+    status: Status of the dynamic group.
+    statusTime: The latest time at which the dynamic group is guaranteed to be
+      in the given status. For example, if status is: UP_TO_DATE - The latest
+      time at which this dynamic group was confirmed to be up to date.
+      UPDATING_MEMBERSHIPS - The time at which dynamic group was created.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Status of the dynamic group.
+
+    Values:
+      STATUS_UNSPECIFIED: Default.
+      UP_TO_DATE: The dynamic group is up-to-date.
+      UPDATING_MEMBERSHIPS: The dynamic group has just been created and
+        memberships are being updated.
+    """
+    STATUS_UNSPECIFIED = 0
+    UP_TO_DATE = 1
+    UPDATING_MEMBERSHIPS = 2
+
+  status = _messages.EnumField('StatusValueValuesEnum', 1)
+  statusTime = _messages.StringField(2)
+
+
+class EndpointApp(_messages.Message):
   r"""Next ID to use: 7
 
   Fields:
@@ -803,67 +758,53 @@ class GoogleAppsCloudidentityDevicesV1alpha1EndpointApp(_messages.Message):
   versionName = _messages.StringField(6)
 
 
-class GoogleAppsCloudidentityDevicesV1alpha1ListDeviceUsersResponse(_messages.Message):
-  r"""Response message that is returned in LRO result of ListDeviceUsers
-  Operation.
+class EntityKey(_messages.Message):
+  r"""A unique identifier for an entity in the Cloud Identity Groups API.  An
+  entity can represent either a group with an optional `namespace` or a user
+  without a `namespace`. The combination of `id` and `namespace` must be
+  unique; however, the same `id` can be used with different `namespace`s.
 
   Fields:
-    deviceUsers: Devices meeting the list restrictions.
-    nextPageToken: Token to retrieve the next page of results. Empty if there
-      are no more results.
+    id: Required. The ID of the entity.  For Google-managed entities, the `id`
+      must be the email address of an existing group or user.  For external-
+      identity-mapped entities, the `id` must be a string conforming to the
+      Identity Source's requirements.  Must be unique within a `namespace`.
+    namespace: The namespace in which the entity exists.  If not specified,
+      the `EntityKey` represents a Google-managed entity such as a Google user
+      or a Google Group.  If specified, the `EntityKey` represents an
+      external-identity-mapped group. The namespace must correspond to an
+      identity source created in Admin Console. Must be of the form
+      `identitysources/{identity_source_id}.
   """
 
-  deviceUsers = _messages.MessageField('GoogleAppsCloudidentityDevicesV1alpha1DeviceUser', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
+  id = _messages.StringField(1)
+  namespace = _messages.StringField(2)
 
 
-class GoogleAppsCloudidentityDevicesV1alpha1ListDevicesResponse(_messages.Message):
-  r"""Response message that is returned in LRO result of ListDevices
-  Operation.
+class ExpiryDetail(_messages.Message):
+  r"""Specifies Membership expiry attributes.
 
   Fields:
-    devices: Devices meeting the list restrictions.
-    nextPageToken: Token to retrieve the next page of results. Empty if there
-      are no more results.
+    expireTime: Expiration time for the Membership.
   """
 
-  devices = _messages.MessageField('GoogleAppsCloudidentityDevicesV1alpha1Device', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
+  expireTime = _messages.StringField(1)
 
 
-class GoogleAppsCloudidentityDevicesV1alpha1ListEndpointAppsResponse(_messages.Message):
-  r"""Response message for listing all apps on the device.
+class GetMembershipGraphResponse(_messages.Message):
+  r"""Response message for getting the membership graph of a member
+  conditionally constrained by a group.
 
   Fields:
-    endpointApps: The list of matching EndpointApps found as a result of the
-      request.
-    nextPageToken: Token to retrieve the next page of results. Empty if there
-      are no more results.
+    adjacencyList: The membership graph's path information represented as an
+      adjacency list.
+    groups: The resources representing each group in the adjacency list. Each
+      group in this list can be correlated to a 'group' of the
+      MembershipAdjacencyList using the 'name' of the Group resource.
   """
 
-  endpointApps = _messages.MessageField('GoogleAppsCloudidentityDevicesV1alpha1EndpointApp', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
-class GoogleAppsCloudidentityDevicesV1alpha1WipeDeviceResponse(_messages.Message):
-  r"""Response message for wiping all data on the device.
-
-  Fields:
-    device: Resultant Device object for the action. Note that asset tags will
-      not be returned in the device object.
-  """
-
-  device = _messages.MessageField('GoogleAppsCloudidentityDevicesV1alpha1Device', 1)
-
-
-class GoogleAppsCloudidentityDevicesV1alpha1WipeDeviceUserResponse(_messages.Message):
-  r"""Response message for wiping the user's account from the device.
-
-  Fields:
-    deviceUser: Resultant DeviceUser object for the action.
-  """
-
-  deviceUser = _messages.MessageField('GoogleAppsCloudidentityDevicesV1alpha1DeviceUser', 1)
+  adjacencyList = _messages.MessageField('MembershipAdjacencyList', 1, repeated=True)
+  groups = _messages.MessageField('Group', 2, repeated=True)
 
 
 class Group(_messages.Message):
@@ -873,9 +814,9 @@ class Group(_messages.Message):
   Messages:
     LabelsValue: Required. The labels that apply to the `Group`.  Must not
       contain more than one entry. Must contain the entry
-      `'system/groups/external': ''` if the `Group` is an external-identity-
-      mapped group or `'cloudidentity.googleapis.com/groups.discussion_forum':
-      ''` if the `Group` is a Google Group.
+      `'cloudidentity.googleapis.com/groups.discussion_forum': ''` if the
+      `Group` is a Google Group or `'system/groups/external': ''` if the
+      `Group` is an external-identity-mapped group.
 
   Fields:
     createTime: Output only. The time when the `Group` was created.
@@ -885,10 +826,10 @@ class Group(_messages.Message):
     dynamicGroupMetadata: Dynamic group metadata like queries and status.
     groupKey: Required. Immutable. The `EntityKey` of the `Group`.
     labels: Required. The labels that apply to the `Group`.  Must not contain
-      more than one entry. Must contain the entry `'system/groups/external':
-      ''` if the `Group` is an external-identity-mapped group or
+      more than one entry. Must contain the entry
       `'cloudidentity.googleapis.com/groups.discussion_forum': ''` if the
-      `Group` is a Google Group.
+      `Group` is a Google Group or `'system/groups/external': ''` if the
+      `Group` is an external-identity-mapped group.
     name: Output only. The [resource
       name](https://cloud.google.com/apis/design/resource_names) of the
       `Group`.  Shall be of the form `groups/{group_id}`.
@@ -902,10 +843,10 @@ class Group(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Required. The labels that apply to the `Group`.  Must not contain more
-    than one entry. Must contain the entry `'system/groups/external': ''` if
-    the `Group` is an external-identity-mapped group or
+    than one entry. Must contain the entry
     `'cloudidentity.googleapis.com/groups.discussion_forum': ''` if the
-    `Group` is a Google Group.
+    `Group` is a Google Group or `'system/groups/external': ''` if the `Group`
+    is an external-identity-mapped group.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -936,6 +877,48 @@ class Group(_messages.Message):
   name = _messages.StringField(7)
   parent = _messages.StringField(8)
   updateTime = _messages.StringField(9)
+
+
+class ListDeviceUsersResponse(_messages.Message):
+  r"""Response message that is returned in LRO result of ListDeviceUsers
+  Operation.
+
+  Fields:
+    deviceUsers: Devices meeting the list restrictions.
+    nextPageToken: Token to retrieve the next page of results. Empty if there
+      are no more results.
+  """
+
+  deviceUsers = _messages.MessageField('DeviceUser', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListDevicesResponse(_messages.Message):
+  r"""Response message that is returned in LRO result of ListDevices
+  Operation.
+
+  Fields:
+    devices: Devices meeting the list restrictions.
+    nextPageToken: Token to retrieve the next page of results. Empty if there
+      are no more results.
+  """
+
+  devices = _messages.MessageField('Device', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListEndpointAppsResponse(_messages.Message):
+  r"""Response message for listing all apps on the device.
+
+  Fields:
+    endpointApps: The list of matching EndpointApps found as a result of the
+      request.
+    nextPageToken: Token to retrieve the next page of results. Empty if there
+      are no more results.
+  """
+
+  endpointApps = _messages.MessageField('EndpointApp', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListGroupsResponse(_messages.Message):
@@ -1361,6 +1344,27 @@ class UpdateMembershipRolesParams(_messages.Message):
 
   fieldMask = _messages.StringField(1)
   membershipRole = _messages.MessageField('MembershipRole', 2)
+
+
+class WipeDeviceResponse(_messages.Message):
+  r"""Response message for wiping all data on the device.
+
+  Fields:
+    device: Resultant Device object for the action. Note that asset tags will
+      not be returned in the device object.
+  """
+
+  device = _messages.MessageField('Device', 1)
+
+
+class WipeDeviceUserResponse(_messages.Message):
+  r"""Response message for wiping the user's account from the device.
+
+  Fields:
+    deviceUser: Resultant DeviceUser object for the action.
+  """
+
+  deviceUser = _messages.MessageField('DeviceUser', 1)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -119,7 +119,7 @@ class ContainerImage(_messages.Message):
 
   Fields:
     repository: Required. The path to the container image repository. For
-      example: gcr.io/<var>{project_id}</var>/<var>{image_name}</var>
+      example: `gcr.io/{project_id}/{image_name}`
     tag: The tag of the container image. If not specified, this defaults to
       the latest tag.
   """
@@ -147,12 +147,12 @@ class Environment(_messages.Message):
     createTime: Output only. The time at which this environment was created.
     description: A brief description of this environment.
     displayName: Display name of this environment for the UI.
-    name: Output only. Name of this environment. Format: projects/<var>{projec
-      t_id}</var>/locations/<var>{location}</var>/environments/<var>{environme
-      nt_id}</var>
+    name: Output only. Name of this environment. Format:
+      `projects/{project_id}/locations/{location}/environments/{environment_id
+      }`
     postStartupScript: Path to a Bash script that automatically runs after a
       notebook instance fully boots up. The path must be a URL or Cloud
-      Storage path (gs://<var>path-to-file</var>/<var>file-name</var>).
+      Storage path (gs://path-to-file/file-name).
     vmImage: Use a Compute Engine VM image to start the notebook instance.
   """
 
@@ -205,10 +205,14 @@ class Instance(_messages.Message):
   r"""The definition of a notebook instance.
 
   Enums:
-    BootDiskTypeValueValuesEnum: Input only. The type of disk attached to this
-      instance, defaults to standard persistent disk (`PD_STANDARD`).
+    BootDiskTypeValueValuesEnum: Input only. The type of the boot disk
+      attached to this instance, defaults to standard persistent disk
+      (`PD_STANDARD`).
+    DataDiskTypeValueValuesEnum: Input only. The type of the data disk
+      attached to this instance, defaults to standard persistent disk
+      (`PD_STANDARD`).
     DiskEncryptionValueValuesEnum: Input only. Disk encryption method used on
-      the boot disk, defaults to GMEK.
+      the boot and data disks, defaults to GMEK.
     StateValueValuesEnum: Output only. The state of this instance.
 
   Messages:
@@ -221,19 +225,25 @@ class Instance(_messages.Message):
       use accelerators, make sure that your configuration has [enough vCPUs
       and memory to support the `machine_type` you have
       selected](/compute/docs/gpus/#gpus-list).
-    bootDiskSizeGb: Input only. The size of the disk in GB attached to this
-      instance, up to a maximum of 64000&nbsp;GB (64&nbsp;TB). The minimum
-      recommended value is 100&nbsp;GB. If not specified, this defaults to
-      100.
-    bootDiskType: Input only. The type of disk attached to this instance,
-      defaults to standard persistent disk (`PD_STANDARD`).
+    bootDiskSizeGb: Input only. The size of the boot disk in GB attached to
+      this instance, up to a maximum of 64000&nbsp;GB (64&nbsp;TB). The
+      minimum recommended value is 100&nbsp;GB. If not specified, this
+      defaults to 100.
+    bootDiskType: Input only. The type of the boot disk attached to this
+      instance, defaults to standard persistent disk (`PD_STANDARD`).
     containerImage: Use a container image to start the notebook instance.
     createTime: Output only. Instance creation time.
     customGpuDriverPath: Specify a custom Cloud Storage path where the GPU
       driver is stored. If not specified, we'll automatically choose from
       official GPU drivers.
-    diskEncryption: Input only. Disk encryption method used on the boot disk,
-      defaults to GMEK.
+    dataDiskSizeGb: Input only. The size of the data disk in GB attached to
+      this instance, up to a maximum of 64000&nbsp;GB (64&nbsp;TB). You can
+      choose the size of the data disk based on how big your notebooks and
+      data are. If not specified, this defaults to 100.
+    dataDiskType: Input only. The type of the data disk attached to this
+      instance, defaults to standard persistent disk (`PD_STANDARD`).
+    diskEncryption: Input only. Disk encryption method used on the boot and
+      data disks, defaults to GMEK.
     installGpuDriver: Whether the end user authorizes GCP to install GPU
       driver on this instance. If this field is empty or set to false, the GPU
       driver won't be installed. Only applicable to instances with GPUs.
@@ -241,27 +251,27 @@ class Instance(_messages.Message):
       Format: `alias@example.com`  Currently supports one owner only. If not
       specified, all of the service account users of your VM instance's
       service account can use the instance.
-    kmsKey: Input only. The KMS key used to encrypt the disk, only applicable
-      if disk_encryption is CMEK. Format: projects/<var>{project_id}</var>/loc
-      ations/<var>{location}</var>/keyRings/<var>{key_ring_id}</var>/cryptoKey
-      s/<var>{key_id}</var>  Learn more about [using your own encryption
-      keys](/kms/docs/quickstart).
+    kmsKey: Input only. The KMS key used to encrypt the disks, only applicable
+      if disk_encryption is CMEK. Format: `projects/{project_id}/locations/{lo
+      cation}/keyRings/{key_ring_id}/cryptoKeys/{key_id}`  Learn more about
+      [using your own encryption keys](/kms/docs/quickstart).
     labels: Labels to apply to this instance. These can be later modified by
       the setLabels method.
     machineType: Required. The [Compute Engine machine type](/compute/docs
       /machine-types) of this instance.
     metadata: Custom metadata to apply to this instance.
-    name: Output only. The name of this notebook instance. Format: projects/<v
-      ar>{project_id}</var>/locations/<var>{location}</var>/instances/<var>{in
-      stance_id}</var>
+    name: Output only. The name of this notebook instance. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
     network: The name of the VPC that this instance is in. Format:
-      projects/<var>{project_id}</var>/global/networks/<var>{network_id}</var>
+      `projects/{project_id}/global/networks/{network_id}`
     noProxyAccess: If true, the notebook instance will not register with the
       proxy.
     noPublicIp: If true, no public IP will be assigned to this instance.
+    noRemoveDataDisk: Input only. If true, the data disk will not be auto
+      deleted when deleting the instance.
     postStartupScript: Path to a Bash script that automatically runs after a
       notebook instance fully boots up. The path must be a URL or Cloud
-      Storage path (gs://<var>path-to-file</var>/<var>file-name</var>).
+      Storage path (gs://path-to-file/file-name).
     proxyUri: Output only. The proxy endpoint that is used to access the
       Jupyter notebook.
     serviceAccount: The service account on this instance, giving access to
@@ -271,16 +281,28 @@ class Instance(_messages.Message):
       account](/compute/docs/access/service-accounts#default_service_account)
       is used.
     state: Output only. The state of this instance.
-    subnet: The name of the subnet that this instance is in. Format: projects/
-      <var>{project_id}</var>/regions/<var>{region}</var>/subnetworks/<var>{su
-      bnetwork_id}</var>
+    subnet: The name of the subnet that this instance is in. Format:
+      `projects/{project_id}/regions/{region}/subnetworks/{subnetwork_id}`
     updateTime: Output only. Instance update time.
     vmImage: Use a Compute Engine VM image to start the notebook instance.
   """
 
   class BootDiskTypeValueValuesEnum(_messages.Enum):
-    r"""Input only. The type of disk attached to this instance, defaults to
-    standard persistent disk (`PD_STANDARD`).
+    r"""Input only. The type of the boot disk attached to this instance,
+    defaults to standard persistent disk (`PD_STANDARD`).
+
+    Values:
+      DISK_TYPE_UNSPECIFIED: Disk type not set.
+      PD_STANDARD: Standard persistent disk type.
+      PD_SSD: SSD persistent disk type.
+    """
+    DISK_TYPE_UNSPECIFIED = 0
+    PD_STANDARD = 1
+    PD_SSD = 2
+
+  class DataDiskTypeValueValuesEnum(_messages.Enum):
+    r"""Input only. The type of the data disk attached to this instance,
+    defaults to standard persistent disk (`PD_STANDARD`).
 
     Values:
       DISK_TYPE_UNSPECIFIED: Disk type not set.
@@ -292,8 +314,8 @@ class Instance(_messages.Message):
     PD_SSD = 2
 
   class DiskEncryptionValueValuesEnum(_messages.Enum):
-    r"""Input only. Disk encryption method used on the boot disk, defaults to
-    GMEK.
+    r"""Input only. Disk encryption method used on the boot and data disks,
+    defaults to GMEK.
 
     Values:
       DISK_ENCRYPTION_UNSPECIFIED: Disk encryption is not specified.
@@ -380,24 +402,27 @@ class Instance(_messages.Message):
   containerImage = _messages.MessageField('ContainerImage', 4)
   createTime = _messages.StringField(5)
   customGpuDriverPath = _messages.StringField(6)
-  diskEncryption = _messages.EnumField('DiskEncryptionValueValuesEnum', 7)
-  installGpuDriver = _messages.BooleanField(8)
-  instanceOwners = _messages.StringField(9, repeated=True)
-  kmsKey = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  machineType = _messages.StringField(12)
-  metadata = _messages.MessageField('MetadataValue', 13)
-  name = _messages.StringField(14)
-  network = _messages.StringField(15)
-  noProxyAccess = _messages.BooleanField(16)
-  noPublicIp = _messages.BooleanField(17)
-  postStartupScript = _messages.StringField(18)
-  proxyUri = _messages.StringField(19)
-  serviceAccount = _messages.StringField(20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  subnet = _messages.StringField(22)
-  updateTime = _messages.StringField(23)
-  vmImage = _messages.MessageField('VmImage', 24)
+  dataDiskSizeGb = _messages.IntegerField(7)
+  dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 8)
+  diskEncryption = _messages.EnumField('DiskEncryptionValueValuesEnum', 9)
+  installGpuDriver = _messages.BooleanField(10)
+  instanceOwners = _messages.StringField(11, repeated=True)
+  kmsKey = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  machineType = _messages.StringField(14)
+  metadata = _messages.MessageField('MetadataValue', 15)
+  name = _messages.StringField(16)
+  network = _messages.StringField(17)
+  noProxyAccess = _messages.BooleanField(18)
+  noPublicIp = _messages.BooleanField(19)
+  noRemoveDataDisk = _messages.BooleanField(20)
+  postStartupScript = _messages.StringField(21)
+  proxyUri = _messages.StringField(22)
+  serviceAccount = _messages.StringField(23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  subnet = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
+  vmImage = _messages.MessageField('VmImage', 27)
 
 
 class ListEnvironmentsResponse(_messages.Message):
@@ -547,8 +572,7 @@ class NotebooksProjectsLocationsEnvironmentsCreateRequest(_messages.Message):
       `environment_id` must be 1 to 63 characters long and contain only
       lowercase letters, numeric characters, and dashes. The first character
       must be a lowercase letter and the last character cannot be a dash.
-    parent: Required. Format:
-      projects/<var>{project_id}</var>/locations/<var>{location}</var>
+    parent: Required. Format: `projects/{project_id}/locations/{location}`
   """
 
   environment = _messages.MessageField('Environment', 1)
@@ -560,8 +584,9 @@ class NotebooksProjectsLocationsEnvironmentsDeleteRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsEnvironmentsDeleteRequest object.
 
   Fields:
-    name: Required. Format: projects/<var>{project_id}</var>/locations/<var>{l
-      ocation}</var>/environments/<var>{environment_id}</var>
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/environments/{environment_id
+      }`
   """
 
   name = _messages.StringField(1, required=True)
@@ -571,8 +596,9 @@ class NotebooksProjectsLocationsEnvironmentsGetRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsEnvironmentsGetRequest object.
 
   Fields:
-    name: Required. Format: projects/<var>{project_id}</var>/locations/<var>{l
-      ocation}</var>/environments/<var>{environment_id}</var>
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/environments/{environment_id
+      }`
   """
 
   name = _messages.StringField(1, required=True)
@@ -585,8 +611,7 @@ class NotebooksProjectsLocationsEnvironmentsListRequest(_messages.Message):
     pageSize: Maximum return size of the list call.
     pageToken: A previous returned page token that can be used to continue
       listing from the last result.
-    parent: Required. Format:
-      projects/<var>{project_id}</var>/locations/<var>{location}</var>
+    parent: Required. `Format: projects/{project_id}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -611,7 +636,7 @@ class NotebooksProjectsLocationsInstancesCreateRequest(_messages.Message):
     instance: A Instance resource to be passed as the request body.
     instanceId: Required. User-defined unique ID of this instance.
     parent: Required. Format:
-      parent=projects/<var>{project_id}</var>/locations/<var>{location}</var>
+      `parent=projects/{project_id}/locations/{location}`
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -623,8 +648,8 @@ class NotebooksProjectsLocationsInstancesDeleteRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesDeleteRequest object.
 
   Fields:
-    name: Required. Format: projects/<var>{project_id}</var>/locations/<var>{l
-      ocation}</var>/instances/<var>{instance_id}</var>
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -652,8 +677,8 @@ class NotebooksProjectsLocationsInstancesGetRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesGetRequest object.
 
   Fields:
-    name: Required. Format: projects/<var>{project_id}</var>/locations/<var>{l
-      ocation}</var>/instances/<var>{instance_id}</var>
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -667,7 +692,7 @@ class NotebooksProjectsLocationsInstancesListRequest(_messages.Message):
     pageToken: A previous returned page token that can be used to continue
       listing from the last result.
     parent: Required. Format:
-      parent=projects/<var>{project_id}</var>/locations/<var>{location}</var>
+      `parent=projects/{project_id}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -680,7 +705,7 @@ class NotebooksProjectsLocationsInstancesRegisterRequest(_messages.Message):
 
   Fields:
     parent: Required. Format:
-      parent=projects/<var>{project_id}</var>/locations/<var>{location}</var>
+      `parent=projects/{project_id}/locations/{location}`
     registerInstanceRequest: A RegisterInstanceRequest resource to be passed
       as the request body.
   """
@@ -693,8 +718,8 @@ class NotebooksProjectsLocationsInstancesReportRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesReportRequest object.
 
   Fields:
-    name: Required. Format: projects/<var>{project_id}</var>/locations/<var>{l
-      ocation}</var>/instances/<var>{instance_id}</var>
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
     reportInstanceInfoRequest: A ReportInstanceInfoRequest resource to be
       passed as the request body.
   """
@@ -707,8 +732,8 @@ class NotebooksProjectsLocationsInstancesResetRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesResetRequest object.
 
   Fields:
-    name: Required. Format: projects/<var>{project_id}</var>/locations/<var>{l
-      ocation}</var>/instances/<var>{instance_id}</var>
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
     resetInstanceRequest: A ResetInstanceRequest resource to be passed as the
       request body.
   """
@@ -721,8 +746,8 @@ class NotebooksProjectsLocationsInstancesSetAcceleratorRequest(_messages.Message
   r"""A NotebooksProjectsLocationsInstancesSetAcceleratorRequest object.
 
   Fields:
-    name: Required. Format: projects/<var>{project_id}</var>/locations/<var>{l
-      ocation}</var>/instances/<var>{instance_id}</var>
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
     setInstanceAcceleratorRequest: A SetInstanceAcceleratorRequest resource to
       be passed as the request body.
   """
@@ -750,8 +775,8 @@ class NotebooksProjectsLocationsInstancesSetLabelsRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesSetLabelsRequest object.
 
   Fields:
-    name: Required. Format: projects/<var>{project_id}</var>/locations/<var>{l
-      ocation}</var>/instances/<var>{instance_id}</var>
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
     setInstanceLabelsRequest: A SetInstanceLabelsRequest resource to be passed
       as the request body.
   """
@@ -764,8 +789,8 @@ class NotebooksProjectsLocationsInstancesSetMachineTypeRequest(_messages.Message
   r"""A NotebooksProjectsLocationsInstancesSetMachineTypeRequest object.
 
   Fields:
-    name: Required. Format: projects/<var>{project_id}</var>/locations/<var>{l
-      ocation}</var>/instances/<var>{instance_id}</var>
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
     setInstanceMachineTypeRequest: A SetInstanceMachineTypeRequest resource to
       be passed as the request body.
   """
@@ -778,8 +803,8 @@ class NotebooksProjectsLocationsInstancesStartRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesStartRequest object.
 
   Fields:
-    name: Required. Format: projects/<var>{project_id}</var>/locations/<var>{l
-      ocation}</var>/instances/<var>{instance_id}</var>
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
     startInstanceRequest: A StartInstanceRequest resource to be passed as the
       request body.
   """
@@ -792,8 +817,8 @@ class NotebooksProjectsLocationsInstancesStopRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesStopRequest object.
 
   Fields:
-    name: Required. Format: projects/<var>{project_id}</var>/locations/<var>{l
-      ocation}</var>/instances/<var>{instance_id}</var>
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
     stopInstanceRequest: A StopInstanceRequest resource to be passed as the
       request body.
   """
@@ -815,6 +840,34 @@ class NotebooksProjectsLocationsInstancesTestIamPermissionsRequest(_messages.Mes
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class NotebooksProjectsLocationsInstancesUpgradeInternalRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsInstancesUpgradeInternalRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
+    upgradeInstanceInternalRequest: A UpgradeInstanceInternalRequest resource
+      to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  upgradeInstanceInternalRequest = _messages.MessageField('UpgradeInstanceInternalRequest', 2)
+
+
+class NotebooksProjectsLocationsInstancesUpgradeRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsInstancesUpgradeRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
+    upgradeInstanceRequest: A UpgradeInstanceRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  upgradeInstanceRequest = _messages.MessageField('UpgradeInstanceRequest', 2)
 
 
 class NotebooksProjectsLocationsListRequest(_messages.Message):
@@ -1403,6 +1456,22 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class UpgradeInstanceInternalRequest(_messages.Message):
+  r"""Request for upgrading a notebook instance from within the VM
+
+  Fields:
+    vmId: Required. The VM hardware token for authenticating the VM.
+      https://cloud.google.com/compute/docs/instances/verifying-instance-
+      identity
+  """
+
+  vmId = _messages.StringField(1)
+
+
+class UpgradeInstanceRequest(_messages.Message):
+  r"""Request for upgrading a notebook instance"""
+
+
 class VmImage(_messages.Message):
   r"""Definition of a custom Compute Engine virtual machine image for starting
   a notebook instance with the environment installed directly on the VM.
@@ -1412,7 +1481,7 @@ class VmImage(_messages.Message):
       in this family will be used.
     imageName: Use VM image name to find the image.
     project: Required. The name of the GCP project that this VM image belongs
-      to. Format: projects/<var>{project_id}</var>
+      to. Format: `projects/{project_id}`
   """
 
   imageFamily = _messages.StringField(1)

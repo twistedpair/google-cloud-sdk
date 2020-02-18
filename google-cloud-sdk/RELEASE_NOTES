@@ -5,6 +5,136 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 281.0.0 (2020-02-18)
+
+### Breaking Changes
+
+*   **(Cloud SDK)** Modified `--update-adc` in `gcloud auth login` to not write a quota project to
+  the generated application default credential file.
+  Use `gcloud auth application-default login --add-quota-project` or
+  `gcloud auth application-default set-quota-project` to add a quota project
+  to the generated file.
+
+
+### AI Platform
+
+* Added xrai option for `--explanation-method` flag to
+  `gcloud <alpha|beta> ai-platform versions create`.
+
+### Access Approval
+
+*   Added `gcloud access-appoval` surface to alpha.
+
+### App Engine
+
+* Added beta support for deploying the Maven project pom.xml file directly.
+
+### Cloud Asset Inventory
+
+*   Modified the following commands such that they no longer require `--scope`
+    flag:
+     * `gcloud beta asset search-all-iam-policies`
+     * `gcloud beta asset search-all-resources`
+     * `gcloud beta asset search-iam-policies`
+     * `gcloud beta asset search-resources`
+    If scope is not specified, the default project property is used.
+
+### Cloud Bigtable
+
+* Added `deleteallrows` command to `cbt` command line tool, which will clear a Cloud Bigtable table.
+
+### Cloud Dataproc
+
+*   Promoted `gcloud dataproc clusters import` and `gcloud dataproc clusters
+    export` to GA.
+
+### Cloud IAM
+
+*   Promoted  `--condition` flag to beta for
+    `gcloud iam service-account <add|remove>-iam-policy-binding`.
+
+### Cloud Key Management Service
+
+*   Promoted  `--condition` flag to beta for the following commands:
+    *   `gcloud kms keyrings <add|remove>-iam-policy-binding`
+    *   `gcloud kms keys <add|remove>-iam-policy-binding`
+
+### Cloud Resource Manager
+
+*   Promoted  `--condition` flag to beta for  the following commands:
+    *   `gcloud projects <add|remove>-iam-policy-binding`
+    *   `gcloud organizations <add|remove>-iam-policy-binding`
+    *   `gcloud resources-manager folders <add|remove>-iam-policy-binding`
+
+### Cloud Run
+
+* 
+* Removed `specTarget` and `statusTarget` fields from the yaml and json
+  output of `gcloud run services update-traffic`. The information nested within
+  `specTarget` and `statusTarget` is available in the top-level
+  `latestRevision`, `revisionName`, `specPercent`, and `statusPercent` fields of
+  the output.
+
+### Cloud Tasks
+
+* Added `--response-view` parameter to `gcloud tasks describe`.
+
+### Compute Engine
+
+* Added sles-12-byol, sles-15-byol, and opensuse-15 options for `--os` flag to
+  `gcloud beta compute images import` and
+  `gcloud beta compute instances import`.
+* Fixed issue where `gcloud compute ssh` command fails with
+  `--impersonate-service-account` flag.
+* Promoted `--network` flag of `compute backend-services create` to GA.
+* Promote `--condition` flag to beta for the following commands:
+  * `gcloud compute disks <add|remove>-iam-policy-binding`
+  * `gcloud compute images <add|remove>-iam-policy-binding`
+  * `gcloud compute instance-templates <add|remove>-iam-policy-binding`
+  * `gcloud compute instances <add|remove>-iam-policy-binding`
+  * `gcloud compute reservations <add|remove>-iam-policy-binding`
+  * `gcloud compute snapshots <add|remove>-iam-policy-binding`
+
+### GKE Hub
+
+* Promoted `gcloud container hub memberships` command group to GA.
+* Deprecated `gcloud beta container memberships` command group.
+
+### Kubernetes Engine
+
+*   Promoted `--node-locations` flags of `gcloud container clusters create` and
+    `gloud container clusters update` to GA.
+*   Added `--addons=GcePersistentDiskCsiDriver` to `gcloud beta container
+    clusters create` and `--update-addons=GcePersistentDiskCsiDriver` to `gcloud
+    beta container clusters update` to enable/disable the GCP Compute Persistent
+    Disk Container Storage Interface (CSI) Driver.
+* Adds kubectl version 1.17 for upcoming rapid channel release.
+* Default kubectl version 1.14.
+* Additional kubectl versions:
+  * kubectl.1.13 (1.13.12)
+  * kubectl.1.14 (1.14.10)
+  * kubectl.1.15 (1.15.9)
+  * kubectl.1.16 (1.16.6)
+  * kubectl.1.17 (1.17.2)
+*   Added warning for upcoming shielded nodes default behavior change.
+
+### Notebooks
+
+*   Added `notebooks` surface to beta which provides access to AI Platform
+    Notebooks.
+*   Added `notebooks instances` command group which provides access to AI
+    Platform Notebooks' instances.
+*   Added `notebooks environments` command group which provides access to AI
+    Platform Notebooks' environments.
+
+### Secret Manager
+
+* Promoted `gcloud secrets` command group to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 280.0.0 (2020-02-11)
 
 ### Breaking Changes

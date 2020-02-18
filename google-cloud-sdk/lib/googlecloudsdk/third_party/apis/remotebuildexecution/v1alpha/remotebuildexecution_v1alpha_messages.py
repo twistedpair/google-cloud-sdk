@@ -786,6 +786,10 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
       REMOTE_CAS_UPLOAD_ERROR: The bot encountered errors from remote CAS when
         uploading blobs.
       LOCAL_CASPROXY_NOT_RUNNING: The local casproxy is not running.
+      DOCKER_CREATE_CONTAINER_ERROR: The bot couldn't start the container.
+      DOCKER_INVALID_ULIMIT: The docker ulimit is not valid.
+      DOCKER_UNKNOWN_RUNTIME: The docker runtime is unknown.
+      DOCKER_UNKNOWN_CAPABILITY: The docker capability is unknown.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -811,6 +815,10 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     REMOTE_CAS_DOWNLOAD_ERROR = 21
     REMOTE_CAS_UPLOAD_ERROR = 22
     LOCAL_CASPROXY_NOT_RUNNING = 23
+    DOCKER_CREATE_CONTAINER_ERROR = 24
+    DOCKER_INVALID_ULIMIT = 25
+    DOCKER_UNKNOWN_RUNTIME = 26
+    DOCKER_UNKNOWN_CAPABILITY = 27
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

@@ -64,3 +64,13 @@ def AddLabelsFlag(parser, resource_type):
       help="""\
            Resource labels associated with the {}.
            """.format(resource_type)).AddToParser(parser)
+
+
+def AddMaxEndpointsFlag(parser):
+  """Adds max_endpoints flags for service-directory commands."""
+  return base.Argument(
+      '--max_endpoints',
+      type=int,
+      help="""\
+           Maximum number of endpoints to return.
+           """).AddToParser(parser)

@@ -9,6 +9,7 @@ class ContainerV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://container.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'container'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

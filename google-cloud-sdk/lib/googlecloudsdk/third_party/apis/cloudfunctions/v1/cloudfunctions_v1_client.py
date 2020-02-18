@@ -9,6 +9,7 @@ class CloudfunctionsV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://cloudfunctions.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'cloudfunctions'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

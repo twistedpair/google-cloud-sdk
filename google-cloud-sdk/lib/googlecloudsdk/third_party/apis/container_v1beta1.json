@@ -584,7 +584,7 @@
           ]
         },
         "key": {
-          "description": "Corresponds to the label key of reservation resource.",
+          "description": "Corresponds to the label key of a reservation resource. To target a\nSPECIFIC_RESERVATION by name, specify \"googleapis.com\/reservation-name\" as\nthe key and specify the name of your reservation as its value.",
           "type": "string"
         },
         "values": {
@@ -615,6 +615,20 @@
             "SECURE",
             "EXPOSE",
             "GKE_METADATA_SERVER"
+          ]
+        },
+        "mode": {
+          "description": "Mode is the configuration for how to expose metadata to workloads running\non the node pool.",
+          "enumDescriptions": [
+            "Not set.",
+            "Expose all GCE metadata to pods.",
+            "Run the GKE Metadata Server on this node. The GKE Metadata Server exposes\na metadata API to workloads that is compatible with the V1 Compute\nMetadata APIs exposed by the Compute Engine and App Engine Metadata\nServers. This feature can only be enabled if Workload Identity is enabled\nat the cluster level."
+          ],
+          "type": "string",
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "GCE_METADATA",
+            "GKE_METADATA"
           ]
         }
       }
@@ -740,7 +754,7 @@
           "$ref": "DnsCacheConfig"
         },
         "gcePersistentDiskCsiDriverConfig": {
-          "description": "Configuration for the GCE PD CSI driver. This option can only be enabled\nat cluster creation time.",
+          "description": "Configuration for the GCP Compute Persistent Disk CSI driver.",
           "$ref": "GcePersistentDiskCsiDriverConfig"
         },
         "kalmConfig": {
@@ -766,7 +780,7 @@
       "type": "object",
       "properties": {
         "disabled": {
-          "description": "Whether the Horizontal Pod Autoscaling feature is enabled in the cluster.\nWhen enabled, it ensures that a Heapster pod is running in the cluster,\nwhich is also used by the Cloud Monitoring service.",
+          "description": "Whether the Horizontal Pod Autoscaling feature is enabled in the cluster.\nWhen enabled, it ensures that metrics are collected into Stackdriver\nMonitoring.",
           "type": "boolean"
         }
       }
@@ -1585,6 +1599,10 @@
         "identityNamespace": {
           "description": "IAM Identity Namespace to attach all Kubernetes Service Accounts to.",
           "type": "string"
+        },
+        "workloadPool": {
+          "description": "The workload pool to attach all Kubernetes service accounts to.",
+          "type": "string"
         }
       }
     },
@@ -1737,7 +1755,7 @@
           "type": "string"
         },
         "statusMessage": {
-          "description": "If an error has occurred, a textual description of the error.",
+          "description": "Output only. If an error has occurred, a textual description of the error.",
           "type": "string"
         },
         "selfLink": {
@@ -1761,7 +1779,7 @@
           "type": "string"
         },
         "progress": {
-          "description": "[Output only] Progress information for an operation.",
+          "description": "Output only. [Output only] Progress information for an operation.",
           "$ref": "OperationProgress"
         },
         "clusterConditions": {
@@ -1829,7 +1847,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Metric name, required.\ne.g., \"nodes total\", \"percent done\"",
+          "description": "Required. Metric name, e.g., \"nodes total\", \"percent done\".",
           "type": "string"
         },
         "intValue": {
@@ -2052,7 +2070,7 @@
           }
         },
         "workloadMetadataConfig": {
-          "description": "The desired image type for the node pool.",
+          "description": "The desired workload metadata config for the node pool.",
           "$ref": "WorkloadMetadataConfig"
         },
         "name": {

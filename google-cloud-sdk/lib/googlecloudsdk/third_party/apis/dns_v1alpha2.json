@@ -283,10 +283,6 @@
             "type": "string"
           }
         },
-        "serviceDiscoveryConfig": {
-          "description": "This field links to the associated service registry. This field should\nnot be set for public zones or forwarding zones.",
-          "$ref": "ManagedZoneServiceDiscoveryConfig"
-        },
         "peeringConfig": {
           "description": "The presence of this field indicates that DNS Peering is enabled for this\nzone. The value of this field contains the network to peer with.",
           "$ref": "ManagedZonePeeringConfig"
@@ -464,39 +460,6 @@
         },
         "kind": {
           "default": "dns#managedZoneForwardingConfigNameServerTarget",
-          "type": "string"
-        }
-      }
-    },
-    "ManagedZoneServiceDiscoveryConfig": {
-      "id": "ManagedZoneServiceDiscoveryConfig",
-      "description": "Contains information about Service Discovery-backed zones.",
-      "type": "object",
-      "properties": {
-        "serviceRegistry": {
-          "description": "Contains information about the registry associated with the zone.",
-          "$ref": "ManagedZoneServiceDiscoveryConfigServiceRegistry"
-        },
-        "kind": {
-          "default": "dns#managedZoneServiceDiscoveryConfig",
-          "type": "string"
-        }
-      }
-    },
-    "ManagedZoneServiceDiscoveryConfigServiceRegistry": {
-      "id": "ManagedZoneServiceDiscoveryConfigServiceRegistry",
-      "type": "object",
-      "properties": {
-        "registryUrl": {
-          "description": "The fully qualified URL of the registry associated with the zone. This\nshould be formatted like\nhttps:\/\/www.servicediscovery.googleapis.com\/v1\/projects\/{project}\/locations\/{location}\/registries\/{registry}",
-          "type": "string"
-        },
-        "deletionTime": {
-          "description": "The time that the registry backing this zone was deleted, empty string\nif it still exists. This is in RFC3339 text format. Output only.",
-          "type": "string"
-        },
-        "kind": {
-          "default": "dns#managedZoneServiceDiscoveryConfigServiceRegistry",
           "type": "string"
         }
       }

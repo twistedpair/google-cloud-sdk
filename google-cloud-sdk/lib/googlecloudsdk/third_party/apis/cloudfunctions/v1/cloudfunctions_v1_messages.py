@@ -173,6 +173,8 @@ class CloudFunction(_messages.Message):
   Fields:
     availableMemoryMb: The amount of memory in MB available for a function.
       Defaults to 256MB.
+    buildId: Output only. The Cloud Build ID of the latest successful
+      deployment of the function.
     buildWorkerPool: Name of the Cloud Build Custom Worker Pool that should be
       used to build the function. The format of this field is
       `projects/{project}/workerPools/{workerPool}` where {project} is the
@@ -343,28 +345,29 @@ class CloudFunction(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   availableMemoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  buildWorkerPool = _messages.StringField(2)
-  description = _messages.StringField(3)
-  entryPoint = _messages.StringField(4)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 5)
-  eventTrigger = _messages.MessageField('EventTrigger', 6)
-  httpsTrigger = _messages.MessageField('HttpsTrigger', 7)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  maxInstances = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  name = _messages.StringField(11)
-  network = _messages.StringField(12)
-  runtime = _messages.StringField(13)
-  serviceAccountEmail = _messages.StringField(14)
-  sourceArchiveUrl = _messages.StringField(15)
-  sourceRepository = _messages.MessageField('SourceRepository', 16)
-  sourceUploadUrl = _messages.StringField(17)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  timeout = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
-  versionId = _messages.IntegerField(21)
-  vpcConnector = _messages.StringField(22)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 23)
+  buildId = _messages.StringField(2)
+  buildWorkerPool = _messages.StringField(3)
+  description = _messages.StringField(4)
+  entryPoint = _messages.StringField(5)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 6)
+  eventTrigger = _messages.MessageField('EventTrigger', 7)
+  httpsTrigger = _messages.MessageField('HttpsTrigger', 8)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  maxInstances = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  runtime = _messages.StringField(14)
+  serviceAccountEmail = _messages.StringField(15)
+  sourceArchiveUrl = _messages.StringField(16)
+  sourceRepository = _messages.MessageField('SourceRepository', 17)
+  sourceUploadUrl = _messages.StringField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  timeout = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
+  versionId = _messages.IntegerField(22)
+  vpcConnector = _messages.StringField(23)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 24)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
@@ -957,6 +960,8 @@ class OperationMetadataV1(_messages.Message):
     RequestValue: The original request that started the operation.
 
   Fields:
+    buildId: The Cloud Build ID of the function created or updated by an API
+      call. This field is only populated for Create and Update operations.
     request: The original request that started the operation.
     target: Target of the operation - for example
       projects/project-1/locations/region-1/functions/function-1
@@ -1005,11 +1010,12 @@ class OperationMetadataV1(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  request = _messages.MessageField('RequestValue', 1)
-  target = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
-  updateTime = _messages.StringField(4)
-  versionId = _messages.IntegerField(5)
+  buildId = _messages.StringField(1)
+  request = _messages.MessageField('RequestValue', 2)
+  target = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  updateTime = _messages.StringField(5)
+  versionId = _messages.IntegerField(6)
 
 
 class OperationMetadataV1Beta2(_messages.Message):

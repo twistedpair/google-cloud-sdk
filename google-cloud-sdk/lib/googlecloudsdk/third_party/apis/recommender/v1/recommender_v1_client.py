@@ -9,6 +9,7 @@ class RecommenderV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://recommender.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'recommender'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

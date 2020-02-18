@@ -9,6 +9,7 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://servicedirectory.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'servicedirectory'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -678,6 +679,60 @@ the namespace.
       super(ServicedirectoryV1beta1.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Get(self, request, global_params=None):
+      r"""Gets information about a location.
+
+      Args:
+        request: (ServicedirectoryProjectsLocationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Location) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}',
+        http_method=u'GET',
+        method_id=u'servicedirectory.projects.locations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'ServicedirectoryProjectsLocationsGetRequest',
+        response_type_name=u'Location',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists information about the supported locations for this service.
+
+      Args:
+        request: (ServicedirectoryProjectsLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations',
+        http_method=u'GET',
+        method_id=u'servicedirectory.projects.locations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'includeUnrevealedLocations', u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/{+name}/locations',
+        request_field='',
+        request_type_name=u'ServicedirectoryProjectsLocationsListRequest',
+        response_type_name=u'ListLocationsResponse',
+        supports_download=False,
+    )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""

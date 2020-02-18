@@ -1653,19 +1653,20 @@ class GoogleCloudMlV1SampledShapleyAttribution(_messages.Message):
 
 
 class GoogleCloudMlV1Scheduling(_messages.Message):
-  r"""All parameters related to queuing and scheduling of training jobs.
+  r"""All parameters related to scheduling of training jobs.
 
   Fields:
     maxRunningTime: Optional. The maximum job running time, expressed in
-      seconds. By default there is no limit.  If the training job is still
-      running after this duration, AI Platform Training cancels it.  For
-      example, if you want to ensure your job runs for no more than 2 hours,
-      set this field to `7200s` (2 hours * 60 minutes / hour * 60 seconds /
-      minute).  If you submit your training job using the `gcloud` tool, you
-      can [provide this field in a `config.yaml` file](/ml-engine/docs
-      /training-jobs#formatting_your_configuration_parameters). For example:
-      ```yaml trainingInput:   ...   scheduling:     maxRunningTime: 7200s
-      ... ```
+      seconds. The field can contain up to nine fractional digits, terminated
+      by `s`. By default there is no limit to the running time.  If the
+      training job is still running after this duration, AI Platform Training
+      cancels it.  For example, if you want to ensure your job runs for no
+      more than 2 hours, set this field to `7200s` (2 hours * 60 minutes /
+      hour * 60 seconds / minute).  If you submit your training job using the
+      `gcloud` tool, you can [provide this field in a `config.yaml` file](/ai-
+      platform/training/docs/training-
+      jobs#formatting_your_configuration_parameters). For example:  ```yaml
+      trainingInput:   ...   scheduling:     maxRunningTime: 7200s   ... ```
   """
 
   maxRunningTime = _messages.StringField(1)

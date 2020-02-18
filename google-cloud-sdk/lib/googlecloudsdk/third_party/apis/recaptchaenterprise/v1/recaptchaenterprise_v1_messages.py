@@ -65,7 +65,7 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
   Fields:
     event: The event being assessed.
     name: Output only. The resource name for the Assessment in the format
-      "projects/{project_number}/assessments/{assessment_id}".
+      "projects/{project}/assessments/{assessment}".
     riskAnalysis: Output only. The risk analysis result for the event being
       assessed.
     tokenProperties: Output only. Properties of the provided event token.
@@ -128,7 +128,7 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
     labels: Optional. See <a href="https://cloud.google.com/recaptcha-
       enterprise/docs/labels"> Creating and managing labels</a>.
     name: The resource name for the Key in the format
-      "projects/{project_number}/keys/{key_id}".
+      "projects/{project}/keys/{key}".
     webSettings: Settings for keys that can be used by websites.
   """
 
@@ -263,7 +263,7 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
   Enums:
     ChallengeSecurityPreferenceValueValuesEnum: Settings for the frequency and
       difficulty at which this key triggers captcha challenges. This should
-      only be specified for IntegrationType CHECKBOX_CHALLENGE.
+      only be specified for IntegrationType CHECKBOX.
     IntegrationTypeValueValuesEnum: Required. Describes how this key is
       integrated with the website.
 
@@ -278,7 +278,7 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
       fragment. Examples: 'example.com' or 'subdomain.example.com'
     challengeSecurityPreference: Settings for the frequency and difficulty at
       which this key triggers captcha challenges. This should only be
-      specified for IntegrationType CHECKBOX_CHALLENGE.
+      specified for IntegrationType CHECKBOX.
     integrationType: Required. Describes how this key is integrated with the
       website.
   """
@@ -286,7 +286,7 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
   class ChallengeSecurityPreferenceValueValuesEnum(_messages.Enum):
     r"""Settings for the frequency and difficulty at which this key triggers
     captcha challenges. This should only be specified for IntegrationType
-    CHECKBOX_CHALLENGE.
+    CHECKBOX.
 
     Values:
       CHALLENGE_SECURITY_PREFERENCE_UNSPECIFIED: Default type that indicates
@@ -342,7 +342,7 @@ class RecaptchaenterpriseProjectsAssessmentsAnnotateRequest(_messages.Message):
       GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest resource to be
       passed as the request body.
     name: Required. The resource name of the Assessment, in the format
-      "projects/{project_number}/assessments/{assessment_id}".
+      "projects/{project}/assessments/{assessment}".
   """
 
   googleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest', 1)
@@ -357,7 +357,7 @@ class RecaptchaenterpriseProjectsAssessmentsCreateRequest(_messages.Message):
       GoogleCloudRecaptchaenterpriseV1Assessment resource to be passed as the
       request body.
     parent: Required. The name of the project in which the assessment will be
-      created, in the format "projects/{project_number}".
+      created, in the format "projects/{project}".
   """
 
   googleCloudRecaptchaenterpriseV1Assessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Assessment', 1)
@@ -371,7 +371,7 @@ class RecaptchaenterpriseProjectsKeysCreateRequest(_messages.Message):
     googleCloudRecaptchaenterpriseV1Key: A GoogleCloudRecaptchaenterpriseV1Key
       resource to be passed as the request body.
     parent: Required. The name of the project in which the key will be
-      created, in the format "projects/{project_number}".
+      created, in the format "projects/{project}".
   """
 
   googleCloudRecaptchaenterpriseV1Key = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Key', 1)
@@ -383,7 +383,7 @@ class RecaptchaenterpriseProjectsKeysDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the key to be deleted, in the format
-      "projects/{project_number}/keys/{key_id}".
+      "projects/{project}/keys/{key}".
   """
 
   name = _messages.StringField(1, required=True)
@@ -394,7 +394,7 @@ class RecaptchaenterpriseProjectsKeysGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the requested key, in the format
-      "projects/{project_number}/keys/{key_id}".
+      "projects/{project}/keys/{key}".
   """
 
   name = _messages.StringField(1, required=True)
@@ -409,7 +409,7 @@ class RecaptchaenterpriseProjectsKeysListRequest(_messages.Message):
     pageToken: Optional. The next_page_token value returned from a previous.
       ListKeysRequest, if any.
     parent: Required. The name of the project that contains the keys that will
-      be listed, in the format "projects/{project_number}".
+      be listed, in the format "projects/{project}".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -424,7 +424,7 @@ class RecaptchaenterpriseProjectsKeysPatchRequest(_messages.Message):
     googleCloudRecaptchaenterpriseV1Key: A GoogleCloudRecaptchaenterpriseV1Key
       resource to be passed as the request body.
     name: The resource name for the Key in the format
-      "projects/{project_number}/keys/{key_id}".
+      "projects/{project}/keys/{key}".
     updateMask: Optional. The mask to control which field of the key get
       updated. If the mask is not present, all fields will be updated.
   """

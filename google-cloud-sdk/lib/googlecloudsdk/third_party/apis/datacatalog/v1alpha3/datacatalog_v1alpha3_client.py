@@ -9,6 +9,7 @@ class DatacatalogV1alpha3(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://datacatalog.googleapis.com/'
+  MTLS_BASE_URL = u'https://datacatalog.mtls.googleapis.com/'
 
   _PACKAGE = u'datacatalog'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

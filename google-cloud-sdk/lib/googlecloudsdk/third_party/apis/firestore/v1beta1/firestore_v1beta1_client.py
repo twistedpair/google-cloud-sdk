@@ -9,6 +9,7 @@ class FirestoreV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://firestore.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'firestore'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/datastore']

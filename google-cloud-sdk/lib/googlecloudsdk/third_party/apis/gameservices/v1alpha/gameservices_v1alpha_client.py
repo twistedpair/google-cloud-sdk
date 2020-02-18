@@ -9,6 +9,7 @@ class GameservicesV1alpha(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://gameservices.googleapis.com/'
+  MTLS_BASE_URL = u'https://gameservices.mtls.googleapis.com/'
 
   _PACKAGE = u'gameservices'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

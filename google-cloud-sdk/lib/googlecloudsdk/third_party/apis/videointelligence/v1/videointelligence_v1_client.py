@@ -9,6 +9,7 @@ class VideointelligenceV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://videointelligence.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'videointelligence'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

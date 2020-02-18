@@ -9,6 +9,7 @@ class ManagedidentitiesV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://managedidentities.googleapis.com/'
+  MTLS_BASE_URL = u'https://managedidentities.mtls.googleapis.com/'
 
   _PACKAGE = u'managedidentities'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

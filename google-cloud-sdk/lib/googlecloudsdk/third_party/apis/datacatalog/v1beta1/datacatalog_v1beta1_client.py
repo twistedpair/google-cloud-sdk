@@ -9,6 +9,7 @@ class DatacatalogV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://datacatalog.googleapis.com/'
+  MTLS_BASE_URL = u'https://datacatalog.mtls.googleapis.com/'
 
   _PACKAGE = u'datacatalog'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -39,6 +40,7 @@ class DatacatalogV1beta1(base_api.BaseApiClient):
     self.entries = self.EntriesService(self)
     self.projects_locations_entryGroups_entries_tags = self.ProjectsLocationsEntryGroupsEntriesTagsService(self)
     self.projects_locations_entryGroups_entries = self.ProjectsLocationsEntryGroupsEntriesService(self)
+    self.projects_locations_entryGroups_tags = self.ProjectsLocationsEntryGroupsTagsService(self)
     self.projects_locations_entryGroups = self.ProjectsLocationsEntryGroupsService(self)
     self.projects_locations_tagTemplates_fields = self.ProjectsLocationsTagTemplatesFieldsService(self)
     self.projects_locations_tagTemplates = self.ProjectsLocationsTagTemplatesService(self)
@@ -273,7 +275,7 @@ used to create the tag must be from the same organization.
       r"""Creates an entry. Only entries of 'FILESET' type or user-specified type can.
 be created.
 
-The user should enable the Data Catalog API in the project identified by
+Users should enable the Data Catalog API in the project identified by
 the `parent` parameter (see [Data Catalog Resource Project]
 (/data-catalog/docs/concepts/resource-project) for more information).
 
@@ -307,7 +309,7 @@ A maximum of 100,000 entries may be created per entry group.
       r"""Deletes an existing entry. Only entries created through.
 CreateEntry
 method can be deleted.
-The user should enable the Data Catalog API in the project identified by
+Users should enable the Data Catalog API in the project identified by
 the `name` parameter (see [Data Catalog Resource Project]
 (/data-catalog/docs/concepts/resource-project) for more information).
 
@@ -434,7 +436,7 @@ Callers must have following Google IAM permission
 
     def Patch(self, request, global_params=None):
       r"""Updates an existing entry.
-The user should enable the Data Catalog API in the project identified by
+Users should enable the Data Catalog API in the project identified by
 the `entry.name` parameter (see [Data Catalog Resource Project]
 (/data-catalog/docs/concepts/resource-project) for more information).
 
@@ -502,6 +504,130 @@ request.
         supports_download=False,
     )
 
+  class ProjectsLocationsEntryGroupsTagsService(base_api.BaseApiService):
+    """Service class for the projects_locations_entryGroups_tags resource."""
+
+    _NAME = u'projects_locations_entryGroups_tags'
+
+    def __init__(self, client):
+      super(DatacatalogV1beta1.ProjectsLocationsEntryGroupsTagsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a tag on an Entry.
+Note: The project identified by the `parent` parameter for the
+[tag](/data-catalog/docs/reference/rest/v1beta1/projects.locations.entryGroups.entries.tags/create#path-parameters)
+and the
+[tag
+template](/data-catalog/docs/reference/rest/v1beta1/projects.locations.tagTemplates/create#path-parameters)
+used to create the tag must be from the same organization.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsTagsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1beta1Tag) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/tags',
+        http_method=u'POST',
+        method_id=u'datacatalog.projects.locations.entryGroups.tags.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1beta1/{+parent}/tags',
+        request_field=u'googleCloudDatacatalogV1beta1Tag',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsTagsCreateRequest',
+        response_type_name=u'GoogleCloudDatacatalogV1beta1Tag',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a tag.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsTagsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/tags/{tagsId}',
+        http_method=u'DELETE',
+        method_id=u'datacatalog.projects.locations.entryGroups.tags.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsTagsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the tags on an Entry.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsTagsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1beta1ListTagsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/tags',
+        http_method=u'GET',
+        method_id=u'datacatalog.projects.locations.entryGroups.tags.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta1/{+parent}/tags',
+        request_field='',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsTagsListRequest',
+        response_type_name=u'GoogleCloudDatacatalogV1beta1ListTagsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing tag.
+
+      Args:
+        request: (DatacatalogProjectsLocationsEntryGroupsTagsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1beta1Tag) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/tags/{tagsId}',
+        http_method=u'PATCH',
+        method_id=u'datacatalog.projects.locations.entryGroups.tags.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1beta1/{+name}',
+        request_field=u'googleCloudDatacatalogV1beta1Tag',
+        request_type_name=u'DatacatalogProjectsLocationsEntryGroupsTagsPatchRequest',
+        response_type_name=u'GoogleCloudDatacatalogV1beta1Tag',
+        supports_download=False,
+    )
+
   class ProjectsLocationsEntryGroupsService(base_api.BaseApiService):
     """Service class for the projects_locations_entryGroups resource."""
 
@@ -513,14 +639,12 @@ request.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an EntryGroup.
+      r"""A maximum of 10,000 entry groups may be created per organization across all.
+locations.
 
-The user should enable the Data Catalog API in the project identified by
+Users should enable the Data Catalog API in the project identified by
 the `parent` parameter (see [Data Catalog Resource Project]
 (/data-catalog/docs/concepts/resource-project) for more information).
-
-A maximum of 10,000 entry groups may be created per organization across all
-locations.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsCreateRequest) input message
@@ -548,7 +672,7 @@ locations.
 
     def Delete(self, request, global_params=None):
       r"""Deletes an EntryGroup. Only entry groups that do not contain entries can be.
-deleted. The user should enable the Data Catalog API in the project
+deleted. Users should enable the Data Catalog API in the project
 identified by the `name` parameter (see [Data Catalog Resource Project]
 (/data-catalog/docs/concepts/resource-project) for more information).
 
@@ -800,7 +924,7 @@ information).
 
     def Delete(self, request, global_params=None):
       r"""Deletes a field in a tag template and all uses of that field.
-The user should enable the Data Catalog API in the project identified by
+Users should enable the Data Catalog API in the project identified by
 the `name` parameter (see [Data Catalog Resource Project]
 (/data-catalog/docs/concepts/resource-project) for more information).
 
@@ -830,7 +954,7 @@ the `name` parameter (see [Data Catalog Resource Project]
 
     def Patch(self, request, global_params=None):
       r"""Updates a field in a tag template. This method cannot be used to update the.
-field type. The user should enable the Data Catalog API in the project
+field type. Users should enable the Data Catalog API in the project
 identified by the `name` parameter (see [Data Catalog Resource Project]
 (/data-catalog/docs/concepts/resource-project) for more information).
 
@@ -930,7 +1054,7 @@ information).
 
     def Delete(self, request, global_params=None):
       r"""Deletes a tag template and all tags using the template.
-The user should enable the Data Catalog API in the project identified by
+Users should enable the Data Catalog API in the project identified by
 the `name` parameter (see [Data Catalog Resource Project]
 (/data-catalog/docs/concepts/resource-project) for more information).
 
@@ -1032,7 +1156,7 @@ Callers must have following Google IAM permission
       r"""Updates a tag template. This method cannot be used to update the fields of.
 a template. The tag template fields are represented as separate resources
 and should be updated using their own create/update/delete methods.
-The user should enable the Data Catalog API in the project identified by
+Users should enable the Data Catalog API in the project identified by
 the `tag_template.name` parameter (see [Data Catalog Resource Project]
 (/data-catalog/docs/concepts/resource-project) for more information).
 

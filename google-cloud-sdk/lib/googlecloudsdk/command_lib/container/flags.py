@@ -2474,7 +2474,8 @@ def AddEnableShieldedNodesFlags(parser):
   """Adds a --enable-shielded-nodes flag to the given parser."""
   help_text = """\
 Enable Shielded Nodes for this cluster. Enabling Shielded Nodes will enable a
-more secure Node credential bootstrapping implementation.
+more secure Node credential bootstrapping implementation. Starting with version
+1.18, clusters will have shielded GKE nodes by default.
 """
   parser.add_argument(
       '--enable-shielded-nodes',

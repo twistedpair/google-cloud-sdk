@@ -50,14 +50,27 @@ def _GetPrimaryNodeName():
          '-c',
          'import tensorflow as tf; print(tf.version.VERSION)']
   proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-  tf_version = proc.stdout.read().decode('utf-8')
+  return_code = proc.wait()
+  if return_code != 0:
+    log.warning('''
+    Cannot import tensorflow under path {}. Using "chief" for cluster setting.
+    If this is not intended, Please check if tensorflow is installed. Please also
+    verify if the python path used is correct. If not, to change the python path:
+    use `gcloud config set ml_engine/local_python $python_path`
+    Eg: gcloud config set ml_engine/local_python /usr/bin/python3'''.format(
+        python_executable))
+    return 'chief'
+
+  tf_version = proc.stdout.read()
+  if 'decode' in dir(tf_version):
+    tf_version = tf_version.decode('utf-8')
   if tf_version.startswith('1.'):
     return 'master'
   elif tf_version.startswith('2.'):
     return 'chief'
   log.warning(
       'Unexpected tensorflow version {}, using the default primary'
-      ' node name, aka "master" for cluster settings'.format(tf_version))
+      ' node name, aka "chief" for cluster settings'.format(tf_version))
   return 'chief'
 
 

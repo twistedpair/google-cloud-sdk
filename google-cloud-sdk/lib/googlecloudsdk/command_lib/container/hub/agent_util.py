@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.container.hub import gkehub_api_adapter
 from googlecloudsdk.api_lib.container.hub import gkehub_api_util
+from googlecloudsdk.command_lib.container.hub import api_util
 from googlecloudsdk.command_lib.container.hub import kube_util
 from googlecloudsdk.command_lib.projects import util as p_util
 from googlecloudsdk.core import exceptions
@@ -231,18 +232,34 @@ def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
     The full manifest to deploy the connect agent resources.
   """
   api_version = gkehub_api_util.GetApiVersionForTrack(release_track)
-  adapter = gkehub_api_adapter.NewAPIAdapter(api_version)
-  connect_agent_ref = _GetConnectAgentOptions(args,
-                                              upgrade,
-                                              DEFAULT_NAMESPACE,
-                                              image_pull_secret_data,
-                                              membership_ref)
-  manifest_resources = adapter.GenerateConnectAgentManifest(connect_agent_ref)
   delimeter = '---\n'
   full_manifest = ''
 
-  for resource in manifest_resources:
-    full_manifest = full_manifest + resource['manifest'] + delimeter
+  # Based on the API version, use api_adapter if GenerateConnectAgentManifest is
+  # a nested message, else use the default api_client.
+  # TODO(b/148312097): Check if api_adapter is needed incase alpha_api.
+  if api_version in ['v1beta1']:
+    adapter = gkehub_api_adapter.NewAPIAdapter(api_version)
+    connect_agent_ref = _GetConnectAgentOptions(args, upgrade,
+                                                DEFAULT_NAMESPACE,
+                                                image_pull_secret_data,
+                                                membership_ref)
+    manifest_resources = adapter.GenerateConnectAgentManifest(connect_agent_ref)
+    for resource in manifest_resources:
+      full_manifest = full_manifest + resource['manifest'] + delimeter
+  else:
+    manifest_resources = api_util.GenerateConnectAgentManifest(
+        membership_ref,
+        image_pull_secret_content=image_pull_secret_data,
+        is_upgrade=upgrade,
+        namespace=DEFAULT_NAMESPACE,
+        proxy=args.proxy,
+        registry=args.docker_registry,
+        version=args.version,
+        release_track=release_track)
+
+    for resource in manifest_resources.manifest:
+      full_manifest = full_manifest + resource.manifest + delimeter
 
   # Append creds secret.
   full_manifest = full_manifest + CREDENTIAL_SECRET_TEMPLATE.format(
@@ -256,7 +273,7 @@ def DeployConnectAgent(kube_client, args,
                        service_account_key_data,
                        image_pull_secret_data,
                        membership_ref, release_track=None):
-  """Deploys the GKE Connect agent to the cluster.
+  """Deploys the Connect Agent to the cluster.
 
   Args:
     kube_client: A Kubernetes Client for the cluster to be registered.
@@ -277,8 +294,7 @@ def DeployConnectAgent(kube_client, args,
   """
   project_id = properties.VALUES.core.project.GetOrFail()
 
-  log.status.Print('Generating connect agent manifest...')
-
+  log.status.Print('Generating the Connect Agent manifest...')
   full_manifest = _GenerateManifest(args,
                                     service_account_key_data,
                                     image_pull_secret_data,
@@ -293,16 +309,24 @@ def DeployConnectAgent(kube_client, args,
           full_manifest,
           private=True)
     except files.Error as e:
-      exceptions.Error('could not create manifest file: {}'.format(e))
+      raise exceptions.Error('Could not create manifest file: {}'.format(e))
 
     log.status.Print(MANIFEST_SAVED_MESSAGE.format(args.manifest_output_file))
     return
 
-  log.status.Print('Deploying GKE Connect agent to cluster...')
+  namespaces = _GKEConnectNamespace(kube_client, project_id)
+  if len(namespaces) > 1:
+    raise exceptions.Error(
+        'Multiple namespaces [{}] containing the Connect Agent found in'
+        'cluster [{}]. Cannot deploy a new Connect Agent'.format(
+            namespaces, args.CLUSTER_NAME))
+  namespace = namespaces[0]
 
-  namespace = _GKEConnectNamespace(kube_client, project_id)
+  log.status.Print(
+      'Deploying the Connect Agent on cluster [{}] in namespace [{}]...'
+      .format(args.CLUSTER_NAME, namespace))
   # Delete the ns if necessary
-  kube_util.DeleteNamespaceForReinstall(kube_client, namespace)
+  kube_util.DeleteNamespace(kube_client, namespace)
 
   # TODO(b/138816749): add check for cluster-admin permissions
   _PurgeAlphaInstaller(kube_client, namespace, project_id)
@@ -312,36 +336,9 @@ def DeployConnectAgent(kube_client, args,
     raise exceptions.Error(
         'Failed to apply manifest to cluster: {}'.format(err))
   # TODO(b/131925085): Check connect agent health status.
-
-
-class NamespaceDeleteOperation(object):
-  """An operation that waits for a namespace to be deleted."""
-
-  def __init__(self, namespace, kube_client):
-    self.namespace = namespace
-    self.kube_client = kube_client
-    self.done = False
-    self.succeeded = False
-    self.error = None
-
-  def __str__(self):
-    return '<deleting namespce {}>'.format(self.namespace)
-
-  def Update(self):
-    """Updates this operation with the latest namespace deletion status."""
-    err = self.kube_client.DeleteNamespace(self.namespace)
-
-    # The first delete request should succeed.
-    if not err:
-      return
-
-    # If deletion is successful, the delete command will return a NotFound
-    # error.
-    if 'NotFound' in err:
-      self.done = True
-      self.succeeded = True
-    else:
-      self.error = err
+  log.status.Print(
+      'Deployed the Connect Agent on cluster [{}] in namespace [{}].'
+      .format(args.CLUSTER_NAME, namespace))
 
 
 def DeleteConnectNamespace(kube_client, args):
@@ -357,49 +354,44 @@ def DeleteConnectNamespace(kube_client, args):
       be deduced from the command line flags or environment
   """
 
-  namespace = _GKEConnectNamespace(kube_client,
-                                   properties.VALUES.core.project.GetOrFail())
-  cleanup_msg = 'Please delete namespace {} manually in your cluster.'.format(
+  namespaces = _GKEConnectNamespace(kube_client,
+                                    properties.VALUES.core.project.GetOrFail())
+
+  if len(namespaces) > 1:
+    log.warning(
+        'gcloud will not remove any namespaces containing the Connect Agent since'
+        ' it was found running in multiple namespaces on cluster: [{}].'
+        ' Please delete these namespaces [{}] maually in your cluster'
+        .format(args.CLUSTER_NAME, namespaces))
+    return
+
+  namespace = namespaces[0]
+  cleanup_msg = 'Please delete namespace [{}] manually in your cluster.'.format(
       namespace)
 
-  err = kube_client.DeleteNamespace(namespace)
-  if err:
-    if 'NotFound' in err:
-      # If the namespace was not found, then do not log an error.
-      log.status.Print(
-          'Namespace [{}] (for context [{}]) did not exist, so it did not '
-          'require deletion.'.format(namespace, args.context))
-      return
-    log.warning(
-        'Failed to delete namespace [{}] (for context [{}]): {}. {}'.format(
-            namespace, args.context, err, cleanup_msg))
-    return
+  try:
+    kube_util.DeleteNamespace(kube_client, namespace)
+  except exceptions.Error:
+    log.warning(cleanup_msg)
 
 
 def _GKEConnectNamespace(kube_client, project_id):
-  """Returns the namespace into which to install or update the connect agent.
+  """Returns the namespaces into which to install or update the connect agent.
 
   Connect namespaces are identified by the presence of the hub.gke.io/project
-  label. If there is one existing namespace with this label in the cluster, its
-  name is returned; otherwise, the default connect namespace is returned.
-  If there are multiple namespaces with the
-  hub.gke.io/project label, an error is raised.
+  label. If there are existing namespaces with this label in the cluster,
+  then a list of all those namespaces is returned; otherwise, a list with the
+  default connect namespace is returned.
 
   Args:
-    kube_client: a KubernetesClient
-    project_id: A GCP project identifier
+    kube_client: a KubernetesClient.
+    project_id: A GCP project identifier.
 
   Returns:
-    a string, the namespace
-
-  Raises:
-    exceptions.Error: if there are multiple Connect namespaces in the cluster
+    List of namespaces with hub.gke.io/project label.
   """
   selector = '{}={}'.format(CONNECT_RESOURCE_LABEL, project_id)
   namespaces = kube_client.NamespacesWithLabelSelector(selector)
   if not namespaces:
-    return DEFAULT_NAMESPACE
-  if len(namespaces) == 1:
-    return namespaces[0]
-  raise exceptions.Error(
-      'Multiple GKE Connect namespaces in cluster: {}'.format(namespaces))
+    return [DEFAULT_NAMESPACE]
+  return namespaces

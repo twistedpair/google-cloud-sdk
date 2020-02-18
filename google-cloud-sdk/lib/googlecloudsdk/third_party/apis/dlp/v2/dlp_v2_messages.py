@@ -3004,7 +3004,8 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
     Values:
       JOB_STATE_UNSPECIFIED: Unused.
       PENDING: The job has not yet started.
-      RUNNING: The job is currently running.
+      RUNNING: The job is currently running. Once a job has finished it will
+        transition to FAILED or DONE.
       DONE: The job is no longer running.
       CANCELED: The job was canceled before it could complete.
       FAILED: The job had an error and did not complete.
@@ -3279,8 +3280,8 @@ class GooglePrivacyDlpV2FindingLimits(_messages.Message):
     maxFindingsPerInfoType: Configuration of findings limit given for
       specified infoTypes.
     maxFindingsPerItem: Max number of findings that will be returned for each
-      item scanned. When set within `InspectDataSourceRequest`, the maximum
-      returned is 2000 regardless if this is set higher. When set within
+      item scanned. When set within `InspectJobConfig`, the maximum returned
+      is 2000 regardless if this is set higher. When set within
       `InspectContentRequest`, this field is ignored.
     maxFindingsPerRequest: Max number of findings that will be returned per
       request/job. When set within `InspectContentRequest`, the maximum
@@ -4828,9 +4829,9 @@ class GooglePrivacyDlpV2StorageConfig(_messages.Message):
   r"""Shared message indicating Cloud storage type.
 
   Fields:
-    bigQueryOptions: BigQuery options specification.
-    cloudStorageOptions: Google Cloud Storage options specification.
-    datastoreOptions: Google Cloud Datastore options specification.
+    bigQueryOptions: BigQuery options.
+    cloudStorageOptions: Google Cloud Storage options.
+    datastoreOptions: Google Cloud Datastore options.
     timespanConfig: A GooglePrivacyDlpV2TimespanConfig attribute.
   """
 

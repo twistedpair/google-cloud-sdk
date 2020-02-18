@@ -489,7 +489,7 @@
       "type": "object",
       "properties": {
         "trust": {
-          "description": "The domain trust resource.",
+          "description": "Required. The domain trust resource.",
           "$ref": "Trust"
         }
       }
@@ -500,11 +500,11 @@
       "type": "object",
       "properties": {
         "targetDomainName": {
-          "description": "The fully-qualified target domain name which will be in trust with current\ndomain.",
+          "description": "Required. The fully-qualified target domain name which will be in trust with current\ndomain.",
           "type": "string"
         },
         "targetDnsIpAddresses": {
-          "description": "The target DNS server IP addresses to resolve the remote domain involved\nin the trust.",
+          "description": "Required. The target DNS server IP addresses to resolve the remote domain involved\nin the trust.",
           "type": "array",
           "items": {
             "type": "string"
@@ -518,7 +518,7 @@
       "type": "object",
       "properties": {
         "trust": {
-          "description": "The domain trust resource to removed.",
+          "description": "Required. The domain trust resource to removed.",
           "$ref": "Trust"
         }
       }
@@ -529,7 +529,7 @@
       "type": "object",
       "properties": {
         "trust": {
-          "description": "The domain trust to validate trust state for.",
+          "description": "Required. The domain trust to validate trust state for.",
           "$ref": "Trust"
         }
       }
@@ -747,7 +747,7 @@
     },
     "GoogleCloudSaasacceleratorManagementProvidersV1Instance": {
       "id": "GoogleCloudSaasacceleratorManagementProvidersV1Instance",
-      "description": "Instance represents the interface for SLM services to actuate the state\nof control plane resources.\n\nExample Instance in JSON, where\n  consumer-project=snapchat,\n  producer-project=cloud-sql:\n\n```json\nInstance:\n{\n  \"name\":\n  \"projects\/snapchat\/locations\/us-east1\/instances\/prod-instance\",\n  \"create_time\": {\n    \"seconds\": 1526406431,\n  },\n  \"labels\": {\n    \"env\": \"prod\",\n    \"foo\": \"bar\"\n  },\n  \"state\": READY,\n  \"software_versions\": {\n    \"software_update\": \"cloud-sql-09-28-2018\",\n  },\n  \"maintenance_policy_names\": {\n    \"UpdatePolicy\":\n    \"projects\/snapchat\/locations\/us-east1\/maintenancePolicies\/prod-update-policy\",\n  }\n  \"rollout_metadata\": {\n    \"projects\/cloud-sql\/locations\/global\/rolloutTypes\/software_update\": {\n      \"release\":\n      \"projects\/cloud-sql\/locations\/global\/releases\/cloud-sql-09-28-2018\",\n      \"rollout\":\n      \"projects\/cloud-sql\/locations\/us-east1\/rollouts\/cloud-sql-09-28-2018-canary\",\n    },\n    \"projects\/cloud-sql\/locations\/global\/rolloutTypes\/instance_restart\": {\n      \"release\":\n      \"projects\/cloud-sql\/locations\/global\/releases\/cloud-sql-09-20-repair\",\n      \"rollout\":\n      \"projects\/cloud-sql\/locations\/us-east1\/rollouts\/cloud-sql-09-20-repair-100-percent\",\n    }\n  }\n  \"tenant_project_id\": \"cloud-sql-test-tenant\",\n  \"producer_metadata\": {\n    \"cloud-sql-tier\": \"basic\",\n    \"cloud-sql-instance-size\": \"1G\",\n  },\n  \"provisioned_resources\": [\n    {\n      \"resource-type\": \"compute-instance\",\n      \"resource-url\":\n      \"https:\/\/www.googleapis.com\/compute\/v1\/projects\/cloud-sql\/zones\/us-east1-b\/instances\/vm-1\",\n    }\n  ],\n  \"maintenance_schedules\": {\n    \"csa_rollout\": {\n       \"start_time\": {\n          \"seconds\": 1526406431,\n       },\n       \"end_time\": {\n          \"seconds\": 1535406431,\n       },\n    },\n    \"ncsa_rollout\": {\n       \"start_time\": {\n          \"seconds\": 1526406431,\n       },\n       \"end_time\": {\n          \"seconds\": 1535406431,\n       },\n    }\n  },\n  \"consumer_defined_name\": \"my-sql-instance1\",\n}\n```",
+      "description": "Instance represents the interface for SLM services to actuate the state\nof control plane resources.\n\nExample Instance in JSON, where\n  consumer-project=snapchat,\n  producer-project=cloud-sql:\n\n```json\nInstance:\n{\n  \"name\":\n  \"projects\/snapchat\/locations\/us-east1\/instances\/prod-instance\",\n  \"create_time\": {\n    \"seconds\": 1526406431,\n  },\n  \"labels\": {\n    \"env\": \"prod\",\n    \"foo\": \"bar\"\n  },\n  \"state\": READY,\n  \"software_versions\": {\n    \"software_update\": \"cloud-sql-09-28-2018\",\n  },\n  \"maintenance_policy_names\": {\n    \"UpdatePolicy\":\n    \"projects\/snapchat\/locations\/us-east1\/maintenancePolicies\/prod-update-policy\",\n  }\n  \"tenant_project_id\": \"cloud-sql-test-tenant\",\n  \"producer_metadata\": {\n    \"cloud-sql-tier\": \"basic\",\n    \"cloud-sql-instance-size\": \"1G\",\n  },\n  \"provisioned_resources\": [\n    {\n      \"resource-type\": \"compute-instance\",\n      \"resource-url\":\n      \"https:\/\/www.googleapis.com\/compute\/v1\/projects\/cloud-sql\/zones\/us-east1-b\/instances\/vm-1\",\n    }\n  ],\n  \"maintenance_schedules\": {\n    \"csa_rollout\": {\n       \"start_time\": {\n          \"seconds\": 1526406431,\n       },\n       \"end_time\": {\n          \"seconds\": 1535406431,\n       },\n    },\n    \"ncsa_rollout\": {\n       \"start_time\": {\n          \"seconds\": 1526406431,\n       },\n       \"end_time\": {\n          \"seconds\": 1535406431,\n       },\n    }\n  },\n  \"consumer_defined_name\": \"my-sql-instance1\",\n}\n```",
       "type": "object",
       "properties": {
         "name": {
@@ -855,7 +855,7 @@
     },
     "GoogleCloudSaasacceleratorManagementProvidersV1RolloutMetadata": {
       "id": "GoogleCloudSaasacceleratorManagementProvidersV1RolloutMetadata",
-      "description": "RolloutMetadata for an actuation instance. It maps to a single RolloutType.",
+      "description": "This message has been deprecated.\nRolloutMetadata for an actuation instance. It maps to a single RolloutType.",
       "type": "object",
       "properties": {
         "releaseName": {
@@ -874,7 +874,7 @@
     },
     "GoogleCloudSaasacceleratorManagementProvidersV1NotificationMetadata": {
       "id": "GoogleCloudSaasacceleratorManagementProvidersV1NotificationMetadata",
-      "description": "NotificationMetadata is the notification state for an instance.",
+      "description": "This message has been deprecated.\nNotificationMetadata is the notification state for an instance.",
       "type": "object",
       "properties": {
         "targetRelease": {
@@ -1242,14 +1242,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "The resource project name and location using the form:\n`projects\/{project_id}\/locations\/global`",
+                          "description": "Required. The resource project name and location using the form:\n`projects\/{project_id}\/locations\/global`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global$",
                           "type": "string"
                         },
                         "domainName": {
-                          "description": "A domain name, e.g. mydomain.myorg.com, with the following restrictions:\n * Must contain only lowercase letters, numbers, periods and hyphens.\n * Must start with a letter.\n * Must contain between 2-64 characters.\n * Must end with a number or a letter.\n * Must not start with period.\n * First segement length (mydomain form example above) shouldn't exceed\n   15 chars.\n * The last segment cannot be fully numeric.\n * Must be unique within the customer project.",
+                          "description": "Required. A domain name, e.g. mydomain.myorg.com, with the following restrictions:\n * Must contain only lowercase letters, numbers, periods and hyphens.\n * Must start with a letter.\n * Must contain between 2-64 characters.\n * Must end with a number or a letter.\n * Must not start with period.\n * First segement length (mydomain form example above) shouldn't exceed\n   15 chars.\n * The last segment cannot be fully numeric.\n * Must be unique within the customer project.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1275,7 +1275,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "The domain resource name using the form:\n`projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "description": "Required. The domain resource name using the form:\n`projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
@@ -1349,7 +1349,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "The domain resource name using the form:\n`projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "description": "Required. The domain resource name using the form:\n`projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
@@ -1381,7 +1381,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Mask of fields to update. At least one path must be supplied in this\nfield. The elements of the repeated paths field may only include\nfields from Domain:\n * `labels`\n * `locations`\n * `authorized_networks`",
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in this\nfield. The elements of the repeated paths field may only include\nfields from Domain:\n * `labels`\n * `locations`\n * `authorized_networks`",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -1408,7 +1408,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "The domain resource name using the form:\n`projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "description": "Required. The domain resource name using the form:\n`projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
@@ -1433,7 +1433,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "The resource domain name, project name and location using the form:\n`projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "description": "Required. The resource domain name, project name and location using the form:\n`projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
@@ -1461,7 +1461,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "The resource domain name, project name and location using the form:\n`projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "description": "Required. The resource domain name, project name and location using the form:\n`projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
@@ -1489,7 +1489,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "The resource domain name, project name, and location using the form:\n`projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "description": "Required. The resource domain name, project name, and location using the form:\n`projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
@@ -1517,7 +1517,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "The resource domain name, project name, and location using the form:\n`projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "description": "Required. The resource domain name, project name, and location using the form:\n`projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",

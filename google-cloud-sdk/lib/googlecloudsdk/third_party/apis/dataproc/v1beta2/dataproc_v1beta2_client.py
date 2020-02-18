@@ -9,6 +9,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://dataproc.googleapis.com/'
+  MTLS_BASE_URL = u'https://dataproc.mtls.googleapis.com/'
 
   _PACKAGE = u'dataproc'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

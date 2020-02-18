@@ -9,6 +9,7 @@ class LanguageV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://language.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'language'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-language', u'https://www.googleapis.com/auth/cloud-platform']

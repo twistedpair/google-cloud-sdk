@@ -9,6 +9,7 @@ class ToolresultsV1beta3(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://www.googleapis.com/toolresults/v1beta3/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'toolresults'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

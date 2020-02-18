@@ -9,6 +9,7 @@ class WorkflowsV1alpha1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://workflows.googleapis.com/'
+  MTLS_BASE_URL = u'https://workflows.mtls.googleapis.com/'
 
   _PACKAGE = u'workflows'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

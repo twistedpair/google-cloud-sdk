@@ -9,6 +9,7 @@ class SourcerepoV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://sourcerepo.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'sourcerepo'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/source.full_control', u'https://www.googleapis.com/auth/source.read_only', u'https://www.googleapis.com/auth/source.read_write']

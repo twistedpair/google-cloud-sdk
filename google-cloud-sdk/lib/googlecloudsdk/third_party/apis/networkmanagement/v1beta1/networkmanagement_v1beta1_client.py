@@ -9,6 +9,7 @@ class NetworkmanagementV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://networkmanagement.googleapis.com/'
+  MTLS_BASE_URL = u'https://networkmanagement.mtls.googleapis.com/'
 
   _PACKAGE = u'networkmanagement'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

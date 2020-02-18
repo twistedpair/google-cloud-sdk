@@ -122,6 +122,13 @@ class Collections(enum.Enum):
       [u'project', u'operation'],
       True
   )
+  GLOBALORGANIZATIONOPERATIONS = (
+      'globalOrganizationOperations',
+      'projects/locations/global/operations/{operation}',
+      {},
+      [u'operation'],
+      True
+  )
   HEALTHCHECKS = (
       'healthChecks',
       'projects/{project}/global/healthChecks/{healthCheck}',
@@ -270,6 +277,13 @@ class Collections(enum.Enum):
       'projects/{project}/zones/{zone}/nodeTypes/{nodeType}',
       {},
       [u'project', u'zone', u'nodeType'],
+      True
+  )
+  ORGANIZATIONSECURITYPOLICIES = (
+      'organizationSecurityPolicies',
+      'projects/locations/global/securityPolicies/{securityPolicy}',
+      {},
+      [u'securityPolicy'],
       True
   )
   PACKETMIRRORINGS = (

@@ -70,6 +70,14 @@ class APIDef(object):
 
 
 MAP = {
+    'accessapproval': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.accessapproval.v1',
+                client_classpath='accessapproval_v1_client.AccessapprovalV1',
+                messages_modulepath='accessapproval_v1_messages',
+                default_version=True),
+    },
     'accesscontextmanager': {
         'v1':
             APIDef(
@@ -96,6 +104,14 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.admin.v1',
                 client_classpath='admin_v1_client.AdminDirectoryV1',
                 messages_modulepath='admin_v1_messages',
+                default_version=True),
+    },
+    'apigateway': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.apigateway.v1alpha1',
+                client_classpath='apigateway_v1alpha1_client.ApigatewayV1alpha1',
+                messages_modulepath='apigateway_v1alpha1_messages',
                 default_version=True),
     },
     'apikeys': {
@@ -742,7 +758,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.gkehub.v1',
                 client_classpath='gkehub_v1_client.GkehubV1',
                 messages_modulepath='gkehub_v1_messages',
-                default_version=False),
+                default_version=True),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.gkehub.v1alpha1',
@@ -754,7 +770,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.gkehub.v1beta1',
                 client_classpath='gkehub_v1beta1_client.GkehubV1beta1',
                 messages_modulepath='gkehub_v1beta1_messages',
-                default_version=True),
+                default_version=False),
     },
     'healthcare': {
         'v1alpha2':

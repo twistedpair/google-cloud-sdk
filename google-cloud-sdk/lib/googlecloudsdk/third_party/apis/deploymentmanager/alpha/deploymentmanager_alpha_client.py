@@ -9,6 +9,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://www.googleapis.com/deploymentmanager/alpha/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'deploymentmanager'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/ndev.cloudman', u'https://www.googleapis.com/auth/ndev.cloudman.readonly']
@@ -149,7 +150,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         method_id=u'deploymentmanager.compositeTypes.list',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'returnPartialSuccess'],
         relative_path=u'projects/{project}/global/compositeTypes',
         request_field='',
         request_type_name=u'DeploymentmanagerCompositeTypesListRequest',
@@ -367,7 +368,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         method_id=u'deploymentmanager.deployments.list',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'returnPartialSuccess'],
         relative_path=u'projects/{project}/global/deployments',
         request_field='',
         request_type_name=u'DeploymentmanagerDeploymentsListRequest',
@@ -559,7 +560,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         method_id=u'deploymentmanager.manifests.list',
         ordered_params=[u'project', u'deployment'],
         path_params=[u'deployment', u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'returnPartialSuccess'],
         relative_path=u'projects/{project}/global/deployments/{deployment}/manifests',
         request_field='',
         request_type_name=u'DeploymentmanagerManifestsListRequest',
@@ -621,7 +622,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         method_id=u'deploymentmanager.operations.list',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'returnPartialSuccess'],
         relative_path=u'projects/{project}/global/operations',
         request_field='',
         request_type_name=u'DeploymentmanagerOperationsListRequest',
@@ -683,7 +684,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         method_id=u'deploymentmanager.resources.list',
         ordered_params=[u'project', u'deployment'],
         path_params=[u'deployment', u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'returnPartialSuccess'],
         relative_path=u'projects/{project}/global/deployments/{deployment}/resources',
         request_field='',
         request_type_name=u'DeploymentmanagerResourcesListRequest',
@@ -823,7 +824,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         method_id=u'deploymentmanager.typeProviders.list',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'returnPartialSuccess'],
         relative_path=u'projects/{project}/global/typeProviders',
         request_field='',
         request_type_name=u'DeploymentmanagerTypeProvidersListRequest',
@@ -849,7 +850,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         method_id=u'deploymentmanager.typeProviders.listTypes',
         ordered_params=[u'project', u'typeProvider'],
         path_params=[u'project', u'typeProvider'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'returnPartialSuccess'],
         relative_path=u'projects/{project}/global/typeProviders/{typeProvider}/types',
         request_field='',
         request_type_name=u'DeploymentmanagerTypeProvidersListTypesRequest',
@@ -963,7 +964,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         method_id=u'deploymentmanager.types.list',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'returnPartialSuccess'],
         relative_path=u'projects/{project}/global/types',
         request_field='',
         request_type_name=u'DeploymentmanagerTypesListRequest',

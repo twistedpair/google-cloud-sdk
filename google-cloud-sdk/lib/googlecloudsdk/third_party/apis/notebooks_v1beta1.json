@@ -287,7 +287,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The name of this notebook instance. Format:\nprojects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>\/instances\/<var>{instance_id}<\/var>",
+          "description": "Output only. The name of this notebook instance. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
           "type": "string"
         },
         "vmImage": {
@@ -299,7 +299,7 @@
           "$ref": "ContainerImage"
         },
         "postStartupScript": {
-          "description": "Path to a Bash script that automatically runs after a notebook instance\nfully boots up. The path must be a URL or\nCloud Storage path (gs:\/\/<var>path-to-file<\/var>\/<var>file-name<\/var>).",
+          "description": "Path to a Bash script that automatically runs after a notebook instance\nfully boots up. The path must be a URL or\nCloud Storage path (gs:\/\/path-to-file\/file-name).",
           "type": "string"
         },
         "proxyUri": {
@@ -356,7 +356,7 @@
           "type": "string"
         },
         "bootDiskType": {
-          "description": "Input only. The type of disk attached to this instance, defaults to\nstandard persistent disk (`PD_STANDARD`).",
+          "description": "Input only. The type of the boot disk attached to this instance, defaults to\nstandard persistent disk (`PD_STANDARD`).",
           "enumDescriptions": [
             "Disk type not set.",
             "Standard persistent disk type.",
@@ -370,12 +370,35 @@
           ]
         },
         "bootDiskSizeGb": {
-          "description": "Input only. The size of the disk in GB attached to this instance, up to a maximum\nof 64000&nbsp;GB (64&nbsp;TB). The minimum recommended value is\n100&nbsp;GB. If not specified, this defaults to 100.",
+          "description": "Input only. The size of the boot disk in GB attached to this instance, up to a maximum\nof 64000&nbsp;GB (64&nbsp;TB). The minimum recommended value is\n100&nbsp;GB. If not specified, this defaults to 100.",
           "type": "string",
           "format": "int64"
         },
+        "dataDiskType": {
+          "description": "Input only. The type of the data disk attached to this instance, defaults to\nstandard persistent disk (`PD_STANDARD`).",
+          "enumDescriptions": [
+            "Disk type not set.",
+            "Standard persistent disk type.",
+            "SSD persistent disk type."
+          ],
+          "type": "string",
+          "enum": [
+            "DISK_TYPE_UNSPECIFIED",
+            "PD_STANDARD",
+            "PD_SSD"
+          ]
+        },
+        "dataDiskSizeGb": {
+          "description": "Input only. The size of the data disk in GB attached to this instance, up to a maximum\nof 64000&nbsp;GB (64&nbsp;TB). You can choose the size of the data disk\nbased on how big your notebooks and data are. If not specified, this\ndefaults to 100.",
+          "type": "string",
+          "format": "int64"
+        },
+        "noRemoveDataDisk": {
+          "description": "Input only. If true, the data disk will not be auto deleted when deleting the instance.",
+          "type": "boolean"
+        },
         "diskEncryption": {
-          "description": "Input only. Disk encryption method used on the boot disk, defaults to GMEK.",
+          "description": "Input only. Disk encryption method used on the boot and data disks, defaults to GMEK.",
           "enumDescriptions": [
             "Disk encryption is not specified.",
             "Use Google managed encryption keys to encrypt the boot disk.",
@@ -389,7 +412,7 @@
           ]
         },
         "kmsKey": {
-          "description": "Input only. The KMS key used to encrypt the disk, only applicable if disk_encryption is\nCMEK.\nFormat:\nprojects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>\/keyRings\/<var>{key_ring_id}<\/var>\/cryptoKeys\/<var>{key_id}<\/var>\n\nLearn more about [using your own encryption keys](\/kms\/docs\/quickstart).",
+          "description": "Input only. The KMS key used to encrypt the disks, only applicable if disk_encryption\nis CMEK.\nFormat:\n`projects\/{project_id}\/locations\/{location}\/keyRings\/{key_ring_id}\/cryptoKeys\/{key_id}`\n\nLearn more about [using your own encryption keys](\/kms\/docs\/quickstart).",
           "type": "string"
         },
         "noPublicIp": {
@@ -401,11 +424,11 @@
           "type": "boolean"
         },
         "network": {
-          "description": "The name of the VPC that this instance is in.\nFormat:\nprojects\/<var>{project_id}<\/var>\/global\/networks\/<var>{network_id}<\/var>",
+          "description": "The name of the VPC that this instance is in.\nFormat:\n`projects\/{project_id}\/global\/networks\/{network_id}`",
           "type": "string"
         },
         "subnet": {
-          "description": "The name of the subnet that this instance is in.\nFormat:\nprojects\/<var>{project_id}<\/var>\/regions\/<var>{region}<\/var>\/subnetworks\/<var>{subnetwork_id}<\/var>",
+          "description": "The name of the subnet that this instance is in.\nFormat:\n`projects\/{project_id}\/regions\/{region}\/subnetworks\/{subnetwork_id}`",
           "type": "string"
         },
         "labels": {
@@ -440,7 +463,7 @@
       "type": "object",
       "properties": {
         "project": {
-          "description": "Required. The name of the GCP project that this VM image belongs to.\nFormat: projects\/<var>{project_id}<\/var>",
+          "description": "Required. The name of the GCP project that this VM image belongs to.\nFormat: `projects\/{project_id}`",
           "type": "string"
         },
         "imageName": {
@@ -459,7 +482,7 @@
       "type": "object",
       "properties": {
         "repository": {
-          "description": "Required. The path to the container image repository. For example:\ngcr.io\/<var>{project_id}<\/var>\/<var>{image_name}<\/var>",
+          "description": "Required. The path to the container image repository. For example:\n`gcr.io\/{project_id}\/{image_name}`",
           "type": "string"
         },
         "tag": {
@@ -627,6 +650,24 @@
         }
       }
     },
+    "UpgradeInstanceRequest": {
+      "id": "UpgradeInstanceRequest",
+      "description": "Request for upgrading a notebook instance",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UpgradeInstanceInternalRequest": {
+      "id": "UpgradeInstanceInternalRequest",
+      "description": "Request for upgrading a notebook instance from within the VM",
+      "type": "object",
+      "properties": {
+        "vmId": {
+          "description": "Required. The VM hardware token for authenticating the VM.\nhttps:\/\/cloud.google.com\/compute\/docs\/instances\/verifying-instance-identity",
+          "type": "string"
+        }
+      }
+    },
     "ListEnvironmentsResponse": {
       "id": "ListEnvironmentsResponse",
       "description": "Response for listing environments.",
@@ -658,7 +699,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Name of this environment.\nFormat:\nprojects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>\/environments\/<var>{environment_id}<\/var>",
+          "description": "Output only. Name of this environment.\nFormat:\n`projects\/{project_id}\/locations\/{location}\/environments\/{environment_id}`",
           "type": "string"
         },
         "displayName": {
@@ -678,7 +719,7 @@
           "$ref": "ContainerImage"
         },
         "postStartupScript": {
-          "description": "Path to a Bash script that automatically runs after a notebook instance\nfully boots up. The path must be a URL or\nCloud Storage path (gs:\/\/<var>path-to-file<\/var>\/<var>file-name<\/var>).",
+          "description": "Path to a Bash script that automatically runs after a notebook instance\nfully boots up. The path must be a URL or\nCloud Storage path (gs:\/\/path-to-file\/file-name).",
           "type": "string"
         },
         "createTime": {
@@ -1040,7 +1081,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Format:\nparent=projects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>",
+                      "description": "Required. Format:\n`parent=projects\/{project_id}\/locations\/{location}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1076,7 +1117,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\nprojects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>\/instances\/<var>{instance_id}<\/var>",
+                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1101,7 +1142,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Format:\nparent=projects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>",
+                      "description": "Required. Format:\n`parent=projects\/{project_id}\/locations\/{location}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1134,7 +1175,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Format:\nparent=projects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>",
+                      "description": "Required. Format:\n`parent=projects\/{project_id}\/locations\/{location}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1162,7 +1203,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\nprojects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>\/instances\/<var>{instance_id}<\/var>",
+                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1190,7 +1231,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\nprojects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>\/instances\/<var>{instance_id}<\/var>",
+                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1218,7 +1259,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\nprojects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>\/instances\/<var>{instance_id}<\/var>",
+                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1246,7 +1287,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\nprojects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>\/instances\/<var>{instance_id}<\/var>",
+                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1271,7 +1312,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\nprojects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>\/instances\/<var>{instance_id}<\/var>",
+                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1299,7 +1340,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\nprojects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>\/instances\/<var>{instance_id}<\/var>",
+                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1327,7 +1368,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\nprojects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>\/instances\/<var>{instance_id}<\/var>",
+                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1355,7 +1396,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\nprojects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>\/instances\/<var>{instance_id}<\/var>",
+                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1375,6 +1416,62 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "ReportInstanceInfo allows notebook instances to report their latest\ninstance information to the Notebooks API server. The server will merge\nthe reported information to the instance metadata store."
+                },
+                "upgrade": {
+                  "id": "notebooks.projects.locations.instances.upgrade",
+                  "path": "v1beta1/{+name}:upgrade",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:upgrade",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "UpgradeInstanceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Upgrades a notebook instance to the latest version."
+                },
+                "upgradeInternal": {
+                  "id": "notebooks.projects.locations.instances.upgradeInternal",
+                  "path": "v1beta1/{+name}:upgradeInternal",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:upgradeInternal",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "UpgradeInstanceInternalRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "UpgradeInstanceInternal allows notebook instances to call this endpoint to\nupgrade themselves"
                 },
                 "setIamPolicy": {
                   "id": "notebooks.projects.locations.instances.setIamPolicy",
@@ -1474,7 +1571,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Format: projects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>",
+                      "description": "Required. `Format: projects\/{project_id}\/locations\/{location}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1510,7 +1607,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\nprojects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>\/environments\/<var>{environment_id}<\/var>",
+                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/environments\/{environment_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
@@ -1535,7 +1632,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Format: projects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1568,7 +1665,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\nprojects\/<var>{project_id}<\/var>\/locations\/<var>{location}<\/var>\/environments\/<var>{environment_id}<\/var>",
+                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/environments\/{environment_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",

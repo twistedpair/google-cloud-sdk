@@ -191,7 +191,7 @@
     },
     "AccessPolicy": {
       "id": "AccessPolicy",
-      "description": "`AccessPolicy` is a container for `AccessLevels` (which define the necessary\nattributes to use GCP services) and `ServicePerimeters` (which define regions\nof services able to freely pass data within a perimeter). An access policy is\nglobally visible within an organization, and the restrictions it specifies\napply to all projects within an organization.",
+      "description": "`AccessPolicy` is a container for `AccessLevels` (which define the necessary\nattributes to use Google Cloud services) and `ServicePerimeters` (which\ndefine regions of services able to freely pass data within a perimeter). An\naccess policy is globally visible within an organization, and the\nrestrictions it specifies apply to all projects within an organization.",
       "type": "object",
       "properties": {
         "name": {
@@ -238,7 +238,7 @@
     },
     "AccessLevel": {
       "id": "AccessLevel",
-      "description": "An `AccessLevel` is a label that can be applied to requests to GCP services,\nalong with a list of requirements necessary for the label to be applied.",
+      "description": "An `AccessLevel` is a label that can be applied to requests to Google Cloud\nservices, along with a list of requirements necessary for the label to be\napplied.",
       "type": "object",
       "properties": {
         "name": {
@@ -418,7 +418,9 @@
             "A desktop Mac operating system.",
             "A desktop Windows operating system.",
             "A desktop Linux operating system.",
-            "A desktop ChromeOS operating system."
+            "A desktop ChromeOS operating system.",
+            "An Android operating system.",
+            "An iOS operating system."
           ],
           "type": "string",
           "enum": [
@@ -426,7 +428,9 @@
             "DESKTOP_MAC",
             "DESKTOP_WINDOWS",
             "DESKTOP_LINUX",
-            "DESKTOP_CHROME_OS"
+            "DESKTOP_CHROME_OS",
+            "ANDROID",
+            "IOS"
           ]
         },
         "minimumVersion": {
@@ -493,7 +497,7 @@
     },
     "ServicePerimeter": {
       "id": "ServicePerimeter",
-      "description": "`ServicePerimeter` describes a set of GCP resources which can freely import\nand export data amongst themselves, but not export outside of the\n`ServicePerimeter`. If a request with a source within this `ServicePerimeter`\nhas a target outside of the `ServicePerimeter`, the request will be blocked.\nOtherwise the request is allowed. There are two types of Service Perimeter -\nRegular and Bridge. Regular Service Perimeters cannot overlap, a single GCP\nproject can only belong to a single regular Service Perimeter. Service\nPerimeter Bridges can contain only GCP projects as members, a single GCP\nproject may belong to multiple Service Perimeter Bridges.",
+      "description": "`ServicePerimeter` describes a set of Google Cloud resources which can freely\nimport and export data amongst themselves, but not export outside of the\n`ServicePerimeter`. If a request with a source within this `ServicePerimeter`\nhas a target outside of the `ServicePerimeter`, the request will be blocked.\nOtherwise the request is allowed. There are two types of Service Perimeter -\nRegular and Bridge. Regular Service Perimeters cannot overlap, a single\nGoogle Cloud project can only belong to a single regular Service Perimeter.\nService Perimeter Bridges can contain only Google Cloud projects as members,\na single Google Cloud project may belong to multiple Service Perimeter\nBridges.",
       "type": "object",
       "properties": {
         "name": {
@@ -546,32 +550,32 @@
     },
     "ServicePerimeterConfig": {
       "id": "ServicePerimeterConfig",
-      "description": "`ServicePerimeterConfig` specifies a set of GCP resources that describe\nspecific Service Perimeter configuration.",
+      "description": "`ServicePerimeterConfig` specifies a set of Google Cloud resources that\ndescribe specific Service Perimeter configuration.",
       "type": "object",
       "properties": {
         "resources": {
-          "description": "A list of GCP resources that are inside of the service perimeter.\nCurrently only projects are allowed. Format: `projects\/{project_number}`",
+          "description": "A list of Google Cloud resources that are inside of the service perimeter.\nCurrently only projects are allowed. Format: `projects\/{project_number}`",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "accessLevels": {
-          "description": "A list of `AccessLevel` resource names that allow resources within the\n`ServicePerimeter` to be accessed from the internet. `AccessLevels` listed\nmust be in the same policy as this `ServicePerimeter`. Referencing a\nnonexistent `AccessLevel` is a syntax error. If no `AccessLevel` names are\nlisted, resources within the perimeter can only be accessed via GCP calls\nwith request origins within the perimeter. Example:\n`\"accessPolicies\/MY_POLICY\/accessLevels\/MY_LEVEL\"`.\nFor Service Perimeter Bridge, must be empty.",
+          "description": "A list of `AccessLevel` resource names that allow resources within the\n`ServicePerimeter` to be accessed from the internet. `AccessLevels` listed\nmust be in the same policy as this `ServicePerimeter`. Referencing a\nnonexistent `AccessLevel` is a syntax error. If no `AccessLevel` names are\nlisted, resources within the perimeter can only be accessed via Google\nCloud calls with request origins within the perimeter. Example:\n`\"accessPolicies\/MY_POLICY\/accessLevels\/MY_LEVEL\"`.\nFor Service Perimeter Bridge, must be empty.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "unrestrictedServices": {
-          "description": "GCP services that are not subject to the Service Perimeter\nrestrictions. Deprecated. Must be set to a single wildcard \"*\".\n\nThe wildcard means that unless explicitly specified by\n\"restricted_services\" list, any service is treated as unrestricted.",
+          "description": "Google Cloud services that are not subject to the Service Perimeter\nrestrictions. Deprecated. Must be set to a single wildcard \"*\".\n\nThe wildcard means that unless explicitly specified by\n\"restricted_services\" list, any service is treated as unrestricted.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "restrictedServices": {
-          "description": "GCP services that are subject to the Service Perimeter restrictions. Must\ncontain a list of services. For example, if\n`storage.googleapis.com` is specified, access to the storage buckets\ninside the perimeter must meet the perimeter's access restrictions.",
+          "description": "Google Cloud services that are subject to the Service Perimeter\nrestrictions. Must contain a list of services. For example, if\n`storage.googleapis.com` is specified, access to the storage buckets\ninside the perimeter must meet the perimeter's access restrictions.",
           "type": "array",
           "items": {
             "type": "string"

@@ -9,6 +9,7 @@ class RedisV1alpha1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://redis.googleapis.com/'
+  MTLS_BASE_URL = u'https://redis.mtls.googleapis.com/'
 
   _PACKAGE = u'redis'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

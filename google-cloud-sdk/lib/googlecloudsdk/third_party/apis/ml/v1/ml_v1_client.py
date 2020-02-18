@@ -9,6 +9,7 @@ class MlV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://ml.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'ml'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']

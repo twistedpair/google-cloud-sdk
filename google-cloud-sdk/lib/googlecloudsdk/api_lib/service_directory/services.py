@@ -69,10 +69,10 @@ class ServicesClient(object):
         field='services',
         batch_size_attribute='pageSize')
 
-  def Resolve(self, service_ref):
+  def Resolve(self, service_ref, max_endpoints=None):
     """Services resolve request."""
     resolve_req = self.msgs.ServicedirectoryProjectsLocationsNamespacesServicesResolveRequest(
-        name=service_ref.RelativeName())
+        name=service_ref.RelativeName(), maxEndpoints=max_endpoints)
     return self.service.Resolve(resolve_req)
 
   def Update(self, service_ref, metadata=None):

@@ -20,11 +20,13 @@ from __future__ import unicode_literals
 
 import os
 
+from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -112,10 +114,20 @@ def CreateFeature(project, feature_id, **kwargs):
   op = client.projects_locations_global_features.Create(request)
   op_resource = resources.REGISTRY.ParseRelativeName(
       op.name, collection='gkehub.projects.locations.operations')
-  return waiter.WaitFor(
+  result = waiter.WaitFor(
       waiter.CloudOperationPoller(client.projects_locations_global_features,
                                   client.projects_locations_operations),
       op_resource, 'Waiting for Feature to be created')
+
+  # This allows us pass warning messages returned from OnePlatform backends.
+  request_type = client.projects_locations_operations.GetRequestType('Get')
+  op = client.projects_locations_operations.Get(
+      request_type(name=op_resource.RelativeName()))
+  metadata_dict = encoding.MessageToPyValue(op.metadata)
+  if 'statusDetail' in metadata_dict:
+    log.warning(metadata_dict['statusDetail'])
+
+  return result
 
 
 def GetFeature(name):
@@ -174,8 +186,7 @@ def ListMemberships(project):
     apitools.base.py.HttpError: if the request returns an HTTP error
   """
   parent = 'projects/{}/locations/global'.format(project)
-  api_version = core_apis.ResolveVersion('gkehub')
-  client = core_apis.GetClientInstance('gkehub', api_version)
+  client = core_apis.GetClientInstance('gkehub', 'v1beta1')
   response = client.projects_locations_memberships.List(
       client.MESSAGES_MODULE
       .GkehubProjectsLocationsMembershipsListRequest(parent=parent))

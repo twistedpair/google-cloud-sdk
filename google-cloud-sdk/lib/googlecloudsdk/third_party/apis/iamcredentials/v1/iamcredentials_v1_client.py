@@ -9,6 +9,7 @@ class IamcredentialsV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://iamcredentials.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'iamcredentials'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

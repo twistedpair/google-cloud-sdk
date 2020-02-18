@@ -9,6 +9,7 @@ class DatafusionV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://datafusion.googleapis.com/'
+  MTLS_BASE_URL = u'https://datafusion.mtls.googleapis.com/'
 
   _PACKAGE = u'datafusion'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

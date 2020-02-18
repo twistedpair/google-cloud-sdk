@@ -9,6 +9,7 @@ class SqlV1beta4(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://sqladmin.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'sql'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/sqlservice.admin']

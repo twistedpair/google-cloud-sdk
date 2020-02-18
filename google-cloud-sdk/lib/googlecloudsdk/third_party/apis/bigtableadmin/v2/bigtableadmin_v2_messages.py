@@ -231,14 +231,14 @@ class BigtableadminProjectsInstancesAppProfilesCreateRequest(_messages.Message):
 
   Fields:
     appProfile: A AppProfile resource to be passed as the request body.
-    appProfileId: The ID to be used when referring to the new app profile
-      within its instance, e.g., just `myprofile` rather than
+    appProfileId: Required. The ID to be used when referring to the new app
+      profile within its instance, e.g., just `myprofile` rather than
       `projects/myproject/instances/myinstance/appProfiles/myprofile`.
     ignoreWarnings: If true, ignore safety checks when creating the app
       profile.
-    parent: The unique name of the instance in which to create the new app
-      profile. Values are of the form
-      `projects/<project>/instances/<instance>`.
+    parent: Required. The unique name of the instance in which to create the
+      new app profile. Values are of the form
+      `projects/{project}/instances/{instance}`.
   """
 
   appProfile = _messages.MessageField('AppProfile', 1)
@@ -251,11 +251,11 @@ class BigtableadminProjectsInstancesAppProfilesDeleteRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesAppProfilesDeleteRequest object.
 
   Fields:
-    ignoreWarnings: If true, ignore safety checks when deleting the app
-      profile.
-    name: The unique name of the app profile to be deleted. Values are of the
-      form
-      `projects/<project>/instances/<instance>/appProfiles/<app_profile>`.
+    ignoreWarnings: Required. If true, ignore safety checks when deleting the
+      app profile.
+    name: Required. The unique name of the app profile to be deleted. Values
+      are of the form
+      `projects/{project}/instances/{instance}/appProfiles/{app_profile}`.
   """
 
   ignoreWarnings = _messages.BooleanField(1)
@@ -266,8 +266,9 @@ class BigtableadminProjectsInstancesAppProfilesGetRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesAppProfilesGetRequest object.
 
   Fields:
-    name: The unique name of the requested app profile. Values are of the form
-      `projects/<project>/instances/<instance>/appProfiles/<app_profile>`.
+    name: Required. The unique name of the requested app profile. Values are
+      of the form
+      `projects/{project}/instances/{instance}/appProfiles/{app_profile}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -285,9 +286,9 @@ class BigtableadminProjectsInstancesAppProfilesListRequest(_messages.Message):
       set in subsequent calls, it must match the page_size given in the first
       request.
     pageToken: The value of `next_page_token` returned by a previous call.
-    parent: The unique name of the instance for which a list of app profiles
-      is requested. Values are of the form
-      `projects/<project>/instances/<instance>`. Use `<instance> = '-'` to
+    parent: Required. The unique name of the instance for which a list of app
+      profiles is requested. Values are of the form
+      `projects/{project}/instances/{instance}`. Use `{instance} = '-'` to
       list AppProfiles for all Instances in a project, e.g.,
       `projects/myproject/instances/-`.
   """
@@ -306,8 +307,8 @@ class BigtableadminProjectsInstancesAppProfilesPatchRequest(_messages.Message):
       profile.
     name: (`OutputOnly`) The unique name of the app profile. Values are of the
       form `projects/<project>/instances/<instance>/appProfiles/_a-zA-Z0-9*`.
-    updateMask: The subset of app profile fields which should be replaced. If
-      unset, all fields will be replaced.
+    updateMask: Required. The subset of app profile fields which should be
+      replaced. If unset, all fields will be replaced.
   """
 
   appProfile = _messages.MessageField('AppProfile', 1)
@@ -494,12 +495,12 @@ class BigtableadminProjectsInstancesClustersCreateRequest(_messages.Message):
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    clusterId: The ID to be used when referring to the new cluster within its
-      instance, e.g., just `mycluster` rather than
+    clusterId: Required. The ID to be used when referring to the new cluster
+      within its instance, e.g., just `mycluster` rather than
       `projects/myproject/instances/myinstance/clusters/mycluster`.
-    parent: The unique name of the instance in which to create the new
-      cluster. Values are of the form
-      `projects/<project>/instances/<instance>`.
+    parent: Required. The unique name of the instance in which to create the
+      new cluster. Values are of the form
+      `projects/{project}/instances/{instance}`.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -511,8 +512,9 @@ class BigtableadminProjectsInstancesClustersDeleteRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesClustersDeleteRequest object.
 
   Fields:
-    name: The unique name of the cluster to be deleted. Values are of the form
-      `projects/<project>/instances/<instance>/clusters/<cluster>`.
+    name: Required. The unique name of the cluster to be deleted. Values are
+      of the form
+      `projects/{project}/instances/{instance}/clusters/{cluster}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -522,8 +524,8 @@ class BigtableadminProjectsInstancesClustersGetRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesClustersGetRequest object.
 
   Fields:
-    name: The unique name of the requested cluster. Values are of the form
-      `projects/<project>/instances/<instance>/clusters/<cluster>`.
+    name: Required. The unique name of the requested cluster. Values are of
+      the form `projects/{project}/instances/{instance}/clusters/{cluster}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -534,9 +536,9 @@ class BigtableadminProjectsInstancesClustersListRequest(_messages.Message):
 
   Fields:
     pageToken: DEPRECATED: This field is unused and ignored.
-    parent: The unique name of the instance for which a list of clusters is
-      requested. Values are of the form
-      `projects/<project>/instances/<instance>`. Use `<instance> = '-'` to
+    parent: Required. The unique name of the instance for which a list of
+      clusters is requested. Values are of the form
+      `projects/{project}/instances/{instance}`. Use `{instance} = '-'` to
       list Clusters for all Instances in a project, e.g.,
       `projects/myproject/instances/-`.
   """
@@ -549,8 +551,8 @@ class BigtableadminProjectsInstancesDeleteRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesDeleteRequest object.
 
   Fields:
-    name: The unique name of the instance to be deleted. Values are of the
-      form `projects/<project>/instances/<instance>`.
+    name: Required. The unique name of the instance to be deleted. Values are
+      of the form `projects/{project}/instances/{instance}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -575,8 +577,8 @@ class BigtableadminProjectsInstancesGetRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesGetRequest object.
 
   Fields:
-    name: The unique name of the requested instance. Values are of the form
-      `projects/<project>/instances/<instance>`.
+    name: Required. The unique name of the requested instance. Values are of
+      the form `projects/{project}/instances/{instance}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -587,8 +589,8 @@ class BigtableadminProjectsInstancesListRequest(_messages.Message):
 
   Fields:
     pageToken: DEPRECATED: This field is unused and ignored.
-    parent: The unique name of the project for which a list of instances is
-      requested. Values are of the form `projects/<project>`.
+    parent: Required. The unique name of the project for which a list of
+      instances is requested. Values are of the form `projects/{project}`.
   """
 
   pageToken = _messages.StringField(1)
@@ -600,10 +602,10 @@ class BigtableadminProjectsInstancesPartialUpdateInstanceRequest(_messages.Messa
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    name: (`OutputOnly`) The unique name of the instance. Values are of the
-      form `projects/<project>/instances/a-z+[a-z0-9]`.
-    updateMask: The subset of Instance fields which should be replaced. Must
-      be explicitly set.
+    name: Required. (`OutputOnly`) The unique name of the instance. Values are
+      of the form `projects/{project}/instances/a-z+[a-z0-9]`.
+    updateMask: Required. The subset of Instance fields which should be
+      replaced. Must be explicitly set.
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -632,9 +634,9 @@ class BigtableadminProjectsInstancesTablesCheckConsistencyRequest(_messages.Mess
   Fields:
     checkConsistencyRequest: A CheckConsistencyRequest resource to be passed
       as the request body.
-    name: The unique name of the Table for which to check replication
-      consistency. Values are of the form
-      `projects/<project>/instances/<instance>/tables/<table>`.
+    name: Required. The unique name of the Table for which to check
+      replication consistency. Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}`.
   """
 
   checkConsistencyRequest = _messages.MessageField('CheckConsistencyRequest', 1)
@@ -647,8 +649,8 @@ class BigtableadminProjectsInstancesTablesCreateRequest(_messages.Message):
   Fields:
     createTableRequest: A CreateTableRequest resource to be passed as the
       request body.
-    parent: The unique name of the instance in which to create the table.
-      Values are of the form `projects/<project>/instances/<instance>`.
+    parent: Required. The unique name of the instance in which to create the
+      table. Values are of the form `projects/{project}/instances/{instance}`.
   """
 
   createTableRequest = _messages.MessageField('CreateTableRequest', 1)
@@ -659,8 +661,8 @@ class BigtableadminProjectsInstancesTablesDeleteRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTablesDeleteRequest object.
 
   Fields:
-    name: The unique name of the table to be deleted. Values are of the form
-      `projects/<project>/instances/<instance>/tables/<table>`.
+    name: Required. The unique name of the table to be deleted. Values are of
+      the form `projects/{project}/instances/{instance}/tables/{table}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -672,9 +674,9 @@ class BigtableadminProjectsInstancesTablesDropRowRangeRequest(_messages.Message)
   Fields:
     dropRowRangeRequest: A DropRowRangeRequest resource to be passed as the
       request body.
-    name: The unique name of the table on which to drop a range of rows.
-      Values are of the form
-      `projects/<project>/instances/<instance>/tables/<table>`.
+    name: Required. The unique name of the table on which to drop a range of
+      rows. Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}`.
   """
 
   dropRowRangeRequest = _messages.MessageField('DropRowRangeRequest', 1)
@@ -688,9 +690,9 @@ class BigtableadminProjectsInstancesTablesGenerateConsistencyTokenRequest(_messa
   Fields:
     generateConsistencyTokenRequest: A GenerateConsistencyTokenRequest
       resource to be passed as the request body.
-    name: The unique name of the Table for which to create a consistency
-      token. Values are of the form
-      `projects/<project>/instances/<instance>/tables/<table>`.
+    name: Required. The unique name of the Table for which to create a
+      consistency token. Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}`.
   """
 
   generateConsistencyTokenRequest = _messages.MessageField('GenerateConsistencyTokenRequest', 1)
@@ -720,8 +722,8 @@ class BigtableadminProjectsInstancesTablesGetRequest(_messages.Message):
       fields. Defaults to `SCHEMA_VIEW` if unspecified.
 
   Fields:
-    name: The unique name of the requested table. Values are of the form
-      `projects/<project>/instances/<instance>/tables/<table>`.
+    name: Required. The unique name of the requested table. Values are of the
+      form `projects/{project}/instances/{instance}/tables/{table}`.
     view: The view to be applied to the returned table's fields. Defaults to
       `SCHEMA_VIEW` if unspecified.
   """
@@ -764,8 +766,9 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
       set in subsequent calls, it must match the page_size given in the first
       request.
     pageToken: The value of `next_page_token` returned by a previous call.
-    parent: The unique name of the instance for which tables should be listed.
-      Values are of the form `projects/<project>/instances/<instance>`.
+    parent: Required. The unique name of the instance for which tables should
+      be listed. Values are of the form
+      `projects/{project}/instances/{instance}`.
     view: The view to be applied to the returned tables' fields. Only
       NAME_ONLY view (default) and REPLICATION_VIEW are supported.
   """
@@ -800,9 +803,9 @@ class BigtableadminProjectsInstancesTablesModifyColumnFamiliesRequest(_messages.
   Fields:
     modifyColumnFamiliesRequest: A ModifyColumnFamiliesRequest resource to be
       passed as the request body.
-    name: The unique name of the table whose families should be modified.
-      Values are of the form
-      `projects/<project>/instances/<instance>/tables/<table>`.
+    name: Required. The unique name of the table whose families should be
+      modified. Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}`.
   """
 
   modifyColumnFamiliesRequest = _messages.MessageField('ModifyColumnFamiliesRequest', 1)
@@ -947,8 +950,8 @@ class CheckConsistencyRequest(_messages.Message):
   google.bigtable.admin.v2.BigtableTableAdmin.CheckConsistency
 
   Fields:
-    consistencyToken: The token created using GenerateConsistencyToken for the
-      Table.
+    consistencyToken: Required. The token created using
+      GenerateConsistencyToken for the Table.
   """
 
   consistencyToken = _messages.StringField(1)
@@ -984,11 +987,11 @@ class Cluster(_messages.Message):
     location: (`CreationOnly`) The location where this cluster's nodes and
       storage reside. For best performance, clients should be located as close
       as possible to this cluster. Currently only zones are supported, so
-      values should be of the form `projects/<project>/locations/<zone>`.
-    name: (`OutputOnly`) The unique name of the cluster. Values are of the
-      form `projects/<project>/instances/<instance>/clusters/a-z*`.
-    serveNodes: The number of nodes allocated to this cluster. More nodes
-      enable higher throughput and more consistent performance.
+      values should be of the form `projects/{project}/locations/{zone}`.
+    name: Required. (`OutputOnly`) The unique name of the cluster. Values are
+      of the form `projects/{project}/instances/{instance}/clusters/a-z*`.
+    serveNodes: Required. The number of nodes allocated to this cluster. More
+      nodes enable higher throughput and more consistent performance.
     state: (`OutputOnly`) The current state of the cluster.
   """
 
@@ -1173,14 +1176,14 @@ class CreateClusterRequest(_messages.Message):
   r"""Request message for BigtableInstanceAdmin.CreateCluster.
 
   Fields:
-    cluster: The cluster to be created. Fields marked `OutputOnly` must be
-      left blank.
-    clusterId: The ID to be used when referring to the new cluster within its
-      instance, e.g., just `mycluster` rather than
+    cluster: Required. The cluster to be created. Fields marked `OutputOnly`
+      must be left blank.
+    clusterId: Required. The ID to be used when referring to the new cluster
+      within its instance, e.g., just `mycluster` rather than
       `projects/myproject/instances/myinstance/clusters/mycluster`.
-    parent: The unique name of the instance in which to create the new
-      cluster. Values are of the form
-      `projects/<project>/instances/<instance>`.
+    parent: Required. The unique name of the instance in which to create the
+      new cluster. Values are of the form
+      `projects/{project}/instances/{instance}`.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -1208,31 +1211,31 @@ class CreateInstanceRequest(_messages.Message):
   r"""Request message for BigtableInstanceAdmin.CreateInstance.
 
   Messages:
-    ClustersValue: The clusters to be created within the instance, mapped by
-      desired cluster ID, e.g., just `mycluster` rather than
+    ClustersValue: Required. The clusters to be created within the instance,
+      mapped by desired cluster ID, e.g., just `mycluster` rather than
       `projects/myproject/instances/myinstance/clusters/mycluster`. Fields
       marked `OutputOnly` must be left blank. Currently, at most four clusters
       can be specified.
 
   Fields:
-    clusters: The clusters to be created within the instance, mapped by
-      desired cluster ID, e.g., just `mycluster` rather than
+    clusters: Required. The clusters to be created within the instance, mapped
+      by desired cluster ID, e.g., just `mycluster` rather than
       `projects/myproject/instances/myinstance/clusters/mycluster`. Fields
       marked `OutputOnly` must be left blank. Currently, at most four clusters
       can be specified.
-    instance: The instance to create. Fields marked `OutputOnly` must be left
-      blank.
-    instanceId: The ID to be used when referring to the new instance within
-      its project, e.g., just `myinstance` rather than
+    instance: Required. The instance to create. Fields marked `OutputOnly`
+      must be left blank.
+    instanceId: Required. The ID to be used when referring to the new instance
+      within its project, e.g., just `myinstance` rather than
       `projects/myproject/instances/myinstance`.
-    parent: The unique name of the project in which to create the new
-      instance. Values are of the form `projects/<project>`.
+    parent: Required. The unique name of the project in which to create the
+      new instance. Values are of the form `projects/{project}`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ClustersValue(_messages.Message):
-    r"""The clusters to be created within the instance, mapped by desired
-    cluster ID, e.g., just `mycluster` rather than
+    r"""Required. The clusters to be created within the instance, mapped by
+    desired cluster ID, e.g., just `mycluster` rather than
     `projects/myproject/instances/myinstance/clusters/mycluster`. Fields
     marked `OutputOnly` must be left blank. Currently, at most four clusters
     can be specified.
@@ -1280,10 +1283,10 @@ class CreateTableRequest(_messages.Message):
       customer_2) => {"customer_1"}.`     - Tablet 4 `[customer_2, other)
       => {"customer_2"}.`     - Tablet 5 `[other, )                =>
       {"other", "zz"}.`
-    table: The Table to create.
-    tableId: The name by which the new table should be referred to within the
-      parent instance, e.g., `foobar` rather than `<parent>/tables/foobar`.
-      Maximum 50 characters.
+    table: Required. The Table to create.
+    tableId: Required. The name by which the new table should be referred to
+      within the parent instance, e.g., `foobar` rather than
+      `{parent}/tables/foobar`. Maximum 50 characters.
   """
 
   initialSplits = _messages.MessageField('Split', 1, repeated=True)
@@ -1419,10 +1422,11 @@ class Instance(_messages.Message):
 
   Enums:
     StateValueValuesEnum: (`OutputOnly`) The current state of the instance.
-    TypeValueValuesEnum: The type of the instance. Defaults to `PRODUCTION`.
+    TypeValueValuesEnum: Required. The type of the instance. Defaults to
+      `PRODUCTION`.
 
   Messages:
-    LabelsValue: Labels are a flexible and lightweight mechanism for
+    LabelsValue: Required. Labels are a flexible and lightweight mechanism for
       organizing cloud resources into groups that reflect a customer's
       organizational needs and deployment strategies. They can be used to
       filter resources and aggregate metrics.  * Label keys must be between 1
@@ -1434,22 +1438,23 @@ class Instance(_messages.Message):
       128 bytes.
 
   Fields:
-    displayName: The descriptive name for this instance as it appears in UIs.
-      Can be changed at any time, but should be kept globally unique to avoid
-      confusion.
-    labels: Labels are a flexible and lightweight mechanism for organizing
-      cloud resources into groups that reflect a customer's organizational
-      needs and deployment strategies. They can be used to filter resources
-      and aggregate metrics.  * Label keys must be between 1 and 63 characters
-      long and must conform to   the regular expression: `\p{Ll}\p{Lo}{0,62}`.
-      * Label values must be between 0 and 63 characters long and must conform
-      to   the regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more
-      than 64 labels can be associated with a given resource. * Keys and
-      values must both be under 128 bytes.
-    name: (`OutputOnly`) The unique name of the instance. Values are of the
-      form `projects/<project>/instances/a-z+[a-z0-9]`.
+    displayName: Required. The descriptive name for this instance as it
+      appears in UIs. Can be changed at any time, but should be kept globally
+      unique to avoid confusion.
+    labels: Required. Labels are a flexible and lightweight mechanism for
+      organizing cloud resources into groups that reflect a customer's
+      organizational needs and deployment strategies. They can be used to
+      filter resources and aggregate metrics.  * Label keys must be between 1
+      and 63 characters long and must conform to   the regular expression:
+      `\p{Ll}\p{Lo}{0,62}`. * Label values must be between 0 and 63 characters
+      long and must conform to   the regular expression:
+      `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more than 64 labels can be
+      associated with a given resource. * Keys and values must both be under
+      128 bytes.
+    name: Required. (`OutputOnly`) The unique name of the instance. Values are
+      of the form `projects/{project}/instances/a-z+[a-z0-9]`.
     state: (`OutputOnly`) The current state of the instance.
-    type: The type of the instance. Defaults to `PRODUCTION`.
+    type: Required. The type of the instance. Defaults to `PRODUCTION`.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1467,7 +1472,7 @@ class Instance(_messages.Message):
     CREATING = 2
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of the instance. Defaults to `PRODUCTION`.
+    r"""Required. The type of the instance. Defaults to `PRODUCTION`.
 
     Values:
       TYPE_UNSPECIFIED: The type of the instance is unspecified. If set when
@@ -1489,15 +1494,15 @@ class Instance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels are a flexible and lightweight mechanism for organizing cloud
-    resources into groups that reflect a customer's organizational needs and
-    deployment strategies. They can be used to filter resources and aggregate
-    metrics.  * Label keys must be between 1 and 63 characters long and must
-    conform to   the regular expression: `\p{Ll}\p{Lo}{0,62}`. * Label values
-    must be between 0 and 63 characters long and must conform to   the regular
-    expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more than 64 labels can be
-    associated with a given resource. * Keys and values must both be under 128
-    bytes.
+    r"""Required. Labels are a flexible and lightweight mechanism for
+    organizing cloud resources into groups that reflect a customer's
+    organizational needs and deployment strategies. They can be used to filter
+    resources and aggregate metrics.  * Label keys must be between 1 and 63
+    characters long and must conform to   the regular expression:
+    `\p{Ll}\p{Lo}{0,62}`. * Label values must be between 0 and 63 characters
+    long and must conform to   the regular expression:
+    `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more than 64 labels can be associated
+    with a given resource. * Keys and values must both be under 128 bytes.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1751,10 +1756,10 @@ class ModifyColumnFamiliesRequest(_messages.Message):
   google.bigtable.admin.v2.BigtableTableAdmin.ModifyColumnFamilies
 
   Fields:
-    modifications: Modifications to be atomically applied to the specified
-      table's families. Entries are applied in order, meaning that earlier
-      modifications can be masked by later ones (in the case of repeated
-      updates to the same family, for example).
+    modifications: Required. Modifications to be atomically applied to the
+      specified table's families. Entries are applied in order, meaning that
+      earlier modifications can be masked by later ones (in the case of
+      repeated updates to the same family, for example).
   """
 
   modifications = _messages.MessageField('Modification', 1, repeated=True)
@@ -1914,9 +1919,10 @@ class PartialUpdateInstanceRequest(_messages.Message):
   r"""Request message for BigtableInstanceAdmin.PartialUpdateInstance.
 
   Fields:
-    instance: The Instance which will (partially) replace the current value.
-    updateMask: The subset of Instance fields which should be replaced. Must
-      be explicitly set.
+    instance: Required. The Instance which will (partially) replace the
+      current value.
+    updateMask: Required. The subset of Instance fields which should be
+      replaced. Must be explicitly set.
   """
 
   instance = _messages.MessageField('Instance', 1)

@@ -9,6 +9,7 @@ class DataflowV1b3(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://dataflow.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'dataflow'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/compute', u'https://www.googleapis.com/auth/compute.readonly', u'https://www.googleapis.com/auth/userinfo.email']

@@ -9,6 +9,7 @@ class GkehubV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://gkehub.googleapis.com/'
+  MTLS_BASE_URL = u'https://gkehub.mtls.googleapis.com/'
 
   _PACKAGE = u'gkehub'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

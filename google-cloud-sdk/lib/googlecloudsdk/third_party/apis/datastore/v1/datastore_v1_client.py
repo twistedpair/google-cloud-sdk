@@ -9,6 +9,7 @@ class DatastoreV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://datastore.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'datastore'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/datastore']

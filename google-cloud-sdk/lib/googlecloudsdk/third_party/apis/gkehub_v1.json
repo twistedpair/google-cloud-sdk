@@ -231,7 +231,7 @@
     },
     "Membership": {
       "id": "Membership",
-      "description": "Membership contains information about a member cluster.\nNext tag: 10",
+      "description": "Membership contains information about a member cluster.",
       "type": "object",
       "properties": {
         "name": {
@@ -250,6 +250,7 @@
           "type": "string"
         },
         "endpoint": {
+          "description": "Optional. Endpoint information to reach this member.",
           "$ref": "MembershipEndpoint"
         },
         "state": {
@@ -274,6 +275,11 @@
         "externalId": {
           "description": "Optional. An externally-generated and managed ID for this Membership. This ID may\nstill be modified after creation but it is not recommended to do so.\nThe ID must match the regex: `a-zA-Z0-9*`",
           "type": "string"
+        },
+        "lastConnectionTime": {
+          "description": "Output only. For clusters using Connect, the timestamp of the most recent connection\nestablished with Google Cloud. This time is updated every several minutes,\nnot continuously. For clusters that do not use GKE Connect, or that have\nnever connected successfully, this field will be unset.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -822,7 +828,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Optional. Lists the Memberships that match the filter expression. A filter expression\nfilters the resources listed in the response. The expression must be of\nthe form `<field> <operator> <value>` where operators: `<`, `>`, `<=`,\n`>=`,\n`!=`, `=`, `:` are supported (colon `:` represents a HAS operator which is\nroughly synonymous with equality). <field> can refer to a proto or JSON\nfield, or a synthetic field. Field names can be camelCase or snake_case.\n\nExamples:\n- Filter by name:\n  name = \"projects\/foo-proj\/locations\/global\/membership\/bar\n\n- Filter by labels:\n  - Resources that have a key called `foo`\n    labels.foo:*\n  - Resources that have a key called `foo` whose value is `bar`\n    labels.foo = bar\n\n - Filter by state:\n   - Members in CREATING state.\n     state = CREATING",
+                      "description": "Optional. Lists the Memberships that match the filter expression. A filter expression\nfilters the resources listed in the response. The expression must be of\nthe form `{field} {operator} {value}` where operators:\n`<`, `>`, `<=`,`>=`, `!=`, `=`, `:`\nare supported (colon `:` represents a HAS operator which is roughly\nsynonymous with equality). `{field}` can refer to a proto or JSON field,\nor a synthetic field. Field names can be camelCase or snake_case.\n\nExamples:\n- Filter by name:\n  name = \"projects\/foo-proj\/locations\/global\/membership\/bar\n\n- Filter by labels:\n  - Resources that have a key called `foo`\n    labels.foo:*\n  - Resources that have a key called `foo` whose value is `bar`\n    labels.foo = bar\n\n - Filter by state:\n   - Members in CREATING state.\n     state = CREATING",
                       "location": "query",
                       "type": "string"
                     },

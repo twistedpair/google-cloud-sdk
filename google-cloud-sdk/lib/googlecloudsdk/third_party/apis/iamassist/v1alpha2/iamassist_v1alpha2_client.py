@@ -9,6 +9,7 @@ class IamassistV1alpha2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://iamassist.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'iamassist'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

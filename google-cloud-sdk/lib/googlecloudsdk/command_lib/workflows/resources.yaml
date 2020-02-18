@@ -20,6 +20,30 @@ workflow:
     help: |
       The Cloud Workflow for the {resource}.
 
+workflow_for_executions:
+  name: workflow
+  # Uses workflowexecutions.googleapis.com API.
+  collection: workflowexecutions.projects.locations.workflows
+  attributes:
+  - *location
+  - &workflow_for_executions
+    parameter_name: workflowsId
+    attribute_name: workflow
+    help: |
+      The Cloud Workflow for the {resource}.
+
+execution:
+  name: execution
+  # Uses workflowexecutions.googleapis.com API.
+  collection: workflowexecutions.projects.locations.workflows.executions
+  attributes:
+  - *location
+  - *workflow_for_executions
+  - parameter_name: executionsId
+    attribute_name: execution
+    help: |
+      The id of a Workflow execution.
+
 operation:
   name: operation
   collection: workflows.projects.locations.operations

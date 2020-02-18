@@ -223,11 +223,12 @@ def AddMetadataArgs(parser, required=False):
   metadata_help = """\
       Metadata to be made available to the guest operating system
       running on the instances. Each metadata entry is a key/value
-      pair separated by an equals sign. Metadata keys must be unique
-      and less than 128 bytes in length. Values must be less than or
-      equal to 32,768 bytes in length. Multiple arguments can be
+      pair separated by an equals sign. Each metadata key must be unique
+      and have a max of 128 bytes in length. Each value must have a max of
+      256 KB in length. Multiple arguments can be
       passed to this flag, e.g.,
       ``--metadata key-1=value-1,key-2=value-2,key-3=value-3''.
+      The combined total size for all metadata entries is 512 KB.
 
       In images that have Compute Engine tools installed on them,
       such as the

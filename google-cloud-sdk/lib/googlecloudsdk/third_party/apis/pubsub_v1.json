@@ -441,7 +441,7 @@
           "$ref": "ExpirationPolicy"
         },
         "filter": {
-          "description": "An expression written in the Cloud Pub\/Sub filter language. If non-empty,\nthen only `PubsubMessage`s whose `attributes` field matches the filter are\ndelivered on this subscription. If empty, then no messages are filtered\nout.",
+          "description": "An expression written in the Cloud Pub\/Sub filter language. If non-empty,\nthen only `PubsubMessage`s whose `attributes` field matches the filter are\ndelivered on this subscription. If empty, then no messages are filtered\nout.\n<b>EXPERIMENTAL:<\/b> This feature is part of a closed alpha release. This\nAPI might be changed in backward-incompatible ways and is not recommended\nfor production use. It is not subject to any SLA or deprecation policy.",
           "type": "string"
         },
         "deadLetterPolicy": {

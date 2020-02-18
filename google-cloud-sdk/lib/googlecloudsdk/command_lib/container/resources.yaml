@@ -23,3 +23,9 @@ attestor:
     parameter_name: attestorsId
     attribute_name: attestor
     help: The name of the Cloud attestor.
+
+continuousValidationConfig:
+  name: continuousValidationConfig
+  collection: binaryauthorization.projects.continuousValidationConfig
+  attributes:
+  - *project

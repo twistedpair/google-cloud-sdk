@@ -272,6 +272,16 @@ def GetReverseLookupArg():
       'Cloud DNS to correctly resolve Non-RFC1918 PTR records.')
 
 
+def GetServiceDirectoryArg():
+  return base.Argument(
+      '--service-directory-namespace',
+      required=False,
+      hidden=True,
+      help='The fully qualified URL of the service directory namespace that '
+      'should be associated with the zone. Ignored for `public` visibility '
+      'zones')
+
+
 # Policy Flags
 def GetPolicyDescriptionArg(required=False):
   return base.Argument(

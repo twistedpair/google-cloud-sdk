@@ -105,7 +105,7 @@ def PromptIfADCEnvVarIsSet():
         message=message, throw_if_unattended=True, cancel_on_no=True)
 
 
-def WriteGcloudCredentialsToADC(creds):
+def WriteGcloudCredentialsToADC(creds, add_quota_project=False):
   """Writes gclouds's credential from auth login to ADC json."""
   if c_creds.CredentialType.FromCredentials(
       creds) != c_creds.CredentialType.USER_ACCOUNT:
@@ -113,7 +113,10 @@ def WriteGcloudCredentialsToADC(creds):
                 'credentials because it is not a user credential.')
     return
   PromptIfADCEnvVarIsSet()
-  c_creds.ADC(creds).DumpExtendedADCToFile()
+  if add_quota_project:
+    c_creds.ADC(creds).DumpExtendedADCToFile()
+  else:
+    c_creds.ADC(creds).DumpADCToFile()
 
 
 def GetADCAsJson():

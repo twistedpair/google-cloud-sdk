@@ -87,6 +87,13 @@ class NoMainClassError(exceptions.Error):
         'Invalid jar file: it does not contain a Main-Class Manifest entry.')
 
 
+class MavenPomNotSupported(exceptions.Error):
+
+  def __init__(self):
+    super(MavenPomNotSupported, self).__init__(
+        'Maven source deployment is not supported for Java8 GAE project.')
+
+
 class StagingCommandFailedError(exceptions.Error):
 
   def __init__(self, args, return_code, output_message):
@@ -212,6 +219,65 @@ class NoopCommand(_Command):
 
   def __eq__(self, other):
     return isinstance(other, NoopCommand)
+
+
+class CreateJava11MavenProjectCommand(_Command):
+  """A command that creates a java11 runtime app.yaml from a jar file."""
+
+  def EnsureInstalled(self):
+    pass
+
+  def GetPath(self):
+    return
+
+  def GetArgs(self, descriptor, pom_file, staging_dir):
+    return
+
+  def Run(self, staging_area, pom_file, project_dir):
+    # Logic is: copy/symlink the Maven project in the staged area, and create a
+    # simple file app.yaml for runtime: java11 if it does not exist.
+    # If it exists in the standard and documented default location
+    # (in project_dir/src/main/appengine/app.yaml), copy it in the staged
+    # area.
+    appenginewebxml = os.path.join(project_dir, 'src', 'main', 'webapp',
+                                   'WEB-INF', 'appengine-web.xml')
+    if os.path.exists(appenginewebxml):
+      raise MavenPomNotSupported()
+    appyaml = os.path.join(project_dir, 'src', 'main', 'appengine', 'app.yaml')
+    if os.path.exists(appyaml):
+      # Put the user app.yaml at the root of the staging directory to deploy
+      # as required by the Cloud SDK.
+      shutil.copy2(appyaml, staging_area)
+    else:
+      # Create a very simple 1 liner app.yaml for Java11 runtime.
+      files.WriteFileContents(
+          os.path.join(staging_area, 'app.yaml'),
+          'runtime: java11\n')
+
+    for name in os.listdir(project_dir):
+      # Do not deploy locally built artifacts, buildpack will clean this anyway.
+      if name == 'target':
+        continue
+      srcname = os.path.join(project_dir, name)
+      dstname = os.path.join(staging_area, name)
+      if os.path.isdir(srcname):
+        if hasattr(os, 'symlink'):
+          os.symlink(srcname, dstname)
+        else:
+          files.CopyTree(srcname, dstname)
+      else:
+        if hasattr(os, 'symlink'):
+          os.symlink(srcname, dstname)
+        else:
+          shutil.copy2(srcname, dstname)
+
+    return staging_area
+
+  def __eq__(self, other):
+    return isinstance(other, CreateJava11MavenProjectCommand)
+
+
+# end ludo
 
 
 class CreateJava11YamlCommand(_Command):
@@ -407,7 +473,10 @@ _STAGING_REGISTRY = {
 
 # _STAGING_REGISTRY_BETA extends _STAGING_REGISTRY, overriding entries if the
 # same key is used.
-_STAGING_REGISTRY_BETA = {}
+_STAGING_REGISTRY_BETA = {
+    runtime_registry.RegistryEntry('java-maven-project', {env.STANDARD}):
+        CreateJava11MavenProjectCommand(),
+}
 
 
 class Stager(object):

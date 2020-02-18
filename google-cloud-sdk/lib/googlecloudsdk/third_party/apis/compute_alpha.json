@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20200131",
+ "revision": "20200213",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -186,6 +186,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -210,6 +217,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -219,6 +227,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -322,6 +331,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -331,6 +341,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -416,6 +427,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -425,6 +437,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -724,6 +737,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -748,6 +768,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -757,6 +778,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -860,6 +882,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -869,6 +892,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -954,6 +978,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -963,6 +988,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -1556,6 +1582,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -1580,6 +1613,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -1589,6 +1623,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -1692,6 +1727,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -1701,6 +1737,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -1838,6 +1875,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -1847,6 +1885,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -2095,7 +2134,7 @@
    "properties": {
     "balancingMode": {
      "type": "string",
-     "description": "Specifies the balancing mode for the backend.\n\nWhen choosing a balancing mode, you need to consider the loadBalancingScheme, and protocol for the backend service, as well as the type of backend (instance group or NEG).\n\n \n- If the load balancing mode is CONNECTION, then the load is spread based on how many concurrent connections the backend can handle.\nYou can use the CONNECTION balancing mode if the protocol for the backend service is SSL, TCP, or UDP.\n\nIf the loadBalancingScheme for the backend service is EXTERNAL (SSL Proxy and TCP Proxy load balancers), you must also specify exactly one of the following parameters: maxConnections, maxConnectionsPerInstance, or maxConnectionsPerEndpoint.\n\nIf the loadBalancingScheme for the backend service is INTERNAL (internal TCP/UDP load balancers), you cannot specify any additional parameters.\n \n- If the load balancing mode is RATE, the load is spread based on the rate of HTTP requests per second (RPS).\nYou can use the RATE balancing mode if the protocol for the backend service is HTTP or HTTPS. You must specify exactly one of the following parameters: maxRate, maxRatePerInstance, or maxRatePerEndpoint.\n \n- If the load balancing mode is UTILIZATION, the load is spread based on the CPU utilization of instances in an instance group.\nYou can use the UTILIZATION balancing mode if the loadBalancingScheme of the backend service is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance groups. There are no restrictions on the backend service protocol.",
+     "description": "Specifies the balancing mode for the backend.\n\nWhen choosing a balancing mode, you need to consider the loadBalancingScheme, and protocol for the backend service, as well as the type of backend (instance group or NEG).\n\n \n- If the load balancing mode is CONNECTION, then the load is spread based on how many concurrent connections the backend can handle.\nYou can use the CONNECTION balancing mode if the protocol for the backend service is SSL, TCP, or UDP.\n\nIf the loadBalancingScheme for the backend service is EXTERNAL (SSL Proxy and TCP Proxy load balancers), you must also specify exactly one of the following parameters: maxConnections (except for regional managed instance groups), maxConnectionsPerInstance, or maxConnectionsPerEndpoint.\n\nIf the loadBalancingScheme for the backend service is INTERNAL (internal TCP/UDP load balancers), you cannot specify any additional parameters.\n \n- If the load balancing mode is RATE, the load is spread based on the rate of HTTP requests per second (RPS).\nYou can use the RATE balancing mode if the protocol for the backend service is HTTP or HTTPS. You must specify exactly one of the following parameters: maxRate (except for regional managed instance groups), maxRatePerInstance, or maxRatePerEndpoint.\n \n- If the load balancing mode is UTILIZATION, the load is spread based on the backend utilization of instances in an instance group.\nYou can use the UTILIZATION balancing mode if the loadBalancingScheme of the backend service is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance groups. There are no restrictions on the backend service protocol.",
      "enum": [
       "CONNECTION",
       "RATE",
@@ -2126,37 +2165,37 @@
     },
     "maxConnections": {
      "type": "integer",
-     "description": "Defines a maximum target for simultaneous connections for the entire backend (instance group or NEG). If the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is CONNECTION, and backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnectionsPerInstance, or maxConnectionsPerEndpoint.\n\nNot available if the backend's balancingMode is RATE. If the loadBalancingScheme is INTERNAL, then maxConnections is not supported, even though the backend requires a balancing mode of CONNECTION.",
+     "description": "Defines a target maximum number of simultaneous connections that the backend can handle. Valid for network endpoint group and instance group backends (except for regional managed instance groups). If the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is CONNECTION, and backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnectionsPerInstance, or maxConnectionsPerEndpoint.\n\nNot available if the backend's balancingMode is RATE. If the loadBalancingScheme is INTERNAL, then maxConnections is not supported, even though the backend requires a balancing mode of CONNECTION.",
      "format": "int32"
     },
     "maxConnectionsPerEndpoint": {
      "type": "integer",
-     "description": "Defines a maximum target for simultaneous connections for an endpoint of a NEG. This is multiplied by the number of endpoints in the NEG to implicitly calculate a maximum number of target maximum simultaneous connections for the NEG. If the backend's balancingMode is CONNECTION, and the backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnections, or maxConnectionsPerInstance.\n\nNot available if the backend's balancingMode is RATE. Internal TCP/UDP load balancing does not support setting maxConnectionsPerEndpoint even though its backends require a balancing mode of CONNECTION.",
+     "description": "Defines a target maximum number of simultaneous connections for an endpoint of a NEG. This is multiplied by the number of endpoints in the NEG to implicitly calculate a maximum number of target maximum simultaneous connections for the NEG. If the backend's balancingMode is CONNECTION, and the backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnections, or maxConnectionsPerInstance.\n\nNot available if the backend's balancingMode is RATE. Internal TCP/UDP load balancing does not support setting maxConnectionsPerEndpoint even though its backends require a balancing mode of CONNECTION.",
      "format": "int32"
     },
     "maxConnectionsPerInstance": {
      "type": "integer",
-     "description": "Defines a maximum target for simultaneous connections for a single VM in a backend instance group. This is multiplied by the number of instances in the instance group to implicitly calculate a target maximum number of simultaneous connections for the whole instance group. If the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is CONNECTION, and backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnections, or maxConnectionsPerEndpoint.\n\nNot available if the backend's balancingMode is RATE. Internal TCP/UDP load balancing does not support setting maxConnectionsPerInstance even though its backends require a balancing mode of CONNECTION.",
+     "description": "Defines a target maximum number of simultaneous connections for a single VM in a backend instance group. This is multiplied by the number of instances in the instance group to implicitly calculate a target maximum number of simultaneous connections for the whole instance group. If the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is CONNECTION, and backend is attached to a backend service whose loadBalancingScheme is EXTERNAL, you must specify either this parameter, maxConnections, or maxConnectionsPerEndpoint.\n\nNot available if the backend's balancingMode is RATE. Internal TCP/UDP load balancing does not support setting maxConnectionsPerInstance even though its backends require a balancing mode of CONNECTION.",
      "format": "int32"
     },
     "maxRate": {
      "type": "integer",
-     "description": "The max requests per second (RPS) of the group. Can be used with either RATE or UTILIZATION balancing modes, but required if RATE mode. For RATE mode, either maxRate or maxRatePerInstance must be set.\n\nThis cannot be used for internal load balancing.",
+     "description": "Defines a maximum number of HTTP requests per second (RPS) that the backend can handle. Valid for network endpoint group and instance group backends (except for regional managed instance groups). Must not be defined if the backend is a managed instance group that uses autoscaling based on load balancing.\n\nIf the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is RATE, you must specify maxRate, maxRatePerInstance, or maxRatePerEndpoint.\n\nNot available if the backend's balancingMode is CONNECTION.",
      "format": "int32"
     },
     "maxRatePerEndpoint": {
      "type": "number",
-     "description": "Defines a maximum target for requests per second (RPS) for an endpoint of a NEG. This is multiplied by the number of endpoints in the NEG to implicitly calculate a target maximum rate for the NEG.\n\nIf the backend's balancingMode is RATE, you must specify either this parameter, maxRate, or maxRatePerInstance.\n\nNot available if the backend's balancingMode is CONNECTION.",
+     "description": "Defines a maximum target for requests per second (RPS) for an endpoint of a NEG. This is multiplied by the number of endpoints in the NEG to implicitly calculate a target maximum rate for the NEG.\n\nIf the backend's balancingMode is RATE, you must specify either this parameter, maxRate (except for regional managed instance groups), or maxRatePerInstance.\n\nNot available if the backend's balancingMode is CONNECTION.",
      "format": "float"
     },
     "maxRatePerInstance": {
      "type": "number",
-     "description": "Defines a maximum target for requests per second (RPS) for a single VM in a backend instance group. This is multiplied by the number of instances in the instance group to implicitly calculate a target maximum rate for the whole instance group.\n\nIf the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is RATE, you must specify either this parameter, maxRate, or maxRatePerEndpoint.\n\nNot available if the backend's balancingMode is CONNECTION.",
+     "description": "Defines a maximum target for requests per second (RPS) for a single VM in a backend instance group. This is multiplied by the number of instances in the instance group to implicitly calculate a target maximum rate for the whole instance group.\n\nIf the backend's balancingMode is UTILIZATION, this is an optional parameter. If the backend's balancingMode is RATE, you must specify either this parameter, maxRate (except for regional managed instance groups), or maxRatePerEndpoint.\n\nNot available if the backend's balancingMode is CONNECTION.",
      "format": "float"
     },
     "maxUtilization": {
      "type": "number",
-     "description": "Defines the maximum average CPU utilization of a backend VM in an instance group. The valid range is [0.0, 1.0]. This is an optional parameter if the backend's balancingMode is UTILIZATION.\n\nThis parameter can be used in conjunction with maxRate, maxRatePerInstance, maxConnections, or maxConnectionsPerInstance.",
+     "description": "Defines the maximum average backend utilization of a backend VM in an instance group. The valid range is [0.0, 1.0]. This is an optional parameter if the backend's balancingMode is UTILIZATION.\n\nThis parameter can be used in conjunction with maxRate, maxRatePerInstance, maxConnections (except for regional managed instance groups), or maxConnectionsPerInstance.",
      "format": "float"
     }
    }
@@ -2283,6 +2322,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -2292,6 +2332,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -2404,7 +2445,7 @@
     },
     "healthChecks": {
      "type": "array",
-     "description": "The list of URLs to the HttpHealthCheck or HttpsHealthCheck resource for health checking this BackendService. Currently at most one health check can be specified. Health check is optional for Compute Engine backend services if there is no backend. A health check must not be specified when adding Internet Network Endpoint Group or Serverless Network Endpoint Group as backends. In all other cases, a health check is required for Compute Engine backend services.\n\nFor internal load balancing, a URL to a HealthCheck resource must be specified instead.",
+     "description": "The list of URLs to the healthChecks, httpHealthChecks (legacy), or httpsHealthChecks (legacy) resource for health checking this backend service. Not all backend services support legacy health checks. See  Load balancer guide. Currently at most one health check can be specified. Backend services with instance group or zonal NEG backends must have a health check. Backend services with internet NEG backends must not have a health check. A health check must",
      "items": {
       "type": "string"
      }
@@ -2486,12 +2527,13 @@
     },
     "portName": {
      "type": "string",
-     "description": "A named port on a backend instance group representing the port for communication to the backend VMs in that group. Required when the loadBalancingScheme is EXTERNAL and the backends are instance groups. The named port must be defined on each backend instance group. This parameter has no meaning if the backends are NEGs.\n\n\n\nMust be omitted when the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Blaancing)."
+     "description": "A named port on a backend instance group representing the port for communication to the backend VMs in that group. Required when the loadBalancingScheme is EXTERNAL, INTERNAL_MANAGED, or INTERNAL_SELF_MANAGED and the backends are instance groups. The named port must be defined on each backend instance group. This parameter has no meaning if the backends are NEGs.\n\n\n\nMust be omitted when the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Blaancing)."
     },
     "protocol": {
      "type": "string",
      "description": "The protocol this BackendService uses to communicate with backends.\n\nPossible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP. depending on the chosen load balancer or Traffic Director configuration. Refer to the documentation for the load balancer or for Traffic Director for more information.",
      "enum": [
+      "GRPC",
       "HTTP",
       "HTTP2",
       "HTTPS",
@@ -2500,6 +2542,7 @@
       "UDP"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -2589,6 +2632,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -2613,6 +2663,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -2622,6 +2673,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -2834,6 +2886,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -2843,6 +2896,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -2953,6 +3007,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -2962,6 +3017,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -3322,10 +3378,6 @@
      "description": "The minimum number of instances to create. If no min_count is specified then count is used as the default value. If min_count instances cannot be created, then no instances will be created.",
      "format": "int64"
     },
-    "namePattern": {
-     "type": "string",
-     "description": "Instance name pattern. Name pattern includes a parameter to specify the auto-incrementing portion of the name. For example: name_pattern = inst-{index:04d} The {index:04d} is replaced with a four character numeric index. The number (04, in this case) specifies the number of characters (min: 4). In this example, you'll get instances named: inst-0000, inst-0001, inst-0002, ... If instances exist with this pattern, the index of the first instance will begin numbering after the maximum existing index."
-    },
     "predefinedNames": {
      "type": "array",
      "description": "List of predefined names. The number of names provided must be equal to count.",
@@ -3676,6 +3728,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -3700,6 +3759,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -3709,6 +3769,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -3812,6 +3873,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -3821,6 +3883,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -3906,6 +3969,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -3915,6 +3979,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -4479,6 +4544,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -4503,6 +4575,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -4512,6 +4585,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -4656,6 +4730,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -4665,6 +4740,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -4817,6 +4893,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -4841,6 +4924,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -4850,6 +4934,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -4953,6 +5038,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -4962,6 +5048,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -5047,6 +5134,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -5056,6 +5144,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -5178,6 +5267,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -5187,6 +5277,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -5395,6 +5486,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -5404,6 +5496,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -5621,6 +5714,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -5630,6 +5724,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -5916,6 +6011,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -5925,6 +6021,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -6150,7 +6247,7 @@
     },
     "networkTier": {
      "type": "string",
-     "description": "This signifies the networking tier used for configuring this load balancer and can only take the following values: PREMIUM , STANDARD.\n\nFor regional ForwardingRule, the valid values are PREMIUM and STANDARD. For GlobalForwardingRule, the valid value is PREMIUM.\n\nIf this field is not specified, it is assumed to be PREMIUM. If IPAddress is specified, this value must be equal to the networkTier of the Address.",
+     "description": "This signifies the networking tier used for configuring this load balancer and can only take the following values: PREMIUM, STANDARD.\n\nFor regional ForwardingRule, the valid values are PREMIUM and STANDARD. For GlobalForwardingRule, the valid value is PREMIUM.\n\nIf this field is not specified, it is assumed to be PREMIUM. If IPAddress is specified, this value must be equal to the networkTier of the Address.",
      "enum": [
       "PREMIUM",
       "SELECT",
@@ -6233,6 +6330,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -6257,6 +6361,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -6266,6 +6371,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -6369,6 +6475,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -6378,6 +6485,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -6472,6 +6580,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -6481,6 +6590,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -7082,6 +7192,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -7091,6 +7202,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -7316,6 +7428,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -7325,6 +7438,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -7404,6 +7518,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -7428,6 +7549,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -7437,6 +7559,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -7522,6 +7645,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -7531,6 +7655,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -7944,6 +8069,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -7953,6 +8079,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -8337,6 +8464,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -8346,6 +8474,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -8652,6 +8781,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -8661,6 +8791,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -9022,6 +9153,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -9046,6 +9184,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -9055,6 +9194,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -9210,6 +9350,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -9234,6 +9381,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -9243,6 +9391,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -9346,6 +9495,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -9355,6 +9505,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -9639,6 +9790,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -9663,6 +9821,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -9672,6 +9831,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -9795,6 +9955,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -9804,6 +9965,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -9906,9 +10068,13 @@
    "id": "InstanceGroupManagerStatusStateful",
    "type": "object",
    "properties": {
-    "isStateful": {
+    "hasStatefulConfig": {
      "type": "boolean",
      "description": "[Output Only] A bit indicating whether the managed instance group is stateful, i.e. has any disks in Stateful Policy or at least one per-instance config. This is determined based on the user intent, the group may be reported as not stateful even when there is still some preserved state on managed instances."
+    },
+    "isStateful": {
+     "type": "boolean",
+     "description": "[Output Only] A bit indicating whether the managed instance group is stateful, i.e. has any disks in Stateful Policy or at least one per-instance config. This is determined based on the user intent, the group may be reported as not stateful even when there is still some preserved state on managed instances. This field is deprecated in favor of has_stateful_config"
     }
    }
   },
@@ -10204,6 +10370,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -10213,6 +10380,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -10340,6 +10508,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -10349,6 +10518,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -10518,6 +10688,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -10527,6 +10698,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -10643,6 +10815,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -10652,6 +10825,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -10773,6 +10947,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -10782,6 +10957,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -10885,6 +11061,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -10894,6 +11071,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -11130,7 +11308,7 @@
     },
     "resourcePolicies": {
      "type": "array",
-     "description": "Resource policies (names, not ULRs) applied to instances created from this templae.",
+     "description": "Resource policies (names, not ULRs) applied to instances created from this template.",
      "items": {
       "type": "string"
      }
@@ -11277,6 +11455,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -11286,6 +11465,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -11496,6 +11676,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -11505,6 +11686,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -12069,6 +12251,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -12093,6 +12282,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -12102,6 +12292,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -12205,6 +12396,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -12214,6 +12406,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -12330,6 +12523,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -12339,6 +12533,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -12588,6 +12783,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -12597,6 +12793,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -12808,6 +13005,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -12817,6 +13015,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -13104,6 +13303,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -13113,6 +13313,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -13216,6 +13417,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -13225,6 +13427,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -13329,7 +13532,7 @@
   "License": {
    "id": "License",
    "type": "object",
-   "description": "A license resource.",
+   "description": "Represents a License resource.\n\nA License represents billing and aggregate usage data for public and marketplace images.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. (== resource_for {$api_version}.licenses ==)",
    "properties": {
     "chargesUseFee": {
      "type": "boolean",
@@ -13388,6 +13591,7 @@
   "LicenseCode": {
    "id": "LicenseCode",
    "type": "object",
+   "description": "Represents a License Code resource.\n\nA License Code is a unique identifier used to represent a license resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. (== resource_for {$api_version}.licenseCodes ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -13549,6 +13753,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -13558,6 +13763,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -13877,6 +14083,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -13886,6 +14093,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -14035,6 +14243,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -14059,6 +14274,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -14068,6 +14284,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -14171,6 +14388,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -14180,6 +14398,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -14265,6 +14484,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -14274,6 +14494,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -14694,18 +14915,6 @@
      "description": "Maximum Transmission Unit in bytes. The minimum value for this field is 1460 and the maximum value is 1500 bytes.",
      "format": "int32"
     },
-    "multicastMode": {
-     "type": "string",
-     "description": "The multicast mode for this network. If set to ZONAL, multicast is allowed within a zone. If set to DISABLED, multicast is disabled for this network. The default is DISABLED.",
-     "enum": [
-      "DISABLED",
-      "ZONAL"
-     ],
-     "enumDescriptions": [
-      "",
-      ""
-     ]
-    },
     "name": {
      "type": "string",
      "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character must be a lowercase letter, and all following characters (except for the last character) must be a dash, lowercase letter, or digit. The last character must be a lowercase letter or digit.",
@@ -14778,7 +14987,7 @@
   "NetworkEndpointGroup": {
    "id": "NetworkEndpointGroup",
    "type": "object",
-   "description": "Represents a collection of network endpoints.\n\nFor more information read Setting up network endpoint groups in load balancing. (== resource_for {$api_version}.networkEndpointGroups ==) Next ID: 21",
+   "description": "Represents a collection of network endpoints.\n\nFor more information read Network endpoint groups overview. (== resource_for {$api_version}.networkEndpointGroups ==) Next ID: 21",
    "properties": {
     "annotations": {
      "type": "object",
@@ -14836,7 +15045,7 @@
     },
     "networkEndpointType": {
      "type": "string",
-     "description": "Type of network endpoints in this network endpoint group. Currently the only supported value is GCE_VM_IP_PORT.",
+     "description": "Type of network endpoints in this network endpoint group.",
      "enum": [
       "GCE_VM_IP_PORT",
       "GCE_VM_PRIMARY_IP",
@@ -14920,6 +15129,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -14944,6 +15160,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -14953,6 +15170,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -15132,6 +15350,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -15141,6 +15360,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -15299,6 +15519,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -15308,6 +15529,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -15393,6 +15615,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -15402,6 +15625,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -15573,6 +15797,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -15582,6 +15807,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -15855,6 +16081,9 @@
       ""
      ]
     },
+    "maintenanceWindow": {
+     "$ref": "NodeGroupMaintenanceWindow"
+    },
     "name": {
      "type": "string",
      "description": "The name of the resource, provided by the client when initially creating the resource. The resource name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash."
@@ -15926,6 +16155,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -15950,6 +16186,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -15959,6 +16196,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -16094,6 +16332,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -16103,6 +16342,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -16150,6 +16390,21 @@
        "description": "[Output Only] A human-readable description of the warning code."
       }
      }
+    }
+   }
+  },
+  "NodeGroupMaintenanceWindow": {
+   "id": "NodeGroupMaintenanceWindow",
+   "type": "object",
+   "description": "Time window specified for daily maintenance operations. GCE's internal maintenance will be performed within this window.",
+   "properties": {
+    "duration": {
+     "type": "string",
+     "description": "[Output only] A predetermined duration for the window, automatically chosen to be the smallest possible in the given scenario."
+    },
+    "startTime": {
+     "type": "string",
+     "description": "Start time of the window. This must be in UTC format that resolves to one of 00:00, 04:00, 08:00, 12:00, 16:00, or 20:00. For example, both 13:00-5 and 08:00 are valid."
     }
    }
   },
@@ -16303,6 +16558,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -16312,6 +16568,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -16397,6 +16654,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -16406,6 +16664,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -16601,6 +16860,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -16625,6 +16891,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -16634,6 +16901,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -16737,6 +17005,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -16746,6 +17015,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -16846,6 +17116,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -16855,6 +17126,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -16999,6 +17271,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -17023,6 +17302,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -17032,6 +17312,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -17135,6 +17416,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -17144,6 +17426,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -17229,6 +17512,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -17238,6 +17522,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -17410,6 +17695,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -17419,6 +17705,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -17626,6 +17913,7 @@
          "NEXT_HOP_NOT_RUNNING",
          "NOT_CRITICAL_ERROR",
          "NO_RESULTS_ON_PAGE",
+         "PARTIAL_SUCCESS",
          "REQUIRED_TOS_AGREEMENT",
          "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
          "RESOURCE_NOT_DELETED",
@@ -17635,6 +17923,7 @@
          "UNREACHABLE"
         ],
         "enumDescriptions": [
+         "",
          "",
          "",
          "",
@@ -17719,6 +18008,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -17743,6 +18039,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -17752,6 +18049,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -17855,6 +18153,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -17864,6 +18163,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -17949,6 +18249,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -17958,6 +18259,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -18270,6 +18572,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -18294,6 +18603,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -18303,6 +18613,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -18440,6 +18751,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -18449,6 +18761,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -18603,6 +18916,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -18612,6 +18926,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -19343,6 +19658,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -19352,6 +19668,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -19529,6 +19846,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -19553,6 +19877,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -19562,6 +19887,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -19664,6 +19990,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -19673,6 +20000,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -19801,6 +20129,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -19810,6 +20139,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -19874,6 +20204,7 @@
      "type": "string",
      "description": "[Output Only] Name of the quota metric.",
      "enum": [
+      "AFFINITY_GROUPS",
       "ALIASES_PER_NETWORK_GLOBAL",
       "AMD_S9300_GPUS",
       "AUTOSCALERS",
@@ -19926,6 +20257,8 @@
       "N2_CPUS",
       "NETWORKS",
       "NETWORK_ENDPOINT_GROUPS",
+      "NODE_GROUPS",
+      "NODE_TEMPLATES",
       "NVIDIA_K80_GPUS",
       "NVIDIA_P100_GPUS",
       "NVIDIA_P100_VWS_GPUS",
@@ -19974,6 +20307,9 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
+      "",
+      "",
       "",
       "",
       "",
@@ -20253,6 +20589,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -20262,6 +20599,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -20377,6 +20715,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -20386,6 +20725,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -20526,6 +20866,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -20535,6 +20876,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -20652,6 +20994,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -20661,6 +21004,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -20897,6 +21241,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -20906,6 +21251,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -21078,6 +21424,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -21087,6 +21434,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -21231,6 +21579,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -21240,6 +21589,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -21507,6 +21857,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -21531,6 +21888,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -21540,6 +21898,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -21642,6 +22001,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -21651,6 +22011,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -21747,6 +22108,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -21756,6 +22118,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -21885,6 +22248,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -21894,6 +22258,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -22050,6 +22415,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -22074,6 +22446,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -22083,6 +22456,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -22285,6 +22659,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -22294,6 +22669,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -22669,6 +23045,7 @@
          "NEXT_HOP_NOT_RUNNING",
          "NOT_CRITICAL_ERROR",
          "NO_RESULTS_ON_PAGE",
+         "PARTIAL_SUCCESS",
          "REQUIRED_TOS_AGREEMENT",
          "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
          "RESOURCE_NOT_DELETED",
@@ -22678,6 +23055,7 @@
          "UNREACHABLE"
         ],
         "enumDescriptions": [
+         "",
          "",
          "",
          "",
@@ -22782,6 +23160,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -22791,6 +23170,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -22967,6 +23347,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -22991,6 +23378,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -23000,6 +23388,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -23368,6 +23757,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -23377,6 +23767,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -23789,6 +24180,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -23798,6 +24190,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -24385,6 +24778,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -24394,6 +24788,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -25117,6 +25512,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -25126,6 +25522,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -25281,7 +25678,7 @@
   "SslCertificate": {
    "id": "SslCertificate",
    "type": "object",
-   "description": "Represents an SSL Certificate resource.\n\nGoogle Compute Engine has two SSL Certificate resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/sslCertificates) * [Regional](/compute/docs/reference/rest/{$api_version}/regionSslCertificates)\n\n\n\nThe sslCertificates are used by:  \n- external HTTPS load balancers \n- SSL proxy load balancers  \n\nThe regionSslCertificates are used by internal HTTPS load balancers.\n\nThis SSL certificate resource also contains a private key. You can use SSL keys and certificates to secure connections to a load balancer. For more information, read  Creating and Using SSL Certificates. (== resource_for {$api_version}.sslCertificates ==) (== resource_for {$api_version}.regionSslCertificates ==)",
+   "description": "Represents an SSL Certificate resource.\n\nGoogle Compute Engine has two SSL Certificate resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/sslCertificates) * [Regional](/compute/docs/reference/rest/{$api_version}/regionSslCertificates)\n\n\n\nThe sslCertificates are used by:  \n- external HTTPS load balancers \n- SSL proxy load balancers  \n\nThe regionSslCertificates are used by internal HTTPS load balancers.\n\nOptionally, certificate file contents that you upload can contain a set of up to five PEM-encoded certificates. The API call creates an object (sslCertificate) that holds this data. You can use SSL keys and certificates to secure connections to a load balancer. For more information, read  Creating and using SSL certificates and SSL certificates quotas and limits. (== resource_for {$api_version}.sslCertificates ==) (== resource_for {$api_version}.regionSslCertificates ==)",
    "properties": {
     "certificate": {
      "type": "string",
@@ -25390,6 +25787,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -25414,6 +25818,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -25423,6 +25828,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -25526,6 +25932,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -25535,6 +25942,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -25694,6 +26102,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -25703,6 +26112,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -25805,6 +26215,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -25814,6 +26225,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -25991,6 +26403,7 @@
          "NEXT_HOP_NOT_RUNNING",
          "NOT_CRITICAL_ERROR",
          "NO_RESULTS_ON_PAGE",
+         "PARTIAL_SUCCESS",
          "REQUIRED_TOS_AGREEMENT",
          "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
          "RESOURCE_NOT_DELETED",
@@ -26000,6 +26413,7 @@
          "UNREACHABLE"
         ],
         "enumDescriptions": [
+         "",
          "",
          "",
          "",
@@ -26247,18 +26661,6 @@
       ""
      ]
     },
-    "rangeType": {
-     "type": "string",
-     "description": "The type of IP CIDR range to associate with this subnetwork. The default is RFC_1918. When creating a subnetwork in non-RFC 1918 range, this field must be set to NON_RFC_1918.",
-     "enum": [
-      "NON_RFC_1918",
-      "RFC_1918"
-     ],
-     "enumDescriptions": [
-      "",
-      ""
-     ]
-    },
     "region": {
      "type": "string",
      "description": "URL of the region where the Subnetwork resides. This field can be set only at resource creation time."
@@ -26333,6 +26735,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -26357,6 +26766,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -26366,6 +26776,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -26469,6 +26880,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -26478,6 +26890,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -26601,18 +27014,6 @@
     "rangeName": {
      "type": "string",
      "description": "The name associated with this subnetwork secondary range, used when adding an alias IP range to a VM instance. The name must be 1-63 characters long, and comply with RFC1035. The name must be unique within the subnetwork."
-    },
-    "rangeType": {
-     "type": "string",
-     "description": "The type of IP CIDR range to associate with this subnetwork secondary range. The default is RFC_1918. When creating a subnetwork in non-RFC 1918 range, this field must be set to NON_RFC_1918.",
-     "enum": [
-      "NON_RFC_1918",
-      "RFC_1918"
-     ],
-     "enumDescriptions": [
-      "",
-      ""
-     ]
     }
    }
   },
@@ -26623,18 +27024,6 @@
     "ipCidrRange": {
      "type": "string",
      "description": "The IP (in CIDR format or netmask) of internal addresses that are legal on this Subnetwork. This range should be disjoint from other subnetworks within this network. This range can only be larger than (i.e. a superset of) the range previously defined before the update."
-    },
-    "rangeType": {
-     "type": "string",
-     "description": "The type of IP CIDR range to associate with this subnetwork. The default is RFC_1918. When expanding to a non-RFC 1918 range, this field must be be set to NON_RFC_1918.",
-     "enum": [
-      "NON_RFC_1918",
-      "RFC_1918"
-     ],
-     "enumDescriptions": [
-      "",
-      ""
-     ]
     }
    }
   },
@@ -26673,6 +27062,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -26682,6 +27072,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -26809,6 +27200,170 @@
     }
    }
   },
+  "TargetGrpcProxy": {
+   "id": "TargetGrpcProxy",
+   "type": "object",
+   "description": "Represents a Target gRPC Proxy resource.\n\nA target gRPC proxy is a component of load balancers intended for load balancing gRPC traffic. Global forwarding rules reference a target gRPC proxy. The Target gRPC Proxy references a URL map which specifies how traffic routes to gRPC backend services.",
+   "properties": {
+    "creationTimestamp": {
+     "type": "string",
+     "description": "[Output Only] Creation timestamp in RFC3339 text format."
+    },
+    "description": {
+     "type": "string",
+     "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource type. The server generates this identifier.",
+     "format": "uint64"
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the resource. Always compute#targetGrpcProxy for target grpc proxies.",
+     "default": "compute#targetGrpcProxy"
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+     "annotations": {
+      "required": [
+       "compute.targetGrpcProxies.insert"
+      ]
+     }
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "selfLinkWithId": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL with id for the resource."
+    },
+    "urlMap": {
+     "type": "string",
+     "description": "URL to the UrlMap resource that defines the mapping from URL to the BackendService. The protocol field in the BackendService must be set to GRPC."
+    },
+    "validateForProxyless": {
+     "type": "boolean",
+     "description": "If true, indicates that the BackendServices referenced by the urlMap may be accessed by gRPC applications without using a sidecar proxy. This will enable configuration checks on urlMap and its referenced BackendServices to not allow unsupported features. A gRPC application must use \"xds-experimental:///\" scheme in the target URI of the service it is connecting to. If false, indicates that the BackendServices referenced by the urlMap will be accessed by gRPC applications via a sidecar proxy. In this case, a gRPC application must not use \"xds-experimental:///\" scheme in the target URI of the service it is connecting to"
+    }
+   }
+  },
+  "TargetGrpcProxyList": {
+   "id": "TargetGrpcProxyList",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] Unique identifier for the resource; defined by the server."
+    },
+    "items": {
+     "type": "array",
+     "description": "A list of TargetGrpcProxy resources.",
+     "items": {
+      "$ref": "TargetGrpcProxy"
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the resource. Always compute#targetGrpcProxy for target grpc proxies.",
+     "default": "compute#targetGrpcProxyList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource."
+    },
+    "warning": {
+     "type": "object",
+     "description": "[Output Only] Informational warning message.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DEPRECATED_TYPE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "EXPERIMENTAL_TYPE_USED",
+        "EXTERNAL_API_WARNING",
+        "FIELD_VALUE_OVERRIDEN",
+        "INJECTED_KERNELS_DEPRECATED",
+        "MISSING_TYPE_DEPENDENCY",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+        "RESOURCE_NOT_DELETED",
+        "SCHEMA_VALIDATION_IGNORED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNDECLARED_PROPERTIES",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
+    }
+   }
+  },
   "TargetHttpProxiesScopedList": {
    "id": "TargetHttpProxiesScopedList",
    "type": "object",
@@ -26844,6 +27399,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -26853,6 +27409,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -26982,6 +27539,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -27006,6 +27570,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -27015,6 +27580,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -27118,6 +27684,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -27127,6 +27694,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -27212,6 +27780,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -27221,6 +27790,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -27412,6 +27982,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -27436,6 +28013,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -27445,6 +28023,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -27548,6 +28127,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -27557,6 +28137,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -27696,6 +28277,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -27720,6 +28308,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -27729,6 +28318,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -27832,6 +28422,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -27841,6 +28432,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -27926,6 +28518,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -27935,6 +28528,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -28103,6 +28697,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -28127,6 +28728,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -28136,6 +28738,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -28256,6 +28859,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -28265,6 +28869,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -28402,6 +29007,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -28411,6 +29017,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -28629,6 +29236,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -28638,6 +29246,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -28819,6 +29428,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -28828,6 +29438,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -29001,6 +29612,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -29025,6 +29643,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -29034,6 +29653,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -29137,6 +29757,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -29146,6 +29767,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -29231,6 +29853,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -29240,6 +29863,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -29607,6 +30231,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -29616,6 +30241,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -29763,6 +30389,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -29787,6 +30420,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -29796,6 +30430,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -29881,6 +30516,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -29890,6 +30526,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -30067,6 +30704,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -30076,6 +30714,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -30250,6 +30889,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -30259,6 +30899,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -30409,6 +31050,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -30433,6 +31081,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -30442,6 +31091,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -30545,6 +31195,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -30554,6 +31205,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -30753,6 +31405,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -30762,6 +31415,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -30995,6 +31649,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
     },
+    "unreachables": {
+     "type": "array",
+     "description": "[Output Only] Unreachable resources.",
+     "items": {
+      "type": "string"
+     }
+    },
     "warning": {
      "type": "object",
      "description": "[Output Only] Informational warning message.",
@@ -31019,6 +31680,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -31028,6 +31690,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -31131,6 +31794,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -31140,6 +31804,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -31225,6 +31890,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -31234,6 +31900,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -31390,6 +32057,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -31399,6 +32067,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -31585,6 +32254,7 @@
         "NEXT_HOP_NOT_RUNNING",
         "NOT_CRITICAL_ERROR",
         "NO_RESULTS_ON_PAGE",
+        "PARTIAL_SUCCESS",
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
@@ -31594,6 +32264,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -31728,6 +32399,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -31820,6 +32496,11 @@
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
       },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
+      },
       "zone": {
        "type": "string",
        "description": "The name of the zone for this request.",
@@ -31885,6 +32566,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -32070,6 +32756,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -32223,6 +32914,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -32401,6 +33097,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       },
       "zone": {
        "type": "string",
@@ -32830,6 +33531,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -33083,6 +33789,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -33253,7 +33964,7 @@
      "id": "compute.backendServices.insert",
      "path": "{project}/global/backendServices",
      "httpMethod": "POST",
-     "description": "Creates a BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a backend service. Read  Restrictions and Guidelines for more information.",
+     "description": "Creates a BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a backend service. Read  Understanding backend services for more information.",
      "parameters": {
       "project": {
        "type": "string",
@@ -33317,6 +34028,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -33335,7 +34051,7 @@
      "id": "compute.backendServices.patch",
      "path": "{project}/global/backendServices/{backendService}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
+     "description": "Patches the specified BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -33453,7 +34169,7 @@
      "id": "compute.backendServices.update",
      "path": "{project}/global/backendServices/{backendService}",
      "httpMethod": "PUT",
-     "description": "Updates the specified BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.",
+     "description": "Updates the specified BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -33534,6 +34250,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -33625,6 +34346,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       },
       "zone": {
        "type": "string",
@@ -33740,6 +34466,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -34024,6 +34755,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       },
       "zone": {
        "type": "string",
@@ -34426,6 +35162,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -34657,6 +35398,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -34834,6 +35580,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -35019,6 +35770,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -35370,6 +36126,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -35601,6 +36362,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -35992,6 +36758,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -36047,6 +36818,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -36106,6 +36882,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -36219,6 +37000,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -36361,6 +37147,11 @@
       "parentId": {
        "type": "string",
        "description": "Parent ID for this request.",
+       "location": "query"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
        "location": "query"
       }
      },
@@ -36517,6 +37308,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -36616,6 +37412,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -36770,6 +37571,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -37047,6 +37853,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -37324,6 +38135,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -37724,6 +38540,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -37938,6 +38759,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -37956,7 +38782,7 @@
      "id": "compute.instanceGroupManagers.applyUpdatesToInstances",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/applyUpdatesToInstances",
      "httpMethod": "POST",
-     "description": "Apply changes to selected instances on the managed instance group. This method can be used to apply new overrides and/or new versions.",
+     "description": "Applies changes to selected instances on the managed instance group. This method can be used to apply new overrides and/or new versions.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -38290,6 +39116,11 @@
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
       },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
+      },
       "zone": {
        "type": "string",
        "description": "The name of the zone where the managed instance group is located.",
@@ -38351,6 +39182,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       },
       "zone": {
        "type": "string",
@@ -38478,6 +39314,11 @@
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
       },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
+      },
       "zone": {
        "type": "string",
        "description": "The name of the zone where the managed instance group is located. It should conform to RFC1035.",
@@ -38550,7 +39391,7 @@
      "id": "compute.instanceGroupManagers.patchPerInstanceConfigs",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/patchPerInstanceConfigs",
      "httpMethod": "POST",
-     "description": "Insert or patch (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch.",
+     "description": "Inserts or patches per-instance configs for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -38976,7 +39817,7 @@
      "id": "compute.instanceGroupManagers.updatePerInstanceConfigs",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/updatePerInstanceConfigs",
      "httpMethod": "POST",
-     "description": "Insert or update (for the ones that already exist) per-instance configs for the managed instance group. perInstanceConfig.instance serves as a key used to distinguish whether to perform insert or patch.",
+     "description": "Inserts or updates per-instance configs for the managed instance group. perInstanceConfig.name serves as a key used to distinguish whether to perform insert or patch.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -39110,6 +39951,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -39284,6 +40130,11 @@
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
       },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
+      },
       "zone": {
        "type": "string",
        "description": "The name of the zone where the instance group is located.",
@@ -39345,6 +40196,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       },
       "zone": {
        "type": "string",
@@ -39693,6 +40549,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -39929,6 +40790,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -40658,6 +41524,11 @@
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
       },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
+      },
       "zone": {
        "type": "string",
        "description": "The name of the zone for this request.",
@@ -40721,6 +41592,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       },
       "zone": {
        "type": "string",
@@ -42253,6 +43129,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -42491,6 +43372,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -42766,6 +43652,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -43035,6 +43926,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -43207,7 +44103,7 @@
      "id": "compute.licenseCodes.get",
      "path": "{project}/global/licenseCodes/{licenseCode}",
      "httpMethod": "GET",
-     "description": "Return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code.",
+     "description": "Return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "licenseCode": {
        "type": "string",
@@ -43241,7 +44137,7 @@
      "id": "compute.licenseCodes.getIamPolicy",
      "path": "{project}/global/licenseCodes/{resource}/getIamPolicy",
      "httpMethod": "GET",
-     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "optionsRequestedPolicyVersion": {
        "type": "integer",
@@ -43281,7 +44177,7 @@
      "id": "compute.licenseCodes.setIamPolicy",
      "path": "{project}/global/licenseCodes/{resource}/setIamPolicy",
      "httpMethod": "POST",
-     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "project": {
        "type": "string",
@@ -43317,7 +44213,7 @@
      "id": "compute.licenseCodes.testIamPermissions",
      "path": "{project}/global/licenseCodes/{resource}/testIamPermissions",
      "httpMethod": "POST",
-     "description": "Returns permissions that a caller has on the specified resource.",
+     "description": "Returns permissions that a caller has on the specified resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "project": {
        "type": "string",
@@ -43358,7 +44254,7 @@
      "id": "compute.licenses.delete",
      "path": "{project}/global/licenses/{license}",
      "httpMethod": "DELETE",
-     "description": "Deletes the specified license.",
+     "description": "Deletes the specified license.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "license": {
        "type": "string",
@@ -43396,7 +44292,7 @@
      "id": "compute.licenses.get",
      "path": "{project}/global/licenses/{license}",
      "httpMethod": "GET",
-     "description": "Returns the specified License resource.",
+     "description": "Returns the specified License resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "license": {
        "type": "string",
@@ -43430,7 +44326,7 @@
      "id": "compute.licenses.getIamPolicy",
      "path": "{project}/global/licenses/{resource}/getIamPolicy",
      "httpMethod": "GET",
-     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "optionsRequestedPolicyVersion": {
        "type": "integer",
@@ -43470,7 +44366,7 @@
      "id": "compute.licenses.insert",
      "path": "{project}/global/licenses",
      "httpMethod": "POST",
-     "description": "Create a License resource in the specified project.",
+     "description": "Create a License resource in the specified project.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "project": {
        "type": "string",
@@ -43506,7 +44402,7 @@
      "id": "compute.licenses.list",
      "path": "{project}/global/licenses",
      "httpMethod": "GET",
-     "description": "Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.",
+     "description": "Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -43537,6 +44433,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -43555,7 +44456,7 @@
      "id": "compute.licenses.setIamPolicy",
      "path": "{project}/global/licenses/{resource}/setIamPolicy",
      "httpMethod": "POST",
-     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "project": {
        "type": "string",
@@ -43591,7 +44492,7 @@
      "id": "compute.licenses.testIamPermissions",
      "path": "{project}/global/licenses/{resource}/testIamPermissions",
      "httpMethod": "POST",
-     "description": "Returns permissions that a caller has on the specified resource.",
+     "description": "Returns permissions that a caller has on the specified resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.",
      "parameters": {
       "project": {
        "type": "string",
@@ -43813,6 +44714,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -43944,6 +44850,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -44036,6 +44947,11 @@
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
       },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
+      },
       "zone": {
        "type": "string",
        "description": "The name of the zone for this request.",
@@ -44101,6 +45017,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -44369,6 +45290,11 @@
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
       },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
+      },
       "zone": {
        "type": "string",
        "description": "The name of the zone where the network endpoint group is located. It should comply with RFC1035.",
@@ -44430,6 +45356,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       },
       "zone": {
        "type": "string",
@@ -44719,6 +45650,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -44775,6 +45711,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       },
       "types": {
        "type": "string",
@@ -44852,6 +45793,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       },
       "subnetName": {
        "type": "string",
@@ -44943,6 +45889,11 @@
       "region": {
        "type": "string",
        "description": "The region of the request. The response will include all subnet routes, static routes and dynamic routes in the region.",
+       "location": "query"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
        "location": "query"
       }
      },
@@ -45250,6 +46201,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -45534,6 +46490,11 @@
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
       },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
+      },
       "zone": {
        "type": "string",
        "description": "The name of the zone for this request.",
@@ -45597,6 +46558,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       },
       "zone": {
        "type": "string",
@@ -45851,6 +46817,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -46084,6 +47055,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -46232,6 +47208,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -46323,6 +47304,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       },
       "zone": {
        "type": "string",
@@ -46635,6 +47621,11 @@
        "type": "string",
        "description": "Parent ID for this request.",
        "location": "query"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "response": {
@@ -46888,6 +47879,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -47073,6 +48069,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -47807,6 +48808,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -47906,6 +48912,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -48091,6 +49102,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -48330,6 +49346,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -48624,7 +49645,7 @@
      "id": "compute.regionBackendServices.insert",
      "path": "{project}/regions/{region}/backendServices",
      "httpMethod": "POST",
-     "description": "Creates a regional BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a regional backend service. Read  Restrictions and Guidelines for more information.",
+     "description": "Creates a regional BackendService resource in the specified project using the data included in the request. There are several restrictions and guidelines to keep in mind when creating a regional backend service. Read  Understanding backend services for more information.",
      "parameters": {
       "project": {
        "type": "string",
@@ -48703,6 +49724,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -48722,7 +49748,7 @@
      "id": "compute.regionBackendServices.patch",
      "path": "{project}/regions/{region}/backendServices/{backendService}",
      "httpMethod": "PATCH",
-     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
+     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -48816,7 +49842,7 @@
      "id": "compute.regionBackendServices.update",
      "path": "{project}/regions/{region}/backendServices/{backendService}",
      "httpMethod": "PUT",
-     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several restrictions and guidelines to keep in mind when updating a backend service. Read  Restrictions and Guidelines for more information.",
+     "description": "Updates the specified regional BackendService resource with the data included in the request. There are several Understanding backend services to keep in mind when updating a backend service. Read  Understanding backend services for more information.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -48905,6 +49931,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -49044,6 +50075,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -49241,6 +50277,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -49586,6 +50627,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -50010,6 +51056,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -50293,6 +51344,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -50845,6 +51901,11 @@
        "description": "Name of the region scoping this request.",
        "required": true,
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -50907,6 +51968,11 @@
        "description": "Name of the region scoping this request. This should conform to RFC1035.",
        "required": true,
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -51033,6 +52099,11 @@
        "description": "Name of the region scoping this request, should conform to RFC1035.",
        "required": true,
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -51608,6 +52679,11 @@
        "description": "Name of the region scoping this request.",
        "required": true,
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -51670,6 +52746,11 @@
        "description": "Name of the region scoping this request.",
        "required": true,
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -51995,6 +53076,11 @@
        "description": "The name of the region where the network endpoint group is located. It should comply with RFC1035.",
        "required": true,
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -52185,6 +53271,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -52371,6 +53462,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -52603,6 +53699,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -52838,6 +53939,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -53122,6 +54228,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -53504,6 +54615,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -53779,6 +54895,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -53837,6 +54958,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -54064,6 +55190,11 @@
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
       },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
+      },
       "zone": {
        "type": "string",
        "description": "Name of the zone for this request.",
@@ -54267,6 +55398,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -54500,6 +55636,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -54648,6 +55789,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -54798,6 +55944,11 @@
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
       },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
+      },
       "router": {
        "type": "string",
        "description": "Name of the Router resource to query for Nat Mapping information of VM endpoints.",
@@ -54945,6 +56096,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -55292,6 +56448,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -55573,6 +56734,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -55622,6 +56788,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -55986,6 +57157,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -56153,6 +57329,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -56307,6 +57488,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -56500,6 +57686,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -56549,6 +57740,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -56684,6 +57880,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -56966,6 +58167,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -57016,6 +58222,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -57225,6 +58436,206 @@
     }
    }
   },
+  "targetGrpcProxies": {
+   "methods": {
+    "delete": {
+     "id": "compute.targetGrpcProxies.delete",
+     "path": "{project}/global/targetGrpcProxies/{targetGrpcProxy}",
+     "httpMethod": "DELETE",
+     "description": "Deletes the specified TargetGrpcProxy in the given scope",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "targetGrpcProxy": {
+       "type": "string",
+       "description": "Name of the TargetGrpcProxy resource to delete.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "targetGrpcProxy"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "get": {
+     "id": "compute.targetGrpcProxies.get",
+     "path": "{project}/global/targetGrpcProxies/{targetGrpcProxy}",
+     "httpMethod": "GET",
+     "description": "Returns the specified TargetGrpcProxy resource in the given scope.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "targetGrpcProxy": {
+       "type": "string",
+       "description": "Name of the TargetGrpcProxy resource to return.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "targetGrpcProxy"
+     ],
+     "response": {
+      "$ref": "TargetGrpcProxy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "insert": {
+     "id": "compute.targetGrpcProxies.insert",
+     "path": "{project}/global/targetGrpcProxies",
+     "httpMethod": "POST",
+     "description": "Creates a TargetGrpcProxy in the specified project in the given scope using the parameters that are included in the request.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "TargetGrpcProxy"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "list": {
+     "id": "compute.targetGrpcProxies.list",
+     "path": "{project}/global/targetGrpcProxies",
+     "httpMethod": "GET",
+     "description": "Lists the TargetGrpcProxies for a project in the given scope.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "TargetGrpcProxyList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "testIamPermissions": {
+     "id": "compute.targetGrpcProxies.testIamPermissions",
+     "path": "{project}/global/targetGrpcProxies/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    }
+   }
+  },
   "targetHttpProxies": {
    "methods": {
     "aggregatedList": {
@@ -57267,6 +58678,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -57421,6 +58837,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -57557,6 +58978,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -57711,6 +59137,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -57968,6 +59399,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -58146,6 +59582,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       },
       "zone": {
        "type": "string",
@@ -58355,6 +59796,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -58585,6 +60031,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -58942,6 +60393,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -59300,6 +60756,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -59477,6 +60938,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -59662,6 +61128,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -59815,6 +61286,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -60010,6 +61486,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -60223,6 +61704,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -60450,6 +61936,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -60603,6 +62094,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -60788,6 +62284,11 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -61017,6 +62518,11 @@
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
       },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
+      },
       "zone": {
        "type": "string",
        "description": "Name of the zone for request.",
@@ -61153,6 +62659,11 @@
        "required": true,
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
+      },
+      "returnPartialSuccess": {
+       "type": "boolean",
+       "description": "Opt-in for partial success behavior which provides partial results in case of failure. The default value is false and the logic is the same as today.",
+       "location": "query"
       }
      },
      "parameterOrder": [

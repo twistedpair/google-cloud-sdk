@@ -989,7 +989,7 @@ class LogConfig(_messages.Message):
 
 
 class Membership(_messages.Message):
-  r"""Membership contains information about a member cluster. Next tag: 11
+  r"""Membership contains information about a member cluster. Next tag: 12
 
   Messages:
     LabelsValue: GCP labels for this membership.
@@ -1007,6 +1007,11 @@ class Membership(_messages.Message):
       This ID may still be modified after creation but it is not recommended
       to do so. The ID must match the regex: `a-zA-Z0-9*`
     labels: GCP labels for this membership.
+    lastConnectionTime: Output only. For clusters using Connect, the timestamp
+      of the most recent connection established with Google Cloud. This time
+      is updated every several minutes, not continuously. For clusters that do
+      not use GKE Connect, or that have never connected successfully, this
+      field will be unset.
     name: Output only. The unique name of this domain resource in the format:
       `projects/[project_id]/locations/global/memberships/[membership_id]`.
       `membership_id` can only be set at creation time using the
@@ -1052,9 +1057,10 @@ class Membership(_messages.Message):
   endpoint = _messages.MessageField('MembershipEndpoint', 5)
   externalId = _messages.StringField(6)
   labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  state = _messages.MessageField('MembershipState', 9)
-  updateTime = _messages.StringField(10)
+  lastConnectionTime = _messages.StringField(8)
+  name = _messages.StringField(9)
+  state = _messages.MessageField('MembershipState', 10)
+  updateTime = _messages.StringField(11)
 
 
 class MembershipEndpoint(_messages.Message):

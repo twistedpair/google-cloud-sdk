@@ -91,6 +91,7 @@ class AcceleratorTypeAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -161,6 +162,7 @@ class AcceleratorTypeAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -185,13 +187,14 @@ class AcceleratorTypeAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -220,7 +223,8 @@ class AcceleratorTypeAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#acceleratorTypeAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class AcceleratorTypeList(_messages.Message):
@@ -286,6 +290,7 @@ class AcceleratorTypeList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -310,13 +315,14 @@ class AcceleratorTypeList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -405,6 +411,7 @@ class AcceleratorTypesScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -429,13 +436,14 @@ class AcceleratorTypesScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -814,6 +822,7 @@ class AddressAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -884,6 +893,7 @@ class AddressAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -908,13 +918,14 @@ class AddressAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -943,7 +954,8 @@ class AddressAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#addressAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class AddressList(_messages.Message):
@@ -1009,6 +1021,7 @@ class AddressList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -1033,13 +1046,14 @@ class AddressList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -1127,6 +1141,7 @@ class AddressesScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -1151,13 +1166,14 @@ class AddressesScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -1873,6 +1889,7 @@ class AutoscalerAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -1943,6 +1960,7 @@ class AutoscalerAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -1967,13 +1985,14 @@ class AutoscalerAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2002,7 +2021,8 @@ class AutoscalerAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#autoscalerAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class AutoscalerList(_messages.Message):
@@ -2068,6 +2088,7 @@ class AutoscalerList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -2092,13 +2113,14 @@ class AutoscalerList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2343,6 +2365,7 @@ class AutoscalersScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -2367,13 +2390,14 @@ class AutoscalersScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -2685,20 +2709,22 @@ class Backend(_messages.Message):
       mode if the protocol for the backend service is SSL, TCP, or UDP.  If
       the loadBalancingScheme for the backend service is EXTERNAL (SSL Proxy
       and TCP Proxy load balancers), you must also specify exactly one of the
-      following parameters: maxConnections, maxConnectionsPerInstance, or
+      following parameters: maxConnections (except for regional managed
+      instance groups), maxConnectionsPerInstance, or
       maxConnectionsPerEndpoint.  If the loadBalancingScheme for the backend
       service is INTERNAL (internal TCP/UDP load balancers), you cannot
       specify any additional parameters.   - If the load balancing mode is
       RATE, the load is spread based on the rate of HTTP requests per second
       (RPS). You can use the RATE balancing mode if the protocol for the
       backend service is HTTP or HTTPS. You must specify exactly one of the
-      following parameters: maxRate, maxRatePerInstance, or
-      maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
-      load is spread based on the CPU utilization of instances in an instance
-      group. You can use the UTILIZATION balancing mode if the
-      loadBalancingScheme of the backend service is EXTERNAL,
-      INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance
-      groups. There are no restrictions on the backend service protocol.
+      following parameters: maxRate (except for regional managed instance
+      groups), maxRatePerInstance, or maxRatePerEndpoint.   - If the load
+      balancing mode is UTILIZATION, the load is spread based on the backend
+      utilization of instances in an instance group. You can use the
+      UTILIZATION balancing mode if the loadBalancingScheme of the backend
+      service is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the
+      backends are instance groups. There are no restrictions on the backend
+      service protocol.
 
   Fields:
     balancingMode: Specifies the balancing mode for the backend.  When
@@ -2710,20 +2736,22 @@ class Backend(_messages.Message):
       protocol for the backend service is SSL, TCP, or UDP.  If the
       loadBalancingScheme for the backend service is EXTERNAL (SSL Proxy and
       TCP Proxy load balancers), you must also specify exactly one of the
-      following parameters: maxConnections, maxConnectionsPerInstance, or
+      following parameters: maxConnections (except for regional managed
+      instance groups), maxConnectionsPerInstance, or
       maxConnectionsPerEndpoint.  If the loadBalancingScheme for the backend
       service is INTERNAL (internal TCP/UDP load balancers), you cannot
       specify any additional parameters.   - If the load balancing mode is
       RATE, the load is spread based on the rate of HTTP requests per second
       (RPS). You can use the RATE balancing mode if the protocol for the
       backend service is HTTP or HTTPS. You must specify exactly one of the
-      following parameters: maxRate, maxRatePerInstance, or
-      maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
-      load is spread based on the CPU utilization of instances in an instance
-      group. You can use the UTILIZATION balancing mode if the
-      loadBalancingScheme of the backend service is EXTERNAL,
-      INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance
-      groups. There are no restrictions on the backend service protocol.
+      following parameters: maxRate (except for regional managed instance
+      groups), maxRatePerInstance, or maxRatePerEndpoint.   - If the load
+      balancing mode is UTILIZATION, the load is spread based on the backend
+      utilization of instances in an instance group. You can use the
+      UTILIZATION balancing mode if the loadBalancingScheme of the backend
+      service is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the
+      backends are instance groups. There are no restrictions on the backend
+      service protocol.
     capacityScaler: A multiplier applied to the group's maximum servicing
       capacity (based on UTILIZATION, RATE or CONNECTION). Default value is 1,
       which means the group will serve up to 100% of its configured capacity
@@ -2747,17 +2775,18 @@ class Backend(_messages.Message):
       NEGs are not supported.    You must use the fully-qualified URL
       (starting with https://www.googleapis.com/) to specify the instance
       group or NEG. Partial URLs are not supported.
-    maxConnections: Defines a maximum target for simultaneous connections for
-      the entire backend (instance group or NEG). If the backend's
-      balancingMode is UTILIZATION, this is an optional parameter. If the
-      backend's balancingMode is CONNECTION, and backend is attached to a
-      backend service whose loadBalancingScheme is EXTERNAL, you must specify
-      either this parameter, maxConnectionsPerInstance, or
-      maxConnectionsPerEndpoint.  Not available if the backend's balancingMode
-      is RATE. If the loadBalancingScheme is INTERNAL, then maxConnections is
-      not supported, even though the backend requires a balancing mode of
-      CONNECTION.
-    maxConnectionsPerEndpoint: Defines a maximum target for simultaneous
+    maxConnections: Defines a target maximum number of simultaneous
+      connections that the backend can handle. Valid for network endpoint
+      group and instance group backends (except for regional managed instance
+      groups). If the backend's balancingMode is UTILIZATION, this is an
+      optional parameter. If the backend's balancingMode is CONNECTION, and
+      backend is attached to a backend service whose loadBalancingScheme is
+      EXTERNAL, you must specify either this parameter,
+      maxConnectionsPerInstance, or maxConnectionsPerEndpoint.  Not available
+      if the backend's balancingMode is RATE. If the loadBalancingScheme is
+      INTERNAL, then maxConnections is not supported, even though the backend
+      requires a balancing mode of CONNECTION.
+    maxConnectionsPerEndpoint: Defines a target maximum number of simultaneous
       connections for an endpoint of a NEG. This is multiplied by the number
       of endpoints in the NEG to implicitly calculate a maximum number of
       target maximum simultaneous connections for the NEG. If the backend's
@@ -2767,7 +2796,7 @@ class Backend(_messages.Message):
       available if the backend's balancingMode is RATE. Internal TCP/UDP load
       balancing does not support setting maxConnectionsPerEndpoint even though
       its backends require a balancing mode of CONNECTION.
-    maxConnectionsPerInstance: Defines a maximum target for simultaneous
+    maxConnectionsPerInstance: Defines a target maximum number of simultaneous
       connections for a single VM in a backend instance group. This is
       multiplied by the number of instances in the instance group to
       implicitly calculate a target maximum number of simultaneous connections
@@ -2779,29 +2808,37 @@ class Backend(_messages.Message):
       available if the backend's balancingMode is RATE. Internal TCP/UDP load
       balancing does not support setting maxConnectionsPerInstance even though
       its backends require a balancing mode of CONNECTION.
-    maxRate: The max requests per second (RPS) of the group. Can be used with
-      either RATE or UTILIZATION balancing modes, but required if RATE mode.
-      For RATE mode, either maxRate or maxRatePerInstance must be set.  This
-      cannot be used for internal load balancing.
+    maxRate: Defines a maximum number of HTTP requests per second (RPS) that
+      the backend can handle. Valid for network endpoint group and instance
+      group backends (except for regional managed instance groups). Must not
+      be defined if the backend is a managed instance group that uses
+      autoscaling based on load balancing.  If the backend's balancingMode is
+      UTILIZATION, this is an optional parameter. If the backend's
+      balancingMode is RATE, you must specify maxRate, maxRatePerInstance, or
+      maxRatePerEndpoint.  Not available if the backend's balancingMode is
+      CONNECTION.
     maxRatePerEndpoint: Defines a maximum target for requests per second (RPS)
       for an endpoint of a NEG. This is multiplied by the number of endpoints
       in the NEG to implicitly calculate a target maximum rate for the NEG.
       If the backend's balancingMode is RATE, you must specify either this
-      parameter, maxRate, or maxRatePerInstance.  Not available if the
-      backend's balancingMode is CONNECTION.
+      parameter, maxRate (except for regional managed instance groups), or
+      maxRatePerInstance.  Not available if the backend's balancingMode is
+      CONNECTION.
     maxRatePerInstance: Defines a maximum target for requests per second (RPS)
       for a single VM in a backend instance group. This is multiplied by the
       number of instances in the instance group to implicitly calculate a
       target maximum rate for the whole instance group.  If the backend's
       balancingMode is UTILIZATION, this is an optional parameter. If the
       backend's balancingMode is RATE, you must specify either this parameter,
-      maxRate, or maxRatePerEndpoint.  Not available if the backend's
-      balancingMode is CONNECTION.
-    maxUtilization: Defines the maximum average CPU utilization of a backend
-      VM in an instance group. The valid range is [0.0, 1.0]. This is an
-      optional parameter if the backend's balancingMode is UTILIZATION.  This
-      parameter can be used in conjunction with maxRate, maxRatePerInstance,
-      maxConnections, or maxConnectionsPerInstance.
+      maxRate (except for regional managed instance groups), or
+      maxRatePerEndpoint.  Not available if the backend's balancingMode is
+      CONNECTION.
+    maxUtilization: Defines the maximum average backend utilization of a
+      backend VM in an instance group. The valid range is [0.0, 1.0]. This is
+      an optional parameter if the backend's balancingMode is UTILIZATION.
+      This parameter can be used in conjunction with maxRate,
+      maxRatePerInstance, maxConnections (except for regional managed instance
+      groups), or maxConnectionsPerInstance.
   """
 
   class BalancingModeValueValuesEnum(_messages.Enum):
@@ -2813,17 +2850,18 @@ class Backend(_messages.Message):
     You can use the CONNECTION balancing mode if the protocol for the backend
     service is SSL, TCP, or UDP.  If the loadBalancingScheme for the backend
     service is EXTERNAL (SSL Proxy and TCP Proxy load balancers), you must
-    also specify exactly one of the following parameters: maxConnections,
-    maxConnectionsPerInstance, or maxConnectionsPerEndpoint.  If the
-    loadBalancingScheme for the backend service is INTERNAL (internal TCP/UDP
-    load balancers), you cannot specify any additional parameters.   - If the
-    load balancing mode is RATE, the load is spread based on the rate of HTTP
-    requests per second (RPS). You can use the RATE balancing mode if the
-    protocol for the backend service is HTTP or HTTPS. You must specify
-    exactly one of the following parameters: maxRate, maxRatePerInstance, or
-    maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
-    load is spread based on the CPU utilization of instances in an instance
-    group. You can use the UTILIZATION balancing mode if the
+    also specify exactly one of the following parameters: maxConnections
+    (except for regional managed instance groups), maxConnectionsPerInstance,
+    or maxConnectionsPerEndpoint.  If the loadBalancingScheme for the backend
+    service is INTERNAL (internal TCP/UDP load balancers), you cannot specify
+    any additional parameters.   - If the load balancing mode is RATE, the
+    load is spread based on the rate of HTTP requests per second (RPS). You
+    can use the RATE balancing mode if the protocol for the backend service is
+    HTTP or HTTPS. You must specify exactly one of the following parameters:
+    maxRate (except for regional managed instance groups), maxRatePerInstance,
+    or maxRatePerEndpoint.   - If the load balancing mode is UTILIZATION, the
+    load is spread based on the backend utilization of instances in an
+    instance group. You can use the UTILIZATION balancing mode if the
     loadBalancingScheme of the backend service is EXTERNAL,
     INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED and the backends are instance
     groups. There are no restrictions on the backend service protocol.
@@ -2973,6 +3011,7 @@ class BackendBucketList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -2997,13 +3036,14 @@ class BackendBucketList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -3134,14 +3174,13 @@ class BackendService(_messages.Message):
       otherwise the request will fail with error 412 conditionNotMet.  To see
       the latest fingerprint, make a get() request to retrieve a
       BackendService.
-    healthChecks: The list of URLs to the HttpHealthCheck or HttpsHealthCheck
-      resource for health checking this BackendService. Currently at most one
-      health check can be specified. Health check is optional for Compute
-      Engine backend services if there is no backend. A health check must not
-      be specified when adding Internet Network Endpoint Group or Serverless
-      Network Endpoint Group as backends. In all other cases, a health check
-      is required for Compute Engine backend services.  For internal load
-      balancing, a URL to a HealthCheck resource must be specified instead.
+    healthChecks: The list of URLs to the healthChecks, httpHealthChecks
+      (legacy), or httpsHealthChecks (legacy) resource for health checking
+      this backend service. Not all backend services support legacy health
+      checks. See  Load balancer guide. Currently at most one health check can
+      be specified. Backend services with instance group or zonal NEG backends
+      must have a health check. Backend services with internet NEG backends
+      must not have a health check. A health check must
     iap: A BackendServiceIAP attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -3202,11 +3241,11 @@ class BackendService(_messages.Message):
       loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).
     portName: A named port on a backend instance group representing the port
       for communication to the backend VMs in that group. Required when the
-      loadBalancingScheme is EXTERNAL and the backends are instance groups.
-      The named port must be defined on each backend instance group. This
-      parameter has no meaning if the backends are NEGs.    Must be omitted
-      when the loadBalancingScheme is INTERNAL (Internal TCP/UDP Load
-      Blaancing).
+      loadBalancingScheme is EXTERNAL, INTERNAL_MANAGED, or
+      INTERNAL_SELF_MANAGED and the backends are instance groups. The named
+      port must be defined on each backend instance group. This parameter has
+      no meaning if the backends are NEGs.    Must be omitted when the
+      loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Blaancing).
     protocol: The protocol this BackendService uses to communicate with
       backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP.
       depending on the chosen load balancer or Traffic Director configuration.
@@ -3311,6 +3350,7 @@ class BackendService(_messages.Message):
     information.
 
     Values:
+      GRPC: <no description>
       HTTP: <no description>
       HTTP2: <no description>
       HTTPS: <no description>
@@ -3318,12 +3358,13 @@ class BackendService(_messages.Message):
       TCP: <no description>
       UDP: <no description>
     """
-    HTTP = 0
-    HTTP2 = 1
-    HTTPS = 2
-    SSL = 3
-    TCP = 4
-    UDP = 5
+    GRPC = 0
+    HTTP = 1
+    HTTP2 = 2
+    HTTPS = 3
+    SSL = 4
+    TCP = 5
+    UDP = 6
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
     r"""Type of session affinity to use. The default is NONE. Session affinity
@@ -3406,6 +3447,7 @@ class BackendServiceAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -3476,6 +3518,7 @@ class BackendServiceAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -3500,13 +3543,14 @@ class BackendServiceAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -3535,7 +3579,8 @@ class BackendServiceAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#backendServiceAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class BackendServiceCdnPolicy(_messages.Message):
@@ -3730,6 +3775,7 @@ class BackendServiceList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -3754,13 +3800,14 @@ class BackendServiceList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -3876,6 +3923,7 @@ class BackendServicesScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -3900,13 +3948,14 @@ class BackendServicesScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -4251,14 +4300,6 @@ class BulkInsertInstanceResource(_messages.Message):
     minCount: The minimum number of instances to create. If no min_count is
       specified then count is used as the default value. If min_count
       instances cannot be created, then no instances will be created.
-    namePattern: Instance name pattern. Name pattern includes a parameter to
-      specify the auto-incrementing portion of the name. For example:
-      name_pattern = inst-{index:04d} The {index:04d} is replaced with a four
-      character numeric index. The number (04, in this case) specifies the
-      number of characters (min: 4). In this example, you'll get instances
-      named: inst-0000, inst-0001, inst-0002, ... If instances exist with this
-      pattern, the index of the first instance will begin numbering after the
-      maximum existing index.
     predefinedNames: List of predefined names. The number of names provided
       must be equal to count.
     sourceInstanceTemplate: Specifies the instance template from which to
@@ -4274,9 +4315,8 @@ class BulkInsertInstanceResource(_messages.Message):
   excludedZones = _messages.StringField(2, repeated=True)
   instance = _messages.MessageField('Instance', 3)
   minCount = _messages.IntegerField(4)
-  namePattern = _messages.StringField(5)
-  predefinedNames = _messages.StringField(6, repeated=True)
-  sourceInstanceTemplate = _messages.StringField(7)
+  predefinedNames = _messages.StringField(5, repeated=True)
+  sourceInstanceTemplate = _messages.StringField(6)
 
 
 class CacheInvalidationRule(_messages.Message):
@@ -4657,6 +4697,7 @@ class CommitmentAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -4727,6 +4768,7 @@ class CommitmentAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -4751,13 +4793,14 @@ class CommitmentAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -4786,7 +4829,8 @@ class CommitmentAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#commitmentAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class CommitmentList(_messages.Message):
@@ -4852,6 +4896,7 @@ class CommitmentList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -4876,13 +4921,14 @@ class CommitmentList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -4970,6 +5016,7 @@ class CommitmentsScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -4994,13 +5041,14 @@ class CommitmentsScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -5072,6 +5120,9 @@ class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -5080,6 +5131,7 @@ class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeAcceleratorTypesGetRequest(_messages.Message):
@@ -5133,6 +5185,9 @@ class ComputeAcceleratorTypesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone for this request.
   """
 
@@ -5141,7 +5196,8 @@ class ComputeAcceleratorTypesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeAddressesAggregatedListRequest(_messages.Message):
@@ -5188,6 +5244,9 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -5196,6 +5255,7 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeAddressesDeleteRequest(_messages.Message):
@@ -5300,6 +5360,9 @@ class ComputeAddressesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -5308,6 +5371,7 @@ class ComputeAddressesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeAddressesSetLabelsRequest(_messages.Message):
@@ -5399,6 +5463,9 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -5407,6 +5474,7 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeAutoscalersDeleteRequest(_messages.Message):
@@ -5510,6 +5578,9 @@ class ComputeAutoscalersListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: Name of the zone for this request.
   """
 
@@ -5518,7 +5589,8 @@ class ComputeAutoscalersListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeAutoscalersPatchRequest(_messages.Message):
@@ -5755,6 +5827,9 @@ class ComputeBackendBucketsListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -5762,6 +5837,7 @@ class ComputeBackendBucketsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeBackendBucketsPatchRequest(_messages.Message):
@@ -5916,6 +5992,9 @@ class ComputeBackendServicesAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Name of the project scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -5924,6 +6003,7 @@ class ComputeBackendServicesAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeBackendServicesDeleteRequest(_messages.Message):
@@ -6064,6 +6144,9 @@ class ComputeBackendServicesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -6071,6 +6154,7 @@ class ComputeBackendServicesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeBackendServicesPatchRequest(_messages.Message):
@@ -6211,6 +6295,9 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -6219,6 +6306,7 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeDiskTypesGetRequest(_messages.Message):
@@ -6272,6 +6360,9 @@ class ComputeDiskTypesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone for this request.
   """
 
@@ -6280,7 +6371,8 @@ class ComputeDiskTypesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeDisksAddResourcePoliciesRequest(_messages.Message):
@@ -6355,6 +6447,9 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -6363,6 +6458,7 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeDisksCreateSnapshotRequest(_messages.Message):
@@ -6516,6 +6612,9 @@ class ComputeDisksListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone for this request.
   """
 
@@ -6524,7 +6623,8 @@ class ComputeDisksListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeDisksRemoveResourcePoliciesRequest(_messages.Message):
@@ -6741,6 +6841,9 @@ class ComputeExternalVpnGatewaysListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -6748,6 +6851,7 @@ class ComputeExternalVpnGatewaysListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeExternalVpnGatewaysSetLabelsRequest(_messages.Message):
@@ -6875,6 +6979,9 @@ class ComputeFirewallsListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -6882,6 +6989,7 @@ class ComputeFirewallsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeFirewallsPatchRequest(_messages.Message):
@@ -6993,6 +7101,9 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -7001,6 +7112,7 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeForwardingRulesDeleteRequest(_messages.Message):
@@ -7106,6 +7218,9 @@ class ComputeForwardingRulesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -7114,6 +7229,7 @@ class ComputeForwardingRulesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeForwardingRulesPatchRequest(_messages.Message):
@@ -7313,6 +7429,9 @@ class ComputeGlobalAddressesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -7320,6 +7439,7 @@ class ComputeGlobalAddressesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeGlobalAddressesSetLabelsRequest(_messages.Message):
@@ -7448,6 +7568,9 @@ class ComputeGlobalForwardingRulesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -7455,6 +7578,7 @@ class ComputeGlobalForwardingRulesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeGlobalForwardingRulesPatchRequest(_messages.Message):
@@ -7699,6 +7823,9 @@ class ComputeGlobalNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Me
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -7707,6 +7834,7 @@ class ComputeGlobalNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Me
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeGlobalNetworkEndpointGroupsListRequest(_messages.Message):
@@ -7746,6 +7874,9 @@ class ComputeGlobalNetworkEndpointGroupsListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -7753,6 +7884,7 @@ class ComputeGlobalNetworkEndpointGroupsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
@@ -7799,6 +7931,9 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -7807,6 +7942,7 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeGlobalOperationsDeleteRequest(_messages.Message):
@@ -7874,6 +8010,9 @@ class ComputeGlobalOperationsListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -7881,6 +8020,7 @@ class ComputeGlobalOperationsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeGlobalOperationsWaitRequest(_messages.Message):
@@ -7960,6 +8100,9 @@ class ComputeGlobalOrganizationOperationsListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     parentId: Parent ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -7967,6 +8110,7 @@ class ComputeGlobalOrganizationOperationsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   parentId = _messages.StringField(5)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeGlobalPublicDelegatedPrefixesDeleteRequest(_messages.Message):
@@ -8067,6 +8211,9 @@ class ComputeGlobalPublicDelegatedPrefixesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -8074,6 +8221,7 @@ class ComputeGlobalPublicDelegatedPrefixesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeGlobalPublicDelegatedPrefixesPatchRequest(_messages.Message):
@@ -8147,6 +8295,9 @@ class ComputeHealthChecksAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Name of the project scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -8155,6 +8306,7 @@ class ComputeHealthChecksAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeHealthChecksDeleteRequest(_messages.Message):
@@ -8252,6 +8404,9 @@ class ComputeHealthChecksListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -8259,6 +8414,7 @@ class ComputeHealthChecksListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeHealthChecksPatchRequest(_messages.Message):
@@ -8424,6 +8580,9 @@ class ComputeHttpHealthChecksListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -8431,6 +8590,7 @@ class ComputeHttpHealthChecksListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeHttpHealthChecksPatchRequest(_messages.Message):
@@ -8596,6 +8756,9 @@ class ComputeHttpsHealthChecksListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -8603,6 +8766,7 @@ class ComputeHttpsHealthChecksListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeHttpsHealthChecksPatchRequest(_messages.Message):
@@ -8821,6 +8985,9 @@ class ComputeImagesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -8828,6 +8995,7 @@ class ComputeImagesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeImagesSetIamPolicyRequest(_messages.Message):
@@ -8948,6 +9116,9 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -8956,6 +9127,7 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest(_messages.Message):
@@ -9164,6 +9336,9 @@ class ComputeInstanceGroupManagersListErrorsRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone where the managed instance group is located. It
       should conform to RFC1035.
   """
@@ -9174,7 +9349,8 @@ class ComputeInstanceGroupManagersListErrorsRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
-  zone = _messages.StringField(7, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+  zone = _messages.StringField(8, required=True)
 
 
 class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message):
@@ -9266,6 +9442,9 @@ class ComputeInstanceGroupManagersListPerInstanceConfigsRequest(_messages.Messag
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone where the managed instance group is located. It
       should conform to RFC1035.
   """
@@ -9276,7 +9455,8 @@ class ComputeInstanceGroupManagersListPerInstanceConfigsRequest(_messages.Messag
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
-  zone = _messages.StringField(7, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+  zone = _messages.StringField(8, required=True)
 
 
 class ComputeInstanceGroupManagersListRequest(_messages.Message):
@@ -9316,6 +9496,9 @@ class ComputeInstanceGroupManagersListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -9324,7 +9507,8 @@ class ComputeInstanceGroupManagersListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeInstanceGroupManagersPatchPerInstanceConfigsRequest(_messages.Message):
@@ -9712,6 +9896,9 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -9720,6 +9907,7 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeInstanceGroupsDeleteRequest(_messages.Message):
@@ -9827,6 +10015,9 @@ class ComputeInstanceGroupsListInstancesRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -9837,7 +10028,8 @@ class ComputeInstanceGroupsListInstancesRequest(_messages.Message):
   orderBy = _messages.StringField(5)
   pageToken = _messages.StringField(6)
   project = _messages.StringField(7, required=True)
-  zone = _messages.StringField(8, required=True)
+  returnPartialSuccess = _messages.BooleanField(8)
+  zone = _messages.StringField(9, required=True)
 
 
 class ComputeInstanceGroupsListRequest(_messages.Message):
@@ -9877,6 +10069,9 @@ class ComputeInstanceGroupsListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -9885,7 +10080,8 @@ class ComputeInstanceGroupsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeInstanceGroupsRemoveInstancesRequest(_messages.Message):
@@ -10074,6 +10270,9 @@ class ComputeInstanceTemplatesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -10081,6 +10280,7 @@ class ComputeInstanceTemplatesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeInstanceTemplatesSetIamPolicyRequest(_messages.Message):
@@ -10215,6 +10415,9 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -10223,6 +10426,7 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeInstancesAttachDiskRequest(_messages.Message):
@@ -10572,6 +10776,9 @@ class ComputeInstancesListReferrersRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone for this request.
   """
 
@@ -10581,7 +10788,8 @@ class ComputeInstancesListReferrersRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
-  zone = _messages.StringField(7, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+  zone = _messages.StringField(8, required=True)
 
 
 class ComputeInstancesListRequest(_messages.Message):
@@ -10621,6 +10829,9 @@ class ComputeInstancesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone for this request.
   """
 
@@ -10629,7 +10840,8 @@ class ComputeInstancesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeInstancesRemoveResourcePoliciesRequest(_messages.Message):
@@ -11500,6 +11712,9 @@ class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -11508,6 +11723,7 @@ class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeInterconnectAttachmentsDeleteRequest(_messages.Message):
@@ -11631,6 +11847,9 @@ class ComputeInterconnectAttachmentsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -11639,6 +11858,7 @@ class ComputeInterconnectAttachmentsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeInterconnectAttachmentsPatchRequest(_messages.Message):
@@ -11780,6 +12000,9 @@ class ComputeInterconnectLocationsListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -11787,6 +12010,7 @@ class ComputeInterconnectLocationsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeInterconnectLocationsTestIamPermissionsRequest(_messages.Message):
@@ -11925,6 +12149,9 @@ class ComputeInterconnectsListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -11932,6 +12159,7 @@ class ComputeInterconnectsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeInterconnectsPatchRequest(_messages.Message):
@@ -12170,6 +12398,9 @@ class ComputeLicensesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -12177,6 +12408,7 @@ class ComputeLicensesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeLicensesSetIamPolicyRequest(_messages.Message):
@@ -12321,6 +12553,9 @@ class ComputeMachineImagesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -12328,6 +12563,7 @@ class ComputeMachineImagesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeMachineImagesSetIamPolicyRequest(_messages.Message):
@@ -12404,6 +12640,9 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -12412,6 +12651,7 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeMachineTypesGetRequest(_messages.Message):
@@ -12465,6 +12705,9 @@ class ComputeMachineTypesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone for this request.
   """
 
@@ -12473,7 +12716,8 @@ class ComputeMachineTypesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeNetworkEndpointGroupsAggregatedListRequest(_messages.Message):
@@ -12520,6 +12764,9 @@ class ComputeNetworkEndpointGroupsAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -12528,6 +12775,7 @@ class ComputeNetworkEndpointGroupsAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeNetworkEndpointGroupsAttachNetworkEndpointsRequest(_messages.Message):
@@ -12705,6 +12953,9 @@ class ComputeNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Message)
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone where the network endpoint group is located. It
       should comply with RFC1035.
   """
@@ -12716,7 +12967,8 @@ class ComputeNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Message)
   orderBy = _messages.StringField(5)
   pageToken = _messages.StringField(6)
   project = _messages.StringField(7, required=True)
-  zone = _messages.StringField(8, required=True)
+  returnPartialSuccess = _messages.BooleanField(8)
+  zone = _messages.StringField(9, required=True)
 
 
 class ComputeNetworkEndpointGroupsListRequest(_messages.Message):
@@ -12756,6 +13008,9 @@ class ComputeNetworkEndpointGroupsListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone where the network endpoint group is located. It
       should comply with RFC1035.
   """
@@ -12765,7 +13020,8 @@ class ComputeNetworkEndpointGroupsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeNetworkEndpointGroupsTestIamPermissionsRequest(_messages.Message):
@@ -12919,6 +13175,9 @@ class ComputeNetworksListIpAddressesRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     types: (Optional) types filter separate by comma, valid values are:
       SUBNETWORK, RESERVED, PEER_USED, PEER_RESERVED, REMOTE_USED,
       REMOTE_RESERVED.
@@ -12930,7 +13189,8 @@ class ComputeNetworksListIpAddressesRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
-  types = _messages.StringField(7)
+  returnPartialSuccess = _messages.BooleanField(7)
+  types = _messages.StringField(8)
 
 
 class ComputeNetworksListIpOwnersRequest(_messages.Message):
@@ -12976,6 +13236,9 @@ class ComputeNetworksListIpOwnersRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     subnetName: (Optional) Subnetwork name filter.
     subnetRegion: (Optional) Subnetwork region filter.
   """
@@ -12989,8 +13252,9 @@ class ComputeNetworksListIpOwnersRequest(_messages.Message):
   ownerTypes = _messages.StringField(7)
   pageToken = _messages.StringField(8)
   project = _messages.StringField(9, required=True)
-  subnetName = _messages.StringField(10)
-  subnetRegion = _messages.StringField(11)
+  returnPartialSuccess = _messages.BooleanField(10)
+  subnetName = _messages.StringField(11)
+  subnetRegion = _messages.StringField(12)
 
 
 class ComputeNetworksListPeeringRoutesRequest(_messages.Message):
@@ -13039,6 +13303,9 @@ class ComputeNetworksListPeeringRoutesRequest(_messages.Message):
     project: Project ID for this request.
     region: The region of the request. The response will include all subnet
       routes, static routes and dynamic routes in the region.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   class DirectionValueValuesEnum(_messages.Enum):
@@ -13060,6 +13327,7 @@ class ComputeNetworksListPeeringRoutesRequest(_messages.Message):
   peeringName = _messages.StringField(7)
   project = _messages.StringField(8, required=True)
   region = _messages.StringField(9)
+  returnPartialSuccess = _messages.BooleanField(10)
 
 
 class ComputeNetworksListRequest(_messages.Message):
@@ -13099,6 +13367,9 @@ class ComputeNetworksListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -13106,6 +13377,7 @@ class ComputeNetworksListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeNetworksPatchRequest(_messages.Message):
@@ -13296,6 +13568,9 @@ class ComputeNodeGroupsAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -13304,6 +13579,7 @@ class ComputeNodeGroupsAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeNodeGroupsDeleteNodesRequest(_messages.Message):
@@ -13454,6 +13730,9 @@ class ComputeNodeGroupsListNodesRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone for this request.
   """
 
@@ -13463,7 +13742,8 @@ class ComputeNodeGroupsListNodesRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
-  zone = _messages.StringField(7, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+  zone = _messages.StringField(8, required=True)
 
 
 class ComputeNodeGroupsListRequest(_messages.Message):
@@ -13503,6 +13783,9 @@ class ComputeNodeGroupsListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone for this request.
   """
 
@@ -13511,7 +13794,8 @@ class ComputeNodeGroupsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeNodeGroupsPatchRequest(_messages.Message):
@@ -13647,6 +13931,9 @@ class ComputeNodeTemplatesAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -13655,6 +13942,7 @@ class ComputeNodeTemplatesAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeNodeTemplatesDeleteRequest(_messages.Message):
@@ -13775,6 +14063,9 @@ class ComputeNodeTemplatesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: The name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -13783,6 +14074,7 @@ class ComputeNodeTemplatesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeNodeTemplatesSetIamPolicyRequest(_messages.Message):
@@ -13863,6 +14155,9 @@ class ComputeNodeTypesAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -13871,6 +14166,7 @@ class ComputeNodeTypesAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeNodeTypesGetRequest(_messages.Message):
@@ -13924,6 +14220,9 @@ class ComputeNodeTypesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: The name of the zone for this request.
   """
 
@@ -13932,7 +14231,8 @@ class ComputeNodeTypesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeOrganizationSecurityPoliciesAddAssociationRequest(_messages.Message):
@@ -14139,6 +14439,9 @@ class ComputeOrganizationSecurityPoliciesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     parentId: Parent ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -14146,6 +14449,7 @@ class ComputeOrganizationSecurityPoliciesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   parentId = _messages.StringField(5)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeOrganizationSecurityPoliciesMoveRequest(_messages.Message):
@@ -14311,6 +14615,9 @@ class ComputePacketMirroringsAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -14319,6 +14626,7 @@ class ComputePacketMirroringsAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputePacketMirroringsDeleteRequest(_messages.Message):
@@ -14424,6 +14732,9 @@ class ComputePacketMirroringsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -14432,6 +14743,7 @@ class ComputePacketMirroringsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputePacketMirroringsPatchRequest(_messages.Message):
@@ -14927,6 +15239,9 @@ class ComputePublicAdvertisedPrefixesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -14934,6 +15249,7 @@ class ComputePublicAdvertisedPrefixesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputePublicAdvertisedPrefixesPatchRequest(_messages.Message):
@@ -15007,6 +15323,9 @@ class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Name of the project scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -15015,6 +15334,7 @@ class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputePublicDelegatedPrefixesDeleteRequest(_messages.Message):
@@ -15122,6 +15442,9 @@ class ComputePublicDelegatedPrefixesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region of this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -15130,6 +15453,7 @@ class ComputePublicDelegatedPrefixesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputePublicDelegatedPrefixesPatchRequest(_messages.Message):
@@ -15263,6 +15587,9 @@ class ComputeRegionAutoscalersListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -15271,6 +15598,7 @@ class ComputeRegionAutoscalersListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionAutoscalersPatchRequest(_messages.Message):
@@ -15467,6 +15795,9 @@ class ComputeRegionBackendServicesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -15475,6 +15806,7 @@ class ComputeRegionBackendServicesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionBackendServicesPatchRequest(_messages.Message):
@@ -15594,6 +15926,9 @@ class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -15602,6 +15937,7 @@ class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionCommitmentsGetRequest(_messages.Message):
@@ -15681,6 +16017,9 @@ class ComputeRegionCommitmentsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -15689,6 +16028,7 @@ class ComputeRegionCommitmentsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionCommitmentsTestIamPermissionsRequest(_messages.Message):
@@ -15790,6 +16130,9 @@ class ComputeRegionDiskTypesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: The name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -15798,6 +16141,7 @@ class ComputeRegionDiskTypesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionDisksAddResourcePoliciesRequest(_messages.Message):
@@ -15981,6 +16325,9 @@ class ComputeRegionDisksListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -15989,6 +16336,7 @@ class ComputeRegionDisksListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionDisksRemoveResourcePoliciesRequest(_messages.Message):
@@ -16215,6 +16563,9 @@ class ComputeRegionHealthCheckServicesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -16223,6 +16574,7 @@ class ComputeRegionHealthCheckServicesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionHealthCheckServicesPatchRequest(_messages.Message):
@@ -16373,6 +16725,9 @@ class ComputeRegionHealthChecksListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -16381,6 +16736,7 @@ class ComputeRegionHealthChecksListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionHealthChecksPatchRequest(_messages.Message):
@@ -16694,6 +17050,9 @@ class ComputeRegionInstanceGroupManagersListErrorsRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request. This should conform to
       RFC1035.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -16703,6 +17062,7 @@ class ComputeRegionInstanceGroupManagersListErrorsRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   region = _messages.StringField(7, required=True)
+  returnPartialSuccess = _messages.BooleanField(8)
 
 
 class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Message):
@@ -16797,6 +17157,9 @@ class ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest(_messages.
     project: Project ID for this request.
     region: Name of the region scoping this request, should conform to
       RFC1035.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -16806,6 +17169,7 @@ class ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest(_messages.
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   region = _messages.StringField(7, required=True)
+  returnPartialSuccess = _messages.BooleanField(8)
 
 
 class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
@@ -16846,6 +17210,9 @@ class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -16854,6 +17221,7 @@ class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionInstanceGroupManagersPatchPerInstanceConfigsRequest(_messages.Message):
@@ -17195,6 +17563,9 @@ class ComputeRegionInstanceGroupsListInstancesRequest(_messages.Message):
     regionInstanceGroupsListInstancesRequest: A
       RegionInstanceGroupsListInstancesRequest resource to be passed as the
       request body.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -17205,6 +17576,7 @@ class ComputeRegionInstanceGroupsListInstancesRequest(_messages.Message):
   project = _messages.StringField(6, required=True)
   region = _messages.StringField(7, required=True)
   regionInstanceGroupsListInstancesRequest = _messages.MessageField('RegionInstanceGroupsListInstancesRequest', 8)
+  returnPartialSuccess = _messages.BooleanField(9)
 
 
 class ComputeRegionInstanceGroupsListRequest(_messages.Message):
@@ -17245,6 +17617,9 @@ class ComputeRegionInstanceGroupsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -17253,6 +17628,7 @@ class ComputeRegionInstanceGroupsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionInstanceGroupsSetNamedPortsRequest(_messages.Message):
@@ -17437,6 +17813,9 @@ class ComputeRegionNetworkEndpointGroupsListRequest(_messages.Message):
     project: Project ID for this request.
     region: The name of the region where the network endpoint group is
       located. It should comply with RFC1035.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -17445,6 +17824,7 @@ class ComputeRegionNetworkEndpointGroupsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionNotificationEndpointsDeleteRequest(_messages.Message):
@@ -17550,6 +17930,9 @@ class ComputeRegionNotificationEndpointsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -17558,6 +17941,7 @@ class ComputeRegionNotificationEndpointsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionNotificationEndpointsTestIamPermissionsRequest(_messages.Message):
@@ -17647,6 +18031,9 @@ class ComputeRegionOperationsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -17655,6 +18042,7 @@ class ComputeRegionOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionOperationsWaitRequest(_messages.Message):
@@ -17774,6 +18162,9 @@ class ComputeRegionSslCertificatesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -17782,6 +18173,7 @@ class ComputeRegionSslCertificatesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionSslCertificatesTestIamPermissionsRequest(_messages.Message):
@@ -17904,6 +18296,9 @@ class ComputeRegionTargetHttpProxiesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -17912,6 +18307,7 @@ class ComputeRegionTargetHttpProxiesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionTargetHttpProxiesSetUrlMapRequest(_messages.Message):
@@ -18062,6 +18458,9 @@ class ComputeRegionTargetHttpsProxiesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -18070,6 +18469,7 @@ class ComputeRegionTargetHttpsProxiesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
@@ -18253,6 +18653,9 @@ class ComputeRegionUrlMapsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -18261,6 +18664,7 @@ class ComputeRegionUrlMapsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRegionUrlMapsPatchRequest(_messages.Message):
@@ -18384,6 +18788,9 @@ class ComputeRegionsListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -18391,6 +18798,7 @@ class ComputeRegionsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeReservationsAggregatedListRequest(_messages.Message):
@@ -18437,6 +18845,9 @@ class ComputeReservationsAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -18445,6 +18856,7 @@ class ComputeReservationsAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeReservationsDeleteRequest(_messages.Message):
@@ -18564,6 +18976,9 @@ class ComputeReservationsListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: Name of the zone for this request.
   """
 
@@ -18572,7 +18987,8 @@ class ComputeReservationsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeReservationsResizeRequest(_messages.Message):
@@ -18681,6 +19097,9 @@ class ComputeResourcePoliciesAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -18689,6 +19108,7 @@ class ComputeResourcePoliciesAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeResourcePoliciesDeleteRequest(_messages.Message):
@@ -18810,6 +19230,9 @@ class ComputeResourcePoliciesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -18818,6 +19241,7 @@ class ComputeResourcePoliciesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeResourcePoliciesSetIamPolicyRequest(_messages.Message):
@@ -18898,6 +19322,9 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -18906,6 +19333,7 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRoutersDeleteRequest(_messages.Message):
@@ -18974,6 +19402,9 @@ class ComputeRoutersGetNatMappingInfoRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     router: Name of the Router resource to query for Nat Mapping information
       of VM endpoints.
   """
@@ -18985,7 +19416,8 @@ class ComputeRoutersGetNatMappingInfoRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   region = _messages.StringField(7, required=True)
-  router = _messages.StringField(8, required=True)
+  returnPartialSuccess = _messages.BooleanField(8)
+  router = _messages.StringField(9, required=True)
 
 
 class ComputeRoutersGetRequest(_messages.Message):
@@ -19079,6 +19511,9 @@ class ComputeRoutersListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -19087,6 +19522,7 @@ class ComputeRoutersListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeRoutersPatchRequest(_messages.Message):
@@ -19271,6 +19707,9 @@ class ComputeRoutesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -19278,6 +19717,7 @@ class ComputeRoutesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeRoutesTestIamPermissionsRequest(_messages.Message):
@@ -19425,6 +19865,9 @@ class ComputeSecurityPoliciesListPreconfiguredExpressionSetsRequest(_messages.Me
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -19432,6 +19875,7 @@ class ComputeSecurityPoliciesListPreconfiguredExpressionSetsRequest(_messages.Me
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeSecurityPoliciesListRequest(_messages.Message):
@@ -19471,6 +19915,9 @@ class ComputeSecurityPoliciesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -19478,6 +19925,7 @@ class ComputeSecurityPoliciesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeSecurityPoliciesPatchRequest(_messages.Message):
@@ -19655,6 +20103,9 @@ class ComputeSnapshotsListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -19662,6 +20113,7 @@ class ComputeSnapshotsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeSnapshotsSetIamPolicyRequest(_messages.Message):
@@ -19753,6 +20205,9 @@ class ComputeSslCertificatesAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Name of the project scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -19761,6 +20216,7 @@ class ComputeSslCertificatesAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeSslCertificatesDeleteRequest(_messages.Message):
@@ -19859,6 +20315,9 @@ class ComputeSslCertificatesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -19866,6 +20325,7 @@ class ComputeSslCertificatesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeSslCertificatesTestIamPermissionsRequest(_messages.Message):
@@ -19980,6 +20440,9 @@ class ComputeSslPoliciesListAvailableFeaturesRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -19987,6 +20450,7 @@ class ComputeSslPoliciesListAvailableFeaturesRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeSslPoliciesListRequest(_messages.Message):
@@ -20026,6 +20490,9 @@ class ComputeSslPoliciesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -20033,6 +20500,7 @@ class ComputeSslPoliciesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeSslPoliciesPatchRequest(_messages.Message):
@@ -20120,6 +20588,9 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -20128,6 +20599,7 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeSubnetworksDeleteRequest(_messages.Message):
@@ -20276,6 +20748,9 @@ class ComputeSubnetworksListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -20284,6 +20759,7 @@ class ComputeSubnetworksListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeSubnetworksListUsableRequest(_messages.Message):
@@ -20323,6 +20799,9 @@ class ComputeSubnetworksListUsableRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -20330,6 +20809,7 @@ class ComputeSubnetworksListUsableRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeSubnetworksPatchRequest(_messages.Message):
@@ -20432,6 +20912,130 @@ class ComputeSubnetworksTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
+class ComputeTargetGrpcProxiesDeleteRequest(_messages.Message):
+  r"""A ComputeTargetGrpcProxiesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    targetGrpcProxy: Name of the TargetGrpcProxy resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  targetGrpcProxy = _messages.StringField(3, required=True)
+
+
+class ComputeTargetGrpcProxiesGetRequest(_messages.Message):
+  r"""A ComputeTargetGrpcProxiesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetGrpcProxy: Name of the TargetGrpcProxy resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetGrpcProxy = _messages.StringField(2, required=True)
+
+
+class ComputeTargetGrpcProxiesInsertRequest(_messages.Message):
+  r"""A ComputeTargetGrpcProxiesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    targetGrpcProxy: A TargetGrpcProxy resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  targetGrpcProxy = _messages.MessageField('TargetGrpcProxy', 3)
+
+
+class ComputeTargetGrpcProxiesListRequest(_messages.Message):
+  r"""A ComputeTargetGrpcProxiesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+
+
+class ComputeTargetGrpcProxiesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeTargetGrpcProxiesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
 class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
   r"""A ComputeTargetHttpProxiesAggregatedListRequest object.
 
@@ -20476,6 +21080,9 @@ class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Name of the project scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -20484,6 +21091,7 @@ class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeTargetHttpProxiesDeleteRequest(_messages.Message):
@@ -20582,6 +21190,9 @@ class ComputeTargetHttpProxiesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -20589,6 +21200,7 @@ class ComputeTargetHttpProxiesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeTargetHttpProxiesSetUrlMapRequest(_messages.Message):
@@ -20676,6 +21288,9 @@ class ComputeTargetHttpsProxiesAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Name of the project scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -20684,6 +21299,7 @@ class ComputeTargetHttpsProxiesAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeTargetHttpsProxiesDeleteRequest(_messages.Message):
@@ -20782,6 +21398,9 @@ class ComputeTargetHttpsProxiesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -20789,6 +21408,7 @@ class ComputeTargetHttpsProxiesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeTargetHttpsProxiesSetQuicOverrideRequest(_messages.Message):
@@ -20961,6 +21581,9 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -20969,6 +21592,7 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeTargetInstancesDeleteRequest(_messages.Message):
@@ -21073,6 +21697,9 @@ class ComputeTargetInstancesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: Name of the zone scoping this request.
   """
 
@@ -21081,7 +21708,8 @@ class ComputeTargetInstancesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeTargetInstancesTestIamPermissionsRequest(_messages.Message):
@@ -21201,6 +21829,9 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -21209,6 +21840,7 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeTargetPoolsDeleteRequest(_messages.Message):
@@ -21331,6 +21963,9 @@ class ComputeTargetPoolsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -21339,6 +21974,7 @@ class ComputeTargetPoolsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeTargetPoolsRemoveHealthCheckRequest(_messages.Message):
@@ -21540,6 +22176,9 @@ class ComputeTargetSslProxiesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -21547,6 +22186,7 @@ class ComputeTargetSslProxiesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeTargetSslProxiesSetBackendServiceRequest(_messages.Message):
@@ -21771,6 +22411,9 @@ class ComputeTargetTcpProxiesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -21778,6 +22421,7 @@ class ComputeTargetTcpProxiesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeTargetTcpProxiesSetBackendServiceRequest(_messages.Message):
@@ -21895,6 +22539,9 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -21903,6 +22550,7 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeTargetVpnGatewaysDeleteRequest(_messages.Message):
@@ -22008,6 +22656,9 @@ class ComputeTargetVpnGatewaysListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -22016,6 +22667,7 @@ class ComputeTargetVpnGatewaysListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeTargetVpnGatewaysSetLabelsRequest(_messages.Message):
@@ -22107,6 +22759,9 @@ class ComputeUrlMapsAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Name of the project scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -22115,6 +22770,7 @@ class ComputeUrlMapsAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeUrlMapsDeleteRequest(_messages.Message):
@@ -22238,6 +22894,9 @@ class ComputeUrlMapsListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -22245,6 +22904,7 @@ class ComputeUrlMapsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class ComputeUrlMapsPatchRequest(_messages.Message):
@@ -22371,6 +23031,9 @@ class ComputeVpnGatewaysAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -22379,6 +23042,7 @@ class ComputeVpnGatewaysAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeVpnGatewaysDeleteRequest(_messages.Message):
@@ -22497,6 +23161,9 @@ class ComputeVpnGatewaysListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -22505,6 +23172,7 @@ class ComputeVpnGatewaysListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeVpnGatewaysSetLabelsRequest(_messages.Message):
@@ -22596,6 +23264,9 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -22604,6 +23275,7 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeVpnTunnelsDeleteRequest(_messages.Message):
@@ -22708,6 +23380,9 @@ class ComputeVpnTunnelsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -22716,6 +23391,7 @@ class ComputeVpnTunnelsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
 
 
 class ComputeVpnTunnelsSetLabelsRequest(_messages.Message):
@@ -22832,6 +23508,9 @@ class ComputeZoneOperationsListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
     zone: Name of the zone for request.
   """
 
@@ -22840,7 +23519,8 @@ class ComputeZoneOperationsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
-  zone = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeZoneOperationsWaitRequest(_messages.Message):
@@ -22906,6 +23586,9 @@ class ComputeZonesListRequest(_messages.Message):
       nextPageToken returned by a previous list request to get the next page
       of results.
     project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false and the
+      logic is the same as today.
   """
 
   filter = _messages.StringField(1)
@@ -22913,6 +23596,7 @@ class ComputeZonesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
 
 
 class Condition(_messages.Message):
@@ -23475,6 +24159,7 @@ class DiskAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -23545,6 +24230,7 @@ class DiskAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -23569,13 +24255,14 @@ class DiskAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -23604,7 +24291,8 @@ class DiskAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#diskAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class DiskInstantiationConfig(_messages.Message):
@@ -23746,6 +24434,7 @@ class DiskList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -23770,13 +24459,14 @@ class DiskList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -23900,6 +24590,7 @@ class DiskTypeAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -23970,6 +24661,7 @@ class DiskTypeAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -23994,13 +24686,14 @@ class DiskTypeAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -24029,7 +24722,8 @@ class DiskTypeAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#diskTypeAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class DiskTypeList(_messages.Message):
@@ -24095,6 +24789,7 @@ class DiskTypeList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -24119,13 +24814,14 @@ class DiskTypeList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -24213,6 +24909,7 @@ class DiskTypesScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -24237,13 +24934,14 @@ class DiskTypesScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -24358,6 +25056,7 @@ class DisksScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -24382,13 +25081,14 @@ class DisksScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -24604,6 +25304,7 @@ class ExchangedPeeringRoutesList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -24628,13 +25329,14 @@ class ExchangedPeeringRoutesList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -24886,6 +25588,7 @@ class ExternalVpnGatewayList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -24910,13 +25613,14 @@ class ExternalVpnGatewayList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -25229,6 +25933,7 @@ class FirewallList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -25253,13 +25958,14 @@ class FirewallList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -25383,7 +26089,7 @@ class ForwardingRule(_messages.Message):
       forwarding rules, refer to Forwarding rule concepts.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this load balancer and can only take the following values:
-      PREMIUM , STANDARD.  For regional ForwardingRule, the valid values are
+      PREMIUM, STANDARD.  For regional ForwardingRule, the valid values are
       PREMIUM and STANDARD. For GlobalForwardingRule, the valid value is
       PREMIUM.  If this field is not specified, it is assumed to be PREMIUM.
       If IPAddress is specified, this value must be equal to the networkTier
@@ -25503,11 +26209,11 @@ class ForwardingRule(_messages.Message):
       network that the load balanced IP should belong to for this Forwarding
       Rule. If this field is not specified, the default network will be used.
     networkTier: This signifies the networking tier used for configuring this
-      load balancer and can only take the following values: PREMIUM ,
-      STANDARD.  For regional ForwardingRule, the valid values are PREMIUM and
-      STANDARD. For GlobalForwardingRule, the valid value is PREMIUM.  If this
-      field is not specified, it is assumed to be PREMIUM. If IPAddress is
-      specified, this value must be equal to the networkTier of the Address.
+      load balancer and can only take the following values: PREMIUM, STANDARD.
+      For regional ForwardingRule, the valid values are PREMIUM and STANDARD.
+      For GlobalForwardingRule, the valid value is PREMIUM.  If this field is
+      not specified, it is assumed to be PREMIUM. If IPAddress is specified,
+      this value must be equal to the networkTier of the Address.
     portRange: When the load balancing scheme is EXTERNAL,
       INTERNAL_SELF_MANAGED and INTERNAL_MANAGED, you can specify a
       port_range. Use with a forwarding rule that points to a target proxy or
@@ -25631,7 +26337,7 @@ class ForwardingRule(_messages.Message):
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     r"""This signifies the networking tier used for configuring this load
-    balancer and can only take the following values: PREMIUM , STANDARD.  For
+    balancer and can only take the following values: PREMIUM, STANDARD.  For
     regional ForwardingRule, the valid values are PREMIUM and STANDARD. For
     GlobalForwardingRule, the valid value is PREMIUM.  If this field is not
     specified, it is assumed to be PREMIUM. If IPAddress is specified, this
@@ -25721,6 +26427,7 @@ class ForwardingRuleAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -25791,6 +26498,7 @@ class ForwardingRuleAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -25815,13 +26523,14 @@ class ForwardingRuleAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -25850,7 +26559,8 @@ class ForwardingRuleAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#forwardingRuleAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class ForwardingRuleList(_messages.Message):
@@ -25915,6 +26625,7 @@ class ForwardingRuleList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -25939,13 +26650,14 @@ class ForwardingRuleList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -26043,6 +26755,7 @@ class ForwardingRulesScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -26067,13 +26780,14 @@ class ForwardingRulesScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -26818,6 +27532,7 @@ class HealthCheckList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -26842,13 +27557,14 @@ class HealthCheckList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -27115,6 +27831,7 @@ class HealthCheckServicesList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -27139,13 +27856,14 @@ class HealthCheckServicesList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -27195,6 +27913,7 @@ class HealthChecksAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -27265,6 +27984,7 @@ class HealthChecksAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -27289,13 +28009,14 @@ class HealthChecksAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -27324,7 +28045,8 @@ class HealthChecksAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#healthChecksAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class HealthChecksScopedList(_messages.Message):
@@ -27383,6 +28105,7 @@ class HealthChecksScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -27407,13 +28130,14 @@ class HealthChecksScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -27827,6 +28551,7 @@ class HttpHealthCheckList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -27851,13 +28576,14 @@ class HttpHealthCheckList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -28303,6 +29029,7 @@ class HttpsHealthCheckList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -28327,13 +29054,14 @@ class HttpsHealthCheckList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -28663,6 +29391,7 @@ class ImageList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -28687,13 +29416,14 @@ class ImageList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -29032,6 +29762,7 @@ class InstanceAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -29102,6 +29833,7 @@ class InstanceAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -29126,13 +29858,14 @@ class InstanceAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -29161,7 +29894,8 @@ class InstanceAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#instanceAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class InstanceGroup(_messages.Message):
@@ -29246,6 +29980,7 @@ class InstanceGroupAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -29316,6 +30051,7 @@ class InstanceGroupAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -29340,13 +30076,14 @@ class InstanceGroupAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -29375,7 +30112,8 @@ class InstanceGroupAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#instanceGroupAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class InstanceGroupList(_messages.Message):
@@ -29441,6 +30179,7 @@ class InstanceGroupList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -29465,13 +30204,14 @@ class InstanceGroupList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -29700,6 +30440,7 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -29770,6 +30511,7 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -29794,13 +30536,14 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -29829,7 +30572,8 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#instanceGroupManagerAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
@@ -29926,6 +30670,7 @@ class InstanceGroupManagerList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -29950,13 +30695,14 @@ class InstanceGroupManagerList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -30049,14 +30795,21 @@ class InstanceGroupManagerStatusStateful(_messages.Message):
   r"""A InstanceGroupManagerStatusStateful object.
 
   Fields:
+    hasStatefulConfig: [Output Only] A bit indicating whether the managed
+      instance group is stateful, i.e. has any disks in Stateful Policy or at
+      least one per-instance config. This is determined based on the user
+      intent, the group may be reported as not stateful even when there is
+      still some preserved state on managed instances.
     isStateful: [Output Only] A bit indicating whether the managed instance
       group is stateful, i.e. has any disks in Stateful Policy or at least one
       per-instance config. This is determined based on the user intent, the
       group may be reported as not stateful even when there is still some
-      preserved state on managed instances.
+      preserved state on managed instances. This field is deprecated in favor
+      of has_stateful_config
   """
 
-  isStateful = _messages.BooleanField(1)
+  hasStatefulConfig = _messages.BooleanField(1)
+  isStateful = _messages.BooleanField(2)
 
 
 class InstanceGroupManagerStatusVersionTarget(_messages.Message):
@@ -30478,6 +31231,7 @@ class InstanceGroupManagersListPerInstanceConfigsResp(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -30502,13 +31256,14 @@ class InstanceGroupManagersListPerInstanceConfigsResp(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -30646,6 +31401,7 @@ class InstanceGroupManagersScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -30670,13 +31426,14 @@ class InstanceGroupManagersScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -30831,6 +31588,7 @@ class InstanceGroupsListInstances(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -30855,13 +31613,14 @@ class InstanceGroupsListInstances(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -30990,6 +31749,7 @@ class InstanceGroupsScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -31014,13 +31774,14 @@ class InstanceGroupsScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -31129,6 +31890,7 @@ class InstanceList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -31153,13 +31915,14 @@ class InstanceList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -31254,6 +32017,7 @@ class InstanceListReferrers(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -31278,13 +32042,14 @@ class InstanceListReferrers(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -31465,7 +32230,7 @@ class InstanceProperties(_messages.Message):
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
     resourcePolicies: Resource policies (names, not ULRs) applied to instances
-      created from this templae.
+      created from this template.
     scheduling: Specifies the scheduling options for the instances that are
       created from this template.
     serviceAccounts: A list of service accounts with specified scopes. Access
@@ -31673,6 +32438,7 @@ class InstanceTemplateList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -31697,13 +32463,14 @@ class InstanceTemplateList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -31898,6 +32665,7 @@ class InstancesScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -31922,13 +32690,14 @@ class InstancesScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -32716,6 +33485,7 @@ class InterconnectAttachmentAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -32786,6 +33556,7 @@ class InterconnectAttachmentAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -32810,13 +33581,14 @@ class InterconnectAttachmentAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -32845,7 +33617,8 @@ class InterconnectAttachmentAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#interconnectAttachmentAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class InterconnectAttachmentList(_messages.Message):
@@ -32913,6 +33686,7 @@ class InterconnectAttachmentList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -32937,13 +33711,14 @@ class InterconnectAttachmentList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -33067,6 +33842,7 @@ class InterconnectAttachmentsScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -33091,13 +33867,14 @@ class InterconnectAttachmentsScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -33354,6 +34131,7 @@ class InterconnectList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -33378,13 +34156,14 @@ class InterconnectList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -33595,6 +34374,7 @@ class InterconnectLocationList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -33619,13 +34399,14 @@ class InterconnectLocationList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -33934,6 +34715,7 @@ class IpAddressesList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -33958,13 +34740,14 @@ class IpAddressesList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -34059,6 +34842,7 @@ class IpOwnerList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -34083,13 +34867,14 @@ class IpOwnerList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -34171,7 +34956,10 @@ class JwtHeader(_messages.Message):
 
 
 class License(_messages.Message):
-  r"""A license resource.
+  r"""Represents a License resource.  A License represents billing and
+  aggregate usage data for public and marketplace images.  Caution This
+  resource is intended for use only by third-party partners who are creating
+  Cloud Marketplace images. (== resource_for {$api_version}.licenses ==)
 
   Fields:
     chargesUseFee: [Output Only] Deprecated. This field no longer reflects
@@ -34210,7 +34998,10 @@ class License(_messages.Message):
 
 
 class LicenseCode(_messages.Message):
-  r"""A LicenseCode object.
+  r"""Represents a License Code resource.  A License Code is a unique
+  identifier used to represent a license resource.  Caution This resource is
+  intended for use only by third-party partners who are creating Cloud
+  Marketplace images. (== resource_for {$api_version}.licenseCodes ==)
 
   Enums:
     StateValueValuesEnum: [Output Only] Current state of this License Code.
@@ -34363,6 +35154,7 @@ class LicensesListResponse(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -34387,13 +35179,14 @@ class LicensesListResponse(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -34713,6 +35506,7 @@ class MachineImageList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -34737,13 +35531,14 @@ class MachineImageList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -34844,6 +35639,7 @@ class MachineTypeAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -34914,6 +35710,7 @@ class MachineTypeAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -34938,13 +35735,14 @@ class MachineTypeAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -34973,7 +35771,8 @@ class MachineTypeAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#machineTypeAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class MachineTypeList(_messages.Message):
@@ -35039,6 +35838,7 @@ class MachineTypeList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -35063,13 +35863,14 @@ class MachineTypeList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -35158,6 +35959,7 @@ class MachineTypesScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -35182,13 +35984,14 @@ class MachineTypesScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -35658,11 +36461,6 @@ class Network(_messages.Message):
   other and to the internet. For more information, read Virtual Private Cloud
   (VPC) Network. (== resource_for {$api_version}.networks ==)
 
-  Enums:
-    MulticastModeValueValuesEnum: The multicast mode for this network. If set
-      to ZONAL, multicast is allowed within a zone. If set to DISABLED,
-      multicast is disabled for this network. The default is DISABLED.
-
   Fields:
     IPv4Range: Deprecated in favor of subnet mode networks. The range of
       internal addresses that are legal on this network. This range is a CIDR
@@ -35685,9 +36483,6 @@ class Network(_messages.Message):
       networks.
     mtu: Maximum Transmission Unit in bytes. The minimum value for this field
       is 1460 and the maximum value is 1500 bytes.
-    multicastMode: The multicast mode for this network. If set to ZONAL,
-      multicast is allowed within a zone. If set to DISABLED, multicast is
-      disabled for this network. The default is DISABLED.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -35706,18 +36501,6 @@ class Network(_messages.Message):
       subnetworks in this VPC network.
   """
 
-  class MulticastModeValueValuesEnum(_messages.Enum):
-    r"""The multicast mode for this network. If set to ZONAL, multicast is
-    allowed within a zone. If set to DISABLED, multicast is disabled for this
-    network. The default is DISABLED.
-
-    Values:
-      DISABLED: <no description>
-      ZONAL: <no description>
-    """
-    DISABLED = 0
-    ZONAL = 1
-
   IPv4Range = _messages.StringField(1)
   autoCreateSubnetworks = _messages.BooleanField(2)
   creationTimestamp = _messages.StringField(3)
@@ -35726,13 +36509,12 @@ class Network(_messages.Message):
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(7, default=u'compute#network')
   mtu = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  multicastMode = _messages.EnumField('MulticastModeValueValuesEnum', 9)
-  name = _messages.StringField(10)
-  peerings = _messages.MessageField('NetworkPeering', 11, repeated=True)
-  routingConfig = _messages.MessageField('NetworkRoutingConfig', 12)
-  selfLink = _messages.StringField(13)
-  selfLinkWithId = _messages.StringField(14)
-  subnetworks = _messages.StringField(15, repeated=True)
+  name = _messages.StringField(9)
+  peerings = _messages.MessageField('NetworkPeering', 10, repeated=True)
+  routingConfig = _messages.MessageField('NetworkRoutingConfig', 11)
+  selfLink = _messages.StringField(12)
+  selfLinkWithId = _messages.StringField(13)
+  subnetworks = _messages.StringField(14, repeated=True)
 
 
 class NetworkEndpoint(_messages.Message):
@@ -35794,13 +36576,12 @@ class NetworkEndpoint(_messages.Message):
 
 class NetworkEndpointGroup(_messages.Message):
   r"""Represents a collection of network endpoints.  For more information read
-  Setting up network endpoint groups in load balancing. (== resource_for
+  Network endpoint groups overview. (== resource_for
   {$api_version}.networkEndpointGroups ==) Next ID: 21
 
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
-      network endpoint group. Currently the only supported value is
-      GCE_VM_IP_PORT.
+      network endpoint group.
     TypeValueValuesEnum: Specify the type of this network endpoint group. Only
       LOAD_BALANCING is valid for now.
 
@@ -35839,7 +36620,7 @@ class NetworkEndpointGroup(_messages.Message):
     network: The URL of the network to which all network endpoints in the NEG
       belong. Uses "default" project network if unspecified.
     networkEndpointType: Type of network endpoints in this network endpoint
-      group. Currently the only supported value is GCE_VM_IP_PORT.
+      group.
     region: [Output Only] The URL of the region where the network endpoint
       group is located.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -35856,8 +36637,7 @@ class NetworkEndpointGroup(_messages.Message):
   """
 
   class NetworkEndpointTypeValueValuesEnum(_messages.Enum):
-    r"""Type of network endpoints in this network endpoint group. Currently
-    the only supported value is GCE_VM_IP_PORT.
+    r"""Type of network endpoints in this network endpoint group.
 
     Values:
       GCE_VM_IP_PORT: <no description>
@@ -35950,6 +36730,7 @@ class NetworkEndpointGroupAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -36020,6 +36801,7 @@ class NetworkEndpointGroupAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -36044,13 +36826,14 @@ class NetworkEndpointGroupAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -36079,7 +36862,8 @@ class NetworkEndpointGroupAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#networkEndpointGroupAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class NetworkEndpointGroupAppEngine(_messages.Message):
@@ -36246,6 +37030,7 @@ class NetworkEndpointGroupList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -36270,13 +37055,14 @@ class NetworkEndpointGroupList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -36437,6 +37223,7 @@ class NetworkEndpointGroupsListNetworkEndpoints(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -36461,13 +37248,14 @@ class NetworkEndpointGroupsListNetworkEndpoints(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -36555,6 +37343,7 @@ class NetworkEndpointGroupsScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -36579,13 +37368,14 @@ class NetworkEndpointGroupsScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -36741,6 +37531,7 @@ class NetworkList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -36765,13 +37556,14 @@ class NetworkList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37026,6 +37818,7 @@ class NodeGroup(_messages.Message):
       node group.
     maintenancePolicy: Specifies how to handle instances when a node in the
       group undergoes maintenance.
+    maintenanceWindow: A NodeGroupMaintenanceWindow attribute.
     name: The name of the resource, provided by the client when initially
       creating the resource. The resource name must be 1-63 characters long,
       and comply with RFC1035. Specifically, the name must be 1-63 characters
@@ -37080,13 +37873,14 @@ class NodeGroup(_messages.Message):
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(6, default=u'compute#nodeGroup')
   maintenancePolicy = _messages.EnumField('MaintenancePolicyValueValuesEnum', 7)
-  name = _messages.StringField(8)
-  nodeTemplate = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  selfLinkWithId = _messages.StringField(11)
-  size = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  zone = _messages.StringField(14)
+  maintenanceWindow = _messages.MessageField('NodeGroupMaintenanceWindow', 8)
+  name = _messages.StringField(9)
+  nodeTemplate = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  selfLinkWithId = _messages.StringField(12)
+  size = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  zone = _messages.StringField(15)
 
 
 class NodeGroupAggregatedList(_messages.Message):
@@ -37108,6 +37902,7 @@ class NodeGroupAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -37178,6 +37973,7 @@ class NodeGroupAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -37202,13 +37998,14 @@ class NodeGroupAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37237,7 +38034,8 @@ class NodeGroupAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#nodeGroupAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class NodeGroupAutoscalingPolicy(_messages.Message):
@@ -37334,6 +38132,7 @@ class NodeGroupList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -37358,13 +38157,14 @@ class NodeGroupList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37394,6 +38194,22 @@ class NodeGroupList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class NodeGroupMaintenanceWindow(_messages.Message):
+  r"""Time window specified for daily maintenance operations. GCE's internal
+  maintenance will be performed within this window.
+
+  Fields:
+    duration: [Output only] A predetermined duration for the window,
+      automatically chosen to be the smallest possible in the given scenario.
+    startTime: Start time of the window. This must be in UTC format that
+      resolves to one of 00:00, 04:00, 08:00, 12:00, 16:00, or 20:00. For
+      example, both 13:00-5 and 08:00 are valid.
+  """
+
+  duration = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class NodeGroupNode(_messages.Message):
@@ -37539,6 +38355,7 @@ class NodeGroupsListNodes(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -37563,13 +38380,14 @@ class NodeGroupsListNodes(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37657,6 +38475,7 @@ class NodeGroupsScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -37681,13 +38500,14 @@ class NodeGroupsScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -37877,6 +38697,7 @@ class NodeTemplateAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -37947,6 +38768,7 @@ class NodeTemplateAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -37971,13 +38793,14 @@ class NodeTemplateAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -38006,7 +38829,8 @@ class NodeTemplateAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#nodeTemplateAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class NodeTemplateList(_messages.Message):
@@ -38072,6 +38896,7 @@ class NodeTemplateList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -38096,13 +38921,14 @@ class NodeTemplateList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -38205,6 +39031,7 @@ class NodeTemplatesScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -38229,13 +39056,14 @@ class NodeTemplatesScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -38331,6 +39159,7 @@ class NodeTypeAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -38401,6 +39230,7 @@ class NodeTypeAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -38425,13 +39255,14 @@ class NodeTypeAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -38460,7 +39291,8 @@ class NodeTypeAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#nodeTypeAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class NodeTypeList(_messages.Message):
@@ -38526,6 +39358,7 @@ class NodeTypeList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -38550,13 +39383,14 @@ class NodeTypeList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -38644,6 +39478,7 @@ class NodeTypesScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -38668,13 +39503,14 @@ class NodeTypesScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -38833,6 +39669,7 @@ class NotificationEndpointList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -38857,13 +39694,14 @@ class NotificationEndpointList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39056,6 +39894,7 @@ class Operation(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -39080,13 +39919,14 @@ class Operation(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39155,6 +39995,7 @@ class OperationAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -39225,6 +40066,7 @@ class OperationAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -39249,13 +40091,14 @@ class OperationAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39284,7 +40127,8 @@ class OperationAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#operationAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class OperationList(_messages.Message):
@@ -39350,6 +40194,7 @@ class OperationList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -39374,13 +40219,14 @@ class OperationList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39468,6 +40314,7 @@ class OperationsScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -39492,13 +40339,14 @@ class OperationsScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39765,6 +40613,7 @@ class PacketMirroringAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -39835,6 +40684,7 @@ class PacketMirroringAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -39859,13 +40709,14 @@ class PacketMirroringAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -39894,7 +40745,8 @@ class PacketMirroringAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#packetMirroringAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class PacketMirroringFilter(_messages.Message):
@@ -39993,6 +40845,7 @@ class PacketMirroringList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -40017,13 +40870,14 @@ class PacketMirroringList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -40172,6 +41026,7 @@ class PacketMirroringsScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -40196,13 +41051,14 @@ class PacketMirroringsScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -40994,6 +41850,7 @@ class PublicAdvertisedPrefixList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -41018,13 +41875,14 @@ class PublicAdvertisedPrefixList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -41167,6 +42025,7 @@ class PublicDelegatedPrefixAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -41237,6 +42096,7 @@ class PublicDelegatedPrefixAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -41261,13 +42121,14 @@ class PublicDelegatedPrefixAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -41296,7 +42157,8 @@ class PublicDelegatedPrefixAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#publicDelegatedPrefixAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class PublicDelegatedPrefixList(_messages.Message):
@@ -41362,6 +42224,7 @@ class PublicDelegatedPrefixList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -41386,13 +42249,14 @@ class PublicDelegatedPrefixList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -41522,6 +42386,7 @@ class PublicDelegatedPrefixesScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -41546,13 +42411,14 @@ class PublicDelegatedPrefixesScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -41598,6 +42464,7 @@ class Quota(_messages.Message):
     r"""[Output Only] Name of the quota metric.
 
     Values:
+      AFFINITY_GROUPS: <no description>
       ALIASES_PER_NETWORK_GLOBAL: <no description>
       AMD_S9300_GPUS: <no description>
       AUTOSCALERS: <no description>
@@ -41653,6 +42520,8 @@ class Quota(_messages.Message):
       N2_CPUS: <no description>
       NETWORKS: <no description>
       NETWORK_ENDPOINT_GROUPS: <no description>
+      NODE_GROUPS: <no description>
+      NODE_TEMPLATES: <no description>
       NVIDIA_K80_GPUS: <no description>
       NVIDIA_P100_GPUS: <no description>
       NVIDIA_P100_VWS_GPUS: <no description>
@@ -41700,104 +42569,107 @@ class Quota(_messages.Message):
       VPN_TUNNELS: <no description>
       XPN_SERVICE_PROJECTS: <no description>
     """
-    ALIASES_PER_NETWORK_GLOBAL = 0
-    AMD_S9300_GPUS = 1
-    AUTOSCALERS = 2
-    BACKEND_BUCKETS = 3
-    BACKEND_SERVICES = 4
-    C2_CPUS = 5
-    COMMITMENTS = 6
-    COMMITTED_C2_CPUS = 7
-    COMMITTED_CPUS = 8
-    COMMITTED_LICENSES = 9
-    COMMITTED_LOCAL_SSD_TOTAL_GB = 10
-    COMMITTED_N2D_CPUS = 11
-    COMMITTED_N2_CPUS = 12
-    COMMITTED_NVIDIA_K80_GPUS = 13
-    COMMITTED_NVIDIA_P100_GPUS = 14
-    COMMITTED_NVIDIA_P4_GPUS = 15
-    COMMITTED_NVIDIA_T4_GPUS = 16
-    COMMITTED_NVIDIA_V100_GPUS = 17
-    CPUS = 18
-    CPUS_ALL_REGIONS = 19
-    DISKS_TOTAL_GB = 20
-    EXTERNAL_VPN_GATEWAYS = 21
-    FIREWALLS = 22
-    FORWARDING_RULES = 23
-    GLOBAL_INTERNAL_ADDRESSES = 24
-    GPUS_ALL_REGIONS = 25
-    HEALTH_CHECKS = 26
-    IMAGES = 27
-    INSTANCES = 28
-    INSTANCES_PER_NETWORK_GLOBAL = 29
-    INSTANCE_GROUPS = 30
-    INSTANCE_GROUP_MANAGERS = 31
-    INSTANCE_TEMPLATES = 32
-    INTERCONNECTS = 33
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 34
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 35
-    INTERCONNECT_TOTAL_GBPS = 36
-    INTERNAL_ADDRESSES = 37
-    INTERNAL_FORWARDING_RULES_PER_NETWORK = 38
-    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 39
-    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 40
-    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 41
-    IN_USE_ADDRESSES = 42
-    IN_USE_BACKUP_SCHEDULES = 43
-    IN_USE_MAINTENANCE_WINDOWS = 44
-    IN_USE_SNAPSHOT_SCHEDULES = 45
-    LOCAL_SSD_TOTAL_GB = 46
-    MACHINE_IMAGES = 47
-    N2D_CPUS = 48
-    N2_CPUS = 49
-    NETWORKS = 50
-    NETWORK_ENDPOINT_GROUPS = 51
-    NVIDIA_K80_GPUS = 52
-    NVIDIA_P100_GPUS = 53
-    NVIDIA_P100_VWS_GPUS = 54
-    NVIDIA_P4_GPUS = 55
-    NVIDIA_P4_VWS_GPUS = 56
-    NVIDIA_T4_GPUS = 57
-    NVIDIA_T4_VWS_GPUS = 58
-    NVIDIA_V100_GPUS = 59
-    PACKET_MIRRORINGS = 60
-    PREEMPTIBLE_CPUS = 61
-    PREEMPTIBLE_LOCAL_SSD_GB = 62
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 63
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 64
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 65
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 66
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 67
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 68
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 69
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 70
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 71
-    REGIONAL_AUTOSCALERS = 72
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 73
-    RESERVATIONS = 74
-    RESOURCE_POLICIES = 75
-    ROUTERS = 76
-    ROUTES = 77
-    SECURITY_POLICIES = 78
-    SECURITY_POLICY_CEVAL_RULES = 79
-    SECURITY_POLICY_RULES = 80
-    SNAPSHOTS = 81
-    SSD_TOTAL_GB = 82
-    SSL_CERTIFICATES = 83
-    STATIC_ADDRESSES = 84
-    SUBNETWORKS = 85
-    SUBNET_RANGES_PER_NETWORK = 86
-    TARGET_HTTPS_PROXIES = 87
-    TARGET_HTTP_PROXIES = 88
-    TARGET_INSTANCES = 89
-    TARGET_POOLS = 90
-    TARGET_SSL_PROXIES = 91
-    TARGET_TCP_PROXIES = 92
-    TARGET_VPN_GATEWAYS = 93
-    URL_MAPS = 94
-    VPN_GATEWAYS = 95
-    VPN_TUNNELS = 96
-    XPN_SERVICE_PROJECTS = 97
+    AFFINITY_GROUPS = 0
+    ALIASES_PER_NETWORK_GLOBAL = 1
+    AMD_S9300_GPUS = 2
+    AUTOSCALERS = 3
+    BACKEND_BUCKETS = 4
+    BACKEND_SERVICES = 5
+    C2_CPUS = 6
+    COMMITMENTS = 7
+    COMMITTED_C2_CPUS = 8
+    COMMITTED_CPUS = 9
+    COMMITTED_LICENSES = 10
+    COMMITTED_LOCAL_SSD_TOTAL_GB = 11
+    COMMITTED_N2D_CPUS = 12
+    COMMITTED_N2_CPUS = 13
+    COMMITTED_NVIDIA_K80_GPUS = 14
+    COMMITTED_NVIDIA_P100_GPUS = 15
+    COMMITTED_NVIDIA_P4_GPUS = 16
+    COMMITTED_NVIDIA_T4_GPUS = 17
+    COMMITTED_NVIDIA_V100_GPUS = 18
+    CPUS = 19
+    CPUS_ALL_REGIONS = 20
+    DISKS_TOTAL_GB = 21
+    EXTERNAL_VPN_GATEWAYS = 22
+    FIREWALLS = 23
+    FORWARDING_RULES = 24
+    GLOBAL_INTERNAL_ADDRESSES = 25
+    GPUS_ALL_REGIONS = 26
+    HEALTH_CHECKS = 27
+    IMAGES = 28
+    INSTANCES = 29
+    INSTANCES_PER_NETWORK_GLOBAL = 30
+    INSTANCE_GROUPS = 31
+    INSTANCE_GROUP_MANAGERS = 32
+    INSTANCE_TEMPLATES = 33
+    INTERCONNECTS = 34
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 35
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 36
+    INTERCONNECT_TOTAL_GBPS = 37
+    INTERNAL_ADDRESSES = 38
+    INTERNAL_FORWARDING_RULES_PER_NETWORK = 39
+    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 40
+    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 41
+    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 42
+    IN_USE_ADDRESSES = 43
+    IN_USE_BACKUP_SCHEDULES = 44
+    IN_USE_MAINTENANCE_WINDOWS = 45
+    IN_USE_SNAPSHOT_SCHEDULES = 46
+    LOCAL_SSD_TOTAL_GB = 47
+    MACHINE_IMAGES = 48
+    N2D_CPUS = 49
+    N2_CPUS = 50
+    NETWORKS = 51
+    NETWORK_ENDPOINT_GROUPS = 52
+    NODE_GROUPS = 53
+    NODE_TEMPLATES = 54
+    NVIDIA_K80_GPUS = 55
+    NVIDIA_P100_GPUS = 56
+    NVIDIA_P100_VWS_GPUS = 57
+    NVIDIA_P4_GPUS = 58
+    NVIDIA_P4_VWS_GPUS = 59
+    NVIDIA_T4_GPUS = 60
+    NVIDIA_T4_VWS_GPUS = 61
+    NVIDIA_V100_GPUS = 62
+    PACKET_MIRRORINGS = 63
+    PREEMPTIBLE_CPUS = 64
+    PREEMPTIBLE_LOCAL_SSD_GB = 65
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 66
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 67
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 68
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 69
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 70
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 71
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 72
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 73
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 74
+    REGIONAL_AUTOSCALERS = 75
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 76
+    RESERVATIONS = 77
+    RESOURCE_POLICIES = 78
+    ROUTERS = 79
+    ROUTES = 80
+    SECURITY_POLICIES = 81
+    SECURITY_POLICY_CEVAL_RULES = 82
+    SECURITY_POLICY_RULES = 83
+    SNAPSHOTS = 84
+    SSD_TOTAL_GB = 85
+    SSL_CERTIFICATES = 86
+    STATIC_ADDRESSES = 87
+    SUBNETWORKS = 88
+    SUBNET_RANGES_PER_NETWORK = 89
+    TARGET_HTTPS_PROXIES = 90
+    TARGET_HTTP_PROXIES = 91
+    TARGET_INSTANCES = 92
+    TARGET_POOLS = 93
+    TARGET_SSL_PROXIES = 94
+    TARGET_TCP_PROXIES = 95
+    TARGET_VPN_GATEWAYS = 96
+    URL_MAPS = 97
+    VPN_GATEWAYS = 98
+    VPN_TUNNELS = 99
+    XPN_SERVICE_PROJECTS = 100
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -41951,6 +42823,7 @@ class RegionAutoscalerList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -41975,13 +42848,14 @@ class RegionAutoscalerList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -42087,6 +42961,7 @@ class RegionDiskTypeList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -42111,13 +42986,14 @@ class RegionDiskTypeList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -42242,6 +43118,7 @@ class RegionInstanceGroupList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -42266,13 +43143,14 @@ class RegionInstanceGroupList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -42379,6 +43257,7 @@ class RegionInstanceGroupManagerList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -42403,13 +43282,14 @@ class RegionInstanceGroupManagerList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -42678,6 +43558,7 @@ class RegionInstanceGroupManagersListInstanceConfigsResp(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -42702,13 +43583,14 @@ class RegionInstanceGroupManagersListInstanceConfigsResp(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -42864,6 +43746,7 @@ class RegionInstanceGroupsListInstances(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -42888,13 +43771,14 @@ class RegionInstanceGroupsListInstances(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -43036,6 +43920,7 @@ class RegionList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -43060,13 +43945,14 @@ class RegionList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -43330,6 +44216,7 @@ class ReservationAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -43400,6 +44287,7 @@ class ReservationAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -43424,13 +44312,14 @@ class ReservationAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -43459,7 +44348,8 @@ class ReservationAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#reservationAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class ReservationList(_messages.Message):
@@ -43525,6 +44415,7 @@ class ReservationList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -43549,13 +44440,14 @@ class ReservationList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -43654,6 +44546,7 @@ class ReservationsScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -43678,13 +44571,14 @@ class ReservationsScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -43820,6 +44714,7 @@ class ResourcePoliciesScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -43844,13 +44739,14 @@ class ResourcePoliciesScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -43964,6 +44860,7 @@ class ResourcePolicyAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -44034,6 +44931,7 @@ class ResourcePolicyAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -44058,13 +44956,14 @@ class ResourcePolicyAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -44094,7 +44993,8 @@ class ResourcePolicyAggregatedList(_messages.Message):
   kind = _messages.StringField(4, default=u'compute#resourcePolicyAggregatedList')
   nextPageToken = _messages.StringField(5)
   selfLink = _messages.StringField(6)
-  warning = _messages.MessageField('WarningValue', 7)
+  unreachables = _messages.StringField(7, repeated=True)
+  warning = _messages.MessageField('WarningValue', 8)
 
 
 class ResourcePolicyDailyCycle(_messages.Message):
@@ -44256,6 +45156,7 @@ class ResourcePolicyList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -44280,13 +45181,14 @@ class ResourcePolicyList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -44652,6 +45554,7 @@ class Route(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -44676,13 +45579,14 @@ class Route(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -44790,6 +45694,7 @@ class RouteList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -44814,13 +45719,14 @@ class RouteList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -44935,6 +45841,7 @@ class RouterAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -45004,6 +45911,7 @@ class RouterAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -45028,13 +45936,14 @@ class RouterAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -45063,7 +45972,8 @@ class RouterAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#routerAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class RouterBgp(_messages.Message):
@@ -45514,6 +46424,7 @@ class RouterList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -45538,13 +46449,14 @@ class RouterList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -45948,6 +46860,7 @@ class RoutersScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -45972,13 +46885,14 @@ class RoutersScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -46616,6 +47530,7 @@ class SecurityPolicyList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -46640,13 +47555,14 @@ class SecurityPolicyList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -47385,6 +48301,7 @@ class SnapshotList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -47409,13 +48326,14 @@ class SnapshotList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -47575,10 +48493,12 @@ class SslCertificate(_messages.Message):
   ional](/compute/docs/reference/rest/{$api_version}/regionSslCertificates)
   The sslCertificates are used by:   - external HTTPS load balancers  - SSL
   proxy load balancers    The regionSslCertificates are used by internal HTTPS
-  load balancers.  This SSL certificate resource also contains a private key.
-  You can use SSL keys and certificates to secure connections to a load
-  balancer. For more information, read  Creating and Using SSL Certificates.
-  (== resource_for {$api_version}.sslCertificates ==) (== resource_for
+  load balancers.  Optionally, certificate file contents that you upload can
+  contain a set of up to five PEM-encoded certificates. The API call creates
+  an object (sslCertificate) that holds this data. You can use SSL keys and
+  certificates to secure connections to a load balancer. For more information,
+  read  Creating and using SSL certificates and SSL certificates quotas and
+  limits. (== resource_for {$api_version}.sslCertificates ==) (== resource_for
   {$api_version}.regionSslCertificates ==)
 
   Enums:
@@ -47672,6 +48592,7 @@ class SslCertificateAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -47742,6 +48663,7 @@ class SslCertificateAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -47766,13 +48688,14 @@ class SslCertificateAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -47801,7 +48724,8 @@ class SslCertificateAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#sslCertificateAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class SslCertificateList(_messages.Message):
@@ -47866,6 +48790,7 @@ class SslCertificateList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -47890,13 +48815,14 @@ class SslCertificateList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -48090,6 +49016,7 @@ class SslCertificatesScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -48114,13 +49041,14 @@ class SslCertificatesScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -48211,6 +49139,7 @@ class SslPoliciesList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -48235,13 +49164,14 @@ class SslPoliciesList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -48418,6 +49348,7 @@ class SslPolicy(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -48442,13 +49373,14 @@ class SslPolicy(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -48653,9 +49585,6 @@ class Subnetwork(_messages.Message):
       with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created
       subnetwork that is reserved for Internal HTTP(S) Load Balancing. If
       unspecified, the purpose defaults to PRIVATE_RFC_1918.
-    RangeTypeValueValuesEnum: The type of IP CIDR range to associate with this
-      subnetwork. The default is RFC_1918. When creating a subnetwork in non-
-      RFC 1918 range, this field must be set to NON_RFC_1918.
     RoleValueValuesEnum: The role of subnetwork. Currenly, this field is only
       used when purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set
       to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
@@ -48759,9 +49688,6 @@ class Subnetwork(_messages.Message):
       purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork
       that is reserved for Internal HTTP(S) Load Balancing. If unspecified,
       the purpose defaults to PRIVATE_RFC_1918.
-    rangeType: The type of IP CIDR range to associate with this subnetwork.
-      The default is RFC_1918. When creating a subnetwork in non-RFC 1918
-      range, this field must be set to NON_RFC_1918.
     region: URL of the region where the Subnetwork resides. This field can be
       set only at resource creation time.
     role: The role of subnetwork. Currenly, this field is only used when
@@ -48857,18 +49783,6 @@ class Subnetwork(_messages.Message):
     PRIVATE = 2
     PRIVATE_RFC_1918 = 3
 
-  class RangeTypeValueValuesEnum(_messages.Enum):
-    r"""The type of IP CIDR range to associate with this subnetwork. The
-    default is RFC_1918. When creating a subnetwork in non-RFC 1918 range,
-    this field must be set to NON_RFC_1918.
-
-    Values:
-      NON_RFC_1918: <no description>
-      RFC_1918: <no description>
-    """
-    NON_RFC_1918 = 0
-    RFC_1918 = 1
-
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currenly, this field is only used when purpose
     = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE or BACKUP.
@@ -48920,13 +49834,12 @@ class Subnetwork(_messages.Message):
   privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 19)
   privateIpv6GoogleAccessServiceAccounts = _messages.StringField(20, repeated=True)
   purpose = _messages.EnumField('PurposeValueValuesEnum', 21)
-  rangeType = _messages.EnumField('RangeTypeValueValuesEnum', 22)
-  region = _messages.StringField(23)
-  role = _messages.EnumField('RoleValueValuesEnum', 24)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 25, repeated=True)
-  selfLink = _messages.StringField(26)
-  selfLinkWithId = _messages.StringField(27)
-  state = _messages.EnumField('StateValueValuesEnum', 28)
+  region = _messages.StringField(22)
+  role = _messages.EnumField('RoleValueValuesEnum', 23)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 24, repeated=True)
+  selfLink = _messages.StringField(25)
+  selfLinkWithId = _messages.StringField(26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
 
 
 class SubnetworkAggregatedList(_messages.Message):
@@ -48948,6 +49861,7 @@ class SubnetworkAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -49018,6 +49932,7 @@ class SubnetworkAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -49042,13 +49957,14 @@ class SubnetworkAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -49077,7 +49993,8 @@ class SubnetworkAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#subnetworkAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class SubnetworkList(_messages.Message):
@@ -49143,6 +50060,7 @@ class SubnetworkList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -49167,13 +50085,14 @@ class SubnetworkList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -49291,12 +50210,6 @@ class SubnetworkLogConfig(_messages.Message):
 class SubnetworkSecondaryRange(_messages.Message):
   r"""Represents a secondary IP range of a subnetwork.
 
-  Enums:
-    RangeTypeValueValuesEnum: The type of IP CIDR range to associate with this
-      subnetwork secondary range. The default is RFC_1918. When creating a
-      subnetwork in non-RFC 1918 range, this field must be set to
-      NON_RFC_1918.
-
   Fields:
     ipCidrRange: The range of IP addresses belonging to this subnetwork
       secondary range. Provide this property when you create the subnetwork.
@@ -49306,60 +50219,23 @@ class SubnetworkSecondaryRange(_messages.Message):
       when adding an alias IP range to a VM instance. The name must be 1-63
       characters long, and comply with RFC1035. The name must be unique within
       the subnetwork.
-    rangeType: The type of IP CIDR range to associate with this subnetwork
-      secondary range. The default is RFC_1918. When creating a subnetwork in
-      non-RFC 1918 range, this field must be set to NON_RFC_1918.
   """
-
-  class RangeTypeValueValuesEnum(_messages.Enum):
-    r"""The type of IP CIDR range to associate with this subnetwork secondary
-    range. The default is RFC_1918. When creating a subnetwork in non-RFC 1918
-    range, this field must be set to NON_RFC_1918.
-
-    Values:
-      NON_RFC_1918: <no description>
-      RFC_1918: <no description>
-    """
-    NON_RFC_1918 = 0
-    RFC_1918 = 1
 
   ipCidrRange = _messages.StringField(1)
   rangeName = _messages.StringField(2)
-  rangeType = _messages.EnumField('RangeTypeValueValuesEnum', 3)
 
 
 class SubnetworksExpandIpCidrRangeRequest(_messages.Message):
   r"""A SubnetworksExpandIpCidrRangeRequest object.
-
-  Enums:
-    RangeTypeValueValuesEnum: The type of IP CIDR range to associate with this
-      subnetwork. The default is RFC_1918. When expanding to a non-RFC 1918
-      range, this field must be be set to NON_RFC_1918.
 
   Fields:
     ipCidrRange: The IP (in CIDR format or netmask) of internal addresses that
       are legal on this Subnetwork. This range should be disjoint from other
       subnetworks within this network. This range can only be larger than
       (i.e. a superset of) the range previously defined before the update.
-    rangeType: The type of IP CIDR range to associate with this subnetwork.
-      The default is RFC_1918. When expanding to a non-RFC 1918 range, this
-      field must be be set to NON_RFC_1918.
   """
 
-  class RangeTypeValueValuesEnum(_messages.Enum):
-    r"""The type of IP CIDR range to associate with this subnetwork. The
-    default is RFC_1918. When expanding to a non-RFC 1918 range, this field
-    must be be set to NON_RFC_1918.
-
-    Values:
-      NON_RFC_1918: <no description>
-      RFC_1918: <no description>
-    """
-    NON_RFC_1918 = 0
-    RFC_1918 = 1
-
   ipCidrRange = _messages.StringField(1)
-  rangeType = _messages.EnumField('RangeTypeValueValuesEnum', 2)
 
 
 class SubnetworksScopedList(_messages.Message):
@@ -49418,6 +50294,7 @@ class SubnetworksScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -49442,13 +50319,14 @@ class SubnetworksScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -49584,6 +50462,184 @@ class Tags(_messages.Message):
   items = _messages.StringField(2, repeated=True)
 
 
+class TargetGrpcProxy(_messages.Message):
+  r"""Represents a Target gRPC Proxy resource.  A target gRPC proxy is a
+  component of load balancers intended for load balancing gRPC traffic. Global
+  forwarding rules reference a target gRPC proxy. The Target gRPC Proxy
+  references a URL map which specifies how traffic routes to gRPC backend
+  services.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    id: [Output Only] The unique identifier for the resource type. The server
+      generates this identifier.
+    kind: [Output Only] Type of the resource. Always compute#targetGrpcProxy
+      for target grpc proxies.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLinkWithId: [Output Only] Server-defined URL with id for the resource.
+    urlMap: URL to the UrlMap resource that defines the mapping from URL to
+      the BackendService. The protocol field in the BackendService must be set
+      to GRPC.
+    validateForProxyless: If true, indicates that the BackendServices
+      referenced by the urlMap may be accessed by gRPC applications without
+      using a sidecar proxy. This will enable configuration checks on urlMap
+      and its referenced BackendServices to not allow unsupported features. A
+      gRPC application must use "xds-experimental:///" scheme in the target
+      URI of the service it is connecting to. If false, indicates that the
+      BackendServices referenced by the urlMap will be accessed by gRPC
+      applications via a sidecar proxy. In this case, a gRPC application must
+      not use "xds-experimental:///" scheme in the target URI of the service
+      it is connecting to
+  """
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(4, default=u'compute#targetGrpcProxy')
+  name = _messages.StringField(5)
+  selfLink = _messages.StringField(6)
+  selfLinkWithId = _messages.StringField(7)
+  urlMap = _messages.StringField(8)
+  validateForProxyless = _messages.BooleanField(9)
+
+
+class TargetGrpcProxyList(_messages.Message):
+  r"""A TargetGrpcProxyList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of TargetGrpcProxy resources.
+    kind: [Output Only] Type of the resource. Always compute#targetGrpcProxy
+      for target grpc proxies.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('TargetGrpcProxy', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#targetGrpcProxyList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
 class TargetHttpProxiesScopedList(_messages.Message):
   r"""A TargetHttpProxiesScopedList object.
 
@@ -49640,6 +50696,7 @@ class TargetHttpProxiesScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -49664,13 +50721,14 @@ class TargetHttpProxiesScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -49772,6 +50830,7 @@ class TargetHttpProxyAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -49842,6 +50901,7 @@ class TargetHttpProxyAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -49866,13 +50926,14 @@ class TargetHttpProxyAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -49901,7 +50962,8 @@ class TargetHttpProxyAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#targetHttpProxyAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class TargetHttpProxyList(_messages.Message):
@@ -49967,6 +51029,7 @@ class TargetHttpProxyList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -49991,13 +51054,14 @@ class TargetHttpProxyList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50085,6 +51149,7 @@ class TargetHttpsProxiesScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -50109,13 +51174,14 @@ class TargetHttpsProxiesScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50307,6 +51373,7 @@ class TargetHttpsProxyAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -50377,6 +51444,7 @@ class TargetHttpsProxyAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -50401,13 +51469,14 @@ class TargetHttpsProxyAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50436,7 +51505,8 @@ class TargetHttpsProxyAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#targetHttpsProxyAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class TargetHttpsProxyList(_messages.Message):
@@ -50502,6 +51572,7 @@ class TargetHttpsProxyList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -50526,13 +51597,14 @@ class TargetHttpsProxyList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50651,6 +51723,7 @@ class TargetInstanceAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -50721,6 +51794,7 @@ class TargetInstanceAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -50745,13 +51819,14 @@ class TargetInstanceAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50780,7 +51855,8 @@ class TargetInstanceAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#targetInstanceAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class TargetInstanceList(_messages.Message):
@@ -50845,6 +51921,7 @@ class TargetInstanceList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -50869,13 +51946,14 @@ class TargetInstanceList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -50963,6 +52041,7 @@ class TargetInstancesScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -50987,13 +52066,14 @@ class TargetInstancesScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -51158,6 +52238,7 @@ class TargetPoolAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -51228,6 +52309,7 @@ class TargetPoolAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -51252,13 +52334,14 @@ class TargetPoolAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -51287,7 +52370,8 @@ class TargetPoolAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#targetPoolAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class TargetPoolInstanceHealth(_messages.Message):
@@ -51367,6 +52451,7 @@ class TargetPoolList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -51391,13 +52476,14 @@ class TargetPoolList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -51534,6 +52620,7 @@ class TargetPoolsScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -51558,13 +52645,14 @@ class TargetPoolsScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -51780,6 +52868,7 @@ class TargetSslProxyList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -51804,13 +52893,14 @@ class TargetSslProxyList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -51996,6 +53086,7 @@ class TargetTcpProxyList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -52020,13 +53111,14 @@ class TargetTcpProxyList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52191,6 +53283,7 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -52261,6 +53354,7 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -52285,13 +53379,14 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52320,7 +53415,8 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#targetVpnGatewayAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class TargetVpnGatewayList(_messages.Message):
@@ -52386,6 +53482,7 @@ class TargetVpnGatewayList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -52410,13 +53507,14 @@ class TargetVpnGatewayList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52505,6 +53603,7 @@ class TargetVpnGatewaysScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -52529,13 +53628,14 @@ class TargetVpnGatewaysScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -52898,6 +53998,7 @@ class UrlMapList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -52922,13 +54023,14 @@ class UrlMapList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -53029,6 +54131,7 @@ class UrlMapsAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -53098,6 +54201,7 @@ class UrlMapsAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -53122,13 +54226,14 @@ class UrlMapsAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -53157,7 +54262,8 @@ class UrlMapsAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#urlMapsAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class UrlMapsScopedList(_messages.Message):
@@ -53216,6 +54322,7 @@ class UrlMapsScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -53240,13 +54347,14 @@ class UrlMapsScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -53409,6 +54517,7 @@ class UsableSubnetworksAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -53433,13 +54542,14 @@ class UsableSubnetworksAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -53603,6 +54713,7 @@ class VmEndpointNatMappingsList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -53627,13 +54738,14 @@ class VmEndpointNatMappingsList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -53765,6 +54877,7 @@ class VpnGatewayAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -53835,6 +54948,7 @@ class VpnGatewayAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -53859,13 +54973,14 @@ class VpnGatewayAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -53894,7 +55009,8 @@ class VpnGatewayAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#vpnGatewayAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class VpnGatewayList(_messages.Message):
@@ -53960,6 +55076,7 @@ class VpnGatewayList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -53984,13 +55101,14 @@ class VpnGatewayList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -54196,6 +55314,7 @@ class VpnGatewaysScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -54220,13 +55339,14 @@ class VpnGatewaysScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -54499,6 +55619,7 @@ class VpnTunnelAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
     warning: [Output Only] Informational warning message.
   """
 
@@ -54569,6 +55690,7 @@ class VpnTunnelAggregatedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -54593,13 +55715,14 @@ class VpnTunnelAggregatedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -54628,7 +55751,8 @@ class VpnTunnelAggregatedList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#vpnTunnelAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class VpnTunnelList(_messages.Message):
@@ -54694,6 +55818,7 @@ class VpnTunnelList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -54718,13 +55843,14 @@ class VpnTunnelList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -54812,6 +55938,7 @@ class VpnTunnelsScopedList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -54836,13 +55963,14 @@ class VpnTunnelsScopedList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -54995,6 +56123,7 @@ class XpnHostList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -55019,13 +56148,14 @@ class XpnHostList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.
@@ -55196,6 +56326,7 @@ class ZoneList(_messages.Message):
         NEXT_HOP_NOT_RUNNING: <no description>
         NOT_CRITICAL_ERROR: <no description>
         NO_RESULTS_ON_PAGE: <no description>
+        PARTIAL_SUCCESS: <no description>
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
@@ -55220,13 +56351,14 @@ class ZoneList(_messages.Message):
       NEXT_HOP_NOT_RUNNING = 13
       NOT_CRITICAL_ERROR = 14
       NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
+      PARTIAL_SUCCESS = 16
+      REQUIRED_TOS_AGREEMENT = 17
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 18
+      RESOURCE_NOT_DELETED = 19
+      SCHEMA_VALIDATION_IGNORED = 20
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 21
+      UNDECLARED_PROPERTIES = 22
+      UNREACHABLE = 23
 
     class DataValueListEntry(_messages.Message):
       r"""A DataValueListEntry object.

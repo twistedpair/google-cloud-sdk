@@ -9,6 +9,7 @@ class PrivatecaV1alpha1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://privateca.googleapis.com/'
+  MTLS_BASE_URL = u'https://privateca.mtls.googleapis.com/'
 
   _PACKAGE = u'privateca'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -552,6 +553,35 @@ may "fail open" without warning.
         relative_path=u'v1alpha1/{+parent}/certificateAuthorities',
         request_field=u'certificateAuthority',
         request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a specific CertificateAuthority. Once deleted, the.
+CertificateAuthority will no longer issue Certificates
+and CertificateRevocationLists.
+
+      Args:
+        request: (PrivatecaProjectsLocationsCertificateAuthoritiesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/certificateAuthorities/{certificateAuthoritiesId}',
+        http_method=u'DELETE',
+        method_id=u'privateca.projects.locations.certificateAuthorities.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'requestId'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'PrivatecaProjectsLocationsCertificateAuthoritiesDeleteRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

@@ -520,6 +520,13 @@ class Collections(enum.Enum):
       [u'project', u'region', u'subnetwork'],
       True
   )
+  TARGETGRPCPROXIES = (
+      'targetGrpcProxies',
+      'projects/{project}/global/targetGrpcProxies/{targetGrpcProxy}',
+      {},
+      [u'project', u'targetGrpcProxy'],
+      True
+  )
   TARGETHTTPPROXIES = (
       'targetHttpProxies',
       'projects/{project}/global/targetHttpProxies/{targetHttpProxy}',

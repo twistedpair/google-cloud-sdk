@@ -184,12 +184,6 @@ def AddEnvironmentVariables(deployment, container_name, env_vars):
     env_list.append({'name': key, 'value': value})
 
 
-# Regular expression for parsing a service account email address.
-# Format is [id]@[project].iam.gserviceaccount.com
-_SERVICE_ACCOUNT_RE = re.compile(
-    r'(?P<id>[^@]+)@(?P<project>[^\.]+).iam.gserviceaccount.com')
-
-
 def CreateDevelopmentServiceAccount(service_account_email):
   """Creates a service account for local development.
 
@@ -199,22 +193,120 @@ def CreateDevelopmentServiceAccount(service_account_email):
   Returns:
     The resource name of the service account.
   """
+  project_id = _GetServiceAccountProject(service_account_email)
+  service_account_name = 'projects/{project}/serviceAccounts/{account}'.format(
+      project=project_id, account=service_account_email)
+
+  exists = _ServiceAccountExists(service_account_name)
+  if _IsReservedServiceAccountName(service_account_email):
+    if not exists:
+      raise ValueError('%s cannot be created because it is a service '
+                       'account name' % service_account_email)
+    else:
+      return service_account_name
+
+  if not exists:
+    account_id = _GetServiceAccountId(service_account_email)
+    _CreateAccount('Serverless Local Development Service Account', account_id,
+                   project_id)
+
+  # Make the service account an editor on the project
+  _AddBinding(project_id, 'serviceAccount:' + service_account_email,
+              'roles/editor')
+
+  return service_account_name
+
+
+# Regular expression for parsing a service account email address.
+# Format is [id]@[project].iam.gserviceaccount.com
+_PROJECT_SERVICE_ACCOUNT_RE = re.compile(
+    r'(?P<id>[^@]+)@(?P<project>[^\.]+).iam.gserviceaccount.com')
+
+# Regular expression for parsing a compute service account email address.
+# Format is [project-id]-compute@developer.gserviceaccount.com
+_APPENGINE_SERVICE_ACCOUNT = re.compile(
+    r'(?P<project_id>[^\.]+).google.com@appspot.gserviceaccount.com')
+
+# Regular expression for parsing a compute service account email address.
+# Format is [project-number]-compute@developer.gserviceaccount.com
+_COMPUTE_SERVICE_ACCOUNT = re.compile(
+    r'(?P<project_number>\d+)-compute@developer.gserviceaccount.com')
+
+
+def _GetServiceAccountProject(service_account_email):
+  """Get the project id from a service account email.
+
+  Args:
+    service_account_email: (str) Email address of service account.
+
+  Returns:
+    The project id of the project to which the service account belongs.
+  """
+  matcher = _PROJECT_SERVICE_ACCOUNT_RE.match(service_account_email)
+  if matcher:
+    return matcher.group('project')
+
+  matcher = _APPENGINE_SERVICE_ACCOUNT.match(service_account_email)
+  if matcher:
+    return matcher.group('project_id')
+
+  matcher = _COMPUTE_SERVICE_ACCOUNT.match(service_account_email)
+  if matcher:
+    return _ProjectNumberToId(matcher.group('project_number'))
+
+  raise ValueError(service_account_email +
+                   ' is not a valid service account address')
+
+
+_SERVICE_ACCOUNT_RE = re.compile(r'(?P<id>[^@]+)@.*\.gserviceaccount\.com')
+
+
+def _GetServiceAccountId(service_account_email):
   matcher = _SERVICE_ACCOUNT_RE.match(service_account_email)
   if not matcher:
     raise ValueError(service_account_email +
                      ' is not a valid service account address')
-  project_name = matcher.group('project')
-  service_account_name = 'projects/{project}/serviceAccounts/{account}'.format(
-      project=project_name, account=service_account_email)
+  return matcher.group('id')
 
-  _CreateAccount('Serverless Local Development Service Account',
-                 matcher.group('id'), project_name)
 
-  # Make the service account an editor on the project
-  _AddBinding(project_name, 'serviceAccount:' + service_account_email,
-              'roles/editor')
+def _ProjectNumberToId(project_number):
+  """Coverts project number to project id.
 
-  return service_account_name
+  Args:
+    project_number: (str) The project number as a string.
+
+  Returns:
+    The project id.
+  """
+  resource_manager = apis.GetClientInstance('cloudresourcemanager', 'v1')
+  req = CRM_MESSAGE_MODULE.CloudresourcemanagerProjectsGetRequest(
+      projectId=project_number)
+  project = resource_manager.projects.Get(req)
+  return six.ensure_text(project.projectId)
+
+
+def _IsReservedServiceAccountName(service_account_email):
+  return (_APPENGINE_SERVICE_ACCOUNT.match(service_account_email) or
+          _COMPUTE_SERVICE_ACCOUNT.match(service_account_email))
+
+
+def _ServiceAccountExists(service_account_name):
+  """Tests if service account email.
+
+  Args:
+    service_account_name: (str) Service account resource name.
+
+  Returns:
+    True if the service account exists.
+  """
+  service = apis.GetClientInstance('iam', 'v1')
+  try:
+    request = IAM_MESSAGE_MODULE.IamProjectsServiceAccountsGetRequest(
+        name=service_account_name)
+    service.projects_serviceAccounts.Get(request)
+    return True
+  except apitools_exceptions.HttpNotFoundError:
+    return False
 
 
 def _CreateAccount(display_name, account_id, project):

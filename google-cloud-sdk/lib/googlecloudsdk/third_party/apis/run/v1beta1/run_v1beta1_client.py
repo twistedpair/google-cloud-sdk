@@ -9,6 +9,7 @@ class RunV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://run.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'run'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

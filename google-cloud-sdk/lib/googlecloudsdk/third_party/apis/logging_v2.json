@@ -123,7 +123,7 @@
   "schemas": {
     "ListBucketsResponse": {
       "id": "ListBucketsResponse",
-      "description": "The response from ListBuckets",
+      "description": "The response from ListBuckets (Beta).",
       "type": "object",
       "properties": {
         "buckets": {
@@ -141,7 +141,7 @@
     },
     "LogBucket": {
       "id": "LogBucket",
-      "description": "Describes a repository of logs.",
+      "description": "Describes a repository of logs (Beta).",
       "type": "object",
       "properties": {
         "name": {
@@ -180,7 +180,7 @@
           "enumDescriptions": [
             "Unspecified state. This is only used\/useful for distinguishing unset values.",
             "The normal and active state.",
-            "The bucket has been marked for deletion by the user (by invoking DeleteBucket). This can be reversed by invoking UndeleteBucket."
+            "The bucket has been marked for deletion by the user."
           ],
           "type": "string",
           "enum": [
@@ -1539,7 +1539,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Lists buckets."
+              "description": "Lists buckets (Beta)."
             },
             "get": {
               "id": "logging.locations.buckets.get",
@@ -1567,7 +1567,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Gets a bucket."
+              "description": "Gets a bucket (Beta)."
             },
             "create": {
               "id": "logging.locations.buckets.create",
@@ -1636,7 +1636,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
+              "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created. This method is in Beta."
             },
             "delete": {
               "id": "logging.locations.buckets.delete",
@@ -1909,7 +1909,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists buckets."
+                  "description": "Lists buckets (Beta)."
                 },
                 "get": {
                   "id": "logging.projects.locations.buckets.get",
@@ -1937,7 +1937,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Gets a bucket."
+                  "description": "Gets a bucket (Beta)."
                 },
                 "create": {
                   "id": "logging.projects.locations.buckets.create",
@@ -2006,7 +2006,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
+                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created. This method is in Beta."
                 },
                 "delete": {
                   "id": "logging.projects.locations.buckets.delete",
@@ -2731,7 +2731,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "metricName": {
-                  "description": "The resource name of the desired metric:\n\"projects\/[PROJECT_ID]\/metrics\/[METRIC_ID]\"\n",
+                  "description": "Required. The resource name of the desired metric:\n\"projects\/[PROJECT_ID]\/metrics\/[METRIC_ID]\"\n",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/metrics\/[^\/]+$",
@@ -2759,7 +2759,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "The resource name of the project in which to create the metric:\n\"projects\/[PROJECT_ID]\"\nThe new metric must be provided in the request.",
+                  "description": "Required. The resource name of the project in which to create the metric:\n\"projects\/[PROJECT_ID]\"\nThe new metric must be provided in the request.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -2789,7 +2789,7 @@
               "httpMethod": "PUT",
               "parameters": {
                 "metricName": {
-                  "description": "The resource name of the metric to update:\n\"projects\/[PROJECT_ID]\/metrics\/[METRIC_ID]\"\nThe updated metric must be provided in the request and it's name field must be the same as [METRIC_ID] If the metric does not exist in [PROJECT_ID], then a new metric is created.",
+                  "description": "Required. The resource name of the metric to update:\n\"projects\/[PROJECT_ID]\/metrics\/[METRIC_ID]\"\nThe updated metric must be provided in the request and it's name field must be the same as [METRIC_ID] If the metric does not exist in [PROJECT_ID], then a new metric is created.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/metrics\/[^\/]+$",
@@ -2819,7 +2819,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "metricName": {
-                  "description": "The resource name of the metric to delete:\n\"projects\/[PROJECT_ID]\/metrics\/[METRIC_ID]\"\n",
+                  "description": "Required. The resource name of the metric to delete:\n\"projects\/[PROJECT_ID]\/metrics\/[METRIC_ID]\"\n",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/metrics\/[^\/]+$",
@@ -2886,7 +2886,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists buckets."
+                  "description": "Lists buckets (Beta)."
                 },
                 "get": {
                   "id": "logging.folders.locations.buckets.get",
@@ -2914,7 +2914,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Gets a bucket."
+                  "description": "Gets a bucket (Beta)."
                 },
                 "create": {
                   "id": "logging.folders.locations.buckets.create",
@@ -2983,7 +2983,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
+                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created. This method is in Beta."
                 },
                 "delete": {
                   "id": "logging.folders.locations.buckets.delete",
@@ -3705,7 +3705,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists buckets."
+                  "description": "Lists buckets (Beta)."
                 },
                 "create": {
                   "id": "logging.billingAccounts.locations.buckets.create",
@@ -3774,7 +3774,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
+                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created. This method is in Beta."
                 },
                 "delete": {
                   "id": "logging.billingAccounts.locations.buckets.delete",
@@ -4004,7 +4004,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Gets a bucket."
+              "description": "Gets a bucket (Beta)."
             }
           }
           ,
@@ -5000,7 +5000,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists buckets."
+                  "description": "Lists buckets (Beta)."
                 },
                 "get": {
                   "id": "logging.organizations.locations.buckets.get",
@@ -5028,7 +5028,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Gets a bucket."
+                  "description": "Gets a bucket (Beta)."
                 },
                 "create": {
                   "id": "logging.organizations.locations.buckets.create",
@@ -5097,7 +5097,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
+                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created. This method is in Beta."
                 },
                 "delete": {
                   "id": "logging.organizations.locations.buckets.delete",

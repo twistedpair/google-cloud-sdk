@@ -28,15 +28,18 @@ from googlecloudsdk.core.credentials import store as c_store
 
 import six
 
-DEFAULT_ENV_ARGS = {'COBRA_SILENCE_USAGE': 'true', 'GCLOUD_AUTH_PLUGIN': 'true'}
+DEFAULT_ENV_ARGS = {'COBRA_SILENCE_USAGE': 'true'}
 
 
-def GetEnvArgsForCommand(extra_vars=None):
+def GetEnvArgsForCommand(extra_vars=None, exclude_vars=None):
   """Return an env dict to be passed on command invocation."""
   env = copy.deepcopy(os.environ)
   env.update(DEFAULT_ENV_ARGS)
   if extra_vars:
     env.update(extra_vars)
+  if exclude_vars:
+    for k in exclude_vars:
+      env.pop(k)
   return  env
 
 
@@ -52,7 +55,7 @@ def RelativePkgPathFromFullPath(path):
   return  rel_path, parent_dir
 
 
-class AnthosCliWrapper(binary_operations.BinaryBackedOperation):
+class AnthosCliWrapper(binary_operations.StreamingBinaryBackedOperation):
   """Binary operation wrapper for anthoscli commands."""
 
   def __init__(self, **kwargs):

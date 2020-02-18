@@ -817,9 +817,6 @@ class ManagedZone(_messages.Message):
     serviceDirectoryConfig: This field links to the associated service
       directory namespace. This field should not be set for public zones or
       forwarding zones.
-    serviceDiscoveryConfig: This field links to the associated service
-      registry. This field should not be set for public zones or forwarding
-      zones.
     visibility: The zone's visibility: public zones are exposed to the
       Internet, while private zones are visible only to Virtual Private Cloud
       resources.
@@ -875,8 +872,7 @@ class ManagedZone(_messages.Message):
   privateVisibilityConfig = _messages.MessageField('ManagedZonePrivateVisibilityConfig', 13)
   reverseLookupConfig = _messages.MessageField('ManagedZoneReverseLookupConfig', 14)
   serviceDirectoryConfig = _messages.MessageField('ManagedZoneServiceDirectoryConfig', 15)
-  serviceDiscoveryConfig = _messages.MessageField('ManagedZoneServiceDiscoveryConfig', 16)
-  visibility = _messages.EnumField('VisibilityValueValuesEnum', 17)
+  visibility = _messages.EnumField('VisibilityValueValuesEnum', 16)
 
 
 class ManagedZoneDnsSecConfig(_messages.Message):
@@ -1104,37 +1100,6 @@ class ManagedZoneServiceDirectoryConfigNamespace(_messages.Message):
   deletionTime = _messages.StringField(1)
   kind = _messages.StringField(2, default=u'dns#managedZoneServiceDirectoryConfigNamespace')
   namespaceUrl = _messages.StringField(3)
-
-
-class ManagedZoneServiceDiscoveryConfig(_messages.Message):
-  r"""Contains information about Service Discovery-backed zones.
-
-  Fields:
-    kind: A string attribute.
-    serviceRegistry: Contains information about the registry associated with
-      the zone.
-  """
-
-  kind = _messages.StringField(1, default=u'dns#managedZoneServiceDiscoveryConfig')
-  serviceRegistry = _messages.MessageField('ManagedZoneServiceDiscoveryConfigServiceRegistry', 2)
-
-
-class ManagedZoneServiceDiscoveryConfigServiceRegistry(_messages.Message):
-  r"""A ManagedZoneServiceDiscoveryConfigServiceRegistry object.
-
-  Fields:
-    deletionTime: The time that the registry backing this zone was deleted,
-      empty string if it still exists. This is in RFC3339 text format. Output
-      only.
-    kind: A string attribute.
-    registryUrl: The fully qualified URL of the registry associated with the
-      zone. This should be formatted like https://www.servicediscovery.googlea
-      pis.com/v1/projects/{project}/locations/{location}/registries/{registry}
-  """
-
-  deletionTime = _messages.StringField(1)
-  kind = _messages.StringField(2, default=u'dns#managedZoneServiceDiscoveryConfigServiceRegistry')
-  registryUrl = _messages.StringField(3)
 
 
 class ManagedZonesListResponse(_messages.Message):

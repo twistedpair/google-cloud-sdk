@@ -1151,6 +1151,17 @@ class StartActivityIntent(_messages.Message):
   uri = _messages.StringField(3)
 
 
+class SystraceSetup(_messages.Message):
+  r"""A SystraceSetup object.
+
+  Fields:
+    durationSeconds: Systrace duration in seconds. Should be between 1 and 30
+      seconds. 0 disables systrace.
+  """
+
+  durationSeconds = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class TestDetails(_messages.Message):
   r"""Additional details about the progress of the running test.
 
@@ -1517,6 +1528,10 @@ class TestSetup(_messages.Message):
       Available network profiles can be queried by using the
       NETWORK_CONFIGURATION environment type when calling
       TestEnvironmentDiscoveryService.GetTestEnvironmentCatalog.
+    systrace: Systrace configuration for the run. If set a systrace will be
+      taken, starting on test start and lasting for the configured duration.
+      The systrace file thus obtained is put in the results bucket together
+      with the other artifacts from the run.
   """
 
   account = _messages.MessageField('Account', 1)
@@ -1525,6 +1540,7 @@ class TestSetup(_messages.Message):
   environmentVariables = _messages.MessageField('EnvironmentVariable', 4, repeated=True)
   filesToPush = _messages.MessageField('DeviceFile', 5, repeated=True)
   networkProfile = _messages.StringField(6)
+  systrace = _messages.MessageField('SystraceSetup', 7)
 
 
 class TestSpecification(_messages.Message):

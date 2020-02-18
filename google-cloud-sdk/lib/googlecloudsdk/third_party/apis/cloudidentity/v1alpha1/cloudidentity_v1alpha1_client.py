@@ -9,6 +9,7 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://cloudidentity.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'cloudidentity'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-identity.groups', u'https://www.googleapis.com/auth/cloud-identity.groups.readonly', u'https://www.googleapis.com/auth/cloud-platform']
@@ -330,7 +331,7 @@ name](https://cloud.google.com/apis/design/resource_names) of a
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the `Group`s within a customer or namespace.
+      r"""Lists the `Group`s under a customer or namespace.
 
       Args:
         request: (CloudidentityGroupsListRequest) input message

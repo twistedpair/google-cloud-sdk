@@ -25,7 +25,11 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
-  config: {$ref: "ClusterConfig.yaml"}
+  config:
+    description: |-
+      The cluster config. Note that Dataproc may set default values, and values
+      may change when clusters are updated.
+    $ref: ClusterConfig.yaml
   labels:
     description: |-
       The labels to associate with this cluster. Label keys must contain 1 to 63

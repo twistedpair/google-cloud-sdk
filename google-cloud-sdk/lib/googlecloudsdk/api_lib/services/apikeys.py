@@ -18,7 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.util import apis
 
 _PROJECT_RESOURCE = 'projects/%s'
@@ -39,7 +41,7 @@ def ListKeys(project, deleted=None, page_size=None, limit=None):
   Returns:
     The list of keys
   """
-  client = _GetClientInstance()
+  client = GetClientInstance()
   messages = client.MESSAGES_MODULE
 
   if deleted:
@@ -57,5 +59,28 @@ def ListKeys(project, deleted=None, page_size=None, limit=None):
       field='keys')
 
 
-def _GetClientInstance():
+def GetClientInstance():
   return apis.GetClientInstance('apikeys', 'v2alpha1')
+
+
+def GetOperation(name):
+  """Make API call to get an operation.
+
+  Args:
+    name: The name of the operation.
+
+  Raises:
+    exceptions.OperationErrorException: when the getting operation API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The result of the operation
+  """
+  client = GetClientInstance()
+  messages = client.MESSAGES_MODULE
+  request = messages.ApikeysOperationsGetRequest(name=name)
+  try:
+    return client.operations.Get(request)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(e, exceptions.OperationErrorException)

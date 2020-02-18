@@ -9,6 +9,7 @@ class AccesscontextmanagerV1beta(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://accesscontextmanager.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'accesscontextmanager'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.util import apis
@@ -260,10 +261,30 @@ class Templates(object):
   """The Templates set of Dataflow API functions."""
 
   CREATE_REQUEST = GetMessagesModule().CreateJobFromTemplateRequest
+  LAUNCH_TEMPLATE_PARAMETERS = GetMessagesModule().LaunchTemplateParameters
+  LAUNCH_TEMPLATE_PARAMETERS_VALUE = LAUNCH_TEMPLATE_PARAMETERS.ParametersValue
   LAUNCH_FLEX_TEMPLATE_REQUEST = GetMessagesModule().LaunchFlexTemplateRequest
   PARAMETERS_VALUE = CREATE_REQUEST.ParametersValue
   FLEX_TEMPLATE_PARAMETER = GetMessagesModule().LaunchFlexTemplateParameter
   FLEX_TEMPLATE_PARAMETERS_VALUE = FLEX_TEMPLATE_PARAMETER.ParametersValue
+
+  # Mapping of apitools request message fields to their json parameters
+  _CUSTOM_JSON_FIELD_MAPPINGS = {
+      'dynamicTemplate_gcsPath': 'dynamicTemplate.gcsPath',
+      'dynamicTemplate_stagingLocation': 'dynamicTemplate.stagingLocation'
+  }
+
+  # TODO(b/124063772): Workaround for apitools issues with nested GET request
+  # message fields.
+  @staticmethod
+  def ModifyDynamicTemplatesLaunchRequest(req):
+    """Add Api field query string mappings to req."""
+    updated_request_type = type(req)
+    for req_field, mapped_param in Templates._CUSTOM_JSON_FIELD_MAPPINGS.items(
+    ):
+      encoding.AddCustomJsonFieldMapping(updated_request_type, req_field,
+                                         mapped_param)
+    return req
 
   @staticmethod
   def GetService():
@@ -322,6 +343,64 @@ class Templates(object):
 
     try:
       return Templates.GetService().Create(request)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)
+
+  @staticmethod
+  def LaunchDynamicTemplate(template_args=None):
+    """Calls the Dataflow Templates.LaunchTemplate method on a dynamic template.
+
+    Args:
+      template_args: Arguments to create template. gcs_location must point to a
+        Json serialized DynamicTemplateFileSpec.
+
+    Returns:
+      (LaunchTemplateResponse)
+    """
+    params_list = []
+    parameters = template_args.parameters
+    for k, v in six.iteritems(parameters) if parameters else {}:
+      params_list.append(
+          Templates.LAUNCH_TEMPLATE_PARAMETERS_VALUE.AdditionalProperty(
+              key=k, value=v))
+
+    # TODO(b/139889563): Remove default when args region is changed to required
+    region_id = template_args.region_id or DATAFLOW_API_DEFAULT_REGION
+
+    ip_configuration_enum = GetMessagesModule(
+    ).RuntimeEnvironment.IpConfigurationValueValuesEnum
+    ip_private = ip_configuration_enum.WORKER_IP_PRIVATE
+    ip_configuration = ip_private if template_args.disable_public_ips else None
+
+    body = Templates.LAUNCH_TEMPLATE_PARAMETERS(
+        environment=GetMessagesModule().RuntimeEnvironment(
+            serviceAccountEmail=template_args.service_account_email,
+            zone=template_args.zone,
+            maxWorkers=template_args.max_workers,
+            numWorkers=template_args.num_workers,
+            network=template_args.network,
+            subnetwork=template_args.subnetwork,
+            machineType=template_args.worker_machine_type,
+            tempLocation=template_args.staging_location,
+            kmsKeyName=template_args.kms_key_name,
+            ipConfiguration=ip_configuration),
+        jobName=template_args.job_name,
+        parameters=Templates.LAUNCH_TEMPLATE_PARAMETERS_VALUE(
+            additionalProperties=params_list) if parameters else None,
+        update=False)
+    request = GetMessagesModule(
+    ).DataflowProjectsLocationsTemplatesLaunchRequest(
+        dynamicTemplate_gcsPath=template_args.gcs_location,
+        dynamicTemplate_stagingLocation=template_args.staging_location,
+        location=region_id,
+        launchTemplateParameters=body,
+        projectId=template_args.project_id or GetProject(),
+        validateOnly=False)
+
+    Templates.ModifyDynamicTemplatesLaunchRequest(request)
+
+    try:
+      return Templates.GetService().Launch(request)
     except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(error)
 

@@ -282,8 +282,6 @@ class ArgumentInterceptor(Argument):
     positional = not name.startswith('-')
     if positional:
       if not self.allow_positional:
-        # TODO(b/36054662): More informative error message here about which
-        # group the problem is in.
         raise parser_errors.ArgumentException(
             'Illegal positional argument [{0}] for command [{1}]'.format(
                 name, '.'.join(self.data.command_name)))

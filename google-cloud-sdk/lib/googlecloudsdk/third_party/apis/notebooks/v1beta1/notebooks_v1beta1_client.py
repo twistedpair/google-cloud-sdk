@@ -9,6 +9,7 @@ class NotebooksV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://notebooks.googleapis.com/'
+  MTLS_BASE_URL = u'https://notebooks.mtls.googleapis.com/'
 
   _PACKAGE = u'notebooks'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -587,6 +588,61 @@ may "fail open" without warning.
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'NotebooksProjectsLocationsInstancesTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+    def Upgrade(self, request, global_params=None):
+      r"""Upgrades a notebook instance to the latest version.
+
+      Args:
+        request: (NotebooksProjectsLocationsInstancesUpgradeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Upgrade')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Upgrade.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:upgrade',
+        http_method=u'POST',
+        method_id=u'notebooks.projects.locations.instances.upgrade',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:upgrade',
+        request_field=u'upgradeInstanceRequest',
+        request_type_name=u'NotebooksProjectsLocationsInstancesUpgradeRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def UpgradeInternal(self, request, global_params=None):
+      r"""UpgradeInstanceInternal allows notebook instances to call this endpoint to.
+upgrade themselves
+
+      Args:
+        request: (NotebooksProjectsLocationsInstancesUpgradeInternalRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpgradeInternal')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpgradeInternal.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:upgradeInternal',
+        http_method=u'POST',
+        method_id=u'notebooks.projects.locations.instances.upgradeInternal',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:upgradeInternal',
+        request_field=u'upgradeInstanceInternalRequest',
+        request_type_name=u'NotebooksProjectsLocationsInstancesUpgradeInternalRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

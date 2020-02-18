@@ -270,6 +270,58 @@ def GenerateExclusivityManifest(crd_manifest, cr_manifest, membership_ref,
           crManifest=cr_manifest))
 
 
+def GenerateConnectAgentManifest(membership_ref,
+                                 image_pull_secret_content=None,
+                                 is_upgrade=None,
+                                 namespace=None,
+                                 proxy=None,
+                                 registry=None,
+                                 version=None,
+                                 release_track=None):
+  """Generated the Connect Agent to apply to the registered cluster.
+
+  Args:
+    membership_ref: the full resource name of the membership.
+    image_pull_secret_content: The image pull secret content to use for private
+      registries or None if it is not available.
+    is_upgrade: Is this is an upgrade operation, or None if it is not available.
+    namespace: The namespace of the Connect Agent, or None if it is not
+      available.
+    proxy: The proxy address or None if it is not available.
+    registry: The registry to pull the Connect Agent image if not using
+      gcr.io/gkeconnect, or None if it is not available.
+    version: The version of the Connect Agent to install/upgrade, or None if it
+      is not available.
+    release_track: the release_track used in the gcloud command, or None if it
+      is not available.
+
+  Returns:
+    the GenerateConnectManifest from API.
+
+  Raises:
+    apitools.base.py.HttpError: if the request returns an HTTP error.
+  """
+
+  client = gkehub_api_util.GetApiClientForTrack(release_track)
+  messages = client.MESSAGES_MODULE
+  request = messages.GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(
+      name=membership_ref)
+  # Add optional flag values.
+  if image_pull_secret_content:
+    request.imagePullSecretContent = image_pull_secret_content.encode('ascii')
+  if is_upgrade:
+    request.isUpgrade = is_upgrade
+  if namespace:
+    request.namespace = namespace
+  if proxy:
+    request.proxy = proxy.encode('ascii')
+  if registry:
+    request.registry = registry
+  if version:
+    request.version = version
+  return client.projects_locations_memberships.GenerateConnectManifest(request)
+
+
 # TODO(b/145953996): Remove this method once
 # gcloud.container.memberships.* has been ported
 def GKEClusterSelfLink(kube_client):

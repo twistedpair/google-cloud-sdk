@@ -9,6 +9,7 @@ class ServiceuserV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://serviceuser.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'serviceuser'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/service.management']

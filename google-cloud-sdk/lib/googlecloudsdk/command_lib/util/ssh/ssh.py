@@ -766,7 +766,8 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
         'OS Login is enabled on Instance/Project, but is not available '
         'in the {0} version of gcloud.'.format(release_track.id))
     return requested_user, use_oslogin
-  user_email = properties.VALUES.core.account.Get()
+  user_email = (properties.VALUES.auth.impersonate_service_account.Get()
+                or properties.VALUES.core.account.Get())
 
   # Check to see if public key is already in profile and POSIX information
   # exists associated with the project. If either are not set, import an SSH

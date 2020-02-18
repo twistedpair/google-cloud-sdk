@@ -9,6 +9,7 @@ class PubsubV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://pubsub.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'pubsub'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/pubsub']

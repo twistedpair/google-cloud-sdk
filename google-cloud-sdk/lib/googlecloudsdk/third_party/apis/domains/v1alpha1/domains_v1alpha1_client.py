@@ -9,6 +9,7 @@ class DomainsV1alpha1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://domains.googleapis.com/'
+  MTLS_BASE_URL = u'https://domains.mtls.googleapis.com/'
 
   _PACKAGE = u'domains'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

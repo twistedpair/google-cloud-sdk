@@ -40,8 +40,8 @@ class AddonsConfig(_messages.Message):
       Kubernetes API
     dnsCacheConfig: Configuration for NodeLocalDNS, a dns cache running on
       cluster nodes
-    gcePersistentDiskCsiDriverConfig: Configuration for the GCE PD CSI driver.
-      This option can only be enabled at cluster creation time.
+    gcePersistentDiskCsiDriverConfig: Configuration for the GCP Compute
+      Persistent Disk CSI driver.
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
       replication controller has based on the resource usage of the existing
@@ -1539,8 +1539,8 @@ class HorizontalPodAutoscaling(_messages.Message):
 
   Fields:
     disabled: Whether the Horizontal Pod Autoscaling feature is enabled in the
-      cluster. When enabled, it ensures that a Heapster pod is running in the
-      cluster, which is also used by the Cloud Monitoring service.
+      cluster. When enabled, it ensures that metrics are collected into
+      Stackdriver Monitoring.
   """
 
   disabled = _messages.BooleanField(1)
@@ -1647,6 +1647,9 @@ class IPAllocationPolicy(_messages.Message):
       managed by Service Networking, instead of GKE.  This field must be
       `false` when `tpu_ipv4_cidr_block` is specified.
     useIpAliases: Whether alias IPs will be used for pod IPs in the cluster.
+      This is used in conjunction with use_routes. It cannot be true if
+      use_routes is true. If both use_ip_aliases and use_routes are false,
+      then the server picks the default IP allocation mode
   """
 
   allowRouteOverlap = _messages.BooleanField(1)
@@ -2124,7 +2127,7 @@ class Metric(_messages.Message):
   Fields:
     doubleValue: For metrics with floating point value.
     intValue: For metrics with integer value.
-    name: Metric name, required. e.g., "nodes total", "percent done"
+    name: Required. Metric name, e.g., "nodes total", "percent done".
     stringValue: For metrics with custom values (ratios, visual progress,
       etc.).
   """
@@ -2642,13 +2645,14 @@ class Operation(_messages.Message):
     name: The server-assigned ID for the operation.
     nodepoolConditions: Which conditions caused the current node pool state.
     operationType: The operation type.
-    progress: [Output only] Progress information for an operation.
+    progress: Output only. [Output only] Progress information for an
+      operation.
     selfLink: Server-defined URL for the resource.
     startTime: [Output only] The time the operation started, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     status: The current status of the operation.
-    statusMessage: If an error has occurred, a textual description of the
-      error. Deprecated, use the field conditions instead.
+    statusMessage: Output only. If an error has occurred, a textual
+      description of the error.
     targetLink: Server-defined URL for the target of the operation.
     zone: The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the operation is taking
@@ -2969,7 +2973,9 @@ class ReservationAffinity(_messages.Message):
   Fields:
     consumeReservationType: Corresponds to the type of reservation
       consumption.
-    key: Corresponds to the label key of reservation resource.
+    key: Corresponds to the label key of a reservation resource. To target a
+      SPECIFIC_RESERVATION by name, specify "googleapis.com/reservation-name"
+      as the key and specify the name of your reservation as its value.
     values: Corresponds to the label value(s) of reservation resource(s).
   """
 
@@ -3833,7 +3839,8 @@ class UpdateNodePoolRequest(_messages.Message):
       'locations', etc.)
     upgradeSettings: Upgrade settings control disruption and speed of the
       upgrade.
-    workloadMetadataConfig: The desired image type for the node pool.
+    workloadMetadataConfig: The desired workload metadata config for the node
+      pool.
     zone: Deprecated. The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
       field has been deprecated and replaced by the name field.
@@ -3968,9 +3975,12 @@ class WorkloadIdentityConfig(_messages.Message):
   Fields:
     identityNamespace: IAM Identity Namespace to attach all k8s Service
       Accounts to.
+    workloadPool: The workload pool to attach all Kubernetes service accounts
+      to.
   """
 
   identityNamespace = _messages.StringField(1)
+  workloadPool = _messages.StringField(2)
 
 
 class WorkloadMetadataConfig(_messages.Message):
@@ -3978,13 +3988,34 @@ class WorkloadMetadataConfig(_messages.Message):
   workloads on the node pool.
 
   Enums:
+    ModeValueValuesEnum: Mode is the configuration for how to expose metadata
+      to workloads running on the node pool.
     NodeMetadataValueValuesEnum: NodeMetadata is the configuration for how to
       expose metadata to the workloads running on the node.
 
   Fields:
+    mode: Mode is the configuration for how to expose metadata to workloads
+      running on the node pool.
     nodeMetadata: NodeMetadata is the configuration for how to expose metadata
       to the workloads running on the node.
   """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Mode is the configuration for how to expose metadata to workloads
+    running on the node pool.
+
+    Values:
+      MODE_UNSPECIFIED: Not set.
+      GCE_METADATA: Expose all GCE metadata to pods.
+      GKE_METADATA: Run the GKE Metadata Server on this node. The GKE Metadata
+        Server exposes a metadata API to workloads that is compatible with the
+        V1 Compute Metadata APIs exposed by the Compute Engine and App Engine
+        Metadata Servers. This feature can only be enabled if Workload
+        Identity is enabled at the cluster level.
+    """
+    MODE_UNSPECIFIED = 0
+    GCE_METADATA = 1
+    GKE_METADATA = 2
 
   class NodeMetadataValueValuesEnum(_messages.Enum):
     r"""NodeMetadata is the configuration for how to expose metadata to the
@@ -4011,7 +4042,8 @@ class WorkloadMetadataConfig(_messages.Message):
     EXPOSE = 2
     GKE_METADATA_SERVER = 3
 
-  nodeMetadata = _messages.EnumField('NodeMetadataValueValuesEnum', 1)
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
+  nodeMetadata = _messages.EnumField('NodeMetadataValueValuesEnum', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -151,7 +151,7 @@
           "format": "google-datetime"
         },
         "labels": {
-          "description": "Required. The labels that apply to the `Group`.\n\nMust not contain more than one entry. Must contain the entry\n`'system\/groups\/external': ''` if the `Group` is an\nexternal-identity-mapped group or\n`'cloudidentity.googleapis.com\/groups.discussion_forum': ''` if the `Group`\nis a Google Group.",
+          "description": "Required. The labels that apply to the `Group`.\n\nMust not contain more than one entry. Must contain the entry\n`'cloudidentity.googleapis.com\/groups.discussion_forum': ''` if the `Group`\nis a Google Group or `'system\/groups\/external': ''` if the `Group` is an\nexternal-identity-mapped group.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -169,11 +169,11 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "Required. The ID of the entity.\n\nFor Google-managed entities, the `id` must be the email address of a group\nor user.\n\nFor external-identity-mapped entities, the `id` must be a string conforming\nto the Identity Source's requirements.\n\nMust be unique within a `namespace`.",
+          "description": "Required. The ID of the entity.\n\nFor Google-managed entities, the `id` must be the email address of an\nexisting group or user.\n\nFor external-identity-mapped entities, the `id` must be a string conforming\nto the Identity Source's requirements.\n\nMust be unique within a `namespace`.",
           "type": "string"
         },
         "namespace": {
-          "description": "The namespace in which the entity exists.\n\nIf not specified, the `EntityKey` represents a Google-managed entity such\nas a Google user or a Google Group.\n\nIf specified, the `EntityKey` represents an external-identity-mapped group\ncreated through Admin Console. Must be of the form\n`identitysources\/{identity_source_id}.",
+          "description": "The namespace in which the entity exists.\n\nIf not specified, the `EntityKey` represents a Google-managed entity such\nas a Google user or a Google Group.\n\nIf specified, the `EntityKey` represents an external-identity-mapped group.\nThe namespace must correspond to an identity source created in Admin\nConsole. Must be of the form `identitysources\/{identity_source_id}.",
           "type": "string"
         }
       }
@@ -569,8 +569,8 @@
         }
       }
     },
-    "GoogleAppsCloudidentityDevicesV1alpha1ListDevicesResponse": {
-      "id": "GoogleAppsCloudidentityDevicesV1alpha1ListDevicesResponse",
+    "ListDevicesResponse": {
+      "id": "ListDevicesResponse",
       "description": "Response message that is returned in LRO result of ListDevices Operation.",
       "type": "object",
       "properties": {
@@ -578,7 +578,7 @@
           "description": "Devices meeting the list restrictions.",
           "type": "array",
           "items": {
-            "$ref": "GoogleAppsCloudidentityDevicesV1alpha1Device"
+            "$ref": "Device"
           }
         },
         "nextPageToken": {
@@ -587,9 +587,9 @@
         }
       }
     },
-    "GoogleAppsCloudidentityDevicesV1alpha1Device": {
-      "id": "GoogleAppsCloudidentityDevicesV1alpha1Device",
-      "description": "Resource representing a Device.",
+    "Device": {
+      "id": "Device",
+      "description": "Represents a Device known to Google Cloud, independent of the device\nownership, type, and whether it is assigned or in use by a user.",
       "type": "object",
       "properties": {
         "name": {
@@ -693,7 +693,7 @@
         },
         "androidSpecificAttributes": {
           "description": "Output only. Attributes specific to Android devices.",
-          "$ref": "GoogleAppsCloudidentityDevicesV1alpha1AndroidAttributes"
+          "$ref": "AndroidAttributes"
         },
         "managementState": {
           "description": "Output only. Management state of the device",
@@ -733,8 +733,8 @@
         }
       }
     },
-    "GoogleAppsCloudidentityDevicesV1alpha1AndroidAttributes": {
-      "id": "GoogleAppsCloudidentityDevicesV1alpha1AndroidAttributes",
+    "AndroidAttributes": {
+      "id": "AndroidAttributes",
       "description": "Resource representing the Android specific attributes of a Device.",
       "type": "object",
       "properties": {
@@ -824,8 +824,8 @@
         }
       }
     },
-    "GoogleAppsCloudidentityDevicesV1alpha1ListDeviceUsersResponse": {
-      "id": "GoogleAppsCloudidentityDevicesV1alpha1ListDeviceUsersResponse",
+    "ListDeviceUsersResponse": {
+      "id": "ListDeviceUsersResponse",
       "description": "Response message that is returned in LRO result of ListDeviceUsers Operation.",
       "type": "object",
       "properties": {
@@ -833,7 +833,7 @@
           "description": "Devices meeting the list restrictions.",
           "type": "array",
           "items": {
-            "$ref": "GoogleAppsCloudidentityDevicesV1alpha1DeviceUser"
+            "$ref": "DeviceUser"
           }
         },
         "nextPageToken": {
@@ -842,8 +842,8 @@
         }
       }
     },
-    "GoogleAppsCloudidentityDevicesV1alpha1DeviceUser": {
-      "id": "GoogleAppsCloudidentityDevicesV1alpha1DeviceUser",
+    "DeviceUser": {
+      "id": "DeviceUser",
       "description": "Resource representing a user's use of a Device",
       "type": "object",
       "properties": {
@@ -925,8 +925,8 @@
         }
       }
     },
-    "GoogleAppsCloudidentityDevicesV1alpha1ListEndpointAppsResponse": {
-      "id": "GoogleAppsCloudidentityDevicesV1alpha1ListEndpointAppsResponse",
+    "ListEndpointAppsResponse": {
+      "id": "ListEndpointAppsResponse",
       "description": "Response message for listing all apps on the device.",
       "type": "object",
       "properties": {
@@ -934,7 +934,7 @@
           "description": "The list of matching EndpointApps found as a result of the request.",
           "type": "array",
           "items": {
-            "$ref": "GoogleAppsCloudidentityDevicesV1alpha1EndpointApp"
+            "$ref": "EndpointApp"
           }
         },
         "nextPageToken": {
@@ -943,8 +943,8 @@
         }
       }
     },
-    "GoogleAppsCloudidentityDevicesV1alpha1EndpointApp": {
-      "id": "GoogleAppsCloudidentityDevicesV1alpha1EndpointApp",
+    "EndpointApp": {
+      "id": "EndpointApp",
       "description": "Next ID to use: 7",
       "type": "object",
       "properties": {
@@ -978,69 +978,69 @@
         }
       }
     },
-    "GoogleAppsCloudidentityDevicesV1alpha1ApproveDeviceUserResponse": {
-      "id": "GoogleAppsCloudidentityDevicesV1alpha1ApproveDeviceUserResponse",
+    "ApproveDeviceUserResponse": {
+      "id": "ApproveDeviceUserResponse",
       "description": "Response message for approving the device to access user data.",
       "type": "object",
       "properties": {
         "deviceUser": {
           "description": "Resultant DeviceUser object for the action.",
-          "$ref": "GoogleAppsCloudidentityDevicesV1alpha1DeviceUser"
+          "$ref": "DeviceUser"
         }
       }
     },
-    "GoogleAppsCloudidentityDevicesV1alpha1BlockDeviceUserResponse": {
-      "id": "GoogleAppsCloudidentityDevicesV1alpha1BlockDeviceUserResponse",
+    "BlockDeviceUserResponse": {
+      "id": "BlockDeviceUserResponse",
       "description": "Response message for blocking the device from accessing user data.",
       "type": "object",
       "properties": {
         "deviceUser": {
           "description": "Resultant DeviceUser object for the action.",
-          "$ref": "GoogleAppsCloudidentityDevicesV1alpha1DeviceUser"
+          "$ref": "DeviceUser"
         }
       }
     },
-    "GoogleAppsCloudidentityDevicesV1alpha1WipeDeviceUserResponse": {
-      "id": "GoogleAppsCloudidentityDevicesV1alpha1WipeDeviceUserResponse",
+    "WipeDeviceUserResponse": {
+      "id": "WipeDeviceUserResponse",
       "description": "Response message for wiping the user's account from the device.",
       "type": "object",
       "properties": {
         "deviceUser": {
           "description": "Resultant DeviceUser object for the action.",
-          "$ref": "GoogleAppsCloudidentityDevicesV1alpha1DeviceUser"
+          "$ref": "DeviceUser"
         }
       }
     },
-    "GoogleAppsCloudidentityDevicesV1alpha1CancelWipeDeviceUserResponse": {
-      "id": "GoogleAppsCloudidentityDevicesV1alpha1CancelWipeDeviceUserResponse",
+    "CancelWipeDeviceUserResponse": {
+      "id": "CancelWipeDeviceUserResponse",
       "description": "Response message for cancelling an unfinished user account wipe.",
       "type": "object",
       "properties": {
         "deviceUser": {
           "description": "Resultant DeviceUser object for the action.",
-          "$ref": "GoogleAppsCloudidentityDevicesV1alpha1DeviceUser"
+          "$ref": "DeviceUser"
         }
       }
     },
-    "GoogleAppsCloudidentityDevicesV1alpha1WipeDeviceResponse": {
-      "id": "GoogleAppsCloudidentityDevicesV1alpha1WipeDeviceResponse",
+    "WipeDeviceResponse": {
+      "id": "WipeDeviceResponse",
       "description": "Response message for wiping all data on the device.",
       "type": "object",
       "properties": {
         "device": {
           "description": "Resultant Device object for the action. Note that asset tags will not be\nreturned in the device object.",
-          "$ref": "GoogleAppsCloudidentityDevicesV1alpha1Device"
+          "$ref": "Device"
         }
       }
     },
-    "GoogleAppsCloudidentityDevicesV1alpha1CancelWipeDeviceResponse": {
-      "id": "GoogleAppsCloudidentityDevicesV1alpha1CancelWipeDeviceResponse",
+    "CancelWipeDeviceResponse": {
+      "id": "CancelWipeDeviceResponse",
       "description": "Response message for cancelling an unfinished device wipe.",
       "type": "object",
       "properties": {
         "device": {
           "description": "Resultant Device object for the action. Note that asset tags will not be\nreturned in the device object.",
-          "$ref": "GoogleAppsCloudidentityDevicesV1alpha1Device"
+          "$ref": "Device"
         }
       }
     }
@@ -1173,12 +1173,12 @@
           "httpMethod": "GET",
           "parameters": {
             "groupKey.id": {
-              "description": "Required. The ID of the entity.\n\nFor Google-managed entities, the `id` must be the email address of a group\nor user.\n\nFor external-identity-mapped entities, the `id` must be a string conforming\nto the Identity Source's requirements.\n\nMust be unique within a `namespace`.",
+              "description": "Required. The ID of the entity.\n\nFor Google-managed entities, the `id` must be the email address of an\nexisting group or user.\n\nFor external-identity-mapped entities, the `id` must be a string conforming\nto the Identity Source's requirements.\n\nMust be unique within a `namespace`.",
               "location": "query",
               "type": "string"
             },
             "groupKey.namespace": {
-              "description": "The namespace in which the entity exists.\n\nIf not specified, the `EntityKey` represents a Google-managed entity such\nas a Google user or a Google Group.\n\nIf specified, the `EntityKey` represents an external-identity-mapped group\ncreated through Admin Console. Must be of the form\n`identitysources\/{identity_source_id}.",
+              "description": "The namespace in which the entity exists.\n\nIf not specified, the `EntityKey` represents a Google-managed entity such\nas a Google user or a Google Group.\n\nIf specified, the `EntityKey` represents an external-identity-mapped group.\nThe namespace must correspond to an identity source created in Admin\nConsole. Must be of the form `identitysources\/{identity_source_id}.",
               "location": "query",
               "type": "string"
             }
@@ -1202,7 +1202,7 @@
           "httpMethod": "GET",
           "parameters": {
             "query": {
-              "description": "Required. The search query.\n\nOnly queries on the parent and labels of `Group`s are supported.\n\nMust be specified in [Common Expression\nLanguage](https:\/\/opensource.google\/projects\/cel). May only contain\nequality operators on the parent (e.g. `parent ==\n'customers\/{customer_id}'`) and inclusion operators on labels (e.g.,\n`'cloudidentity.googleapis.com\/groups.discussion_forum' in labels`).",
+              "description": "Required. The search query.\n\nMust be specified in [Common Expression\nLanguage](https:\/\/opensource.google\/projects\/cel). May only contain\nequality operators on the parent and inclusion operators on labels (e.g.,\n`parent == 'customers\/{customer_id}' &&\n'cloudidentity.googleapis.com\/groups.discussion_forum' in labels`).",
               "location": "query",
               "type": "string"
             },
@@ -1283,7 +1283,7 @@
             "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Lists the `Group`s within a customer or namespace."
+          "description": "Lists the `Group`s under a customer or namespace."
         }
       }
       ,
@@ -1360,7 +1360,7 @@
                   "type": "string"
                 },
                 "updateMask": {
-                  "description": "The fully-qualified names of fields to update.",
+                  "description": "Required. The fully-qualified names of fields to update.",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -1421,12 +1421,12 @@
                   "type": "string"
                 },
                 "memberKey.id": {
-                  "description": "Required. The ID of the entity.\n\nFor Google-managed entities, the `id` must be the email address of a group\nor user.\n\nFor external-identity-mapped entities, the `id` must be a string conforming\nto the Identity Source's requirements.\n\nMust be unique within a `namespace`.",
+                  "description": "Required. The ID of the entity.\n\nFor Google-managed entities, the `id` must be the email address of an\nexisting group or user.\n\nFor external-identity-mapped entities, the `id` must be a string conforming\nto the Identity Source's requirements.\n\nMust be unique within a `namespace`.",
                   "location": "query",
                   "type": "string"
                 },
                 "memberKey.namespace": {
-                  "description": "The namespace in which the entity exists.\n\nIf not specified, the `EntityKey` represents a Google-managed entity such\nas a Google user or a Google Group.\n\nIf specified, the `EntityKey` represents an external-identity-mapped group\ncreated through Admin Console. Must be of the form\n`identitysources\/{identity_source_id}.",
+                  "description": "The namespace in which the entity exists.\n\nIf not specified, the `EntityKey` represents a Google-managed entity such\nas a Google user or a Google Group.\n\nIf specified, the `EntityKey` represents an external-identity-mapped group.\nThe namespace must correspond to an identity source created in Admin\nConsole. Must be of the form `identitysources\/{identity_source_id}.",
                   "location": "query",
                   "type": "string"
                 }
@@ -1499,7 +1499,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "name": {
-                  "description": "The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe `Membership` whose roles are to be modified.\n\nMust be of the form `groups\/{group_id}\/memberships\/{membership_id}`.",
+                  "description": "Required. The [resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe `Membership` whose roles are to be modified.\n\nMust be of the form `groups\/{group_id}\/memberships\/{membership_id}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^groups\/[^\/]+\/memberships\/[^\/]+$",

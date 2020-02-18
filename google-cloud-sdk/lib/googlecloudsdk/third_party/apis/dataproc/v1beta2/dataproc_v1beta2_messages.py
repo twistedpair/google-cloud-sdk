@@ -274,6 +274,10 @@ class ClusterConfig(_messages.Message):
     endpointConfig: Optional. Port/endpoint configuration for this cluster
     gceClusterConfig: Optional. The shared Compute Engine config settings for
       all instances in a cluster.
+    gkeClusterConfig: Optional. The GKE config for Dataproc clusters deployed
+      to Kubernetes. Setting this is considered mutually exclusive with GCE-
+      based options such as gce_cluster_config, master_config, worker_config,
+      secondary_worker_config, and autoscaling_config.
     initializationActions: Optional. Commands to execute on each node after
       config is completed. By default, executables are run on master and all
       worker nodes. You can test a node's <code>role</code> metadata to run an
@@ -300,13 +304,14 @@ class ClusterConfig(_messages.Message):
   encryptionConfig = _messages.MessageField('EncryptionConfig', 3)
   endpointConfig = _messages.MessageField('EndpointConfig', 4)
   gceClusterConfig = _messages.MessageField('GceClusterConfig', 5)
-  initializationActions = _messages.MessageField('NodeInitializationAction', 6, repeated=True)
-  lifecycleConfig = _messages.MessageField('LifecycleConfig', 7)
-  masterConfig = _messages.MessageField('InstanceGroupConfig', 8)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 9)
-  securityConfig = _messages.MessageField('SecurityConfig', 10)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 11)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 12)
+  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 6)
+  initializationActions = _messages.MessageField('NodeInitializationAction', 7, repeated=True)
+  lifecycleConfig = _messages.MessageField('LifecycleConfig', 8)
+  masterConfig = _messages.MessageField('InstanceGroupConfig', 9)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 10)
+  securityConfig = _messages.MessageField('SecurityConfig', 11)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 12)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 13)
 
 
 class ClusterMetrics(_messages.Message):
@@ -2067,6 +2072,16 @@ class GetPolicyOptions(_messages.Message):
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class GkeClusterConfig(_messages.Message):
+  r"""The GKE config for this cluster.
+
+  Fields:
+    namespacedGkeDeploymentTarget: Optional. A target for the deployment.
+  """
+
+  namespacedGkeDeploymentTarget = _messages.MessageField('NamespacedGkeDeploymentTarget', 1)
+
+
 class HadoopJob(_messages.Message):
   r"""A Dataproc job for running Apache Hadoop MapReduce
   (https://hadoop.apache.org/docs/current/hadoop-mapreduce-client/hadoop-
@@ -2920,6 +2935,21 @@ class ManagedGroupConfig(_messages.Message):
 
   instanceGroupManagerName = _messages.StringField(1)
   instanceTemplateName = _messages.StringField(2)
+
+
+class NamespacedGkeDeploymentTarget(_messages.Message):
+  r"""A full, namespace-isolated deployment target for an existing GKE
+  cluster.
+
+  Fields:
+    clusterNamespace: Optional. A namespace within the GKE cluster to deploy
+      into.
+    targetGkeCluster: Optional. The target GKE cluster to deploy to. Format:
+      'projects/{project}/locations/{location}/clusters/{cluster_id}'
+  """
+
+  clusterNamespace = _messages.StringField(1)
+  targetGkeCluster = _messages.StringField(2)
 
 
 class NodeInitializationAction(_messages.Message):

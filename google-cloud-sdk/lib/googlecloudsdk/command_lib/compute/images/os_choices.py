@@ -18,6 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+_BETA_ADDITIONS = [
+    'opensuse-15',
+    'sles-12-byol',
+    'sles-15-byol',
+]
+
 OS_CHOICES_IMAGE_IMPORT_GA = [
     'debian-8',
     'debian-9',
@@ -47,6 +53,9 @@ OS_CHOICES_IMAGE_IMPORT_GA = [
     'windows-10-x64-byol',
     'windows-10-x86-byol',
 ]
-OS_CHOICES_IMAGE_IMPORT_BETA = OS_CHOICES_IMAGE_IMPORT_GA
+
+OS_CHOICES_IMAGE_IMPORT_BETA = OS_CHOICES_IMAGE_IMPORT_GA + _BETA_ADDITIONS
 OS_CHOICES_IMAGE_IMPORT_ALPHA = OS_CHOICES_IMAGE_IMPORT_BETA
-OS_CHOICES_INSTANCE_IMPORT_BETA = OS_CHOICES_IMAGE_IMPORT_GA
+
+OS_CHOICES_INSTANCE_IMPORT_GA = OS_CHOICES_IMAGE_IMPORT_GA
+OS_CHOICES_INSTANCE_IMPORT_BETA = OS_CHOICES_IMAGE_IMPORT_BETA

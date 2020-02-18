@@ -83,7 +83,34 @@ def ChooseUpdateOrPreviewMethod(unused_instance_ref, args):
   return 'updateRollout'
 
 
-def SetUpdateMask(ref, args, request):
+def SetUpdateMaskForDeployment(ref, args, request):
+  """Python hook that computes the update mask for a patch request.
+
+  Args:
+    ref: The deployment resource reference.
+    args: The parsed args namespace.
+    request: The update deployment request.
+
+  Returns:
+    Request with update mask set appropriately.
+  Raises:
+    NoFieldsSpecifiedError: If no fields were provided for updating.
+  """
+  del ref
+  update_mask = []
+
+  if (args.IsSpecified('update_labels') or
+      args.IsSpecified('remove_labels') or
+      args.IsSpecified('clear_labels')):
+    update_mask.append('labels')
+  if not update_mask:
+    raise NoFieldsSpecifiedError(
+        'Must specify at least one parameter to update.')
+  request.updateMask = ','.join(update_mask)
+  return request
+
+
+def SetUpdateMaskForRollout(ref, args, request):
   """Python hook that computes the update mask for a patch request.
 
   Args:

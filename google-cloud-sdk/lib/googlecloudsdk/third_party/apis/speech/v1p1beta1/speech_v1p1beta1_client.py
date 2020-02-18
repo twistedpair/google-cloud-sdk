@@ -9,6 +9,7 @@ class SpeechV1p1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://speech.googleapis.com/'
+  MTLS_BASE_URL = u''
 
   _PACKAGE = u'speech'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

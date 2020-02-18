@@ -415,7 +415,7 @@
           }
         },
         "etag": {
-          "description": "Required. Fingerprint of the Recommendation. Provides optimistic locking.",
+          "description": "Fingerprint of the Recommendation. Provides optimistic locking.",
           "type": "string"
         }
       }

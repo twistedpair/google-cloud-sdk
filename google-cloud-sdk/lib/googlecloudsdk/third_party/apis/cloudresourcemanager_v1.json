@@ -984,7 +984,7 @@
           "httpMethod": "GET",
           "parameters": {
             "parent": {
-              "description": "The name of the resource to list all attached Liens.\nFor example, `projects\/1234`.",
+              "description": "Required. The name of the resource to list all attached Liens.\nFor example, `projects\/1234`.",
               "location": "query",
               "type": "string"
             },
@@ -1018,7 +1018,7 @@
           "httpMethod": "GET",
           "parameters": {
             "liensId": {
-              "description": "Part of `name`. The name\/identifier of the Lien.",
+              "description": "Part of `name`. Required. The name\/identifier of the Lien.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -1064,7 +1064,7 @@
           "httpMethod": "DELETE",
           "parameters": {
             "liensId": {
-              "description": "Part of `name`. The name\/identifier of the Lien to delete.",
+              "description": "Part of `name`. Required. The name\/identifier of the Lien to delete.",
               "location": "path",
               "required": true,
               "type": "string"

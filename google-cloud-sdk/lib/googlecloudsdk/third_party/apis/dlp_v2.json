@@ -226,7 +226,7 @@
       "type": "object",
       "properties": {
         "maxFindingsPerItem": {
-          "description": "Max number of findings that will be returned for each item scanned.\nWhen set within `InspectDataSourceRequest`,\nthe maximum returned is 2000 regardless if this is set higher.\nWhen set within `InspectContentRequest`, this field is ignored.",
+          "description": "Max number of findings that will be returned for each item scanned.\nWhen set within `InspectJobConfig`,\nthe maximum returned is 2000 regardless if this is set higher.\nWhen set within `InspectContentRequest`, this field is ignored.",
           "type": "integer",
           "format": "int32"
         },
@@ -2423,15 +2423,15 @@
       "type": "object",
       "properties": {
         "datastoreOptions": {
-          "description": "Google Cloud Datastore options specification.",
+          "description": "Google Cloud Datastore options.",
           "$ref": "GooglePrivacyDlpV2DatastoreOptions"
         },
         "cloudStorageOptions": {
-          "description": "Google Cloud Storage options specification.",
+          "description": "Google Cloud Storage options.",
           "$ref": "GooglePrivacyDlpV2CloudStorageOptions"
         },
         "bigQueryOptions": {
-          "description": "BigQuery options specification.",
+          "description": "BigQuery options.",
           "$ref": "GooglePrivacyDlpV2BigQueryOptions"
         },
         "timespanConfig": {
@@ -2888,7 +2888,7 @@
           "enumDescriptions": [
             "Unused.",
             "The job has not yet started.",
-            "The job is currently running.",
+            "The job is currently running. Once a job has finished it will transition\nto FAILED or DONE.",
             "The job is no longer running.",
             "The job was canceled before it could complete.",
             "The job had an error and did not complete."
