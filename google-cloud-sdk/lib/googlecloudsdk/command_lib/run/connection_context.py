@@ -27,7 +27,6 @@ import re
 import ssl
 import sys
 import tempfile
-import enum
 from googlecloudsdk.api_lib.run import gke
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.util import apis
@@ -400,12 +399,7 @@ class _RegionalConnectionContext(ConnectionInfo):
     return True
 
 
-class Product(enum.Enum):
-  RUN = 'Run'
-  EVENTS = 'Events'
-
-
-def GetConnectionContext(args, product=Product.RUN):
+def GetConnectionContext(args, product=flags.Product.RUN):
   """Gets the regional, kubeconfig, or GKE connection context.
 
   Args:
@@ -438,9 +432,9 @@ def GetConnectionContext(args, product=Product.RUN):
       raise flags.ArgumentError(
           'You must specify a region. Either use the `--region` flag '
           'or set the run/region property.')
-    if product == Product.RUN:
+    if product == flags.Product.RUN:
       version = global_methods.SERVERLESS_API_VERSION
-    elif product == Product.EVENTS:
+    elif product == flags.Product.EVENTS:
       version = _EVENTS_API_VERSION
     else:
       raise ValueError('Unrecognized product: ' + six.u(product))

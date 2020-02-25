@@ -26,9 +26,11 @@ import random
 
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.events import custom_resource_definition
+from googlecloudsdk.api_lib.events import iam_util
 from googlecloudsdk.api_lib.events import metric_names
 from googlecloudsdk.api_lib.events import source
 from googlecloudsdk.api_lib.events import trigger
+from googlecloudsdk.api_lib.run import secret
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.command_lib.events import exceptions
@@ -44,6 +46,9 @@ from googlecloudsdk.core import resources
 
 _EVENT_SOURCES_LABEL_SELECTOR = 'duck.knative.dev/source=true'
 
+_SERVICE_ACCOUNT_KEY_COLLECTION = 'iam.projects.serviceAccounts.keys'
+
+_CORE_CLIENT_VERSION = 'v1'
 _CRD_CLIENT_VERSION = 'v1beta1'
 
 
@@ -80,6 +85,11 @@ def Connect(conn_context):
         check_response_func=apis.CheckResponseForApiEnablement()
         if conn_context.supports_one_platform else None,
         http_client=conn_context.HttpClient())
+    # This client is used for working with core resources (e.g. Secrets)
+    core_client = apis_internal._GetClientInstance(
+        conn_context.api_name,
+        _CORE_CLIENT_VERSION,
+        http_client=conn_context.HttpClient())
     # This client is only used to get CRDs because the api group they are
     # under uses different versioning in k8s
     crd_client = apis_internal._GetClientInstance(
@@ -90,73 +100,127 @@ def Connect(conn_context):
     yield EventflowOperations(
         client,
         conn_info.region,
+        core_client,
         crd_client,
         op_client)
 
 
-class TriggerConditionPoller(serverless_operations.ConditionPoller):
-  """A ConditionPoller for triggers."""
+# TODO(b/149793348): Remove this grace period
+_POLLING_GRACE_PERIOD = datetime.timedelta(seconds=15)
 
-  def __init__(self, getter, tracker, dependencies=None):
 
-    def GetIfProbablyNewerOrNotFalse():
-      """Workaround for a potentially slowly updating Trigger.
+class TimeLockedUnfailingConditionPoller(serverless_operations.ConditionPoller):
+  """Condition poller that never fails and is only done on success for a period of time.
 
-      The trigger's Ready condition is based on the source it depends on. If the
-      source doesn't exist the trigger should be Ready == False and if it does
-      exist, the trigger's Ready condition should match the source's (assuming
-      no other issues with the trigger).
+  Knative Eventing occasionally returns Ready == False on a resource that will
+  shortly become Ready == True. In these cases, we cannot rely upon that False
+  status as an indication of a terminal failure. Instead, only Ready == True can
+  be relied upon as a terminal state and all other statuses (False, Unknown)
+  simply mean not currently successful, but provide no indication if this is a
+  temporary or permanent state.
 
-      We only start polling for the trigger's Ready condition once the source
-      has been created and gone Ready == True, which means the trigger *should*
-      also be Ready == True. However, to prevent against the trigger being slow
-      in updating its status, we allow for a 3 second grace period where we'll
-      ignore a Ready == False status and continue polling.
+  This condition poller never fails a stage for that reason, and therefore is
+  never done until successful.
 
-      Returns:
-        The requested resource or None if it seems stale.
-      """
-      resource = getter()
-      # pylint:disable=g-bool-id-comparison, Need to check for False explicitly
-      # because None is a valid state (meaning Unknown)
-      if (resource is None or resource.ready_condition['status'] is not False or
-          self._HaveThreeSecondsPassed()):
-        return resource
+  This behavior only exists for a period of time, after which it acts like a
+  normal condition poller.
+  """
 
-      # lastTransitionTime being updated from what we first saw when we started
-      # polling is good enough to stop waiting, even if Ready == False
-      if not self._last_transition_time:
-        self._last_transition_time = resource.last_transition_time
-      if self._last_transition_time != resource.last_transition_time:
-        return resource
+  def __init__(self,
+               getter,
+               tracker,
+               dependencies=None,
+               grace_period=_POLLING_GRACE_PERIOD):
+    super(TimeLockedUnfailingConditionPoller,
+          self).__init__(getter, tracker, dependencies)
+    self._grace_period = _POLLING_GRACE_PERIOD
+    self._start_time = datetime.datetime.now()
 
+  def _HasGracePeriodPassed(self):
+    return datetime.datetime.now() - self._start_time > self._grace_period
+
+  def IsDone(self, conditions):
+    """Within grace period -  this only checks for IsReady rather than IsTerminal.
+
+    Args:
+      conditions: A condition.Conditions object.
+
+    Returns:
+      A bool indicating whether `conditions` is ready.
+    """
+    if self._HasGracePeriodPassed():
+      return super(TimeLockedUnfailingConditionPoller, self).IsDone(conditions)
+
+    if conditions is None:
+      return False
+    return conditions.IsReady()
+
+  def Poll(self, unused_ref):
+    """Within grace period - this polls like normal but does not raise on failure.
+
+    Args:
+      unused_ref: A string representing the operation reference. Unused and may
+        be None.
+
+    Returns:
+      A condition.Conditions object or None if there's no conditions on the
+        resource or if the conditions are not fresh (the generation on the
+        resource doesn't match the observedGeneration)
+    """
+    if self._HasGracePeriodPassed():
+      return super(TimeLockedUnfailingConditionPoller, self).Poll(unused_ref)
+
+    conditions = self.GetConditions()
+
+    if conditions is None or not conditions.IsFresh():
       return None
 
-    super(TriggerConditionPoller, self).__init__(GetIfProbablyNewerOrNotFalse,
-                                                 tracker, dependencies)
-    self._last_transition_time = None
-    self._start_time = datetime.datetime.now()
-    self._three_seconds = datetime.timedelta(seconds=3)
+    conditions_message = conditions.DescriptiveMessage()
+    if conditions_message:
+      self._tracker.UpdateHeaderMessage(conditions_message)
 
-  def _HaveThreeSecondsPassed(self):
-    return datetime.datetime.now() - self._start_time > self._three_seconds
+    self._PollTerminalSubconditions(conditions, conditions_message)
+
+    if conditions.IsReady():
+      self._tracker.UpdateHeaderMessage(self._ready_message)
+      # TODO(b/120679874): Should not have to manually call Tick()
+      self._tracker.Tick()
+
+    return conditions
+
+  def _PossiblyFailStage(self, condition, message):
+    """Within grace period - stages are never marked as failed."""
+    if self._HasGracePeriodPassed():
+      # pylint:disable=protected-access
+      return super(TimeLockedUnfailingConditionPoller,
+                   self)._PossiblyFailStage(condition, message)
+
+
+class TriggerConditionPoller(TimeLockedUnfailingConditionPoller):
+  """A ConditionPoller for triggers."""
+
+
+class SourceConditionPoller(TimeLockedUnfailingConditionPoller):
+  """A ConditionPoller for sources."""
 
 
 class EventflowOperations(object):
   """Client used by Eventflow to communicate with the actual API."""
 
-  def __init__(self, client, region, crd_client, op_client):
+  def __init__(self, client, region, core_client, crd_client, op_client):
     """Inits EventflowOperations with given API clients.
 
     Args:
       client: The API client for interacting with Kubernetes Cloud Run APIs.
       region: str, The region of the control plane if operating against
         hosted Cloud Run, else None.
-      crd_client: The API client for querying for CRDs.
+      core_client: The API client for queries against core resources.
+      crd_client: The API client for querying for CRDs
       op_client: The API client for interacting with One Platform APIs. Or
         None if interacting with Cloud Run for Anthos.
     """
     self._client = client
+    self._core_client = core_client
     self._crd_client = crd_client
     self._op_client = op_client
     self._region = region
@@ -379,8 +443,8 @@ class EventflowOperations(object):
         source_obj.name, source_obj.namespace, event_type.crd)
     source_getter = functools.partial(
         self.GetSource, source_ref, event_type.crd)
-    poller = serverless_operations.ConditionPoller(
-        source_getter, tracker, stages.TriggerSourceDependencies())
+    poller = SourceConditionPoller(source_getter, tracker,
+                                   stages.TriggerSourceDependencies())
     util.WaitForCondition(poller, exceptions.SourceCreationError)
     # Manually complete the stage indicating source readiness because we can't
     # track a terminal (Ready) condition in the ConditionPoller.
@@ -411,3 +475,42 @@ class EventflowOperations(object):
     ]
     # Only include CRDs for source kinds that are defined in the api.
     return [s for s in source_crds if hasattr(self.messages, s.source_kind)]
+
+  def CreateOrReplaceServiceAccountSecret(self, secret_ref,
+                                          service_account_ref):
+    """Create a new secret or replace an existing one.
+
+    Secret data contains the key of the given service account.
+
+    Args:
+      secret_ref: googlecloudsdk.core.resources.Resource, secret resource.
+      service_account_ref: googlecloudsdk.core.resources.Resource, service
+        account whose key will be used to create/replace the secret.
+
+    Returns:
+      (secret.Secret, googlecloudsdk.core.resources.Resource): tuple of the
+        wrapped Secret resource and a ref to the created service account key.
+    """
+    secret_obj = secret.Secret.New(
+        self._core_client, secret_ref.Parent().Name())
+    secret_obj.name = secret_ref.Name()
+    key = iam_util.CreateServiceAccountKey(service_account_ref)
+    secret_obj.data['key.json'] = key.privateKeyData
+    key_ref = resources.REGISTRY.ParseResourceId(
+        _SERVICE_ACCOUNT_KEY_COLLECTION, key.name, {})
+
+    messages = self._core_client.MESSAGES_MODULE
+    with metrics.RecordDuration(metric_names.CREATE_OR_REPLACE_SECRET):
+      # Create secret or replace if already exists.
+      try:
+        request = messages.RunApiV1NamespacesSecretsCreateRequest(
+            secret=secret_obj.Message(),
+            parent=secret_ref.Parent().RelativeName())
+        response = self._core_client.api_v1_namespaces_secrets.Create(request)
+      except api_exceptions.HttpConflictError:
+        request = messages.RunApiV1NamespacesSecretsReplaceSecretRequest(
+            secret=secret_obj.Message(),
+            name=secret_ref.RelativeName())
+        response = self._core_client.api_v1_namespaces_secrets.ReplaceSecret(
+            request)
+    return secret.Secret(response, messages), key_ref

@@ -22,8 +22,7 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import base
 
 GKEHUB_API_NAME = 'gkehub'
-# TODO(b/148312097): update to alpha api_version once its live.
-GKEHUB_ALPHA_API_VERSION = 'v1beta1'
+GKEHUB_ALPHA_API_VERSION = 'v1alpha2'
 GKEHUB_BETA_API_VERSION = 'v1beta1'
 GKEHUB_GA_API_VERSION = 'v1'
 

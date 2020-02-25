@@ -26,9 +26,12 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.composer import parsers
+from googlecloudsdk.command_lib.composer import util as command_util
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import properties
+
 import ipaddress
+import six
 
 
 AIRFLOW_VERSION_TYPE = arg_parsers.RegexpValidator(
@@ -280,6 +283,56 @@ SERVICES_SECONDARY_RANGE_NAME_FLAG = base.Argument(
     name of an existing secondary range in the cluster subnetwork.
 
     Cannot be specified unless '--enable-ip-alias' is also specified.
+    """)
+
+WEB_SERVER_ALLOW_IP = base.Argument(
+    '--web-server-allow-ip',
+    type=arg_parsers.ArgDict(spec={
+        'ip_range': str,
+        'description': str
+    }),
+    action='append',
+    help="""\
+    Specifies a list of IPv4 or IPv6 ranges that will be allowed to access the
+    Airflow web server. By default, all IPs are allowed to access the web
+    server.
+
+    *ip_range*::: IPv4 or IPv6 range of addresses allowed to access the Airflow
+    web server.
+
+    *description*::: An optional description of the IP range.
+    """)
+
+WEB_SERVER_DENY_ALL = base.Argument(
+    '--web-server-deny-all',
+    action='store_true',
+    help="""\
+    Denies all incoming traffic to the Airflow web server.
+    """)
+
+WEB_SERVER_ALLOW_ALL = base.Argument(
+    '--web-server-allow-all',
+    action='store_true',
+    help="""\
+    Allows all IP addresses to access the Airflow web server.
+    """)
+
+UPDATE_WEB_SERVER_ALLOW_IP = base.Argument(
+    '--update-web-server-allow-ip',
+    type=arg_parsers.ArgDict(spec={
+        'ip_range': str,
+        'description': str
+    }),
+    action='append',
+    help="""\
+    Specifies a list of IPv4 or IPv6 ranges that will be allowed to access the
+    Airflow web server. By default, all IPs are allowed to access the web
+    server.
+
+    *ip_range*::: IPv4 or IPv6 range of addresses allowed to access the Airflow
+    web server.
+
+    *description*::: An optional description of the IP range.
     """)
 
 
@@ -712,3 +765,21 @@ def FallthroughToLocationProperty(location_refs, flag_name, failure_msg):
     return [parsers.ParseLocation(fallthrough_location)]
   else:
     raise exceptions.RequiredArgumentException(flag_name, failure_msg)
+
+
+def ValidateIpRanges(ip_ranges):
+  """Validates list of IP ranges.
+
+  Raises exception when any of the given strings is not a valid IPv4
+  or IPv6 network IP range.
+  Args:
+    ip_ranges: [string], list of IP ranges to validate
+  """
+  for ip_range in ip_ranges:
+    if six.PY2:
+      ip_range = ip_range.decode()
+    try:
+      ipaddress.ip_network(ip_range)
+    except:
+      raise command_util.InvalidUserInputError(
+          'Invalid IP range: [{}].'.format(ip_range))

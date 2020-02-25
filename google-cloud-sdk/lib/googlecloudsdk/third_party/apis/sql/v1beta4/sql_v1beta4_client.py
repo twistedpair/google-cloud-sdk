@@ -42,8 +42,6 @@ class SqlV1beta4(base_api.BaseApiClient):
     self.instances = self.InstancesService(self)
     self.operations = self.OperationsService(self)
     self.projects_instances = self.ProjectsInstancesService(self)
-    self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
-    self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
     self.sslCerts = self.SslCertsService(self)
     self.tiers = self.TiersService(self)
@@ -77,7 +75,7 @@ class SqlV1beta4(base_api.BaseApiClient):
         method_id=u'sql.backupRuns.delete',
         ordered_params=[u'project', u'instance', u'id'],
         path_params=[u'id', u'instance', u'project'],
-        query_params=[u'resourceName'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/backupRuns/{id}',
         request_field='',
         request_type_name=u'SqlBackupRunsDeleteRequest',
@@ -103,7 +101,7 @@ class SqlV1beta4(base_api.BaseApiClient):
         method_id=u'sql.backupRuns.get',
         ordered_params=[u'project', u'instance', u'id'],
         path_params=[u'id', u'instance', u'project'],
-        query_params=[u'resourceName'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/backupRuns/{id}',
         request_field='',
         request_type_name=u'SqlBackupRunsGetRequest',
@@ -130,7 +128,7 @@ Second Generation instances.
         method_id=u'sql.backupRuns.insert',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/backupRuns',
         request_field=u'backupRun',
         request_type_name=u'SqlBackupRunsInsertRequest',
@@ -157,7 +155,7 @@ the reverse chronological order of the backup initiation time.
         method_id=u'sql.backupRuns.list',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'maxResults', u'pageToken', u'parent'],
+        query_params=[u'maxResults', u'pageToken'],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/backupRuns',
         request_field='',
         request_type_name=u'SqlBackupRunsListRequest',
@@ -193,7 +191,7 @@ the reverse chronological order of the backup initiation time.
         method_id=u'sql.databases.delete',
         ordered_params=[u'project', u'instance', u'database'],
         path_params=[u'database', u'instance', u'project'],
-        query_params=[u'resourceName'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/databases/{database}',
         request_field='',
         request_type_name=u'SqlDatabasesDeleteRequest',
@@ -220,7 +218,7 @@ SQL instance.
         method_id=u'sql.databases.get',
         ordered_params=[u'project', u'instance', u'database'],
         path_params=[u'database', u'instance', u'project'],
-        query_params=[u'resourceName'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/databases/{database}',
         request_field='',
         request_type_name=u'SqlDatabasesGetRequest',
@@ -233,7 +231,7 @@ SQL instance.
 SQL instance.
 
       Args:
-        request: (SqlDatabasesInsertRequest) input message
+        request: (Database) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -247,10 +245,10 @@ SQL instance.
         method_id=u'sql.databases.insert',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/databases',
-        request_field=u'database',
-        request_type_name=u'SqlDatabasesInsertRequest',
+        request_field='<request>',
+        request_type_name=u'Database',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -273,7 +271,7 @@ SQL instance.
         method_id=u'sql.databases.list',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/databases',
         request_field='',
         request_type_name=u'SqlDatabasesListRequest',
@@ -284,11 +282,6 @@ SQL instance.
     def Patch(self, request, global_params=None):
       r"""Partially updates a resource containing information about a database inside.
 a Cloud SQL instance. This method supports patch semantics.
-<aside
-class="caution"><strong>Caution:</strong> This is not a partial update, so
-you must include values for all the settings that you want to retain. For
-partial updates, use <a
-href="/sql/docs/db_path/admin-api/rest/v1beta4/instances/update">update</a>.</aside>
 
       Args:
         request: (SqlDatabasesPatchRequest) input message
@@ -305,7 +298,7 @@ href="/sql/docs/db_path/admin-api/rest/v1beta4/instances/update">update</a>.</as
         method_id=u'sql.databases.patch',
         ordered_params=[u'project', u'instance', u'database'],
         path_params=[u'database', u'instance', u'project'],
-        query_params=[u'resourceName'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/databases/{database}',
         request_field=u'databaseResource',
         request_type_name=u'SqlDatabasesPatchRequest',
@@ -332,7 +325,7 @@ SQL instance.
         method_id=u'sql.databases.update',
         ordered_params=[u'project', u'instance', u'database'],
         path_params=[u'database', u'instance', u'project'],
-        query_params=[u'resourceName'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/databases/{database}',
         request_field=u'databaseResource',
         request_type_name=u'SqlDatabasesUpdateRequest',
@@ -408,7 +401,7 @@ waiting to be rotated in.
         method_id=u'sql.instances.addServerCa',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/addServerCa',
         request_field='',
         request_type_name=u'SqlInstancesAddServerCaRequest',
@@ -417,7 +410,8 @@ waiting to be rotated in.
     )
 
     def Clone(self, request, global_params=None):
-      r"""Creates a Cloud SQL instance as a clone of the source instance.
+      r"""Creates a Cloud SQL instance as a clone of the source instance. Using this.
+operation might cause your instance to restart.
 
       Args:
         request: (SqlInstancesCloneRequest) input message
@@ -434,7 +428,7 @@ waiting to be rotated in.
         method_id=u'sql.instances.clone',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/clone',
         request_field=u'instancesCloneRequest',
         request_type_name=u'SqlInstancesCloneRequest',
@@ -460,7 +454,7 @@ waiting to be rotated in.
         method_id=u'sql.instances.delete',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'resourceName'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}',
         request_field='',
         request_type_name=u'SqlInstancesDeleteRequest',
@@ -487,7 +481,7 @@ external database server.
         method_id=u'sql.instances.demoteMaster',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/demoteMaster',
         request_field=u'instancesDemoteMasterRequest',
         request_type_name=u'SqlInstancesDemoteMasterRequest',
@@ -514,7 +508,7 @@ dump or CSV file.
         method_id=u'sql.instances.export',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/export',
         request_field=u'instancesExportRequest',
         request_type_name=u'SqlInstancesExportRequest',
@@ -523,7 +517,8 @@ dump or CSV file.
     )
 
     def Failover(self, request, global_params=None):
-      r"""Failover the instance to its failover replica instance.
+      r"""Failover the instance to its failover replica instance. Using this.
+operation might cause your instance to restart.
 
       Args:
         request: (SqlInstancesFailoverRequest) input message
@@ -540,7 +535,7 @@ dump or CSV file.
         method_id=u'sql.instances.failover',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/failover',
         request_field=u'instancesFailoverRequest',
         request_type_name=u'SqlInstancesFailoverRequest',
@@ -566,7 +561,7 @@ dump or CSV file.
         method_id=u'sql.instances.get',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'resourceName'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}',
         request_field='',
         request_type_name=u'SqlInstancesGetRequest',
@@ -593,7 +588,7 @@ Cloud Storage.
         method_id=u'sql.instances.import',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/import',
         request_field=u'instancesImportRequest',
         request_type_name=u'SqlInstancesImportRequest',
@@ -605,7 +600,7 @@ Cloud Storage.
       r"""Creates a new Cloud SQL instance.
 
       Args:
-        request: (SqlInstancesInsertRequest) input message
+        request: (DatabaseInstance) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -619,10 +614,10 @@ Cloud Storage.
         method_id=u'sql.instances.insert',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances',
-        request_field=u'databaseInstance',
-        request_type_name=u'SqlInstancesInsertRequest',
+        request_field='<request>',
+        request_type_name=u'DatabaseInstance',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -645,7 +640,7 @@ Cloud Storage.
         method_id=u'sql.instances.list',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[u'filter', u'maxResults', u'pageToken', u'parent'],
+        query_params=[u'filter', u'maxResults', u'pageToken'],
         relative_path=u'sql/v1beta4/projects/{project}/instances',
         request_field='',
         request_type_name=u'SqlInstancesListRequest',
@@ -675,7 +670,7 @@ has previously rotated out.
         method_id=u'sql.instances.listServerCas',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/listServerCas',
         request_field='',
         request_type_name=u'SqlInstancesListServerCasRequest',
@@ -702,7 +697,7 @@ This method supports patch semantics.
         method_id=u'sql.instances.patch',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'resourceName'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}',
         request_field=u'databaseInstance',
         request_type_name=u'SqlInstancesPatchRequest',
@@ -712,6 +707,7 @@ This method supports patch semantics.
 
     def PromoteReplica(self, request, global_params=None):
       r"""Promotes the read replica instance to be a stand-alone Cloud SQL instance.
+Using this operation might cause your instance to restart.
 
       Args:
         request: (SqlInstancesPromoteReplicaRequest) input message
@@ -728,7 +724,7 @@ This method supports patch semantics.
         method_id=u'sql.instances.promoteReplica',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/promoteReplica',
         request_field='',
         request_type_name=u'SqlInstancesPromoteReplicaRequest',
@@ -755,7 +751,7 @@ for the instance.
         method_id=u'sql.instances.resetSslConfig',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/resetSslConfig',
         request_field='',
         request_type_name=u'SqlInstancesResetSslConfigRequest',
@@ -781,7 +777,7 @@ for the instance.
         method_id=u'sql.instances.restart',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/restart',
         request_field='',
         request_type_name=u'SqlInstancesRestartRequest',
@@ -790,7 +786,8 @@ for the instance.
     )
 
     def RestoreBackup(self, request, global_params=None):
-      r"""Restores a backup of a Cloud SQL instance.
+      r"""Restores a backup of a Cloud SQL instance. Using this operation might cause.
+your instance to restart.
 
       Args:
         request: (SqlInstancesRestoreBackupRequest) input message
@@ -807,7 +804,7 @@ for the instance.
         method_id=u'sql.instances.restoreBackup',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/restoreBackup',
         request_field=u'instancesRestoreBackupRequest',
         request_type_name=u'SqlInstancesRestoreBackupRequest',
@@ -834,7 +831,7 @@ for the instance.
         method_id=u'sql.instances.rotateServerCa',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/rotateServerCa',
         request_field=u'instancesRotateServerCaRequest',
         request_type_name=u'SqlInstancesRotateServerCaRequest',
@@ -860,7 +857,7 @@ for the instance.
         method_id=u'sql.instances.startReplica',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/startReplica',
         request_field='',
         request_type_name=u'SqlInstancesStartReplicaRequest',
@@ -886,7 +883,7 @@ for the instance.
         method_id=u'sql.instances.stopReplica',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/stopReplica',
         request_field='',
         request_type_name=u'SqlInstancesStopReplicaRequest',
@@ -912,7 +909,7 @@ for the instance.
         method_id=u'sql.instances.truncateLog',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/truncateLog',
         request_field=u'instancesTruncateLogRequest',
         request_type_name=u'SqlInstancesTruncateLogRequest',
@@ -921,7 +918,8 @@ for the instance.
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates settings of a Cloud SQL instance.
+      r"""Updates settings of a Cloud SQL instance. Using this operation might cause.
+your instance to restart.
 
       Args:
         request: (SqlInstancesUpdateRequest) input message
@@ -938,7 +936,7 @@ for the instance.
         method_id=u'sql.instances.update',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'resourceName'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}',
         request_field=u'databaseInstance',
         request_type_name=u'SqlInstancesUpdateRequest',
@@ -974,7 +972,7 @@ for the instance.
         method_id=u'sql.operations.get',
         ordered_params=[u'project', u'operation'],
         path_params=[u'operation', u'project'],
-        query_params=[u'resourceName'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/operations/{operation}',
         request_field='',
         request_type_name=u'SqlOperationsGetRequest',
@@ -1001,7 +999,7 @@ SQL instance in the reverse chronological order of the start time.
         method_id=u'sql.operations.list',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[u'instance', u'maxResults', u'pageToken', u'parent'],
+        query_params=[u'instance', u'maxResults', u'pageToken'],
         relative_path=u'sql/v1beta4/projects/{project}/operations',
         request_field='',
         request_type_name=u'SqlOperationsListRequest',
@@ -1037,7 +1035,7 @@ SQL instance in the reverse chronological order of the start time.
         method_id=u'sql.projects.instances.rescheduleMaintenance',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/rescheduleMaintenance',
         request_field=u'sqlInstancesRescheduleMaintenanceRequestBody',
         request_type_name=u'SqlProjectsInstancesRescheduleMaintenanceRequest',
@@ -1045,52 +1043,57 @@ SQL instance in the reverse chronological order of the start time.
         supports_download=False,
     )
 
-  class ProjectsLocationsInstancesService(base_api.BaseApiService):
-    """Service class for the projects_locations_instances resource."""
-
-    _NAME = u'projects_locations_instances'
-
-    def __init__(self, client):
-      super(SqlV1beta4.ProjectsLocationsInstancesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def RescheduleMaintenance(self, request, global_params=None):
-      r"""Reschedules the maintenance on the given instance.
+    def StartExternalSync(self, request, global_params=None):
+      r"""Start External master migration.
 
       Args:
-        request: (SqlProjectsLocationsInstancesRescheduleMaintenanceRequest) input message
+        request: (SqlProjectsInstancesStartExternalSyncRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
       """
-      config = self.GetMethodConfig('RescheduleMaintenance')
+      config = self.GetMethodConfig('StartExternalSync')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    RescheduleMaintenance.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'sql/v1beta4/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/rescheduleMaintenance',
+    StartExternalSync.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'POST',
-        method_id=u'sql.projects.locations.instances.rescheduleMaintenance',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'instance', u'project'],
-        relative_path=u'sql/v1beta4/{+parent}/rescheduleMaintenance',
-        request_field=u'sqlInstancesRescheduleMaintenanceRequestBody',
-        request_type_name=u'SqlProjectsLocationsInstancesRescheduleMaintenanceRequest',
+        method_id=u'sql.projects.instances.startExternalSync',
+        ordered_params=[u'project', u'instance'],
+        path_params=[u'instance', u'project'],
+        query_params=[u'syncMode'],
+        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/startExternalSync',
+        request_field='',
+        request_type_name=u'SqlProjectsInstancesStartExternalSyncRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
 
-  class ProjectsLocationsService(base_api.BaseApiService):
-    """Service class for the projects_locations resource."""
+    def VerifyExternalSyncSettings(self, request, global_params=None):
+      r"""Verify External master external sync settings.
 
-    _NAME = u'projects_locations'
+      Args:
+        request: (SqlProjectsInstancesVerifyExternalSyncSettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SqlInstancesVerifyExternalSyncSettingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('VerifyExternalSyncSettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
-    def __init__(self, client):
-      super(SqlV1beta4.ProjectsLocationsService, self).__init__(client)
-      self._upload_configs = {
-          }
+    VerifyExternalSyncSettings.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'sql.projects.instances.verifyExternalSyncSettings',
+        ordered_params=[u'project', u'instance'],
+        path_params=[u'instance', u'project'],
+        query_params=[u'syncMode', u'verifyConnectionOnly'],
+        relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/verifyExternalSyncSettings',
+        request_field='',
+        request_type_name=u'SqlProjectsInstancesVerifyExternalSyncSettingsRequest',
+        response_type_name=u'SqlInstancesVerifyExternalSyncSettingsResponse',
+        supports_download=False,
+    )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
@@ -1133,7 +1136,7 @@ database.
         method_id=u'sql.sslCerts.createEphemeral',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/createEphemeral',
         request_field=u'sslCertsCreateEphemeralRequest',
         request_type_name=u'SqlSslCertsCreateEphemeralRequest',
@@ -1160,7 +1163,7 @@ certificate remains valid until the instance is restarted.
         method_id=u'sql.sslCerts.delete',
         ordered_params=[u'project', u'instance', u'sha1Fingerprint'],
         path_params=[u'instance', u'project', u'sha1Fingerprint'],
-        query_params=[u'resourceName'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/sslCerts/{sha1Fingerprint}',
         request_field='',
         request_type_name=u'SqlSslCertsDeleteRequest',
@@ -1188,7 +1191,7 @@ initial creation.
         method_id=u'sql.sslCerts.get',
         ordered_params=[u'project', u'instance', u'sha1Fingerprint'],
         path_params=[u'instance', u'project', u'sha1Fingerprint'],
-        query_params=[u'resourceName'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/sslCerts/{sha1Fingerprint}',
         request_field='',
         request_type_name=u'SqlSslCertsGetRequest',
@@ -1216,7 +1219,7 @@ the instance is restarted.
         method_id=u'sql.sslCerts.insert',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/sslCerts',
         request_field=u'sslCertsInsertRequest',
         request_type_name=u'SqlSslCertsInsertRequest',
@@ -1242,7 +1245,7 @@ the instance is restarted.
         method_id=u'sql.sslCerts.list',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/sslCerts',
         request_field='',
         request_type_name=u'SqlSslCertsListRequest',
@@ -1316,7 +1319,7 @@ href="/sql/pricing">Pricing</a>.
         method_id=u'sql.users.delete',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'host', u'name', u'resourceName'],
+        query_params=[u'host', u'name'],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/users',
         request_field='',
         request_type_name=u'SqlUsersDeleteRequest',
@@ -1328,7 +1331,7 @@ href="/sql/pricing">Pricing</a>.
       r"""Creates a new user in a Cloud SQL instance.
 
       Args:
-        request: (SqlUsersInsertRequest) input message
+        request: (User) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1342,10 +1345,10 @@ href="/sql/pricing">Pricing</a>.
         method_id=u'sql.users.insert',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/users',
-        request_field=u'user',
-        request_type_name=u'SqlUsersInsertRequest',
+        request_field='<request>',
+        request_type_name=u'User',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1368,7 +1371,7 @@ href="/sql/pricing">Pricing</a>.
         method_id=u'sql.users.list',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'parent'],
+        query_params=[],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/users',
         request_field='',
         request_type_name=u'SqlUsersListRequest',
@@ -1394,7 +1397,7 @@ href="/sql/pricing">Pricing</a>.
         method_id=u'sql.users.update',
         ordered_params=[u'project', u'instance'],
         path_params=[u'instance', u'project'],
-        query_params=[u'host', u'name', u'resourceName'],
+        query_params=[u'host', u'name'],
         relative_path=u'sql/v1beta4/projects/{project}/instances/{instance}/users',
         request_field=u'user',
         request_type_name=u'SqlUsersUpdateRequest',

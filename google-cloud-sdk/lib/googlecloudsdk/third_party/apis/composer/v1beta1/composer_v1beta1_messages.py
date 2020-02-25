@@ -16,7 +16,8 @@ class AllowedIpRange(_messages.Message):
   r"""Allowed IP range with user-provided description.
 
   Fields:
-    description: Optional. User-provided description.
+    description: Optional. User-provided description. It must contain at most
+      300 characters.
     value: IP address or range, defined using CIDR notation, of requests that
       this rule applies to. You can use the wildcard character "*" to match
       all IPs equivalent to "0/0" and "::/0" together. Examples: `192.168.1.1`

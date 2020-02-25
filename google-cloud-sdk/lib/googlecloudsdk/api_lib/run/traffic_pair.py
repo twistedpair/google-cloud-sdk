@@ -23,15 +23,23 @@ from googlecloudsdk.api_lib.run import traffic
 import six
 
 
-# Human readable indicator for a missing traffic percentage.
-_MISSING_PERCENT = '-'
+# Human readable indicator for a missing traffic percentage or missing tags.
+_MISSING_PERCENT_OR_TAGS = '-'
+
+# String to join TrafficTarget tags referencing the same revision.
+_TAGS_JOIN_STRING = ', '
 
 
 def _FormatPercentage(percent):
-  if percent == _MISSING_PERCENT:
-    return _MISSING_PERCENT
+  if percent == _MISSING_PERCENT_OR_TAGS:
+    return _MISSING_PERCENT_OR_TAGS
   else:
     return '{}%'.format(percent)
+
+
+def _SumPercent(targets):
+  """Sums the percents of the given targets."""
+  return sum(t.percent for t in targets if t.percent)
 
 
 class TrafficTargetPair(object):
@@ -77,11 +85,27 @@ class TrafficTargetPair(object):
       in the service's spec.
     statusPercent: The percent of traffic allocated to the referenced revision
       in the service's status.
+    specTags: Tags assigned to the referenced revision in the service's spec as
+      a comma and space separated string.
+    statusTags: Tags assigned to the referenced revision in the service's status
+      as a comma and space separated string.
+    urls: A list of urls that directly address the referenced revision.
     displayPercent: Human-readable representation of the current percent
       assigned to the referenced revision.
     displayRevisionId: Human-readable representation of the name of the
       referenced revision.
+    displayTags: Human-readable representation of the current tags assigned to
+      the referenced revision.
   """
+  # This class has lower camel case public attribute names to implement our
+  # desired style for json and yaml property names in structured output.
+  #
+  # This class gets passed to gcloud's printer to produce the output of
+  # `gcloud run services update-traffic`. When users specify --format=yaml or
+  # --format=json, the public attributes of this class get automatically
+  # converted to fields in the resulting json or yaml output, with names
+  # determined by this class's attribute names. We want the json and yaml output
+  # to have lower camel case property names.
 
   def __init__(
       self, spec_targets, status_targets, revision_name, latest,
@@ -125,20 +149,34 @@ class TrafficTargetPair(object):
   @property
   def specPercent(self):  # pylint: disable=invalid-name
     if self._spec_targets:
-      return six.text_type(
-          sum(t.percent for t in self._spec_targets if t.percent))
+      return six.text_type(_SumPercent(self._spec_targets))
     else:
-      return _MISSING_PERCENT
+      return _MISSING_PERCENT_OR_TAGS
 
   @property
   def statusPercent(self):  # pylint: disable=invalid-name
     if self._status_percent_override is not None:
       return six.text_type(self._status_percent_override)
     elif self._status_targets:
-      return six.text_type(
-          sum(t.percent for t in self._status_targets if t.percent))
+      return six.text_type(_SumPercent(self._status_targets))
     else:
-      return _MISSING_PERCENT
+      return _MISSING_PERCENT_OR_TAGS
+
+  @property
+  def specTags(self):  # pylint: disable=invalid-name
+    spec_tags = _TAGS_JOIN_STRING.join(
+        t.tag for t in self._spec_targets if t.tag)
+    return spec_tags if spec_tags else _MISSING_PERCENT_OR_TAGS
+
+  @property
+  def statusTags(self):  # pylint: disable=invalid-name
+    status_tags = _TAGS_JOIN_STRING.join(
+        t.tag for t in self._status_targets if t.tag)
+    return status_tags if status_tags else _MISSING_PERCENT_OR_TAGS
+
+  @property
+  def urls(self):
+    return [t.url for t in self._status_targets if t.url]
 
   @property
   def displayPercent(self):  # pylint: disable=invalid-name
@@ -158,6 +196,15 @@ class TrafficTargetPair(object):
                                     self.revisionName)
     else:
       return self.revisionName
+
+  @property
+  def displayTags(self):  # pylint: disable=invalid-name
+    spec_tags = self.specTags
+    status_tags = self.statusTags
+    if spec_tags == status_tags:
+      return status_tags if status_tags != _MISSING_PERCENT_OR_TAGS else ''
+    else:
+      return '{} (currently {})'.format(spec_tags, status_tags)
 
 
 def _SplitManagedLatestStatusTarget(spec_dict, status_dict, is_platform_managed,
@@ -179,42 +226,43 @@ def _SplitManagedLatestStatusTarget(spec_dict, status_dict, is_platform_managed,
     latest_ready_revision_name: The name of the latest ready revision.
 
   Returns:
-    Optionally, the id of the status target containing the combined traffic
-    referencing the latest ready revision by name and by latest.
+    Optionally, the id of the list of status targets containing the combined
+    traffic referencing the latest ready revision by name and by latest.
   """
-  combined_status_target_id = None
+  combined_status_targets_id = None
   if (is_platform_managed and traffic.LATEST_REVISION_KEY in spec_dict and
       traffic.LATEST_REVISION_KEY not in status_dict and
       latest_ready_revision_name in status_dict):
-    latest_status_target = status_dict[latest_ready_revision_name]
-    status_dict[traffic.LATEST_REVISION_KEY] = latest_status_target
+    latest_status_targets = status_dict[latest_ready_revision_name]
+    status_dict[traffic.LATEST_REVISION_KEY] = latest_status_targets
     if latest_ready_revision_name in spec_dict:
-      combined_status_target_id = id(latest_status_target)
+      combined_status_targets_id = id(latest_status_targets)
     else:
       del status_dict[latest_ready_revision_name]
-  return combined_status_target_id
+  return combined_status_targets_id
 
 
-def _PercentOverride(key, spec_dict, status_target, combined_status_target_id):
+def _PercentOverride(key, spec_dict, status_targets,
+                     combined_status_targets_id):
   """Computes the optional override percent to apply to the status percent."""
   percent_override = None
-  if id(status_target) == combined_status_target_id:
-    spec_by_latest_target = spec_dict[traffic.LATEST_REVISION_KEY]
-    status_by_latest_percent = min(spec_by_latest_target.percent,
-                                   status_target.percent)
+  if id(status_targets) == combined_status_targets_id:
+    spec_by_latest_percent = _SumPercent(spec_dict[traffic.LATEST_REVISION_KEY])
+    status_percent = _SumPercent(status_targets)
+    status_by_latest_percent = min(spec_by_latest_percent, status_percent)
     if key == traffic.LATEST_REVISION_KEY:
       percent_override = status_by_latest_percent
     else:
-      percent_override = status_target.percent - status_by_latest_percent
+      percent_override = status_percent - status_by_latest_percent
   return percent_override
 
 
-def GetTrafficTargetPairs(spec_targets, status_targets, is_platform_managed,
+def GetTrafficTargetPairs(spec_traffic, status_traffic, is_platform_managed,
                           latest_ready_revision_name):
   """Returns a list of TrafficTargetPairs for a Service.
 
-  Given the list of spec traffic targets and status traffic targets for a
-  sevice, this function pairs up all spec and status traffic targets that
+  Given the spec and status traffic targets wrapped in a TrafficTargets instance
+  for a sevice, this function pairs up all spec and status traffic targets that
   reference the same revision (either by name or the latest ready revision) into
   TrafficTargetPairs. This allows the caller to easily see any differences
   between the spec and status traffic.
@@ -227,9 +275,9 @@ def GetTrafficTargetPairs(spec_targets, status_targets, is_platform_managed,
   for the percent allocated to the latest revision because it is latest.
 
   Args:
-    spec_targets: An iterable of TrafficTarget protos from the service's spec.
-    status_targets: An iterable of TrafficTarget protos from the service's
-      status.
+    spec_traffic: A traffic.TrafficTargets instance wrapping the spec traffic.
+    status_traffic: A traffic.TrafficTargets instance wrapping the status
+      traffic.
     is_platform_managed: Boolean indicating whether the current platform is
       fully-managed or Anthos/GKE.
     latest_ready_revision_name: The name of the service's latest ready revision.
@@ -238,17 +286,22 @@ def GetTrafficTargetPairs(spec_targets, status_targets, is_platform_managed,
     traffic assignments. The TrafficTargetPairs are sorted by revision name,
     with targets referencing the latest ready revision at the end.
   """
-  spec_dict = {traffic.GetKey(t): t for t in spec_targets}
-  status_dict = {traffic.GetKey(t): t for t in status_targets}
+  # Copy spec and status traffic to dictionaries to allow mapping
+  # traffic.LATEST_REVISION_KEY to the same targets as
+  # latest_ready_revision_name without modifying the underlying protos during
+  # a read-only operation. These dictionaries map revision name (or "LATEST"
+  # for the latest ready revision) to a list of TrafficTarget protos.
+  spec_dict = dict(spec_traffic)
+  status_dict = dict(status_traffic)
 
-  combined_status_target_id = _SplitManagedLatestStatusTarget(
+  combined_status_targets_id = _SplitManagedLatestStatusTarget(
       spec_dict, status_dict, is_platform_managed, latest_ready_revision_name)
   result = []
   for k in set(spec_dict).union(status_dict):
-    spec_target = spec_dict.get(k, None)
-    status_target = status_dict.get(k, None)
-    percent_override = _PercentOverride(k, spec_dict, status_target,
-                                        combined_status_target_id)
+    spec_targets = spec_dict.get(k, [])
+    status_targets = status_dict.get(k, [])
+    percent_override = _PercentOverride(k, spec_dict, status_targets,
+                                        combined_status_targets_id)
     if k == traffic.LATEST_REVISION_KEY:
       revision_name = latest_ready_revision_name
       latest = True
@@ -256,13 +309,7 @@ def GetTrafficTargetPairs(spec_targets, status_targets, is_platform_managed,
       revision_name = k
       latest = False
 
-    # TODO(b/148901171) Temporary conversion until the callers of
-    # GetTrafficTargetPairs are updated to pass the traffic targets wrapped in
-    # traffic.TrafficTargets instead of the raw traffic target messages.
-    to_list = lambda x: [x] if x else []
-
     result.append(
-        TrafficTargetPair(
-            to_list(spec_target), to_list(status_target), revision_name, latest,
-            percent_override))
+        TrafficTargetPair(spec_targets, status_targets, revision_name, latest,
+                          percent_override))
   return sorted(result, key=traffic.SortKeyFromTarget)

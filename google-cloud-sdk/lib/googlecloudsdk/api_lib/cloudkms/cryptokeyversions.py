@@ -22,7 +22,7 @@ from googlecloudsdk.api_lib.cloudkms import base as cloudkms_base
 
 
 def SetState(version_ref, state):
-  """Update the state of a CryptoKeyVersion.
+  """Updates the state of a CryptoKeyVersion.
 
   Args:
       version_ref: A resources.Resource for the CryptoKeyVersion.
@@ -40,4 +40,42 @@ def SetState(version_ref, state):
       cryptoKeyVersion=messages.CryptoKeyVersion(state=state))
 
   return client.projects_locations_keyRings_cryptoKeys_cryptoKeyVersions.Patch(
+      req)
+
+
+def Get(version_ref):
+  """Gets a CryptoKeyVersion.
+
+  Args:
+    version_ref: A resources.Resource for the CryptoKeyVersion.
+
+  Returns:
+    The corresponding CryptoKeyVersion.
+  """
+  client = cloudkms_base.GetClientInstance()
+  messages = cloudkms_base.GetMessagesModule()
+
+  req = messages.CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetRequest(
+      name=version_ref.RelativeName())
+
+  return client.projects_locations_keyRings_cryptoKeys_cryptoKeyVersions.Get(
+      req)
+
+
+def GetPublicKey(version_ref):
+  """Gets the public key of a CryptoKeyVersion.
+
+  Args:
+      version_ref: A resources.Resource for the CryptoKeyVersion.
+
+  Returns:
+      The CryptoKeyVersion's PublicKey.
+  """
+  client = cloudkms_base.GetClientInstance()
+  messages = cloudkms_base.GetMessagesModule()
+
+  req = messages.CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKeyRequest(
+      name=version_ref.RelativeName())
+
+  return client.projects_locations_keyRings_cryptoKeys_cryptoKeyVersions.GetPublicKey(
       req)

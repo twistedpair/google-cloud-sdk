@@ -234,6 +234,12 @@ class UpdateManager(object):
       force: bool, True to force a server check for updates, False to check only
         if the update frequency has expired.
     """
+    # Component manager is disabled, never check for updates.
+    if (config.INSTALLATION_CONFIG.disable_updater or
+        properties.VALUES.component_manager.disable_update_check.GetBool()):
+      log.debug('SDK update checks are disabled.')
+      return
+
     platform = platforms.Platform.Current()
     manager = UpdateManager(platform_filter=platform, warn=False)
     # pylint: disable=protected-access
@@ -635,12 +641,6 @@ version [{1}].  To clear your fixed version setting, run:
       force: bool, True to force a server check for updates, False to check only
         if the update frequency has expired.
     """
-    # Component manager is disabled, never check for updates.
-    if (config.INSTALLATION_CONFIG.disable_updater or
-        properties.VALUES.component_manager.disable_update_check.GetBool()):
-      log.debug('SDK update checks are disabled.')
-      return
-
     with update_check.UpdateCheckData() as last_update_check:
       if force or last_update_check.ShouldDoUpdateCheck():
         log.debug('Checking for updates...')

@@ -5,21 +5,78 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 282.0.0 (2020-02-25)
+
+### Breaking Changes
+
+*   **(Cloud Key Management Service)** Modified `gcloud beta kms locations list` to include EKM availability. This may disrupt automated processing of the command's output. This may disrupt automated processing of the command's output; consider using the `--format` flag for parsing.
+
+
+### BigQuery
+
+* Added `require_hive_partition_filter` support for hive partitioned tables.
+
+### Cloud Access Context Manager
+
+* Added `replace-all` command to the following command groups in beta:
+    * `gcloud access-context-manager levels`.
+    * `gcloud access-context-manager perimeters`.
+
+* `replace-all` is a command that is used to replace all existing `levels`
+   or `perimeters` with the ones you provide in a valid yaml file.
+
+### Cloud Composer
+
+* Added the following flags to `gcloud beta composer environments` commands to manage Airflow web server network access control:
+  * `--web-server-allow-ip`
+  * `--web-server-deny-all`
+  * `--web-server-allow-all`
+  * `--update-web-server-allow-ip`
+
+### Cloud Dataflow
+
+* Added `--dataflow-kms-key` flag to `gcloud dataflow jobs run`.
+
+### Cloud Functions
+
+* Promoted `--egress-settings` and `--ingress-settings` flags of `gcloud functions deploy` to GA.
+
+### Cloud Key Management Service
+
+*   Added EKM availability to `gcloud beta kms locations list`.
+
+### Cloud Memorystore
+
+* Added `--connect-mode` flag to `gcloud redis instances create` to specify a
+network connection mode when creating a new Redis instance.
+
+### Cloud SQL
+
+*   Promoted SQL Server to GA.
+
+### Stackdriver Monitoring
+
+* Promoted `gcloud monitoring dashboards` command group to beta.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 281.0.0 (2020-02-18)
 
 ### Breaking Changes
 
-*   **(Cloud SDK)** Modified `--update-adc` in `gcloud auth login` to not write a quota project to
-  the generated application default credential file.
-  Use `gcloud auth application-default login --add-quota-project` or
-  `gcloud auth application-default set-quota-project` to add a quota project
-  to the generated file.
+*   **(Cloud SDK)** Modified `--update-adc` in `gcloud auth login` to not write
+    a quota project to the generated application default credential file.
+    Use `gcloud auth application-default login --add-quota-project` or
+    `gcloud auth application-default set-quota-project` to add a quota project
+    to the generated file.
 
 
 ### AI Platform
 
 * Added xrai option for `--explanation-method` flag to
-  `gcloud <alpha|beta> ai-platform versions create`.
+  `gcloud beta ai-platform versions create`.
 
 ### Access Approval
 
@@ -68,7 +125,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Run
 
-* 
 * Removed `specTarget` and `statusTarget` fields from the yaml and json
   output of `gcloud run services update-traffic`. The information nested within
   `specTarget` and `statusTarget` is available in the top-level
@@ -87,7 +143,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Fixed issue where `gcloud compute ssh` command fails with
   `--impersonate-service-account` flag.
 * Promoted `--network` flag of `compute backend-services create` to GA.
-* Promote `--condition` flag to beta for the following commands:
+* Promoted `--condition` flag to beta for the following commands:
   * `gcloud compute disks <add|remove>-iam-policy-binding`
   * `gcloud compute images <add|remove>-iam-policy-binding`
   * `gcloud compute instance-templates <add|remove>-iam-policy-binding`
@@ -108,14 +164,14 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
     clusters create` and `--update-addons=GcePersistentDiskCsiDriver` to `gcloud
     beta container clusters update` to enable/disable the GCP Compute Persistent
     Disk Container Storage Interface (CSI) Driver.
-* Adds kubectl version 1.17 for upcoming rapid channel release.
-* Default kubectl version 1.14.
-* Additional kubectl versions:
-  * kubectl.1.13 (1.13.12)
-  * kubectl.1.14 (1.14.10)
-  * kubectl.1.15 (1.15.9)
-  * kubectl.1.16 (1.16.6)
-  * kubectl.1.17 (1.17.2)
+* Added kubectl version 1.17 for upcoming rapid channel release.
+  * Default kubectl version 1.14.
+  * Additional kubectl versions:
+    * kubectl.1.13 (1.13.12)
+    * kubectl.1.14 (1.14.10)
+    * kubectl.1.15 (1.15.9)
+    * kubectl.1.16 (1.16.6)
+    * kubectl.1.17 (1.17.2)
 *   Added warning for upcoming shielded nodes default behavior change.
 
 ### Notebooks
@@ -146,23 +202,30 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### AI Platform
 
-* Added `--use-chief-in-tf-config` flag to `gcloud beta ml-engine jobs submit training` and `gcloud beta ai-platform jobs submit training`.
+* Added `--use-chief-in-tf-config` flag to the following commands:
+  * `gcloud beta ml-engine jobs submit training`
+  * `gcloud ml-engine jobs submit training`
+  * `gcloud beta ai-platform jobs submit training`
+  * `gcloud ai-platform jobs submit training`
 
 ### Cloud Access Context Manager
 
-* Access Context Manger beta track commands now call the ACM v1 API instead of
-v1beta.
+* Modified Access Context Manger beta commands to call the ACM v1 API instead of
+  v1beta.
 
 ### Cloud Data Catalog
 
-* Added `gcloud beta data-catalog entries list` which lists Data Catalog entries.
-* Added `gcloud beta data-catalog entry-groups update` which updates a Data Catalog entry group.
-* Added flags to `gcloud beta data-catalog entries update` for updating an entry's description, display name, and Cloud Storage file patterns.
+* Added `gcloud beta data-catalog entries list` which lists Data Catalog
+  entries.
+* Added `gcloud beta data-catalog entry-groups update` which updates a Data
+  Catalog entry group.
+* Added flags to `gcloud beta data-catalog entries update` for updating an
+  entry's description, display name, and Cloud Storage file patterns.
 
 ### Cloud Firestore Emulator
 
-* Release Cloud Firestore emulator v1.10.4
-  * Add `update_transform` support for commit and batchWrite.
+* Released Cloud Firestore emulator v1.10.4
+  * Added `update_transform` support for commit and batchWrite.
   * Send resume tokens on the Listen stream
 
 ### Cloud Run
@@ -188,14 +251,12 @@ v1beta.
     in `gcloud container` command group. Use these flags to specify upgrade
     settings parameters during cluster creation, node pool creation, or node
     pool update.
-* Updates kubectl to change default version of kubectl from 1.13 to 1.14.
-* Additional kubectl versions:
-  * kubectl.1.13 (1.13.12)
-  * kubectl.1.14 (1.14.10)
-  * kubectl.1.15 (1.15.9)
-  * kubectl.1.16 (1.16.6)
-
-
+* Updated kubectl to change default version of kubectl from 1.13 to 1.14.
+  * Additional kubectl versions:
+    * kubectl.1.13 (1.13.12)
+    * kubectl.1.14 (1.14.10)
+    * kubectl.1.15 (1.15.9)
+    * kubectl.1.16 (1.16.6)
 
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
@@ -214,7 +275,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### BigQuery
 
 * Fixed issue where `--apilog` would not use the specified log file and would
-.. instead output the logs to stdout.
+  instead output the logs to stdout.
 
 ### Cloud Dataproc
 

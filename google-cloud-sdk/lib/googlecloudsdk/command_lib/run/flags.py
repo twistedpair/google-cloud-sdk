@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import collections
 import os
 import re
+import enum
 
 from googlecloudsdk.api_lib.container import kubeconfig
 from googlecloudsdk.api_lib.run import global_methods
@@ -83,6 +84,11 @@ class ArgumentError(exceptions.Error):
 
 class KubeconfigError(exceptions.Error):
   pass
+
+
+class Product(enum.Enum):
+  RUN = 'Run'
+  EVENTS = 'Events'
 
 
 def AddImageArg(parser):
@@ -208,6 +214,32 @@ def AddNoTrafficFlag(parser):
       'effect is that the revsion being deployed will not receive traffic. '
       'After a deployment with this flag the LATEST revision will not recieve '
       'traffic on future deployments.')
+
+
+def AddTrafficTagsFlags(parser):
+  """Add flags for updating traffic tags for a service."""
+  AddMapFlagsNoFile(
+      parser,
+      group_help=('Specify traffic tags. Traffic tags can be '
+                  'assigned to a revision by name or to the '
+                  'latest ready revision. Assigning a tag to a '
+                  'revision generates a URL prefixed with the '
+                  'tag that allows addressing that revision '
+                  'directly, regardless of the percent traffic '
+                  'specified. Keys are tags. Values are revision names or '
+                  '"LATEST" for the latest ready revision. For example, '
+                  '--set-tags=candidate=LATEST,current='
+                  'myservice-v1 assigns the tag "candidate" '
+                  'to the latest ready revision and the tag'
+                  ' "current" to the revision with name '
+                  '"service-nw9hs" and clears any existing tags. '
+                  'Changing tags does not '
+                  'affect the traffic percentage assigned to '
+                  'revisions. When using a tags flag and '
+                  'one or more of --to-latest and --to-revisions, in the same '
+                  'command, the tags change occurs first, then the traffic '
+                  'percentage change occurs.'),
+      flag_name='tags')
 
 
 def AddUpdateTrafficFlags(parser):
@@ -384,6 +416,22 @@ def AddServiceAccountFlag(parser):
       'the running revision, and determines what permissions the revision has. '
       'If not provided, the revision will use the project\'s default service '
       'account.')
+
+
+def AddServiceAccountFlagAlpha(parser):
+  parser.add_argument(
+      '--service-account',
+      help='The service account associated with the revision of the service. '
+      'The service account represents the identity of '
+      'the running revision, and determines what permissions the revision has. '
+      'For the {} platform, this is the email address of an IAM '
+      'service account. For the Kubernetes-based platforms ({}, {}), this is '
+      'the name of a Kubernetes service account in the same namespace as the '
+      'service. If not provided, the revision will use the default service '
+      'account of the project, or default Kubernetes namespace service account '
+      'respectively.'.format(
+          PLATFORM_MANAGED, PLATFORM_GKE, PLATFORM_KUBERNETES)
+      )
 
 
 def AddPlatformArg(parser):
@@ -621,10 +669,16 @@ def _HasConfigMapsChanges(args):
   return _HasChanges(args, config_maps_flags)
 
 
+def _HasTrafficTagsChanges(args):
+  """True iff any of the traffic tags flags are set."""
+  tags_flags = ['update_tags', 'set_tags', 'remove_tags', 'clear_tags']
+  return _HasChanges(args, tags_flags)
+
+
 def _HasTrafficChanges(args):
   """True iff any of the traffic flags are set."""
   traffic_flags = ['to_revisions', 'to_latest']
-  return _HasChanges(args, traffic_flags)
+  return _HasChanges(args, traffic_flags) or _HasTrafficTagsChanges(args)
 
 
 def _GetEnvChanges(args):
@@ -777,11 +831,23 @@ def _CheckCloudSQLApiEnablement():
 
 def _GetTrafficChanges(args):
   """Returns a changes for traffic assignment based on the flags."""
+  # Check if args has tags changes again in case args does not include tags
+  # flags. Tags will launch in the alpha release track only.
+  if _HasTrafficTagsChanges(args):
+    update_tags = args.update_tags or args.set_tags
+    remove_tags = args.remove_tags
+    clear_other_tags = bool(args.set_tags) or args.clear_tags
+  else:
+    update_tags = None
+    remove_tags = None
+    clear_other_tags = False
   if args.to_latest:
     # Mutually exlcusive flag with to-revisions
-    return config_changes.TrafficChanges({traffic.LATEST_REVISION_KEY: 100})
-  new_percentages = args.to_revisions if args.to_revisions else {}
-  return config_changes.TrafficChanges(new_percentages)
+    new_percentages = {traffic.LATEST_REVISION_KEY: 100}
+  else:
+    new_percentages = args.to_revisions if args.to_revisions else {}
+  return config_changes.TrafficChanges(new_percentages, update_tags,
+                                       remove_tags, clear_other_tags)
 
 
 def GetConfigurationChanges(args):
@@ -1024,9 +1090,10 @@ def _FlagIsExplicitlySet(args, flag):
   return hasattr(args, flag) and args.IsSpecified(flag)
 
 
-def VerifyOnePlatformFlags(args, release_track):
+def VerifyOnePlatformFlags(args, release_track, product):
   """Raise ConfigurationError if args includes GKE only arguments."""
-  del release_track
+  del release_track  # not currently checked by any flags
+  del product  # not currently checked by any flags
   error_msg = ('The `{flag}` flag is not supported on the fully managed '
                'version of Cloud Run. Specify `--platform {platform}` or run '
                '`gcloud config set run/platform {platform}` to work with '
@@ -1103,9 +1170,8 @@ def VerifyOnePlatformFlags(args, release_track):
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_KUBERNETES]))
 
 
-def VerifyGKEFlags(args, release_track):
+def VerifyGKEFlags(args, release_track, product):
   """Raise ConfigurationError if args includes OnePlatform only arguments."""
-  del release_track  # not currently checked by any flags
   error_msg = ('The `{flag}` flag is not supported with Cloud Run for Anthos '
                'deployed on Google Cloud. Specify `--platform {platform}` or '
                'run `gcloud config set run/platform {platform}` to work with '
@@ -1118,7 +1184,9 @@ def VerifyGKEFlags(args, release_track):
             platform=PLATFORM_MANAGED,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
 
-  if _FlagIsExplicitlySet(args, 'service_account'):
+  if (release_track != base.ReleaseTrack.ALPHA and
+      _FlagIsExplicitlySet(args, 'service_account') and
+      product == Product.RUN):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--service-account',
@@ -1161,9 +1229,8 @@ def VerifyGKEFlags(args, release_track):
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_KUBERNETES]))
 
 
-def VerifyKubernetesFlags(args, release_track):
+def VerifyKubernetesFlags(args, release_track, product):
   """Raise ConfigurationError if args includes OnePlatform or GKE only arguments."""
-  del release_track  # not currently checked by any flags
   error_msg = ('The `{flag}` flag is not supported with Cloud Run for Anthos '
                'deployed on VMware. Specify `--platform {platform}` or run '
                '`gcloud config set run/platform {platform}` to work with '
@@ -1176,7 +1243,9 @@ def VerifyKubernetesFlags(args, release_track):
             platform=PLATFORM_MANAGED,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
 
-  if _FlagIsExplicitlySet(args, 'service_account'):
+  if (release_track != base.ReleaseTrack.ALPHA and
+      _FlagIsExplicitlySet(args, 'service_account') and
+      product == Product.RUN):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--service-account',
@@ -1222,14 +1291,12 @@ def VerifyKubernetesFlags(args, release_track):
 def GetPlatform():
   """Returns the platform to run on.
 
-  This is only reliable if the platform has first been set and validated by
-  GetAndValidatePlatform.
+  If not set by the user, this prompts the user to choose a platform and sets
+  the property so future calls to this method do continue to prompt.
+
+  Raises:
+    ArgumentError: if not platform is specified and prompting is not allowed.
   """
-  return properties.VALUES.run.platform.Get()
-
-
-def GetAndValidatePlatform(args, release_track):
-  """Returns the platform to run on."""
   platform = properties.VALUES.run.platform.Get()
   if platform is None:
     if console_io.CanPrompt():
@@ -1253,13 +1320,18 @@ def GetAndValidatePlatform(args, release_track):
           'Available platforms:\n{}'.format(
               '\n'.join(
                   ['- {}: {}'.format(k, v) for k, v in _PLATFORMS.items()])))
+  return platform
 
+
+def GetAndValidatePlatform(args, release_track, product):
+  """Returns the platform to run on."""
+  platform = GetPlatform()
   if platform == PLATFORM_MANAGED:
-    VerifyOnePlatformFlags(args, release_track)
+    VerifyOnePlatformFlags(args, release_track, product)
   elif platform == PLATFORM_GKE:
-    VerifyGKEFlags(args, release_track)
+    VerifyGKEFlags(args, release_track, product)
   elif platform == PLATFORM_KUBERNETES:
-    VerifyKubernetesFlags(args, release_track)
+    VerifyKubernetesFlags(args, release_track, product)
   if platform not in _PLATFORMS:
     raise ArgumentError(
         'Invalid target platform specified: [{}].\n'

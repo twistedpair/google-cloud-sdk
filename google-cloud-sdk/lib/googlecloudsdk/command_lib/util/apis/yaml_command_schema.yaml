@@ -354,7 +354,7 @@ properties:
       .*: {type: string}
 
   # Attributes about the API request the command will make.
-  request:
+  request: &request
     description: Describes information about the API that this command calls
     type: object
     additionalProperties: false
@@ -490,7 +490,7 @@ properties:
 
   # If present, indicates that this API method uses operations and the --async
   # flag will be set up.
-  async:
+  async: &async
     description: Describes how to poll and report the result of the operation
     type: object
     additionalProperties: false
@@ -707,3 +707,26 @@ properties:
       # Disable the field mask auto generation in the update commands.
       # False by default.
       disable_auto_field_mask: {type: boolean}
+
+  # Additional information for handling the import commands.
+  import:
+    type: object
+    additionalProperties: false
+    properties:
+      # True when the import command should return early if it detects the imported resource
+      # has no changes from the resource on the service.
+      abort_if_equivalent: {type: boolean}
+      # True when the import command should create the resource if it does not already exist
+      # on the service.
+      create_if_not_exist: {type: boolean}
+      # Attributes about the create request the command will make if the resource does not already
+      # exist on the service. The create request will use all configuration from the parent
+      # request configuration unless explicitly specified here.
+      create_request: *request
+      # Attributes about the asynchronous behavior for the above create command. The create request
+      # will use all settings from the parent asynchronous configuration unless explicitly
+      # specified here.
+      create_async: *async
+      # If set, the create command will not use operations, and will not use the settings
+      # form the parent asynchronous configuration.
+      no_create_async: {type: boolean}

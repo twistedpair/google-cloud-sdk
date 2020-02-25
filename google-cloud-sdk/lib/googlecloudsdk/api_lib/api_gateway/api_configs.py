@@ -42,7 +42,8 @@ class ApiConfigClient(base.BaseClient):
 
     return self.client.projects_locations_apis_configs.Get(req)
 
-  def Create(self, api_config_ref, rollout_id, display_name=None, labels=None):
+  def Create(self, api_config_ref, rollout_id, display_name=None, labels=None,
+             backend_auth=None):
     """Creates an Api Config object.
 
     Args:
@@ -50,6 +51,7 @@ class ApiConfigClient(base.BaseClient):
       rollout_id: Id of the service rollout
       display_name: Optional display name
       labels: Optional cloud labels
+      backend_auth: Optional field to set the service account for backend auth
 
     Returns:
       Long running operation
@@ -60,11 +62,16 @@ class ApiConfigClient(base.BaseClient):
 
     service_rollout = self.messages.ApigatewayApiConfigManagedServiceRollout(
         rolloutId=rollout_id)
+    backend_config = self.messages.ApigatewayBackendConfig(
+        googleServiceAccount=backend_auth)
+    gateway_config = self.messages.ApigatewayGatewayConfig(
+        backendConfig=backend_config)
     api_config = self.messages.ApigatewayApiConfig(
         name=api_config_ref.RelativeName(),
         serviceRollout=service_rollout,
         displayName=display_name,
-        labels=labels)
+        labels=labels,
+        gatewayConfig=gateway_config)
 
     req = self.messages.ApigatewayProjectsLocationsApisConfigsCreateRequest(
         apiConfigId=api_config_ref.Name(),

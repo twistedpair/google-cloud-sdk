@@ -24,6 +24,16 @@ DOCS_URL = 'https://cloud.google.com/run/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  API_V1_NAMESPACES_SECRETS = (
+      'api.v1.namespaces.secrets',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/secrets/{secretsId}',
+      },
+      [u'name'],
+      True
+  )
   NAMESPACES = (
       'namespaces',
       'namespaces/{namespacesId}',
@@ -90,12 +100,9 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}',
-      },
-      [u'name'],
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      [u'projectsId', u'locationsId'],
       True
   )
   PROJECTS_LOCATIONS_CONFIGURATIONS = (
@@ -138,6 +145,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/routes/'
               '{routesId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SECRETS = (
+      'projects.locations.secrets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/secrets/'
+              '{secretsId}',
       },
       [u'name'],
       True

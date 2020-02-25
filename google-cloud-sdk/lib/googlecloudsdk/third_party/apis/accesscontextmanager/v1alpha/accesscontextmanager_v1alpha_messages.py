@@ -955,15 +955,12 @@ class ServicePerimeterConfig(_messages.Message):
       specified, access to the storage buckets inside the perimeter must meet
       the perimeter's access restrictions.
     vpcAccessibleServices: Configuration for within Perimeter allowed APIs.
-    vpcServiceRestriction: Alpha. Configuration for within Perimeter allowed
-      APIs. Deprecated. The field had been renamed to vpc_accessible_services
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
   resources = _messages.StringField(2, repeated=True)
   restrictedServices = _messages.StringField(3, repeated=True)
   vpcAccessibleServices = _messages.MessageField('VpcAccessibleServices', 4)
-  vpcServiceRestriction = _messages.MessageField('VpcServiceRestriction', 5)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1083,22 +1080,6 @@ class Status(_messages.Message):
 class VpcAccessibleServices(_messages.Message):
   r"""Specifies how APIs are allowed to communicate within the Service
   Perimeter.
-
-  Fields:
-    allowedServices: The list of APIs usable within the Service Perimeter.
-      Must be empty unless 'enable_restriction' is True.
-    enableRestriction: Whether to restrict API calls within the Service
-      Perimeter to the list of APIs specified in 'allowed_services'.
-  """
-
-  allowedServices = _messages.StringField(1, repeated=True)
-  enableRestriction = _messages.BooleanField(2)
-
-
-class VpcServiceRestriction(_messages.Message):
-  r"""Alpha. Specifies how APIs are allowed to communicate within the Service
-  Perimeter. This message is DEPRECATED and had been renamed to
-  VpcAccessibleServices
 
   Fields:
     allowedServices: The list of APIs usable within the Service Perimeter.

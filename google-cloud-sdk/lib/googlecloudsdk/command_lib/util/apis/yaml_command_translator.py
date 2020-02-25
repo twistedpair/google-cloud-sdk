@@ -26,13 +26,17 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import json
+import sys
+import textwrap
 
 from apitools.base.protorpclite import messages as apitools_messages
 from apitools.base.py import encoding
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py.exceptions import HttpBadRequestError
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import command_loading
+from googlecloudsdk.command_lib.export import util as export_util
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.apis import arg_marshalling
@@ -46,6 +50,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_transform
+from googlecloudsdk.core.util import files
 
 import six
 
@@ -99,18 +104,20 @@ class CommandBuilder(object):
   def __init__(self, spec, path):
     self.spec = spec
     self.path = path
+    self.ConfigureCommand()
+
+  def ConfigureCommand(self):
+    """Allows command to be reconfigured if needed."""
     self.method = registry.GetMethod(self.spec.request.collection,
                                      self.spec.request.method,
                                      self.spec.request.api_version,
                                      self.spec.request.use_google_auth)
     resource_arg = self.spec.arguments.resource
     self.arg_generator = arg_marshalling.DeclarativeArgumentGenerator(
-        self.method,
-        self.spec.arguments.params,
-        resource_arg)
+        self.method, self.spec.arguments.params, resource_arg)
     self.display_resource_type = self.spec.request.display_resource_type
-    if (not self.display_resource_type
-        and resource_arg and not resource_arg.is_parent_resource):
+    if (not self.display_resource_type and resource_arg and
+        not resource_arg.is_parent_resource):
       self.display_resource_type = resource_arg.name if resource_arg else None
 
   def Generate(self):
@@ -147,6 +154,10 @@ class CommandBuilder(object):
       command = self._GenerateRemoveIamPolicyBindingCommand()
     elif self.spec.command_type == yaml_command_schema.CommandType.UPDATE:
       command = self._GenerateUpdateCommand()
+    elif self.spec.command_type == yaml_command_schema.CommandType.IMPORT:
+      command = self._GenerateImportCommand()
+    elif self.spec.command_type == yaml_command_schema.CommandType.EXPORT:
+      command = self._GenerateExportCommand()
     elif self.spec.command_type == yaml_command_schema.CommandType.GENERIC:
       command = self._GenerateGenericCommand()
     else:
@@ -200,6 +211,7 @@ class CommandBuilder(object):
     # pylint: disable=protected-access, The linter gets confused about 'self'
     # and thinks we are accessing something protected.
     class Command(base.ListCommand):
+    # pylint: disable=missing-docstring
 
       @staticmethod
       def Args(parser):
@@ -235,6 +247,7 @@ class CommandBuilder(object):
     # pylint: disable=protected-access, The linter gets confused about 'self'
     # and thinks we are accessing something protected.
     class Command(base.DeleteCommand):
+    # pylint: disable=missing-docstring
 
       @staticmethod
       def Args(parser):
@@ -281,6 +294,7 @@ class CommandBuilder(object):
     # pylint: disable=protected-access, The linter gets confused about 'self'
     # and thinks we are accessing something protected.
     class Command(base.CreateCommand):
+    # pylint: disable=missing-docstring
 
       @staticmethod
       def Args(parser):
@@ -343,6 +357,7 @@ class CommandBuilder(object):
     # pylint: disable=protected-access, The linter gets confused about 'self'
     # and thinks we are accessing something protected.
     class Command(base.Command):
+    # pylint: disable=missing-docstring
 
       @staticmethod
       def Args(parser):
@@ -628,6 +643,154 @@ class CommandBuilder(object):
           response = self._HandleAsync(
               args, ref, response, request_string=request_string)
         return self._HandleResponse(response, args)
+
+    return Command
+
+  def _GenerateImportCommand(self):
+    """Generates an export command.
+
+    An export command has a single resource argument and an API method to call
+    to get the resource. The result is exported to a local yaml file provided
+    by the `--destination` flag, or to stdout if nothing is provided.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.ImportCommand):
+      """Export command enclosure."""
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+        if self.spec.async_:
+          base.ASYNC_FLAG.AddToParser(parser)
+        parser.add_argument(
+            '--source',
+            help=textwrap.dedent("""
+            Path to a YAML file containing the configuration export data. The
+            YAML file must not contain any output-only fields. Alternatively, you
+            may omit this flag to read from standard input. A schema describing
+            the export/import format can be found in:
+            $CLOUDSDKROOT/lib/googlecloudsdk/schemas/...
+          """))
+
+      def Run(self_, args):
+        # Determine message to parse resource into from yaml
+        message_type = self.method.GetRequestType()
+        request_field = self.method.request_field
+        resource_message_class = message_type.field_by_name(request_field).type
+
+        # Set up information for export utility.
+        data = console_io.ReadFromFileOrStdin(args.source or '-', binary=False)
+        schema_path = export_util.GetSchemaPath(self.method.collection.api_name,
+                                                self.spec.request.api_version,
+                                                resource_message_class.__name__)
+        # Import resource from yaml.
+        imported_resource = export_util.Import(
+            message_type=resource_message_class,
+            stream=data,
+            schema_path=schema_path)
+
+        # If any special configuration has been made for the import command...
+        existing_resource = None
+        if self.spec.import_:
+          abort_if_equivalent = self.spec.import_.abort_if_equivalent
+          create_if_not_exists = self.spec.import_.create_if_not_exists
+
+          # Try to get the existing resource from the service.
+          try:
+            existing_resource = self._GetExistingResource(args)
+          except apitools_exceptions.HttpError as error:
+            # Raise error if command is configured to not create a new resource
+            # or if error other than "Does Not Exist" occurs.
+            if error.status_code != 404 or not create_if_not_exists:
+              raise error
+            else:
+              # Configure command to use fallback create request configuration.
+              self.spec.request = self.spec.import_.create_request
+
+              # Configure command to use fallback create async configuration.
+              if self.spec.import_.no_create_async:
+                self.spec.async_ = None
+              else:
+                self.spec.async_ = self.spec.import_.create_async
+              # Reset command with updated configuration.
+              self.ConfigureCommand()
+
+          # Abort command early if no changes are detected.
+          if abort_if_equivalent:
+            if imported_resource == existing_resource:
+              return log.status.Print(
+                  'Request not sent for [{}]: No changes detected.'.format(
+                      imported_resource.name))
+
+        ref, response = self._CommonRun(
+            args, existing_message=imported_resource)
+
+        # Handle asynchronous behavior.
+        if self.spec.async_:
+          request_string = None
+          if ref is not None:
+            request_string = 'Request issued for: [{{{}}}]'.format(
+                yaml_command_schema.NAME_FORMAT_KEY)
+          response = self._HandleAsync(args, ref, response, request_string)
+
+        return self._HandleResponse(response, args)
+
+    return Command
+
+  def _GenerateExportCommand(self):
+    """Generates an export command.
+
+    An export command has a single resource argument and an API method to call
+    to get the resource. The result is exported to a local yaml file provided
+    by the `--destination` flag, or to stdout if nothing is provided.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.ExportCommand):
+      """Export command enclosure."""
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+        parser.add_argument(
+            '--destination',
+            help=textwrap.dedent("""
+            Path to a YAML file where the configuration will be exported.
+            The exported data will not contain any output-only fields.
+            Alternatively, you may omit this flag to write to standard output. A
+            schema describing the export/import format can be found in
+            $CLOUDSDKROOT/lib/googlecloudsdk/schemas/...
+          """))
+
+      def Run(self_, args):
+        unused_ref, response = self._CommonRun(args)
+        schema_path = export_util.GetSchemaPath(self.method.collection.api_name,
+                                                self.spec.request.api_version,
+                                                response.__class__.__name__)
+
+        # Export parsed yaml to selected destination.
+        if args.IsSpecified('destination'):
+          with files.FileWriter(args.destination) as stream:
+            export_util.Export(
+                message=response, stream=stream, schema_path=schema_path)
+          return log.status.Print('Exported [{}] to \'{}\'.'.format(
+              response.name, args.destination))
+        else:
+          export_util.Export(
+              message=response, stream=sys.stdout, schema_path=schema_path)
 
     return Command
 
@@ -1106,7 +1269,7 @@ class AsyncOperationPoller(waiter.OperationPoller):
     request_type = self.method.GetRequestType()
     relative_name = operation_ref.RelativeName()
     fields = {
-        f.name: getattr(
+        f.name: getattr(  # pylint:disable=g-complex-comprehension
             operation_ref,
             self.spec.async_.operation_get_method_params.get(f.name, f.name),
             relative_name)

@@ -12,6 +12,326 @@ from apitools.base.py import extra_types
 package = 'cloudidentity'
 
 
+class AndroidAttributes(_messages.Message):
+  r"""A AndroidAttributes object.
+
+  Enums:
+    EncryptionStateValueValuesEnum: Device encryption state.
+    OwnershipPrivilegeValueValuesEnum: Ownership privileges on device.
+
+  Fields:
+    basebandVersion: Baseband version of Android device.
+    bootloaderVersion: Device bootloader version. Example: 0.6.7.
+    buildNumber: Build number of Android device.
+    enabledDeveloperOptions: Whether developer options is enabled on device.
+    enabledUnknownSources: Whether applications from unknown sources can be
+      installed on device.
+    enabledUsbDebugging: Whether adb (USB debugging) is enabled on device.
+    encryptionState: Device encryption state.
+    hardware: Device hardware. Example: Sprout.
+    kernelVersion: Kernel version of Android device.
+    otherAccounts: Domain name for Google accounts on device. Type for other
+      accounts on device. Will only be populated if |ownership_privilege| is
+      |PROFILE_OWNER| or |DEVICE_OWNER|. Does not include the account signed
+      in to the device policy app if that account's domain has only one
+      account. Examples: "com.example", "xyz.com".
+    ownerProfileAccount: Whether this account is on an owner/primary profile.
+      For phones, only true for owner profiles. Tablets above JB_MR can have
+      secondary or restricted user profiles.
+    ownershipPrivilege: Ownership privileges on device.
+    securityPatchTime: OS security patch update time on device.
+    supportsWorkProfile: Whether device supports Android work profiles. If
+      false, this service will not block access to corp data even if an
+      administrator turns on the "Enforce Work Profile" policy.
+  """
+
+  class EncryptionStateValueValuesEnum(_messages.Enum):
+    r"""Device encryption state.
+
+    Values:
+      ENCRYPTION_STATE_UNSPECIFIED: Encryption Status is not set.
+      UNSUPPORTED_BY_DEVICE: Device doesn't support encryption.
+      ENCRYPTED: Device is encrypted.
+      NOT_ENCRYPTED: Device is not encrypted.
+    """
+    ENCRYPTION_STATE_UNSPECIFIED = 0
+    UNSUPPORTED_BY_DEVICE = 1
+    ENCRYPTED = 2
+    NOT_ENCRYPTED = 3
+
+  class OwnershipPrivilegeValueValuesEnum(_messages.Enum):
+    r"""Ownership privileges on device.
+
+    Values:
+      OWNERSHIP_PRIVILEGE_UNSPECIFIED: Ownership privilege is not set.
+      DEVICE_ADMINISTRATOR: Active device administrator privileges on the
+        device.
+      PROFILE_OWNER: Profile Owner privileges. The account is in a managed
+        corporate profile.
+      DEVICE_OWNER: Device Owner privileges on the device.
+    """
+    OWNERSHIP_PRIVILEGE_UNSPECIFIED = 0
+    DEVICE_ADMINISTRATOR = 1
+    PROFILE_OWNER = 2
+    DEVICE_OWNER = 3
+
+  basebandVersion = _messages.StringField(1)
+  bootloaderVersion = _messages.StringField(2)
+  buildNumber = _messages.StringField(3)
+  enabledDeveloperOptions = _messages.BooleanField(4)
+  enabledUnknownSources = _messages.BooleanField(5)
+  enabledUsbDebugging = _messages.BooleanField(6)
+  encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 7)
+  hardware = _messages.StringField(8)
+  kernelVersion = _messages.StringField(9)
+  otherAccounts = _messages.StringField(10, repeated=True)
+  ownerProfileAccount = _messages.BooleanField(11)
+  ownershipPrivilege = _messages.EnumField('OwnershipPrivilegeValueValuesEnum', 12)
+  securityPatchTime = _messages.StringField(13)
+  supportsWorkProfile = _messages.BooleanField(14)
+
+
+class ClientContext(_messages.Message):
+  r"""Information related to the caller client.
+
+  Fields:
+    appId: [Optional] Identifier of the application. e.g., "com.google.Drive"
+    clientVersion: The name and the version of the client. e.g. "DXP 1.0"
+    iosVendorId: Vendor id of the ios device.
+    osVersion: [Optional] OS version on which the client app is running. e.g.,
+      "iOS 12.1"
+  """
+
+  appId = _messages.StringField(1)
+  clientVersion = _messages.StringField(2)
+  iosVendorId = _messages.StringField(3)
+  osVersion = _messages.StringField(4)
+
+
+class CloudidentityDevicesAccountWipeRequest(_messages.Message):
+  r"""A CloudidentityDevicesAccountWipeRequest object.
+
+  Fields:
+    customer: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. For querying your own customer,
+      pass `customers/my_customer`
+    device: [Device resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_resource_id}`, where device_resource_id is
+      the unique ID assigned to the Device.
+  """
+
+  customer = _messages.StringField(1)
+  device = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesApproveRequest(_messages.Message):
+  r"""A CloudidentityDevicesApproveRequest object.
+
+  Fields:
+    customer: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. For querying your own customer,
+      pass `customers/my_customer`
+    name: [Resource name](https://cloud.google.com/apis/design/resource_names)
+      of the Device in format: `devices/{device_resource_id}`, where
+      device_resource_id is the unique ID assigned to the Device.
+  """
+
+  customer = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesBlockRequest(_messages.Message):
+  r"""A CloudidentityDevicesBlockRequest object.
+
+  Fields:
+    customer: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. For querying your own customer,
+      pass `customers/my_customer`
+    name: [Resource name](https://cloud.google.com/apis/design/resource_names)
+      of the Device in format: `devices/{device_resource_id}`, where
+      device_resource_id is the unique ID assigned to the Device.
+  """
+
+  customer = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesCancelWipeRequest(_messages.Message):
+  r"""A CloudidentityDevicesCancelWipeRequest object.
+
+  Fields:
+    customer: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. For querying your own customer,
+      pass `customers/my_customer`
+    name: [Resource name](https://cloud.google.com/apis/design/resource_names)
+      of the Device in format: `devices/{device_resource_id}`, where
+      device_resource_id is the unique ID assigned to the Device.
+  """
+
+  customer = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesDeleteRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeleteRequest object.
+
+  Fields:
+    customer: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. For querying your own customer,
+      pass `customers/my_customer`
+    name: [Resource name](https://cloud.google.com/apis/design/resource_names)
+      of the Device in format: `devices/{device_resource_id}`, where
+      device_resource_id is the unique ID assigned to the Device.
+  """
+
+  customer = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesGetRequest(_messages.Message):
+  r"""A CloudidentityDevicesGetRequest object.
+
+  Fields:
+    customer: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. For querying your own customer,
+      pass `customers/my_customer`
+    name: [Resource name](https://cloud.google.com/apis/design/resource_names)
+      of the Device in format: `devices/{device_resource_id}`, where
+      device_resource_id is the unique ID assigned to the Device.
+  """
+
+  customer = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesGetSettingsRequest(_messages.Message):
+  r"""A CloudidentityDevicesGetSettingsRequest object.
+
+  Fields:
+    clientContext_appId: [Optional] Identifier of the application. e.g.,
+      "com.google.Drive"
+    clientContext_clientVersion: The name and the version of the client. e.g.
+      "DXP 1.0"
+    clientContext_iosVendorId: Vendor id of the ios device.
+    clientContext_osVersion: [Optional] OS version on which the client app is
+      running. e.g., "iOS 12.1"
+    resourceId: Resource id of the entity for which the settings are
+      requested.
+  """
+
+  clientContext_appId = _messages.StringField(1)
+  clientContext_clientVersion = _messages.StringField(2)
+  clientContext_iosVendorId = _messages.StringField(3)
+  clientContext_osVersion = _messages.StringField(4)
+  resourceId = _messages.StringField(5, required=True)
+
+
+class CloudidentityDevicesListRequest(_messages.Message):
+  r"""A CloudidentityDevicesListRequest object.
+
+  Fields:
+    customer: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer who owns the devices being listed. For querying your own
+      customer, pass `customers/my_customer`
+    filter: Additional restrictions when fetching list of devices. HC article:
+      {@link https://support.google.com/a/answer/7549103}
+    orderBy: Order specification for devices in the response.
+    pageSize: Maximum number of devices to list. If zero, a default page size
+      is used.
+    pageToken: page_token to get subsequent pages in the response starting at
+      this token. This should be filled with the value provided by a previous
+      call to ListDevices.
+  """
+
+  customer = _messages.StringField(1)
+  filter = _messages.StringField(2)
+  orderBy = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+
+
+class CloudidentityDevicesPatchRequest(_messages.Message):
+  r"""A CloudidentityDevicesPatchRequest object.
+
+  Fields:
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_resource_id}`, where device_resource_id is
+      the unique id assigned to the Device.  Must be left blank while creating
+      a Device.
+    updateDeviceRequest: A UpdateDeviceRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateDeviceRequest = _messages.MessageField('UpdateDeviceRequest', 2)
+
+
+class CloudidentityDevicesRingRequest(_messages.Message):
+  r"""A CloudidentityDevicesRingRequest object.
+
+  Fields:
+    customer: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. For querying your own customer,
+      pass `customers/my_customer`
+    name: [Resource name](https://cloud.google.com/apis/design/resource_names)
+      of the Device in format: `devices/{device_resource_id}`, where
+      device_resource_id is the unique ID assigned to the Device.
+  """
+
+  customer = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesSettingsRequest(_messages.Message):
+  r"""A CloudidentityDevicesSettingsRequest object.
+
+  Fields:
+    getEffectiveSettingsRequest: A GetEffectiveSettingsRequest resource to be
+      passed as the request body.
+    resourceId: Resource id of the entity for which the settings are
+      requested.
+  """
+
+  getEffectiveSettingsRequest = _messages.MessageField('GetEffectiveSettingsRequest', 1)
+  resourceId = _messages.StringField(2, required=True)
+
+
+class CloudidentityDevicesWipeRequest(_messages.Message):
+  r"""A CloudidentityDevicesWipeRequest object.
+
+  Fields:
+    customer: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. For querying your own customer,
+      pass `customers/my_customer`
+    name: [Resource name](https://cloud.google.com/apis/design/resource_names)
+      of the Device in format: `devices/{device_resource_id}`, where
+      device_resource_id is the unique ID assigned to the Device.
+  """
+
+  customer = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
 class CloudidentityGroupsCreateRequest(_messages.Message):
   r"""A CloudidentityGroupsCreateRequest object.
 
@@ -246,6 +566,23 @@ class CloudidentityGroupsMembershipsModifyMembershipRolesRequest(_messages.Messa
   name = _messages.StringField(2, required=True)
 
 
+class CloudidentityGroupsMembershipsPatchRequest(_messages.Message):
+  r"""A CloudidentityGroupsMembershipsPatchRequest object.
+
+  Fields:
+    membership: A Membership resource to be passed as the request body.
+    name: Output only. The [resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      `Membership`.  Shall be of the form
+      `groups/{group_id}/memberships/{membership_id}`.
+    updateMask: Required. The fully-qualified names of fields to update.
+  """
+
+  membership = _messages.MessageField('Membership', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class CloudidentityGroupsPatchRequest(_messages.Message):
   r"""A CloudidentityGroupsPatchRequest object.
 
@@ -306,6 +643,264 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
+class CustomDeviceAttributeValue(_messages.Message):
+  r"""A CustomDeviceAttributeValue object.
+
+  Fields:
+    boolValue: Represents a boolean value.
+    numberValue: Represents a double value.
+    stringValue: Represents a string value.
+  """
+
+  boolValue = _messages.BooleanField(1)
+  numberValue = _messages.FloatField(2)
+  stringValue = _messages.StringField(3)
+
+
+class CustomDeviceAttributes(_messages.Message):
+  r"""A CustomDeviceAttributes object.
+
+  Enums:
+    CompositeScoreValueValuesEnum:
+
+  Messages:
+    AttributesValue: The map of key-value attributes stored by a third-party
+      specific to a device. The total serialized length of this map may not
+      exceed 100KB. No limit is placed on the number of attributes in a map.
+
+  Fields:
+    attributes: The map of key-value attributes stored by a third-party
+      specific to a device. The total serialized length of this map may not
+      exceed 100KB. No limit is placed on the number of attributes in a map.
+    compositeScore: A CompositeScoreValueValuesEnum attribute.
+    customDeviceId: The device identifier provided by the caller.
+    scoreReason: A descriptive cause of the score.
+  """
+
+  class CompositeScoreValueValuesEnum(_messages.Enum):
+    r"""CompositeScoreValueValuesEnum enum type.
+
+    Values:
+      UNKNOWN: <no description>
+      EXTREME: <no description>
+      VERY_HIGH: <no description>
+      HIGH: <no description>
+      MEDIUM: <no description>
+      MODERATE: <no description>
+      LOW: <no description>
+      VERY_LOW: <no description>
+      NONE: <no description>
+    """
+    UNKNOWN = 0
+    EXTREME = 1
+    VERY_HIGH = 2
+    HIGH = 3
+    MEDIUM = 4
+    MODERATE = 5
+    LOW = 6
+    VERY_LOW = 7
+    NONE = 8
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttributesValue(_messages.Message):
+    r"""The map of key-value attributes stored by a third-party specific to a
+    device. The total serialized length of this map may not exceed 100KB. No
+    limit is placed on the number of attributes in a map.
+
+    Messages:
+      AdditionalProperty: An additional property for a AttributesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A CustomDeviceAttributeValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('CustomDeviceAttributeValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  attributes = _messages.MessageField('AttributesValue', 1)
+  compositeScore = _messages.EnumField('CompositeScoreValueValuesEnum', 2)
+  customDeviceId = _messages.StringField(3)
+  scoreReason = _messages.StringField(4)
+
+
+class CustomDeviceData(_messages.Message):
+  r"""A CustomDeviceData object.
+
+  Fields:
+    createdTime: Output only. The time the custom device data was created.
+    customDeviceAttributes: Custom attributes of the device.
+    lastUpdatedTime: Output only. The time the custom device data was last
+      updated.
+  """
+
+  createdTime = _messages.StringField(1)
+  customDeviceAttributes = _messages.MessageField('CustomDeviceAttributes', 2)
+  lastUpdatedTime = _messages.StringField(3)
+
+
+class Device(_messages.Message):
+  r"""Resource representing a Device. Next ID to use: 23
+
+  Enums:
+    CompromisedStateValueValuesEnum: Output only. Whether the device is
+      rooted.
+    DevicePasswordStateValueValuesEnum: Output only. Whether device is
+      secured, either with a PIN or with a password.
+    ManagementStateValueValuesEnum: Output only. Management state of device.
+    TypeValueValuesEnum: Output only. Type of device.
+
+  Fields:
+    androidSpecificAttributes: Output only.
+    brand: Output only. Device brand. Example: Samsung.
+    compromisedState: Output only. Whether the device is rooted.
+    customDeviceData: Custom data about the device containing attributes that
+      may be updated.
+    devicePasswordState: Output only. Whether device is secured, either with a
+      PIN or with a password.
+    firstSyncTime: Output only. Most recent time when device was "registered"
+      with this service.
+    imei: Output only. IMEI number of device if GSM device; empty otherwise.
+      Example: 358240051111110.
+    languageCode: Output only. Default locale used on device.
+    lastSyncTime: Output only. Last time that device is synced with policies.
+    managementState: Output only. Management state of device.
+    manufacturer: Output only. Device manufacturer. Example: Motorola.
+    meid: Output only. MEID number of device if CDMA device; empty otherwise.
+    model: Output only. Model name of device. Example: Pixel 3.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_resource_id}`, where device_resource_id is
+      the unique id assigned to the Device.  Must be left blank while creating
+      a Device.
+    networkOperator: Output only. Mobile or network operator of device, if
+      available.
+    os: Output only. Operating system of device. Examples: iOS 11.2, Android
+      8.1.0.
+    releaseVersion: Output only. OS release version. Example: 6.0.
+    serialNumber: Output only. Serial Number of device. Example: HT82V1A01076.
+    type: Output only. Type of device.
+    userAgent: Output only. User Agent. Example for iOS: Apple-
+      iPhone1C2/808.7,gzip(gfe). Example for android: Google Apps Device
+      Policy 4.08.
+    userEmail: Output only. E-mail address of user logged into device.
+    wifiMacAddresses: Output only. WiFi MAC address of device.
+  """
+
+  class CompromisedStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Whether the device is rooted.
+
+    Values:
+      COMPROMISED_STATE_UNSPECIFIED: <no description>
+      COMPROMISED: <no description>
+      NOT_COMPROMISED: <no description>
+    """
+    COMPROMISED_STATE_UNSPECIFIED = 0
+    COMPROMISED = 1
+    NOT_COMPROMISED = 2
+
+  class DevicePasswordStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Whether device is secured, either with a PIN or with a
+    password.
+
+    Values:
+      PASSWORD_STATE_UNSPECIFIED: Password state not set.
+      PASSWORD_SET: Password set in device.
+      PASSWORD_NOT_SET: Password not set in device.
+    """
+    PASSWORD_STATE_UNSPECIFIED = 0
+    PASSWORD_SET = 1
+    PASSWORD_NOT_SET = 2
+
+  class ManagementStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Management state of device.
+
+    Values:
+      MANAGEMENT_STATE_UNSPECIFIED: <no description>
+      ACCOUNT_WIPED: <no description>
+      ACCOUNT_WIPING: <no description>
+      APPROVED: <no description>
+      BLOCKED: <no description>
+      PENDING: <no description>
+      UNPROVISIONED: <no description>
+      DEVICE_WIPED: <no description>
+      DEVICE_WIPING: <no description>
+    """
+    MANAGEMENT_STATE_UNSPECIFIED = 0
+    ACCOUNT_WIPED = 1
+    ACCOUNT_WIPING = 2
+    APPROVED = 3
+    BLOCKED = 4
+    PENDING = 5
+    UNPROVISIONED = 6
+    DEVICE_WIPED = 7
+    DEVICE_WIPING = 8
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of device.
+
+    Values:
+      TYPE_UNSPECIFIED: <no description>
+      ANDROID: <no description>
+      IOS: <no description>
+      GOOGLE_SYNC: <no description>
+      WINDOWS: <no description>
+      MAC_OS: <no description>
+      LINUX: <no description>
+      CHROME_OS: <no description>
+    """
+    TYPE_UNSPECIFIED = 0
+    ANDROID = 1
+    IOS = 2
+    GOOGLE_SYNC = 3
+    WINDOWS = 4
+    MAC_OS = 5
+    LINUX = 6
+    CHROME_OS = 7
+
+  androidSpecificAttributes = _messages.MessageField('AndroidAttributes', 1)
+  brand = _messages.StringField(2)
+  compromisedState = _messages.EnumField('CompromisedStateValueValuesEnum', 3)
+  customDeviceData = _messages.MessageField('CustomDeviceData', 4)
+  devicePasswordState = _messages.EnumField('DevicePasswordStateValueValuesEnum', 5)
+  firstSyncTime = _messages.StringField(6)
+  imei = _messages.StringField(7)
+  languageCode = _messages.StringField(8)
+  lastSyncTime = _messages.StringField(9)
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 10)
+  manufacturer = _messages.StringField(11)
+  meid = _messages.StringField(12)
+  model = _messages.StringField(13)
+  name = _messages.StringField(14)
+  networkOperator = _messages.StringField(15)
+  os = _messages.StringField(16)
+  releaseVersion = _messages.StringField(17)
+  serialNumber = _messages.StringField(18)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
+  userAgent = _messages.StringField(20)
+  userEmail = _messages.StringField(21)
+  wifiMacAddresses = _messages.StringField(22, repeated=True)
+
+
+class EffectiveSetting(_messages.Message):
+  r"""A EffectiveSetting object.
+
+  Fields:
+    mamDataProtectionSetting: A MamDataProtectionSetting attribute.
+  """
+
+  mamDataProtectionSetting = _messages.MessageField('MamDataProtectionSetting', 1)
+
+
 class EntityKey(_messages.Message):
   r"""A unique identifier for an entity in the Cloud Identity Groups API.  An
   entity can represent either a group with an optional `namespace` or a user
@@ -327,6 +922,38 @@ class EntityKey(_messages.Message):
 
   id = _messages.StringField(1)
   namespace = _messages.StringField(2)
+
+
+class ExpiryDetail(_messages.Message):
+  r"""The `MembershipRole` expiry details.
+
+  Fields:
+    expireTime: The time at which the `MembershipRole` will expire.
+  """
+
+  expireTime = _messages.StringField(1)
+
+
+class GetEffectiveSettingsRequest(_messages.Message):
+  r"""A GetEffectiveSettingsRequest object.
+
+  Fields:
+    clientContext: Context of the caller client.
+  """
+
+  clientContext = _messages.MessageField('ClientContext', 1)
+
+
+class GetEffectiveSettingsResponse(_messages.Message):
+  r"""A GetEffectiveSettingsResponse object.
+
+  Fields:
+    effectiveSetting: A EffectiveSetting attribute.
+    resourceId: Resource id of the device.
+  """
+
+  effectiveSetting = _messages.MessageField('EffectiveSetting', 1)
+  resourceId = _messages.StringField(2)
 
 
 class Group(_messages.Message):
@@ -401,6 +1028,20 @@ class Group(_messages.Message):
   updateTime = _messages.StringField(9)
 
 
+class ListDevicesResponse(_messages.Message):
+  r"""Response message that is returned in LRO result of ListDevices
+  Operation.
+
+  Fields:
+    devices: Devices meeting the list restrictions.
+    nextPageToken: Token to retrieve the next page of results. Empty if there
+      are no more results.
+  """
+
+  devices = _messages.MessageField('Device', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListGroupsResponse(_messages.Message):
   r"""The response message for GroupsService.ListGroups.
 
@@ -452,6 +1093,24 @@ class LookupMembershipNameResponse(_messages.Message):
   name = _messages.StringField(1)
 
 
+class MamDataProtectionSetting(_messages.Message):
+  r"""Data protection setting for enforcing data leak restrictions on user's
+  device.
+
+  Fields:
+    copyPasteProtected: Whether user's data on the device is protected for
+      cut/copy/paste.
+    obfuscatedCustomerId: Obfuscated customer ID of the user in hex with at
+      most 16 chars.
+    sharingProtected: Whether the user's data on the device is protected for
+      native sharing.
+  """
+
+  copyPasteProtected = _messages.BooleanField(1)
+  obfuscatedCustomerId = _messages.StringField(2)
+  sharingProtected = _messages.BooleanField(3)
+
+
 class Membership(_messages.Message):
   r"""A membership within the Cloud Identity Groups API.  A `Membership`
   defines a relationship between a `Group` and an entity belonging to that
@@ -490,11 +1149,15 @@ class MembershipRole(_messages.Message):
   `MembershipRole` defines the privileges granted to a `Membership`.
 
   Fields:
+    expiryDetail: The expiry details of the `MembershipRole`.  Expiry details
+      are only supported for `MEMBER` `MembershipRoles`.  May be set if `name`
+      is `MEMBER`. Must not be set if `name` is any other value.
     name: The name of the `MembershipRole`.  Must be one of `OWNER`,
       `MANAGER`, `MEMBER`.
   """
 
-  name = _messages.StringField(1)
+  expiryDetail = _messages.MessageField('ExpiryDetail', 1)
+  name = _messages.StringField(2)
 
 
 class ModifyMembershipRolesRequest(_messages.Message):
@@ -764,6 +1427,24 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class UpdateDeviceRequest(_messages.Message):
+  r"""Request message for updating a Device resource.
+
+  Fields:
+    customer: [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      Customer in format: `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs. For querying your own customer,
+      pass `customers/my_customer`
+    device: Updated device information.
+    updateMask: Required. Fully qualified names of fields to update.
+  """
+
+  customer = _messages.StringField(1)
+  device = _messages.MessageField('Device', 2)
+  updateMask = _messages.StringField(3)
 
 
 class UpdateMembershipRolesParams(_messages.Message):

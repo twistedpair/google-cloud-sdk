@@ -197,7 +197,8 @@
             "This field is deprecated, and will be removed in future version of API.",
             "",
             "Creates clone instance.",
-            "Reschedule maintenance to another time."
+            "Reschedule maintenance to another time.",
+            "Starts external sync of a Cloud SQL EM replica to an external master."
           ],
           "type": "string",
           "enum": [
@@ -234,7 +235,8 @@
             "ENABLE_PRIVATE_IP",
             "DEFER_MAINTENANCE",
             "CREATE_CLONE",
-            "RESCHEDULE_MAINTENANCE"
+            "RESCHEDULE_MAINTENANCE",
+            "START_EXTERNAL_SYNC"
           ]
         },
         "importContext": {
@@ -754,7 +756,8 @@
             "The database version is SQL Server 2017 Enterprise.",
             "The database version is SQL Server 2017 Express.",
             "The database version is SQL Server 2017 Web.",
-            "The database version is PostgreSQL 10."
+            "The database version is PostgreSQL 10.",
+            "The database version is PostgreSQL 12."
           ],
           "type": "array",
           "items": {
@@ -771,7 +774,8 @@
               "SQLSERVER_2017_ENTERPRISE",
               "SQLSERVER_2017_EXPRESS",
               "SQLSERVER_2017_WEB",
-              "POSTGRES_10"
+              "POSTGRES_10",
+              "POSTGRES_12"
             ]
           }
         },
@@ -1037,7 +1041,8 @@
             "The database version is SQL Server 2017 Enterprise.",
             "The database version is SQL Server 2017 Express.",
             "The database version is SQL Server 2017 Web.",
-            "The database version is PostgreSQL 10."
+            "The database version is PostgreSQL 10.",
+            "The database version is PostgreSQL 12."
           ],
           "type": "string",
           "enum": [
@@ -1052,7 +1057,8 @@
             "SQLSERVER_2017_ENTERPRISE",
             "SQLSERVER_2017_EXPRESS",
             "SQLSERVER_2017_WEB",
-            "POSTGRES_10"
+            "POSTGRES_10",
+            "POSTGRES_12"
           ]
         },
         "settings": {
@@ -1619,6 +1625,14 @@
           "description": "This is always <code>sql#onPremisesConfiguration<\/code>.",
           "type": "string"
         },
+        "username": {
+          "description": "The username for connecting to on-premises instance.",
+          "type": "string"
+        },
+        "password": {
+          "description": "The password for connecting to on-premises instance.",
+          "type": "string"
+        },
         "caCertificate": {
           "description": "PEM representation of the trusted CA's x509 certificate.",
           "type": "string"
@@ -1629,6 +1643,10 @@
         },
         "clientKey": {
           "description": "PEM representation of the slave's private key. The corresponsing public key\nis encoded in the client's certificate.",
+          "type": "string"
+        },
+        "dumpFilePath": {
+          "description": "The dump file to create the Cloud SQL replica.",
           "type": "string"
         }
       }
@@ -1944,6 +1962,59 @@
         }
       }
     },
+    "SqlInstancesVerifyExternalSyncSettingsResponse": {
+      "id": "SqlInstancesVerifyExternalSyncSettingsResponse",
+      "description": "Instance verify external sync settings response.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "This is always <code>sql#migrationSettingErrorList<\/code>.",
+          "type": "string"
+        },
+        "errors": {
+          "description": "List of migration violations.",
+          "type": "array",
+          "items": {
+            "$ref": "SqlExternalSyncSettingError"
+          }
+        }
+      }
+    },
+    "SqlExternalSyncSettingError": {
+      "id": "SqlExternalSyncSettingError",
+      "description": "External master migration setting error.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "This is always <code>sql#migrationSettingError<\/code>.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Identifies the specific error that occurred.",
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "type": "string",
+          "enum": [
+            "SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED",
+            "CONNECTION_FAILURE",
+            "BINLOG_NOT_ENABLED",
+            "INCOMPATIBLE_DATABASE_VERSION",
+            "REPLICA_ALREADY_SETUP",
+            "INSUFFICIENT_PRIVILEGE"
+          ]
+        },
+        "detail": {
+          "description": "Additional information about the error encountered.",
+          "type": "string"
+        }
+      }
+    },
     "OperationsListResponse": {
       "id": "OperationsListResponse",
       "description": "Database instance list operations response.",
@@ -2189,11 +2260,6 @@
               "required": true,
               "type": "string",
               "format": "int64"
-            },
-            "resourceName": {
-              "description": "The name of the backupRun to delete.\nFormat:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}\/backupRuns\/{backupRun}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -2234,11 +2300,6 @@
               "required": true,
               "type": "string",
               "format": "int64"
-            },
-            "resourceName": {
-              "description": "Name of the resource backupRun.\nFormat:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}\/backupRuns\/{backupRun}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -2271,11 +2332,6 @@
               "description": "Cloud SQL instance ID. This does not include the project ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL should create this backupRun.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -2323,11 +2379,6 @@
               "description": "A previously-returned page token representing part of the larger set of\nresults to view.",
               "location": "query",
               "type": "string"
-            },
-            "parent": {
-              "description": "The parent, which owns this collection of backupRuns.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -2370,11 +2421,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "resourceName": {
-              "description": "The name of the database to delete.\nFormat:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}\/databases\/{database}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -2414,11 +2460,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "resourceName": {
-              "description": "Name of the resource database.\nFormat:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}\/databases\/{database}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -2451,11 +2492,6 @@
               "description": "Database instance ID. This does not include the project ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL should add this database.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -2491,11 +2527,6 @@
               "description": "Cloud SQL instance ID. This does not include the project ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "parent": {
-              "description": "The parent, which owns this collection of databases.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -2535,11 +2566,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "resourceName": {
-              "description": "The name of the database for Cloud SQL to update.\nFormat:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}\/databases\/{database}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -2557,7 +2583,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/sqlservice.admin"
           ],
-          "description": "Partially updates a resource containing information about a database inside\na Cloud SQL instance. This method supports patch semantics.\n<aside\nclass=\"caution\"><strong>Caution:<\/strong> This is not a partial update, so\nyou must include values for all the settings that you want to retain. For\npartial updates, use <a\nhref=\"\/sql\/docs\/db_path\/admin-api\/rest\/v1beta4\/instances\/update\">update<\/a>.<\/aside>"
+          "description": "Partially updates a resource containing information about a database inside\na Cloud SQL instance. This method supports patch semantics."
         },
         "update": {
           "id": "sql.databases.update",
@@ -2581,11 +2607,6 @@
               "description": "Name of the database to be updated in the instance.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "resourceName": {
-              "description": "The name of the database for Cloud SQL to update.\nFormat:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}\/databases\/{database}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -2654,11 +2675,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL should add this server CA.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -2691,11 +2707,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL should clone this instance.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -2712,7 +2723,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/sqlservice.admin"
           ],
-          "description": "Creates a Cloud SQL instance as a clone of the source instance."
+          "description": "Creates a Cloud SQL instance as a clone of the source instance. Using this\noperation might cause your instance to restart."
         },
         "delete": {
           "id": "sql.instances.delete",
@@ -2730,11 +2741,6 @@
               "description": "Cloud SQL instance ID. This does not include the project ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "resourceName": {
-              "description": "The name of database instance to delete.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -2767,11 +2773,6 @@
               "description": "Cloud SQL instance name.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL demotes this master database instance.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -2808,11 +2809,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL exports this database instance.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -2847,11 +2843,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL sends this database instance during a\nfailover. Format:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -2868,7 +2859,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/sqlservice.admin"
           ],
-          "description": "Failover the instance to its failover replica instance."
+          "description": "Failover the instance to its failover replica instance. Using this\noperation might cause your instance to restart."
         },
         "get": {
           "id": "sql.instances.get",
@@ -2886,11 +2877,6 @@
               "description": "Database instance ID. This does not include the project ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "resourceName": {
-              "description": "Name of the resource database instance.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -2924,11 +2910,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL imports this database instance.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -2956,11 +2937,6 @@
               "description": "Project ID of the project to which the newly created Cloud SQL instances\nshould belong.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL creates this database instance.\nFormat: projects\/{project}\/locations\/{location}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -3006,11 +2982,6 @@
               "description": "A previously-returned page token representing part of the larger set of\nresults to view.",
               "location": "query",
               "type": "string"
-            },
-            "parent": {
-              "description": "The parent, which owns this collection of database instances.\nFormat: projects\/{project}\/locations\/{location}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -3041,11 +3012,6 @@
               "description": "Cloud SQL instance ID. This does not include the project ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "parent": {
-              "description": "The parent, which owns this collection of server CAs.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -3078,11 +3044,6 @@
               "description": "Cloud SQL instance ID. This does not include the project ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "resourceName": {
-              "description": "The name of the database instance for Cloud SQL to update.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -3119,11 +3080,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL promotes this replica database\ninstance. Format: projects\/{project}\/locations\/{location}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -3137,7 +3093,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/sqlservice.admin"
           ],
-          "description": "Promotes the read replica instance to be a stand-alone Cloud SQL instance."
+          "description": "Promotes the read replica instance to be a stand-alone Cloud SQL instance.\nUsing this operation might cause your instance to restart."
         },
         "resetSslConfig": {
           "id": "sql.instances.resetSslConfig",
@@ -3155,11 +3111,6 @@
               "description": "Cloud SQL instance ID. This does not include the project ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL resets this SSL config.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -3193,11 +3144,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL restarts this database instance.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -3230,11 +3176,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL restores this database instance from\nbackup. Format:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -3251,7 +3192,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/sqlservice.admin"
           ],
-          "description": "Restores a backup of a Cloud SQL instance."
+          "description": "Restores a backup of a Cloud SQL instance. Using this operation might cause\nyour instance to restart."
         },
         "rotateServerCa": {
           "id": "sql.instances.rotateServerCa",
@@ -3269,11 +3210,6 @@
               "description": "Cloud SQL instance ID. This does not include the project ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL rotates these server CAs.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -3310,11 +3246,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL starts this database instance\nreplication. Format:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -3347,11 +3278,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL stops this database instance\nreplication. Format:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -3383,11 +3309,6 @@
               "description": "Cloud SQL instance ID. This does not include the project ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL truncates this log.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -3424,11 +3345,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "resourceName": {
-              "description": "The name of the database instance for Cloud SQL to update.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -3445,7 +3361,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/sqlservice.admin"
           ],
-          "description": "Updates settings of a Cloud SQL instance."
+          "description": "Updates settings of a Cloud SQL instance. Using this operation might cause\nyour instance to restart."
         }
       }
     },
@@ -3467,11 +3383,6 @@
               "description": "Cloud SQL instance ID. This does not include the project ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL creates this ephemeral certificate.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -3514,11 +3425,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "resourceName": {
-              "description": "The name of SSL certificate to delete.\nFormat:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}\/sslCerts\/{sslCert}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -3558,11 +3464,6 @@
               "location": "path",
               "required": true,
               "type": "string"
-            },
-            "resourceName": {
-              "description": "Name of the resource ssl certificate.\nFormat:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}\/sslCerts\/{sslCert}",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -3595,11 +3496,6 @@
               "description": "Cloud SQL instance ID. This does not include the project ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL creates this SSL certificate.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -3635,11 +3531,6 @@
               "description": "Cloud SQL instance ID. This does not include the project ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "parent": {
-              "description": "The parent, which owns this collection of SSL certificates.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -3679,11 +3570,6 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
-                },
-                "parent": {
-                  "description": "The parent resource where Cloud SQL reshedule this database instance's\nmaintenance. Format:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}",
-                  "location": "query",
-                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -3701,53 +3587,95 @@
                 "https://www.googleapis.com/auth/sqlservice.admin"
               ],
               "description": "Reschedules the maintenance on the given instance."
-            }
-          }
-        },
-        "locations": {
-          "resources": {
-            "instances": {
-              "methods": {
-                "rescheduleMaintenance": {
-                  "id": "sql.projects.locations.instances.rescheduleMaintenance",
-                  "path": "sql/v1beta4/{+parent}/rescheduleMaintenance",
-                  "flatPath": "sql/v1beta4/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/rescheduleMaintenance",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "The parent resource where Cloud SQL reshedule this database instance's\nmaintenance. Format:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "instance": {
-                      "description": "Cloud SQL instance ID. This does not include the project ID.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "project": {
-                      "description": "ID of the project that contains the instance.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "SqlInstancesRescheduleMaintenanceRequestBody"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/sqlservice.admin"
-                  ],
-                  "description": "Reschedules the maintenance on the given instance."
+            },
+            "verifyExternalSyncSettings": {
+              "id": "sql.projects.instances.verifyExternalSyncSettings",
+              "path": "sql/v1beta4/projects/{project}/instances/{instance}/verifyExternalSyncSettings",
+              "flatPath": "sql/v1beta4/projects/{project}/instances/{instance}/verifyExternalSyncSettings",
+              "httpMethod": "POST",
+              "parameters": {
+                "project": {
+                  "description": "Project ID of the project that contains the instance.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "instance": {
+                  "description": "Cloud SQL instance ID. This does not include the project ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "verifyConnectionOnly": {
+                  "description": "Flag to enable verifying connection only",
+                  "location": "query",
+                  "type": "boolean"
+                },
+                "syncMode": {
+                  "description": "External sync mode",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "EXTERNAL_SYNC_MODE_UNSPECIFIED",
+                    "ONLINE",
+                    "OFFLINE"
+                  ]
                 }
-              }
+              },
+              "parameterOrder": [
+                "project",
+                "instance"
+              ],
+              "response": {
+                "$ref": "SqlInstancesVerifyExternalSyncSettingsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/sqlservice.admin"
+              ],
+              "description": "Verify External master external sync settings."
+            },
+            "startExternalSync": {
+              "id": "sql.projects.instances.startExternalSync",
+              "path": "sql/v1beta4/projects/{project}/instances/{instance}/startExternalSync",
+              "flatPath": "sql/v1beta4/projects/{project}/instances/{instance}/startExternalSync",
+              "httpMethod": "POST",
+              "parameters": {
+                "project": {
+                  "description": "ID of the project that contains the first generation instance.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "instance": {
+                  "description": "Cloud SQL instance ID. This does not include the project ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "syncMode": {
+                  "description": "External sync mode",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "EXTERNAL_SYNC_MODE_UNSPECIFIED",
+                    "ONLINE",
+                    "OFFLINE"
+                  ]
+                }
+              },
+              "parameterOrder": [
+                "project",
+                "instance"
+              ],
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/sqlservice.admin"
+              ],
+              "description": "Start External master migration."
             }
           }
         }
@@ -3771,11 +3699,6 @@
               "description": "Instance operation ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "resourceName": {
-              "description": "The name of the operation for Cloud SQL to get.\nFormat: projects\/{project}\/locations\/{location}\/operations\/{operation}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -3817,11 +3740,6 @@
             },
             "pageToken": {
               "description": "A previously-returned page token representing part of the larger set of\nresults to view.",
-              "location": "query",
-              "type": "string"
-            },
-            "parent": {
-              "description": "Indirect parent. The direct parent should combine with the instance name,\nwhich owns this collection of operations.\nFormat:\nprojects\/{project}\/locations\/{location}",
               "location": "query",
               "type": "string"
             }
@@ -3898,11 +3816,6 @@
               "description": "Name of the user in the instance.",
               "location": "query",
               "type": "string"
-            },
-            "resourceName": {
-              "description": "The name of the user to delete.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}\/users",
-              "location": "query",
-              "type": "string"
             }
           },
           "parameterOrder": [
@@ -3934,11 +3847,6 @@
               "description": "Database instance ID. This does not include the project ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "parent": {
-              "description": "The parent resource where Cloud SQL creates this user.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -3974,11 +3882,6 @@
               "description": "Database instance ID. This does not include the project ID.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "parent": {
-              "description": "The parent, which owns this collection of users.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}",
-              "location": "query",
               "type": "string"
             }
           },
@@ -4020,11 +3923,6 @@
             },
             "name": {
               "description": "Name of the user in the instance.",
-              "location": "query",
-              "type": "string"
-            },
-            "resourceName": {
-              "description": "The name of the user for Cloud SQL to update.\nFormat: projects\/{project}\/locations\/{location}\/instances\/{instance}\/users",
               "location": "query",
               "type": "string"
             }

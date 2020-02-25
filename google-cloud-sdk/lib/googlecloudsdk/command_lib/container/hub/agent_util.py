@@ -237,7 +237,6 @@ def _GenerateManifest(args, service_account_key_data, image_pull_secret_data,
 
   # Based on the API version, use api_adapter if GenerateConnectAgentManifest is
   # a nested message, else use the default api_client.
-  # TODO(b/148312097): Check if api_adapter is needed incase alpha_api.
   if api_version in ['v1beta1']:
     adapter = gkehub_api_adapter.NewAPIAdapter(api_version)
     connect_agent_ref = _GetConnectAgentOptions(args, upgrade,

@@ -233,6 +233,7 @@ class _NormalProgressTracker(_BaseProgressTracker):
       if not self._done:
         self._ticks += 1
         self._Print(self._GetSuffix())
+    self._stream.flush()
     return self._done
 
   def _GetSuffix(self):

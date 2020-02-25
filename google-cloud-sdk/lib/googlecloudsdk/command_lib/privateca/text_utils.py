@@ -24,3 +24,16 @@ def SnakeCaseToCamelCase(name):
   words = name.split('_')
   return words[0].lower() + ''.join(
       [w[0].upper() + w[1:].lower() for w in words[1:]])
+
+
+def ToSnakeCaseDict(dictionary):
+  """Recursively convert all keys in nested dictionaries to snakeCase."""
+  new_dict = {}
+  for key, val in dictionary.items():
+    snaked_key = SnakeCaseToCamelCase(key)
+    if isinstance(val, dict):
+      new_dict[snaked_key] = ToSnakeCaseDict(val)
+    else:
+      new_dict[snaked_key] = val
+
+  return new_dict

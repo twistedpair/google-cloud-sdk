@@ -29,9 +29,9 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import creds as core_creds
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files
-
 from oauth2client import client
 import six
+from google.auth import credentials
 
 ENCODING = None if six.PY2 else 'utf8'
 
@@ -89,8 +89,7 @@ def Http(timeout='unset',
       properties.VALUES.auth.authorization_token_file.Get())
   handlers = _GetIAMAuthHandlers(authority_selector, authorization_token_file)
 
-  creds = store.LoadIfEnabled(
-      allow_account_impersonation=allow_account_impersonation)
+  creds = store.LoadIfEnabled(allow_account_impersonation, use_google_auth)
   if creds:
     # Inject the resource project header for quota unless explicitly disabled.
     if enable_resource_quota or force_resource_quota:
@@ -99,10 +98,8 @@ def Http(timeout='unset',
         handlers.append(http.Modifiers.Handler(
             http.Modifiers.SetHeader('X-Goog-User-Project', quota_project)))
 
-    if _AuthenticateWithGoogleAuth(creds, use_google_auth):
-      google_auth_creds = store.ConvertToGoogleAuthCredentials(creds)
-      http_client = google_auth_httplib2.AuthorizedHttp(google_auth_creds,
-                                                        http_client)
+    if isinstance(creds, credentials.Credentials):
+      http_client = google_auth_httplib2.AuthorizedHttp(creds, http_client)
     else:
       http_client = creds.authorize(http_client)
 
@@ -161,31 +158,3 @@ def _HandleAuthError(e):
   log.debug('Exception caught during HTTP request: %s', msg,
             exc_info=True)
   raise store.TokenRefreshError(msg)
-
-
-def _AuthenticateWithGoogleAuth(creds, use_google_auth):
-  """Whether authenticate the http transport with the google-auth library.
-
-  Authenticates with the google-auth library if the below condictions are all
-  met:
-  1. auth/disable_google_auth is NOT set to True;
-  2. The calling command indicates to use google-auth for authentication;
-  3. The input credentails are not built from P12 service account key. The
-     reason is that this legacy service account key is not supported by
-     google-auth. Additionally, gcloud plans to deprecate P12 service account
-     key support. The autenticaion logic of credentials of this type will be
-     left on oauth2client for now and will be removed in the deprecation.
-
-  Args:
-    creds: oauth2client.client.Credentials, Credentials of the oauth2client
-      library.
-    use_google_auth: bool, True if the calling command indicates to use
-      google-auth library for authentication.
-
-  Returns:
-    bool, True to authenticate the http transport with the google-auth library.
-  """
-  google_auth_disabled = properties.VALUES.auth.disable_google_auth.GetBool()
-  not_p12_service_account_creds = core_creds.CredentialType.FromCredentials(
-      creds) != core_creds.CredentialType.P12_SERVICE_ACCOUNT
-  return (not google_auth_disabled) and use_google_auth and not_p12_service_account_creds  # pylint: disable=line-too-long

@@ -39,14 +39,17 @@ class CommandData(object):
   def __init__(self, name, data):
     self.hidden = data.get('hidden', False)
     self.release_tracks = [
-        base.ReleaseTrack.FromId(i) for i in data.get('release_tracks', [])]
+        base.ReleaseTrack.FromId(i) for i in data.get('release_tracks', [])
+    ]
     self.command_type = CommandType.ForName(data.get('command_type', name))
     self.help_text = data['help_text']
-    self.request = Request(self.command_type, data['request'])
+    request_data = data.get('request')
+    self.request = Request(self.command_type, request_data)
     self.response = Response(data.get('response', {}))
     async_data = data.get('async')
     iam_data = data.get('iam')
     update_data = data.get('update')
+    import_data = data.get('import')
     if self.command_type == CommandType.WAIT and not async_data:
       raise util.InvalidSchemaError(
           'Wait commands must include an async section.')
@@ -56,6 +59,8 @@ class CommandData(object):
     self.input = Input(self.command_type, data.get('input', {}))
     self.output = Output(data.get('output', {}))
     self.update = UpdateData(update_data) if update_data else None
+    self.import_ = ImportData(import_data, request_data,
+                              async_data) if import_data else None
 
 
 class CommandType(Enum):
@@ -68,6 +73,8 @@ class CommandType(Enum):
   DESCRIBE = 'get'
   LIST = 'list'
   DELETE = 'delete'
+  IMPORT = 'patch'
+  EXPORT = 'get'
   CREATE = 'create'
   WAIT = 'get'
   UPDATE = 'patch'
@@ -450,3 +457,36 @@ class UpdateData(object):
     self.mask_field = data.get('mask_field', None)
     self.read_modify_update = data.get('read_modify_update', False)
     self.disable_auto_field_mask = data.get('disable_auto_field_mask', False)
+
+
+class ImportData(object):
+  """A holder object for yaml import command."""
+
+  def __init__(self, data, orig_request, orig_async):
+    self.abort_if_equivalent = data.get('abort_if_equivalent', False)
+    self.create_if_not_exists = data.get('create_if_not_exists', False)
+    self.no_create_async = data.get('no_create_async', False)
+
+    # Populate create request data if any is specified.
+    create_request = data.get('create_request', None)
+    if create_request:
+      # Use original request data while overwriting specified fields.
+      overlayed_create_request = self._OverlayData(create_request, orig_request)
+      self.create_request = Request(CommandType.CREATE,
+                                    overlayed_create_request)
+    else:
+      self.create_request = None
+
+    # Populate create async data if any is specified.
+    create_async = data.get('create_async', None)
+    if create_async:
+      overlayed_create_async = self._OverlayData(create_async, orig_async)
+      self.create_async = Async(overlayed_create_async)
+    else:
+      self.create_async = None
+
+  def _OverlayData(self, create_data, orig_data):
+    """Uses data from the original configuration unless explicitly defined."""
+    for k, v in orig_data.items():
+      create_data[k] = create_data.get(k) or v
+    return create_data

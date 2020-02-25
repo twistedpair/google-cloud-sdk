@@ -31,7 +31,7 @@ SOURCE_COLLECTION_NAME = 'run.namespaces.{plural_kind}'
 
 
 # Max wait time before timing out
-_POLLING_TIMEOUT_MS = 60000
+_POLLING_TIMEOUT_MS = 180000
 # Max wait time between poll retries before timing out
 _RETRY_TIMEOUT_MS = 1000
 

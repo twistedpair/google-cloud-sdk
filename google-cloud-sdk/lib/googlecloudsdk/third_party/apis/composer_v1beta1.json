@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/composer/",
   "protocol": "rest",
   "rootUrl": "https://composer.googleapis.com/",
+  "mtlsRootUrl": "https://composer.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://composer.googleapis.com/",
   "batchPath": "batch",
@@ -463,7 +464,7 @@
           "type": "string"
         },
         "description": {
-          "description": "Optional. User-provided description.",
+          "description": "Optional. User-provided description. It must contain at most 300 characters.",
           "type": "string"
         }
       }

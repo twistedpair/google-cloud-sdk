@@ -9,7 +9,7 @@ class RunV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://run.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://run.mtls.googleapis.com/'
 
   _PACKAGE = u'run'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -36,6 +36,10 @@ class RunV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.api_v1_namespaces_secrets = self.ApiV1NamespacesSecretsService(self)
+    self.api_v1_namespaces = self.ApiV1NamespacesService(self)
+    self.api_v1 = self.ApiV1Service(self)
+    self.api = self.ApiService(self)
     self.namespaces_authorizeddomains = self.NamespacesAuthorizeddomainsService(self)
     self.namespaces_configurations = self.NamespacesConfigurationsService(self)
     self.namespaces_domainmappings = self.NamespacesDomainmappingsService(self)
@@ -48,9 +52,138 @@ class RunV1(base_api.BaseApiClient):
     self.projects_locations_domainmappings = self.ProjectsLocationsDomainmappingsService(self)
     self.projects_locations_revisions = self.ProjectsLocationsRevisionsService(self)
     self.projects_locations_routes = self.ProjectsLocationsRoutesService(self)
+    self.projects_locations_secrets = self.ProjectsLocationsSecretsService(self)
     self.projects_locations_services = self.ProjectsLocationsServicesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ApiV1NamespacesSecretsService(base_api.BaseApiService):
+    """Service class for the api_v1_namespaces_secrets resource."""
+
+    _NAME = u'api_v1_namespaces_secrets'
+
+    def __init__(self, client):
+      super(RunV1.ApiV1NamespacesSecretsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new secret.
+
+      Args:
+        request: (RunApiV1NamespacesSecretsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Secret) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'api/v1/namespaces/{namespacesId}/secrets',
+        http_method=u'POST',
+        method_id=u'run.api.v1.namespaces.secrets.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'api/v1/{+parent}/secrets',
+        request_field=u'secret',
+        request_type_name=u'RunApiV1NamespacesSecretsCreateRequest',
+        response_type_name=u'Secret',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a secret.
+
+      Args:
+        request: (RunApiV1NamespacesSecretsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Secret) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'api/v1/namespaces/{namespacesId}/secrets/{secretsId}',
+        http_method=u'GET',
+        method_id=u'run.api.v1.namespaces.secrets.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'api/v1/{+name}',
+        request_field='',
+        request_type_name=u'RunApiV1NamespacesSecretsGetRequest',
+        response_type_name=u'Secret',
+        supports_download=False,
+    )
+
+    def ReplaceSecret(self, request, global_params=None):
+      r"""Rpc to replace a secret.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
+
+      Args:
+        request: (RunApiV1NamespacesSecretsReplaceSecretRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Secret) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceSecret')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceSecret.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'api/v1/namespaces/{namespacesId}/secrets/{secretsId}',
+        http_method=u'PUT',
+        method_id=u'run.api.v1.namespaces.secrets.replaceSecret',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'api/v1/{+name}',
+        request_field=u'secret',
+        request_type_name=u'RunApiV1NamespacesSecretsReplaceSecretRequest',
+        response_type_name=u'Secret',
+        supports_download=False,
+    )
+
+  class ApiV1NamespacesService(base_api.BaseApiService):
+    """Service class for the api_v1_namespaces resource."""
+
+    _NAME = u'api_v1_namespaces'
+
+    def __init__(self, client):
+      super(RunV1.ApiV1NamespacesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ApiV1Service(base_api.BaseApiService):
+    """Service class for the api_v1 resource."""
+
+    _NAME = u'api_v1'
+
+    def __init__(self, client):
+      super(RunV1.ApiV1Service, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ApiService(base_api.BaseApiService):
+    """Service class for the api resource."""
+
+    _NAME = u'api'
+
+    def __init__(self, client):
+      super(RunV1.ApiService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class NamespacesAuthorizeddomainsService(base_api.BaseApiService):
     """Service class for the namespaces_authorizeddomains resource."""
@@ -964,6 +1097,104 @@ optimistic concurrency control.
         supports_download=False,
     )
 
+  class ProjectsLocationsSecretsService(base_api.BaseApiService):
+    """Service class for the projects_locations_secrets resource."""
+
+    _NAME = u'projects_locations_secrets'
+
+    def __init__(self, client):
+      super(RunV1.ProjectsLocationsSecretsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new secret.
+
+      Args:
+        request: (RunProjectsLocationsSecretsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Secret) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/secrets',
+        http_method=u'POST',
+        method_id=u'run.projects.locations.secrets.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/secrets',
+        request_field=u'secret',
+        request_type_name=u'RunProjectsLocationsSecretsCreateRequest',
+        response_type_name=u'Secret',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a secret.
+
+      Args:
+        request: (RunProjectsLocationsSecretsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Secret) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/secrets/{secretsId}',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.secrets.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsSecretsGetRequest',
+        response_type_name=u'Secret',
+        supports_download=False,
+    )
+
+    def ReplaceSecret(self, request, global_params=None):
+      r"""Rpc to replace a secret.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
+
+      Args:
+        request: (RunProjectsLocationsSecretsReplaceSecretRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Secret) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceSecret')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceSecret.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/secrets/{secretsId}',
+        http_method=u'PUT',
+        method_id=u'run.projects.locations.secrets.replaceSecret',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field=u'secret',
+        request_type_name=u'RunProjectsLocationsSecretsReplaceSecretRequest',
+        response_type_name=u'Secret',
+        supports_download=False,
+    )
+
   class ProjectsLocationsServicesService(base_api.BaseApiService):
     """Service class for the projects_locations_services resource."""
 
@@ -1212,33 +1443,6 @@ There are no permissions required for making this API call.
       super(RunV1.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def Get(self, request, global_params=None):
-      r"""Gets information about a location.
-
-      Args:
-        request: (RunProjectsLocationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Location) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'run.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1/{+name}',
-        request_field='',
-        request_type_name=u'RunProjectsLocationsGetRequest',
-        response_type_name=u'Location',
-        supports_download=False,
-    )
 
     def List(self, request, global_params=None):
       r"""Lists information about the supported locations for this service.

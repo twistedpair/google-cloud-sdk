@@ -443,6 +443,7 @@ class DatabaseInstance(_messages.Message):
       SQLSERVER_2017_EXPRESS: The database version is SQL Server 2017 Express.
       SQLSERVER_2017_WEB: The database version is SQL Server 2017 Web.
       POSTGRES_10: The database version is PostgreSQL 10.
+      POSTGRES_12: The database version is PostgreSQL 12.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -456,6 +457,7 @@ class DatabaseInstance(_messages.Message):
     SQLSERVER_2017_EXPRESS = 9
     SQLSERVER_2017_WEB = 10
     POSTGRES_10 = 11
+    POSTGRES_12 = 12
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type. This can be one of the following.
@@ -834,6 +836,7 @@ class Flag(_messages.Message):
       SQLSERVER_2017_EXPRESS: <no description>
       SQLSERVER_2017_WEB: <no description>
       POSTGRES_10: <no description>
+      POSTGRES_12: <no description>
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -847,6 +850,7 @@ class Flag(_messages.Message):
     SQLSERVER_2017_EXPRESS = 9
     SQLSERVER_2017_WEB = 10
     POSTGRES_10 = 11
+    POSTGRES_12 = 12
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being <code>BOOLEAN</code>,
@@ -1298,16 +1302,22 @@ class OnPremisesConfiguration(_messages.Message):
     clientCertificate: PEM representation of the slave's x509 certificate.
     clientKey: PEM representation of the slave's private key. The
       corresponsing public key is encoded in the client's certificate.
+    dumpFilePath: The dump file to create the Cloud SQL replica.
     hostPort: The host and port of the on-premises instance in host:port
       format
     kind: This is always <code>sql#onPremisesConfiguration</code>.
+    password: The password for connecting to on-premises instance.
+    username: The username for connecting to on-premises instance.
   """
 
   caCertificate = _messages.StringField(1)
   clientCertificate = _messages.StringField(2)
   clientKey = _messages.StringField(3)
-  hostPort = _messages.StringField(4)
-  kind = _messages.StringField(5)
+  dumpFilePath = _messages.StringField(4)
+  hostPort = _messages.StringField(5)
+  kind = _messages.StringField(6)
+  password = _messages.StringField(7)
+  username = _messages.StringField(8)
 
 
 class Operation(_messages.Message):
@@ -1409,6 +1419,8 @@ class Operation(_messages.Message):
       DEFER_MAINTENANCE: <no description>
       CREATE_CLONE: Creates clone instance.
       RESCHEDULE_MAINTENANCE: Reschedule maintenance to another time.
+      START_EXTERNAL_SYNC: Starts external sync of a Cloud SQL EM replica to
+        an external master.
     """
     SQL_OPERATION_TYPE_UNSPECIFIED = 0
     IMPORT = 1
@@ -1444,6 +1456,7 @@ class Operation(_messages.Message):
     DEFER_MAINTENANCE = 31
     CREATE_CLONE = 32
     RESCHEDULE_MAINTENANCE = 33
+    START_EXTERNAL_SYNC = 34
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of an operation. Valid values are <code>PENDING</code>,
@@ -1863,14 +1876,11 @@ class SqlBackupRunsDeleteRequest(_messages.Message):
       api/rest/v1beta4/backupRuns/list">list</a> method.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
-    resourceName: The name of the backupRun to delete. Format: projects/{proje
-      ct}/locations/{location}/instances/{instance}/backupRuns/{backupRun}
   """
 
   id = _messages.IntegerField(1, required=True)
   instance = _messages.StringField(2, required=True)
   project = _messages.StringField(3, required=True)
-  resourceName = _messages.StringField(4)
 
 
 class SqlBackupRunsGetRequest(_messages.Message):
@@ -1880,14 +1890,11 @@ class SqlBackupRunsGetRequest(_messages.Message):
     id: The ID of this Backup Run.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
-    resourceName: Name of the resource backupRun. Format: projects/{project}/l
-      ocations/{location}/instances/{instance}/backupRuns/{backupRun}
   """
 
   id = _messages.IntegerField(1, required=True)
   instance = _messages.StringField(2, required=True)
   project = _messages.StringField(3, required=True)
-  resourceName = _messages.StringField(4)
 
 
 class SqlBackupRunsInsertRequest(_messages.Message):
@@ -1896,15 +1903,12 @@ class SqlBackupRunsInsertRequest(_messages.Message):
   Fields:
     backupRun: A BackupRun resource to be passed as the request body.
     instance: Cloud SQL instance ID. This does not include the project ID.
-    parent: The parent resource where Cloud SQL should create this backupRun.
-      Format: projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the project that contains the instance.
   """
 
   backupRun = _messages.MessageField('BackupRun', 1)
   instance = _messages.StringField(2, required=True)
-  parent = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
+  project = _messages.StringField(3, required=True)
 
 
 class SqlBackupRunsListRequest(_messages.Message):
@@ -1915,16 +1919,13 @@ class SqlBackupRunsListRequest(_messages.Message):
     maxResults: Maximum number of backup runs per response.
     pageToken: A previously-returned page token representing part of the
       larger set of results to view.
-    parent: The parent, which owns this collection of backupRuns. Format:
-      projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the project that contains the instance.
   """
 
   instance = _messages.StringField(1, required=True)
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  project = _messages.StringField(4, required=True)
 
 
 class SqlDatabasesDeleteRequest(_messages.Message):
@@ -1934,14 +1935,11 @@ class SqlDatabasesDeleteRequest(_messages.Message):
     database: Name of the database to be deleted in the instance.
     instance: Database instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
-    resourceName: The name of the database to delete. Format: projects/{projec
-      t}/locations/{location}/instances/{instance}/databases/{database}
   """
 
   database = _messages.StringField(1, required=True)
   instance = _messages.StringField(2, required=True)
   project = _messages.StringField(3, required=True)
-  resourceName = _messages.StringField(4)
 
 
 class SqlDatabasesGetRequest(_messages.Message):
@@ -1951,31 +1949,11 @@ class SqlDatabasesGetRequest(_messages.Message):
     database: Name of the database in the instance.
     instance: Database instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
-    resourceName: Name of the resource database. Format: projects/{project}/lo
-      cations/{location}/instances/{instance}/databases/{database}
   """
 
   database = _messages.StringField(1, required=True)
   instance = _messages.StringField(2, required=True)
   project = _messages.StringField(3, required=True)
-  resourceName = _messages.StringField(4)
-
-
-class SqlDatabasesInsertRequest(_messages.Message):
-  r"""A SqlDatabasesInsertRequest object.
-
-  Fields:
-    database: A Database resource to be passed as the request body.
-    instance: Database instance ID. This does not include the project ID.
-    parent: The parent resource where Cloud SQL should add this database.
-      Format: projects/{project}/locations/{location}/instances/{instance}
-    project: Project ID of the project that contains the instance.
-  """
-
-  database = _messages.MessageField('Database', 1)
-  instance = _messages.StringField(2, required=True)
-  parent = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
 
 
 class SqlDatabasesListRequest(_messages.Message):
@@ -1983,14 +1961,11 @@ class SqlDatabasesListRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
-    parent: The parent, which owns this collection of databases. Format:
-      projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the project that contains the instance.
   """
 
   instance = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2)
-  project = _messages.StringField(3, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class SqlDatabasesPatchRequest(_messages.Message):
@@ -2001,16 +1976,12 @@ class SqlDatabasesPatchRequest(_messages.Message):
     databaseResource: A Database resource to be passed as the request body.
     instance: Database instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
-    resourceName: The name of the database for Cloud SQL to update. Format: pr
-      ojects/{project}/locations/{location}/instances/{instance}/databases/{da
-      tabase}
   """
 
   database = _messages.StringField(1, required=True)
   databaseResource = _messages.MessageField('Database', 2)
   instance = _messages.StringField(3, required=True)
   project = _messages.StringField(4, required=True)
-  resourceName = _messages.StringField(5)
 
 
 class SqlDatabasesUpdateRequest(_messages.Message):
@@ -2021,16 +1992,47 @@ class SqlDatabasesUpdateRequest(_messages.Message):
     databaseResource: A Database resource to be passed as the request body.
     instance: Database instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
-    resourceName: The name of the database for Cloud SQL to update. Format: pr
-      ojects/{project}/locations/{location}/instances/{instance}/databases/{da
-      tabase}
   """
 
   database = _messages.StringField(1, required=True)
   databaseResource = _messages.MessageField('Database', 2)
   instance = _messages.StringField(3, required=True)
   project = _messages.StringField(4, required=True)
-  resourceName = _messages.StringField(5)
+
+
+class SqlExternalSyncSettingError(_messages.Message):
+  r"""External master migration setting error.
+
+  Enums:
+    TypeValueValuesEnum: Identifies the specific error that occurred.
+
+  Fields:
+    detail: Additional information about the error encountered.
+    kind: This is always <code>sql#migrationSettingError</code>.
+    type: Identifies the specific error that occurred.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Identifies the specific error that occurred.
+
+    Values:
+      SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED: <no description>
+      CONNECTION_FAILURE: <no description>
+      BINLOG_NOT_ENABLED: <no description>
+      INCOMPATIBLE_DATABASE_VERSION: <no description>
+      REPLICA_ALREADY_SETUP: <no description>
+      INSUFFICIENT_PRIVILEGE: <no description>
+    """
+    SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
+    CONNECTION_FAILURE = 1
+    BINLOG_NOT_ENABLED = 2
+    INCOMPATIBLE_DATABASE_VERSION = 3
+    REPLICA_ALREADY_SETUP = 4
+    INSUFFICIENT_PRIVILEGE = 5
+
+  detail = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class SqlFlagsListRequest(_messages.Message):
@@ -2050,14 +2052,11 @@ class SqlInstancesAddServerCaRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
-    parent: The parent resource where Cloud SQL should add this server CA.
-      Format: projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the project that contains the instance.
   """
 
   instance = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2)
-  project = _messages.StringField(3, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class SqlInstancesCloneRequest(_messages.Message):
@@ -2068,15 +2067,12 @@ class SqlInstancesCloneRequest(_messages.Message):
       does not include the project ID.
     instancesCloneRequest: A InstancesCloneRequest resource to be passed as
       the request body.
-    parent: The parent resource where Cloud SQL should clone this instance.
-      Format: projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the source as well as the clone Cloud SQL instance.
   """
 
   instance = _messages.StringField(1, required=True)
   instancesCloneRequest = _messages.MessageField('InstancesCloneRequest', 2)
-  parent = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
+  project = _messages.StringField(3, required=True)
 
 
 class SqlInstancesDeleteRequest(_messages.Message):
@@ -2086,13 +2082,10 @@ class SqlInstancesDeleteRequest(_messages.Message):
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance to be
       deleted.
-    resourceName: The name of database instance to delete. Format:
-      projects/{project}/locations/{location}/instances/{instance}
   """
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  resourceName = _messages.StringField(3)
 
 
 class SqlInstancesDemoteMasterRequest(_messages.Message):
@@ -2102,16 +2095,12 @@ class SqlInstancesDemoteMasterRequest(_messages.Message):
     instance: Cloud SQL instance name.
     instancesDemoteMasterRequest: A InstancesDemoteMasterRequest resource to
       be passed as the request body.
-    parent: The parent resource where Cloud SQL demotes this master database
-      instance. Format:
-      projects/{project}/locations/{location}/instances/{instance}
     project: ID of the project that contains the instance.
   """
 
   instance = _messages.StringField(1, required=True)
   instancesDemoteMasterRequest = _messages.MessageField('InstancesDemoteMasterRequest', 2)
-  parent = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
+  project = _messages.StringField(3, required=True)
 
 
 class SqlInstancesExportRequest(_messages.Message):
@@ -2121,17 +2110,13 @@ class SqlInstancesExportRequest(_messages.Message):
     instance: Cloud SQL instance ID. This does not include the project ID.
     instancesExportRequest: A InstancesExportRequest resource to be passed as
       the request body.
-    parent: The parent resource where Cloud SQL exports this database
-      instance. Format:
-      projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the project that contains the instance to be
       exported.
   """
 
   instance = _messages.StringField(1, required=True)
   instancesExportRequest = _messages.MessageField('InstancesExportRequest', 2)
-  parent = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
+  project = _messages.StringField(3, required=True)
 
 
 class SqlInstancesFailoverRequest(_messages.Message):
@@ -2141,16 +2126,12 @@ class SqlInstancesFailoverRequest(_messages.Message):
     instance: Cloud SQL instance ID. This does not include the project ID.
     instancesFailoverRequest: A InstancesFailoverRequest resource to be passed
       as the request body.
-    parent: The parent resource where Cloud SQL sends this database instance
-      during a failover. Format:
-      projects/{project}/locations/{location}/instances/{instance}
     project: ID of the project that contains the read replica.
   """
 
   instance = _messages.StringField(1, required=True)
   instancesFailoverRequest = _messages.MessageField('InstancesFailoverRequest', 2)
-  parent = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
+  project = _messages.StringField(3, required=True)
 
 
 class SqlInstancesGetRequest(_messages.Message):
@@ -2159,13 +2140,10 @@ class SqlInstancesGetRequest(_messages.Message):
   Fields:
     instance: Database instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
-    resourceName: Name of the resource database instance. Format:
-      projects/{project}/locations/{location}/instances/{instance}
   """
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  resourceName = _messages.StringField(3)
 
 
 class SqlInstancesImportRequest(_messages.Message):
@@ -2175,32 +2153,11 @@ class SqlInstancesImportRequest(_messages.Message):
     instance: Cloud SQL instance ID. This does not include the project ID.
     instancesImportRequest: A InstancesImportRequest resource to be passed as
       the request body.
-    parent: The parent resource where Cloud SQL imports this database
-      instance. Format:
-      projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the project that contains the instance.
   """
 
   instance = _messages.StringField(1, required=True)
   instancesImportRequest = _messages.MessageField('InstancesImportRequest', 2)
-  parent = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
-
-
-class SqlInstancesInsertRequest(_messages.Message):
-  r"""A SqlInstancesInsertRequest object.
-
-  Fields:
-    databaseInstance: A DatabaseInstance resource to be passed as the request
-      body.
-    parent: The parent resource where Cloud SQL creates this database
-      instance. Format: projects/{project}/locations/{location}
-    project: Project ID of the project to which the newly created Cloud SQL
-      instances should belong.
-  """
-
-  databaseInstance = _messages.MessageField('DatabaseInstance', 1)
-  parent = _messages.StringField(2)
   project = _messages.StringField(3, required=True)
 
 
@@ -2219,16 +2176,13 @@ class SqlInstancesListRequest(_messages.Message):
     maxResults: The maximum number of results to return per response.
     pageToken: A previously-returned page token representing part of the
       larger set of results to view.
-    parent: The parent, which owns this collection of database instances.
-      Format: projects/{project}/locations/{location}
     project: Project ID of the project for which to list Cloud SQL instances.
   """
 
   filter = _messages.StringField(1)
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
   pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  project = _messages.StringField(4, required=True)
 
 
 class SqlInstancesListServerCasRequest(_messages.Message):
@@ -2236,14 +2190,11 @@ class SqlInstancesListServerCasRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
-    parent: The parent, which owns this collection of server CAs. Format:
-      projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the project that contains the instance.
   """
 
   instance = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2)
-  project = _messages.StringField(3, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class SqlInstancesPatchRequest(_messages.Message):
@@ -2254,14 +2205,11 @@ class SqlInstancesPatchRequest(_messages.Message):
       body.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
-    resourceName: The name of the database instance for Cloud SQL to update.
-      Format: projects/{project}/locations/{location}/instances/{instance}
   """
 
   databaseInstance = _messages.MessageField('DatabaseInstance', 1)
   instance = _messages.StringField(2, required=True)
   project = _messages.StringField(3, required=True)
-  resourceName = _messages.StringField(4)
 
 
 class SqlInstancesPromoteReplicaRequest(_messages.Message):
@@ -2269,14 +2217,11 @@ class SqlInstancesPromoteReplicaRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL read replica instance name.
-    parent: The parent resource where Cloud SQL promotes this replica database
-      instance. Format: projects/{project}/locations/{location}
     project: ID of the project that contains the read replica.
   """
 
   instance = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2)
-  project = _messages.StringField(3, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class SqlInstancesRescheduleMaintenanceRequestBody(_messages.Message):
@@ -2294,14 +2239,11 @@ class SqlInstancesResetSslConfigRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
-    parent: The parent resource where Cloud SQL resets this SSL config.
-      Format: projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the project that contains the instance.
   """
 
   instance = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2)
-  project = _messages.StringField(3, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class SqlInstancesRestartRequest(_messages.Message):
@@ -2309,16 +2251,12 @@ class SqlInstancesRestartRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
-    parent: The parent resource where Cloud SQL restarts this database
-      instance. Format:
-      projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the project that contains the instance to be
       restarted.
   """
 
   instance = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2)
-  project = _messages.StringField(3, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class SqlInstancesRestoreBackupRequest(_messages.Message):
@@ -2328,16 +2266,12 @@ class SqlInstancesRestoreBackupRequest(_messages.Message):
     instance: Cloud SQL instance ID. This does not include the project ID.
     instancesRestoreBackupRequest: A InstancesRestoreBackupRequest resource to
       be passed as the request body.
-    parent: The parent resource where Cloud SQL restores this database
-      instance from backup. Format:
-      projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the project that contains the instance.
   """
 
   instance = _messages.StringField(1, required=True)
   instancesRestoreBackupRequest = _messages.MessageField('InstancesRestoreBackupRequest', 2)
-  parent = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
+  project = _messages.StringField(3, required=True)
 
 
 class SqlInstancesRotateServerCaRequest(_messages.Message):
@@ -2347,15 +2281,12 @@ class SqlInstancesRotateServerCaRequest(_messages.Message):
     instance: Cloud SQL instance ID. This does not include the project ID.
     instancesRotateServerCaRequest: A InstancesRotateServerCaRequest resource
       to be passed as the request body.
-    parent: The parent resource where Cloud SQL rotates these server CAs.
-      Format: projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the project that contains the instance.
   """
 
   instance = _messages.StringField(1, required=True)
   instancesRotateServerCaRequest = _messages.MessageField('InstancesRotateServerCaRequest', 2)
-  parent = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
+  project = _messages.StringField(3, required=True)
 
 
 class SqlInstancesStartReplicaRequest(_messages.Message):
@@ -2363,15 +2294,11 @@ class SqlInstancesStartReplicaRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL read replica instance name.
-    parent: The parent resource where Cloud SQL starts this database instance
-      replication. Format:
-      projects/{project}/locations/{location}/instances/{instance}
     project: ID of the project that contains the read replica.
   """
 
   instance = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2)
-  project = _messages.StringField(3, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class SqlInstancesStopReplicaRequest(_messages.Message):
@@ -2379,15 +2306,11 @@ class SqlInstancesStopReplicaRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL read replica instance name.
-    parent: The parent resource where Cloud SQL stops this database instance
-      replication. Format:
-      projects/{project}/locations/{location}/instances/{instance}
     project: ID of the project that contains the read replica.
   """
 
   instance = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2)
-  project = _messages.StringField(3, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class SqlInstancesTruncateLogRequest(_messages.Message):
@@ -2397,15 +2320,12 @@ class SqlInstancesTruncateLogRequest(_messages.Message):
     instance: Cloud SQL instance ID. This does not include the project ID.
     instancesTruncateLogRequest: A InstancesTruncateLogRequest resource to be
       passed as the request body.
-    parent: The parent resource where Cloud SQL truncates this log. Format:
-      projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the Cloud SQL project.
   """
 
   instance = _messages.StringField(1, required=True)
   instancesTruncateLogRequest = _messages.MessageField('InstancesTruncateLogRequest', 2)
-  parent = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
+  project = _messages.StringField(3, required=True)
 
 
 class SqlInstancesUpdateRequest(_messages.Message):
@@ -2416,14 +2336,23 @@ class SqlInstancesUpdateRequest(_messages.Message):
       body.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
-    resourceName: The name of the database instance for Cloud SQL to update.
-      Format: projects/{project}/locations/{location}/instances/{instance}
   """
 
   databaseInstance = _messages.MessageField('DatabaseInstance', 1)
   instance = _messages.StringField(2, required=True)
   project = _messages.StringField(3, required=True)
-  resourceName = _messages.StringField(4)
+
+
+class SqlInstancesVerifyExternalSyncSettingsResponse(_messages.Message):
+  r"""Instance verify external sync settings response.
+
+  Fields:
+    errors: List of migration violations.
+    kind: This is always <code>sql#migrationSettingErrorList</code>.
+  """
+
+  errors = _messages.MessageField('SqlExternalSyncSettingError', 1, repeated=True)
+  kind = _messages.StringField(2)
 
 
 class SqlOperationsGetRequest(_messages.Message):
@@ -2432,13 +2361,10 @@ class SqlOperationsGetRequest(_messages.Message):
   Fields:
     operation: Instance operation ID.
     project: Project ID of the project that contains the instance.
-    resourceName: The name of the operation for Cloud SQL to get. Format:
-      projects/{project}/locations/{location}/operations/{operation}
   """
 
   operation = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  resourceName = _messages.StringField(3)
 
 
 class SqlOperationsListRequest(_messages.Message):
@@ -2449,17 +2375,13 @@ class SqlOperationsListRequest(_messages.Message):
     maxResults: Maximum number of operations per response.
     pageToken: A previously-returned page token representing part of the
       larger set of results to view.
-    parent: Indirect parent. The direct parent should combine with the
-      instance name, which owns this collection of operations. Format:
-      projects/{project}/locations/{location}
     project: Project ID of the project that contains the instance.
   """
 
   instance = _messages.StringField(1)
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
   pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
+  project = _messages.StringField(4, required=True)
 
 
 class SqlProjectsInstancesRescheduleMaintenanceRequest(_messages.Message):
@@ -2467,9 +2389,6 @@ class SqlProjectsInstancesRescheduleMaintenanceRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
-    parent: The parent resource where Cloud SQL reshedule this database
-      instance's maintenance. Format:
-      projects/{project}/locations/{location}/instances/{instance}
     project: ID of the project that contains the instance.
     sqlInstancesRescheduleMaintenanceRequestBody: A
       SqlInstancesRescheduleMaintenanceRequestBody resource to be passed as
@@ -2477,29 +2396,68 @@ class SqlProjectsInstancesRescheduleMaintenanceRequest(_messages.Message):
   """
 
   instance = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2)
-  project = _messages.StringField(3, required=True)
-  sqlInstancesRescheduleMaintenanceRequestBody = _messages.MessageField('SqlInstancesRescheduleMaintenanceRequestBody', 4)
+  project = _messages.StringField(2, required=True)
+  sqlInstancesRescheduleMaintenanceRequestBody = _messages.MessageField('SqlInstancesRescheduleMaintenanceRequestBody', 3)
 
 
-class SqlProjectsLocationsInstancesRescheduleMaintenanceRequest(_messages.Message):
-  r"""A SqlProjectsLocationsInstancesRescheduleMaintenanceRequest object.
+class SqlProjectsInstancesStartExternalSyncRequest(_messages.Message):
+  r"""A SqlProjectsInstancesStartExternalSyncRequest object.
+
+  Enums:
+    SyncModeValueValuesEnum: External sync mode
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
-    parent: The parent resource where Cloud SQL reshedule this database
-      instance's maintenance. Format:
-      projects/{project}/locations/{location}/instances/{instance}
-    project: ID of the project that contains the instance.
-    sqlInstancesRescheduleMaintenanceRequestBody: A
-      SqlInstancesRescheduleMaintenanceRequestBody resource to be passed as
-      the request body.
+    project: ID of the project that contains the first generation instance.
+    syncMode: External sync mode
   """
 
-  instance = _messages.StringField(1)
-  parent = _messages.StringField(2, required=True)
-  project = _messages.StringField(3)
-  sqlInstancesRescheduleMaintenanceRequestBody = _messages.MessageField('SqlInstancesRescheduleMaintenanceRequestBody', 4)
+  class SyncModeValueValuesEnum(_messages.Enum):
+    r"""External sync mode
+
+    Values:
+      EXTERNAL_SYNC_MODE_UNSPECIFIED: <no description>
+      ONLINE: <no description>
+      OFFLINE: <no description>
+    """
+    EXTERNAL_SYNC_MODE_UNSPECIFIED = 0
+    ONLINE = 1
+    OFFLINE = 2
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  syncMode = _messages.EnumField('SyncModeValueValuesEnum', 3)
+
+
+class SqlProjectsInstancesVerifyExternalSyncSettingsRequest(_messages.Message):
+  r"""A SqlProjectsInstancesVerifyExternalSyncSettingsRequest object.
+
+  Enums:
+    SyncModeValueValuesEnum: External sync mode
+
+  Fields:
+    instance: Cloud SQL instance ID. This does not include the project ID.
+    project: Project ID of the project that contains the instance.
+    syncMode: External sync mode
+    verifyConnectionOnly: Flag to enable verifying connection only
+  """
+
+  class SyncModeValueValuesEnum(_messages.Enum):
+    r"""External sync mode
+
+    Values:
+      EXTERNAL_SYNC_MODE_UNSPECIFIED: <no description>
+      ONLINE: <no description>
+      OFFLINE: <no description>
+    """
+    EXTERNAL_SYNC_MODE_UNSPECIFIED = 0
+    ONLINE = 1
+    OFFLINE = 2
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  syncMode = _messages.EnumField('SyncModeValueValuesEnum', 3)
+  verifyConnectionOnly = _messages.BooleanField(4)
 
 
 class SqlScheduledMaintenance(_messages.Message):
@@ -2547,18 +2505,14 @@ class SqlSslCertsCreateEphemeralRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
-    parent: The parent resource where Cloud SQL creates this ephemeral
-      certificate. Format:
-      projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the Cloud SQL project.
     sslCertsCreateEphemeralRequest: A SslCertsCreateEphemeralRequest resource
       to be passed as the request body.
   """
 
   instance = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2)
-  project = _messages.StringField(3, required=True)
-  sslCertsCreateEphemeralRequest = _messages.MessageField('SslCertsCreateEphemeralRequest', 4)
+  project = _messages.StringField(2, required=True)
+  sslCertsCreateEphemeralRequest = _messages.MessageField('SslCertsCreateEphemeralRequest', 3)
 
 
 class SqlSslCertsDeleteRequest(_messages.Message):
@@ -2567,15 +2521,12 @@ class SqlSslCertsDeleteRequest(_messages.Message):
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
-    resourceName: The name of SSL certificate to delete. Format: projects/{pro
-      ject}/locations/{location}/instances/{instance}/sslCerts/{sslCert}
     sha1Fingerprint: Sha1 FingerPrint.
   """
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  resourceName = _messages.StringField(3)
-  sha1Fingerprint = _messages.StringField(4, required=True)
+  sha1Fingerprint = _messages.StringField(3, required=True)
 
 
 class SqlSslCertsGetRequest(_messages.Message):
@@ -2584,15 +2535,12 @@ class SqlSslCertsGetRequest(_messages.Message):
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
-    resourceName: Name of the resource ssl certificate. Format: projects/{proj
-      ect}/locations/{location}/instances/{instance}/sslCerts/{sslCert}
     sha1Fingerprint: Sha1 FingerPrint.
   """
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  resourceName = _messages.StringField(3)
-  sha1Fingerprint = _messages.StringField(4, required=True)
+  sha1Fingerprint = _messages.StringField(3, required=True)
 
 
 class SqlSslCertsInsertRequest(_messages.Message):
@@ -2600,17 +2548,14 @@ class SqlSslCertsInsertRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
-    parent: The parent resource where Cloud SQL creates this SSL certificate.
-      Format: projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the project that contains the instance.
     sslCertsInsertRequest: A SslCertsInsertRequest resource to be passed as
       the request body.
   """
 
   instance = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2)
-  project = _messages.StringField(3, required=True)
-  sslCertsInsertRequest = _messages.MessageField('SslCertsInsertRequest', 4)
+  project = _messages.StringField(2, required=True)
+  sslCertsInsertRequest = _messages.MessageField('SslCertsInsertRequest', 3)
 
 
 class SqlSslCertsListRequest(_messages.Message):
@@ -2618,14 +2563,11 @@ class SqlSslCertsListRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
-    parent: The parent, which owns this collection of SSL certificates.
-      Format: projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the project that contains the instance.
   """
 
   instance = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2)
-  project = _messages.StringField(3, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class SqlTiersListRequest(_messages.Message):
@@ -2646,32 +2588,12 @@ class SqlUsersDeleteRequest(_messages.Message):
     instance: Database instance ID. This does not include the project ID.
     name: Name of the user in the instance.
     project: Project ID of the project that contains the instance.
-    resourceName: The name of the user to delete. Format:
-      projects/{project}/locations/{location}/instances/{instance}/users
   """
 
   host = _messages.StringField(1)
   instance = _messages.StringField(2, required=True)
   name = _messages.StringField(3)
   project = _messages.StringField(4, required=True)
-  resourceName = _messages.StringField(5)
-
-
-class SqlUsersInsertRequest(_messages.Message):
-  r"""A SqlUsersInsertRequest object.
-
-  Fields:
-    instance: Database instance ID. This does not include the project ID.
-    parent: The parent resource where Cloud SQL creates this user. Format:
-      projects/{project}/locations/{location}/instances/{instance}
-    project: Project ID of the project that contains the instance.
-    user: A User resource to be passed as the request body.
-  """
-
-  instance = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2)
-  project = _messages.StringField(3, required=True)
-  user = _messages.MessageField('User', 4)
 
 
 class SqlUsersListRequest(_messages.Message):
@@ -2679,14 +2601,11 @@ class SqlUsersListRequest(_messages.Message):
 
   Fields:
     instance: Database instance ID. This does not include the project ID.
-    parent: The parent, which owns this collection of users. Format:
-      projects/{project}/locations/{location}/instances/{instance}
     project: Project ID of the project that contains the instance.
   """
 
   instance = _messages.StringField(1, required=True)
-  parent = _messages.StringField(2)
-  project = _messages.StringField(3, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class SqlUsersUpdateRequest(_messages.Message):
@@ -2697,8 +2616,6 @@ class SqlUsersUpdateRequest(_messages.Message):
     instance: Database instance ID. This does not include the project ID.
     name: Name of the user in the instance.
     project: Project ID of the project that contains the instance.
-    resourceName: The name of the user for Cloud SQL to update. Format:
-      projects/{project}/locations/{location}/instances/{instance}/users
     user: A User resource to be passed as the request body.
   """
 
@@ -2706,8 +2623,7 @@ class SqlUsersUpdateRequest(_messages.Message):
   instance = _messages.StringField(2, required=True)
   name = _messages.StringField(3)
   project = _messages.StringField(4, required=True)
-  resourceName = _messages.StringField(5)
-  user = _messages.MessageField('User', 6)
+  user = _messages.MessageField('User', 5)
 
 
 class SslCert(_messages.Message):

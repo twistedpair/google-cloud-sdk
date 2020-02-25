@@ -31,6 +31,16 @@ def AddDisplayNameArg(parser):
       """)
 
 
+def AddBackendAuthServiceAccountFlag(parser):
+  """Adds the backend auth service account flag."""
+  parser.add_argument(
+      '--backend-auth-service-account',
+      help="""\
+      Service account which will be used to sign tokens for backends with \
+      authentication configured.
+      """)
+
+
 def ProcessLabelsFlag(labels, message):
   """Parses labels into a specific message format."""
 

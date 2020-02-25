@@ -26,6 +26,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.privateca import text_utils
+from googlecloudsdk.command_lib.util.apis import arg_utils
 import ipaddress
 import six
 
@@ -325,10 +326,52 @@ def AddLocationFlag(parser, resource_name):
   """Add location flag to parser.
 
   Args:
-    parser: The parser to add the flag to.
+    parser: The argparse parser to add the flag to.
     resource_name: The name of resource that the location refers to e.g.
       'certificate authority'
   """
   base.Argument(
       '--location'.format(),
       help='Location of the {}.'.format(resource_name)).AddToParser(parser)
+
+
+_REVOCATION_MAPPING = {
+    'REVOCATION_REASON_UNSPECIFIED': 'unspecified',
+    'KEY_COMPROMISE': 'key-compromise',
+    'CERTIFICATE_AUTHORITY_COMPROMISE': 'certificate-authority-compromise',
+    'AFFILIATION_CHANGED': 'affiliation-changed',
+    'SUPERSEDED': 'superseded',
+    'CESSATION_OF_OPERATION': 'cessation-of-operation',
+    'CERTIFICATE_HOLD': 'certificate-hold',
+    'PRIVILEGE_WITHDRAWN': 'privilege-withdrawn',
+    'ATTRIBUTE_AUTHORITY_COMPROMISE': 'attribute-authority-compromise'
+}
+
+_REVOCATION_REASON_MAPPER = arg_utils.ChoiceEnumMapper(
+    arg_name='--reason',
+    default='unspecified',
+    help_str='Revocation reason to include in the CRL.',
+    message_enum=privateca_base.GetMessagesModule().RevokeCertificateRequest
+    .ReasonValueValuesEnum,
+    custom_mappings=_REVOCATION_MAPPING)
+
+
+def AddRevocationReasonFlag(parser):
+  """Add a revocation reason enum flag to the parser.
+
+  Args:
+    parser: The argparse parser to add the flag to.
+  """
+  _REVOCATION_REASON_MAPPER.choice_arg.AddToParser(parser)
+
+
+def ParseRevocationChoiceToEnum(choice):
+  """Return the apitools revocation reason enum value from the string choice.
+
+  Args:
+    choice: The string value of the revocation reason.
+
+  Returns:
+    The revocation enum value for the choice text.
+  """
+  return _REVOCATION_REASON_MAPPER.GetEnumForChoice(choice)

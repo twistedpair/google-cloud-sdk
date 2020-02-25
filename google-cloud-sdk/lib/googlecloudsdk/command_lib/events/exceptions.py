@@ -69,3 +69,7 @@ class SourceNotFound(exceptions.Error):
 
 class SourceCreationError(exceptions.Error):
   """When source creation fails."""
+
+
+class ServiceAccountMissingRequiredPermissions(exceptions.Error):
+  """When a service account does not have the necessary permissions."""

@@ -62,8 +62,8 @@ def ProcessInstanceTypeAndNodes(args, instance_type):
   """Ensure that --instance-type and --num-nodes are consistent.
 
   If --instance-type is DEVELOPMENT, then no --cluster-num-nodes can be
-  specified. If --instance-type is PRODUCTION, then --cluster-num-nodes must be
-  at least 3 if specified and defaults to 3 if not specified.
+  specified. If --instance-type is PRODUCTION, then --cluster-num-nodes defaults
+  to 3 if not specified, but can be any positive value.
 
   Args:
     args: an argparse namespace.
@@ -71,8 +71,8 @@ def ProcessInstanceTypeAndNodes(args, instance_type):
 
   Raises:
     exceptions.InvalidArgumentException: If --cluster-num-nodes is specified
-        when --instance-type is DEVELOPMENT, or if --instance-type is PRODUCTION
-        and --cluster-num-nodes is less than 3.
+        when --instance-type is DEVELOPMENT, or --cluster-num-nodes is not
+        positive.
 
   Returns:
     Number of nodes or None if DEVELOPMENT instance-type.
@@ -87,10 +87,10 @@ def ProcessInstanceTypeAndNodes(args, instance_type):
       raise exceptions.InvalidArgumentException(
           '--cluster-num-nodes',
           'Cannot set --cluster-num-nodes for DEVELOPMENT instances.')
-    elif num_nodes < 3:
+    elif num_nodes < 1:
       raise exceptions.InvalidArgumentException(
           '--cluster-num-nodes',
-          'Clusters of PRODUCTION instances must have at least 3 nodes.')
+          'Clusters of PRODUCTION instances must have at least 1 node.')
   return num_nodes
 
 

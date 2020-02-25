@@ -63,8 +63,6 @@ class InvalidFormatError(ParseError):
                '    - projects/0123456789\n'
                '    accessLevels:\n'
                '    - accessPolicies/my_policy/accessLevels/my_level\n'
-               '    unrestrictedServices\n'
-               '    - "*"'
                '    restrictedServices:\n'
                '    - storage.googleapis.com').format(reason,
                                                       ', '.join(valid_fields)))
@@ -432,6 +430,10 @@ def ParseServicePerimetersAlpha(path):
   return ParseServicePerimetersBase(path, version='v1alpha')
 
 
+def ParseServicePerimetersBeta(path):
+  return ParseServicePerimetersBase(path, version='v1')
+
+
 def ParseServicePerimetersBase(path, version=None):
   """Parse a YAML representation of a list of Service Perimeters.
 
@@ -463,6 +465,10 @@ def ParseServicePerimetersBase(path, version=None):
 
 def ParseReplaceServicePerimetersResponseAlpha(lro, unused_args):
   return ParseReplaceServicePerimetersResponseBase(lro, version='v1alpha')
+
+
+def ParseReplaceServicePerimetersResponseBeta(lro, unused_args):
+  return ParseReplaceServicePerimetersResponseBase(lro, version='v1')
 
 
 def ParseReplaceServicePerimetersResponseBase(lro, version):

@@ -9,7 +9,7 @@ class AccesscontextmanagerV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://accesscontextmanager.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://accesscontextmanager.mtls.googleapis.com/'
 
   _PACKAGE = u'accesscontextmanager'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -199,6 +199,43 @@ errors will result in an error response for the first error encountered.
         supports_download=False,
     )
 
+    def ReplaceAll(self, request, global_params=None):
+      r"""Replace all existing Access Levels in an Access.
+Policy with
+the Access Levels provided. This
+is done within one transaction. The longrunning operation from this RPC
+will have a successful status once all replacements have propagated to
+long-lasting storage. Replacements containing errors will result in an
+error response for the first error encountered and the transaction will be
+cancelled. Operation.response field will contain
+ReplaceAccessLevelsResponse. Removing Access Levels contained in existing
+Service Perimeters will result in
+error.
+
+      Args:
+        request: (AccesscontextmanagerAccessPoliciesAccessLevelsReplaceAllRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceAll')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceAll.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/accessPolicies/{accessPoliciesId}/accessLevels:replaceAll',
+        http_method=u'POST',
+        method_id=u'accesscontextmanager.accessPolicies.accessLevels.replaceAll',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/accessLevels:replaceAll',
+        request_field=u'replaceAccessLevelsRequest',
+        request_type_name=u'AccesscontextmanagerAccessPoliciesAccessLevelsReplaceAllRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class AccessPoliciesServicePerimetersService(base_api.BaseApiService):
     """Service class for the accessPolicies_servicePerimeters resource."""
 
@@ -208,6 +245,44 @@ errors will result in an error response for the first error encountered.
       super(AccesscontextmanagerV1.AccessPoliciesServicePerimetersService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Commit(self, request, global_params=None):
+      r"""Commit the dry-run spec for all the Service Perimeters in an.
+Access Policy.
+A commit operation on a Service Perimeter involves copying its `spec` field
+to that Service Perimeter's `status` field. Only Service Perimeters with
+`use_explicit_dry_run_spec` field set to true are affected by a commit
+operation. The longrunning operation from this RPC will have a successful
+status once the dry-run specs for all the Service Perimeters have been
+committed. If a commit fails, it will cause the longrunning operation to
+return an error response and the entire commit operation will be cancelled.
+When successful, Operation.response field will contain
+CommitServicePerimetersResponse. The `dry_run` and the `spec` fields will
+be cleared after a successful commit operation.
+
+      Args:
+        request: (AccesscontextmanagerAccessPoliciesServicePerimetersCommitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Commit')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Commit.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/accessPolicies/{accessPoliciesId}/servicePerimeters:commit',
+        http_method=u'POST',
+        method_id=u'accesscontextmanager.accessPolicies.servicePerimeters.commit',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/servicePerimeters:commit',
+        request_field=u'commitServicePerimetersRequest',
+        request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersCommitRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       r"""Create an Service Perimeter. The.
@@ -353,6 +428,41 @@ errors will result in an error response for the first error encountered.
         relative_path=u'v1/{+name}',
         request_field=u'servicePerimeter',
         request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def ReplaceAll(self, request, global_params=None):
+      r"""Replace all existing Service Perimeters in an.
+Access Policy
+with the Service Perimeters provided.
+This is done within one transaction. The longrunning operation from this
+RPC will have a successful status once all replacements have propagated to
+long-lasting storage. Replacements containing errors will result in an
+error response for the first error encountered and the transaction will be
+cancelled. Operation.response field will contain
+ReplaceServicePerimetersResponse.
+
+      Args:
+        request: (AccesscontextmanagerAccessPoliciesServicePerimetersReplaceAllRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceAll')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceAll.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/accessPolicies/{accessPoliciesId}/servicePerimeters:replaceAll',
+        http_method=u'POST',
+        method_id=u'accesscontextmanager.accessPolicies.servicePerimeters.replaceAll',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/servicePerimeters:replaceAll',
+        request_field=u'replaceServicePerimetersRequest',
+        request_type_name=u'AccesscontextmanagerAccessPoliciesServicePerimetersReplaceAllRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

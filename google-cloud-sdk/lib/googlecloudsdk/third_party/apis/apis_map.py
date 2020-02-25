@@ -765,6 +765,12 @@ MAP = {
                 client_classpath='gkehub_v1alpha1_client.GkehubV1alpha1',
                 messages_modulepath='gkehub_v1alpha1_messages',
                 default_version=False),
+        'v1alpha2':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.gkehub.v1alpha2',
+                client_classpath='gkehub_v1alpha2_client.GkehubV1alpha2',
+                messages_modulepath='gkehub_v1alpha2_messages',
+                default_version=False),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.gkehub.v1beta1',
@@ -881,6 +887,14 @@ MAP = {
                 client_classpath='managedidentities_v1beta1_client.ManagedidentitiesV1beta1',
                 messages_modulepath='managedidentities_v1beta1_messages',
                 default_version=False),
+    },
+    'memcache': {
+        'v1beta2':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.memcache.v1beta2',
+                client_classpath='memcache_v1beta2_client.MemcacheV1beta2',
+                messages_modulepath='memcache_v1beta2_messages',
+                default_version=True),
     },
     'ml': {
         'v1':

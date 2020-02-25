@@ -582,21 +582,33 @@ class ExecAction(_messages.Message):
 
 
 class Expr(_messages.Message):
-  r"""Represents an expression text. Example:      title: "User account
-  presence"     description: "Determines whether the request has a user
-  account"     expression: "size(request.user) > 0"
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec.  Example (Comparison):
+  title: "Summary size limit"     description: "Determines if a summary is
+  less than 100 chars"     expression: "document.summary.size() < 100"
+  Example (Equality):      title: "Requestor is owner"     description:
+  "Determines if requestor is the document owner"     expression:
+  "document.owner == request.auth.claims.email"  Example (Logic):      title:
+  "Public documents"     description: "Determine whether the document should
+  be publicly visible"     expression: "document.type != 'private' &&
+  document.type != 'internal'"  Example (Data Manipulation):      title:
+  "Notification string"     description: "Create a notification string with a
+  timestamp."     expression: "'New message received at ' +
+  string(document.create_time)"  The exact variables and functions that may be
+  referenced within an expression are determined by the service that evaluates
+  it. See the service documentation for additional information.
 
   Fields:
-    description: An optional description of the expression. This is a longer
+    description: Optional. Description of the expression. This is a longer
       text which describes the expression, e.g. when hovered over it in a UI.
     expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
       error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
   """
 
   description = _messages.StringField(1)
@@ -1627,6 +1639,43 @@ class RouteStatus(_messages.Message):
   url = _messages.StringField(5)
 
 
+class RunApiV1NamespacesSecretsCreateRequest(_messages.Message):
+  r"""A RunApiV1NamespacesSecretsCreateRequest object.
+
+  Fields:
+    parent: Required. The project ID or project number in which this secret
+      should be created.
+    secret: A Secret resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  secret = _messages.MessageField('Secret', 2)
+
+
+class RunApiV1NamespacesSecretsGetRequest(_messages.Message):
+  r"""A RunApiV1NamespacesSecretsGetRequest object.
+
+  Fields:
+    name: Required. The name of the secret being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunApiV1NamespacesSecretsReplaceSecretRequest(_messages.Message):
+  r"""A RunApiV1NamespacesSecretsReplaceSecretRequest object.
+
+  Fields:
+    name: Required. The name of the secret being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+    secret: A Secret resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  secret = _messages.MessageField('Secret', 2)
+
+
 class RunNamespacesAuthorizeddomainsListRequest(_messages.Message):
   r"""A RunNamespacesAuthorizeddomainsListRequest object.
 
@@ -2084,16 +2133,6 @@ class RunProjectsLocationsDomainmappingsListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
-class RunProjectsLocationsGetRequest(_messages.Message):
-  r"""A RunProjectsLocationsGetRequest object.
-
-  Fields:
-    name: Resource name for the location.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class RunProjectsLocationsListRequest(_messages.Message):
   r"""A RunProjectsLocationsListRequest object.
 
@@ -2212,6 +2251,43 @@ class RunProjectsLocationsRoutesListRequest(_messages.Message):
   parent = _messages.StringField(6, required=True)
   resourceVersion = _messages.StringField(7)
   watch = _messages.BooleanField(8)
+
+
+class RunProjectsLocationsSecretsCreateRequest(_messages.Message):
+  r"""A RunProjectsLocationsSecretsCreateRequest object.
+
+  Fields:
+    parent: Required. The project ID or project number in which this secret
+      should be created.
+    secret: A Secret resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  secret = _messages.MessageField('Secret', 2)
+
+
+class RunProjectsLocationsSecretsGetRequest(_messages.Message):
+  r"""A RunProjectsLocationsSecretsGetRequest object.
+
+  Fields:
+    name: Required. The name of the secret being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunProjectsLocationsSecretsReplaceSecretRequest(_messages.Message):
+  r"""A RunProjectsLocationsSecretsReplaceSecretRequest object.
+
+  Fields:
+    name: Required. The name of the secret being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+    secret: A Secret resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  secret = _messages.MessageField('Secret', 2)
 
 
 class RunProjectsLocationsServicesCreateRequest(_messages.Message):
@@ -2349,6 +2425,101 @@ class RunProjectsLocationsServicesTestIamPermissionsRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class Secret(_messages.Message):
+  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  Secret holds secret data of a certain type. The total bytes of the values in
+  the Data field must be less than MaxSecretSize bytes.
+
+  Messages:
+    DataValue: Data contains the secret data. Each key must consist of
+      alphanumeric characters, '-', '_' or '.'. The serialized form of the
+      secret data is a base64 encoded string, representing the arbitrary
+      (possibly non-string) data value here. Described in
+      https://tools.ietf.org/html/rfc4648#section-4
+    StringDataValue: stringData allows specifying non-binary secret data in
+      string form. It is provided as a write-only convenience method. All keys
+      and values are merged into the data field on write, overwriting any
+      existing values. It is never output when reading from the API. +k8s
+      :conversion-gen=false
+
+  Fields:
+    data: Data contains the secret data. Each key must consist of alphanumeric
+      characters, '-', '_' or '.'. The serialized form of the secret data is a
+      base64 encoded string, representing the arbitrary (possibly non-string)
+      data value here. Described in
+      https://tools.ietf.org/html/rfc4648#section-4
+    metadata: Standard object's metadata. More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#metadata
+    stringData: stringData allows specifying non-binary secret data in string
+      form. It is provided as a write-only convenience method. All keys and
+      values are merged into the data field on write, overwriting any existing
+      values. It is never output when reading from the API. +k8s:conversion-
+      gen=false
+    type: Used to facilitate programmatic handling of secret data.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DataValue(_messages.Message):
+    r"""Data contains the secret data. Each key must consist of alphanumeric
+    characters, '-', '_' or '.'. The serialized form of the secret data is a
+    base64 encoded string, representing the arbitrary (possibly non-string)
+    data value here. Described in
+    https://tools.ietf.org/html/rfc4648#section-4
+
+    Messages:
+      AdditionalProperty: An additional property for a DataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A byte attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.BytesField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class StringDataValue(_messages.Message):
+    r"""stringData allows specifying non-binary secret data in string form. It
+    is provided as a write-only convenience method. All keys and values are
+    merged into the data field on write, overwriting any existing values. It
+    is never output when reading from the API. +k8s:conversion-gen=false
+
+    Messages:
+      AdditionalProperty: An additional property for a StringDataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type StringDataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a StringDataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  data = _messages.MessageField('DataValue', 1)
+  metadata = _messages.MessageField('ObjectMeta', 2)
+  stringData = _messages.MessageField('StringDataValue', 3)
+  type = _messages.StringField(4)
 
 
 class SecretEnvSource(_messages.Message):

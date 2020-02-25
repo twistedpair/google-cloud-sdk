@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.events import exceptions
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import yaml
 
 
@@ -64,6 +65,16 @@ def AddBrokerFlag(parser):
       default='default',
       help='Name of the Broker to send events to. '
       'Defaults to \'default\' if not specified.')
+
+
+def AddServiceAccountFlag(parser):
+  """Adds service account flag."""
+  parser.add_argument(
+      '--service-account',
+      required=True,
+      type=iam_util.GetIamAccountFormatValidator(),
+      help='Email address of an IAM service account which represents the '
+      'identity of the internal events operator.')
 
 
 _PARAMETERS_FLAG_NAME = 'parameters'

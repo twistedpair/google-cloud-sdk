@@ -94,6 +94,7 @@ def ConstructPatch(env_ref=None,
                    remove_env_variables=None,
                    update_env_variables=None,
                    update_image_version=None,
+                   update_web_server_access_control=None,
                    release_track=base.ReleaseTrack.GA):
   """Constructs an environment patch.
 
@@ -124,6 +125,8 @@ def ConstructPatch(env_ref=None,
     update_env_variables: {string: string}, dict of environment variable
       names and values to set.
     update_image_version: string, image version to use for environment upgrade
+    update_web_server_access_control: [{string: string}], Webserver access
+        control to set
     release_track: base.ReleaseTrack, the release track of command. Will dictate
         which Composer client library will be used.
 
@@ -166,6 +169,9 @@ def ConstructPatch(env_ref=None,
   if update_image_version:
     return _ConstructImageVersionPatch(
         update_image_version, release_track=release_track)
+  if update_web_server_access_control is not None:
+    return _ConstructWebServerAccessControlPatch(
+        update_web_server_access_control, release_track=release_track)
   raise command_util.Error(
       'Cannot update Environment with no update type specified.')
 
@@ -356,4 +362,25 @@ def _ConstructImageVersionPatch(update_image_version,
   config = messages.EnvironmentConfig(softwareConfig=software_config)
 
   return 'config.software_config.image_version', messages.Environment(
+      config=config)
+
+
+def _ConstructWebServerAccessControlPatch(web_server_access_control,
+                                          release_track):
+  """Constructs an environment patch for web server network access control.
+
+  Args:
+    web_server_access_control: [{string: string}], the target list of IP ranges.
+    release_track: base.ReleaseTrack, the release track of command. It dictates
+      which Composer client library is used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  config = messages.EnvironmentConfig(
+      webServerNetworkAccessControl=environments_api_util
+      .BuildWebServerNetworkAccessControl(web_server_access_control,
+                                          release_track))
+  return 'config.web_server_network_access_control', messages.Environment(
       config=config)

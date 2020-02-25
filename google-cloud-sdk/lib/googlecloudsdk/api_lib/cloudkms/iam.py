@@ -136,6 +136,18 @@ def SetCryptoKeyIamPolicy(crypto_key_ref, policy, update_mask):
   return client.projects_locations_keyRings_cryptoKeys.SetIamPolicy(req)
 
 
+def TestCryptoKeyIamPermissions(crypto_key_ref, permissions):
+  """Return permissions that the caller has on the named CryptoKey."""
+  client = base.GetClientInstance()
+  messages = base.GetMessagesModule()
+
+  req = messages.CloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissionsRequest(
+      resource=crypto_key_ref.RelativeName(),
+      testIamPermissionsRequest=messages.TestIamPermissionsRequest(
+          permissions=permissions))
+  return client.projects_locations_keyRings_cryptoKeys.TestIamPermissions(req)
+
+
 def AddPolicyBindingToCryptoKey(crypto_key_ref, member, role):
   """Does an atomic Read-Modify-Write, adding the member to the role."""
   messages = base.GetMessagesModule()

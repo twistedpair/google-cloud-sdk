@@ -123,9 +123,8 @@ def CreateIndexes(project_id, indexes_to_create):
   detail_message = None
   with progress_tracker.ProgressTracker(
       '.',
-      autotick=True,
-      detail_message_callback=lambda: detail_message,
-      tick_delay=3):
+      autotick=False,
+      detail_message_callback=lambda: detail_message) as pt:
     for index in indexes_to_create:
       GetIndexesService().Create(
           BuildIndexProto(
@@ -135,7 +134,7 @@ def CreateIndexes(project_id, indexes_to_create):
               properties=index.properties))
       cnt = cnt + 1
       detail_message = '{0:.0%}'.format(cnt / len(indexes_to_create))
-      sys.stderr.flush()
+      pt.Tick()
 
 
 def DeleteIndexes(project_id, indexes_to_delete_ids):

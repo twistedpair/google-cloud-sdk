@@ -64,8 +64,22 @@ class _KubeCluster(object):
   """A kubernetes cluster.
 
   Attributes:
+    context_name: Kubernetes context name.
     env_vars: Docker env vars.
+    shared_docker: Whether the kubernetes cluster shares a docker instance
+        with the developer's machine.
   """
+
+  def __init__(self, context_name, shared_docker):
+    """Initializes KindCluster with cluster name.
+
+    Args:
+      context_name: Kubernetes context.
+      shared_docker: Whether the kubernetes cluster shares a docker instance
+        with the developer's machine.
+    """
+    self.context_name = context_name
+    self.shared_docker = shared_docker
 
   @property
   def env_vars(self):
@@ -78,6 +92,8 @@ class KindCluster(_KubeCluster):
   Attributes:
     context_name: Kubernetes context name.
     env_vars: Docker env vars.
+    shared_docker: Whether the kubernetes cluster shares a docker instance
+        with the developer's machine.
   """
 
   def __init__(self, cluster_name):
@@ -86,7 +102,7 @@ class KindCluster(_KubeCluster):
     Args:
       cluster_name: Name of cluster.
     """
-    self.context_name = 'kind-' + cluster_name
+    super(KindCluster, self).__init__('kind-' + cluster_name, False)
 
 
 class KindClusterContext(object):
@@ -161,15 +177,9 @@ class MinikubeCluster(_KubeCluster):
   Attributes:
     context_name: Kubernetes context name.
     env_vars: Docker environment variables.
+    shared_docker: Whether the kubernetes cluster shares a docker instance
+        with the developer's machine.
   """
-
-  def __init__(self, profile):
-    """Initializes MinkubeCluster with profile name.
-
-    Args:
-      profile: Name of minikube profile.
-    """
-    self.context_name = profile
 
   @property
   def env_vars(self):
@@ -186,7 +196,7 @@ class Minikube(object):
 
   def __enter__(self):
     _StartMinkubeCluster(self._cluster_name, self._vm_driver)
-    return MinikubeCluster(self._cluster_name)
+    return MinikubeCluster(self._cluster_name, self._vm_driver == 'docker')
 
   def __exit__(self, exc_type, exc_value, tb):
     if self._stop_cluster:
@@ -250,6 +260,8 @@ class ExternalCluster(_KubeCluster):
   Attributes:
     context_name: Kubernetes context name.
     env_vars: Docker environment variables.
+    shared_docker: Whether the kubernetes cluster shares a docker instance
+        with the developer's machine.
   """
 
   def __init__(self, cluster_name):
@@ -258,7 +270,7 @@ class ExternalCluster(_KubeCluster):
     Args:
       cluster_name: Name of the cluster.
     """
-    self.context_name = cluster_name
+    super(ExternalCluster, self).__init__(cluster_name, False)
 
 
 class ExternalClusterContext(object):

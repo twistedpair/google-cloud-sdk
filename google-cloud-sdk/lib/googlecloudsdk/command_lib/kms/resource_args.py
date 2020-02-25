@@ -25,6 +25,12 @@ from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 
 
+def KeyVersionAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='kms-key-version',
+      help_text='The KMS key version of the {resource}.')
+
+
 def KeyAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='kms-key', help_text='The KMS key of the {resource}.')
@@ -50,6 +56,18 @@ def ProjectAttributeConfig():
       name='kms-project',
       help_text='The Cloud project for the {resource}.',
       fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
+
+
+def GetKmsKeyVersionResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions',
+      resource_name='key version',
+      cryptoKeyVersionsId=KeyVersionAttributeConfig(),
+      cryptoKeysId=KeyAttributeConfig(),
+      keyRingsId=KeyringAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=ProjectAttributeConfig(),
+      disable_auto_completers=False)
 
 
 def GetKmsKeyResourceSpec(region_fallthrough=False):

@@ -21,13 +21,16 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
 
+DEFAULT_API_NAME = 'cloudkms'
+DEFAULT_API_VERSION = 'v1'
+
 
 def GetClientInstance():
-  return apis.GetClientInstance('cloudkms', 'v1')
+  return apis.GetClientInstance(DEFAULT_API_NAME, DEFAULT_API_VERSION)
 
 
 def GetMessagesModule():
-  return apis.GetMessagesModule('cloudkms', 'v1')
+  return apis.GetMessagesModule(DEFAULT_API_NAME, DEFAULT_API_VERSION)
 
 
 def MakeGetUriFunc(collection):
@@ -47,7 +50,7 @@ def MakeGetUriFunc(collection):
 
   def _GetUri(resource):
     registry = resources.REGISTRY.Clone()
-    registry.RegisterApiByName('cloudkms', 'v1')
+    registry.RegisterApiByName(DEFAULT_API_NAME, DEFAULT_API_VERSION)
     parsed = registry.Parse(resource.name, collection=collection)
     return parsed.SelfLink()
 

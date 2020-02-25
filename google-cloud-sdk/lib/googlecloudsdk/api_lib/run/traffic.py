@@ -110,7 +110,9 @@ def _GetItemSortKey(target):
   # be sorted for comparisons on TrafficTargets instances to work correctly. The
   # order of the list of traffic targets for a given key should not affect
   # equality. TrafficTarget is not hashable so a set is not an option.
-  return target.percent, (target.tag if target.tag is not None else '')
+  percent = target.percent if target.percent else 0
+  tag = target.tag if target.tag else ''
+  return percent, tag
 
 
 def NewRoundingCorrectionPrecedence(key_and_percent):

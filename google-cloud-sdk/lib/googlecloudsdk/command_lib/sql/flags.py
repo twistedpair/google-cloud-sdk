@@ -267,6 +267,10 @@ def AddDatabaseVersion(parser, restrict_choices=True):
       'MYSQL_5_7',
       'POSTGRES_9_6',
       'POSTGRES_11',
+      'SQLSERVER_2017_EXPRESS',
+      'SQLSERVER_2017_WEB',
+      'SQLSERVER_2017_STANDARD',
+      'SQLSERVER_2017_ENTERPRISE',
   ]
   help_text = (
       'The database engine type and version. If left unspecified, the API '

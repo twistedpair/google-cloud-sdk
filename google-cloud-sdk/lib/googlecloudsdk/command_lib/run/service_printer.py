@@ -172,8 +172,8 @@ class ServicePrinter(cp.CustomPrinterBase):
   def Transform(self, record):
     """Transform a service into the output structure of marker classes."""
     pairs = traffic_pair.GetTrafficTargetPairs(
-        record.spec.traffic,
-        record.status.traffic,
+        record.spec_traffic,
+        record.status_traffic,
         record.is_managed,
         record.status.latestReadyRevisionName)
     fmt = cp.Lines([

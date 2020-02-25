@@ -79,7 +79,7 @@ def ApiConfigProjectAttributeConfig(name='api-config-project'):
 def ApiConfigAttributeConfig(name='api-config'):
   return concepts.ResourceParameterAttributeConfig(
       name=name,
-      help_text='The API Config ID.')
+      help_text='API Config ID.')
 
 
 def GetLocationResourceSpec(resource_name='location', default=None):
@@ -147,7 +147,7 @@ def AddGatewayApiConfigResourceArgs(parser, verb, gateway_required=True,
           presentation_specs.ResourcePresentationSpec(
               '--api-config',
               GetApiConfigResourceSpec(include_project=True),
-              'Resource name for the API config the gateway will use.',
+              'Resource name for API config the gateway will use.',
               flag_name_overrides={'location': ''},
               required=api_config_required)
       ]).AddToParser(parser)
@@ -162,7 +162,7 @@ def AddLocationResourceArg(parser, verb,
   concept_parsers.ConceptParser.ForResource(
       name,
       GetLocationResourceSpec(default=default),
-      'The parent location which the {}.'.format(verb),
+      'Parent location which {}.'.format(verb),
       required=required).AddToParser(parser)
 
 
@@ -175,7 +175,7 @@ def AddApiResourceArg(parser, verb, positional=False, required=True,
   concept_parsers.ConceptParser.ForResource(
       name,
       GetApiResourceSpec(wildcard=wildcard),
-      'The name for API which {}.'.format(verb),
+      'Name for API which {}.'.format(verb),
       flag_name_overrides={'location': ''},
       required=required).AddToParser(parser)
 
@@ -188,6 +188,6 @@ def AddApiConfigResourceArg(parser, verb, positional=False, required=True):
   concept_parsers.ConceptParser.ForResource(
       name,
       GetApiConfigResourceSpec(),
-      'The name for the API Config which will be {}.'.format(verb),
+      'Name for API Config which will be {}.'.format(verb),
       flag_name_overrides={'location': ''},
       required=required).AddToParser(parser)

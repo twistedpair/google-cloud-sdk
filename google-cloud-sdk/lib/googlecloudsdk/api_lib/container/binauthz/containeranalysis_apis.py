@@ -20,16 +20,14 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import base
 
-V1_BETA1 = 'v1beta1'
 V1 = 'v1'
 
 
 def GetApiVersion(release_track):
-  # TODO(b/138859339): Migrate GA and beta commands to containeranalysis v1.
   if release_track == base.ReleaseTrack.GA:
-    return V1_BETA1
+    return V1
   elif release_track == base.ReleaseTrack.BETA:
-    return V1_BETA1
+    return V1
   elif release_track == base.ReleaseTrack.ALPHA:
     return V1
   else:

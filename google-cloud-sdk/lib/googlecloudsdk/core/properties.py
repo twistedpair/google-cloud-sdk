@@ -2388,17 +2388,16 @@ def PersistProperty(prop, value, scope=None):
   else:
     active_config = named_configs.ConfigurationStore.ActiveConfig()
     active_config.PersistProperty(prop.section, prop.name, value)
-  # Print message if value being set is overridden by environment var
+  # Print message if value being set/unset is overridden by environment var
   # to prevent user confusion
-  if value is not None:
-    env_name = prop.EnvironmentName()
-    override = os.getenv(env_name)
-    if override:
-      warning_message = ('WARNING: Property [{0}] is overridden '
-                         'by environment setting [{1}={2}]\n')
-      # Writing to sys.stderr because of circular dependency
-      # in googlecloudsdk.core.log on properties
-      sys.stderr.write(warning_message.format(prop.name, env_name, override))
+  env_name = prop.EnvironmentName()
+  override = os.getenv(env_name)
+  if override:
+    warning_message = ('WARNING: Property [{0}] is overridden '
+                       'by environment setting [{1}={2}]\n')
+    # Writing to sys.stderr because of circular dependency
+    # in googlecloudsdk.core.log on properties
+    sys.stderr.write(warning_message.format(prop.name, env_name, override))
 
 
 def _GetProperty(prop, properties_file, required):

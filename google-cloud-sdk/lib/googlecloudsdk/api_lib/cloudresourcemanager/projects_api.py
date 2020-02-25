@@ -252,6 +252,20 @@ def RemoveIamPolicyBindingWithCondition(project_ref,
   return SetIamPolicy(project_ref, policy, api_version=api_version)
 
 
+def TestIamPermissions(project_ref,
+                       permissions,
+                       api_version=DEFAULT_API_VERSION):
+  """Return a subset of the given permissions that a caller has on project_ref."""
+  client = projects_util.GetClient(api_version)
+  messages = projects_util.GetMessages(api_version)
+
+  request = messages.CloudresourcemanagerProjectsTestIamPermissionsRequest(
+      resource=project_ref.Name(),
+      testIamPermissionsRequest=messages.TestIamPermissionsRequest(
+          permissions=permissions))
+  return client.projects.TestIamPermissions(request)
+
+
 def ParentNameToResourceId(parent_name, api_version=DEFAULT_API_VERSION):
   messages = projects_util.GetMessages(api_version)
   if not parent_name:

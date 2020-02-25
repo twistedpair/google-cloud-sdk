@@ -96,13 +96,16 @@ def CreateReusableConfigResourceSpec():
       projectsId=ProjectAttributeConfig(fallthroughs=[project_fallthrough]))
 
 
-def CreateCertificateAuthorityResourceSpec(display_name,
-                                           location_attribute='location'):
+def CreateCertificateAuthorityResourceSpec(
+    display_name,
+    certificate_authority_attribute='certificate_authority',
+    location_attribute='location'):
   return concepts.ResourceSpec(
       'privateca.projects.locations.certificateAuthorities',
       # This will be formatted and used as {resource} in the help text.
       resource_name=display_name,
-      certificateAuthoritiesId=CertificateAuthorityAttributeConfig(),
+      certificateAuthoritiesId=CertificateAuthorityAttributeConfig(
+          certificate_authority_attribute),
       locationsId=LocationAttributeConfig(location_attribute),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 

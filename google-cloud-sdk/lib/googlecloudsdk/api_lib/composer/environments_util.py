@@ -53,6 +53,7 @@ def Create(environment_ref,
            private_environment=None,
            private_endpoint=None,
            master_ipv4_cidr=None,
+           web_server_access_control=None,
            release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.Create method.
 
@@ -99,6 +100,8 @@ def Create(environment_ref,
     private_endpoint: bool or None, managed env cluster using the private IP
         address of the master API endpoint.
     master_ipv4_cidr: IPv4 CIDR range to use for the master network.
+    web_server_access_control: [{string: string}], List of IP ranges with
+        descriptions to allow access to the web server.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
         which Composer client library will be used.
 
@@ -168,6 +171,11 @@ def Create(environment_ref,
       config.privateEnvironmentConfig = messages.PrivateEnvironmentConfig(
           enablePrivateEnvironment=private_environment,
           privateClusterConfig=private_cluster_config)
+
+  # Builds webServerNetworkAccessControl, if necessary.
+  if web_server_access_control is not None:
+    config.webServerNetworkAccessControl = BuildWebServerNetworkAccessControl(
+        web_server_access_control, release_track)
 
   # Builds environment message and attaches the configuration
   environment = messages.Environment(name=environment_ref.RelativeName())
@@ -288,3 +296,56 @@ def Patch(environment_ref,
           name=environment_ref.RelativeName(),
           environment=environment_patch,
           updateMask=update_mask))
+
+
+def BuildWebServerNetworkAccessControl(web_server_access_control,
+                                       release_track):
+  """Builds a WebServerNetworkAccessControl proto given an IP range list.
+
+  If the list is empty, the returned policy is set to ALLOW by default.
+  Otherwise, the default policy is DENY with a list of ALLOW rules for each
+  of the IP ranges.
+
+  Args:
+    web_server_access_control: [{string: string}], list of IP ranges with
+      descriptions.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+      which Composer client library will be used.
+
+  Returns:
+    WebServerNetworkAccessControl: proto to be sent to the API.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  return messages.WebServerNetworkAccessControl(allowedIpRanges=[
+      messages.AllowedIpRange(
+          value=ip_range['ip_range'], description=ip_range.get('description'))
+      for ip_range in web_server_access_control
+  ])
+
+
+def BuildWebServerAllowedIps(allowed_ip_list, allow_all, deny_all):
+  """Returns the list of IP ranges that will be sent to the API.
+
+  The resulting IP range list is determined by the options specified in
+  environment create or update flags.
+
+  Args:
+    allowed_ip_list: [{string: string}], list of IP ranges with descriptions.
+    allow_all: bool, True if allow all flag was set.
+    deny_all: bool, True if deny all flag was set.
+
+  Returns:
+    [{string: string}]: list of IP ranges that will be sent to the API, taking
+        into account the values of allow all and deny all flags.
+  """
+  if deny_all:
+    return []
+  if allow_all:
+    return [{
+        'ip_range': '0.0.0.0/0',
+        'description': 'Allows access from all IPv4 addresses (default value)',
+    }, {
+        'ip_range': '::0/0',
+        'description': 'Allows access from all IPv6 addresses (default value)',
+    }]
+  return allowed_ip_list

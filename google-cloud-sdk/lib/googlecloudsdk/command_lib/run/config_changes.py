@@ -634,7 +634,8 @@ class NoTrafficChange(ConfigChanger):
       raise exceptions.ConfigurationError(
           '--no-traffic not supported when creating a new service.')
 
-    resource.traffic.ZeroLatestTraffic(resource.status.latestReadyRevisionName)
+    resource.spec_traffic.ZeroLatestTraffic(
+        resource.status.latestReadyRevisionName)
     return resource
 
 
@@ -651,10 +652,11 @@ class TrafficChanges(ConfigChanger):
   def Adjust(self, resource):
     """Mutates the given service's traffic assignments."""
     if self._tags_to_update or self._tags_to_remove or self._clear_other_tags:
-      resource.traffic.UpdateTags(self._tags_to_update, self._tags_to_remove,
-                                  self._clear_other_tags)
+      resource.spec_traffic.UpdateTags(self._tags_to_update,
+                                       self._tags_to_remove,
+                                       self._clear_other_tags)
     if self._new_percentages:
-      resource.traffic.UpdateTraffic(self._new_percentages)
+      resource.spec_traffic.UpdateTraffic(self._new_percentages)
     return resource
 
 

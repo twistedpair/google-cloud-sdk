@@ -274,16 +274,18 @@ def AddDefaultAlgorithmFlag(parser):
   parser.add_argument(
       '--default-algorithm',
       choices=sorted(maps.ALL_ALGORITHMS),
-      help='The default algorithm for the crypto key. See '
-      'https://cloud.google.com/kms/docs/algorithms for guidance on choosing '
-      'an algorithm.')
+      help='The default algorithm for the crypto key. For more information '
+      'about choosing an algorithm, see '
+      'https://cloud.google.com/kms/docs/algorithms.')
 
 
 def AddRequiredImportMethodFlag(parser):
   parser.add_argument(
       '--import-method',
       choices=sorted(maps.IMPORT_METHOD_MAPPER.choices)[1:],
-      help='Import method to use for this import job.',
+      help='The wrapping method to be used for incoming key material. For more '
+      'information about choosing an import method, see '
+      'https://cloud.google.com/kms/docs/key-wrapping.',
       required=True)
 
 
@@ -298,9 +300,9 @@ def AddOptionalPublicKeyFileArgument(parser):
 def AddOptionalTargetKeyFileArgument(parser):
   parser.add_argument(
       '--target-key-file',
-      help='Optional path to the target key to import into a KMS key version. '
-      'If specified, the key will be wrapped in the format produced by the '
-      'PKCS#11 mechanism CKM_RSA_AES_KEY_WRAP')
+      help='Optional path to the unwrapped target key to import into a Cloud '
+      'KMS key version. If specified, the key will be securely wrapped before '
+      'transmission to Google.')
 
 
 def AddDigestAlgorithmFlag(parser, help_action):
@@ -315,9 +317,9 @@ def AddImportedVersionAlgorithmFlag(parser):
   parser.add_argument(
       '--algorithm',
       choices=sorted(maps.ALGORITHMS_FOR_IMPORT),
-      help='The algorithm of the key being imported. See'
-      'https://cloud.google.com/kms/docs/algorithms for guidance on choosing '
-      'an algorithm.',
+      help='The algorithm to assign to the new key version. For more '
+      'information about supported algorithms, see '
+      'https://cloud.google.com/kms/docs/algorithms.',
       required=True)
 
 

@@ -127,9 +127,14 @@ class Service(k8s_object.KubernetesObject):
     return self.annotations.get(u'serving.knative.dev/lastModifier')
 
   @property
-  def traffic(self):
+  def spec_traffic(self):
     self.AssertFullObject()
     return traffic.TrafficTargets(self._messages, self.spec.traffic)
+
+  @property
+  def status_traffic(self):
+    self.AssertFullObject()
+    return traffic.TrafficTargets(self._messages, self.status.traffic)
 
   @property
   def vpc_connector(self):

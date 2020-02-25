@@ -25,6 +25,7 @@ from googlecloudsdk.calliope import base
 
 ALL_TRACKS = [t.id for t in base.ReleaseTrack.AllValues()]
 RELEASE_TRACKS = 'release_tracks'
+GROUP = 'group'
 
 
 class DoesNotExistForTrackError(Exception):
@@ -45,6 +46,7 @@ def _SetValuesForTrack(obj, track):
     DoesNotExistForTrackError: if the object does not exist for the track.
   """
   if isinstance(obj, dict):
+    is_group = GROUP in obj
     # Check if it exists for this track, and raise an Exception if it doesn't.
     if RELEASE_TRACKS in obj:
       if track not in obj[RELEASE_TRACKS]:
@@ -65,9 +67,9 @@ def _SetValuesForTrack(obj, track):
         _SetValuesForTrack(child, track)
       except DoesNotExistForTrackError:
         del obj[key]
-    if not obj:
-      # All of the children have been omitted, such as for an arg group nested
-      # under the `group` key.
+    if is_group and not obj:
+      # All of the children have been omitted for an arg group nested under the
+      # `group` key.
       raise DoesNotExistForTrackError()
   elif isinstance(obj, list):
     # Recursively update all children.

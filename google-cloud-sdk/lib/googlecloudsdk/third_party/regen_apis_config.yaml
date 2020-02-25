@@ -437,6 +437,8 @@ apis:
   gkehub:
     v1alpha1:
       discovery_doc: gkehub_v1alpha1.json
+    v1alpha2:
+      discovery_doc: gkehub_v1alpha2.json
     v1beta1:
       discovery_doc: gkehub_v1beta1.json
     v1:
@@ -547,6 +549,9 @@ apis:
     v2:
       discovery_doc: logging_v2.json
       default: true
+  memcache:
+    v1beta2:
+      discovery_doc: memcache_v1beta2.json
   ml:
     v1:
       discovery_doc: ml_v1.json

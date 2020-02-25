@@ -13,13 +13,14 @@ package = 'accesscontextmanager'
 
 
 class AccessLevel(_messages.Message):
-  r"""An `AccessLevel` is a label that can be applied to requests to GCP
-  services, along with a list of requirements necessary for the label to be
-  applied.
+  r"""An `AccessLevel` is a label that can be applied to requests to Google
+  Cloud services, along with a list of requirements necessary for the label to
+  be applied.
 
   Fields:
     basic: A `BasicLevel` composed of `Conditions`.
     createTime: Output only. Time the `AccessLevel` was created in UTC.
+    custom: A `CustomLevel` written in the Common Expression Language.
     description: Description of the `AccessLevel` and its use. Does not affect
       behavior.
     name: Required. Resource name for the Access Level. The `short_name`
@@ -31,18 +32,19 @@ class AccessLevel(_messages.Message):
 
   basic = _messages.MessageField('BasicLevel', 1)
   createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  name = _messages.StringField(4)
-  title = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  custom = _messages.MessageField('CustomLevel', 3)
+  description = _messages.StringField(4)
+  name = _messages.StringField(5)
+  title = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class AccessPolicy(_messages.Message):
   r"""`AccessPolicy` is a container for `AccessLevels` (which define the
-  necessary attributes to use GCP services) and `ServicePerimeters` (which
-  define regions of services able to freely pass data within a perimeter). An
-  access policy is globally visible within an organization, and the
-  restrictions it specifies apply to all projects within an organization.
+  necessary attributes to use Google Cloud services) and `ServicePerimeters`
+  (which define regions of services able to freely pass data within a
+  perimeter). An access policy is globally visible within an organization, and
+  the restrictions it specifies apply to all projects within an organization.
 
   Fields:
     createTime: Output only. Time the `AccessPolicy` was created in UTC.
@@ -186,6 +188,21 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest(_messages.Messa
   updateMask = _messages.StringField(3)
 
 
+class AccesscontextmanagerAccessPoliciesAccessLevelsReplaceAllRequest(_messages.Message):
+  r"""A AccesscontextmanagerAccessPoliciesAccessLevelsReplaceAllRequest
+  object.
+
+  Fields:
+    parent: Required. Resource name for the access policy which owns these
+      Access Levels.  Format: `accessPolicies/{policy_id}`
+    replaceAccessLevelsRequest: A ReplaceAccessLevelsRequest resource to be
+      passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  replaceAccessLevelsRequest = _messages.MessageField('ReplaceAccessLevelsRequest', 2)
+
+
 class AccesscontextmanagerAccessPoliciesDeleteRequest(_messages.Message):
   r"""A AccesscontextmanagerAccessPoliciesDeleteRequest object.
 
@@ -239,6 +256,22 @@ class AccesscontextmanagerAccessPoliciesPatchRequest(_messages.Message):
   accessPolicy = _messages.MessageField('AccessPolicy', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class AccesscontextmanagerAccessPoliciesServicePerimetersCommitRequest(_messages.Message):
+  r"""A AccesscontextmanagerAccessPoliciesServicePerimetersCommitRequest
+  object.
+
+  Fields:
+    commitServicePerimetersRequest: A CommitServicePerimetersRequest resource
+      to be passed as the request body.
+    parent: Required. Resource name for the parent Access Policy which owns
+      all Service Perimeters in scope for the commit operation.  Format:
+      `accessPolicies/{policy_id}`
+  """
+
+  commitServicePerimetersRequest = _messages.MessageField('CommitServicePerimetersRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class AccesscontextmanagerAccessPoliciesServicePerimetersCreateRequest(_messages.Message):
@@ -313,6 +346,21 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest(_messages.
   name = _messages.StringField(1, required=True)
   servicePerimeter = _messages.MessageField('ServicePerimeter', 2)
   updateMask = _messages.StringField(3)
+
+
+class AccesscontextmanagerAccessPoliciesServicePerimetersReplaceAllRequest(_messages.Message):
+  r"""A AccesscontextmanagerAccessPoliciesServicePerimetersReplaceAllRequest
+  object.
+
+  Fields:
+    parent: Required. Resource name for the access policy which owns these
+      Service Perimeters.  Format: `accessPolicies/{policy_id}`
+    replaceServicePerimetersRequest: A ReplaceServicePerimetersRequest
+      resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  replaceServicePerimetersRequest = _messages.MessageField('ReplaceServicePerimetersRequest', 2)
 
 
 class AccesscontextmanagerOperationsCancelRequest(_messages.Message):
@@ -408,6 +456,35 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CommitServicePerimetersRequest(_messages.Message):
+  r"""A request to commit dry-run specs in all Service Perimeters belonging to
+  an Access Policy.
+
+  Fields:
+    etag: Optional. The etag for the version of the Access Policy that this
+      commit operation is to be performed on. If, at the time of commit, the
+      etag for the Access Policy stored in Access Context Manager is different
+      from the specified etag, then the commit operation will not be performed
+      and the call will fail. This field is not required. If etag is not
+      provided, the operation will be performed as if a valid etag is
+      provided.
+  """
+
+  etag = _messages.StringField(1)
+
+
+class CommitServicePerimetersResponse(_messages.Message):
+  r"""A response to CommitServicePerimetersRequest. This will be put inside of
+  Operation.response field.
+
+  Fields:
+    servicePerimeters: List of all the Service Perimeter instances in the
+      Access Policy.
+  """
+
+  servicePerimeters = _messages.MessageField('ServicePerimeter', 1, repeated=True)
+
+
 class Condition(_messages.Message):
   r"""A condition necessary for an `AccessLevel` to be granted. The Condition
   is an AND over its fields. So a Condition is true if: 1) the request IP is
@@ -448,6 +525,18 @@ class Condition(_messages.Message):
   negate = _messages.BooleanField(4)
   regions = _messages.StringField(5, repeated=True)
   requiredAccessLevels = _messages.StringField(6, repeated=True)
+
+
+class CustomLevel(_messages.Message):
+  r"""`CustomLevel` is an `AccessLevel` using the Cloud Common Expression
+  Language to represent the necessary conditions for the level to apply to a
+  request. See CEL spec at: https://github.com/google/cel-spec
+
+  Fields:
+    expr: Required. A Cloud CEL expression evaluating to a boolean.
+  """
+
+  expr = _messages.MessageField('Expr', 1)
 
 
 class DevicePolicy(_messages.Message):
@@ -523,6 +612,42 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class Expr(_messages.Message):
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec.  Example (Comparison):
+  title: "Summary size limit"     description: "Determines if a summary is
+  less than 100 chars"     expression: "document.summary.size() < 100"
+  Example (Equality):      title: "Requestor is owner"     description:
+  "Determines if requestor is the document owner"     expression:
+  "document.owner == request.auth.claims.email"  Example (Logic):      title:
+  "Public documents"     description: "Determine whether the document should
+  be publicly visible"     expression: "document.type != 'private' &&
+  document.type != 'internal'"  Example (Data Manipulation):      title:
+  "Notification string"     description: "Create a notification string with a
+  timestamp."     expression: "'New message received at ' +
+  string(document.create_time)"  The exact variables and functions that may be
+  referenced within an expression are determined by the service that evaluates
+  it. See the service documentation for additional information.
+
+  Fields:
+    description: Optional. Description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
 
 
 class ListAccessLevelsResponse(_messages.Message):
@@ -712,29 +837,95 @@ class OsConstraint(_messages.Message):
       DESKTOP_WINDOWS: A desktop Windows operating system.
       DESKTOP_LINUX: A desktop Linux operating system.
       DESKTOP_CHROME_OS: A desktop ChromeOS operating system.
+      ANDROID: An Android operating system.
+      IOS: An iOS operating system.
     """
     OS_UNSPECIFIED = 0
     DESKTOP_MAC = 1
     DESKTOP_WINDOWS = 2
     DESKTOP_LINUX = 3
     DESKTOP_CHROME_OS = 4
+    ANDROID = 5
+    IOS = 6
 
   minimumVersion = _messages.StringField(1)
   osType = _messages.EnumField('OsTypeValueValuesEnum', 2)
   requireVerifiedChromeOs = _messages.BooleanField(3)
 
 
+class ReplaceAccessLevelsRequest(_messages.Message):
+  r"""A request to replace all existing Access Levels in an Access Policy with
+  the Access Levels provided. This is done within one transaction.
+
+  Fields:
+    accessLevels: Required. The desired Access Levels that should replace all
+      existing Access Levels in the Access Policy.
+    etag: Optional. The etag for the version of the Access Policy that this
+      replace operation is to be performed on. If, at the time of replace, the
+      etag for the Access Policy stored in Access Context Manager is different
+      from the specified etag, then the replace operation will not be
+      performed and the call will fail. This field is not required. If etag is
+      not provided, the operation will be performed as if a valid etag is
+      provided.
+  """
+
+  accessLevels = _messages.MessageField('AccessLevel', 1, repeated=True)
+  etag = _messages.StringField(2)
+
+
+class ReplaceAccessLevelsResponse(_messages.Message):
+  r"""A response to ReplaceAccessLevelsRequest. This will be put inside of
+  Operation.response field.
+
+  Fields:
+    accessLevels: List of the Access Level instances.
+  """
+
+  accessLevels = _messages.MessageField('AccessLevel', 1, repeated=True)
+
+
+class ReplaceServicePerimetersRequest(_messages.Message):
+  r"""A request to replace all existing Service Perimeters in an Access Policy
+  with the Service Perimeters provided. This is done within one transaction.
+
+  Fields:
+    etag: Optional. The etag for the version of the Access Policy that this
+      replace operation is to be performed on. If, at the time of replace, the
+      etag for the Access Policy stored in Access Context Manager is different
+      from the specified etag, then the replace operation will not be
+      performed and the call will fail. This field is not required. If etag is
+      not provided, the operation will be performed as if a valid etag is
+      provided.
+    servicePerimeters: Required. The desired Service Perimeters that should
+      replace all existing Service Perimeters in the Access Policy.
+  """
+
+  etag = _messages.StringField(1)
+  servicePerimeters = _messages.MessageField('ServicePerimeter', 2, repeated=True)
+
+
+class ReplaceServicePerimetersResponse(_messages.Message):
+  r"""A response to ReplaceServicePerimetersRequest. This will be put inside
+  of Operation.response field.
+
+  Fields:
+    servicePerimeters: List of the Service Perimeter instances.
+  """
+
+  servicePerimeters = _messages.MessageField('ServicePerimeter', 1, repeated=True)
+
+
 class ServicePerimeter(_messages.Message):
-  r"""`ServicePerimeter` describes a set of GCP resources which can freely
-  import and export data amongst themselves, but not export outside of the
-  `ServicePerimeter`. If a request with a source within this
+  r"""`ServicePerimeter` describes a set of Google Cloud resources which can
+  freely import and export data amongst themselves, but not export outside of
+  the `ServicePerimeter`. If a request with a source within this
   `ServicePerimeter` has a target outside of the `ServicePerimeter`, the
   request will be blocked. Otherwise the request is allowed. There are two
   types of Service Perimeter - Regular and Bridge. Regular Service Perimeters
-  cannot overlap, a single GCP project can only belong to a single regular
-  Service Perimeter. Service Perimeter Bridges can contain only GCP projects
-  as members, a single GCP project may belong to multiple Service Perimeter
-  Bridges.
+  cannot overlap, a single Google Cloud project can only belong to a single
+  regular Service Perimeter. Service Perimeter Bridges can contain only Google
+  Cloud projects as members, a single Google Cloud project may belong to
+  multiple Service Perimeter Bridges.
 
   Enums:
     PerimeterTypeValueValuesEnum: Perimeter type indicator. A single project
@@ -756,11 +947,26 @@ class ServicePerimeter(_messages.Message):
       bridges. A project cannot be a included in a perimeter bridge without
       being included in regular perimeter. For perimeter bridges, the
       restricted service list as well as access level lists must be empty.
+    spec: Proposed (or dry run) ServicePerimeter configuration. This
+      configuration allows to specify and test ServicePerimeter configuration
+      without enforcing actual access restrictions. Only allowed to be set
+      when the "use_explicit_dry_run_spec" flag is set.
     status: Current ServicePerimeter configuration. Specifies sets of
       resources, restricted services and access levels that determine
       perimeter content and boundaries.
     title: Human readable title. Must be unique within the Policy.
     updateTime: Output only. Time the `ServicePerimeter` was updated in UTC.
+    useExplicitDryRunSpec: Use explicit dry run spec flag. Ordinarily, a dry-
+      run spec implicitly exists  for all Service Perimeters, and that spec is
+      identical to the status for those Service Perimeters. When this flag is
+      set, it inhibits the generation of the implicit spec, thereby allowing
+      the user to explicitly provide a configuration ("spec") to use in a dry-
+      run version of the Service Perimeter. This allows the user to test
+      changes to the enforced config ("status") without actually enforcing
+      them. This testing is done through analyzing the differences between
+      currently enforced and suggested restrictions. use_explicit_dry_run_spec
+      must bet set to True if any of the fields in the spec are set to non-
+      default values.
   """
 
   class PerimeterTypeValueValuesEnum(_messages.Enum):
@@ -781,14 +987,16 @@ class ServicePerimeter(_messages.Message):
   description = _messages.StringField(2)
   name = _messages.StringField(3)
   perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 4)
-  status = _messages.MessageField('ServicePerimeterConfig', 5)
-  title = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  spec = _messages.MessageField('ServicePerimeterConfig', 5)
+  status = _messages.MessageField('ServicePerimeterConfig', 6)
+  title = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  useExplicitDryRunSpec = _messages.BooleanField(9)
 
 
 class ServicePerimeterConfig(_messages.Message):
-  r"""`ServicePerimeterConfig` specifies a set of GCP resources that describe
-  specific Service Perimeter configuration.
+  r"""`ServicePerimeterConfig` specifies a set of Google Cloud resources that
+  describe specific Service Perimeter configuration.
 
   Fields:
     accessLevels: A list of `AccessLevel` resource names that allow resources
@@ -796,22 +1004,24 @@ class ServicePerimeterConfig(_messages.Message):
       `AccessLevels` listed must be in the same policy as this
       `ServicePerimeter`. Referencing a nonexistent `AccessLevel` is a syntax
       error. If no `AccessLevel` names are listed, resources within the
-      perimeter can only be accessed via GCP calls with request origins within
-      the perimeter. Example:
+      perimeter can only be accessed via Google Cloud calls with request
+      origins within the perimeter. Example:
       `"accessPolicies/MY_POLICY/accessLevels/MY_LEVEL"`. For Service
       Perimeter Bridge, must be empty.
-    resources: A list of GCP resources that are inside of the service
+    resources: A list of Google Cloud resources that are inside of the service
       perimeter. Currently only projects are allowed. Format:
       `projects/{project_number}`
-    restrictedServices: GCP services that are subject to the Service Perimeter
-      restrictions. For example, if `storage.googleapis.com` is specified,
-      access to the storage buckets inside the perimeter must meet the
-      perimeter's access restrictions.
+    restrictedServices: Google Cloud services that are subject to the Service
+      Perimeter restrictions. For example, if `storage.googleapis.com` is
+      specified, access to the storage buckets inside the perimeter must meet
+      the perimeter's access restrictions.
+    vpcAccessibleServices: Configuration for within Perimeter allowed APIs.
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
   resources = _messages.StringField(2, repeated=True)
   restrictedServices = _messages.StringField(3, repeated=True)
+  vpcAccessibleServices = _messages.MessageField('VpcAccessibleServices', 4)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -926,6 +1136,21 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class VpcAccessibleServices(_messages.Message):
+  r"""Specifies how APIs are allowed to communicate within the Service
+  Perimeter.
+
+  Fields:
+    allowedServices: The list of APIs usable within the Service Perimeter.
+      Must be empty unless 'enable_restriction' is True.
+    enableRestriction: Whether to restrict API calls within the Service
+      Perimeter to the list of APIs specified in 'allowed_services'.
+  """
+
+  allowedServices = _messages.StringField(1, repeated=True)
+  enableRestriction = _messages.BooleanField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

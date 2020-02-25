@@ -22,7 +22,7 @@ from __future__ import unicode_literals
 
 import abc
 import collections
-from functools import wraps
+from functools import wraps  # pylint:disable=g-importing-member
 import itertools
 import re
 import sys
@@ -652,6 +652,14 @@ class SilentCommand(six.with_metaclass(abc.ABCMeta, Command)):
 
 class DescribeCommand(six.with_metaclass(abc.ABCMeta, Command)):
   """A command that prints one resource in the 'default' format."""
+
+
+class ImportCommand(six.with_metaclass(abc.ABCMeta, Command)):
+  """A command that imports one resource from yaml format."""
+
+
+class ExportCommand(six.with_metaclass(abc.ABCMeta, Command)):
+  """A command that outputs one resource to file in yaml format."""
 
 
 class BinaryBackedCommand(six.with_metaclass(abc.ABCMeta, Command)):

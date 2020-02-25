@@ -165,6 +165,10 @@ def ProcessConfigsFiles(ref, args, request):
   """Reads the config into GameServerConfig proto and updates the request."""
   del ref
   if args.config_overrides_file:
+    if not request.gameServerDeploymentRollout:
+      messages = utils.GetMessages(utils.GetApiVersionFromArgs(args))
+      gsd = messages.GameServerDeploymentRollout()
+      request.gameServerDeploymentRollout = gsd
     request.gameServerDeploymentRollout.gameServerConfigOverrides = utils.ProcessConfigOverrideFile(
         args.config_overrides_file, utils.GetApiVersionFromArgs(args))
   return request

@@ -387,7 +387,7 @@ def LoadFreshCredential(account=None,
   return cred
 
 
-def LoadIfEnabled(allow_account_impersonation=True):
+def LoadIfEnabled(allow_account_impersonation=True, use_google_auth=False):
   """Get the credentials associated with the current account.
 
   If credentials have been disabled via properties, this will return None.
@@ -399,11 +399,22 @@ def LoadIfEnabled(allow_account_impersonation=True):
     allow_account_impersonation: bool, True to allow use of impersonated service
       account credentials (if that is configured). If False, the active user
       credentials will always be loaded.
+    use_google_auth: bool, True to load credentials of google-auth if it is
+      supported in the current authentication scenario. False to load
+      credentials of oauth2client.
 
   Returns:
-    The credentials or None. The only time None is returned is if credentials
-    are disabled via properties. If no credentials are present but credentials
-    are enabled via properties, it will be an error.
+    The credentials or None. The returned credentails will be type of
+    oauth2client.client.Credentials or google.auth.credentials.Credentials based
+    on use_google_auth and whether google-auth is supported in the current
+    authentication scenario. The only two scenarios that google-auth is not
+    supported are,
+    1) Property auth/disable_google_auth is set to True;
+    2) P12 service account key is being used.
+
+    The only time None is returned is when credentials are disabled via
+    properties. If no credentials are present but credentials are enabled via
+    properties, it will be an error.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -415,11 +426,16 @@ def LoadIfEnabled(allow_account_impersonation=True):
   """
   if properties.VALUES.auth.disable_credentials.GetBool():
     return None
-  return Load(allow_account_impersonation=allow_account_impersonation)
+  return Load(
+      allow_account_impersonation=allow_account_impersonation,
+      use_google_auth=use_google_auth)
 
 
-def Load(account=None, scopes=None, prevent_refresh=False,
-         allow_account_impersonation=True):
+def Load(account=None,
+         scopes=None,
+         prevent_refresh=False,
+         allow_account_impersonation=True,
+         use_google_auth=False):
   """Get the credentials associated with the provided account.
 
   This loads credentials regardless of whether credentials have been disabled
@@ -444,9 +460,17 @@ def Load(account=None, scopes=None, prevent_refresh=False,
     allow_account_impersonation: bool, True to allow use of impersonated service
       account credentials (if that is configured). If False, the active user
       credentials will always be loaded.
+    use_google_auth: bool, True to load credentials of google-auth if it is
+      supported in the current authentication scenario. False to load
+      credentials of oauth2client.
 
   Returns:
-    oauth2client.client.Credentials, The specified credentials.
+    oauth2client.client.Credentials or google.auth.credentials.Credentials based
+    on use_google_auth and whether google-auth is supported in the current
+    authentication sceanrio. The only two scenarios that google-auth is not
+    supported are,
+    1) Property auth/disable_google_auth is set to True;
+    2) P12 service account key is being used.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -460,23 +484,27 @@ def Load(account=None, scopes=None, prevent_refresh=False,
     AccountImpersonationError: If impersonation is requested but an
       impersonation provider is not configured.
   """
-  cred = _Load(account, scopes, prevent_refresh)
-  if not allow_account_impersonation:
-    return cred
+  google_auth_disabled = properties.VALUES.auth.disable_google_auth.GetBool()
+  use_google_auth = use_google_auth and (not google_auth_disabled)
+
   impersonate_service_account = (
       properties.VALUES.auth.impersonate_service_account.Get())
-  if not impersonate_service_account:
-    return cred
-  if not IMPERSONATION_TOKEN_PROVIDER:
-    raise AccountImpersonationError(
-        'gcloud is configured to impersonate service account [{}] but '
-        'impersonation support is not available.'
-        .format(impersonate_service_account))
-  log.warning(
-      'This command is using service account impersonation. All API calls will '
-      'be executed as [{}].'.format(impersonate_service_account))
-  return IMPERSONATION_TOKEN_PROVIDER.GetElevationAccessToken(
-      impersonate_service_account, scopes or config.CLOUDSDK_SCOPES)
+  if allow_account_impersonation and impersonate_service_account:
+    if not IMPERSONATION_TOKEN_PROVIDER:
+      raise AccountImpersonationError(
+          'gcloud is configured to impersonate service account [{}] but '
+          'impersonation support is not available.'.format(
+              impersonate_service_account))
+    log.warning(
+        'This command is using service account impersonation. All API calls will '
+        'be executed as [{}].'.format(impersonate_service_account))
+    cred = IMPERSONATION_TOKEN_PROVIDER.GetElevationAccessToken(
+        impersonate_service_account, scopes or config.CLOUDSDK_SCOPES)
+  else:
+    cred = _Load(account, scopes, prevent_refresh)
+
+  cred = MaybeConvertToGoogleAuthCredentials(cred, use_google_auth)
+  return cred
 
 
 def _Load(account, scopes, prevent_refresh):
@@ -535,19 +563,34 @@ def _Load(account, scopes, prevent_refresh):
 
 # TODO(b/147098689): Deprecate this method once credentials store is ready
 # to produce credentials of google-auth directly.
-def ConvertToGoogleAuthCredentials(credentials):
-  """Converts credentials of oauth2lient to credentials of google-auth.
+def MaybeConvertToGoogleAuthCredentials(credentials, use_google_auth):
+  """Converts credentials to type of google-auth under certain conditions.
 
-  This conversion will be used in the phase 1 of the 'GUAC on gcloud' project.
-  More details in go/gcloud-guac.
+  The conversion will perform when the below condidtions are all met,
+  1. use_google_auth is True;
+  2. credentials is of type oauth2client;
+  3. The input credentials are not built from P12 service account key. The
+     reason is that this legacy service account key is not supported by
+     google-auth. Additionally, gcloud plans to deprecate P12 service account
+     key support. The autenticaion logic of credentials of this type will be
+     left on oauth2client for now and will be removed in the deprecation.
+
 
   Args:
-    credentials: oauth2client.client.Credentials, Credentials of the
-      oauth2client library.
+    credentials: oauth2client.client.Credentials or
+      google.auth.credentials.Credentials
+    use_google_auth: bool, True if the calling command indicates to use
+      google-auth library for authentication.
 
   Returns:
-    google.auth.credentials.Credentials, Credentials of the google-auth library.
+    google.auth.credentials.Credentials or oauth2client.client.Credentials
   """
+  if ((not use_google_auth) or
+      (not isinstance(credentials, client.OAuth2Credentials)) or
+      creds.CredentialType.FromCredentials(
+          credentials) == creds.CredentialType.P12_SERVICE_ACCOUNT):
+    return credentials
+
   # pylint: disable=g-import-not-at-top
   # To work around the circular dependency between this the util and the store
   # modules.

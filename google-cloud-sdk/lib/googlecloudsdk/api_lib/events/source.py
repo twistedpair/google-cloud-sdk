@@ -41,7 +41,7 @@ class Source(k8s_object.KubernetesObject):
   }
   # localObjectReference is not a recognized field in SecretKeySelector
   # messages, so don't try to set it for any secrets in the source spec.
-  FIELD_BLACKLIST = ['localObjectReference']
+  FIELD_BLACKLIST = ['localObjectReference', 'pubsubSecret']
 
   @property
   def sink(self):
