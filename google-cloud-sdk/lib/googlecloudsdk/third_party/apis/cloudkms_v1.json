@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/kms/",
   "protocol": "rest",
   "rootUrl": "https://cloudkms.googleapis.com/",
+  "mtlsRootUrl": "https://cloudkms.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudkms.googleapis.com/",
   "batchPath": "batch",
@@ -1558,7 +1559,7 @@
                           "description": "Required. The resource name of the CryptoKey or CryptoKeyVersion\nto use for encryption.\n\nIf a CryptoKey is specified, the server will use its\nprimary version.",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/.+$",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/.*$",
                           "type": "string"
                         }
                       },

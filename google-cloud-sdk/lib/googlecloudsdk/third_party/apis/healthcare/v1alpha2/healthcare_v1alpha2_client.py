@@ -9,7 +9,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://healthcare.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://healthcare.mtls.googleapis.com/'
 
   _PACKAGE = u'healthcare'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -37,6 +37,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_datasets_annotationStores = self.ProjectsLocationsDatasetsAnnotationStoresService(self)
+    self.projects_locations_datasets_dataProtectionStores = self.ProjectsLocationsDatasetsDataProtectionStoresService(self)
     self.projects_locations_datasets_dicomStores = self.ProjectsLocationsDatasetsDicomStoresService(self)
     self.projects_locations_datasets_fhirStores = self.ProjectsLocationsDatasetsFhirStoresService(self)
     self.projects_locations_datasets_hl7V2Stores = self.ProjectsLocationsDatasetsHl7V2StoresService(self)
@@ -116,6 +117,9 @@ ground truth Annotation store.
 When the operation finishes successfully, a detailed response is returned
 of type EvaluateAnnotationStoreResponse, contained in the response. The metadata field type is
 OperationMetadata.
+Errors are logged to Stackdriver
+(see [Viewing logs](/healthcare/docs/how-tos/stackdriver-logging) and
+ImportAnnotations for a sample log entry).
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsAnnotationStoresEvaluateRequest) input message
@@ -146,12 +150,17 @@ OperationMetadata.
 Annotations from
 the Annotation
 store.
-Errors are noted in the error
-field. Otherwise, a detailed response is returned of type
+If the request is successful, a detailed response is returned of type
 ExportAnnotationsResponse, contained in the
 response field when the
-operation finishes. The metadata
-field type is OperationMetadata.
+operation finishes.
+The metadata field type is
+OperationMetadata.
+If errors occur, the error
+field type is ImportAnnotationsErrorDetails.
+Errors are also logged to Stackdriver
+(see [Viewing logs](/healthcare/docs/how-tos/stackdriver-logging) and
+ImportAnnotations for a sample log entry).
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsAnnotationStoresExportRequest) input message
@@ -240,13 +249,50 @@ Annotations to
 the Annotation
 store by
 loading data from the specified sources.
-Errors are noted in the error
-field. Otherwise, a detailed response is returned as of type
-ImportAnnotationsResponse contained in the
+If the request is successful, a detailed response is returned as of type
+ImportAnnotationsResponse, contained in the
 response field when the
 operation finishes.
 The metadata field type is
 OperationMetadata.
+If errors occur, the error
+field type is ImportAnnotationsErrorDetails.
+Errors are also logged to Stackdriver
+(see [Viewing logs](/healthcare/docs/how-tos/stackdriver-logging)).
+For example, the following sample log entry shows a
+`failed to parse GCS object` error that occurred while attempting to import
+`gs://ANNOTATION_FILENAME.json` to
+`projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
+```json
+jsonPayload: {
+  @type:
+  "type.googleapis.com/google.cloud.healthcare.logging.ImportAnnotationLogEntry"
+  error: {
+    code:  3
+    message:  "failed to parse GCS object"
+  }
+  source:  "gs://ANNOTATION_FILENAME.json"
+}
+logName:
+"projects/{project_id}/logs/healthcare.googleapis.com%2Fimport_annotations"
+operation: {
+  id:
+  "projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/operations/{operation_id}"
+  producer:  "healthcare.googleapis.com/ImportAnnotations"
+}
+receiveTimestamp:  "TIMESTAMP"
+resource: {
+  labels: {
+    annotation_store_id:  "{annotation_store_id}"
+    dataset_id:  "{dataset_id}"
+    location:  "{location_id}"
+    project_id:  "{project_id}"
+  }
+  type:  "healthcare_annotation_store"
+}
+severity:  "ERROR"
+timestamp:  "TIMESTAMP"
+```
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsAnnotationStoresImportRequest) input message
@@ -386,6 +432,75 @@ may "fail open" without warning.
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'HealthcareProjectsLocationsDatasetsAnnotationStoresTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDatasetsDataProtectionStoresService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_dataProtectionStores resource."""
+
+    _NAME = u'projects_locations_datasets_dataProtectionStores'
+
+    def __init__(self, client):
+      super(HealthcareV1alpha2.ProjectsLocationsDatasetsDataProtectionStoresService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource.
+Returns an empty policy if the resource exists and does not have a policy
+set.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDataProtectionStoresGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dataProtectionStores/{dataProtectionStoresId}:getIamPolicy',
+        http_method=u'GET',
+        method_id=u'healthcare.projects.locations.datasets.dataProtectionStores.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[u'options_requestedPolicyVersion'],
+        relative_path=u'v1alpha2/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name=u'HealthcareProjectsLocationsDatasetsDataProtectionStoresGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any.
+existing policy.
+
+Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDataProtectionStoresSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dataProtectionStores/{dataProtectionStoresId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'healthcare.projects.locations.datasets.dataProtectionStores.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1alpha2/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'HealthcareProjectsLocationsDatasetsDataProtectionStoresSetIamPolicyRequest',
+        response_type_name=u'Policy',
         supports_download=False,
     )
 

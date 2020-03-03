@@ -9,7 +9,7 @@ class CloudbuildV1alpha2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://cloudbuild.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://cloudbuild.mtls.googleapis.com/'
 
   _PACKAGE = u'cloudbuild'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

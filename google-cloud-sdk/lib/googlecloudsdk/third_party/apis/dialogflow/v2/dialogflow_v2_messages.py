@@ -185,94 +185,6 @@ class DialogflowProjectsAgentEntityTypesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
-class DialogflowProjectsAgentEnvironmentsCreateRequest(_messages.Message):
-  r"""A DialogflowProjectsAgentEnvironmentsCreateRequest object.
-
-  Fields:
-    environmentId: Required. The unique id of the new environment.
-    googleCloudDialogflowV2Environment: A GoogleCloudDialogflowV2Environment
-      resource to be passed as the request body.
-    parent: Required. The agent to create a environment for. Format:
-      `projects/<Project ID>/agent`.
-  """
-
-  environmentId = _messages.StringField(1)
-  googleCloudDialogflowV2Environment = _messages.MessageField('GoogleCloudDialogflowV2Environment', 2)
-  parent = _messages.StringField(3, required=True)
-
-
-class DialogflowProjectsAgentEnvironmentsDeleteRequest(_messages.Message):
-  r"""A DialogflowProjectsAgentEnvironmentsDeleteRequest object.
-
-  Fields:
-    name: Required. The name of the environment to delete. Format:
-      `projects/<Project ID>/agent/environments/<Environment ID>`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class DialogflowProjectsAgentEnvironmentsGetHistoryRequest(_messages.Message):
-  r"""A DialogflowProjectsAgentEnvironmentsGetHistoryRequest object.
-
-  Fields:
-    pageSize: Optional. The maximum number of items to return in a single
-      page. By default 100 and at most 1000.
-    pageToken: Optional. The next_page_token value returned from a previous
-      list request.
-    parent: Required. The name of the environment to retrieve history for.
-      Format: `projects/<Project ID>/agent/environments/<Environment ID>`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class DialogflowProjectsAgentEnvironmentsGetRequest(_messages.Message):
-  r"""A DialogflowProjectsAgentEnvironmentsGetRequest object.
-
-  Fields:
-    name: Required. The name of the environment. Format: `projects/<Project
-      ID>/agent/environments/<Environment ID>`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class DialogflowProjectsAgentEnvironmentsListRequest(_messages.Message):
-  r"""A DialogflowProjectsAgentEnvironmentsListRequest object.
-
-  Fields:
-    pageSize: Optional. The maximum number of items to return in a single
-      page. By default 100 and at most 1000.
-    pageToken: Optional. The next_page_token value returned from a previous
-      list request.
-    parent: Required. The agent to list all environments from. Format:
-      `projects/<Project ID>/agent`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class DialogflowProjectsAgentEnvironmentsPatchRequest(_messages.Message):
-  r"""A DialogflowProjectsAgentEnvironmentsPatchRequest object.
-
-  Fields:
-    googleCloudDialogflowV2Environment: A GoogleCloudDialogflowV2Environment
-      resource to be passed as the request body.
-    name: Output only. The unique identifier of this agent environment.
-      Format: `projects/<Project ID>/agent/environments/<Environment ID>`.
-    updateMask: Optional. The mask to control which fields get updated.
-  """
-
-  googleCloudDialogflowV2Environment = _messages.MessageField('GoogleCloudDialogflowV2Environment', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-
-
 class DialogflowProjectsAgentExportRequest(_messages.Message):
   r"""A DialogflowProjectsAgentExportRequest object.
 
@@ -524,22 +436,6 @@ class DialogflowProjectsAgentIntentsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(5)
 
 
-class DialogflowProjectsAgentRequest(_messages.Message):
-  r"""A DialogflowProjectsAgentRequest object.
-
-  Fields:
-    googleCloudDialogflowV2Agent: A GoogleCloudDialogflowV2Agent resource to
-      be passed as the request body.
-    parent: Required. The project of this agent. Format: `projects/<Project
-      ID>`.
-    updateMask: Optional. The mask to control which fields get updated.
-  """
-
-  googleCloudDialogflowV2Agent = _messages.MessageField('GoogleCloudDialogflowV2Agent', 1)
-  parent = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-
-
 class DialogflowProjectsAgentRestoreRequest(_messages.Message):
   r"""A DialogflowProjectsAgentRestoreRequest object.
 
@@ -784,64 +680,6 @@ class DialogflowProjectsAgentUpdateFulfillmentRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
-class DialogflowProjectsAgentVersionsCreateRequest(_messages.Message):
-  r"""A DialogflowProjectsAgentVersionsCreateRequest object.
-
-  Fields:
-    googleCloudDialogflowV2Version: A GoogleCloudDialogflowV2Version resource
-      to be passed as the request body.
-    parent: Required. The agent to create a version for. Format:
-      `projects/<Project ID>/agent`.
-  """
-
-  googleCloudDialogflowV2Version = _messages.MessageField('GoogleCloudDialogflowV2Version', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class DialogflowProjectsAgentVersionsGetRequest(_messages.Message):
-  r"""A DialogflowProjectsAgentVersionsGetRequest object.
-
-  Fields:
-    name: Required. The name of the version. Format: `projects/<Project
-      ID>/agent/versions/<Version ID>`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class DialogflowProjectsAgentVersionsListRequest(_messages.Message):
-  r"""A DialogflowProjectsAgentVersionsListRequest object.
-
-  Fields:
-    pageSize: Optional. The maximum number of items to return in a single
-      page. By default 100 and at most 1000.
-    pageToken: Optional. The next_page_token value returned from a previous
-      list request.
-    parent: Required. The agent to list all versions from. Format:
-      `projects/<Project ID>/agent`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class DialogflowProjectsAgentVersionsPatchRequest(_messages.Message):
-  r"""A DialogflowProjectsAgentVersionsPatchRequest object.
-
-  Fields:
-    googleCloudDialogflowV2Version: A GoogleCloudDialogflowV2Version resource
-      to be passed as the request body.
-    name: Output only. The unique identifier of this agent version. Format:
-      `projects/<Project ID>/agent/versions/<Version ID>`.
-    updateMask: Optional. The mask to control which fields get updated.
-  """
-
-  googleCloudDialogflowV2Version = _messages.MessageField('GoogleCloudDialogflowV2Version', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-
-
 class DialogflowProjectsDeleteAgentRequest(_messages.Message):
   r"""A DialogflowProjectsDeleteAgentRequest object.
 
@@ -934,6 +772,22 @@ class DialogflowProjectsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class DialogflowProjectsSetAgentRequest(_messages.Message):
+  r"""A DialogflowProjectsSetAgentRequest object.
+
+  Fields:
+    googleCloudDialogflowV2Agent: A GoogleCloudDialogflowV2Agent resource to
+      be passed as the request body.
+    parent: Required. The project of this agent. Format: `projects/<Project
+      ID>`.
+    updateMask: Optional. The mask to control which fields get updated.
+  """
+
+  googleCloudDialogflowV2Agent = _messages.MessageField('GoogleCloudDialogflowV2Agent', 1)
+  parent = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class GoogleCloudDialogflowV2Agent(_messages.Message):
@@ -1351,24 +1205,28 @@ class GoogleCloudDialogflowV2DetectIntentRequest(_messages.Message):
   intent.
 
   Fields:
-    inputAudio: Optional. The natural language speech audio to be processed.
-      This field should be populated iff `query_input` is set to an input
-      audio config. A single request can contain up to 1 minute of speech
-      audio data.
-    outputAudioConfig: Optional. Instructs the speech synthesizer how to
-      generate the output audio. If this field is not set and agent-level
-      speech synthesizer is not configured, no output audio is generated.
+    inputAudio: The natural language speech audio to be processed. This field
+      should be populated iff `query_input` is set to an input audio config. A
+      single request can contain up to 1 minute of speech audio data.
+    outputAudioConfig: Instructs the speech synthesizer how to generate the
+      output audio. If this field is not set and agent-level speech
+      synthesizer is not configured, no output audio is generated.
+    outputAudioConfigMask: Mask for output_audio_config indicating which
+      settings in this request-level config should override speech synthesizer
+      settings defined at agent-level.  If unspecified or empty,
+      output_audio_config replaces the agent-level config in its entirety.
     queryInput: Required. The input specification. It can be set to:  1.  an
       audio config     which instructs the speech recognizer how to process
       the speech audio,  2.  a conversational query in the form of text, or
       3.  an event that specifies which intent to trigger.
-    queryParams: Optional. The parameters of this query.
+    queryParams: The parameters of this query.
   """
 
   inputAudio = _messages.BytesField(1)
   outputAudioConfig = _messages.MessageField('GoogleCloudDialogflowV2OutputAudioConfig', 2)
-  queryInput = _messages.MessageField('GoogleCloudDialogflowV2QueryInput', 3)
-  queryParams = _messages.MessageField('GoogleCloudDialogflowV2QueryParameters', 4)
+  outputAudioConfigMask = _messages.StringField(3)
+  queryInput = _messages.MessageField('GoogleCloudDialogflowV2QueryInput', 4)
+  queryParams = _messages.MessageField('GoogleCloudDialogflowV2QueryParameters', 5)
 
 
 class GoogleCloudDialogflowV2DetectIntentResponse(_messages.Message):
@@ -1490,83 +1348,6 @@ class GoogleCloudDialogflowV2EntityTypeEntity(_messages.Message):
   value = _messages.StringField(2)
 
 
-class GoogleCloudDialogflowV2Environment(_messages.Message):
-  r"""Represents an agent environment.
-
-  Enums:
-    StateValueValuesEnum: Output only. The state of this environment. This
-      field is read-only, i.e., it cannot be set by create and update methods.
-
-  Fields:
-    agentVersion: Optional. The agent version loaded into this environment.
-      Format: `projects/<Project ID>/agent/versions/<Version ID>`.
-    description: Optional. The developer-provided description for this
-      environment. The maximum length is 500 characters. If exceeded, the
-      request is rejected.
-    name: Output only. The unique identifier of this agent environment.
-      Format: `projects/<Project ID>/agent/environments/<Environment ID>`.
-    state: Output only. The state of this environment. This field is read-
-      only, i.e., it cannot be set by create and update methods.
-    updateTime: Output only. The last update time of this environment. This
-      field is read-only, i.e., it cannot be set by create and update methods.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of this environment. This field is read-only,
-    i.e., it cannot be set by create and update methods.
-
-    Values:
-      STATE_UNSPECIFIED: Not specified. This value is not used.
-      STOPPED: Stopped.
-      LOADING: Loading.
-      RUNNING: Running.
-    """
-    STATE_UNSPECIFIED = 0
-    STOPPED = 1
-    LOADING = 2
-    RUNNING = 3
-
-  agentVersion = _messages.StringField(1)
-  description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  updateTime = _messages.StringField(5)
-
-
-class GoogleCloudDialogflowV2EnvironmentHistory(_messages.Message):
-  r"""The response message for Environments.GetEnvironmentHistory.
-
-  Fields:
-    entries: Output only. The list of agent environments. There will be a
-      maximum number of items returned based on the page_size field in the
-      request.
-    nextPageToken: Output only. Token to retrieve the next page of results, or
-      empty if there are no more results in the list.
-    parent: Output only. The name of the environment this history is for.
-      Format: `projects/<Project ID>/agent/environments/<Environment ID>`.
-  """
-
-  entries = _messages.MessageField('GoogleCloudDialogflowV2EnvironmentHistoryEntry', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  parent = _messages.StringField(3)
-
-
-class GoogleCloudDialogflowV2EnvironmentHistoryEntry(_messages.Message):
-  r"""Represents a environment history entry.
-
-  Fields:
-    agentVersion: The agent version loaded into this environment history
-      entry.
-    createTime: The creation time of this environment history entry.
-    description: The developer-provided description for this environment
-      history entry.
-  """
-
-  agentVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-
-
 class GoogleCloudDialogflowV2EventInput(_messages.Message):
   r"""Events allow for matching intents by event name instead of the natural
   language input. For instance, input `<event: { name: "welcome_event",
@@ -1575,8 +1356,7 @@ class GoogleCloudDialogflowV2EventInput(_messages.Message):
   #welcome_event.name! What can I do for you today?"`.
 
   Messages:
-    ParametersValue: Optional. The collection of parameters associated with
-      the event.
+    ParametersValue: The collection of parameters associated with the event.
 
   Fields:
     languageCode: Required. The language of this query. See [Language
@@ -1585,13 +1365,12 @@ class GoogleCloudDialogflowV2EventInput(_messages.Message):
       in the same session do not necessarily need to specify the same
       language.
     name: Required. The unique identifier of the event.
-    parameters: Optional. The collection of parameters associated with the
-      event.
+    parameters: The collection of parameters associated with the event.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
-    r"""Optional. The collection of parameters associated with the event.
+    r"""The collection of parameters associated with the event.
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -2767,20 +2546,6 @@ class GoogleCloudDialogflowV2ListEntityTypesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class GoogleCloudDialogflowV2ListEnvironmentsResponse(_messages.Message):
-  r"""The response message for Environments.ListEnvironments.
-
-  Fields:
-    environments: The list of agent environments. There will be a maximum
-      number of items returned based on the page_size field in the request.
-    nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-  """
-
-  environments = _messages.MessageField('GoogleCloudDialogflowV2Environment', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
 class GoogleCloudDialogflowV2ListIntentsResponse(_messages.Message):
   r"""The response message for Intents.ListIntents.
 
@@ -2808,20 +2573,6 @@ class GoogleCloudDialogflowV2ListSessionEntityTypesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   sessionEntityTypes = _messages.MessageField('GoogleCloudDialogflowV2SessionEntityType', 2, repeated=True)
-
-
-class GoogleCloudDialogflowV2ListVersionsResponse(_messages.Message):
-  r"""The response message for Versions.ListVersions.
-
-  Fields:
-    nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-    versions: The list of agent versions. There will be a maximum number of
-      items returned based on the page_size field in the request.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  versions = _messages.MessageField('GoogleCloudDialogflowV2Version', 2, repeated=True)
 
 
 class GoogleCloudDialogflowV2Message(_messages.Message):
@@ -2961,14 +2712,13 @@ class GoogleCloudDialogflowV2OutputAudioConfig(_messages.Message):
 
   Fields:
     audioEncoding: Required. Audio encoding of the synthesized audio content.
-    sampleRateHertz: Optional. The synthesis sample rate (in hertz) for this
-      audio. If not provided, then the synthesizer will use the default sample
-      rate based on the audio encoding. If this is different from the voice's
+    sampleRateHertz: The synthesis sample rate (in hertz) for this audio. If
+      not provided, then the synthesizer will use the default sample rate
+      based on the audio encoding. If this is different from the voice's
       natural sample rate, then the synthesizer will honor this request by
       converting to the desired sample rate (which might result in worse audio
       quality).
-    synthesizeSpeechConfig: Optional. Configuration of how speech should be
-      synthesized.
+    synthesizeSpeechConfig: Configuration of how speech should be synthesized.
   """
 
   class AudioEncodingValueValuesEnum(_messages.Enum):
@@ -3018,34 +2768,32 @@ class GoogleCloudDialogflowV2QueryParameters(_messages.Message):
   r"""Represents the parameters of the conversational query.
 
   Messages:
-    PayloadValue: Optional. This field can be used to pass custom data into
-      the webhook associated with the agent. Arbitrary JSON objects are
-      supported.
+    PayloadValue: This field can be used to pass custom data into the webhook
+      associated with the agent. Arbitrary JSON objects are supported.
 
   Fields:
-    contexts: Optional. The collection of contexts to be activated before this
-      query is executed.
-    geoLocation: Optional. The geo location of this conversational query.
-    payload: Optional. This field can be used to pass custom data into the
-      webhook associated with the agent. Arbitrary JSON objects are supported.
-    resetContexts: Optional. Specifies whether to delete all contexts in the
-      current session before the new ones are activated.
-    sentimentAnalysisRequestConfig: Optional. Configures the type of sentiment
-      analysis to perform. If not provided, sentiment analysis is not
-      performed.
-    sessionEntityTypes: Optional. Additional session entity types to replace
-      or extend developer entity types with. The entity synonyms apply to all
-      languages and persist for the session of this query.
-    timeZone: Optional. The time zone of this conversational query from the
-      [time zone database](https://www.iana.org/time-zones), e.g.,
-      America/New_York, Europe/Paris. If not provided, the time zone specified
-      in agent settings is used.
+    contexts: The collection of contexts to be activated before this query is
+      executed.
+    geoLocation: The geo location of this conversational query.
+    payload: This field can be used to pass custom data into the webhook
+      associated with the agent. Arbitrary JSON objects are supported.
+    resetContexts: Specifies whether to delete all contexts in the current
+      session before the new ones are activated.
+    sentimentAnalysisRequestConfig: Configures the type of sentiment analysis
+      to perform. If not provided, sentiment analysis is not performed.
+    sessionEntityTypes: Additional session entity types to replace or extend
+      developer entity types with. The entity synonyms apply to all languages
+      and persist for the session of this query.
+    timeZone: The time zone of this conversational query from the [time zone
+      database](https://www.iana.org/time-zones), e.g., America/New_York,
+      Europe/Paris. If not provided, the time zone specified in agent settings
+      is used.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PayloadValue(_messages.Message):
-    r"""Optional. This field can be used to pass custom data into the webhook
-    associated with the agent. Arbitrary JSON objects are supported.
+    r"""This field can be used to pass custom data into the webhook associated
+    with the agent. Arbitrary JSON objects are supported.
 
     Messages:
       AdditionalProperty: An additional property for a PayloadValue object.
@@ -3291,9 +3039,9 @@ class GoogleCloudDialogflowV2SentimentAnalysisRequestConfig(_messages.Message):
   r"""Configures the types of sentiment analysis to perform.
 
   Fields:
-    analyzeQueryTextSentiment: Optional. Instructs the service to perform
-      sentiment analysis on `query_text`. If not provided, sentiment analysis
-      is not performed on `query_text`.
+    analyzeQueryTextSentiment: Instructs the service to perform sentiment
+      analysis on `query_text`. If not provided, sentiment analysis is not
+      performed on `query_text`.
   """
 
   analyzeQueryTextSentiment = _messages.BooleanField(1)
@@ -3492,49 +3240,6 @@ class GoogleCloudDialogflowV2ValidationResult(_messages.Message):
   """
 
   validationErrors = _messages.MessageField('GoogleCloudDialogflowV2ValidationError', 1, repeated=True)
-
-
-class GoogleCloudDialogflowV2Version(_messages.Message):
-  r"""Represents an agent version.
-
-  Enums:
-    StatusValueValuesEnum: Output only. The status of this version. This field
-      is read-only and cannot be set by create and update methods.
-
-  Fields:
-    createTime: Output only. The creation time of this version. This field is
-      read-only, i.e., it cannot be set by create and update methods.
-    description: Optional. The developer-provided description of this version.
-    name: Output only. The unique identifier of this agent version. Format:
-      `projects/<Project ID>/agent/versions/<Version ID>`.
-    status: Output only. The status of this version. This field is read-only
-      and cannot be set by create and update methods.
-    versionNumber: Output only. The sequential number of this version. This
-      field is read-only which means it cannot be set by create and update
-      methods.
-  """
-
-  class StatusValueValuesEnum(_messages.Enum):
-    r"""Output only. The status of this version. This field is read-only and
-    cannot be set by create and update methods.
-
-    Values:
-      VERSION_STATUS_UNSPECIFIED: Not specified. This value is not used.
-      IN_PROGRESS: Version is not ready to serve (e.g. training is in
-        progress).
-      READY: Version is ready to serve.
-      FAILED: Version training failed.
-    """
-    VERSION_STATUS_UNSPECIFIED = 0
-    IN_PROGRESS = 1
-    READY = 2
-    FAILED = 3
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  status = _messages.EnumField('StatusValueValuesEnum', 4)
-  versionNumber = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudDialogflowV2VoiceSelectionParams(_messages.Message):
@@ -3915,8 +3620,7 @@ class GoogleCloudDialogflowV2beta1EventInput(_messages.Message):
   #welcome_event.name! What can I do for you today?"`.
 
   Messages:
-    ParametersValue: Optional. The collection of parameters associated with
-      the event.
+    ParametersValue: The collection of parameters associated with the event.
 
   Fields:
     languageCode: Required. The language of this query. See [Language
@@ -3925,13 +3629,12 @@ class GoogleCloudDialogflowV2beta1EventInput(_messages.Message):
       in the same session do not necessarily need to specify the same
       language.
     name: Required. The unique identifier of the event.
-    parameters: Optional. The collection of parameters associated with the
-      event.
+    parameters: The collection of parameters associated with the event.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
-    r"""Optional. The collection of parameters associated with the event.
+    r"""The collection of parameters associated with the event.
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.

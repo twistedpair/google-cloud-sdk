@@ -9,7 +9,7 @@ class BigtableadminV2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://bigtableadmin.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://bigtableadmin.mtls.googleapis.com/'
 
   _PACKAGE = u'bigtableadmin'
   _SCOPES = [u'https://www.googleapis.com/auth/bigtable.admin', u'https://www.googleapis.com/auth/bigtable.admin.cluster', u'https://www.googleapis.com/auth/bigtable.admin.instance', u'https://www.googleapis.com/auth/bigtable.admin.table', u'https://www.googleapis.com/auth/cloud-bigtable.admin', u'https://www.googleapis.com/auth/cloud-bigtable.admin.cluster', u'https://www.googleapis.com/auth/cloud-bigtable.admin.table', u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']

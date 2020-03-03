@@ -94,6 +94,8 @@ class Authority(_messages.Message):
   Fields:
     identityNamespace: Output only. The identity namespace in which the above
       issuer will be recognized.
+    identityProvider: Output only. An identity provider that reflects this
+      issuer in the identity namespace.
     issuer: A JWT issuer URI. If set, then Google will attempt OIDC discovery
       on this URI, and allow valid OIDC tokens from this issuer to
       authenticate within the below identity namespace.  This can be updated
@@ -103,7 +105,8 @@ class Authority(_messages.Message):
   """
 
   identityNamespace = _messages.StringField(1)
-  issuer = _messages.StringField(2)
+  identityProvider = _messages.StringField(2)
+  issuer = _messages.StringField(3)
 
 
 class AuthorizationLoggingOptions(_messages.Message):
@@ -386,17 +389,22 @@ class DataAccessOptions(_messages.Message):
 
   Enums:
     LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
-      manner at the caller. This is relevant only in the LocalIAM
-      implementation, for now.
+      manner at the caller. This is currently supported in the LocalIAM
+      implementation, Stubby C++, and Stubby Java. For Apps Framework, see go
+      /af-audit-logging#failclosed.
 
   Fields:
     logMode: Whether Gin logging should happen in a fail-closed manner at the
-      caller. This is relevant only in the LocalIAM implementation, for now.
+      caller. This is currently supported in the LocalIAM implementation,
+      Stubby C++, and Stubby Java. For Apps Framework, see go/af-audit-
+      logging#failclosed.
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
     r"""Whether Gin logging should happen in a fail-closed manner at the
-    caller. This is relevant only in the LocalIAM implementation, for now.
+    caller. This is currently supported in the LocalIAM implementation, Stubby
+    C++, and Stubby Java. For Apps Framework, see go/af-audit-
+    logging#failclosed.
 
     Values:
       LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
@@ -1027,8 +1035,6 @@ class MembershipState(_messages.Message):
 
   Fields:
     code: Code indicating the state of the Membership resource.
-    description: Human readable description of the issue.
-    updateTime: The last update time of this state by the controllers
   """
 
   class CodeValueValuesEnum(_messages.Enum):
@@ -1039,18 +1045,18 @@ class MembershipState(_messages.Message):
       CREATING: CREATING indicates the cluster is being registered.
       READY: READY indicates the cluster is registered.
       DELETING: DELETING indicates that the cluster is being unregistered.
-      UPDATING: UPDATING indicates that the cluster registration is being
-        updated.
+      UPDATING: UPDATING indicates the Membership is being updated.
+      SERVICE_UPDATING: SERVICE_UPDATING indicates the Membership is being
+        updated by the Hub Service.
     """
     CODE_UNSPECIFIED = 0
     CREATING = 1
     READY = 2
     DELETING = 3
     UPDATING = 4
+    SERVICE_UPDATING = 5
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
-  description = _messages.StringField(2)
-  updateTime = _messages.StringField(3)
 
 
 class Operation(_messages.Message):

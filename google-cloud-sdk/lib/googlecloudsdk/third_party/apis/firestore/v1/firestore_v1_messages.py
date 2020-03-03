@@ -2389,6 +2389,10 @@ class Write(_messages.Message):
       not present in the input document, are deleted from the document on the
       server. The field paths in this mask must not contain a reserved field
       name.
+    updateTransforms: The transforms to perform after update.  This field can
+      be set only when the operation is `update`. If present, this write is
+      equivalent to performing `update` and `transform` to the same document
+      atomically and in order.
   """
 
   currentDocument = _messages.MessageField('Precondition', 1)
@@ -2396,6 +2400,7 @@ class Write(_messages.Message):
   transform = _messages.MessageField('DocumentTransform', 3)
   update = _messages.MessageField('Document', 4)
   updateMask = _messages.MessageField('DocumentMask', 5)
+  updateTransforms = _messages.MessageField('FieldTransform', 6, repeated=True)
 
 
 class WriteRequest(_messages.Message):

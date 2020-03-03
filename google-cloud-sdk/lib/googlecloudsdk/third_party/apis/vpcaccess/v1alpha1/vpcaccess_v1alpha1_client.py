@@ -9,7 +9,7 @@ class VpcaccessV1alpha1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://vpcaccess.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://vpcaccess.mtls.googleapis.com/'
 
   _PACKAGE = u'vpcaccess'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

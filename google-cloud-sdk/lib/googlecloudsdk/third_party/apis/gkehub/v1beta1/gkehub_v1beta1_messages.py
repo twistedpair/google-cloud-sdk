@@ -386,17 +386,22 @@ class DataAccessOptions(_messages.Message):
 
   Enums:
     LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
-      manner at the caller. This is relevant only in the LocalIAM
-      implementation, for now.
+      manner at the caller. This is currently supported in the LocalIAM
+      implementation, Stubby C++, and Stubby Java. For Apps Framework, see go
+      /af-audit-logging#failclosed.
 
   Fields:
     logMode: Whether Gin logging should happen in a fail-closed manner at the
-      caller. This is relevant only in the LocalIAM implementation, for now.
+      caller. This is currently supported in the LocalIAM implementation,
+      Stubby C++, and Stubby Java. For Apps Framework, see go/af-audit-
+      logging#failclosed.
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
     r"""Whether Gin logging should happen in a fail-closed manner at the
-    caller. This is relevant only in the LocalIAM implementation, for now.
+    caller. This is currently supported in the LocalIAM implementation, Stubby
+    C++, and Stubby Java. For Apps Framework, see go/af-audit-
+    logging#failclosed.
 
     Values:
       LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
@@ -1082,8 +1087,10 @@ class MembershipState(_messages.Message):
 
   Fields:
     code: Code indicating the state of the Membership resource.
-    description: Human readable description of the issue.
-    updateTime: The last update time of this state by the controllers
+    description: Human readable description of the issue. This field is
+      deprecated, and is never set by the Hub Service.
+    updateTime: The last update time of this state by the controllers This
+      field is deprecated, and is never set by the Hub Service.
   """
 
   class CodeValueValuesEnum(_messages.Enum):
@@ -1094,14 +1101,16 @@ class MembershipState(_messages.Message):
       CREATING: CREATING indicates the cluster is being registered.
       READY: READY indicates the cluster is registered.
       DELETING: DELETING indicates that the cluster is being unregistered.
-      UPDATING: UPDATING indicates that the cluster registration is being
-        updated.
+      UPDATING: UPDATING indicates the Membership is being updated.
+      SERVICE_UPDATING: SERVICE_UPDATING indicates the Membership is being
+        updated by the Hub Service.
     """
     CODE_UNSPECIFIED = 0
     CREATING = 1
     READY = 2
     DELETING = 3
     UPDATING = 4
+    SERVICE_UPDATING = 5
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   description = _messages.StringField(2)

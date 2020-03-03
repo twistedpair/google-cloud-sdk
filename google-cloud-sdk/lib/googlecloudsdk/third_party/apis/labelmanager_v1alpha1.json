@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/resource-manager/",
   "protocol": "rest",
   "rootUrl": "https://labelmanager.googleapis.com/",
+  "mtlsRootUrl": "https://labelmanager.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://labelmanager.googleapis.com/",
   "batchPath": "batch",
@@ -631,7 +632,7 @@
               "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.+$",
+              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },

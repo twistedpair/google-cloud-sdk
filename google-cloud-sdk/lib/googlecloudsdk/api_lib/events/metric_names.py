@@ -45,5 +45,8 @@ DELETE_SOURCE = _EVENTS_PREFIX + 'delete_source'
 # Time to list source CRDs
 LIST_SOURCE_CRDS = _EVENTS_PREFIX + 'list_source_crds'
 
+# Time to update a namespace
+UPDATE_NAMESPACE = _EVENTS_PREFIX + 'update_namespace'
+
 # Time to create a secret
 CREATE_OR_REPLACE_SECRET = _EVENTS_PREFIX + 'create_or_replace_secret'

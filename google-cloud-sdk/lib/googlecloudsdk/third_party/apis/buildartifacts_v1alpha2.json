@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/build-artifacts",
   "protocol": "rest",
   "rootUrl": "https://buildartifacts.googleapis.com/",
+  "mtlsRootUrl": "https://buildartifacts.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://buildartifacts.googleapis.com/",
   "batchPath": "batch",
@@ -1312,7 +1313,7 @@
                       "description": "The name of the file to retrieve.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/repositories\/[^\/]+\/files\/.+$",
+                      "pattern": "^projects\/[^\/]+\/repositories\/[^\/]+\/files\/.*$",
                       "type": "string"
                     }
                   },

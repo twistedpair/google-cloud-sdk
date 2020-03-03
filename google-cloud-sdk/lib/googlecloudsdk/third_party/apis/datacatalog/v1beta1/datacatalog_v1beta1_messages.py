@@ -1499,7 +1499,10 @@ class GoogleCloudDatacatalogV1beta1SearchCatalogRequest(_messages.Message):
       minimum of 3 characters for substring matching to work correctly. See
       [Data Catalog Search Syntax](/data-catalog/docs/how-to/search-reference)
       for more information.
-    scope: Required. The scope of this search request.
+    scope: Required. The scope of this search request. A `scope` that has
+      empty `include_org_ids`, `include_project_ids` AND false
+      `include_gcp_public_datasets` is considered invalid. Data Catalog will
+      return an error in such a case.
   """
 
   orderBy = _messages.StringField(1)
@@ -1510,22 +1513,17 @@ class GoogleCloudDatacatalogV1beta1SearchCatalogRequest(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1beta1SearchCatalogRequestScope(_messages.Message):
-  r"""A GoogleCloudDatacatalogV1beta1SearchCatalogRequestScope object.
+  r"""The criteria that select the subspace used for query matching.
 
   Fields:
     includeGcpPublicDatasets: If `true`, include Google Cloud Platform (GCP)
       public datasets in the search results. Info on GCP public datasets is
       available at https://cloud.google.com/public-datasets/. By default, GCP
       public datasets are excluded.
-    includeOrgIds: Data Catalog tries to automatically choose the right corpus
-      of data to search through. You can ensure an organization is included by
-      adding it to `include_org_ids`. You can ensure a project's org is
-      included with `include_project_ids`. You must specify at least one
-      organization using `include_org_ids` or `include_project_ids` in all
-      search requests.  List of organization IDs to search within. To find
-      your organization ID, follow instructions in https://cloud.google.com
+    includeOrgIds: The list of organization IDs to search within. To find your
+      organization ID, follow instructions in https://cloud.google.com
       /resource-manager/docs/creating-managing-organization.
-    includeProjectIds: List of project IDs to search within. To learn more
+    includeProjectIds: The list of project IDs to search within. To learn more
       about the distinction between project names/IDs/numbers, go to
       https://cloud.google.com/docs/overview/#projects.
   """
@@ -1736,6 +1734,11 @@ class GoogleCloudDatacatalogV1beta1TagField(_messages.Message):
     doubleValue: Holds the value for a tag field with double type.
     enumValue: Holds the value for a tag field with enum type. This value must
       be one of the allowed values in the definition of this enum.
+    order: Output only. The order of this field with respect to other fields
+      in this tag. It can be set in Tag. For example, a higher value can
+      indicate a more important field. The value can be negative. Multiple
+      fields can have the same order, and field orders within a tag do not
+      have to be sequential.
     stringValue: Holds the value for a tag field with string type.
     timestampValue: Holds the value for a tag field with timestamp type.
   """
@@ -1744,8 +1747,9 @@ class GoogleCloudDatacatalogV1beta1TagField(_messages.Message):
   displayName = _messages.StringField(2)
   doubleValue = _messages.FloatField(3)
   enumValue = _messages.MessageField('GoogleCloudDatacatalogV1beta1TagFieldEnumValue', 4)
-  stringValue = _messages.StringField(5)
-  timestampValue = _messages.StringField(6)
+  order = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  stringValue = _messages.StringField(6)
+  timestampValue = _messages.StringField(7)
 
 
 class GoogleCloudDatacatalogV1beta1TagFieldEnumValue(_messages.Message):
@@ -1836,13 +1840,18 @@ class GoogleCloudDatacatalogV1beta1TagTemplateField(_messages.Message):
       format. Example:  * projects/{project_id}/locations/{location}/tagTempla
       tes/{tag_template}/fields/{field}  Note that this TagTemplateField may
       not actually be stored in the location in this name.
+    order: The order of this field with respect to other fields in this tag
+      template.  A higher value indicates a more important field. The value
+      can be negative. Multiple fields can have the same order, and field
+      orders within a tag do not have to be sequential.
     type: Required. The type of value this tag field can contain.
   """
 
   displayName = _messages.StringField(1)
   isRequired = _messages.BooleanField(2)
   name = _messages.StringField(3)
-  type = _messages.MessageField('GoogleCloudDatacatalogV1beta1FieldType', 4)
+  order = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  type = _messages.MessageField('GoogleCloudDatacatalogV1beta1FieldType', 5)
 
 
 class GoogleCloudDatacatalogV1beta1Taxonomy(_messages.Message):

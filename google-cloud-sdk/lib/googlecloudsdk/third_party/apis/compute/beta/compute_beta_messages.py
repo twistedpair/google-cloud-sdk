@@ -1325,6 +1325,8 @@ class AttachedDisk(_messages.Message):
     mode: The mode in which to attach this disk, either READ_WRITE or
       READ_ONLY. If not specified, the default is to attach the disk in
       READ_WRITE mode.
+    shieldedInstanceInitialState: [Output Only] shielded vm initial state
+      stored on disk
     source: Specifies a valid partial or full URL to an existing Persistent
       Disk resource. When creating a new instance, one of
       initializeParams.sourceImage or initializeParams.sourceSnapshot or
@@ -1385,8 +1387,9 @@ class AttachedDisk(_messages.Message):
   kind = _messages.StringField(10, default=u'compute#attachedDisk')
   licenses = _messages.StringField(11, repeated=True)
   mode = _messages.EnumField('ModeValueValuesEnum', 12)
-  source = _messages.StringField(13)
-  type = _messages.EnumField('TypeValueValuesEnum', 14)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 13)
+  source = _messages.StringField(14)
+  type = _messages.EnumField('TypeValueValuesEnum', 15)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -2446,13 +2449,13 @@ class AutoscalingPolicyScaleDownControl(_messages.Message):
       at when computing recommendations. Possibly all these VMs can be deleted
       at once so user service needs to be prepared to lose that many VMs in
       one step.
-    timeWindow: How long back autoscaling should look when computing
+    timeWindowSec: How long back autoscaling should look when computing
       recommendations to include directives regarding slower scale down, as
       described above.
   """
 
   maxScaledDownReplicas = _messages.MessageField('FixedOrPercent', 1)
-  timeWindow = _messages.MessageField('GoogleDuration', 2)
+  timeWindowSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class Backend(_messages.Message):
@@ -3343,7 +3346,14 @@ class BackendServiceCdnPolicy(_messages.Message):
 
 
 class BackendServiceFailoverPolicy(_messages.Message):
-  r"""A BackendServiceFailoverPolicy object.
+  r"""Applicable only to Failover for Internal TCP/UDP Load Balancing. On
+  failover or failback, this field indicates whether connection draining will
+  be honored. GCP has a fixed connection draining timeout of 10 minutes. A
+  setting of true terminates existing TCP connections to the active pool
+  during failover and failback, immediately draining traffic. A setting of
+  false allows existing TCP connections to persist, even on VMs no longer in
+  the active pool, for up to the duration of the connection draining timeout
+  (10 minutes).
 
   Fields:
     disableConnectionDrainOnFailover: This can be set to true only if the
@@ -9516,6 +9526,34 @@ class ComputeInstancesAddAccessConfigRequest(_messages.Message):
   zone = _messages.StringField(6, required=True)
 
 
+class ComputeInstancesAddResourcePoliciesRequest(_messages.Message):
+  r"""A ComputeInstancesAddResourcePoliciesRequest object.
+
+  Fields:
+    instance: The instance name for this request.
+    instancesAddResourcePoliciesRequest: A InstancesAddResourcePoliciesRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesAddResourcePoliciesRequest = _messages.MessageField('InstancesAddResourcePoliciesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstancesAggregatedListRequest(_messages.Message):
   r"""A ComputeInstancesAggregatedListRequest object.
 
@@ -9949,6 +9987,35 @@ class ComputeInstancesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputeInstancesRemoveResourcePoliciesRequest(_messages.Message):
+  r"""A ComputeInstancesRemoveResourcePoliciesRequest object.
+
+  Fields:
+    instance: The instance name for this request.
+    instancesRemoveResourcePoliciesRequest: A
+      InstancesRemoveResourcePoliciesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesRemoveResourcePoliciesRequest = _messages.MessageField('InstancesRemoveResourcePoliciesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesResetRequest(_messages.Message):
@@ -10585,24 +10652,28 @@ class ComputeInstancesUpdateRequest(_messages.Message):
   r"""A ComputeInstancesUpdateRequest object.
 
   Enums:
-    MinimalActionValueValuesEnum: If specified, this action or higher level
-      action is performed on the instance irrespective of what action is
-      required for the update to take effect. If not specified, then Compute
-      Engine acts based on the minimum action required.
-    MostDisruptiveAllowedActionValueValuesEnum: If specified, Compute Engine
-      returns an error if the update requires a higher action to be applied to
-      the instance. If not specified, the default will be REFRESH.
+    MinimalActionValueValuesEnum: Specifies the action to take when updating
+      an instance even if the updated properties do not require it. If not
+      specified, then Compute Engine acts based on the minimum action that the
+      updated properties require.
+    MostDisruptiveAllowedActionValueValuesEnum: Specifies the most disruptive
+      action that can be taken on the instance as part of the update. Compute
+      Engine returns an error if the instance properties require a more
+      disruptive action as part of the instance update. Valid options from
+      lowest to highest are NO_EFFECT, REFRESH, and RESTART.
 
   Fields:
     instance: Name of the instance resource to update.
     instanceResource: A Instance resource to be passed as the request body.
-    minimalAction: If specified, this action or higher level action is
-      performed on the instance irrespective of what action is required for
-      the update to take effect. If not specified, then Compute Engine acts
-      based on the minimum action required.
-    mostDisruptiveAllowedAction: If specified, Compute Engine returns an error
-      if the update requires a higher action to be applied to the instance. If
-      not specified, the default will be REFRESH.
+    minimalAction: Specifies the action to take when updating an instance even
+      if the updated properties do not require it. If not specified, then
+      Compute Engine acts based on the minimum action that the updated
+      properties require.
+    mostDisruptiveAllowedAction: Specifies the most disruptive action that can
+      be taken on the instance as part of the update. Compute Engine returns
+      an error if the instance properties require a more disruptive action as
+      part of the instance update. Valid options from lowest to highest are
+      NO_EFFECT, REFRESH, and RESTART.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -10618,10 +10689,10 @@ class ComputeInstancesUpdateRequest(_messages.Message):
   """
 
   class MinimalActionValueValuesEnum(_messages.Enum):
-    r"""If specified, this action or higher level action is performed on the
-    instance irrespective of what action is required for the update to take
-    effect. If not specified, then Compute Engine acts based on the minimum
-    action required.
+    r"""Specifies the action to take when updating an instance even if the
+    updated properties do not require it. If not specified, then Compute
+    Engine acts based on the minimum action that the updated properties
+    require.
 
     Values:
       INVALID: <no description>
@@ -10635,9 +10706,11 @@ class ComputeInstancesUpdateRequest(_messages.Message):
     RESTART = 3
 
   class MostDisruptiveAllowedActionValueValuesEnum(_messages.Enum):
-    r"""If specified, Compute Engine returns an error if the update requires a
-    higher action to be applied to the instance. If not specified, the default
-    will be REFRESH.
+    r"""Specifies the most disruptive action that can be taken on the instance
+    as part of the update. Compute Engine returns an error if the instance
+    properties require a more disruptive action as part of the instance
+    update. Valid options from lowest to highest are NO_EFFECT, REFRESH, and
+    RESTART.
 
     Values:
       INVALID: <no description>
@@ -22132,9 +22205,9 @@ class DiskMoveRequest(_messages.Message):
 class DiskType(_messages.Message):
   r"""Represents a Disk Type resource.  Google Compute Engine has two Disk
   Type resources:  *
-  [Global](/compute/docs/reference/rest/{$api_version}/diskTypes) *
-  [Regional](/compute/docs/reference/rest/{$api_version}/regionDiskTypes)  You
-  can choose from a variety of disk types based on your needs. For more
+  [Regional](/compute/docs/reference/rest/{$api_version}/regionDiskTypes) *
+  [Zonal](/compute/docs/reference/rest/{$api_version}/diskTypes)  You can
+  choose from a variety of disk types based on your needs. For more
   information, read Storage options.  The diskTypes resource represents disk
   types for a zonal persistent disk. For more information, read Zonal
   persistent disks.  The regionDiskTypes resource represents disk types for a
@@ -23209,6 +23282,33 @@ class ExternalVpnGatewayList(_messages.Message):
   nextPageToken = _messages.StringField(5)
   selfLink = _messages.StringField(6)
   warning = _messages.MessageField('WarningValue', 7)
+
+
+class FileContentBuffer(_messages.Message):
+  r"""A FileContentBuffer object.
+
+  Enums:
+    FileTypeValueValuesEnum:
+
+  Fields:
+    content: The raw content in the secure keys file.
+    fileType: A FileTypeValueValuesEnum attribute.
+  """
+
+  class FileTypeValueValuesEnum(_messages.Enum):
+    r"""FileTypeValueValuesEnum enum type.
+
+    Values:
+      BIN: <no description>
+      UNDEFINED: <no description>
+      X509: <no description>
+    """
+    BIN = 0
+    UNDEFINED = 1
+    X509 = 2
+
+  content = _messages.BytesField(1)
+  fileType = _messages.EnumField('FileTypeValueValuesEnum', 2)
 
 
 class Firewall(_messages.Message):
@@ -24432,49 +24532,6 @@ class GlobalSetPolicyRequest(_messages.Message):
   policy = _messages.MessageField('Policy', 3)
 
 
-class GoogleDuration(_messages.Message):
-  r"""A Duration represents a signed, fixed-length span of time represented as
-  a count of seconds and fractions of seconds at nanosecond resolution. It is
-  independent of any calendar and concepts like "day" or "month". It is
-  related to Timestamp in that the difference between two Timestamp values is
-  a Duration and it can be added or subtracted from a Timestamp. Range is
-  approximately +-10,000 years.  # Examples  Example 1: Compute Duration from
-  two Timestamps in pseudo code.  Timestamp start = ...; Timestamp end = ...;
-  Duration duration = ...;  duration.seconds = end.seconds - start.seconds;
-  duration.nanos = end.nanos - start.nanos;  if (duration.seconds  0) {
-  duration.seconds += 1; duration.nanos -= 1000000000; } else if
-  (duration.seconds > 0 && duration.nanos < 0) { duration.seconds -= 1;
-  duration.nanos += 1000000000; }  Example 2: Compute Timestamp from Timestamp
-  + Duration in pseudo code.  Timestamp start = ...; Duration duration = ...;
-  Timestamp end = ...;  end.seconds = start.seconds + duration.seconds;
-  end.nanos = start.nanos + duration.nanos;  if (end.nanos = 1000000000) {
-  end.seconds += 1; end.nanos -= 1000000000; }  Example 3: Compute Duration
-  from datetime.timedelta in Python.  td = datetime.timedelta(days=3,
-  minutes=10) duration = Duration() duration.FromTimedelta(td)  # JSON Mapping
-  In JSON format, the Duration type is encoded as a string rather than an
-  object, where the string ends in the suffix "s" (indicating seconds) and is
-  preceded by the number of seconds, with nanoseconds expressed as fractional
-  seconds. For example, 3 seconds with 0 nanoseconds should be encoded in JSON
-  format as "3s", while 3 seconds and 1 nanosecond should be expressed in JSON
-  format as "3.000000001s", and 3 seconds and 1 microsecond should be
-  expressed in JSON format as "3.000001s".
-
-  Fields:
-    nanos: Signed fractions of a second at nanosecond resolution of the span
-      of time. Durations less than one second are represented with a 0
-      `seconds` field and a positive or negative `nanos` field. For durations
-      of one second or more, a non-zero value for the `nanos` field must be of
-      the same sign as the `seconds` field. Must be from -999,999,999 to
-      +999,999,999 inclusive.
-    seconds: Signed seconds of the span of time. Must be from -315,576,000,000
-      to +315,576,000,000 inclusive. Note: these bounds are computed from: 60
-      sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years
-  """
-
-  nanos = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  seconds = _messages.IntegerField(2)
-
-
 class GuestAttributes(_messages.Message):
   r"""A guest attributes entry.
 
@@ -25666,10 +25723,10 @@ class HostRule(_messages.Message):
   Fields:
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    hosts: The list of host patterns to match. They must be valid hostnames,
-      except * will match any string of ([a-z0-9-.]*). In that case, * must be
-      the first character and must be followed in the pattern by either - or
-      ..
+    hosts: The list of host patterns to match. They must be valid hostnames
+      with optional port numbers in the format host:port. * matches any string
+      of ([a-z0-9-.]*). In that case, * must be the first character and must
+      be followed in the pattern by either - or ..
     pathMatcher: The name of the PathMatcher to use to match the path portion
       of the URL if the hostRule matches the URL's host portion.
   """
@@ -26543,6 +26600,8 @@ class Image(_messages.Message):
       cannot be a dash.
     rawDisk: The parameters of the raw disk image.
     selfLink: [Output Only] Server-defined URL for the resource.
+    shieldedInstanceInitialState: Set the secure boot keys of shielded
+      instance.
     sourceDisk: URL of the source disk used to create this image. This can be
       a full or valid partial URL. You must provide either this property or
       the rawDisk.source property but not both to create an image. For
@@ -26691,18 +26750,19 @@ class Image(_messages.Message):
   name = _messages.StringField(15)
   rawDisk = _messages.MessageField('RawDiskValue', 16)
   selfLink = _messages.StringField(17)
-  sourceDisk = _messages.StringField(18)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
-  sourceDiskId = _messages.StringField(20)
-  sourceImage = _messages.StringField(21)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 22)
-  sourceImageId = _messages.StringField(23)
-  sourceSnapshot = _messages.StringField(24)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 25)
-  sourceSnapshotId = _messages.StringField(26)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 27, default=u'RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 28)
-  storageLocations = _messages.StringField(29, repeated=True)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 18)
+  sourceDisk = _messages.StringField(19)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
+  sourceDiskId = _messages.StringField(21)
+  sourceImage = _messages.StringField(22)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
+  sourceImageId = _messages.StringField(24)
+  sourceSnapshot = _messages.StringField(25)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 26)
+  sourceSnapshotId = _messages.StringField(27)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 28, default=u'RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 29)
+  storageLocations = _messages.StringField(30, repeated=True)
 
 
 class ImageList(_messages.Message):
@@ -26829,12 +26889,32 @@ class ImageList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class InitialStateConfig(_messages.Message):
+  r"""Initial State for shielded instance, these are public keys which are
+  safe to store in public
+
+  Fields:
+    dbs: The Key Database (db).
+    dbxs: The forbidden key database (dbx).
+    keks: The Key Exchange Key (KEK).
+    pk: The Platform Key (PK).
+  """
+
+  dbs = _messages.MessageField('FileContentBuffer', 1, repeated=True)
+  dbxs = _messages.MessageField('FileContentBuffer', 2, repeated=True)
+  keks = _messages.MessageField('FileContentBuffer', 3, repeated=True)
+  pk = _messages.MessageField('FileContentBuffer', 4)
+
+
 class Instance(_messages.Message):
   r"""Represents an Instance resource.  An instance is a virtual machine that
   is hosted on Google Cloud Platform. For more information, read Virtual
   Machine Instances. (== resource_for {$api_version}.instances ==)
 
   Enums:
+    PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
+      type for the VM. If not specified, use  INHERIT_FROM_SUBNETWORK as
+      default.
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
       the following values: PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED,
       SUSPENDING, SUSPENDED, and TERMINATED.
@@ -26915,6 +26995,8 @@ class Instance(_messages.Message):
       These specify how interfaces are configured to interact with other
       network services, such as connecting to the internet. Multiple
       interfaces are supported per instance.
+    privateIpv6GoogleAccess: The private IPv6 google access type for the VM.
+      If not specified, use  INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
     resourcePolicies: Resource policies applied to this instance.
@@ -26950,12 +27032,26 @@ class Instance(_messages.Message):
       as a field in the request body.
   """
 
+  class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
+    r"""The private IPv6 google access type for the VM. If not specified, use
+    INHERIT_FROM_SUBNETWORK as default.
+
+    Values:
+      ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE: <no description>
+      ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE: <no description>
+      INHERIT_FROM_SUBNETWORK: <no description>
+    """
+    ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE = 0
+    ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE = 1
+    INHERIT_FROM_SUBNETWORK = 2
+
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the instance. One of the following values:
     PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED, SUSPENDING, SUSPENDED,
     and TERMINATED.
 
     Values:
+      DEPROVISIONING: <no description>
       PROVISIONING: <no description>
       REPAIRING: <no description>
       RUNNING: <no description>
@@ -26966,15 +27062,16 @@ class Instance(_messages.Message):
       SUSPENDING: <no description>
       TERMINATED: <no description>
     """
-    PROVISIONING = 0
-    REPAIRING = 1
-    RUNNING = 2
-    STAGING = 3
-    STOPPED = 4
-    STOPPING = 5
-    SUSPENDED = 6
-    SUSPENDING = 7
-    TERMINATED = 8
+    DEPROVISIONING = 0
+    PROVISIONING = 1
+    REPAIRING = 2
+    RUNNING = 3
+    STAGING = 4
+    STOPPED = 5
+    STOPPING = 6
+    SUSPENDED = 7
+    SUSPENDING = 8
+    TERMINATED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -27021,22 +27118,23 @@ class Instance(_messages.Message):
   minCpuPlatform = _messages.StringField(18)
   name = _messages.StringField(19)
   networkInterfaces = _messages.MessageField('NetworkInterface', 20, repeated=True)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 21)
-  resourcePolicies = _messages.StringField(22, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 23)
-  selfLink = _messages.StringField(24)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 25, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 26)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 27)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 28)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 29)
-  sourceMachineImage = _messages.StringField(30)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 31)
-  startRestricted = _messages.BooleanField(32)
-  status = _messages.EnumField('StatusValueValuesEnum', 33)
-  statusMessage = _messages.StringField(34)
-  tags = _messages.MessageField('Tags', 35)
-  zone = _messages.StringField(36)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 21)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 22)
+  resourcePolicies = _messages.StringField(23, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 24)
+  selfLink = _messages.StringField(25)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 26, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 27)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 28)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 29)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 30)
+  sourceMachineImage = _messages.StringField(31)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 32)
+  startRestricted = _messages.BooleanField(33)
+  status = _messages.EnumField('StatusValueValuesEnum', 34)
+  statusMessage = _messages.StringField(35)
+  tags = _messages.MessageField('Tags', 36)
+  zone = _messages.StringField(37)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -28058,16 +28156,18 @@ class InstanceGroupManagerStatusStateful(_messages.Message):
 
   Fields:
     hasStatefulConfig: [Output Only] A bit indicating whether the managed
-      instance group is stateful, i.e. has any disks in Stateful Policy or at
-      least one per-instance config. This is determined based on the user
-      intent, the group may be reported as not stateful even when there is
-      still some preserved state on managed instances.
+      instance group has stateful configuration, that is, if you have
+      configured any items in a stateful policy or in per-instance configs.
+      The group might report that it has no stateful config even when there is
+      still some preserved state on a managed instance, for example, if you
+      have deleted all PICs but not yet applied those deletions.
     isStateful: [Output Only] A bit indicating whether the managed instance
-      group is stateful, i.e. has any disks in Stateful Policy or at least one
-      per-instance config. This is determined based on the user intent, the
-      group may be reported as not stateful even when there is still some
-      preserved state on managed instances. This field is deprecated in favor
-      of has_stateful_config
+      group has stateful configuration, that is, if you have configured any
+      items in a stateful policy or in per-instance configs. The group might
+      report that it has no stateful config even when there is still some
+      preserved state on a managed instance, for example, if you have deleted
+      all PICs but not yet applied those deletions. This field is deprecated
+      in favor of has_stateful_config.
   """
 
   hasStatefulConfig = _messages.BooleanField(1)
@@ -29405,6 +29505,11 @@ class InstanceMoveRequest(_messages.Message):
 class InstanceProperties(_messages.Message):
   r"""InstanceProperties message type.
 
+  Enums:
+    PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
+      type for the VM. If not specified, use  INHERIT_FROM_SUBNETWORK as
+      default.
+
   Messages:
     LabelsValue: Labels to apply to instances that are created from this
       template.
@@ -29438,6 +29543,8 @@ class InstanceProperties(_messages.Message):
       For more information, read Specifying a Minimum CPU Platform.
     networkInterfaces: An array of network access configurations for this
       interface.
+    privateIpv6GoogleAccess: The private IPv6 google access type for the VM.
+      If not specified, use  INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
     resourcePolicies: Resource policies (names, not ULRs) applied to instances
@@ -29456,6 +29563,19 @@ class InstanceProperties(_messages.Message):
       firewalls. The setTags method can modify this list of tags. Each tag
       within the list must comply with RFC1035.
   """
+
+  class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
+    r"""The private IPv6 google access type for the VM. If not specified, use
+    INHERIT_FROM_SUBNETWORK as default.
+
+    Values:
+      ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE: <no description>
+      ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE: <no description>
+      INHERIT_FROM_SUBNETWORK: <no description>
+    """
+    ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE = 0
+    ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE = 1
+    INHERIT_FROM_SUBNETWORK = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -29491,13 +29611,14 @@ class InstanceProperties(_messages.Message):
   metadata = _messages.MessageField('Metadata', 8)
   minCpuPlatform = _messages.StringField(9)
   networkInterfaces = _messages.MessageField('NetworkInterface', 10, repeated=True)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 11)
-  resourcePolicies = _messages.StringField(12, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 13)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 14, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 15)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 16)
-  tags = _messages.MessageField('Tags', 17)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 11)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 12)
+  resourcePolicies = _messages.StringField(13, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 14)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 15, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 16)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 17)
+  tags = _messages.MessageField('Tags', 18)
 
 
 class InstanceReference(_messages.Message):
@@ -29697,6 +29818,7 @@ class InstanceWithNamedPorts(_messages.Message):
     r"""[Output Only] The status of the instance.
 
     Values:
+      DEPROVISIONING: <no description>
       PROVISIONING: <no description>
       REPAIRING: <no description>
       RUNNING: <no description>
@@ -29707,19 +29829,30 @@ class InstanceWithNamedPorts(_messages.Message):
       SUSPENDING: <no description>
       TERMINATED: <no description>
     """
-    PROVISIONING = 0
-    REPAIRING = 1
-    RUNNING = 2
-    STAGING = 3
-    STOPPED = 4
-    STOPPING = 5
-    SUSPENDED = 6
-    SUSPENDING = 7
-    TERMINATED = 8
+    DEPROVISIONING = 0
+    PROVISIONING = 1
+    REPAIRING = 2
+    RUNNING = 3
+    STAGING = 4
+    STOPPED = 5
+    STOPPING = 6
+    SUSPENDED = 7
+    SUSPENDING = 8
+    TERMINATED = 9
 
   instance = _messages.StringField(1)
   namedPorts = _messages.MessageField('NamedPort', 2, repeated=True)
   status = _messages.EnumField('StatusValueValuesEnum', 3)
+
+
+class InstancesAddResourcePoliciesRequest(_messages.Message):
+  r"""A InstancesAddResourcePoliciesRequest object.
+
+  Fields:
+    resourcePolicies: Resource policies to be added to this instance.
+  """
+
+  resourcePolicies = _messages.StringField(1, repeated=True)
 
 
 class InstancesGetEffectiveFirewallsResponse(_messages.Message):
@@ -29745,6 +29878,16 @@ class InstancesGetEffectiveFirewallsResponseOrganizationFirewallPolicy(_messages
 
   id = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
   rules = _messages.MessageField('SecurityPolicyRule', 2, repeated=True)
+
+
+class InstancesRemoveResourcePoliciesRequest(_messages.Message):
+  r"""A InstancesRemoveResourcePoliciesRequest object.
+
+  Fields:
+    resourcePolicies: Resource policies to be removed from this instance.
+  """
+
+  resourcePolicies = _messages.StringField(1, repeated=True)
 
 
 class InstancesResumeRequest(_messages.Message):
@@ -32007,8 +32150,7 @@ class LogConfigCounterOptions(_messages.Message):
   "" (empty string), resulting in a counter with no fields.  Examples: counter
   { metric: "/debug_access_count" field: "iam_principal" } ==> increment
   counter /iam/policy/debug_access_count {iam_principal=[value of
-  IAMContext.principal]}  TODO(b/141846426): Consider supporting "authority"
-  and "iam_principal" fields in the same counter.
+  IAMContext.principal]}
 
   Fields:
     customFields: Custom fields.
@@ -32041,17 +32183,25 @@ class LogConfigDataAccessOptions(_messages.Message):
 
   Enums:
     LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
-      manner at the caller. This is relevant only in the LocalIAM
-      implementation, for now.
+      manner at the caller. This is currently supported in the LocalIAM
+      implementation, Stubby C++, and Stubby Java. For Apps Framework, see go
+      /af-audit-logging#failclosed. TODO(b/77591626): Add support for Stubby
+      Go. TODO(b/129671387): Add support for Scaffolding.
 
   Fields:
     logMode: Whether Gin logging should happen in a fail-closed manner at the
-      caller. This is relevant only in the LocalIAM implementation, for now.
+      caller. This is currently supported in the LocalIAM implementation,
+      Stubby C++, and Stubby Java. For Apps Framework, see go/af-audit-
+      logging#failclosed. TODO(b/77591626): Add support for Stubby Go.
+      TODO(b/129671387): Add support for Scaffolding.
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
     r"""Whether Gin logging should happen in a fail-closed manner at the
-    caller. This is relevant only in the LocalIAM implementation, for now.
+    caller. This is currently supported in the LocalIAM implementation, Stubby
+    C++, and Stubby Java. For Apps Framework, see go/af-audit-
+    logging#failclosed. TODO(b/77591626): Add support for Stubby Go.
+    TODO(b/129671387): Add support for Scaffolding.
 
     Values:
       LOG_FAIL_CLOSED: <no description>
@@ -32832,6 +32982,7 @@ class ManagedInstance(_messages.Message):
     instance does not exist.
 
     Values:
+      DEPROVISIONING: <no description>
       PROVISIONING: <no description>
       REPAIRING: <no description>
       RUNNING: <no description>
@@ -32842,15 +32993,16 @@ class ManagedInstance(_messages.Message):
       SUSPENDING: <no description>
       TERMINATED: <no description>
     """
-    PROVISIONING = 0
-    REPAIRING = 1
-    RUNNING = 2
-    STAGING = 3
-    STOPPED = 4
-    STOPPING = 5
-    SUSPENDED = 6
-    SUSPENDING = 7
-    TERMINATED = 8
+    DEPROVISIONING = 0
+    PROVISIONING = 1
+    REPAIRING = 2
+    RUNNING = 3
+    STAGING = 4
+    STOPPED = 5
+    STOPPING = 6
+    SUSPENDED = 7
+    SUSPENDING = 8
+    TERMINATED = 9
 
   currentAction = _messages.EnumField('CurrentActionValueValuesEnum', 1)
   id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
@@ -37559,19 +37711,19 @@ class PerInstanceConfig(_messages.Message):
   r"""A PerInstanceConfig object.
 
   Fields:
-    fingerprint: Fingerprint of this per-instance config. This field may be
-      used in optimistic locking. It will be ignored when inserting a per-
-      instance config. An up-to-date fingerprint must be provided in order to
-      update an existing per-instance config or the field needs to be unset.
-    name: The name of the per-instance config and the corresponding instance.
-      Serves as a merge key during UpdatePerInstanceConfigs operation, i.e. if
-      per-instance config with the same name exists then it will be updated,
-      otherwise a new one will be created for the VM instance with the same
-      name. An attempt to create a per-instance config for a VM instance that
-      either doesn't exist or is not part of the group will result in a
-      failure.
-    preservedState: Intended preserved state for the given instance. Does not
-      contain state generated based on Stateful Policy.
+    fingerprint: Fingerprint of this per-instance config. This field can be
+      used in optimistic locking. It is ignored when inserting a per-instance
+      config. An up-to-date fingerprint must be provided in order to update an
+      existing per-instance config or the field needs to be unset.
+    name: The name of a per-instance config and its corresponding instance.
+      Serves as a merge key during UpdatePerInstanceConfigs operations, that
+      is, if a per-instance config with the same name exists then it will be
+      updated, otherwise a new one will be created for the VM instance with
+      the same name. An attempt to create a per-instance config for a VM
+      instance that either doesn't exist or is not part of the group will
+      result in an error.
+    preservedState: The intended preserved state for the given instance. Does
+      not contain preserved state generated from a stateful policy.
   """
 
   fingerprint = _messages.BytesField(1)
@@ -39604,12 +39756,14 @@ class ReservationAffinity(_messages.Message):
       ANY_RESERVATION: <no description>
       NO_RESERVATION: <no description>
       SPECIFIC_RESERVATION: <no description>
+      SPECIFIC_THEN_ANY_RESERVATION: <no description>
       UNSPECIFIED: <no description>
     """
     ANY_RESERVATION = 0
     NO_RESERVATION = 1
     SPECIFIC_RESERVATION = 2
-    UNSPECIFIED = 3
+    SPECIFIC_THEN_ANY_RESERVATION = 3
+    UNSPECIFIED = 4
 
   consumeReservationType = _messages.EnumField('ConsumeReservationTypeValueValuesEnum', 1)
   key = _messages.StringField(2)
@@ -44578,7 +44732,7 @@ class Subnetwork(_messages.Message):
       with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created
       subnetwork that is reserved for Internal HTTP(S) Load Balancing. If
       unspecified, the purpose defaults to PRIVATE_RFC_1918.
-    RoleValueValuesEnum: The role of subnetwork. Currenly, this field is only
+    RoleValueValuesEnum: The role of subnetwork. Currently, this field is only
       used when purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set
       to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
       used for Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one
@@ -44665,7 +44819,7 @@ class Subnetwork(_messages.Message):
       the purpose defaults to PRIVATE_RFC_1918.
     region: URL of the region where the Subnetwork resides. This field can be
       set only at resource creation time.
-    role: The role of subnetwork. Currenly, this field is only used when
+    role: The role of subnetwork. Currently, this field is only used when
       purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE
       or BACKUP. An ACTIVE subnetwork is one that is currently being used for
       Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is
@@ -44720,12 +44874,12 @@ class Subnetwork(_messages.Message):
     PRIVATE_RFC_1918 = 2
 
   class RoleValueValuesEnum(_messages.Enum):
-    r"""The role of subnetwork. Currenly, this field is only used when purpose
-    = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE or BACKUP.
-    An ACTIVE subnetwork is one that is currently being used for Internal
-    HTTP(S) Load Balancing. A BACKUP subnetwork is one that is ready to be
-    promoted to ACTIVE or is currently draining. This field can be updated
-    with a patch request.
+    r"""The role of subnetwork. Currently, this field is only used when
+    purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE or
+    BACKUP. An ACTIVE subnetwork is one that is currently being used for
+    Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is ready
+    to be promoted to ACTIVE or is currently draining. This field can be
+    updated with a patch request.
 
     Values:
       ACTIVE: <no description>
@@ -45072,6 +45226,9 @@ class SubnetworkLogConfig(_messages.Message):
     enable: Whether to enable flow logging for this subnetwork. If this field
       is not explicitly set, it will not appear in get listings. If not set
       the default behavior is to disable flow logging.
+    filterExpr: Can only be specified if VPC flow logs for this subnetwork is
+      enabled. Export filter used to define which VPC flow logs should be
+      logged.
     flowSampling: Can only be specified if VPC flow logging for this
       subnetwork is enabled. The value of the field must be in [0, 1]. Set the
       sampling rate of VPC flow logs within the subnetwork where 1.0 means all
@@ -45081,6 +45238,8 @@ class SubnetworkLogConfig(_messages.Message):
       enabled. Configures whether all, none or a subset of metadata fields
       should be added to the reported VPC flow logs. Default is
       INCLUDE_ALL_METADATA.
+    metadataFields: Can only be specified if VPC flow logs for this subnetwork
+      is enabled and "metadata" was set to CUSTOM_METADATA.
   """
 
   class AggregationIntervalValueValuesEnum(_messages.Enum):
@@ -45111,16 +45270,20 @@ class SubnetworkLogConfig(_messages.Message):
     added to the reported VPC flow logs. Default is INCLUDE_ALL_METADATA.
 
     Values:
+      CUSTOM_METADATA: <no description>
       EXCLUDE_ALL_METADATA: <no description>
       INCLUDE_ALL_METADATA: <no description>
     """
-    EXCLUDE_ALL_METADATA = 0
-    INCLUDE_ALL_METADATA = 1
+    CUSTOM_METADATA = 0
+    EXCLUDE_ALL_METADATA = 1
+    INCLUDE_ALL_METADATA = 2
 
   aggregationInterval = _messages.EnumField('AggregationIntervalValueValuesEnum', 1)
   enable = _messages.BooleanField(2)
-  flowSampling = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
-  metadata = _messages.EnumField('MetadataValueValuesEnum', 4)
+  filterExpr = _messages.StringField(3)
+  flowSampling = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  metadata = _messages.EnumField('MetadataValueValuesEnum', 5)
+  metadataFields = _messages.StringField(6, repeated=True)
 
 
 class SubnetworkSecondaryRange(_messages.Message):

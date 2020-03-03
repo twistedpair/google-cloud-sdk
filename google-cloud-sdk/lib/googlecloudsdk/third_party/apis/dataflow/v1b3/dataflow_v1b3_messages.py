@@ -4298,6 +4298,8 @@ class Snapshot(_messages.Message):
   Fields:
     creationTime: The time this snapshot was created.
     description: User specified description of the snapshot. Maybe empty.
+    diskSizeBytes: The disk byte size of the snapshot. Only available for
+      snapshots in READY state.
     id: The unique ID of this snapshot.
     projectId: The project this snapshot belongs to.
     pubsubMetadata: PubSub snapshot metadata.
@@ -4327,12 +4329,13 @@ class Snapshot(_messages.Message):
 
   creationTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  id = _messages.StringField(3)
-  projectId = _messages.StringField(4)
-  pubsubMetadata = _messages.MessageField('PubsubSnapshotMetadata', 5, repeated=True)
-  sourceJobId = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  ttl = _messages.StringField(8)
+  diskSizeBytes = _messages.IntegerField(3)
+  id = _messages.StringField(4)
+  projectId = _messages.StringField(5)
+  pubsubMetadata = _messages.MessageField('PubsubSnapshotMetadata', 6, repeated=True)
+  sourceJobId = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  ttl = _messages.StringField(9)
 
 
 class SnapshotJobRequest(_messages.Message):

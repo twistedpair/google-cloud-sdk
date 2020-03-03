@@ -30,9 +30,14 @@ _TRIGGER_DEPENDENCY = 'DependencyReady'
 SOURCE_READY = 'source_ready'
 
 
-def TriggerSourceStages():
+def TriggerAndSourceStages():
   return [
-      progress_tracker.Stage('Creating Event Source...', key=SOURCE_READY),
+      progress_tracker.Stage('Creating Event Source...', key=SOURCE_READY)
+  ] + TriggerStages()
+
+
+def TriggerStages():
+  return [
       progress_tracker.Stage('Subscribing Service...', key=_TRIGGER_SUBSCRIBED),
       progress_tracker.Stage('Linking Trigger...', key=_TRIGGER_DEPENDENCY),
   ]

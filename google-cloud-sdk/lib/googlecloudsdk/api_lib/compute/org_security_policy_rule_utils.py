@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import re
+
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 
 ALLOWED_METAVAR = 'PROTOCOL[:PORT[-PORT]]'
@@ -41,8 +42,8 @@ def ParseDestPorts(dest_ports, message_classes):
     match = LEGAL_SPECS.match(spec)
     if not match:
       raise calliope_exceptions.ToolException(
-          'Organization security policy rules must be of the form {0}; received [{1}].'
-          .format(ALLOWED_METAVAR, spec))
+          'Organization security policy rules must be of the form {0}; '
+          'received [{1}].'.format(ALLOWED_METAVAR, spec))
     if match.group('ports'):
       ports = [match.group('ports')]
     else:
@@ -51,6 +52,26 @@ def ParseDestPorts(dest_ports, message_classes):
         ipProtocol=match.group('protocol'), ports=ports)
     dest_port_list.append(dest_port)
   return dest_port_list
+
+
+def ParseLayer4Configs(layer4_conifigs, message_classes):
+  """Parses protocol:port mappings for --layer4-configs command line."""
+  layer4_config_list = []
+  for spec in layer4_conifigs or []:
+    match = LEGAL_SPECS.match(spec)
+    if not match:
+      raise calliope_exceptions.ToolException(
+          'Organization security policy rules must be of the form {0}; '
+          'received [{1}].'.format(ALLOWED_METAVAR, spec))
+    if match.group('ports'):
+      ports = [match.group('ports')]
+    else:
+      ports = []
+    layer4_conifig = (
+        message_classes.SecurityPolicyRuleMatcherConfigLayer4Config(
+            ipProtocol=match.group('protocol'), ports=ports))
+    layer4_config_list.append(layer4_conifig)
+  return layer4_config_list
 
 
 def ConvertPriorityToInt(priority):

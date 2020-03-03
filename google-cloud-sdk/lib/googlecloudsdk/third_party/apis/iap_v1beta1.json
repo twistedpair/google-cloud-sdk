@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/iap",
   "protocol": "rest",
   "rootUrl": "https://iap.googleapis.com/",
+  "mtlsRootUrl": "https://iap.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://iap.googleapis.com/",
   "batchPath": "batch",
@@ -254,7 +255,7 @@
               "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
               "location": "path",
               "required": true,
-              "pattern": "^.+$",
+              "pattern": "^.*$",
               "type": "string"
             }
           },
@@ -282,7 +283,7 @@
               "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
               "location": "path",
               "required": true,
-              "pattern": "^.+$",
+              "pattern": "^.*$",
               "type": "string"
             }
           },
@@ -310,7 +311,7 @@
               "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
               "location": "path",
               "required": true,
-              "pattern": "^.+$",
+              "pattern": "^.*$",
               "type": "string"
             }
           },

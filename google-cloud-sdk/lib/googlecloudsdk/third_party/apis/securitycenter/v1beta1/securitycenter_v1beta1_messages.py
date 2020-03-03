@@ -73,7 +73,7 @@ class Asset(_messages.Message):
   name = _messages.StringField(2)
   resourceProperties = _messages.MessageField('ResourcePropertiesValue', 3)
   securityCenterProperties = _messages.MessageField('SecurityCenterProperties', 4)
-  securityMarks = _messages.MessageField('SecurityMarks', 5)
+  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV1beta1SecurityMarks', 5)
   updateTime = _messages.StringField(6)
 
 
@@ -273,7 +273,63 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class Finding(_messages.Message):
+class GetIamPolicyRequest(_messages.Message):
+  r"""Request message for `GetIamPolicy` method.
+
+  Fields:
+    options: OPTIONAL: A `GetPolicyOptions` object for specifying options to
+      `GetIamPolicy`. This field is only used by Cloud IAM.
+  """
+
+  options = _messages.MessageField('GetPolicyOptions', 1)
+
+
+class GetPolicyOptions(_messages.Message):
+  r"""Encapsulates settings provided to GetIamPolicy.
+
+  Fields:
+    requestedPolicyVersion: Optional. The policy format version to be
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
+  """
+
+  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
+  r"""Response of asset discovery run
+
+  Enums:
+    StateValueValuesEnum: The state of an asset discovery run.
+
+  Fields:
+    duration: The duration between asset discovery run start and end
+    state: The state of an asset discovery run.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of an asset discovery run.
+
+    Values:
+      STATE_UNSPECIFIED: Asset discovery run state was unspecified.
+      COMPLETED: Asset discovery run completed successfully.
+      SUPERSEDED: Asset discovery run was cancelled with tasks still pending,
+        as another run for the same organization was started with a higher
+        priority.
+      TERMINATED: Asset discovery run was killed and terminated.
+    """
+    STATE_UNSPECIFIED = 0
+    COMPLETED = 1
+    SUPERSEDED = 2
+    TERMINATED = 3
+
+  duration = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class GoogleCloudSecuritycenterV1beta1Finding(_messages.Message):
   r"""Cloud Security Command Center (Cloud SCC) finding.  A finding is a
   record of assessment data (security, risk, health or privacy) ingested into
   Cloud SCC for presentation, notification, analysis, policy testing, and
@@ -376,65 +432,9 @@ class Finding(_messages.Message):
   name = _messages.StringField(5)
   parent = _messages.StringField(6)
   resourceName = _messages.StringField(7)
-  securityMarks = _messages.MessageField('SecurityMarks', 8)
+  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV1beta1SecurityMarks', 8)
   sourceProperties = _messages.MessageField('SourcePropertiesValue', 9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
-
-
-class GetIamPolicyRequest(_messages.Message):
-  r"""Request message for `GetIamPolicy` method.
-
-  Fields:
-    options: OPTIONAL: A `GetPolicyOptions` object for specifying options to
-      `GetIamPolicy`. This field is only used by Cloud IAM.
-  """
-
-  options = _messages.MessageField('GetPolicyOptions', 1)
-
-
-class GetPolicyOptions(_messages.Message):
-  r"""Encapsulates settings provided to GetIamPolicy.
-
-  Fields:
-    requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
-  """
-
-  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-
-
-class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
-  r"""Response of asset discovery run
-
-  Enums:
-    StateValueValuesEnum: The state of an asset discovery run.
-
-  Fields:
-    duration: The duration between asset discovery run start and end
-    state: The state of an asset discovery run.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""The state of an asset discovery run.
-
-    Values:
-      STATE_UNSPECIFIED: Asset discovery run state was unspecified.
-      COMPLETED: Asset discovery run completed successfully.
-      SUPERSEDED: Asset discovery run was cancelled with tasks still pending,
-        as another run for the same organization was started with a higher
-        priority.
-      TERMINATED: Asset discovery run was killed and terminated.
-    """
-    STATE_UNSPECIFIED = 0
-    COMPLETED = 1
-    SUPERSEDED = 2
-    TERMINATED = 3
-
-  duration = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class GoogleCloudSecuritycenterV1beta1RunAssetDiscoveryResponse(_messages.Message):
@@ -466,6 +466,68 @@ class GoogleCloudSecuritycenterV1beta1RunAssetDiscoveryResponse(_messages.Messag
 
   duration = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class GoogleCloudSecuritycenterV1beta1SecurityMarks(_messages.Message):
+  r"""User specified security marks that are attached to the parent Cloud
+  Security Command Center (Cloud SCC) resource. Security marks are scoped
+  within a Cloud SCC organization -- they can be modified and viewed by all
+  users who have proper permissions on the organization.
+
+  Messages:
+    MarksValue: Mutable user specified security marks belonging to the parent
+      resource. Constraints are as follows:    * Keys and values are treated
+      as case insensitive   * Keys must be between 1 - 256 characters
+      (inclusive)   * Keys must be letters, numbers, underscores, or dashes
+      * Values have leading and trailing whitespace trimmed, remaining
+      characters must be between 1 - 4096 characters (inclusive)
+
+  Fields:
+    marks: Mutable user specified security marks belonging to the parent
+      resource. Constraints are as follows:    * Keys and values are treated
+      as case insensitive   * Keys must be between 1 - 256 characters
+      (inclusive)   * Keys must be letters, numbers, underscores, or dashes
+      * Values have leading and trailing whitespace trimmed, remaining
+      characters must be between 1 - 4096 characters (inclusive)
+    name: The relative resource name of the SecurityMarks. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Examples:
+      "organizations/{organization_id}/assets/{asset_id}/securityMarks" "organ
+      izations/{organization_id}/sources/{source_id}/findings/{finding_id}/sec
+      urityMarks".
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MarksValue(_messages.Message):
+    r"""Mutable user specified security marks belonging to the parent
+    resource. Constraints are as follows:    * Keys and values are treated as
+    case insensitive   * Keys must be between 1 - 256 characters (inclusive)
+    * Keys must be letters, numbers, underscores, or dashes   * Values have
+    leading and trailing whitespace trimmed, remaining     characters must be
+    between 1 - 4096 characters (inclusive)
+
+    Messages:
+      AdditionalProperty: An additional property for a MarksValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MarksValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MarksValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  marks = _messages.MessageField('MarksValue', 1)
+  name = _messages.StringField(2)
 
 
 class GoogleCloudSecuritycenterV1p1beta1Asset(_messages.Message):
@@ -1073,7 +1135,7 @@ class ListFindingsResponse(_messages.Message):
     totalSize: The total number of findings matching the query.
   """
 
-  findings = _messages.MessageField('Finding', 1, repeated=True)
+  findings = _messages.MessageField('GoogleCloudSecuritycenterV1beta1Finding', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   readTime = _messages.StringField(3)
   totalSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
@@ -1335,68 +1397,6 @@ class SecurityCenterProperties(_messages.Message):
   resourceType = _messages.StringField(5)
 
 
-class SecurityMarks(_messages.Message):
-  r"""User specified security marks that are attached to the parent Cloud
-  Security Command Center (Cloud SCC) resource. Security marks are scoped
-  within a Cloud SCC organization -- they can be modified and viewed by all
-  users who have proper permissions on the organization.
-
-  Messages:
-    MarksValue: Mutable user specified security marks belonging to the parent
-      resource. Constraints are as follows:    * Keys and values are treated
-      as case insensitive   * Keys must be between 1 - 256 characters
-      (inclusive)   * Keys must be letters, numbers, underscores, or dashes
-      * Values have leading and trailing whitespace trimmed, remaining
-      characters must be between 1 - 4096 characters (inclusive)
-
-  Fields:
-    marks: Mutable user specified security marks belonging to the parent
-      resource. Constraints are as follows:    * Keys and values are treated
-      as case insensitive   * Keys must be between 1 - 256 characters
-      (inclusive)   * Keys must be letters, numbers, underscores, or dashes
-      * Values have leading and trailing whitespace trimmed, remaining
-      characters must be between 1 - 4096 characters (inclusive)
-    name: The relative resource name of the SecurityMarks. See:
-      https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Examples:
-      "organizations/{organization_id}/assets/{asset_id}/securityMarks" "organ
-      izations/{organization_id}/sources/{source_id}/findings/{finding_id}/sec
-      urityMarks".
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MarksValue(_messages.Message):
-    r"""Mutable user specified security marks belonging to the parent
-    resource. Constraints are as follows:    * Keys and values are treated as
-    case insensitive   * Keys must be between 1 - 256 characters (inclusive)
-    * Keys must be letters, numbers, underscores, or dashes   * Values have
-    leading and trailing whitespace trimmed, remaining     characters must be
-    between 1 - 4096 characters (inclusive)
-
-    Messages:
-      AdditionalProperty: An additional property for a MarksValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type MarksValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MarksValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  marks = _messages.MessageField('MarksValue', 1)
-  name = _messages.StringField(2)
-
-
 class SecuritycenterOrganizationsAssetsGroupRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsAssetsGroupRequest object.
 
@@ -1498,20 +1498,22 @@ class SecuritycenterOrganizationsAssetsUpdateSecurityMarksRequest(_messages.Mess
   r"""A SecuritycenterOrganizationsAssetsUpdateSecurityMarksRequest object.
 
   Fields:
+    googleCloudSecuritycenterV1beta1SecurityMarks: A
+      GoogleCloudSecuritycenterV1beta1SecurityMarks resource to be passed as
+      the request body.
     name: The relative resource name of the SecurityMarks. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Examples:
       "organizations/{organization_id}/assets/{asset_id}/securityMarks" "organ
       izations/{organization_id}/sources/{source_id}/findings/{finding_id}/sec
       urityMarks".
-    securityMarks: A SecurityMarks resource to be passed as the request body.
     startTime: The time at which the updated SecurityMarks take effect.
     updateMask: The FieldMask to use when updating the security marks
       resource.
   """
 
-  name = _messages.StringField(1, required=True)
-  securityMarks = _messages.MessageField('SecurityMarks', 2)
+  googleCloudSecuritycenterV1beta1SecurityMarks = _messages.MessageField('GoogleCloudSecuritycenterV1beta1SecurityMarks', 1)
+  name = _messages.StringField(2, required=True)
   startTime = _messages.StringField(3)
   updateMask = _messages.StringField(4)
 
@@ -1593,16 +1595,18 @@ class SecuritycenterOrganizationsSourcesFindingsCreateRequest(_messages.Message)
   r"""A SecuritycenterOrganizationsSourcesFindingsCreateRequest object.
 
   Fields:
-    finding: A Finding resource to be passed as the request body.
     findingId: Required. Unique identifier provided by the client within the
       parent scope. It must be alphanumeric and less than or equal to 32
       characters and greater than 0 characters in length.
+    googleCloudSecuritycenterV1beta1Finding: A
+      GoogleCloudSecuritycenterV1beta1Finding resource to be passed as the
+      request body.
     parent: Required. Resource name of the new finding's parent. Its format
       should be "organizations/[organization_id]/sources/[source_id]".
   """
 
-  finding = _messages.MessageField('Finding', 1)
-  findingId = _messages.StringField(2)
+  findingId = _messages.StringField(1)
+  googleCloudSecuritycenterV1beta1Finding = _messages.MessageField('GoogleCloudSecuritycenterV1beta1Finding', 2)
   parent = _messages.StringField(3, required=True)
 
 
@@ -1677,7 +1681,9 @@ class SecuritycenterOrganizationsSourcesFindingsPatchRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsSourcesFindingsPatchRequest object.
 
   Fields:
-    finding: A Finding resource to be passed as the request body.
+    googleCloudSecuritycenterV1beta1Finding: A
+      GoogleCloudSecuritycenterV1beta1Finding resource to be passed as the
+      request body.
     name: The relative resource name of this finding. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/sources/{source_id}/finding
@@ -1686,7 +1692,7 @@ class SecuritycenterOrganizationsSourcesFindingsPatchRequest(_messages.Message):
       field should not be specified when creating a finding.
   """
 
-  finding = _messages.MessageField('Finding', 1)
+  googleCloudSecuritycenterV1beta1Finding = _messages.MessageField('GoogleCloudSecuritycenterV1beta1Finding', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
 
@@ -1712,20 +1718,22 @@ class SecuritycenterOrganizationsSourcesFindingsUpdateSecurityMarksRequest(_mess
   object.
 
   Fields:
+    googleCloudSecuritycenterV1beta1SecurityMarks: A
+      GoogleCloudSecuritycenterV1beta1SecurityMarks resource to be passed as
+      the request body.
     name: The relative resource name of the SecurityMarks. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Examples:
       "organizations/{organization_id}/assets/{asset_id}/securityMarks" "organ
       izations/{organization_id}/sources/{source_id}/findings/{finding_id}/sec
       urityMarks".
-    securityMarks: A SecurityMarks resource to be passed as the request body.
     startTime: The time at which the updated SecurityMarks take effect.
     updateMask: The FieldMask to use when updating the security marks
       resource.
   """
 
-  name = _messages.StringField(1, required=True)
-  securityMarks = _messages.MessageField('SecurityMarks', 2)
+  googleCloudSecuritycenterV1beta1SecurityMarks = _messages.MessageField('GoogleCloudSecuritycenterV1beta1SecurityMarks', 1)
+  name = _messages.StringField(2, required=True)
   startTime = _messages.StringField(3)
   updateMask = _messages.StringField(4)
 

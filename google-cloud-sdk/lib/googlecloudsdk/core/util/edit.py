@@ -33,6 +33,7 @@ import os
 import subprocess
 import tempfile
 
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
@@ -87,7 +88,7 @@ def OnlineEdit(text):
                             'please try again.'.format(error.returncode))
   else:
     try:
-      editor = os.getenv('EDITOR', 'vi')
+      editor = encoding.GetEncodedValue(os.environ, 'EDITOR', 'vi')
       # We use shell=True and manual smashing of the args to permit users to set
       # EDITOR="emacs -nw", or similar things.
       # We used suprocess.check_call instead of subprocess.check_output because

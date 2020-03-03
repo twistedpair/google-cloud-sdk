@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/spanner/",
   "protocol": "rest",
   "rootUrl": "https://spanner.googleapis.com/",
+  "mtlsRootUrl": "https://spanner.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://spanner.googleapis.com/",
   "batchPath": "batch",
@@ -255,7 +256,7 @@
           "type": "string"
         },
         "extraStatements": {
-          "description": "An optional list of DDL statements to run inside the newly created\ndatabase. Statements can create tables, indexes, etc. These\nstatements execute atomically with the creation of the database:\nif there is an error in any statement, the database is not created.",
+          "description": "Optional. A list of DDL statements to run inside the newly created\ndatabase. Statements can create tables, indexes, etc. These\nstatements execute atomically with the creation of the database:\nif there is an error in any statement, the database is not created.",
           "type": "array",
           "items": {
             "type": "string"
@@ -558,7 +559,7 @@
           }
         },
         "endpointUris": {
-          "description": "Output only. A set of endpoint URIs based on your instance config\nthat you can use instead of the global endpoint `spanner.googleapis.com`.\n\nFor example, if your instance config is `us-central1` (a regional config\nin Iowa), then your instance specific endpoints may include\n`us-central1-spanner.googleapis.com`. By calling these endpoints instead of\nthe global endpoint, you optimize network routing which could reduce\nnetwork latency.\n\nThe client libraries, JDBC drivers, and other SDK clients automatically\ncall these instance specific endpoints.\n\nIf you are using DNS whitelists, firewalls, or filtering to control access\nto endpoints, make sure you grant access to `*spanner.googleapis.com`.",
+          "description": "Deprecated. This field is not populated.",
           "type": "array",
           "items": {
             "type": "string"
@@ -740,6 +741,10 @@
           "description": "A per-transaction sequence number used to identify this request. This field\nmakes each request idempotent such that if the request is received multiple\ntimes, at most one will succeed.\n\nThe sequence number must be monotonically increasing within the\ntransaction. If a request arrives for the first time with an out-of-order\nsequence number, the transaction may be aborted. Replays of previously\nhandled requests will yield the same response as the first execution.\n\nRequired for DML statements. Ignored for queries.",
           "type": "string",
           "format": "int64"
+        },
+        "queryOptions": {
+          "description": "Query optimizer configuration to use for the given query.",
+          "$ref": "QueryOptions"
         }
       }
     },
@@ -900,6 +905,17 @@
         "type": {
           "description": "The type of the field.",
           "$ref": "Type"
+        }
+      }
+    },
+    "QueryOptions": {
+      "id": "QueryOptions",
+      "description": "Query optimizer configuration.",
+      "type": "object",
+      "properties": {
+        "optimizerVersion": {
+          "description": "An option to control the selection of optimizer version.\n\nThis parameter allows individual queries to pick different query\noptimizer versions.\n\nSpecifying \"latest\" as a value instructs Cloud Spanner to use the\nlatest supported query optimizer version. If not specified, Cloud Spanner\nuses optimizer version set at the database level options. Any other\npositive integer (from the list of supported optimizer versions)\noverrides the default optimizer version for query execution.\nThe list of supported optimizer versions can be queried from\nSPANNER_SYS.SUPPORTED_OPTIMIZER_VERSIONS. Executing a SQL statement\nwith an invalid optimizer version will fail with a syntax error\n(`INVALID_ARGUMENT`) status.\n\nThe `optimizer_version` statement hint has precedence over this setting.",
+          "type": "string"
         }
       }
     },

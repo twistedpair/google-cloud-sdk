@@ -263,7 +263,7 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
   Enums:
     ChallengeSecurityPreferenceValueValuesEnum: Settings for the frequency and
       difficulty at which this key triggers captcha challenges. This should
-      only be specified for IntegrationType CHECKBOX.
+      only be specified for IntegrationTypes CHECKBOX and INVISIBLE.
     IntegrationTypeValueValuesEnum: Required. Describes how this key is
       integrated with the website.
 
@@ -278,15 +278,15 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
       fragment. Examples: 'example.com' or 'subdomain.example.com'
     challengeSecurityPreference: Settings for the frequency and difficulty at
       which this key triggers captcha challenges. This should only be
-      specified for IntegrationType CHECKBOX.
+      specified for IntegrationTypes CHECKBOX and INVISIBLE.
     integrationType: Required. Describes how this key is integrated with the
       website.
   """
 
   class ChallengeSecurityPreferenceValueValuesEnum(_messages.Enum):
     r"""Settings for the frequency and difficulty at which this key triggers
-    captcha challenges. This should only be specified for IntegrationType
-    CHECKBOX.
+    captcha challenges. This should only be specified for IntegrationTypes
+    CHECKBOX and INVISIBLE.
 
     Values:
       CHALLENGE_SECURITY_PREFERENCE_UNSPECIFIED: Default type that indicates
@@ -312,10 +312,13 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
         robot" checkbox and never shows captcha challenges.
       CHECKBOX: Displays the "I'm not a robot" checkbox and may show captcha
         challenges after it is checked.
+      INVISIBLE: Doesn't display the "I'm not a robot" checkbox, but may show
+        captcha challenges after risk analysis.
     """
     INTEGRATION_TYPE_UNSPECIFIED = 0
     SCORE = 1
     CHECKBOX = 2
+    INVISIBLE = 3
 
   allowAllDomains = _messages.BooleanField(1)
   allowAmpTraffic = _messages.BooleanField(2)

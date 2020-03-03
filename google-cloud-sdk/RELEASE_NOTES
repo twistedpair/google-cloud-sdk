@@ -5,11 +5,51 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 283.0.0 (2020-03-03)
+
+### Cloud Dataflow
+
+* Added `gcloud beta dataflow sql query` command.
+* Removed `--flex-template` flag support from `gcloud beta dataflow jobs run`.
+* Added flex-template command `gcloud beta dataflow flex-template run`.
+
+### Cloud Run
+
+* Fixed error handling when Cloud Run for Anthos fails with an HTTP error.
+
+### Cloud Storage
+
+* 
+* Updated gsutil component to 4.48.
+
+### Compute Engine
+
+* Added field 'PRESERVED_STATE' to the output of `gcloud beta compute instance-groups managed list-instances`.
+* Promoted `--enable-logging` and `--logging-sample-rate` flags of
+  `gcloud compute backend-services <create|update>` to GA.
+* Added support for `group-placement-policy` without specific VM count.
+Spread placement policies support incremental groups size now.
+* Promoted `--resource-policies` flag of `gcloud compute instances create`
+to beta.
+* Added `get-iam-policy` and `set-iam-policy` commands to `gcloud compute resource-policies` command group.
+* Promoted `export` and `update-from-file` commands of `gcloud compute instances` command group to beta and GA.
+
+### Stackdriver Logging
+
+* Promoted the following commands to beta:
+  * `gcloud logging buckets list`
+  * `gcloud logging buckets describe`
+  * `gcloud logging buckets update`
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 282.0.0 (2020-02-25)
 
 ### Breaking Changes
 
-*   **(Cloud Key Management Service)** Modified `gcloud beta kms locations list` to include EKM availability. This may disrupt automated processing of the command's output. This may disrupt automated processing of the command's output; consider using the `--format` flag for parsing.
+*   **(Cloud Key Management Service)** Modified `gcloud beta kms locations list` to include EKM availability. This may disrupt automated processing of the command's output; consider using the `--format` flag for parsing.
 
 
 ### BigQuery

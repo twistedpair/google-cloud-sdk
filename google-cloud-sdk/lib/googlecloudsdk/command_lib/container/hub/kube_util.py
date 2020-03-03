@@ -169,12 +169,14 @@ class KubeconfigProcessor(object):
     # and KUBERNETES_SERVICE_HOST environment variables are set in a kubernetes
     # cluster automatically, which can be used by kubectl to talk to
     # the API server.
-    if not flags.kubeconfig and os.getenv(
-        'KUBERNETES_SERVICE_PORT') and os.getenv('KUBERNETES_SERVICE_HOST'):
+    if not flags.kubeconfig and encoding.GetEncodedValue(
+        os.environ, 'KUBERNETES_SERVICE_PORT') and encoding.GetEncodedValue(
+            os.environ, 'KUBERNETES_SERVICE_HOST'):
       return None, None
 
     kubeconfig_file = (
-        flags.kubeconfig or os.getenv('KUBECONFIG') or '~/.kube/config')
+        flags.kubeconfig or encoding.GetEncodedValue(os.environ, 'KUBECONFIG')
+        or '~/.kube/config')
 
     kubeconfig = files.ExpandHomeDir(kubeconfig_file)
     if not kubeconfig:
@@ -227,12 +229,14 @@ class OldKubeconfigProcessor(object):
     """
     # We need to support in-cluster configuration so that gcloud can run from
     # a container on the Cluster we are registering.
-    if not flags.kubeconfig and os.getenv(
-        'KUBERNETES_SERVICE_PORT') and os.getenv('KUBERNETES_SERVICE_HOST'):
+    if not flags.kubeconfig and encoding.GetEncodedValue(
+        os.environ, 'KUBERNETES_SERVICE_PORT') and  encoding.GetEncodedValue(
+            os.environ, 'KUBERNETES_SERVICE_HOST'):
       return None, None
 
     kubeconfig_file = (
-        flags.kubeconfig or os.getenv('KUBECONFIG') or '~/.kube/config')
+        flags.kubeconfig or encoding.GetEncodedValue(os.environ, 'KUBECONFIG')
+        or '~/.kube/config')
 
     kubeconfig = files.ExpandHomeDir(kubeconfig_file)
     if not kubeconfig:

@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1beta1",
-  "revision": "20200213",
+  "revision": "20200226",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development.\n",
   "ownerDomain": "google.com",
@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/firestore",
   "protocol": "rest",
   "rootUrl": "https://firestore.googleapis.com/",
+  "mtlsRootUrl": "https://firestore.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://firestore.googleapis.com/",
   "batchPath": "batch",
@@ -624,6 +625,13 @@
         "updateMask": {
           "description": "The fields to update in this write.\n\nThis field can be set only when the operation is `update`.\nIf the mask is not set for an `update` and the document exists, any\nexisting data will be overwritten.\nIf the mask is set and the document on the server has fields not covered by\nthe mask, they are left unchanged.\nFields referenced in the mask, but not present in the input document, are\ndeleted from the document on the server.\nThe field paths in this mask must not contain a reserved field name.",
           "$ref": "DocumentMask"
+        },
+        "updateTransforms": {
+          "description": "The transforms to perform after update.\n\nThis field can be set only when the operation is `update`. If present, this\nwrite is equivalent to performing `update` and `transform` to the same\ndocument atomically and in order.",
+          "type": "array",
+          "items": {
+            "$ref": "FieldTransform"
+          }
         },
         "currentDocument": {
           "description": "An optional precondition on the document.\n\nThe write will fail if this is set and not met by the target document.",
@@ -1794,7 +1802,7 @@
                       "description": "Required. The resource name of the Document to get. In the format:\n`projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.+$",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "type": "string"
                     },
                     "mask.fieldPaths": {
@@ -1838,7 +1846,7 @@
                       "description": "Required. The parent resource name. In the format:\n`projects\/{project_id}\/databases\/{database_id}\/documents` or\n`projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`.\nFor example:\n`projects\/my-project\/databases\/my-database\/documents` or\n`projects\/my-project\/databases\/my-database\/documents\/chatrooms\/my-chatroom`",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.+$",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "type": "string"
                     },
                     "collectionId": {
@@ -1910,7 +1918,7 @@
                       "description": "The resource name of the document, for example\n`projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.+$",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "type": "string"
                     },
                     "updateMask.fieldPaths": {
@@ -1962,7 +1970,7 @@
                       "description": "Required. The resource name of the Document to delete. In the format:\n`projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.+$",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "type": "string"
                     },
                     "currentDocument.exists": {
@@ -2144,7 +2152,7 @@
                       "description": "Required. The parent resource name. In the format:\n`projects\/{project_id}\/databases\/{database_id}\/documents` or\n`projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`.\nFor example:\n`projects\/my-project\/databases\/my-database\/documents` or\n`projects\/my-project\/databases\/my-database\/documents\/chatrooms\/my-chatroom`",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.+$",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "type": "string"
                     }
                   },
@@ -2260,7 +2268,7 @@
                       "description": "Required. The parent document. In the format:\n`projects\/{project_id}\/databases\/{database_id}\/documents\/{document_path}`.\nFor example:\n`projects\/my-project\/databases\/my-database\/documents\/chatrooms\/my-chatroom`",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.+$",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/[^\/]+\/.*$",
                       "type": "string"
                     }
                   },
@@ -2289,7 +2297,7 @@
                       "description": "Required. The parent resource. For example:\n`projects\/{project_id}\/databases\/{database_id}\/documents` or\n`projects\/{project_id}\/databases\/{database_id}\/documents\/chatrooms\/{chatroom_id}`",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/.+$",
+                      "pattern": "^projects\/[^\/]+\/databases\/[^\/]+\/documents\/.*$",
                       "type": "string"
                     },
                     "collectionId": {

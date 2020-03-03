@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/ml/",
   "protocol": "rest",
   "rootUrl": "https://ml.googleapis.com/",
+  "mtlsRootUrl": "https://ml.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://ml.googleapis.com/",
   "batchPath": "batch",
@@ -204,7 +205,7 @@
     },
     "GoogleCloudMlV1__TrainingInput": {
       "id": "GoogleCloudMlV1__TrainingInput",
-      "description": "Represents input parameters for a training job. When using the\ngcloud command to submit your training job, you can specify\nthe input parameters as command-line arguments and\/or in a YAML configuration\nfile referenced from the --config command-line argument. For\ndetails, see the guide to\n<a href=\"\/ml-engine\/docs\/tensorflow\/training-jobs\">submitting a training\njob<\/a>.",
+      "description": "Represents input parameters for a training job. When using the gcloud command\nto submit your training job, you can specify the input parameters as\ncommand-line arguments and\/or in a YAML configuration file referenced from\nthe --config command-line argument. For details, see the guide to [submitting\na training job](\/ai-platform\/training\/docs\/training-jobs).",
       "type": "object",
       "properties": {
         "scaleTier": {
@@ -232,7 +233,7 @@
           "type": "string"
         },
         "masterConfig": {
-          "description": "Optional. The configuration for your master worker.\n\nYou should only set `masterConfig.acceleratorConfig` if `masterType` is set\nto a Compute Engine machine type. Learn about [restrictions on accelerator\nconfigurations for\ntraining.](\/ml-engine\/docs\/tensorflow\/using-gpus#compute-engine-machine-types-with-gpu)\n\nSet `masterConfig.imageUri` only if you build a custom image. Only one of\n`masterConfig.imageUri` and `runtimeVersion` should be set. Learn more about\n[configuring custom\ncontainers](\/ml-engine\/docs\/distributed-training-containers).",
+          "description": "Optional. The configuration for your master worker.\n\nYou should only set `masterConfig.acceleratorConfig` if `masterType` is set\nto a Compute Engine machine type. Learn about [restrictions on accelerator\nconfigurations for\ntraining.](\/ml-engine\/docs\/tensorflow\/using-gpus#compute-engine-machine-types-with-gpu)\n\nSet `masterConfig.imageUri` only if you build a custom image. Only one of\n`masterConfig.imageUri` and `runtimeVersion` should be set. Learn more\nabout [configuring custom\ncontainers](\/ml-engine\/docs\/distributed-training-containers).",
           "$ref": "GoogleCloudMlV1__ReplicaConfig"
         },
         "workerType": {
@@ -288,7 +289,7 @@
           "$ref": "GoogleCloudMlV1__NasSpec"
         },
         "region": {
-          "description": "Required. The Google Compute Engine region to run the training job in.\nSee the <a href=\"\/ml-engine\/docs\/tensorflow\/regions\">available regions<\/a>\nfor AI Platform services.",
+          "description": "Required. The region to run the training job in. See the [available\nregions](\/ai-platform\/training\/docs\/regions) for AI Platform Training.",
           "type": "string"
         },
         "jobDir": {
@@ -296,12 +297,16 @@
           "type": "string"
         },
         "runtimeVersion": {
-          "description": "Optional. The AI Platform runtime version to use for training. If not\nset, AI Platform uses the default stable version, 1.0. Starting [January\n13, 2020](\/ml-engine\/docs\/release-notes#december_10_2019), this field is\nrequired.\n\nFor more information, see the\n<a href=\"\/ml-engine\/docs\/runtime-version-list\">runtime version list<\/a>\nand\n<a href=\"\/ml-engine\/docs\/versioning\">how to manage runtime versions<\/a>.",
+          "description": "Optional. The AI Platform runtime version to use for training. You must\neither specify this field or specify `masterConfig.imageUri`.\n\nFor more information, see the [runtime version\nlist](\/ai-platform\/training\/docs\/runtime-version-list) and learn [how to\nmanage runtime versions](\/ai-platform\/training\/docs\/versioning).",
           "type": "string"
         },
         "pythonVersion": {
-          "description": "Optional. The version of Python used in training. If not set, the default\nversion is '2.7'. Starting [January 13,\n2020](\/ml-engine\/docs\/release-notes#december_10_2019), this field is\nrequired.\n\nThe following Python versions are available:\n\n* Python '3.7' is available when `runtime_version` is set to '1.15' or\n  later.\n* Python '3.5' is available when `runtime_version` is set to a version\n  from '1.4' to '1.14'.\n* Python '2.7' is available when `runtime_version` is set to '1.15' or\n  earlier. (Runtime versions released [after January 1,\n  2020](\/ml-engine\/docs\/release-notes#december_10_2019) do not support\n  Python 2.7.)\n\nRead more about the Python versions available for [each runtime\nversion](\/ml-engine\/docs\/runtime-version-list).",
+          "description": "Optional. The version of Python used in training. You must either specify\nthis field or specify `masterConfig.imageUri`.\n\nThe following Python versions are available:\n\n* Python '3.7' is available when `runtime_version` is set to '1.15' or\n  later.\n* Python '3.5' is available when `runtime_version` is set to a version\n  from '1.4' to '1.14'.\n* Python '2.7' is available when `runtime_version` is set to '1.15' or\n  earlier.\n\nRead more about the Python versions available for [each runtime\nversion](\/ml-engine\/docs\/runtime-version-list).",
           "type": "string"
+        },
+        "encryptionConfig": {
+          "description": "Custom encryption key options for a training job. If this is set,\nthen all resources created by the training job will be encrypted with the\nprovided encryption key.",
+          "$ref": "GoogleCloudMlV1__EncryptionConfig"
         },
         "scheduling": {
           "description": "Optional. Scheduling options for a training job.",
@@ -586,6 +591,17 @@
             "ONE_SHOT_ALGORITHM_UNSPECIFIED",
             "REINFORCEMENT_LEARNING"
           ]
+        }
+      }
+    },
+    "GoogleCloudMlV1__EncryptionConfig": {
+      "id": "GoogleCloudMlV1__EncryptionConfig",
+      "description": "Represents a custom encryption key configuration that can be applied to\na resource.",
+      "type": "object",
+      "properties": {
+        "kmsKeyName": {
+          "description": "The Cloud KMS resource identifier of the customer managed encryption key\nused to protect a resource, such as a training job. Has the form:\n`projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`.",
+          "type": "string"
         }
       }
     },
@@ -1525,7 +1541,7 @@
           "format": "google-datetime"
         },
         "runtimeVersion": {
-          "description": "Optional. The AI Platform runtime version to use for this deployment.\nIf not set, AI Platform uses the default stable version, 1.0. Starting\n[January 13, 2020](\/ml-engine\/docs\/release-notes#december_10_2019), this\nfield is required.\n\nFor more information, see the\n[runtime version list](\/ml-engine\/docs\/runtime-version-list) and\n[how to manage runtime versions](\/ml-engine\/docs\/versioning).",
+          "description": "Required. The AI Platform runtime version to use for this deployment.\n\nFor more information, see the\n[runtime version list](\/ml-engine\/docs\/runtime-version-list) and\n[how to manage runtime versions](\/ml-engine\/docs\/versioning).",
           "type": "string"
         },
         "machineType": {
@@ -1607,7 +1623,7 @@
           ]
         },
         "pythonVersion": {
-          "description": "Optional. The version of Python used in prediction. If not set, the default\nversion is '2.7'. Starting [January 13,\n2020](\/ml-engine\/docs\/release-notes#december_10_2019), this field is\nrequired.\n\nThe following Python versions are available:\n\n* Python '3.7' is available when `runtime_version` is set to '1.15' or\n  later.\n* Python '3.5' is available when `runtime_version` is set to a version\n  from '1.4' to '1.14'.\n* Python '2.7' is available when `runtime_version` is set to '1.15' or\n  earlier. (Runtime versions released [after January 1,\n  2020](\/ml-engine\/docs\/release-notes#december_10_2019) do not support\n  Python 2.7.)\n\nRead more about the Python versions available for [each runtime\nversion](\/ml-engine\/docs\/runtime-version-list).",
+          "description": "Required. The version of Python used in prediction.\n\nThe following Python versions are available:\n\n* Python '3.7' is available when `runtime_version` is set to '1.15' or\n  later.\n* Python '3.5' is available when `runtime_version` is set to a version\n  from '1.4' to '1.14'.\n* Python '2.7' is available when `runtime_version` is set to '1.15' or\n  earlier.\n\nRead more about the Python versions available for [each runtime\nversion](\/ml-engine\/docs\/runtime-version-list).",
           "type": "string"
         },
         "acceleratorConfig": {
@@ -2130,7 +2146,7 @@
               "description": "Required. The resource name of a model or a version.\n\nAuthorization: requires the `predict` permission on the specified resource.",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/.+$",
+              "pattern": "^projects\/.*$",
               "type": "string"
             }
           },
@@ -2158,7 +2174,7 @@
               "description": "Required. The resource name of a model or a version.\n\nAuthorization: requires the `predict` permission on the specified resource.",
               "location": "path",
               "required": true,
-              "pattern": "^projects\/.+$",
+              "pattern": "^projects\/.*$",
               "type": "string"
             }
           },
@@ -2517,6 +2533,63 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only"
               ],
               "description": "List all locations that provides at least one type of CMLE capability."
+            }
+          }
+          ,
+          "resources": {
+            "operations": {
+              "methods": {
+                "get": {
+                  "id": "ml.projects.locations.operations.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunning__Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+                },
+                "cancel": {
+                  "id": "ml.projects.locations.operations.cancel",
+                  "path": "v1/{+name}:cancel",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleProtobuf__Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
+                }
+              }
             }
           }
         },

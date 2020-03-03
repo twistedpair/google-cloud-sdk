@@ -78,6 +78,11 @@ DEFAULTS_WITHOUT_AUTOPROVISIONING_MSG = """\
 Must enable node autoprovisioning to specify defaults for node autoprovisioning.
 """
 
+MIN_CPU_PLATFORM_NOT_IMPLEMENTED_IN_GA = """\
+Min CPU platform not implemented in GA. Please remove 'minCpuPlatform' from
+auto-provisioning config file
+"""
+
 UPGRADE_SETTINGS_NOT_IMPLEMENTED_IN_GA = """\
 Upgrade settings not implemented in GA. Please remove 'upgradeSettings' from
 auto-provisioning config file
@@ -244,6 +249,7 @@ NODELOCALDNS = 'NodeLocalDNS'
 APPLICATIONMANAGER = 'ApplicationManager'
 RESOURCE_LIMITS = 'resourceLimits'
 SERVICE_ACCOUNT = 'serviceAccount'
+MIN_CPU_PLATFORM = 'minCpuPlatform'
 UPGRADE_SETTINGS = 'upgradeSettings'
 MAX_SURGE_UPGRADE = 'maxSurgeUpgrade'
 MAX_UNAVAILABLE_UPGRADE = 'maxUnavailableUpgrade'
@@ -437,7 +443,6 @@ class CreateClusterOptions(object):
       private_cluster=None,
       enable_private_nodes=None,
       enable_private_endpoint=None,
-      enable_peering_route_sharing=None,
       master_ipv4_cidr=None,
       tpu_ipv4_cidr=None,
       enable_tpu=None,
@@ -485,6 +490,7 @@ class CreateClusterOptions(object):
       enable_autoprovisioning_autorepair=None,
       reservation_affinity=None,
       reservation=None,
+      autoprovisioning_min_cpu_platform=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -547,7 +553,6 @@ class CreateClusterOptions(object):
     self.private_cluster = private_cluster
     self.enable_private_nodes = enable_private_nodes
     self.enable_private_endpoint = enable_private_endpoint
-    self.enable_peering_route_sharing = enable_peering_route_sharing
     self.master_ipv4_cidr = master_ipv4_cidr
     self.tpu_ipv4_cidr = tpu_ipv4_cidr
     self.enable_tpu_service_networking = enable_tpu_service_networking
@@ -596,6 +601,7 @@ class CreateClusterOptions(object):
     self.enable_autoprovisioning_autorepair = enable_autoprovisioning_autorepair
     self.reservation_affinity = reservation_affinity
     self.reservation = reservation
+    self.autoprovisioning_min_cpu_platform = autoprovisioning_min_cpu_platform
 
 
 class UpdateClusterOptions(object):
@@ -654,7 +660,8 @@ class UpdateClusterOptions(object):
                autoprovisioning_max_surge_upgrade=None,
                autoprovisioning_max_unavailable_upgrade=None,
                enable_autoprovisioning_autoupgrade=None,
-               enable_autoprovisioning_autorepair=None):
+               enable_autoprovisioning_autorepair=None,
+               autoprovisioning_min_cpu_platform=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -709,6 +716,7 @@ class UpdateClusterOptions(object):
     self.autoprovisioning_max_unavailable_upgrade = autoprovisioning_max_unavailable_upgrade
     self.enable_autoprovisioning_autoupgrade = enable_autoprovisioning_autoupgrade
     self.enable_autoprovisioning_autorepair = enable_autoprovisioning_autorepair
+    self.autoprovisioning_min_cpu_platform = autoprovisioning_min_cpu_platform
 
 
 class SetMasterAuthOptions(object):
@@ -1546,6 +1554,8 @@ class APIAdapter(object):
         raise util.Error(NODE_MANAGEMENT_SETTINGS_NOT_IMPLEMENTED_IN_GA)
       if config.get(UPGRADE_SETTINGS):
         raise util.Error(UPGRADE_SETTINGS_NOT_IMPLEMENTED_IN_GA)
+      if config.get(MIN_CPU_PLATFORM):
+        raise util.Error(MIN_CPU_PLATFORM_NOT_IMPLEMENTED_IN_GA)
     else:
       resource_limits = self.ResourceLimitsFromFlags(options)
       service_account = options.autoprovisioning_service_account
@@ -1750,12 +1760,6 @@ class APIAdapter(object):
           enabled=options.enable_intra_node_visibility)
       update = self.messages.ClusterUpdate(
           desiredIntraNodeVisibilityConfig=intra_node_visibility_config)
-    elif options.enable_peering_route_sharing is not None:
-      # For update, we can either enable or disable.
-      private_cluster_config = self.messages.PrivateClusterConfig(
-          enablePeeringRouteSharing=options.enable_peering_route_sharing)
-      update = self.messages.ClusterUpdate(
-          desiredPrivateClusterConfig=private_cluster_config)
 
     if (options.security_profile is not None and
         options.security_profile_runtime_rules is not None):
@@ -2812,6 +2816,7 @@ class V1Beta1Adapter(V1Adapter):
         enable_autorepair = management_settings.get(ENABLE_AUTO_REPAIR)
       autoprovisioning_locations = \
         config.get(AUTOPROVISIONING_LOCATIONS)
+      min_cpu_platform = config.get(MIN_CPU_PLATFORM)
     else:
       resource_limits = self.ResourceLimitsFromFlags(options)
       service_account = options.autoprovisioning_service_account
@@ -2821,6 +2826,7 @@ class V1Beta1Adapter(V1Adapter):
       max_unavailable_upgrade = options.autoprovisioning_max_unavailable_upgrade
       enable_autoupgrade = options.enable_autoprovisioning_autoupgrade
       enable_autorepair = options.enable_autoprovisioning_autorepair
+      min_cpu_platform = options.autoprovisioning_min_cpu_platform
 
     if options.enable_autoprovisioning is not None:
       autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
@@ -2840,7 +2846,8 @@ class V1Beta1Adapter(V1Adapter):
         .AutoprovisioningNodePoolDefaults(serviceAccount=service_account,
                                           oauthScopes=scopes,
                                           upgradeSettings=upgrade_settings,
-                                          management=management)
+                                          management=management,
+                                          minCpuPlatform=min_cpu_platform)
       if autoprovisioning_locations:
         autoscaling.autoprovisioningLocations = \
           sorted(autoprovisioning_locations)
@@ -3005,14 +3012,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       else:
         cluster.networkConfig.enablePrivateIpv6Access = \
             options.enable_private_ipv6_access
-    if options.enable_peering_route_sharing is not None:
-      if not options.enable_private_nodes:
-        raise util.Error(
-            PREREQUISITE_OPTION_ERROR_MSG.format(
-                prerequisite='enable-private-nodes',
-                opt='enable-peering-route-sharing'))
-      cluster.privateClusterConfig.enablePeeringRouteSharing = \
-        options.enable_peering_route_sharing
     _AddReleaseChannelToCluster(cluster, options, self.messages)
     if options.enable_cost_management:
       cluster.costManagementConfig = self.messages.CostManagementConfig(
@@ -3158,6 +3157,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         enable_autorepair = management_settings.get(ENABLE_AUTO_REPAIR)
       autoprovisioning_locations = \
           config.get(AUTOPROVISIONING_LOCATIONS)
+      min_cpu_platform = config.get(MIN_CPU_PLATFORM)
     else:
       resource_limits = self.ResourceLimitsFromFlags(options)
       service_account = options.autoprovisioning_service_account
@@ -3167,6 +3167,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       max_unavailable_upgrade = options.autoprovisioning_max_unavailable_upgrade
       enable_autoupgrade = options.enable_autoprovisioning_autoupgrade
       enable_autorepair = options.enable_autoprovisioning_autorepair
+      min_cpu_platform = options.autoprovisioning_min_cpu_platform
 
     if options.enable_autoprovisioning is not None:
       autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
@@ -3189,7 +3190,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         .AutoprovisioningNodePoolDefaults(serviceAccount=service_account,
                                           oauthScopes=scopes,
                                           upgradeSettings=upgrade_settings,
-                                          management=management)
+                                          management=management,
+                                          minCpuPlatform=min_cpu_platform)
 
       if autoprovisioning_locations:
         autoscaling.autoprovisioningLocations = \

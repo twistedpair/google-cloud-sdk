@@ -549,7 +549,7 @@ is the parent resource, without the operations collection id.
         method_id=u'networkmanagement.projects.locations.list',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'filter', u'includeUnrevealedLocations', u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
         relative_path=u'v1beta1/{+name}/locations',
         request_field='',
         request_type_name=u'NetworkmanagementProjectsLocationsListRequest',

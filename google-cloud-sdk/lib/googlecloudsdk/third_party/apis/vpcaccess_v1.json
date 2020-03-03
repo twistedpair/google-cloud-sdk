@@ -17,6 +17,7 @@
   "documentationLink": "http://cloud.google.com",
   "protocol": "rest",
   "rootUrl": "https://vpcaccess.googleapis.com/",
+  "mtlsRootUrl": "https://vpcaccess.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://vpcaccess.googleapis.com/",
   "batchPath": "batch",

@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/security-scanner/",
   "protocol": "rest",
   "rootUrl": "https://websecurityscanner.googleapis.com/",
+  "mtlsRootUrl": "https://websecurityscanner.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://websecurityscanner.googleapis.com/",
   "batchPath": "batch",
@@ -671,6 +672,24 @@
         "findingType": {
           "description": "The type of the Finding.\nDetailed and up-to-date information on findings can be found here:\nhttps:\/\/cloud.google.com\/security-scanner\/docs\/scan-result-details",
           "type": "string"
+        },
+        "severity": {
+          "description": "The severity level of the reported vulnerability.",
+          "enumDescriptions": [
+            "No severity specified. The default value.",
+            "Critical severity.",
+            "High severity.",
+            "Medium severity.",
+            "Low severity."
+          ],
+          "type": "string",
+          "enum": [
+            "SEVERITY_UNSPECIFIED",
+            "CRITICAL",
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ]
         },
         "httpMethod": {
           "description": "The http method of the request that triggered the vulnerability, in\nuppercase.",

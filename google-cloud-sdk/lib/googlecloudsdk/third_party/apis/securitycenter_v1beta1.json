@@ -17,6 +17,7 @@
   "documentationLink": "https://console.cloud.google.com/apis/api/securitycenter.googleapis.com/overview",
   "protocol": "rest",
   "rootUrl": "https://securitycenter.googleapis.com/",
+  "mtlsRootUrl": "https://securitycenter.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://securitycenter.googleapis.com/",
   "batchPath": "batch",
@@ -222,8 +223,8 @@
         }
       }
     },
-    "Finding": {
-      "id": "Finding",
+    "GoogleCloudSecuritycenterV1beta1Finding": {
+      "id": "GoogleCloudSecuritycenterV1beta1Finding",
       "description": "Cloud Security Command Center (Cloud SCC) finding.\n\nA finding is a record of assessment data (security, risk, health or privacy)\ningested into Cloud SCC for presentation, notification, analysis,\npolicy testing, and enforcement. For example, an XSS vulnerability in an\nApp Engine application is a finding.",
       "type": "object",
       "properties": {
@@ -270,7 +271,7 @@
         },
         "securityMarks": {
           "description": "Output only. User specified security marks. These marks are entirely\nmanaged by the user and come from the SecurityMarks resource that belongs\nto the finding.",
-          "$ref": "SecurityMarks"
+          "$ref": "GoogleCloudSecuritycenterV1beta1SecurityMarks"
         },
         "eventTime": {
           "description": "The time at which the event took place. For example, if the finding\nrepresents an open firewall it would capture the time the detector believes\nthe firewall became open. The accuracy is determined by the detector.",
@@ -284,8 +285,8 @@
         }
       }
     },
-    "SecurityMarks": {
-      "id": "SecurityMarks",
+    "GoogleCloudSecuritycenterV1beta1SecurityMarks": {
+      "id": "GoogleCloudSecuritycenterV1beta1SecurityMarks",
       "description": "User specified security marks that are attached to the parent Cloud Security\nCommand Center (Cloud SCC) resource. Security marks are scoped within a Cloud\nSCC organization -- they can be modified and viewed by all users who have\nproper permissions on the organization.",
       "type": "object",
       "properties": {
@@ -703,7 +704,7 @@
         },
         "securityMarks": {
           "description": "User specified security marks. These marks are entirely managed by the user\nand come from the SecurityMarks resource that belongs to the asset.",
-          "$ref": "SecurityMarks"
+          "$ref": "GoogleCloudSecuritycenterV1beta1SecurityMarks"
         },
         "createTime": {
           "description": "The time at which the asset was created in Cloud SCC.",
@@ -756,7 +757,7 @@
           "description": "Findings matching the list request.",
           "type": "array",
           "items": {
-            "$ref": "Finding"
+            "$ref": "GoogleCloudSecuritycenterV1beta1Finding"
           }
         },
         "readTime": {
@@ -1599,10 +1600,10 @@
                     "parent"
                   ],
                   "request": {
-                    "$ref": "Finding"
+                    "$ref": "GoogleCloudSecuritycenterV1beta1Finding"
                   },
                   "response": {
-                    "$ref": "Finding"
+                    "$ref": "GoogleCloudSecuritycenterV1beta1Finding"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -1716,7 +1717,7 @@
                     "$ref": "SetFindingStateRequest"
                   },
                   "response": {
-                    "$ref": "Finding"
+                    "$ref": "GoogleCloudSecuritycenterV1beta1Finding"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -1747,10 +1748,10 @@
                     "name"
                   ],
                   "request": {
-                    "$ref": "Finding"
+                    "$ref": "GoogleCloudSecuritycenterV1beta1Finding"
                   },
                   "response": {
-                    "$ref": "Finding"
+                    "$ref": "GoogleCloudSecuritycenterV1beta1Finding"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -1787,10 +1788,10 @@
                     "name"
                   ],
                   "request": {
-                    "$ref": "SecurityMarks"
+                    "$ref": "GoogleCloudSecuritycenterV1beta1SecurityMarks"
                   },
                   "response": {
-                    "$ref": "SecurityMarks"
+                    "$ref": "GoogleCloudSecuritycenterV1beta1SecurityMarks"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -1953,10 +1954,10 @@
                 "name"
               ],
               "request": {
-                "$ref": "SecurityMarks"
+                "$ref": "GoogleCloudSecuritycenterV1beta1SecurityMarks"
               },
               "response": {
-                "$ref": "SecurityMarks"
+                "$ref": "GoogleCloudSecuritycenterV1beta1SecurityMarks"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"

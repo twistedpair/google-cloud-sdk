@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/service-directory",
   "protocol": "rest",
   "rootUrl": "https://servicedirectory.googleapis.com/",
+  "mtlsRootUrl": "https://servicedirectory.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://servicedirectory.googleapis.com/",
   "batchPath": "batch",
@@ -177,7 +178,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name for the service in the format\n'projects\/*\/locations\/*\/namespaces\/*\/services\/*'.",
+          "description": "Immutable. The resource name for the service in the format\n'projects\/*\/locations\/*\/namespaces\/*\/services\/*'.",
           "type": "string"
         },
         "metadata": {
@@ -213,7 +214,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name for the endpoint in the format\n'projects\/*\/locations\/*\/namespaces\/*\/services\/*\/endpoints\/*'.",
+          "description": "Immutable. The resource name for the endpoint in the format\n'projects\/*\/locations\/*\/namespaces\/*\/services\/*\/endpoints\/*'.",
           "type": "string"
         },
         "address": {
@@ -255,7 +256,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name for the namespace in the format\n'projects\/*\/locations\/*\/namespaces\/*'.",
+          "description": "Immutable. The resource name for the namespace in the format\n'projects\/*\/locations\/*\/namespaces\/*'.",
           "type": "string"
         },
         "labels": {
@@ -264,28 +265,6 @@
           "additionalProperties": {
             "type": "string"
           }
-        },
-        "cloudDnsZones": {
-          "description": "Output only. Cloud DNS Zone information associated with this Namespace.",
-          "type": "array",
-          "items": {
-            "$ref": "CloudDnsZone"
-          }
-        }
-      }
-    },
-    "CloudDnsZone": {
-      "id": "CloudDnsZone",
-      "description": "Information on the Cloud DNS Managed Zone whose\ncomplete and authoritative source of information is a Service Directory\nNamespace. This is an\noptional association; some Namespaces may not have an associated\nCloudDnsZone.\nhttps:\/\/cloud.google.com\/dns\/docs\/reference\/v1\/managedZones#resource",
-      "type": "object",
-      "properties": {
-        "managedZoneUri": {
-          "description": "Output only. The resource URI of the Cloud DNS Managed Zone. Example:\n`https:\/\/www.googleapis.com\/dns\/v1\/projects\/myproject\/managedZones\/myzone`",
-          "type": "string"
-        },
-        "dnsName": {
-          "description": "Output only. The Cloud DNS zone name. Example: `example.com.`",
-          "type": "string"
         }
       }
     },
@@ -681,7 +660,7 @@
     },
     "CounterOptions": {
       "id": "CounterOptions",
-      "description": "Increment a streamz counter with the specified metric and field names.\n\nMetric names should start with a '\/', generally be lowercase-only,\nand end in \"_count\". Field names should not contain an initial slash.\nThe actual exported metric names will have \"\/iam\/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are\ntheir respective values.\n\nSupported field names:\n   - \"authority\", which is \"[token]\" if IAMContext.token is present,\n     otherwise the value of IAMContext.authority_selector if present, and\n     otherwise a representation of IAMContext.principal; or\n   - \"iam_principal\", a representation of IAMContext.principal even if a\n     token or authority selector is present; or\n   - \"\" (empty string), resulting in a counter with no fields.\n\nExamples:\n  counter { metric: \"\/debug_access_count\"  field: \"iam_principal\" }\n  ==> increment counter \/iam\/policy\/debug_access_count\n                        {iam_principal=[value of IAMContext.principal]}\n",
+      "description": "Increment a streamz counter with the specified metric and field names.\n\nMetric names should start with a '\/', generally be lowercase-only,\nand end in \"_count\". Field names should not contain an initial slash.\nThe actual exported metric names will have \"\/iam\/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are\ntheir respective values.\n\nSupported field names:\n   - \"authority\", which is \"[token]\" if IAMContext.token is present,\n     otherwise the value of IAMContext.authority_selector if present, and\n     otherwise a representation of IAMContext.principal; or\n   - \"iam_principal\", a representation of IAMContext.principal even if a\n     token or authority selector is present; or\n   - \"\" (empty string), resulting in a counter with no fields.\n\nExamples:\n  counter { metric: \"\/debug_access_count\"  field: \"iam_principal\" }\n  ==> increment counter \/iam\/policy\/debug_access_count\n                        {iam_principal=[value of IAMContext.principal]}",
       "type": "object",
       "properties": {
         "metric": {
@@ -722,7 +701,7 @@
       "type": "object",
       "properties": {
         "logMode": {
-          "description": "Whether Gin logging should happen in a fail-closed manner at the caller.\nThis is relevant only in the LocalIAM implementation, for now.",
+          "description": "Whether Gin logging should happen in a fail-closed manner at the caller.\nThis is currently supported in the LocalIAM implementation, Stubby C++,\nand Stubby Java. For Apps Framework, see go\/af-audit-logging#failclosed.",
           "enumDescriptions": [
             "Client is not required to write a partial Gin log immediately after\nthe authorization check. If client chooses to write one and it fails,\nclient may either fail open (allow the operation to continue) or\nfail closed (handle as a DENY outcome).",
             "The application's operation in the context of which this authorization\ncheck is being made may only be performed if it is successfully logged\nto Gin. For instance, the authorization library may satisfy this\nobligation by emitting a partial log entry at authorization check time\nand only returning ALLOW to the application if it succeeds.\n\nIf a matching Rule has this directive, but the client has not indicated\nthat it will honor such requirements, then the IAM check will result in\nauthorization failure by setting CheckPolicyResponse.success=false."
@@ -1022,7 +1001,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. The resource name for the namespace in the format\n'projects\/*\/locations\/*\/namespaces\/*'.",
+                      "description": "Immutable. The resource name for the namespace in the format\n'projects\/*\/locations\/*\/namespaces\/*'.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+$",
@@ -1181,6 +1160,11 @@
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
+                        },
+                        "endpointFilter": {
+                          "description": "Optional. The filter applied to the endpoints of the resolved service.\n\nGeneral filter string syntax:\n<field> <operator> <value> (<logical connector>)\n<field> can be \"name\" or \"metadata.<key>\" for map field.\n<operator> can be \"<, >, <=, >=, !=, =, :\". Of which \":\" means HAS and is\nroughly the same as \"=\".\n<value> must be the same data type as the field.\n<logical connector> can be \"AND, OR, NOT\".\n\nExamples of valid filters:\n* \"metadata.owner\" returns Endpoints that have a label with the\n  key \"owner\", this is the same as \"metadata:owner\"\n* \"metadata.protocol=gRPC\" returns Endpoints that have key\/value\n  \"protocol=gRPC\"\n* \"metadata.owner!=sd AND metadata.foo=bar\" returns\n  Endpoints that have \"owner\" field in metadata with a value that is not\n  \"sd\" AND have the key\/value foo=bar.",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -1305,7 +1289,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. The resource name for the service in the format\n'projects\/*\/locations\/*\/namespaces\/*\/services\/*'.",
+                          "description": "Immutable. The resource name for the service in the format\n'projects\/*\/locations\/*\/namespaces\/*\/services\/*'.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+$",
@@ -1557,7 +1541,7 @@
                           "httpMethod": "PATCH",
                           "parameters": {
                             "name": {
-                              "description": "Output only. The resource name for the endpoint in the format\n'projects\/*\/locations\/*\/namespaces\/*\/services\/*\/endpoints\/*'.",
+                              "description": "Immutable. The resource name for the endpoint in the format\n'projects\/*\/locations\/*\/namespaces\/*\/services\/*\/endpoints\/*'.",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/namespaces\/[^\/]+\/services\/[^\/]+\/endpoints\/[^\/]+$",

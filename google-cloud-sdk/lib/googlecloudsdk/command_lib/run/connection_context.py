@@ -240,7 +240,7 @@ class _KubeconfigConnectionContext(ConnectionInfo):
           self.endpoint = 'https://{}/'.format(self.raw_hostname)
           with _OverrideEndpointOverrides(self.endpoint):
             yield self
-      except httplib2.SSLHandshakeError as e:
+      except httplib2.HttpLib2Error as e:
         if 'CERTIFICATE_VERIFY_FAILED' in six.text_type(e):
           raise gke.NoCaCertError(
               'Missing or invalid [certificate-authority] or '

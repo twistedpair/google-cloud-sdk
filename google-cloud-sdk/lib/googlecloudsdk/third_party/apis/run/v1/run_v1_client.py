@@ -50,6 +50,7 @@ class RunV1(base_api.BaseApiClient):
     self.projects_locations_authorizeddomains = self.ProjectsLocationsAuthorizeddomainsService(self)
     self.projects_locations_configurations = self.ProjectsLocationsConfigurationsService(self)
     self.projects_locations_domainmappings = self.ProjectsLocationsDomainmappingsService(self)
+    self.projects_locations_namespaces = self.ProjectsLocationsNamespacesService(self)
     self.projects_locations_revisions = self.ProjectsLocationsRevisionsService(self)
     self.projects_locations_routes = self.ProjectsLocationsRoutesService(self)
     self.projects_locations_secrets = self.ProjectsLocationsSecretsService(self)
@@ -164,6 +165,60 @@ optimistic concurrency control.
       super(RunV1.ApiV1NamespacesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a namespace.
+
+      Args:
+        request: (RunApiV1NamespacesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Namespace) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'api/v1/namespaces/{namespacesId}',
+        http_method=u'GET',
+        method_id=u'run.api.v1.namespaces.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'api/v1/{+name}',
+        request_field='',
+        request_type_name=u'RunApiV1NamespacesGetRequest',
+        response_type_name=u'Namespace',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Rpc to update a namespace.
+
+      Args:
+        request: (RunApiV1NamespacesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Namespace) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'api/v1/namespaces/{namespacesId}',
+        http_method=u'PATCH',
+        method_id=u'run.api.v1.namespaces.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'api/v1/{+name}',
+        request_field=u'namespace',
+        request_type_name=u'RunApiV1NamespacesPatchRequest',
+        response_type_name=u'Namespace',
+        supports_download=False,
+    )
 
   class ApiV1Service(base_api.BaseApiService):
     """Service class for the api_v1 resource."""
@@ -939,6 +994,70 @@ optimistic concurrency control.
         request_field='',
         request_type_name=u'RunProjectsLocationsDomainmappingsListRequest',
         response_type_name=u'ListDomainMappingsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNamespacesService(base_api.BaseApiService):
+    """Service class for the projects_locations_namespaces resource."""
+
+    _NAME = u'projects_locations_namespaces'
+
+    def __init__(self, client):
+      super(RunV1.ProjectsLocationsNamespacesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a namespace.
+
+      Args:
+        request: (RunProjectsLocationsNamespacesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Namespace) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}',
+        http_method=u'GET',
+        method_id=u'run.projects.locations.namespaces.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'RunProjectsLocationsNamespacesGetRequest',
+        response_type_name=u'Namespace',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Rpc to update a namespace.
+
+      Args:
+        request: (RunProjectsLocationsNamespacesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Namespace) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/namespaces/{namespacesId}',
+        http_method=u'PATCH',
+        method_id=u'run.projects.locations.namespaces.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/{+name}',
+        request_field=u'namespace',
+        request_type_name=u'RunProjectsLocationsNamespacesPatchRequest',
+        response_type_name=u'Namespace',
         supports_download=False,
     )
 

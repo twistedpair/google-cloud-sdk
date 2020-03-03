@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/asset-inventory/docs/quickstart",
   "protocol": "rest",
   "rootUrl": "https://cloudasset.googleapis.com/",
+  "mtlsRootUrl": "https://cloudasset.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudasset.googleapis.com/",
   "batchPath": "batch",
@@ -566,7 +567,7 @@
                   "description": "The name of the operation resource.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+\/.+$",
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+\/.*$",
                   "type": "string"
                 }
               },
@@ -630,7 +631,7 @@
                   "description": "The name of the operation resource.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/operations\/[^\/]+\/.+$",
+                  "pattern": "^folders\/[^\/]+\/operations\/[^\/]+\/.*$",
                   "type": "string"
                 }
               },
@@ -747,7 +748,7 @@
                   "description": "The name of the operation resource.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+\/.+$",
+                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+\/.*$",
                   "type": "string"
                 }
               },

@@ -309,7 +309,8 @@ class Cluster(_messages.Message):
       and nodes. The cluster has no SLA for uptime and master/node upgrades
       are disabled. Alpha enabled clusters are automatically deleted thirty
       days after creation.
-    enableTpu: Enable the ability to use Cloud TPUs in this cluster.
+    enableTpu: Enable the ability to use Cloud TPUs in this cluster. This
+      field is deprecated, use tpu_config.enabled instead.
     endpoint: [Output only] The IP address of this cluster's master endpoint.
       The endpoint can be accessed from the internet at
       `https://username:password@endpoint/`.  See the `masterAuth` property of
@@ -347,10 +348,13 @@ class Cluster(_messages.Message):
       [zones](/compute/docs/zones#available) in which the cluster's nodes
       should be located.
     loggingService: The logging service the cluster should use to write logs.
-      Currently available options:  * `logging.googleapis.com` - the Google
-      Cloud Logging service. * `none` - no logs will be exported from the
-      cluster. * if left as an empty string,`logging.googleapis.com` will be
-      used.
+      Currently available options:  * `logging.googleapis.com/kubernetes` -
+      The Cloud Logging service with a Kubernetes-native resource model *
+      `logging.googleapis.com` - The legacy Cloud Logging service (no longer
+      available as of GKE 1.15). * `none` - no logs will be exported from the
+      cluster.  If left as an empty string,`logging.googleapis.com/kubernetes`
+      will be used for GKE 1.14+ or `logging.googleapis.com` for earlier
+      versions.
     maintenancePolicy: Configure the maintenance policy for this cluster.
     masterAuth: The authentication information for accessing the master
       endpoint. If unspecified, the defaults are used: For clusters before
@@ -365,10 +369,13 @@ class Cluster(_messages.Message):
       field is deprecated, use private_cluster_config.master_ipv4_cidr_block
       instead.
     monitoringService: The monitoring service the cluster should use to write
-      metrics. Currently available options:  * `monitoring.googleapis.com` -
-      the Google Cloud Monitoring service. * `none` - no metrics will be
-      exported from the cluster. * if left as an empty string,
-      `monitoring.googleapis.com` will be used.
+      metrics. Currently available options:  *
+      "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
+      with a Kubernetes-native resource model * `monitoring.googleapis.com` -
+      The legacy Cloud Monitoring service (no   longer available as of GKE
+      1.15). * `none` - No metrics will be exported from the cluster.  If left
+      as an empty string,`monitoring.googleapis.com/kubernetes` will be used
+      for GKE 1.14+ or `monitoring.googleapis.com` for earlier versions.
     name: The name of this cluster. The name must be unique within this
       project and location (e.g. zone or region), and can be up to 40
       characters with the following restrictions:  * Lowercase letters,
@@ -423,6 +430,7 @@ class Cluster(_messages.Message):
       [subnetwork](/compute/docs/subnetworks) to which the cluster is
       connected. On output this shows the subnetwork ID instead of the name.
     tierSettings: Cluster tier settings.
+    tpuConfig: Configuration for Cloud TPU support;
     tpuIpv4CidrBlock: [Output only] The IP address range of the Cloud TPUs in
       this cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `1.2.3.4/29`).
@@ -560,10 +568,11 @@ class Cluster(_messages.Message):
   statusMessage = _messages.StringField(55)
   subnetwork = _messages.StringField(56)
   tierSettings = _messages.MessageField('TierSettings', 57)
-  tpuIpv4CidrBlock = _messages.StringField(58)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 59)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 60)
-  zone = _messages.StringField(61)
+  tpuConfig = _messages.MessageField('TpuConfig', 58)
+  tpuIpv4CidrBlock = _messages.StringField(59)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 60)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 61)
+  zone = _messages.StringField(62)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -667,6 +676,8 @@ class ClusterUpdate(_messages.Message):
       "desired_node_pool" field as well.
     desiredIntraNodeVisibilityConfig: The desired config of Intra-node
       visibility.
+    desiredL4ilbSubsettingConfig: The desired L4 Internal Load Balancer
+      Subsetting configuration.
     desiredLocations: The desired list of Google Compute Engine
       [zones](/compute/docs/zones#available) in which the cluster's nodes
       should be located. Changing the locations a cluster is in will result in
@@ -674,11 +685,13 @@ class ClusterUpdate(_messages.Message):
       whether locations are being added or removed.  This list must always
       include the cluster's primary zone.
     desiredLoggingService: The logging service the cluster should use to write
-      metrics. Currently available options:  *
-      "logging.googleapis.com/kubernetes" - the Google Cloud Logging service
-      with Kubernetes-native resource model * "logging.googleapis.com" - the
-      Google Cloud Logging service * "none" - no logs will be exported from
-      the cluster
+      logs. Currently available options:  *
+      `logging.googleapis.com/kubernetes` - The Cloud Logging service with a
+      Kubernetes-native resource model * `logging.googleapis.com` - The legacy
+      Cloud Logging service (no longer   available as of GKE 1.15). * `none` -
+      no logs will be exported from the cluster.  If left as an empty
+      string,`logging.googleapis.com/kubernetes` will be used for GKE 1.14+ or
+      `logging.googleapis.com` for earlier versions.
     desiredMasterAuthorizedNetworksConfig: The desired configuration options
       for master authorized networks feature.
     desiredMasterVersion: The Kubernetes version to change the master to.
@@ -690,10 +703,12 @@ class ClusterUpdate(_messages.Message):
       explicit Kubernetes version - "-": picks the default Kubernetes version
     desiredMonitoringService: The monitoring service the cluster should use to
       write metrics. Currently available options:  *
-      "monitoring.googleapis.com/kubernetes" - the Google Cloud Monitoring
-      service with Kubernetes-native resource model *
-      "monitoring.googleapis.com" - the Google Cloud Monitoring service *
-      "none" - no metrics will be exported from the cluster
+      "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
+      with a Kubernetes-native resource model * `monitoring.googleapis.com` -
+      The legacy Cloud Monitoring service (no   longer available as of GKE
+      1.15). * `none` - No metrics will be exported from the cluster.  If left
+      as an empty string,`monitoring.googleapis.com/kubernetes` will be used
+      for GKE 1.14+ or `monitoring.googleapis.com` for earlier versions.
     desiredNodePoolAutoscaling: Autoscaler configuration for the node pool
       specified in desired_node_pool_id. If there is only one pool in the
       cluster and desired_node_pool_id is not provided then the change applies
@@ -719,6 +734,7 @@ class ClusterUpdate(_messages.Message):
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
     desiredShieldedNodes: Configuration for Shielded Nodes.
+    desiredTpuConfig: The desired Cloud TPU configuration.
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
     desiredWorkloadIdentityConfig: Configuration for Workload Identity.
@@ -739,24 +755,26 @@ class ClusterUpdate(_messages.Message):
   desiredImageProject = _messages.StringField(11)
   desiredImageType = _messages.StringField(12)
   desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 13)
-  desiredLocations = _messages.StringField(14, repeated=True)
-  desiredLoggingService = _messages.StringField(15)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 16)
-  desiredMasterVersion = _messages.StringField(17)
-  desiredMonitoringService = _messages.StringField(18)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 19)
-  desiredNodePoolId = _messages.StringField(20)
-  desiredNodeVersion = _messages.StringField(21)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 22)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 23)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 24)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 25)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 26)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 27)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 28)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 29)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 30)
-  securityProfile = _messages.MessageField('SecurityProfile', 31)
+  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 14)
+  desiredLocations = _messages.StringField(15, repeated=True)
+  desiredLoggingService = _messages.StringField(16)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 17)
+  desiredMasterVersion = _messages.StringField(18)
+  desiredMonitoringService = _messages.StringField(19)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 20)
+  desiredNodePoolId = _messages.StringField(21)
+  desiredNodeVersion = _messages.StringField(22)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 23)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 24)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 25)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 26)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 27)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 28)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 29)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 30)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 31)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 32)
+  securityProfile = _messages.MessageField('SecurityProfile', 33)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1573,6 +1591,17 @@ class HttpLoadBalancing(_messages.Message):
   disabled = _messages.BooleanField(1)
 
 
+class ILBSubsettingConfig(_messages.Message):
+  r"""ILBSubsettingConfig contains the desired config of L4 Internal
+  LoadBalancer subsetting on this cluster.
+
+  Fields:
+    enabled: Enables l4 ILB subsetting for this cluster
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class IPAllocationPolicy(_messages.Message):
   r"""Configuration for controlling how IPs are allocated in the cluster.
 
@@ -1641,11 +1670,13 @@ class IPAllocationPolicy(_messages.Message):
       netmask.  Set to a [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `10.96.0.0/14`) from the RFC-1918 private
       networks (e.g. `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick
-      a specific range to use.
+      a specific range to use. This field is deprecated, use
+      cluster.tpu_config.ipv4_cidr_block instead.
     tpuUseServiceNetworking: Enable Cloud TPU's Service Networking mode. In
       this mode, the CIDR blocks used by the Cloud TPUs will be allocated and
       managed by Service Networking, instead of GKE.  This field must be
-      `false` when `tpu_ipv4_cidr_block` is specified.
+      `false` when `tpu_ipv4_cidr_block` is specified. This field is
+      deprecated, use cluster.tpu_config.use_service_networking instead.
     useIpAliases: Whether alias IPs will be used for pod IPs in the cluster.
       This is used in conjunction with use_routes. It cannot be true if
       use_routes is true. If both use_ip_aliases and use_routes are false,
@@ -2153,6 +2184,8 @@ class NetworkConfig(_messages.Message):
       disable_default_snat instead.
     enableIntraNodeVisibility: Whether Intra-node visibility is enabled for
       this cluster. This enables flow logs for same node pod to pod traffic.
+    enableL4ilbSubsetting: Whether L4ILB Subsetting is enabled for this
+      cluster.
     enablePrivateIpv6Access: Whether or not Private IPv6 access is enabled.
       This enables direct connectivity from GKE pods to Google Cloud services
       over gRPC.
@@ -2170,10 +2203,11 @@ class NetworkConfig(_messages.Message):
   disableDefaultSnat = _messages.BooleanField(1)
   enableCloudNat = _messages.BooleanField(2)
   enableIntraNodeVisibility = _messages.BooleanField(3)
-  enablePrivateIpv6Access = _messages.BooleanField(4)
-  enableSharedNetwork = _messages.BooleanField(5)
-  network = _messages.StringField(6)
-  subnetwork = _messages.StringField(7)
+  enableL4ilbSubsetting = _messages.BooleanField(4)
+  enablePrivateIpv6Access = _messages.BooleanField(5)
+  enableSharedNetwork = _messages.BooleanField(6)
+  network = _messages.StringField(7)
+  subnetwork = _messages.StringField(8)
 
 
 class NetworkPolicy(_messages.Message):
@@ -3273,10 +3307,14 @@ class SetLoggingServiceRequest(_messages.Message):
   Fields:
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
-    loggingService: The logging service the cluster should use to write
-      metrics. Currently available options:  * "logging.googleapis.com" - the
-      Google Cloud Logging service * "none" - no metrics will be exported from
-      the cluster
+    loggingService: The logging service the cluster should use to write logs.
+      Currently available options:  * `logging.googleapis.com/kubernetes` -
+      The Cloud Logging service with a Kubernetes-native resource model *
+      `logging.googleapis.com` - The legacy Cloud Logging service (no longer
+      available as of GKE 1.15). * `none` - no logs will be exported from the
+      cluster.  If left as an empty string,`logging.googleapis.com/kubernetes`
+      will be used for GKE 1.14+ or `logging.googleapis.com` for earlier
+      versions.
     name: The name (project, location, cluster) of the cluster to set logging.
       Specified in the format 'projects/*/locations/*/clusters/*'.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -3371,9 +3409,13 @@ class SetMonitoringServiceRequest(_messages.Message):
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
     monitoringService: The monitoring service the cluster should use to write
-      metrics. Currently available options:  * "monitoring.googleapis.com" -
-      the Google Cloud Monitoring service * "none" - no metrics will be
-      exported from the cluster
+      metrics. Currently available options:  *
+      "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
+      with a Kubernetes-native resource model * `monitoring.googleapis.com` -
+      The legacy Cloud Monitoring service (no   longer available as of GKE
+      1.15). * `none` - No metrics will be exported from the cluster.  If left
+      as an empty string,`monitoring.googleapis.com/kubernetes` will be used
+      for GKE 1.14+ or `monitoring.googleapis.com` for earlier versions.
     name: The name (project, location, cluster) of the cluster to set
       monitoring. Specified in the format 'projects/*/locations/*/clusters/*'.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -3744,6 +3786,21 @@ class TimeWindow(_messages.Message):
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)
+
+
+class TpuConfig(_messages.Message):
+  r"""Configuration for Cloud TPU.
+
+  Fields:
+    enabled: Whether Cloud TPU integration is enabled or not.
+    ipv4CidrBlock: IPv4 CIDR block reserved for Cloud TPU in the VPC.
+    useServiceNetworking: Whether to use service networking for Cloud TPU or
+      not.
+  """
+
+  enabled = _messages.BooleanField(1)
+  ipv4CidrBlock = _messages.StringField(2)
+  useServiceNetworking = _messages.BooleanField(3)
 
 
 class UpdateClusterRequest(_messages.Message):

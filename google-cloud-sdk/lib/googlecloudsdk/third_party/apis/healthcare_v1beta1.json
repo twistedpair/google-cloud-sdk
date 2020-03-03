@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/healthcare",
   "protocol": "rest",
   "rootUrl": "https://healthcare.googleapis.com/",
+  "mtlsRootUrl": "https://healthcare.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://healthcare.googleapis.com/",
   "batchPath": "batch",
@@ -803,7 +804,7 @@
       "type": "object",
       "properties": {
         "pubsubTopic": {
-          "description": "The [Cloud Pub\/Sub](https:\/\/cloud.google.com\/pubsub\/docs\/) topic that\nnotifications of changes are published on. Supplied by the client.\nPubsubMessage.Data contains the resource name.\nPubsubMessage.MessageId is the ID of this message. It is guaranteed to be\nunique within the topic.\nPubsubMessage.PublishTime is the time at which the message was published.\nNotifications are only sent if the topic is\nnon-empty. [Topic\nnames](https:\/\/cloud.google.com\/pubsub\/docs\/overview#names) must be scoped\nto a project. cloud-healthcare@system.gserviceaccount.com must have\npublisher permissions on the given Cloud Pub\/Sub topic. Not having adequate\npermissions causes the calls that send notifications to fail.",
+          "description": "The [Cloud Pub\/Sub](https:\/\/cloud.google.com\/pubsub\/docs\/) topic that\nnotifications of changes are published on. Supplied by the client.\nPubsubMessage.Data contains the resource name.\nPubsubMessage.MessageId is the ID of this message. It is guaranteed to be\nunique within the topic.\nPubsubMessage.PublishTime is the time at which the message was published.\nNotifications are only sent if the topic is\nnon-empty. [Topic\nnames](https:\/\/cloud.google.com\/pubsub\/docs\/overview#names) must be scoped\nto a project. cloud-healthcare@system.gserviceaccount.com must have\npublisher permissions on the given Cloud Pub\/Sub topic. Not having adequate\npermissions causes the calls that send notifications to fail.\n\nIf a notification can't be published to Cloud Pub\/Sub, errors are logged to\nStackdriver (see [Viewing\nlogs](\/healthcare\/docs\/how-tos\/stackdriver-logging)). If the number of\nerrors exceeds a certain rate, some aren't submitted.",
           "type": "string"
         }
       }
@@ -1024,7 +1025,7 @@
           "format": "google-datetime"
         },
         "messageType": {
-          "description": "The message type and trigger event for this message. MSH-9.",
+          "description": "The message type for this message. MSH-9.1.",
           "type": "string"
         },
         "patientIds": {
@@ -1129,13 +1130,6 @@
       "description": "Lists the messages in the specified HL7v2 store.",
       "type": "object",
       "properties": {
-        "messages": {
-          "description": "Deprecated. Use `hl7_v2_messages` instead.\nThe returned message names. Won't be more values than the value of\npage_size in the request.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
         "hl7V2Messages": {
           "description": "The returned Messages. Won't be more Messages than the value of\npage_size in the request. See\nview for\npopulated fields.",
           "type": "array",
@@ -3345,7 +3339,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Restricts messages returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\n\nFields\/functions available for filtering are:\n\n*  `message_type`, from the MSH-9 segment. For example,\n`NOT message_type = \"ADT\"`.\n*  `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in\nthe dataset's time_zone, from the MSH-7 segment. For example,\n`send_date < \"2017-01-02\"`.\n*  `send_time`, the timestamp when the message was sent, using the\nRFC3339 time format for comparisons, from the MSH-7 segment. For example,\n`send_time < \"2017-01-02T00:00:00-05:00\"`.\n*  `send_facility`, the care center that the message came from, from the\nMSH-4 segment. For example, `send_facility = \"ABC\"`.\n*  `PatientId(value, type)`, which matches if the message lists a patient\nhaving an ID of the given value and type in the PID-2, PID-3, or PID-4\nsegments. For example, `PatientId(\"123456\", \"MRN\")`.\n*  `labels.x`, a string value of the label with key `x` as set using the\nMessage.labels\nmap. For example, `labels.\"priority\"=\"high\"`. The operator `:*` can be used\nto assert the existence of a label. For example, `labels.\"priority\":*`.\n\nLimitations on conjunctions:\n\n*  Negation on the patient ID function or the labels field is not\nsupported. For example, these queries are invalid:\n`NOT PatientId(\"123456\", \"MRN\")`, `NOT labels.\"tag1\":*`,\n`NOT labels.\"tag2\"=\"val2\"`.\n*  Conjunction of multiple patient ID functions is not supported, for\nexample this query is invalid:\n`PatientId(\"123456\", \"MRN\") AND PatientId(\"456789\", \"MRN\")`.\n*  Conjunction of multiple labels fields is also not supported, for\nexample this query is invalid: `labels.\"tag1\":* AND labels.\"tag2\"=\"val2\"`.\n*  Conjunction of one patient ID function, one labels field and conditions\non other fields is supported. For example, this query is valid:\n`PatientId(\"123456\", \"MRN\") AND labels.\"tag1\":* AND message_type = \"ADT\"`.",
+                              "description": "Restricts messages returned to those matching a filter. Syntax:\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings\n\nFields\/functions available for filtering are:\n\n*  `message_type`, from the MSH-9.1 field. For example,\n`NOT message_type = \"ADT\"`.\n*  `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in\nthe dataset's time_zone, from the MSH-7 segment. For example,\n`send_date < \"2017-01-02\"`.\n*  `send_time`, the timestamp when the message was sent, using the\nRFC3339 time format for comparisons, from the MSH-7 segment. For example,\n`send_time < \"2017-01-02T00:00:00-05:00\"`.\n*  `send_facility`, the care center that the message came from, from the\nMSH-4 segment. For example, `send_facility = \"ABC\"`.\n*  `PatientId(value, type)`, which matches if the message lists a patient\nhaving an ID of the given value and type in the PID-2, PID-3, or PID-4\nsegments. For example, `PatientId(\"123456\", \"MRN\")`.\n*  `labels.x`, a string value of the label with key `x` as set using the\nMessage.labels\nmap. For example, `labels.\"priority\"=\"high\"`. The operator `:*` can be used\nto assert the existence of a label. For example, `labels.\"priority\":*`.\n\nLimitations on conjunctions:\n\n*  Negation on the patient ID function or the labels field is not\nsupported. For example, these queries are invalid:\n`NOT PatientId(\"123456\", \"MRN\")`, `NOT labels.\"tag1\":*`,\n`NOT labels.\"tag2\"=\"val2\"`.\n*  Conjunction of multiple patient ID functions is not supported, for\nexample this query is invalid:\n`PatientId(\"123456\", \"MRN\") AND PatientId(\"456789\", \"MRN\")`.\n*  Conjunction of multiple labels fields is also not supported, for\nexample this query is invalid: `labels.\"tag1\":* AND labels.\"tag2\"=\"val2\"`.\n*  Conjunction of one patient ID function, one labels field and conditions\non other fields is supported. For example, this query is valid:\n`PatientId(\"123456\", \"MRN\") AND labels.\"tag1\":* AND message_type = \"ADT\"`.",
                               "location": "query",
                               "type": "string"
                             },
@@ -4041,7 +4035,7 @@
                               "description": "The FHIR resource type to search, such as Patient or Observation. For a\ncomplete list, see the FHIR Resource Index\n([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/resourcelist.html),\n[STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/resourcelist.html),\n[R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/resourcelist.html)).",
                               "location": "path",
                               "required": true,
-                              "pattern": "^.+$",
+                              "pattern": "^.*$",
                               "type": "string"
                             }
                           },

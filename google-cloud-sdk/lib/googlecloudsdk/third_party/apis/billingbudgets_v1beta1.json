@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/billing/docs/how-to/budget-api-overview",
   "protocol": "rest",
   "rootUrl": "https://billingbudgets.googleapis.com/",
+  "mtlsRootUrl": "https://billingbudgets.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://billingbudgets.googleapis.com/",
   "batchPath": "batch",

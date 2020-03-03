@@ -9,7 +9,7 @@ class MlV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://ml.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://ml.mtls.googleapis.com/'
 
   _PACKAGE = u'ml'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']
@@ -37,6 +37,7 @@ class MlV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_jobs = self.ProjectsJobsService(self)
+    self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_models_versions = self.ProjectsModelsVersionsService(self)
     self.projects_models = self.ProjectsModelsService(self)
@@ -282,6 +283,81 @@ may "fail open" without warning.
         request_field=u'googleIamV1TestIamPermissionsRequest',
         request_type_name=u'MlProjectsJobsTestIamPermissionsRequest',
         response_type_name=u'GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operations resource."""
+
+    _NAME = u'projects_locations_operations'
+
+    def __init__(self, client):
+      super(MlV1.ProjectsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation.  The server.
+makes a best effort to cancel the operation, but success is not
+guaranteed.  If the server doesn't support this method, it returns
+`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
+Operations.GetOperation or
+other methods to check whether the cancellation succeeded or whether the
+operation completed despite cancellation. On successful cancellation,
+the operation is not deleted; instead, it becomes an operation with
+an Operation.error value with a google.rpc.Status.code of 1,
+corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (MlProjectsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method=u'POST',
+        method_id=u'ml.projects.locations.operations.cancel',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:cancel',
+        request_field='',
+        request_type_name=u'MlProjectsLocationsOperationsCancelRequest',
+        response_type_name=u'GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
+method to poll the operation result at intervals as recommended by the API
+service.
+
+      Args:
+        request: (MlProjectsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'ml.projects.locations.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'MlProjectsLocationsOperationsGetRequest',
+        response_type_name=u'GoogleLongrunningOperation',
         supports_download=False,
     )
 

@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/source-repositories/docs/apis",
   "protocol": "rest",
   "rootUrl": "https://sourcerepo.googleapis.com/",
+  "mtlsRootUrl": "https://sourcerepo.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://sourcerepo.googleapis.com/",
   "batchPath": "batch",
@@ -649,7 +650,7 @@
                   "description": "The name of the requested repository. Values are of the form\n`projects\/<project>\/repos\/<repo>`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/repos\/.+$",
+                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "type": "string"
                 }
               },
@@ -677,7 +678,7 @@
                   "description": "The name of the requested repository. Values are of the form\n`projects\/<project>\/repos\/<repo>`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/repos\/.+$",
+                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "type": "string"
                 }
               },
@@ -734,7 +735,7 @@
                   "description": "The name of the repo to delete. Values are of the form\n`projects\/<project>\/repos\/<repo>`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/repos\/.+$",
+                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "type": "string"
                 }
               },
@@ -760,7 +761,7 @@
                   "description": "The name of the repo to synchronize. Values are of the form\n`projects\/<project>\/repos\/<repo>`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/repos\/.+$",
+                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "type": "string"
                 }
               },
@@ -788,7 +789,7 @@
                   "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/repos\/.+$",
+                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "type": "string"
                 }
               },
@@ -817,7 +818,7 @@
                   "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/repos\/.+$",
+                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "type": "string"
                 },
                 "options.requestedPolicyVersion": {
@@ -851,7 +852,7 @@
                   "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/repos\/.+$",
+                  "pattern": "^projects\/[^\/]+\/repos\/.*$",
                   "type": "string"
                 }
               },

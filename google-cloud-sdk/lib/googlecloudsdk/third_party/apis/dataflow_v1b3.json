@@ -16,6 +16,7 @@
   "documentationLink": "https://cloud.google.com/dataflow",
   "protocol": "rest",
   "rootUrl": "https://dataflow.googleapis.com/",
+  "mtlsRootUrl": "https://dataflow.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://dataflow.googleapis.com/",
   "batchPath": "batch",
@@ -232,6 +233,11 @@
         "description": {
           "description": "User specified description of the snapshot. Maybe empty.",
           "type": "string"
+        },
+        "diskSizeBytes": {
+          "description": "The disk byte size of the snapshot. Only available for snapshots in READY\nstate.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

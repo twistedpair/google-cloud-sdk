@@ -319,6 +319,20 @@ class GoogleCloudMlV1ContainerSpec(_messages.Message):
   ports = _messages.MessageField('GoogleCloudMlV1ContainerPort', 5, repeated=True)
 
 
+class GoogleCloudMlV1EncryptionConfig(_messages.Message):
+  r"""Represents a custom encryption key configuration that can be applied to
+  a resource.
+
+  Fields:
+    kmsKeyName: The Cloud KMS resource identifier of the customer managed
+      encryption key used to protect a resource, such as a training job. Has
+      the form: `projects/my-project/locations/my-region/keyRings/my-
+      kr/cryptoKeys/my-key`.
+  """
+
+  kmsKeyName = _messages.StringField(1)
+
+
 class GoogleCloudMlV1EnvVar(_messages.Message):
   r"""EnvVar represents an environment variable present in a Container.
 
@@ -1680,8 +1694,8 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
   r"""Represents input parameters for a training job. When using the gcloud
   command to submit your training job, you can specify the input parameters as
   command-line arguments and/or in a YAML configuration file referenced from
-  the --config command-line argument. For details, see the guide to <a href
-  ="/ml-engine/docs/tensorflow/training-jobs">submitting a training job</a>.
+  the --config command-line argument. For details, see the guide to
+  [submitting a training job](/ai-platform/training/docs/training-jobs).
 
   Enums:
     ScaleTierValueValuesEnum: Required. Specifies the machine types, the
@@ -1689,6 +1703,9 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
 
   Fields:
     args: Optional. Command line arguments to pass to the program.
+    encryptionConfig: Custom encryption key options for a training job. If
+      this is set, then all resources created by the training job will be
+      encrypted with the provided encryption key.
     hyperparameters: Optional. The set of Hyperparameters to tune.
     jobDir: Optional. A Google Cloud Storage path in which to store training
       outputs and other data needed for training. This path is passed to your
@@ -1754,27 +1771,22 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       than zero.
     pythonModule: Required. The Python module name to run after installing the
       packages.
-    pythonVersion: Optional. The version of Python used in training. If not
-      set, the default version is '2.7'. Starting [January 13, 2020](/ml-
-      engine/docs/release-notes#december_10_2019), this field is required.
-      The following Python versions are available:  * Python '3.7' is
-      available when `runtime_version` is set to '1.15' or   later. * Python
-      '3.5' is available when `runtime_version` is set to a version   from
-      '1.4' to '1.14'. * Python '2.7' is available when `runtime_version` is
-      set to '1.15' or   earlier. (Runtime versions released [after January 1,
-      2020](/ml-engine/docs/release-notes#december_10_2019) do not support
-      Python 2.7.)  Read more about the Python versions available for [each
-      runtime version](/ml-engine/docs/runtime-version-list).
-    region: Required. The Google Compute Engine region to run the training job
-      in. See the <a href="/ml-engine/docs/tensorflow/regions">available
-      regions</a> for AI Platform services.
+    pythonVersion: Optional. The version of Python used in training. You must
+      either specify this field or specify `masterConfig.imageUri`.  The
+      following Python versions are available:  * Python '3.7' is available
+      when `runtime_version` is set to '1.15' or   later. * Python '3.5' is
+      available when `runtime_version` is set to a version   from '1.4' to
+      '1.14'. * Python '2.7' is available when `runtime_version` is set to
+      '1.15' or   earlier.  Read more about the Python versions available for
+      [each runtime version](/ml-engine/docs/runtime-version-list).
+    region: Required. The region to run the training job in. See the
+      [available regions](/ai-platform/training/docs/regions) for AI Platform
+      Training.
     runtimeVersion: Optional. The AI Platform runtime version to use for
-      training. If not set, AI Platform uses the default stable version, 1.0.
-      Starting [January 13, 2020](/ml-engine/docs/release-
-      notes#december_10_2019), this field is required.  For more information,
-      see the <a href="/ml-engine/docs/runtime-version-list">runtime version
-      list</a> and <a href="/ml-engine/docs/versioning">how to manage runtime
-      versions</a>.
+      training. You must either specify this field or specify
+      `masterConfig.imageUri`.  For more information, see the [runtime version
+      list](/ai-platform/training/docs/runtime-version-list) and learn [how to
+      manage runtime versions](/ai-platform/training/docs/versioning).
     scaleTier: Required. Specifies the machine types, the number of replicas
       for workers and parameter servers.
     scheduling: Optional. Scheduling options for a training job.
@@ -1847,25 +1859,26 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     CUSTOM = 5
 
   args = _messages.StringField(1, repeated=True)
-  hyperparameters = _messages.MessageField('GoogleCloudMlV1HyperparameterSpec', 2)
-  jobDir = _messages.StringField(3)
-  masterConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 4)
-  masterType = _messages.StringField(5)
-  nasJobSpec = _messages.MessageField('GoogleCloudMlV1NasSpec', 6)
-  packageUris = _messages.StringField(7, repeated=True)
-  parameterServerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 8)
-  parameterServerCount = _messages.IntegerField(9)
-  parameterServerType = _messages.StringField(10)
-  pythonModule = _messages.StringField(11)
-  pythonVersion = _messages.StringField(12)
-  region = _messages.StringField(13)
-  runtimeVersion = _messages.StringField(14)
-  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 15)
-  scheduling = _messages.MessageField('GoogleCloudMlV1Scheduling', 16)
-  useChiefInTfConfig = _messages.BooleanField(17)
-  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 18)
-  workerCount = _messages.IntegerField(19)
-  workerType = _messages.StringField(20)
+  encryptionConfig = _messages.MessageField('GoogleCloudMlV1EncryptionConfig', 2)
+  hyperparameters = _messages.MessageField('GoogleCloudMlV1HyperparameterSpec', 3)
+  jobDir = _messages.StringField(4)
+  masterConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 5)
+  masterType = _messages.StringField(6)
+  nasJobSpec = _messages.MessageField('GoogleCloudMlV1NasSpec', 7)
+  packageUris = _messages.StringField(8, repeated=True)
+  parameterServerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 9)
+  parameterServerCount = _messages.IntegerField(10)
+  parameterServerType = _messages.StringField(11)
+  pythonModule = _messages.StringField(12)
+  pythonVersion = _messages.StringField(13)
+  region = _messages.StringField(14)
+  runtimeVersion = _messages.StringField(15)
+  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 16)
+  scheduling = _messages.MessageField('GoogleCloudMlV1Scheduling', 17)
+  useChiefInTfConfig = _messages.BooleanField(18)
+  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 19)
+  workerCount = _messages.IntegerField(20)
+  workerType = _messages.StringField(21)
 
 
 class GoogleCloudMlV1TrainingOutput(_messages.Message):
@@ -2056,28 +2069,22 @@ class GoogleCloudMlV1Version(_messages.Message):
       "     raise NotImplementedError() </pre>  Learn more about [the
       Predictor interface and custom prediction routines](/ml-
       engine/docs/tensorflow/custom-prediction-routines).
-    pythonVersion: Optional. The version of Python used in prediction. If not
-      set, the default version is '2.7'. Starting [January 13, 2020](/ml-
-      engine/docs/release-notes#december_10_2019), this field is required.
-      The following Python versions are available:  * Python '3.7' is
-      available when `runtime_version` is set to '1.15' or   later. * Python
-      '3.5' is available when `runtime_version` is set to a version   from
-      '1.4' to '1.14'. * Python '2.7' is available when `runtime_version` is
-      set to '1.15' or   earlier. (Runtime versions released [after January 1,
-      2020](/ml-engine/docs/release-notes#december_10_2019) do not support
-      Python 2.7.)  Read more about the Python versions available for [each
-      runtime version](/ml-engine/docs/runtime-version-list).
+    pythonVersion: Required. The version of Python used in prediction.  The
+      following Python versions are available:  * Python '3.7' is available
+      when `runtime_version` is set to '1.15' or   later. * Python '3.5' is
+      available when `runtime_version` is set to a version   from '1.4' to
+      '1.14'. * Python '2.7' is available when `runtime_version` is set to
+      '1.15' or   earlier.  Read more about the Python versions available for
+      [each runtime version](/ml-engine/docs/runtime-version-list).
     requestLoggingConfig: Optional. *Only* specify this field in a
       projects.models.versions.patch request. Specifying it in a
       projects.models.versions.create request has no effect.  Configures the
       request-response pair logging on predictions from this Version.
     routes: A GoogleCloudMlV1RouteMap attribute.
-    runtimeVersion: Optional. The AI Platform runtime version to use for this
-      deployment. If not set, AI Platform uses the default stable version,
-      1.0. Starting [January 13, 2020](/ml-engine/docs/release-
-      notes#december_10_2019), this field is required.  For more information,
-      see the [runtime version list](/ml-engine/docs/runtime-version-list) and
-      [how to manage runtime versions](/ml-engine/docs/versioning).
+    runtimeVersion: Required. The AI Platform runtime version to use for this
+      deployment.  For more information, see the [runtime version list](/ml-
+      engine/docs/runtime-version-list) and [how to manage runtime versions
+      ](/ml-engine/docs/versioning).
     serviceAccount: Optional. Specifies the service account for resource
       access control.
     state: Output only. The state of a version.
@@ -2839,6 +2846,26 @@ class MlProjectsLocationsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class MlProjectsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A MlProjectsLocationsOperationsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MlProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A MlProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class MlProjectsModelsCreateRequest(_messages.Message):

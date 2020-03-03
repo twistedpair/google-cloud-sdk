@@ -25,7 +25,8 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 DEFAULT_LIST_FORMAT = """\
     table(
-      name,
+      name:label=ID,
+      displayName,
       description
     )"""
 
@@ -39,15 +40,31 @@ class OrgSecurityPoliciesCompleter(compute_completers.ListCommandCompleter):
         **kwargs)
 
 
-def OrgSecurityPolicyArgument(required=False, plural=False, operation=None):
+def OrgSecurityPolicyRuleListArgument(required=False,
+                                      plural=False,
+                                      operation=None):
   return compute_flags.ResourceArgument(
-      name='SECURITY_POLICY_ID',
+      name='SECURITY_POLICY',
       resource_name='security policy',
       completer=OrgSecurityPoliciesCompleter,
       plural=plural,
       required=required,
       custom_plural='security policies',
-      short_help='Resource ID of the security policy to {0}.'.format(operation),
+      short_help='Display name of the security policy to {0}.'.format(
+          operation),
+      global_collection='compute.organizationSecurityPolicies')
+
+
+def OrgSecurityPolicyArgument(required=False, plural=False, operation=None):
+  return compute_flags.ResourceArgument(
+      name='SECURITY_POLICY',
+      resource_name='security policy',
+      completer=OrgSecurityPoliciesCompleter,
+      plural=plural,
+      required=required,
+      custom_plural='security policies',
+      short_help='Display name or ID of the security policy to {0}.'.format(
+          operation),
       global_collection='compute.organizationSecurityPolicies')
 
 
@@ -79,6 +96,9 @@ def OrgSecurityPolicyRuleArgument(
 
 def AddArgSpCreation(parser):
   """Adds the argument for security policy creaton."""
+  parser.add_argument(
+      '--display-name', help=('A textual name of the security policy.'))
+
   group = parser.add_group(required=True, mutex=True)
 
   group.add_argument(
@@ -102,7 +122,12 @@ def AddArgsCopyRules(parser):
   parser.add_argument(
       '--source-security-policy',
       required=True,
-      help=('Source security policy to copy the rules from.'))
+      help=('The URL of the source security policy to copy the rules from.'))
+
+  parser.add_argument(
+      '--organization',
+      help=('Organization in which the organization security policy to copy the'
+            ' rules to. Must be set if security-policy is display name.'))
 
 
 def AddArgsListSp(parser):
@@ -119,14 +144,12 @@ def AddArgsListSp(parser):
 
 def AddArgsMove(parser):
   """Adds the argument for security policy move."""
-  group = parser.add_group(required=True, mutex=True)
-
-  group.add_argument(
+  parser.add_argument(
       '--organization',
-      help=('Organization to which the organization security policy'
-            ' is to be moved.'))
+      help=('Organization in which the organization security policy is to be'
+            ' moved. Must be set if SECURITY_POLICY is display name.'))
 
-  group.add_argument(
+  parser.add_argument(
       '--folder',
       help=('Folder to which the organization security policy is to be'
             ' moved.'))
@@ -134,6 +157,10 @@ def AddArgsMove(parser):
 
 def AddArgsUpdateSp(parser):
   """Adds the argument for security policy update."""
+  parser.add_argument(
+      '--organization',
+      help=('Organization in which the organization security policy is to be'
+            ' updated. Must be set if SECURITY_POLICY is display name.'))
   parser.add_argument(
       '--description',
       help=('An optional, textual description for the organization security'
@@ -168,8 +195,16 @@ def AddSecurityPolicyId(parser, required=True, operation=None):
   parser.add_argument(
       '--security-policy',
       required=required,
-      help=('Resource ID of the security policy into which the rule should '
+      help=('Display name of the security policy into which the rule should '
             'be {}.'.format(operation)))
+
+
+def AddOrganization(parser, required=True):
+  parser.add_argument(
+      '--organization',
+      required=required,
+      help=('Organization which the organization security policy belongs to. '
+            'Must be set if SECURITY_POLICY is display name.'))
 
 
 def AddSrcIpRanges(parser, required=False):
@@ -201,6 +236,17 @@ def AddDestPorts(parser, required=False):
       type=arg_parsers.ArgList(),
       required=required,
       metavar='DEST_PORTS',
+      help=('A list of destination protocols and ports to which the firewall '
+            'rule will apply.'))
+
+
+def AddLayer4Configs(parser, required=False):
+  """Adds the layer4 configs."""
+  parser.add_argument(
+      '--layer4-configs',
+      type=arg_parsers.ArgList(),
+      required=required,
+      metavar='LAYER4_CONFIG',
       help=('A list of destination protocols and ports to which the firewall '
             'rule will apply.'))
 
@@ -244,6 +290,16 @@ def AddTargetResources(parser, required=False):
       help=('List of URLs of target resources to which the rule is applied.'))
 
 
+def AddTargetServiceAccounts(parser, required=False):
+  """Adds the target service accounts for the rule."""
+  parser.add_argument(
+      '--target-service-accounts',
+      type=arg_parsers.ArgList(),
+      metavar='TARGET_SERVICE_ACCOUNTS',
+      required=required,
+      help=('List of target service accounts for the rule.'))
+
+
 def AddDescription(parser, required=False):
   """Adds the description of this rule."""
   parser.add_argument(
@@ -258,14 +314,12 @@ def AddArgsCreateAssociation(parser):
       '--security-policy',
       required=True,
       help=('Security policy ID of the association.'))
-
-  group = parser.add_group(required=True, mutex=True)
-
-  group.add_argument(
+  parser.add_argument(
       '--organization',
-      help=('ID of the organization with which the association is created.'))
+      help=('ID of the organization in which the security policy is to be'
+            ' associated. Must be set if SECURITY_POLICY is display name.'))
 
-  group.add_argument(
+  parser.add_argument(
       '--folder',
       help=('ID of the folder with which the association is created.'))
 
@@ -293,7 +347,12 @@ def AddArgsDeleteAssociation(parser):
   parser.add_argument(
       '--security-policy',
       required=True,
-      help=('Security policy ID of the association.'))
+      help=('Display name or ID of the security policy ID of the association.'))
+
+  parser.add_argument(
+      '--organization',
+      help=('ID of the organization in which the security policy is to be'
+            ' detached. Must be set if SECURITY_POLICY is display name.'))
 
 
 def AddArgsListAssociation(parser):

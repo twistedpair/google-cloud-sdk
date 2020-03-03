@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/functions/docs/concepts/events-triggers",
   "protocol": "rest",
   "rootUrl": "https://eventflow.googleapis.com/",
+  "mtlsRootUrl": "https://eventflow.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://eventflow.googleapis.com/",
   "batchPath": "batch",

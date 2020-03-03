@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/bigquery/",
   "protocol": "rest",
   "rootUrl": "https://bigquerydatatransfer.googleapis.com/",
+  "mtlsRootUrl": "https://bigquerydatatransfer.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://bigquerydatatransfer.googleapis.com/",
   "batchPath": "batch",

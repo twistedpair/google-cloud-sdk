@@ -9,7 +9,7 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://servicedirectory.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://servicedirectory.mtls.googleapis.com/'
 
   _PACKAGE = u'servicedirectory'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -381,7 +381,7 @@ Resolving a service is not considered an active developer method.
         method_id=u'servicedirectory.projects.locations.namespaces.services.resolve',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'maxEndpoints'],
+        query_params=[u'endpointFilter', u'maxEndpoints'],
         relative_path=u'v1beta1/{+name}:resolve',
         request_field='',
         request_type_name=u'ServicedirectoryProjectsLocationsNamespacesServicesResolveRequest',

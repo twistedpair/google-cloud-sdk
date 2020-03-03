@@ -170,6 +170,7 @@ CLOUDSDK_USER_AGENT = INSTALLATION_CONFIG.user_agent
 
 # Do not add more scopes here.
 CLOUDSDK_SCOPES = (
+    'openid',
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/cloud-platform',
     # TODO(b/19019218): remove the following now that 'cloud-platform'

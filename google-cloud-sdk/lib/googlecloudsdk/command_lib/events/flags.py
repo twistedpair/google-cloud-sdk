@@ -67,6 +67,13 @@ def AddBrokerFlag(parser):
       'Defaults to \'default\' if not specified.')
 
 
+def AddBrokerArg(parser):
+  """Adds broker arg."""
+  parser.add_argument(
+      'BROKER',
+      help='Name of the Broker to create.')
+
+
 def AddServiceAccountFlag(parser):
   """Adds service account flag."""
   parser.add_argument(
@@ -75,6 +82,15 @@ def AddServiceAccountFlag(parser):
       type=iam_util.GetIamAccountFormatValidator(),
       help='Email address of an IAM service account which represents the '
       'identity of the internal events operator.')
+
+
+def AddCustomEventTypeFlag(parser):
+  """Adds custom event type boolean flag."""
+  parser.add_argument(
+      '--custom-type',
+      action='store_true',
+      help='If specified, the provided event type should be interpreted as a '
+      'custom event type.')
 
 
 _PARAMETERS_FLAG_NAME = 'parameters'

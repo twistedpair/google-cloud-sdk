@@ -9,7 +9,7 @@ class DialogflowV2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://dialogflow.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://dialogflow.mtls.googleapis.com/'
 
   _PACKAGE = u'dialogflow'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/dialogflow']
@@ -38,12 +38,10 @@ class DialogflowV2(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_agent_entityTypes_entities = self.ProjectsAgentEntityTypesEntitiesService(self)
     self.projects_agent_entityTypes = self.ProjectsAgentEntityTypesService(self)
-    self.projects_agent_environments = self.ProjectsAgentEnvironmentsService(self)
     self.projects_agent_intents = self.ProjectsAgentIntentsService(self)
     self.projects_agent_sessions_contexts = self.ProjectsAgentSessionsContextsService(self)
     self.projects_agent_sessions_entityTypes = self.ProjectsAgentSessionsEntityTypesService(self)
     self.projects_agent_sessions = self.ProjectsAgentSessionsService(self)
-    self.projects_agent_versions = self.ProjectsAgentVersionsService(self)
     self.projects_agent = self.ProjectsAgentService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -351,185 +349,6 @@ Operation <response: BatchUpdateEntityTypesResponse>
         request_field=u'googleCloudDialogflowV2EntityType',
         request_type_name=u'DialogflowProjectsAgentEntityTypesPatchRequest',
         response_type_name=u'GoogleCloudDialogflowV2EntityType',
-        supports_download=False,
-    )
-
-  class ProjectsAgentEnvironmentsService(base_api.BaseApiService):
-    """Service class for the projects_agent_environments resource."""
-
-    _NAME = u'projects_agent_environments'
-
-    def __init__(self, client):
-      super(DialogflowV2.ProjectsAgentEnvironmentsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates an agent environment.
-
-      Args:
-        request: (DialogflowProjectsAgentEnvironmentsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDialogflowV2Environment) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/agent/environments',
-        http_method=u'POST',
-        method_id=u'dialogflow.projects.agent.environments.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'environmentId'],
-        relative_path=u'v2/{+parent}/environments',
-        request_field=u'googleCloudDialogflowV2Environment',
-        request_type_name=u'DialogflowProjectsAgentEnvironmentsCreateRequest',
-        response_type_name=u'GoogleCloudDialogflowV2Environment',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes the specified agent environment.
-
-      Args:
-        request: (DialogflowProjectsAgentEnvironmentsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleProtobufEmpty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/agent/environments/{environmentsId}',
-        http_method=u'DELETE',
-        method_id=u'dialogflow.projects.agent.environments.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v2/{+name}',
-        request_field='',
-        request_type_name=u'DialogflowProjectsAgentEnvironmentsDeleteRequest',
-        response_type_name=u'GoogleProtobufEmpty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Retrieves the specified agent environment.
-
-      Args:
-        request: (DialogflowProjectsAgentEnvironmentsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDialogflowV2Environment) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/agent/environments/{environmentsId}',
-        http_method=u'GET',
-        method_id=u'dialogflow.projects.agent.environments.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v2/{+name}',
-        request_field='',
-        request_type_name=u'DialogflowProjectsAgentEnvironmentsGetRequest',
-        response_type_name=u'GoogleCloudDialogflowV2Environment',
-        supports_download=False,
-    )
-
-    def GetHistory(self, request, global_params=None):
-      r"""Gets the history of the specified environment.
-
-      Args:
-        request: (DialogflowProjectsAgentEnvironmentsGetHistoryRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDialogflowV2EnvironmentHistory) The response message.
-      """
-      config = self.GetMethodConfig('GetHistory')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetHistory.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/agent/environments/{environmentsId}/history',
-        http_method=u'GET',
-        method_id=u'dialogflow.projects.agent.environments.getHistory',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/history',
-        request_field='',
-        request_type_name=u'DialogflowProjectsAgentEnvironmentsGetHistoryRequest',
-        response_type_name=u'GoogleCloudDialogflowV2EnvironmentHistory',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Returns the list of all environments of the specified agent.
-
-      Args:
-        request: (DialogflowProjectsAgentEnvironmentsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDialogflowV2ListEnvironmentsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/agent/environments',
-        http_method=u'GET',
-        method_id=u'dialogflow.projects.agent.environments.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/environments',
-        request_field='',
-        request_type_name=u'DialogflowProjectsAgentEnvironmentsListRequest',
-        response_type_name=u'GoogleCloudDialogflowV2ListEnvironmentsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the specified agent environment.
-
-This method allows you to deploy new agent versions into the environment.
-When a environment is pointed to a new agent version by setting
-`environment.agent_version`, the environment is temporarily set to the
-`LOADING` state. During that time, the environment keeps on serving the
-previous version of the agent. After the new agent version is done loading,
-the environment is set back to the `RUNNING` state.
-
-      Args:
-        request: (DialogflowProjectsAgentEnvironmentsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDialogflowV2Environment) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/agent/environments/{environmentsId}',
-        http_method=u'PATCH',
-        method_id=u'dialogflow.projects.agent.environments.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'googleCloudDialogflowV2Environment',
-        request_type_name=u'DialogflowProjectsAgentEnvironmentsPatchRequest',
-        response_type_name=u'GoogleCloudDialogflowV2Environment',
         supports_download=False,
     )
 
@@ -1118,128 +937,6 @@ results of future queries.
         supports_download=False,
     )
 
-  class ProjectsAgentVersionsService(base_api.BaseApiService):
-    """Service class for the projects_agent_versions resource."""
-
-    _NAME = u'projects_agent_versions'
-
-    def __init__(self, client):
-      super(DialogflowV2.ProjectsAgentVersionsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates an agent version.
-
-      Args:
-        request: (DialogflowProjectsAgentVersionsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDialogflowV2Version) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/agent/versions',
-        http_method=u'POST',
-        method_id=u'dialogflow.projects.agent.versions.create',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[],
-        relative_path=u'v2/{+parent}/versions',
-        request_field=u'googleCloudDialogflowV2Version',
-        request_type_name=u'DialogflowProjectsAgentVersionsCreateRequest',
-        response_type_name=u'GoogleCloudDialogflowV2Version',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Retrieves the specified agent version.
-
-      Args:
-        request: (DialogflowProjectsAgentVersionsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDialogflowV2Version) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/agent/versions/{versionsId}',
-        http_method=u'GET',
-        method_id=u'dialogflow.projects.agent.versions.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v2/{+name}',
-        request_field='',
-        request_type_name=u'DialogflowProjectsAgentVersionsGetRequest',
-        response_type_name=u'GoogleCloudDialogflowV2Version',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Returns the list of all versions of the specified agent.
-
-      Args:
-        request: (DialogflowProjectsAgentVersionsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDialogflowV2ListVersionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/agent/versions',
-        http_method=u'GET',
-        method_id=u'dialogflow.projects.agent.versions.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+parent}/versions',
-        request_field='',
-        request_type_name=u'DialogflowProjectsAgentVersionsListRequest',
-        response_type_name=u'GoogleCloudDialogflowV2ListVersionsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the specified agent version.
-
-Note that this method does not allow you to update the state of the agent
-the given version points to. It allows you to update only mutable
-properties of the version resource.
-
-      Args:
-        request: (DialogflowProjectsAgentVersionsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDialogflowV2Version) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/agent/versions/{versionsId}',
-        http_method=u'PATCH',
-        method_id=u'dialogflow.projects.agent.versions.patch',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+name}',
-        request_field=u'googleCloudDialogflowV2Version',
-        request_type_name=u'DialogflowProjectsAgentVersionsPatchRequest',
-        response_type_name=u'GoogleCloudDialogflowV2Version',
-        supports_download=False,
-    )
-
   class ProjectsAgentService(base_api.BaseApiService):
     """Service class for the projects_agent resource."""
 
@@ -1730,33 +1427,6 @@ is the parent resource, without the operations collection id.
       self._upload_configs = {
           }
 
-    def Agent(self, request, global_params=None):
-      r"""Creates/updates the specified agent.
-
-      Args:
-        request: (DialogflowProjectsAgentRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDialogflowV2Agent) The response message.
-      """
-      config = self.GetMethodConfig('Agent')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Agent.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/projects/{projectsId}/agent',
-        http_method=u'POST',
-        method_id=u'dialogflow.projects.agent',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'updateMask'],
-        relative_path=u'v2/{+parent}/agent',
-        request_field=u'googleCloudDialogflowV2Agent',
-        request_type_name=u'DialogflowProjectsAgentRequest',
-        response_type_name=u'GoogleCloudDialogflowV2Agent',
-        supports_download=False,
-    )
-
     def DeleteAgent(self, request, global_params=None):
       r"""Deletes the specified agent.
 
@@ -1807,6 +1477,33 @@ is the parent resource, without the operations collection id.
         relative_path=u'v2/{+parent}/agent',
         request_field='',
         request_type_name=u'DialogflowProjectsGetAgentRequest',
+        response_type_name=u'GoogleCloudDialogflowV2Agent',
+        supports_download=False,
+    )
+
+    def SetAgent(self, request, global_params=None):
+      r"""Creates/updates the specified agent.
+
+      Args:
+        request: (DialogflowProjectsSetAgentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Agent) The response message.
+      """
+      config = self.GetMethodConfig('SetAgent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetAgent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/agent',
+        http_method=u'POST',
+        method_id=u'dialogflow.projects.setAgent',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'updateMask'],
+        relative_path=u'v2/{+parent}/agent',
+        request_field=u'googleCloudDialogflowV2Agent',
+        request_type_name=u'DialogflowProjectsSetAgentRequest',
         response_type_name=u'GoogleCloudDialogflowV2Agent',
         supports_download=False,
     )

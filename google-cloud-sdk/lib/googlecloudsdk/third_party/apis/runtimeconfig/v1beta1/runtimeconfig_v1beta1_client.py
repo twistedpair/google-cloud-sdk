@@ -9,7 +9,7 @@ class RuntimeconfigV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://runtimeconfig.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://runtimeconfig.mtls.googleapis.com/'
 
   _PACKAGE = u'runtimeconfig'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloudruntimeconfig']

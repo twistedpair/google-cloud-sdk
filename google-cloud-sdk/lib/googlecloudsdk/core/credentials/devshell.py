@@ -26,6 +26,7 @@ import os
 from apitools.base.protorpclite import messages
 
 from googlecloudsdk.core import config
+from googlecloudsdk.core.util import encoding
 
 from oauth2client import client
 import six
@@ -131,7 +132,7 @@ class CredentialInfoResponse(messages.Message):
 
 def _SendRecv(request):
   """Communicate with the devshell access token service."""
-  port = int(os.getenv(DEVSHELL_CLIENT_PORT, 0))
+  port = int(encoding.GetEncodedValue(os.environ, DEVSHELL_CLIENT_PORT, 0))
   if not port:
     raise NoDevshellServer()
   return _SendRecvPort(request, port)
@@ -149,7 +150,9 @@ def _SendRecvPort(request, port):
   if len(nstr) > 5:
     raise ValueError('length too long')
 
-  if socket.has_ipv6 and os.getenv(DEVSHELL_ENV_IPV6_ENABLED) is not None:
+  if (socket.has_ipv6 and
+      encoding.GetEncodedValue(os.environ, DEVSHELL_ENV_IPV6_ENABLED)
+      is not None):
     s = socket.socket(socket.AF_INET6)
   else:
     s = socket.socket()
@@ -282,9 +285,10 @@ def LoadDevshellCredentials():
 
 
 def IsDevshellEnvironment():
-  return bool(os.getenv(DEVSHELL_ENV, False)) or HasDevshellAuth()
+  return bool(encoding.GetEncodedValue(os.environ, DEVSHELL_ENV, False)) \
+         or HasDevshellAuth()
 
 
 def HasDevshellAuth():
-  port = int(os.getenv(DEVSHELL_CLIENT_PORT, 0))
+  port = int(encoding.GetEncodedValue(os.environ, DEVSHELL_CLIENT_PORT, 0))
   return port != 0

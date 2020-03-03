@@ -20,12 +20,14 @@ from __future__ import unicode_literals
 
 import os
 
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_encoding
 
 from six.moves import urllib
 
 GOOGLE_GCE_METADATA_URI = 'http://{}/computeMetadata/v1'.format(
-    os.getenv('GCE_METADATA_ROOT', 'metadata.google.internal'))
+    encoding.GetEncodedValue(os.environ, 'GCE_METADATA_ROOT',
+                             'metadata.google.internal'))
 
 GOOGLE_GCE_METADATA_DEFAULT_ACCOUNT_URI = (
     GOOGLE_GCE_METADATA_URI + '/instance/service-accounts/default/email')

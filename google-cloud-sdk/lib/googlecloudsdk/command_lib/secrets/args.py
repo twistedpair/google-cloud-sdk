@@ -72,7 +72,6 @@ def AddLocation(parser, purpose, positional=False, **kwargs):
       **kwargs).AddToParser(parser)
 
 
-# TODO(b/135570696): may want to convert to resource arg & add fallthrough
 def AddLocations(parser, resource, positional=False, **kwargs):
   parser.add_argument(
       _ArgOrFlag('locations', positional),

@@ -60,8 +60,8 @@ class BackupConfiguration(_messages.Message):
   r"""Database instance backup configuration.
 
   Fields:
-    binaryLogEnabled: Whether binary log is enabled. If backup configuration
-      is disabled, binary log must be disabled as well.
+    binaryLogEnabled: (MySQL only) Whether binary log is enabled. If backup
+      configuration is disabled, binarylog must be disabled as well.
     enabled: Whether this configuration is enabled.
     kind: This is always <code>sql#backupConfiguration</code>.
     location: Location of the backup
@@ -1637,12 +1637,13 @@ class Settings(_messages.Message):
       use. Instances with <code>PER_USE</code> pricing turn off after 15
       minutes of inactivity. Instances with <code>PER_PACKAGE</code> pricing
       turn off after 12 hours of inactivity.
-    AvailabilityTypeValueValuesEnum: Availability type (PostgreSQL instances
-      only). Potential values: <br><code>ZONAL</code>: The instance serves
-      data from only one zone. Outages in that zone affect data accessibility.
-      <br><code>REGIONAL</code>: The instance can serve data from more than
-      one zone in a region (it is highly available). <br>For more information,
-      see <a href="https://cloud.google.com/sql/docs/postgres/high-
+    AvailabilityTypeValueValuesEnum: Availability type (PostgreSQL and MySQL
+      instances only). Potential values: <br><code>ZONAL</code>: The instance
+      serves data from only one zone. Outages in that zone affect data
+      accessibility. <br><code>REGIONAL</code>: The instance can serve data
+      from more than one zone in a region (it is highly available). <br>For
+      more information, see <a
+      href="https://cloud.google.com/sql/docs/postgres/high-
       availability">Overview of the High Availability Configuration</a>.
     DataDiskTypeValueValuesEnum: The type of data disk: <code>PD_SSD</code>
       (default) or <code>PD_HDD</code>. Not used for First Generation
@@ -1673,9 +1674,9 @@ class Settings(_messages.Message):
       turn off after 12 hours of inactivity.
     authorizedGaeApplications: The App Engine app IDs that can access this
       instance. First Generation instances only.
-    availabilityType: Availability type (PostgreSQL instances only). Potential
-      values: <br><code>ZONAL</code>: The instance serves data from only one
-      zone. Outages in that zone affect data accessibility.
+    availabilityType: Availability type (PostgreSQL and MySQL instances only).
+      Potential values: <br><code>ZONAL</code>: The instance serves data from
+      only one zone. Outages in that zone affect data accessibility.
       <br><code>REGIONAL</code>: The instance can serve data from more than
       one zone in a region (it is highly available). <br>For more information,
       see <a href="https://cloud.google.com/sql/docs/postgres/high-
@@ -1753,12 +1754,12 @@ class Settings(_messages.Message):
     ON_DEMAND = 3
 
   class AvailabilityTypeValueValuesEnum(_messages.Enum):
-    r"""Availability type (PostgreSQL instances only). Potential values:
-    <br><code>ZONAL</code>: The instance serves data from only one zone.
-    Outages in that zone affect data accessibility. <br><code>REGIONAL</code>:
-    The instance can serve data from more than one zone in a region (it is
-    highly available). <br>For more information, see <a
-    href="https://cloud.google.com/sql/docs/postgres/high-
+    r"""Availability type (PostgreSQL and MySQL instances only). Potential
+    values: <br><code>ZONAL</code>: The instance serves data from only one
+    zone. Outages in that zone affect data accessibility.
+    <br><code>REGIONAL</code>: The instance can serve data from more than one
+    zone in a region (it is highly available). <br>For more information, see
+    <a href="https://cloud.google.com/sql/docs/postgres/high-
     availability">Overview of the High Availability Configuration</a>.
 
     Values:
@@ -2022,6 +2023,11 @@ class SqlExternalSyncSettingError(_messages.Message):
       INCOMPATIBLE_DATABASE_VERSION: <no description>
       REPLICA_ALREADY_SETUP: <no description>
       INSUFFICIENT_PRIVILEGE: <no description>
+      UNSUPPORTED_MIGRATION_TYPE: Unsupported migration type.
+      NO_PGLOGICAL_INSTALLED: No pglogical extension installed on databases,
+        applicable for postgres.
+      PGLOGICAL_NODE_ALREADY_EXISTS: pglogical node already exists on
+        databases, applicable for postgres.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -2029,6 +2035,9 @@ class SqlExternalSyncSettingError(_messages.Message):
     INCOMPATIBLE_DATABASE_VERSION = 3
     REPLICA_ALREADY_SETUP = 4
     INSUFFICIENT_PRIVILEGE = 5
+    UNSUPPORTED_MIGRATION_TYPE = 6
+    NO_PGLOGICAL_INSTALLED = 7
+    PGLOGICAL_NODE_ALREADY_EXISTS = 8
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)

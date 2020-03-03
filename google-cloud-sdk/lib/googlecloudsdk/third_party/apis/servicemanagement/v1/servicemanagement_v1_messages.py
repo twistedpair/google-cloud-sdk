@@ -186,6 +186,15 @@ class AuthProvider(_messages.Message):
       the issuer.  - can be inferred from the email domain of the issuer (e.g.
       a Google  service account).  Example:
       https://www.googleapis.com/oauth2/v1/certs
+    jwtLocations: Defines the locations to extract the JWT.  JWT locations can
+      be either from HTTP headers or URL query parameters. The rule is that
+      the first match wins. The checking order is: checking all headers first,
+      then URL query parameters.  If not specified,  default to use following
+      3 locations:    1) Authorization: Bearer    2) x-goog-iap-jwt-assertion
+      3) access_token query parameter  Default locations can be specified as
+      followings:    jwt_locations:    - header: Authorization
+      value_prefix: "Bearer "    - header: x-goog-iap-jwt-assertion    -
+      query: access_token
   """
 
   audiences = _messages.StringField(1)
@@ -193,6 +202,7 @@ class AuthProvider(_messages.Message):
   id = _messages.StringField(3)
   issuer = _messages.StringField(4)
   jwksUri = _messages.StringField(5)
+  jwtLocations = _messages.MessageField('JwtLocation', 6, repeated=True)
 
 
 class AuthRequirement(_messages.Message):
@@ -1645,6 +1655,25 @@ class HttpRule(_messages.Message):
   put = _messages.StringField(9)
   responseBody = _messages.StringField(10)
   selector = _messages.StringField(11)
+
+
+class JwtLocation(_messages.Message):
+  r"""Specifies a location to extract JWT from an API request.
+
+  Fields:
+    header: Specifies HTTP header name to extract JWT token.
+    query: Specifies URL query parameter name to extract JWT token.
+    valuePrefix: The value prefix. The value format is "value_prefix{token}"
+      Only applies to "in" header type. Must be empty for "in" query type. If
+      not empty, the header value has to match (case sensitive) this prefix.
+      If not matched, JWT will not be extracted. If matched, JWT will be
+      extracted after the prefix is removed.  For example, for "Authorization:
+      Bearer {JWT}", value_prefix="Bearer " with a space at the end.
+  """
+
+  header = _messages.StringField(1)
+  query = _messages.StringField(2)
+  valuePrefix = _messages.StringField(3)
 
 
 class LabelDescriptor(_messages.Message):
@@ -3264,7 +3293,8 @@ class Rollout(_messages.Message):
 
   Fields:
     createTime: Creation time of the rollout. Readonly.
-    createdBy: The user who created the Rollout. Readonly.
+    createdBy: This field is deprecated and will be deleted. Please remove
+      usage of this field.
     deleteServiceStrategy: The strategy associated with a rollout to delete a
       `ManagedService`. Readonly.
     rolloutId: Optional. Unique identifier of this Rollout. Must be no longer

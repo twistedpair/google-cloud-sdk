@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/healthcare",
   "protocol": "rest",
   "rootUrl": "https://healthcare.googleapis.com/",
+  "mtlsRootUrl": "https://healthcare.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://healthcare.googleapis.com/",
   "batchPath": "batch",
@@ -745,7 +746,7 @@
       "type": "object",
       "properties": {
         "infoTypes": {
-          "description": "InfoTypes to apply this transformation to. If this is not specified, this\ntransformation becomes the default transformation, and is used for any\ninfo_type that is not specified in another transformation.",
+          "description": "`InfoTypes` to apply this transformation to. If this is not specified, this\ntransformation becomes the default transformation, and is used for any\n`info_type` that is not specified in another transformation.",
           "type": "array",
           "items": {
             "type": "string"
@@ -850,7 +851,7 @@
       "type": "object",
       "properties": {
         "pubsubTopic": {
-          "description": "The [Cloud Pub\/Sub](https:\/\/cloud.google.com\/pubsub\/docs\/) topic that\nnotifications of changes are published on. Supplied by the client.\nPubsubMessage.Data contains the resource name.\nPubsubMessage.MessageId is the ID of this message. It is guaranteed to be\nunique within the topic.\nPubsubMessage.PublishTime is the time at which the message was published.\nNotifications are only sent if the topic is\nnon-empty. [Topic\nnames](https:\/\/cloud.google.com\/pubsub\/docs\/overview#names) must be scoped\nto a project. cloud-healthcare@system.gserviceaccount.com must have\npublisher permissions on the given Cloud Pub\/Sub topic. Not having adequate\npermissions causes the calls that send notifications to fail.",
+          "description": "The [Cloud Pub\/Sub](https:\/\/cloud.google.com\/pubsub\/docs\/) topic that\nnotifications of changes are published on. Supplied by the client.\nPubsubMessage.Data contains the resource name.\nPubsubMessage.MessageId is the ID of this message. It is guaranteed to be\nunique within the topic.\nPubsubMessage.PublishTime is the time at which the message was published.\nNotifications are only sent if the topic is\nnon-empty. [Topic\nnames](https:\/\/cloud.google.com\/pubsub\/docs\/overview#names) must be scoped\nto a project. cloud-healthcare@system.gserviceaccount.com must have\npublisher permissions on the given Cloud Pub\/Sub topic. Not having adequate\npermissions causes the calls that send notifications to fail.\n\nIf a notification can't be published to Cloud Pub\/Sub, errors are logged to\nStackdriver (see [Viewing\nlogs](\/healthcare\/docs\/how-tos\/stackdriver-logging)). If the number of\nerrors exceeds a certain rate, some aren't submitted.",
           "type": "string"
         }
       }
@@ -1897,6 +1898,69 @@
               }
               ,
               "resources": {
+                "dataProtectionStores": {
+                  "methods": {
+                    "setIamPolicy": {
+                      "id": "healthcare.projects.locations.datasets.dataProtectionStores.setIamPolicy",
+                      "path": "v1alpha2/{+resource}:setIamPolicy",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dataProtectionStores/{dataProtectionStoresId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dataProtectionStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED"
+                    },
+                    "getIamPolicy": {
+                      "id": "healthcare.projects.locations.datasets.dataProtectionStores.getIamPolicy",
+                      "path": "v1alpha2/{+resource}:getIamPolicy",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dataProtectionStores/{dataProtectionStoresId}:getIamPolicy",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/dataProtectionStores\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
+                    }
+                  }
+                },
                 "dicomStores": {
                   "methods": {
                     "setIamPolicy": {
@@ -3029,7 +3093,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Import\nAnnotations to\nthe Annotation\nstore by\nloading data from the specified sources.\nErrors are noted in the error\nfield. Otherwise, a detailed response is returned as of type\nImportAnnotationsResponse contained in the\nresponse field when the\noperation finishes.\nThe metadata field type is\nOperationMetadata."
+                      "description": "Import\nAnnotations to\nthe Annotation\nstore by\nloading data from the specified sources.\nIf the request is successful, a detailed response is returned as of type\nImportAnnotationsResponse, contained in the\nresponse field when the\noperation finishes.\nThe metadata field type is\nOperationMetadata.\nIf errors occur, the error\nfield type is ImportAnnotationsErrorDetails.\nErrors are also logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging)).\nFor example, the following sample log entry shows a\n`failed to parse GCS object` error that occurred while attempting to import\n`gs:\/\/ANNOTATION_FILENAME.json` to\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.\n```json\njsonPayload: {\n  @type:\n  \"type.googleapis.com\/google.cloud.healthcare.logging.ImportAnnotationLogEntry\"\n  error: {\n    code:  3\n    message:  \"failed to parse GCS object\"\n  }\n  source:  \"gs:\/\/ANNOTATION_FILENAME.json\"\n}\nlogName:\n\"projects\/{project_id}\/logs\/healthcare.googleapis.com%2Fimport_annotations\"\noperation: {\n  id:\n  \"projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/operations\/{operation_id}\"\n  producer:  \"healthcare.googleapis.com\/ImportAnnotations\"\n}\nreceiveTimestamp:  \"TIMESTAMP\"\nresource: {\n  labels: {\n    annotation_store_id:  \"{annotation_store_id}\"\n    dataset_id:  \"{dataset_id}\"\n    location:  \"{location_id}\"\n    project_id:  \"{project_id}\"\n  }\n  type:  \"healthcare_annotation_store\"\n}\nseverity:  \"ERROR\"\ntimestamp:  \"TIMESTAMP\"\n```"
                     },
                     "export": {
                       "id": "healthcare.projects.locations.datasets.annotationStores.export",
@@ -3057,7 +3121,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Export\nAnnotations from\nthe Annotation\nstore.\nErrors are noted in the error\nfield. Otherwise, a detailed response is returned of type\nExportAnnotationsResponse, contained in the\nresponse field when the\noperation finishes. The metadata\nfield type is OperationMetadata."
+                      "description": "Export\nAnnotations from\nthe Annotation\nstore.\nIf the request is successful, a detailed response is returned of type\nExportAnnotationsResponse, contained in the\nresponse field when the\noperation finishes.\nThe metadata field type is\nOperationMetadata.\nIf errors occur, the error\nfield type is ImportAnnotationsErrorDetails.\nErrors are also logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging) and\nImportAnnotations for a sample log entry)."
                     },
                     "evaluate": {
                       "id": "healthcare.projects.locations.datasets.annotationStores.evaluate",
@@ -3085,7 +3149,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Evaluate an Annotation store against a\nground truth Annotation store.\nWhen the operation finishes successfully, a detailed response is returned\nof type EvaluateAnnotationStoreResponse, contained in the response. The metadata field type is\nOperationMetadata."
+                      "description": "Evaluate an Annotation store against a\nground truth Annotation store.\nWhen the operation finishes successfully, a detailed response is returned\nof type EvaluateAnnotationStoreResponse, contained in the response. The metadata field type is\nOperationMetadata.\nErrors are logged to Stackdriver\n(see [Viewing logs](\/healthcare\/docs\/how-tos\/stackdriver-logging) and\nImportAnnotations for a sample log entry)."
                     }
                   }
                 },

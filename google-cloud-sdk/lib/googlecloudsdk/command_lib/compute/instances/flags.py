@@ -566,7 +566,7 @@ def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
       *auto-delete*::: If ``yes'',  this persistent disk will be
       automatically deleted when the instance is deleted. However,
       if the disk is later detached from the instance, this option
-      won't apply. The default value for this is ``no''.
+      won't apply. The default value for this is ``yes''.
       """.format(disk_name_extra_help, disk_mode_extra_help,
                  disk_device_name_help)
   if enable_kms:
@@ -2401,7 +2401,6 @@ def AddPostKeyRevocationActionTypeArgs(parser):
       choices=['noop', 'shutdown'],
       metavar='POLICY',
       required=False,
-      hidden=True,
       help="""\
       The instance will be shut down when the KMS key of one of its disk is
       revoked, if set to `SHUTDOWN`.

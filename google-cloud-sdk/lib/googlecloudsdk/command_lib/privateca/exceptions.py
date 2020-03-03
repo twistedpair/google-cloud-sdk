@@ -1,3 +1,4 @@
+# Lint as: python3
 # -*- coding: utf-8 -*- #
 # Copyright 2020 Google LLC. All Rights Reserved.
 #
@@ -23,3 +24,26 @@ from googlecloudsdk.core import exceptions
 
 class FileOutputError(exceptions.Error):
   """Error thrown for issues with writing to files."""
+
+
+class InvalidCertificateAuthorityTypeError(exceptions.Error):
+  """Error thrown for performing a command on the wrong CA type."""
+
+
+class InsufficientPermissionException(exceptions.Error):
+  """Indicates that a user is missing required permissions for an operation."""
+
+  def __init__(self, resource):
+    """Create a new InsufficientPermissionException.
+
+    Args:
+      resource: str, The resource on which the user needs permissions.
+    """
+    super(InsufficientPermissionException, self).__init__(
+        'The current user is missing required permissions for this operation. '
+        'Please ensure you have the necessary IAM roles on the {} and that '
+        'you are logged-in as the correct user and try again.'.format(resource))
+
+
+class UnsupportedKmsKeyTypeException(exceptions.Error):
+  """Indicates that a user is using an unsupported KMS key type."""

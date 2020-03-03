@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/compute/docs/oslogin/",
   "protocol": "rest",
   "rootUrl": "https://oslogin.googleapis.com/",
+  "mtlsRootUrl": "https://oslogin.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://oslogin.googleapis.com/",
   "batchPath": "batch",

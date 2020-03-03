@@ -82,6 +82,12 @@ def ApiConfigAttributeConfig(name='api-config'):
       help_text='API Config ID.')
 
 
+def OperationAttributeConfig(name='operation'):
+  return concepts.ResourceParameterAttributeConfig(
+      name=name,
+      help_text='The name for the API Gateway operation')
+
+
 def GetLocationResourceSpec(resource_name='location', default=None):
   return concepts.ResourceSpec(
       'apigateway.projects.locations',
@@ -123,7 +129,27 @@ def GetApiConfigResourceSpec(resource_name='api-config', include_project=False):
       projectsId=projects_id)
 
 
+def GetOperationResourceSpec(resource_name='operation'):
+  return concepts.ResourceSpec(
+      'apigateway.projects.locations.operations',
+      resource_name=resource_name,
+      operationsId=OperationAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
 def AddGatewayResourceArg(parser, verb, positional=False, required=True):
+  """Adds Gateway resource argument to parser.
+
+  Args:
+    parser: parser to add arg to
+    verb: action being taken with the Gateway
+    positional: Boolean indicating if argument is positional, default False
+    required: Boolean for if this is required, default is True
+
+  Returns: None
+  """
+
   if positional:
     name = 'gateway'
   else:
@@ -137,6 +163,17 @@ def AddGatewayResourceArg(parser, verb, positional=False, required=True):
 
 def AddGatewayApiConfigResourceArgs(parser, verb, gateway_required=True,
                                     api_config_required=True):
+  """Adds Gateway and API Config resource arguments to parser.
+
+  Args:
+    parser: parser to add arg to
+    verb: action being taken with the Gateway
+    gateway_required: Boolean for if Gateway is required, default is True
+    api_config_required: Boolean for if API Config is required, default is True
+
+  Returns: None
+  """
+
   concept_parsers.ConceptParser(
       [
           presentation_specs.ResourcePresentationSpec(
@@ -153,21 +190,51 @@ def AddGatewayApiConfigResourceArgs(parser, verb, gateway_required=True,
       ]).AddToParser(parser)
 
 
-def AddLocationResourceArg(parser, verb,
-                           positional=False, default=None, required=True):
+def AddLocationResourceArg(parser, verb, positional=False, default=None,
+                           required=True):
+  """Adds location resource argument to parser.
+
+  Args:
+    parser: parser to add arg to
+    verb: action being taken with the location
+    positional: Optional boolean indiicating if argument is positional
+    default: Optional default value for the arg
+    required: Boolean for if this is required, default is True
+
+  Returns: None
+  """
+
   if positional:
     name = 'location'
   else:
     name = '--location'
+
+  override = None
+  if default == 'global':
+    override = {'location': ''}
+
   concept_parsers.ConceptParser.ForResource(
       name,
       GetLocationResourceSpec(default=default),
       'Parent location which {}.'.format(verb),
+      flag_name_overrides=override,
       required=required).AddToParser(parser)
 
 
 def AddApiResourceArg(parser, verb, positional=False, required=True,
                       wildcard=False):
+  """Adds API resource argument to parser.
+
+  Args:
+    parser: parser to add arg to
+    verb: action being taken with the API
+    positional: Optional boolean indiicating if argument is positional
+    required: Boolean for if this is required, default is True
+    wildcard: Boolean. Does arg have a default wildcard? default: False
+
+  Returns: None
+  """
+
   if positional:
     name = 'api'
   else:
@@ -181,6 +248,17 @@ def AddApiResourceArg(parser, verb, positional=False, required=True,
 
 
 def AddApiConfigResourceArg(parser, verb, positional=False, required=True):
+  """Adds API Config resource argument to parser.
+
+  Args:
+    parser: parser to add arg to
+    verb: action being taken with the API Config
+    positional: Boolean indicating if argument is positional, default False
+    required: Boolean for if this is required, default is True
+
+  Returns: None
+  """
+
   if positional:
     name = 'api_config'
   else:
@@ -191,3 +269,11 @@ def AddApiConfigResourceArg(parser, verb, positional=False, required=True):
       'Name for API Config which will be {}.'.format(verb),
       flag_name_overrides={'location': ''},
       required=required).AddToParser(parser)
+
+
+def AddOperationResourceArgs(parser, verb):
+  concept_parsers.ConceptParser.ForResource(
+      'operation',
+      GetOperationResourceSpec(),
+      'The name of the operation to {}.'.format(verb),
+      required=True).AddToParser(parser)

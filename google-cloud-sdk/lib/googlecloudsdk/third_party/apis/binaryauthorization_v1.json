@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/binary-authorization/",
   "protocol": "rest",
   "rootUrl": "https://binaryauthorization.googleapis.com/",
+  "mtlsRootUrl": "https://binaryauthorization.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://binaryauthorization.googleapis.com/",
   "batchPath": "batch",

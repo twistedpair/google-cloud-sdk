@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/recommender/docs/",
   "protocol": "rest",
   "rootUrl": "https://recommender.googleapis.com/",
+  "mtlsRootUrl": "https://recommender.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://recommender.googleapis.com/",
   "batchPath": "batch",
@@ -712,7 +713,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Name of the insight.",
+                          "description": "Required. Name of the insight.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
@@ -870,7 +871,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Name of the recommendation.",
+                          "description": "Required. Name of the recommendation.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
@@ -1092,7 +1093,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Name of the insight.",
+                          "description": "Required. Name of the insight.",
                           "location": "path",
                           "required": true,
                           "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+\/insights\/[^\/]+$",
@@ -1250,7 +1251,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Name of the recommendation.",
+                          "description": "Required. Name of the recommendation.",
                           "location": "path",
                           "required": true,
                           "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",

@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/cloud-build/docs/",
   "protocol": "rest",
   "rootUrl": "https://cloudbuild.googleapis.com/",
+  "mtlsRootUrl": "https://cloudbuild.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudbuild.googleapis.com/",
   "batchPath": "batch",

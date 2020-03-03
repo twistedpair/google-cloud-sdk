@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/artifacts/docs/",
   "protocol": "rest",
   "rootUrl": "https://artifactregistry.googleapis.com/",
+  "mtlsRootUrl": "https://artifactregistry.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://artifactregistry.googleapis.com/",
   "batchPath": "batch",
@@ -1450,7 +1451,7 @@
                           "description": "The name of the file to retrieve.",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/files\/.+$",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/files\/.*$",
                           "type": "string"
                         }
                       },

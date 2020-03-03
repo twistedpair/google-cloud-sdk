@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/access-approval/docs",
   "protocol": "rest",
   "rootUrl": "https://accessapproval.googleapis.com/",
+  "mtlsRootUrl": "https://accessapproval.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://accessapproval.googleapis.com/",
   "batchPath": "batch",

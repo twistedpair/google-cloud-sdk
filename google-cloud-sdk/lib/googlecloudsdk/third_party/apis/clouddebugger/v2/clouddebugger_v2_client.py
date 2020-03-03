@@ -9,7 +9,7 @@ class ClouddebuggerV2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://clouddebugger.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://clouddebugger.mtls.googleapis.com/'
 
   _PACKAGE = u'clouddebugger'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud_debugger']

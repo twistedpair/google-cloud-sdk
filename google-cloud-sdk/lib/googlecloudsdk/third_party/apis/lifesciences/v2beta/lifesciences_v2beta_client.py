@@ -9,7 +9,7 @@ class LifesciencesV2beta(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://lifesciences.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://lifesciences.mtls.googleapis.com/'
 
   _PACKAGE = u'lifesciences'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

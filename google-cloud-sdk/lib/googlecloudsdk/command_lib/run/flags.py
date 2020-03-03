@@ -44,6 +44,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
 
@@ -1062,8 +1063,9 @@ def GetKubeconfig(args):
   if getattr(args, 'kubeconfig', None):
     return kubeconfig.Kubeconfig.LoadFromFile(
         files.ExpandHomeDir(args.kubeconfig))
-  if os.getenv('KUBECONFIG'):
-    config_paths = os.getenv('KUBECONFIG').split(os.pathsep)
+  if encoding.GetEncodedValue(os.environ, 'KUBECONFIG'):
+    config_paths = encoding.GetEncodedValue(os.environ,
+                                            'KUBECONFIG').split(os.pathsep)
     config = None
     # Merge together all valid paths into single config
     for path in config_paths:
@@ -1093,7 +1095,6 @@ def _FlagIsExplicitlySet(args, flag):
 def VerifyOnePlatformFlags(args, release_track, product):
   """Raise ConfigurationError if args includes GKE only arguments."""
   del release_track  # not currently checked by any flags
-  del product  # not currently checked by any flags
   error_msg = ('The `{flag}` flag is not supported on the fully managed '
                'version of Cloud Run. Specify `--platform {platform}` or run '
                '`gcloud config set run/platform {platform}` to work with '
@@ -1152,6 +1153,13 @@ def VerifyOnePlatformFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--broker',
+            platform=PLATFORM_GKE,
+            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
+
+  if _FlagIsExplicitlySet(args, 'custom_type') and product == Product.EVENTS:
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--custom-type',
             platform=PLATFORM_GKE,
             platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_GKE]))
 

@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/recaptcha-enterprise/",
   "protocol": "rest",
   "rootUrl": "https://recaptchaenterprise.googleapis.com/",
+  "mtlsRootUrl": "https://recaptchaenterprise.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://recaptchaenterprise.googleapis.com/",
   "batchPath": "batch",
@@ -332,17 +333,19 @@
           "enumDescriptions": [
             "Default type that indicates this enum hasn't been specified. This is not\na valid IntegrationType, one of the other types must be specified\ninstead.",
             "Only used to produce scores. It doesn't display the \"I'm not a robot\"\ncheckbox and never shows captcha challenges.",
-            "Displays the \"I'm not a robot\" checkbox and may show captcha challenges\nafter it is checked."
+            "Displays the \"I'm not a robot\" checkbox and may show captcha challenges\nafter it is checked.",
+            "Doesn't display the \"I'm not a robot\" checkbox, but may show captcha\nchallenges after risk analysis."
           ],
           "type": "string",
           "enum": [
             "INTEGRATION_TYPE_UNSPECIFIED",
             "SCORE",
-            "CHECKBOX"
+            "CHECKBOX",
+            "INVISIBLE"
           ]
         },
         "challengeSecurityPreference": {
-          "description": "Settings for the frequency and difficulty at which this key triggers\ncaptcha challenges. This should only be specified for IntegrationType\nCHECKBOX.",
+          "description": "Settings for the frequency and difficulty at which this key triggers\ncaptcha challenges. This should only be specified for IntegrationTypes\nCHECKBOX and INVISIBLE.",
           "enumDescriptions": [
             "Default type that indicates this enum hasn't been specified.",
             "Key tends to show fewer and easier challenges.",

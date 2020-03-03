@@ -191,8 +191,8 @@ def IsInteractive(output=False, error=False, heuristic=False):
     # probably being run from a task scheduler context. HOMEPATH can be '\'
     # when a user has a network mapped home directory.
     # Cygwin has it all! Both Windows and Linux. Checking both is perfect.
-    home = os.getenv('HOME')
-    homepath = os.getenv('HOMEPATH')
+    home = encoding.GetEncodedValue(os.environ, 'HOME')
+    homepath = encoding.GetEncodedValue(os.environ, 'HOMEPATH')
     if not homepath and (not home or home == '/'):
       return False
   return True

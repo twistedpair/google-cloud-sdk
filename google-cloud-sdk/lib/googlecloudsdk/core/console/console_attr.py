@@ -264,7 +264,8 @@ class ConsoleAttr(object):
     elif encoding == 'win':
       encoding = 'cp437'
     self._encoding = encoding or 'ascii'
-    self._term = '' if suppress_output else os.getenv('TERM', '').lower()
+    self._term = '' if suppress_output else encoding_util.GetEncodedValue(
+        os.environ, 'TERM', '').lower()
 
     # ANSI "standard" attributes.
     if self.SupportsAnsi():

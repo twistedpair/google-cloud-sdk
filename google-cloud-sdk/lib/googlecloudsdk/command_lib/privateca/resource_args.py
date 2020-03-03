@@ -19,6 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.privateca import locations
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -153,3 +155,15 @@ def AddCertificatePositionalResourceArg(parser, verb):
       CreateCertificateResourceSpec(arg_name),
       'The certificate {}.'.format(verb),
       required=True).AddToParser(parser)
+
+# Resource validation.
+
+
+def ValidateKmsKeyVersionLocation(version_ref):
+  """Raises an exception if the key version is in an unsupported location."""
+  supported_locations = locations.GetSupportedLocations()
+  if version_ref.locationsId not in supported_locations:
+    raise exceptions.InvalidArgumentException(
+        '--kms-key-version',
+        'Resource is in an unsupported location. Supported locations are: {}.'
+        .format(', '.join(sorted(supported_locations))))

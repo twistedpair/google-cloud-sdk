@@ -32,6 +32,7 @@ from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 
 
@@ -351,10 +352,20 @@ def GetDomainMappingResourceSpec():
 
 
 def GetNamespaceResourceSpec():
-  return concepts.ResourceSpec(
-      'run.namespaces',
-      namespacesId=NamespaceAttributeConfig(),
-      resource_name='namespace')
+  """Returns a resource spec for the namespace."""
+  # TODO(b/150322097): Remove this when the api has been split.
+  # This try/except block is needed because the v1alpha1 and v1 run apis
+  # have different collection names for the namespaces.
+  try:
+    return concepts.ResourceSpec(
+        'run.namespaces',
+        namespacesId=NamespaceAttributeConfig(),
+        resource_name='namespace')
+  except resources.InvalidCollectionException:
+    return concepts.ResourceSpec(
+        'run.api.v1.namespaces',
+        namespacesId=NamespaceAttributeConfig(),
+        resource_name='namespace')
 
 
 CLUSTER_PRESENTATION = presentation_specs.ResourcePresentationSpec(

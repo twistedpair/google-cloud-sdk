@@ -48,16 +48,6 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
-  PROJECTS_AGENT_ENVIRONMENTS = (
-      'projects.agent.environments',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/agent/environments/{environmentsId}',
-      },
-      [u'name'],
-      True
-  )
   PROJECTS_AGENT_INTENTS = (
       'projects.agent.intents',
       '{+name}',
@@ -93,16 +83,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/agent/sessions/{sessionsId}/entityTypes/'
               '{entityTypesId}',
-      },
-      [u'name'],
-      True
-  )
-  PROJECTS_AGENT_VERSIONS = (
-      'projects.agent.versions',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/agent/versions/{versionsId}',
       },
       [u'name'],
       True

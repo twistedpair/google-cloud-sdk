@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/tasks/",
   "protocol": "rest",
   "rootUrl": "https://cloudtasks.googleapis.com/",
+  "mtlsRootUrl": "https://cloudtasks.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudtasks.googleapis.com/",
   "batchPath": "batch",

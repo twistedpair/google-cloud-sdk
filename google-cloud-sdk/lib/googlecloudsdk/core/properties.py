@@ -1568,11 +1568,6 @@ class _SectionDataflow(_Section):
         help_text='Specifies that Cloud Dataflow workers '
         'must not use public IP addresses.',
         default=False)
-    self.flex_template = self._AddBool(
-        'flex_template',
-        help_text='Specifies whether job templates accepted by the run '
-        'command are flex templates.',
-        default=False)
 
 
 class _SectionDatafusion(_Section):
@@ -1829,6 +1824,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.runtimeconfig = self._Add('runtimeconfig')
     self.redis = self._Add('redis')
     self.run = self._Add('run')
+    self.scc = self._Add('scc')
     self.servicemanagement = self._Add('servicemanagement')
     self.serviceregistry = self._Add('serviceregistry')
     self.serviceusage = self._Add('serviceusage')
@@ -2391,7 +2387,7 @@ def PersistProperty(prop, value, scope=None):
   # Print message if value being set/unset is overridden by environment var
   # to prevent user confusion
   env_name = prop.EnvironmentName()
-  override = os.getenv(env_name)
+  override = encoding.GetEncodedValue(os.environ, env_name)
   if override:
     warning_message = ('WARNING: Property [{0}] is overridden '
                        'by environment setting [{1}={2}]\n')

@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/iam/",
   "protocol": "rest",
   "rootUrl": "https://policytroubleshooter.googleapis.com/",
+  "mtlsRootUrl": "https://policytroubleshooter.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://policytroubleshooter.googleapis.com/",
   "batchPath": "batch",

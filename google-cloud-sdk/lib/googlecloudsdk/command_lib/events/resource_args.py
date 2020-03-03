@@ -35,3 +35,12 @@ def GetTriggerResourceSpec():
       namespacesId=run_resource_args.NamespaceAttributeConfig(),
       triggersId=TriggerAttributeConfig(),
       resource_name='Trigger')
+
+
+def GetCoreNamespaceResourceSpec():
+  """Returns a resource spec for namespace core api, rather than just run.namespaces."""
+  return concepts.ResourceSpec(
+      'run.api.v1.namespaces',
+      namespacesId=run_resource_args.NamespaceAttributeConfig(),
+      resource_name='namespace',
+      api_version='v1')

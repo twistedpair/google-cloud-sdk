@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/functions",
   "protocol": "rest",
   "rootUrl": "https://cloudfunctions.googleapis.com/",
+  "mtlsRootUrl": "https://cloudfunctions.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudfunctions.googleapis.com/",
   "batchPath": "batch",

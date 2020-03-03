@@ -301,6 +301,8 @@ def ParseUpdateOptionsBase(args, locations):
           args, 'enable_autoprovisioning_autorepair', None),
       enable_autoprovisioning_autoupgrade=getattr(
           args, 'enable_autoprovisioning_autoupgrade', None),
+      autoprovisioning_min_cpu_platform=getattr(
+          args, 'autoprovisioning_min_cpu_platform', None),
       min_cpu=args.min_cpu,
       max_cpu=args.max_cpu,
       min_memory=args.min_memory,

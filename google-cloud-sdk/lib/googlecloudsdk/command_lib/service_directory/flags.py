@@ -74,3 +74,13 @@ def AddMaxEndpointsFlag(parser):
       help="""\
            Maximum number of endpoints to return.
            """).AddToParser(parser)
+
+
+def AddEndpointFilterFlag(parser):
+  """Adds endpoint filter flags for service-directory commands."""
+  return base.Argument(
+      '--endpoint-filter',
+      help="""\
+        Apply a Boolean filter EXPRESSION to each endpoint in the service.
+        If the expression evaluates True, then that endpoint is listed.
+        """).AddToParser(parser)

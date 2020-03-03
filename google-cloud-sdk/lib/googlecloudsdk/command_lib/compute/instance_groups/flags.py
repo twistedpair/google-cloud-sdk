@@ -291,6 +291,7 @@ _LIST_INSTANCES_FORMAT_BETA = """\
               instanceStatus:label=STATUS,
               instanceHealth[0].detailedHealthState:label=HEALTH_STATE,
               currentAction:label=ACTION,
+              preservedState():label=PRESERVED_STATE,
               version.instanceTemplate.basename():label=INSTANCE_TEMPLATE,
               version.name:label=VERSION_NAME,
               lastAttempt.errors.errors.map().format(

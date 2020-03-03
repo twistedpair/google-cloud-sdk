@@ -171,7 +171,7 @@ class CreateDatabaseRequest(_messages.Message):
       expression `a-z*[a-z0-9]` and be between 2 and 30 characters in length.
       If the database ID is a reserved word or if it contains a hyphen, the
       database ID must be enclosed in backticks (`` ` ``).
-    extraStatements: An optional list of DDL statements to run inside the
+    extraStatements: Optional. A list of DDL statements to run inside the
       newly created database. Statements can create tables, indexes, etc.
       These statements execute atomically with the creation of the database:
       if there is an error in any statement, the database is not created.
@@ -386,6 +386,7 @@ class ExecuteSqlRequest(_messages.Message):
     queryMode: Used to control the amount of debugging information returned in
       ResultSetStats. If partition_token is set, query_mode can only be set to
       QueryMode.NORMAL.
+    queryOptions: Query optimizer configuration to use for the given query.
     resumeToken: If this request is resuming a previously interrupted SQL
       statement execution, `resume_token` should be copied from the last
       PartialResultSet yielded before the interruption. Doing this enables the
@@ -489,10 +490,11 @@ class ExecuteSqlRequest(_messages.Message):
   params = _messages.MessageField('ParamsValue', 2)
   partitionToken = _messages.BytesField(3)
   queryMode = _messages.EnumField('QueryModeValueValuesEnum', 4)
-  resumeToken = _messages.BytesField(5)
-  seqno = _messages.IntegerField(6)
-  sql = _messages.StringField(7)
-  transaction = _messages.MessageField('TransactionSelector', 8)
+  queryOptions = _messages.MessageField('QueryOptions', 5)
+  resumeToken = _messages.BytesField(6)
+  seqno = _messages.IntegerField(7)
+  sql = _messages.StringField(8)
+  transaction = _messages.MessageField('TransactionSelector', 9)
 
 
 class Expr(_messages.Message):
@@ -620,17 +622,7 @@ class Instance(_messages.Message):
     displayName: Required. The descriptive name for this instance as it
       appears in UIs. Must be unique per project and between 4 and 30
       characters in length.
-    endpointUris: Output only. A set of endpoint URIs based on your instance
-      config that you can use instead of the global endpoint
-      `spanner.googleapis.com`.  For example, if your instance config is `us-
-      central1` (a regional config in Iowa), then your instance specific
-      endpoints may include `us-central1-spanner.googleapis.com`. By calling
-      these endpoints instead of the global endpoint, you optimize network
-      routing which could reduce network latency.  The client libraries, JDBC
-      drivers, and other SDK clients automatically call these instance
-      specific endpoints.  If you are using DNS whitelists, firewalls, or
-      filtering to control access to endpoints, make sure you grant access to
-      `*spanner.googleapis.com`.
+    endpointUris: Deprecated. This field is not populated.
     labels: Cloud Labels are a flexible and lightweight mechanism for
       organizing cloud resources into groups that reflect a customer's
       organizational needs and deployment strategies. Cloud Labels can be used
@@ -1494,6 +1486,27 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class QueryOptions(_messages.Message):
+  r"""Query optimizer configuration.
+
+  Fields:
+    optimizerVersion: An option to control the selection of optimizer version.
+      This parameter allows individual queries to pick different query
+      optimizer versions.  Specifying "latest" as a value instructs Cloud
+      Spanner to use the latest supported query optimizer version. If not
+      specified, Cloud Spanner uses optimizer version set at the database
+      level options. Any other positive integer (from the list of supported
+      optimizer versions) overrides the default optimizer version for query
+      execution. The list of supported optimizer versions can be queried from
+      SPANNER_SYS.SUPPORTED_OPTIMIZER_VERSIONS. Executing a SQL statement with
+      an invalid optimizer version will fail with a syntax error
+      (`INVALID_ARGUMENT`) status.  The `optimizer_version` statement hint has
+      precedence over this setting.
+  """
+
+  optimizerVersion = _messages.StringField(1)
 
 
 class QueryPlan(_messages.Message):

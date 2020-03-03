@@ -65,7 +65,8 @@ def EventTypeFromTypeString(source_crds, type_string, source=None):
   # No matches
   if not possible_matches:
     raise exceptions.EventTypeNotFound(
-        'Unknown event type: {}.'.format(type_string))
+        "Unknown event type: {}. If you're trying to use a custom event type, "
+        'add the "--custom-type" flag.'.format(type_string))
 
   # Single match
   if len(possible_matches) == 1:

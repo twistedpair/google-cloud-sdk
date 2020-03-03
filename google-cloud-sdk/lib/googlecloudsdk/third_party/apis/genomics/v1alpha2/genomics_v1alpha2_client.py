@@ -9,7 +9,7 @@ class GenomicsV1alpha2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://genomics.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://genomics.mtls.googleapis.com/'
 
   _PACKAGE = u'genomics'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/compute', u'https://www.googleapis.com/auth/genomics']

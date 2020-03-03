@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/recommender/docs/",
   "protocol": "rest",
   "rootUrl": "https://recommender.googleapis.com/",
+  "mtlsRootUrl": "https://recommender.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://recommender.googleapis.com/",
   "batchPath": "batch",

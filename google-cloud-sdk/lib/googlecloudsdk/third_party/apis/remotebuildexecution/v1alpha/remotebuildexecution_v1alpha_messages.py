@@ -790,6 +790,11 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
       DOCKER_INVALID_ULIMIT: The docker ulimit is not valid.
       DOCKER_UNKNOWN_RUNTIME: The docker runtime is unknown.
       DOCKER_UNKNOWN_CAPABILITY: The docker capability is unknown.
+      DOCKER_UNKNOWN_ERROR: The command failed with unknown docker errors.
+      DOCKER_CREATE_COMPUTE_SYSTEM_ERROR: Docker failed to run containers with
+        CreateComputeSystem error.
+      DOCKER_PREPARELAYER_ERROR: Docker failed to run containers with
+        hcsshim::PrepareLayer error.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -819,6 +824,9 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_INVALID_ULIMIT = 25
     DOCKER_UNKNOWN_RUNTIME = 26
     DOCKER_UNKNOWN_CAPABILITY = 27
+    DOCKER_UNKNOWN_ERROR = 28
+    DOCKER_CREATE_COMPUTE_SYSTEM_ERROR = 29
+    DOCKER_PREPARELAYER_ERROR = 30
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

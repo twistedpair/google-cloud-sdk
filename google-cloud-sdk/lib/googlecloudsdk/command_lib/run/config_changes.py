@@ -156,7 +156,7 @@ class VpcConnectorChange(ConfigChanger):
 
   def Adjust(self, resource):
     annotations = k8s_object.AnnotationsFromMetadata(resource.MessagesModule(),
-                                                     resource.metadata)
+                                                     resource.template.metadata)
     annotations['run.googleapis.com/vpc-access-connector'] = (
         self._connector_name)
     return resource
@@ -167,7 +167,7 @@ class ClearVpcConnectorChange(ConfigChanger):
 
   def Adjust(self, resource):
     annotations = k8s_object.AnnotationsFromMetadata(resource.MessagesModule(),
-                                                     resource.metadata)
+                                                     resource.template.metadata)
     if 'run.googleapis.com/vpc-access-connector' in annotations:
       del annotations['run.googleapis.com/vpc-access-connector']
     return resource

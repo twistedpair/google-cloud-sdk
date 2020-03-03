@@ -27,7 +27,6 @@ from __future__ import unicode_literals
 
 import json
 import sys
-import textwrap
 
 from apitools.base.protorpclite import messages as apitools_messages
 from apitools.base.py import encoding
@@ -36,7 +35,6 @@ from apitools.base.py.exceptions import HttpBadRequestError
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import command_loading
-from googlecloudsdk.command_lib.export import util as export_util
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.apis import arg_marshalling
@@ -656,6 +654,8 @@ class CommandBuilder(object):
     Returns:
       calliope.base.Command, The command that implements the spec.
     """
+    # Lazy import to prevent drag on startup time.
+    from googlecloudsdk.command_lib.export import util as export_util  # pylint:disable=g-import-not-at-top
 
     # pylint: disable=no-self-argument, The class closure throws off the linter
     # a bit. We want to use the generator class, not the class being generated.
@@ -671,13 +671,13 @@ class CommandBuilder(object):
           base.ASYNC_FLAG.AddToParser(parser)
         parser.add_argument(
             '--source',
-            help=textwrap.dedent("""
+            help="""
             Path to a YAML file containing the configuration export data. The
             YAML file must not contain any output-only fields. Alternatively, you
             may omit this flag to read from standard input. A schema describing
             the export/import format can be found in:
             $CLOUDSDKROOT/lib/googlecloudsdk/schemas/...
-          """))
+          """)
 
       def Run(self_, args):
         # Determine message to parse resource into from yaml
@@ -755,6 +755,9 @@ class CommandBuilder(object):
       calliope.base.Command, The command that implements the spec.
     """
 
+    # Lazy import to prevent drag on startup time.
+    from googlecloudsdk.command_lib.export import util as export_util  # pylint:disable=g-import-not-at-top
+
     # pylint: disable=no-self-argument, The class closure throws off the linter
     # a bit. We want to use the generator class, not the class being generated.
     # pylint: disable=protected-access, The linter gets confused about 'self'
@@ -767,19 +770,19 @@ class CommandBuilder(object):
         self._CommonArgs(parser)
         parser.add_argument(
             '--destination',
-            help=textwrap.dedent("""
+            help="""
             Path to a YAML file where the configuration will be exported.
             The exported data will not contain any output-only fields.
             Alternatively, you may omit this flag to write to standard output. A
             schema describing the export/import format can be found in
             $CLOUDSDKROOT/lib/googlecloudsdk/schemas/...
-          """))
+          """)
 
       def Run(self_, args):
         unused_ref, response = self._CommonRun(args)
         schema_path = export_util.GetSchemaPath(self.method.collection.api_name,
                                                 self.spec.request.api_version,
-                                                response.__class__.__name__)
+                                                type(response).__name__)
 
         # Export parsed yaml to selected destination.
         if args.IsSpecified('destination'):

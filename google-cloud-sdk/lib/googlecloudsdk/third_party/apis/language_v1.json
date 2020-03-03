@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/natural-language/",
   "protocol": "rest",
   "rootUrl": "https://language.googleapis.com/",
+  "mtlsRootUrl": "https://language.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://language.googleapis.com/",
   "batchPath": "batch",

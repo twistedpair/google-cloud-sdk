@@ -9,7 +9,7 @@ class IapV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://iap.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://iap.mtls.googleapis.com/'
 
   _PACKAGE = u'iap'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

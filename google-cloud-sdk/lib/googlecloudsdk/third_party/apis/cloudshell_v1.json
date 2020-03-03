@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/shell/docs/",
   "protocol": "rest",
   "rootUrl": "https://cloudshell.googleapis.com/",
+  "mtlsRootUrl": "https://cloudshell.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudshell.googleapis.com/",
   "batchPath": "batch",
@@ -416,7 +417,7 @@
               "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.+$",
+              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -441,7 +442,7 @@
               "description": "The name of the operation resource to be deleted.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.+$",
+              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -466,7 +467,7 @@
               "description": "The name of the operation resource to be cancelled.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.+$",
+              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },

@@ -17,6 +17,7 @@
   "documentationLink": "https://console.cloud.google.com/apis/api/securitycenter.googleapis.com/overview",
   "protocol": "rest",
   "rootUrl": "https://securitycenter.googleapis.com/",
+  "mtlsRootUrl": "https://securitycenter.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://securitycenter.googleapis.com/",
   "batchPath": "batch",

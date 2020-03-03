@@ -55,31 +55,41 @@ class OrgSecurityPolicy(object):
             .ComputeOrganizationSecurityPoliciesListAssociationsRequest(
                 targetResource=target_resource))
 
-  def _MakeDeleteRequestTuple(self):
+  def _MakeDeleteRequestTuple(self, sp_id=None):
     return (self._client.organizationSecurityPolicies, 'Delete',
             self._messages.ComputeOrganizationSecurityPoliciesDeleteRequest(
-                securityPolicy=self.ref.Name()))
+                securityPolicy=sp_id))
 
-  def _MakeUpdateRequestTuple(self, security_policy=None):
+  def _MakeUpdateRequestTuple(self, sp_id=None, security_policy=None):
+    if sp_id:
+      return (self._client.organizationSecurityPolicies, 'Patch',
+              self._messages.ComputeOrganizationSecurityPoliciesPatchRequest(
+                  securityPolicy=sp_id, securityPolicyResource=security_policy))
     return (self._client.organizationSecurityPolicies, 'Patch',
             self._messages.ComputeOrganizationSecurityPoliciesPatchRequest(
                 securityPolicy=self.ref.Name(),
                 securityPolicyResource=security_policy))
 
-  def _MakeDescribeRequestTuple(self):
+  def _MakeDescribeRequestTuple(self, sp_id=None):
+    if sp_id:
+      return (self._client.organizationSecurityPolicies, 'Get',
+              self._messages.ComputeOrganizationSecurityPoliciesGetRequest(
+                  securityPolicy=sp_id))
     return (self._client.organizationSecurityPolicies, 'Get',
             self._messages.ComputeOrganizationSecurityPoliciesGetRequest(
                 securityPolicy=self.ref.Name()))
 
-  def _MakeMoveRequestTuple(self, parent_id=None):
+  def _MakeMoveRequestTuple(self, sp_id=None, parent_id=None):
     return (self._client.organizationSecurityPolicies, 'Move',
             self._messages.ComputeOrganizationSecurityPoliciesMoveRequest(
-                securityPolicy=self.ref.Name(), parentId=parent_id))
+                securityPolicy=sp_id, parentId=parent_id))
 
-  def _MakeCopyRulesRequestTuple(self, source_security_policy=None):
+  def _MakeCopyRulesRequestTuple(self,
+                                 dest_sp_id=None,
+                                 source_security_policy=None):
     return (self._client.organizationSecurityPolicies, 'CopyRules',
             self._messages.ComputeOrganizationSecurityPoliciesCopyRulesRequest(
-                securityPolicy=self.ref.Name(),
+                securityPolicy=dest_sp_id,
                 sourceSecurityPolicy=source_security_policy))
 
   def _MakeListRequestTuple(self, parent_id):
@@ -125,45 +135,55 @@ class OrgSecurityPolicy(object):
       return self._compute_client.MakeRequests(requests)
     return requests
 
-  def Delete(self, only_generate_request=False):
+  def Delete(self, sp_id=None, only_generate_request=False):
     """Sends request to delete a security policy."""
 
-    requests = [self._MakeDeleteRequestTuple()]
+    requests = [self._MakeDeleteRequestTuple(sp_id=sp_id)]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests
 
-  def Update(self, only_generate_request=False, security_policy=None):
+  def Update(self,
+             sp_id=None,
+             only_generate_request=False,
+             security_policy=None):
     """Sends request to update a security policy."""
 
-    requests = [self._MakeUpdateRequestTuple(security_policy=security_policy)]
+    requests = [
+        self._MakeUpdateRequestTuple(
+            sp_id=sp_id, security_policy=security_policy)
+    ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests
 
-  def Move(self, only_generate_request=False, parent_id=None):
+  def Move(self, only_generate_request=False, sp_id=None, parent_id=None):
     """Sends request to move the security policy to anther parent."""
 
-    requests = [self._MakeMoveRequestTuple(parent_id=parent_id)]
+    requests = [self._MakeMoveRequestTuple(sp_id=sp_id, parent_id=parent_id)]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests
 
-  def CopyRules(self, only_generate_request=False, source_security_policy=None):
+  def CopyRules(self,
+                only_generate_request=False,
+                dest_sp_id=None,
+                source_security_policy=None):
     """Sends request to copy all the rules from another security policy."""
 
     requests = [
         self._MakeCopyRulesRequestTuple(
+            dest_sp_id=dest_sp_id,
             source_security_policy=source_security_policy)
     ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests
 
-  def Describe(self, only_generate_request=False):
+  def Describe(self, sp_id=None, only_generate_request=False):
     """Sends request to describe a security policy."""
 
-    requests = [self._MakeDescribeRequestTuple()]
+    requests = [self._MakeDescribeRequestTuple(sp_id=sp_id)]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests

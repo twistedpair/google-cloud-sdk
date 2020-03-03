@@ -1662,7 +1662,8 @@ class AuditLogConfig(_messages.Message):
 
 
 class AuthenticationPolicy(_messages.Message):
-  r"""The authentication settings for the backend service.
+  r"""[Deprecated] The authentication settings for the backend service. The
+  authentication settings for the backend service.
 
   Enums:
     PrincipalBindingValueValuesEnum: Define whether peer or origin identity
@@ -1725,8 +1726,8 @@ class AuthenticationPolicy(_messages.Message):
 
 
 class AuthorizationConfig(_messages.Message):
-  r"""Authorization configuration provides service-level and method-level
-  access control for a service.
+  r"""[Deprecated] Authorization configuration provides service-level and
+  method-level access control for a service. control for a service.
 
   Fields:
     policies: List of RbacPolicies.
@@ -2683,17 +2684,13 @@ class AutoscalingPolicyScaleDownControl(_messages.Message):
       at when computing recommendations. Possibly all these VMs can be deleted
       at once so user service needs to be prepared to lose that many VMs in
       one step.
-    timeWindow: How long back autoscaling should look when computing
-      recommendations to include directives regarding slower scale down, as
-      described above.
     timeWindowSec: How long back autoscaling should look when computing
       recommendations to include directives regarding slower scale down, as
       described above.
   """
 
   maxScaledDownReplicas = _messages.MessageField('FixedOrPercent', 1)
-  timeWindow = _messages.MessageField('GoogleDuration', 2)
-  timeWindowSec = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  timeWindowSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class Backend(_messages.Message):
@@ -3606,7 +3603,14 @@ class BackendServiceCdnPolicy(_messages.Message):
 
 
 class BackendServiceFailoverPolicy(_messages.Message):
-  r"""A BackendServiceFailoverPolicy object.
+  r"""Applicable only to Failover for Internal TCP/UDP Load Balancing. On
+  failover or failback, this field indicates whether connection draining will
+  be honored. GCP has a fixed connection draining timeout of 10 minutes. A
+  setting of true terminates existing TCP connections to the active pool
+  during failover and failback, immediately draining traffic. A setting of
+  false allows existing TCP connections to persist, even on VMs no longer in
+  the active pool, for up to the duration of the connection draining timeout
+  (10 minutes).
 
   Fields:
     disableConnectionDrainOnFailover: This can be set to true only if the
@@ -4363,7 +4367,8 @@ class CacheKeyPolicy(_messages.Message):
 
 
 class CallCredentials(_messages.Message):
-  r"""gRPC call credentials to access the SDS server.
+  r"""[Deprecated] gRPC call credentials to access the SDS server. gRPC call
+  credentials to access the SDS server.
 
   Enums:
     CallCredentialTypeValueValuesEnum: The type of call credentials to use for
@@ -4403,7 +4408,8 @@ class CallCredentials(_messages.Message):
 
 
 class ChannelCredentials(_messages.Message):
-  r"""gRPC channel credentials to access the SDS server.
+  r"""[Deprecated] gRPC channel credentials to access the SDS server. gRPC
+  channel credentials to access the SDS server.
 
   Enums:
     ChannelCredentialTypeValueValuesEnum: The channel credentials to access
@@ -4466,8 +4472,8 @@ class CircuitBreakers(_messages.Message):
 
 
 class ClientTlsSettings(_messages.Message):
-  r"""The client side authentication settings for connection originating from
-  the backend service.
+  r"""[Deprecated] The client side authentication settings for connection
+  originating from the backend service. the backend service.
 
   Enums:
     ModeValueValuesEnum: Indicates whether connections to this port should be
@@ -11538,24 +11544,28 @@ class ComputeInstancesUpdateRequest(_messages.Message):
   r"""A ComputeInstancesUpdateRequest object.
 
   Enums:
-    MinimalActionValueValuesEnum: If specified, this action or higher level
-      action is performed on the instance irrespective of what action is
-      required for the update to take effect. If not specified, then Compute
-      Engine acts based on the minimum action required.
-    MostDisruptiveAllowedActionValueValuesEnum: If specified, Compute Engine
-      returns an error if the update requires a higher action to be applied to
-      the instance. If not specified, the default will be REFRESH.
+    MinimalActionValueValuesEnum: Specifies the action to take when updating
+      an instance even if the updated properties do not require it. If not
+      specified, then Compute Engine acts based on the minimum action that the
+      updated properties require.
+    MostDisruptiveAllowedActionValueValuesEnum: Specifies the most disruptive
+      action that can be taken on the instance as part of the update. Compute
+      Engine returns an error if the instance properties require a more
+      disruptive action as part of the instance update. Valid options from
+      lowest to highest are NO_EFFECT, REFRESH, and RESTART.
 
   Fields:
     instance: Name of the instance resource to update.
     instanceResource: A Instance resource to be passed as the request body.
-    minimalAction: If specified, this action or higher level action is
-      performed on the instance irrespective of what action is required for
-      the update to take effect. If not specified, then Compute Engine acts
-      based on the minimum action required.
-    mostDisruptiveAllowedAction: If specified, Compute Engine returns an error
-      if the update requires a higher action to be applied to the instance. If
-      not specified, the default will be REFRESH.
+    minimalAction: Specifies the action to take when updating an instance even
+      if the updated properties do not require it. If not specified, then
+      Compute Engine acts based on the minimum action that the updated
+      properties require.
+    mostDisruptiveAllowedAction: Specifies the most disruptive action that can
+      be taken on the instance as part of the update. Compute Engine returns
+      an error if the instance properties require a more disruptive action as
+      part of the instance update. Valid options from lowest to highest are
+      NO_EFFECT, REFRESH, and RESTART.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -11571,10 +11581,10 @@ class ComputeInstancesUpdateRequest(_messages.Message):
   """
 
   class MinimalActionValueValuesEnum(_messages.Enum):
-    r"""If specified, this action or higher level action is performed on the
-    instance irrespective of what action is required for the update to take
-    effect. If not specified, then Compute Engine acts based on the minimum
-    action required.
+    r"""Specifies the action to take when updating an instance even if the
+    updated properties do not require it. If not specified, then Compute
+    Engine acts based on the minimum action that the updated properties
+    require.
 
     Values:
       INVALID: <no description>
@@ -11588,9 +11598,11 @@ class ComputeInstancesUpdateRequest(_messages.Message):
     RESTART = 3
 
   class MostDisruptiveAllowedActionValueValuesEnum(_messages.Enum):
-    r"""If specified, Compute Engine returns an error if the update requires a
-    higher action to be applied to the instance. If not specified, the default
-    will be REFRESH.
+    r"""Specifies the most disruptive action that can be taken on the instance
+    as part of the update. Compute Engine returns an error if the instance
+    properties require a more disruptive action as part of the instance
+    update. Valid options from lowest to highest are NO_EFFECT, REFRESH, and
+    RESTART.
 
     Values:
       INVALID: <no description>
@@ -24521,9 +24533,9 @@ class DiskMoveRequest(_messages.Message):
 class DiskType(_messages.Message):
   r"""Represents a Disk Type resource.  Google Compute Engine has two Disk
   Type resources:  *
-  [Global](/compute/docs/reference/rest/{$api_version}/diskTypes) *
-  [Regional](/compute/docs/reference/rest/{$api_version}/regionDiskTypes)  You
-  can choose from a variety of disk types based on your needs. For more
+  [Regional](/compute/docs/reference/rest/{$api_version}/regionDiskTypes) *
+  [Zonal](/compute/docs/reference/rest/{$api_version}/diskTypes)  You can
+  choose from a variety of disk types based on your needs. For more
   information, read Storage options.  The diskTypes resource represents disk
   types for a zonal persistent disk. For more information, read Zonal
   persistent disks.  The regionDiskTypes resource represents disk types for a
@@ -26981,51 +26993,9 @@ class GlobalSetPolicyRequest(_messages.Message):
   policy = _messages.MessageField('Policy', 3)
 
 
-class GoogleDuration(_messages.Message):
-  r"""A Duration represents a signed, fixed-length span of time represented as
-  a count of seconds and fractions of seconds at nanosecond resolution. It is
-  independent of any calendar and concepts like "day" or "month". It is
-  related to Timestamp in that the difference between two Timestamp values is
-  a Duration and it can be added or subtracted from a Timestamp. Range is
-  approximately +-10,000 years.  # Examples  Example 1: Compute Duration from
-  two Timestamps in pseudo code.  Timestamp start = ...; Timestamp end = ...;
-  Duration duration = ...;  duration.seconds = end.seconds - start.seconds;
-  duration.nanos = end.nanos - start.nanos;  if (duration.seconds  0) {
-  duration.seconds += 1; duration.nanos -= 1000000000; } else if
-  (duration.seconds > 0 && duration.nanos < 0) { duration.seconds -= 1;
-  duration.nanos += 1000000000; }  Example 2: Compute Timestamp from Timestamp
-  + Duration in pseudo code.  Timestamp start = ...; Duration duration = ...;
-  Timestamp end = ...;  end.seconds = start.seconds + duration.seconds;
-  end.nanos = start.nanos + duration.nanos;  if (end.nanos = 1000000000) {
-  end.seconds += 1; end.nanos -= 1000000000; }  Example 3: Compute Duration
-  from datetime.timedelta in Python.  td = datetime.timedelta(days=3,
-  minutes=10) duration = Duration() duration.FromTimedelta(td)  # JSON Mapping
-  In JSON format, the Duration type is encoded as a string rather than an
-  object, where the string ends in the suffix "s" (indicating seconds) and is
-  preceded by the number of seconds, with nanoseconds expressed as fractional
-  seconds. For example, 3 seconds with 0 nanoseconds should be encoded in JSON
-  format as "3s", while 3 seconds and 1 nanosecond should be expressed in JSON
-  format as "3.000000001s", and 3 seconds and 1 microsecond should be
-  expressed in JSON format as "3.000001s".
-
-  Fields:
-    nanos: Signed fractions of a second at nanosecond resolution of the span
-      of time. Durations less than one second are represented with a 0
-      `seconds` field and a positive or negative `nanos` field. For durations
-      of one second or more, a non-zero value for the `nanos` field must be of
-      the same sign as the `seconds` field. Must be from -999,999,999 to
-      +999,999,999 inclusive.
-    seconds: Signed seconds of the span of time. Must be from -315,576,000,000
-      to +315,576,000,000 inclusive. Note: these bounds are computed from: 60
-      sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years
-  """
-
-  nanos = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  seconds = _messages.IntegerField(2)
-
-
 class GrpcServiceConfig(_messages.Message):
-  r"""gRPC config to access the SDS server.
+  r"""[Deprecated] gRPC config to access the SDS server. gRPC config to access
+  the SDS server.
 
   Fields:
     callCredentials: The call credentials to access the SDS server.
@@ -28274,10 +28244,10 @@ class HostRule(_messages.Message):
   Fields:
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    hosts: The list of host patterns to match. They must be valid hostnames,
-      except * will match any string of ([a-z0-9-.]*). In that case, * must be
-      the first character and must be followed in the pattern by either - or
-      ..
+    hosts: The list of host patterns to match. They must be valid hostnames
+      with optional port numbers in the format host:port. * matches any string
+      of ([a-z0-9-.]*). In that case, * must be the first character and must
+      be followed in the pattern by either - or ..
     pathMatcher: The name of the PathMatcher to use to match the path portion
       of the URL if the hostRule matches the URL's host portion.
   """
@@ -28334,6 +28304,27 @@ class HttpFaultInjection(_messages.Message):
 
   abort = _messages.MessageField('HttpFaultAbort', 1)
   delay = _messages.MessageField('HttpFaultDelay', 2)
+
+
+class HttpFilterConfig(_messages.Message):
+  r"""HttpFilterConfiguration supplies additional contextual settings for
+  networkservices.HttpFilter resources enabled by Traffic Director.
+
+  Fields:
+    config: The configuration needed to enable the networkservices.HttpFilter
+      resource. The configuration must be YAML formatted and only contain
+      fields defined in the protobuf identified in configTypeUrl
+    configTypeUrl: The fully qualified versioned proto3 type url of the
+      protobuf that the filter expects for its contextual settings, for
+      example: type.googleapis.com/google.protobuf.Struct
+    filterName: Name of the networkservices.HttpFilter resource this
+      configuration belongs to. This name must be known to the xDS client.
+      Example: envoy.wasm
+  """
+
+  config = _messages.StringField(1)
+  configTypeUrl = _messages.StringField(2)
+  filterName = _messages.StringField(3)
 
 
 class HttpHeaderAction(_messages.Message):
@@ -28813,6 +28804,17 @@ class HttpRouteRule(_messages.Message):
       specified here are applied before the matching
       pathMatchers[].headerAction and after pathMatchers[].routeRules[].routeA
       ction.weightedBackendService.backendServiceWeightAction[].headerAction
+    httpFilterConfigs: Outbound route specific configuration for
+      networkservices.HttpFilter resources enabled by Traffic Director.
+      httpFilterConfigs only applies for Loadbalancers with
+      loadBalancingScheme set to INTERNAL_SELF_MANAGED. See ForwardingRule for
+      more details.
+    httpFilterMetadata: Outbound route specific metadata supplied to
+      networkservices.HttpFilter resources enabled by Traffic Director.
+      httpFilterMetadata only applies for Loadbalancers with
+      loadBalancingScheme set to INTERNAL_SELF_MANAGED. See ForwardingRule for
+      more details. The only configTypeUrl supported is
+      type.googleapis.com/google.protobuf.Struct
     matchRules: A HttpRouteRuleMatch attribute.
     priority: For routeRules within a given pathMatcher, priority determines
       the order in which load balancer will interpret routeRules. RouteRules
@@ -28848,11 +28850,13 @@ class HttpRouteRule(_messages.Message):
 
   description = _messages.StringField(1)
   headerAction = _messages.MessageField('HttpHeaderAction', 2)
-  matchRules = _messages.MessageField('HttpRouteRuleMatch', 3, repeated=True)
-  priority = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  routeAction = _messages.MessageField('HttpRouteAction', 5)
-  service = _messages.StringField(6)
-  urlRedirect = _messages.MessageField('HttpRedirectAction', 7)
+  httpFilterConfigs = _messages.MessageField('HttpFilterConfig', 3, repeated=True)
+  httpFilterMetadata = _messages.MessageField('HttpFilterConfig', 4, repeated=True)
+  matchRules = _messages.MessageField('HttpRouteRuleMatch', 5, repeated=True)
+  priority = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  routeAction = _messages.MessageField('HttpRouteAction', 7)
+  service = _messages.StringField(8)
+  urlRedirect = _messages.MessageField('HttpRedirectAction', 9)
 
 
 class HttpRouteRuleMatch(_messages.Message):
@@ -29652,6 +29656,7 @@ class Instance(_messages.Message):
     and TERMINATED.
 
     Values:
+      DEPROVISIONING: <no description>
       PROVISIONING: <no description>
       REPAIRING: <no description>
       RUNNING: <no description>
@@ -29662,15 +29667,16 @@ class Instance(_messages.Message):
       SUSPENDING: <no description>
       TERMINATED: <no description>
     """
-    PROVISIONING = 0
-    REPAIRING = 1
-    RUNNING = 2
-    STAGING = 3
-    STOPPED = 4
-    STOPPING = 5
-    SUSPENDED = 6
-    SUSPENDING = 7
-    TERMINATED = 8
+    DEPROVISIONING = 0
+    PROVISIONING = 1
+    REPAIRING = 2
+    RUNNING = 3
+    STAGING = 4
+    STOPPED = 5
+    STOPPING = 6
+    SUSPENDED = 7
+    SUSPENDING = 8
+    TERMINATED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -30796,16 +30802,18 @@ class InstanceGroupManagerStatusStateful(_messages.Message):
 
   Fields:
     hasStatefulConfig: [Output Only] A bit indicating whether the managed
-      instance group is stateful, i.e. has any disks in Stateful Policy or at
-      least one per-instance config. This is determined based on the user
-      intent, the group may be reported as not stateful even when there is
-      still some preserved state on managed instances.
+      instance group has stateful configuration, that is, if you have
+      configured any items in a stateful policy or in per-instance configs.
+      The group might report that it has no stateful config even when there is
+      still some preserved state on a managed instance, for example, if you
+      have deleted all PICs but not yet applied those deletions.
     isStateful: [Output Only] A bit indicating whether the managed instance
-      group is stateful, i.e. has any disks in Stateful Policy or at least one
-      per-instance config. This is determined based on the user intent, the
-      group may be reported as not stateful even when there is still some
-      preserved state on managed instances. This field is deprecated in favor
-      of has_stateful_config
+      group has stateful configuration, that is, if you have configured any
+      items in a stateful policy or in per-instance configs. The group might
+      report that it has no stateful config even when there is still some
+      preserved state on a managed instance, for example, if you have deleted
+      all PICs but not yet applied those deletions. This field is deprecated
+      in favor of has_stateful_config.
   """
 
   hasStatefulConfig = _messages.BooleanField(1)
@@ -32519,6 +32527,7 @@ class InstanceWithNamedPorts(_messages.Message):
     r"""[Output Only] The status of the instance.
 
     Values:
+      DEPROVISIONING: <no description>
       PROVISIONING: <no description>
       REPAIRING: <no description>
       RUNNING: <no description>
@@ -32529,15 +32538,16 @@ class InstanceWithNamedPorts(_messages.Message):
       SUSPENDING: <no description>
       TERMINATED: <no description>
     """
-    PROVISIONING = 0
-    REPAIRING = 1
-    RUNNING = 2
-    STAGING = 3
-    STOPPED = 4
-    STOPPING = 5
-    SUSPENDED = 6
-    SUSPENDING = 7
-    TERMINATED = 8
+    DEPROVISIONING = 0
+    PROVISIONING = 1
+    REPAIRING = 2
+    RUNNING = 3
+    STAGING = 4
+    STOPPED = 5
+    STOPPING = 6
+    SUSPENDED = 7
+    SUSPENDING = 8
+    TERMINATED = 9
 
   instance = _messages.StringField(1)
   namedPorts = _messages.MessageField('NamedPort', 2, repeated=True)
@@ -34907,7 +34917,8 @@ class IpOwnerList(_messages.Message):
 
 
 class Jwt(_messages.Message):
-  r"""JWT configuration for origin authentication.
+  r"""[Deprecated] JWT configuration for origin authentication. JWT
+  configuration for origin authentication.
 
   Fields:
     audiences: A JWT containing any of these audiences will be accepted. The
@@ -34942,7 +34953,8 @@ class Jwt(_messages.Message):
 
 
 class JwtHeader(_messages.Message):
-  r"""This message specifies a header location to extract JWT token.
+  r"""[Deprecated] This message specifies a header location to extract JWT
+  token. This message specifies a header location to extract JWT token.
 
   Fields:
     name: The HTTP header name.
@@ -35290,8 +35302,7 @@ class LogConfigCounterOptions(_messages.Message):
   "" (empty string), resulting in a counter with no fields.  Examples: counter
   { metric: "/debug_access_count" field: "iam_principal" } ==> increment
   counter /iam/policy/debug_access_count {iam_principal=[value of
-  IAMContext.principal]}  TODO(b/141846426): Consider supporting "authority"
-  and "iam_principal" fields in the same counter.
+  IAMContext.principal]}
 
   Fields:
     customFields: Custom fields.
@@ -35324,17 +35335,25 @@ class LogConfigDataAccessOptions(_messages.Message):
 
   Enums:
     LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
-      manner at the caller. This is relevant only in the LocalIAM
-      implementation, for now.
+      manner at the caller. This is currently supported in the LocalIAM
+      implementation, Stubby C++, and Stubby Java. For Apps Framework, see go
+      /af-audit-logging#failclosed. TODO(b/77591626): Add support for Stubby
+      Go. TODO(b/129671387): Add support for Scaffolding.
 
   Fields:
     logMode: Whether Gin logging should happen in a fail-closed manner at the
-      caller. This is relevant only in the LocalIAM implementation, for now.
+      caller. This is currently supported in the LocalIAM implementation,
+      Stubby C++, and Stubby Java. For Apps Framework, see go/af-audit-
+      logging#failclosed. TODO(b/77591626): Add support for Stubby Go.
+      TODO(b/129671387): Add support for Scaffolding.
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
     r"""Whether Gin logging should happen in a fail-closed manner at the
-    caller. This is relevant only in the LocalIAM implementation, for now.
+    caller. This is currently supported in the LocalIAM implementation, Stubby
+    C++, and Stubby Java. For Apps Framework, see go/af-audit-
+    logging#failclosed. TODO(b/77591626): Add support for Stubby Go.
+    TODO(b/129671387): Add support for Scaffolding.
 
     Values:
       LOG_FAIL_CLOSED: <no description>
@@ -36135,6 +36154,7 @@ class ManagedInstance(_messages.Message):
     instance does not exist.
 
     Values:
+      DEPROVISIONING: <no description>
       PROVISIONING: <no description>
       REPAIRING: <no description>
       RUNNING: <no description>
@@ -36145,15 +36165,16 @@ class ManagedInstance(_messages.Message):
       SUSPENDING: <no description>
       TERMINATED: <no description>
     """
-    PROVISIONING = 0
-    REPAIRING = 1
-    RUNNING = 2
-    STAGING = 3
-    STOPPED = 4
-    STOPPING = 5
-    SUSPENDED = 6
-    SUSPENDING = 7
-    TERMINATED = 8
+    DEPROVISIONING = 0
+    PROVISIONING = 1
+    REPAIRING = 2
+    RUNNING = 3
+    STAGING = 4
+    STOPPED = 5
+    STOPPING = 6
+    SUSPENDED = 7
+    SUSPENDING = 8
+    TERMINATED = 9
 
   currentAction = _messages.EnumField('CurrentActionValueValuesEnum', 1)
   id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
@@ -36324,7 +36345,8 @@ class Metadata(_messages.Message):
 
 
 class MetadataCredentialsFromPlugin(_messages.Message):
-  r"""Custom authenticator credentials.
+  r"""[Deprecated] Custom authenticator credentials. Custom authenticator
+  credentials.
 
   Fields:
     name: Plugin name.
@@ -36408,7 +36430,9 @@ class MetadataFilterLabelMatch(_messages.Message):
 
 
 class MutualTls(_messages.Message):
-  r"""Configuration for the mutual Tls mode for peer authentication.
+  r"""[Deprecated] Configuration for the mutual Tls mode for peer
+  authentication. Configuration for the mutual Tls mode for peer
+  authentication.
 
   Enums:
     ModeValueValuesEnum: Specifies if the server TLS is configured to be
@@ -40389,7 +40413,8 @@ class OrganizationSecurityPoliciesListAssociationsResponse(_messages.Message):
 
 
 class OriginAuthenticationMethod(_messages.Message):
-  r"""Configuration for the origin authentication method.
+  r"""[Deprecated] Configuration for the origin authentication method.
+  Configuration for the origin authentication method.
 
   Fields:
     jwt: A Jwt attribute.
@@ -41188,7 +41213,8 @@ class PathRule(_messages.Message):
 
 
 class PeerAuthenticationMethod(_messages.Message):
-  r"""Configuration for the peer authentication method.
+  r"""[Deprecated] Configuration for the peer authentication method.
+  Configuration for the peer authentication method.
 
   Fields:
     mtls: Set if mTLS is used for peer authentication.
@@ -41201,19 +41227,19 @@ class PerInstanceConfig(_messages.Message):
   r"""A PerInstanceConfig object.
 
   Fields:
-    fingerprint: Fingerprint of this per-instance config. This field may be
-      used in optimistic locking. It will be ignored when inserting a per-
-      instance config. An up-to-date fingerprint must be provided in order to
-      update an existing per-instance config or the field needs to be unset.
-    name: The name of the per-instance config and the corresponding instance.
-      Serves as a merge key during UpdatePerInstanceConfigs operation, i.e. if
-      per-instance config with the same name exists then it will be updated,
-      otherwise a new one will be created for the VM instance with the same
-      name. An attempt to create a per-instance config for a VM instance that
-      either doesn't exist or is not part of the group will result in a
-      failure.
-    preservedState: Intended preserved state for the given instance. Does not
-      contain state generated based on Stateful Policy.
+    fingerprint: Fingerprint of this per-instance config. This field can be
+      used in optimistic locking. It is ignored when inserting a per-instance
+      config. An up-to-date fingerprint must be provided in order to update an
+      existing per-instance config or the field needs to be unset.
+    name: The name of a per-instance config and its corresponding instance.
+      Serves as a merge key during UpdatePerInstanceConfigs operations, that
+      is, if a per-instance config with the same name exists then it will be
+      updated, otherwise a new one will be created for the VM instance with
+      the same name. An attempt to create a per-instance config for a VM
+      instance that either doesn't exist or is not part of the group will
+      result in an error.
+    preservedState: The intended preserved state for the given instance. Does
+      not contain preserved state generated from a stateful policy.
   """
 
   fingerprint = _messages.BytesField(1)
@@ -41222,7 +41248,7 @@ class PerInstanceConfig(_messages.Message):
 
 
 class Permission(_messages.Message):
-  r"""All fields defined in a permission are ANDed.
+  r"""[Deprecated] All fields defined in a permission are ANDed.
 
   Fields:
     constraints: Extra custom constraints. The constraints are ANDed together.
@@ -41474,7 +41500,7 @@ class PreservedStatePreservedDisk(_messages.Message):
 
 
 class Principal(_messages.Message):
-  r"""All fields defined in a principal are ANDed.
+  r"""[Deprecated] All fields defined in a principal are ANDed.
 
   Messages:
     PropertiesValue: A map of Istio attribute to expected values. Exact match,
@@ -47279,7 +47305,8 @@ class Screenshot(_messages.Message):
 
 
 class SdsConfig(_messages.Message):
-  r"""The configuration to access the SDS server.
+  r"""[Deprecated] The configuration to access the SDS server. The
+  configuration to access the SDS server.
 
   Fields:
     grpcServiceConfig: The configuration to access the SDS server over GRPC.
@@ -47823,12 +47850,14 @@ class SecuritySettings(_messages.Message):
   r"""The authentication and authorization settings for a BackendService.
 
   Fields:
-    authenticationPolicy: Authentication policy defines what authentication
-      methods can be accepted on backends, and if authenticated, which
-      method/certificate will set the request principal.
-    authorizationConfig: Authorization config defines the Role Based Access
-      Control (RBAC) config.
-    clientTlsSettings: TLS Settings for the backend service.
+    authenticationPolicy: [Deprecated] Authentication policy defines what
+      authentication methods can be accepted on backends, and if
+      authenticated, which method/certificate will set the request principal.
+      request principal.
+    authorizationConfig: [Deprecated] Authorization config defines the Role
+      Based Access Control (RBAC) config. Authorization config defines the
+      Role Based Access Control (RBAC) config.
+    clientTlsSettings: [Deprecated] TLS Settings for the backend service.
   """
 
   authenticationPolicy = _messages.MessageField('AuthenticationPolicy', 1)
@@ -49585,7 +49614,7 @@ class Subnetwork(_messages.Message):
       with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created
       subnetwork that is reserved for Internal HTTP(S) Load Balancing. If
       unspecified, the purpose defaults to PRIVATE_RFC_1918.
-    RoleValueValuesEnum: The role of subnetwork. Currenly, this field is only
+    RoleValueValuesEnum: The role of subnetwork. Currently, this field is only
       used when purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set
       to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
       used for Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one
@@ -49690,7 +49719,7 @@ class Subnetwork(_messages.Message):
       the purpose defaults to PRIVATE_RFC_1918.
     region: URL of the region where the Subnetwork resides. This field can be
       set only at resource creation time.
-    role: The role of subnetwork. Currenly, this field is only used when
+    role: The role of subnetwork. Currently, this field is only used when
       purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE
       or BACKUP. An ACTIVE subnetwork is one that is currently being used for
       Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is
@@ -49784,12 +49813,12 @@ class Subnetwork(_messages.Message):
     PRIVATE_RFC_1918 = 3
 
   class RoleValueValuesEnum(_messages.Enum):
-    r"""The role of subnetwork. Currenly, this field is only used when purpose
-    = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE or BACKUP.
-    An ACTIVE subnetwork is one that is currently being used for Internal
-    HTTP(S) Load Balancing. A BACKUP subnetwork is one that is ready to be
-    promoted to ACTIVE or is currently draining. This field can be updated
-    with a patch request.
+    r"""The role of subnetwork. Currently, this field is only used when
+    purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE or
+    BACKUP. An ACTIVE subnetwork is one that is currently being used for
+    Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is ready
+    to be promoted to ACTIVE or is currently draining. This field can be
+    updated with a patch request.
 
     Values:
       ACTIVE: <no description>
@@ -50775,6 +50804,18 @@ class TargetHttpProxy(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    httpFilters: Urls to networkservices.HttpFilter resources enabled for xDS
+      clients using this configuration. For example, https://networkservices.g
+      oogleapis.com/v1alpha1/projects/project/locations/locationhttpFilters/ht
+      tpFilter Only filters that handle outbound connection and stream events
+      may be specified. These filters work in conjunction with a default set
+      of HTTP filters that may already be configured by Traffic Director.
+      Traffic Director will determine the final location of these filters
+      within xDS configuration based on the name of the HTTP filter. If
+      Traffic Director positions multiple filters at the same location, those
+      filters will be in the same order as specified in this list. httpFilters
+      only applies for loadbalancers with loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED. See ForwardingRule for more details.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#targetHttpProxy for
@@ -50801,14 +50842,15 @@ class TargetHttpProxy(_messages.Message):
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#targetHttpProxy')
-  name = _messages.StringField(5)
-  proxyBind = _messages.BooleanField(6)
-  region = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  selfLinkWithId = _messages.StringField(9)
-  urlMap = _messages.StringField(10)
+  httpFilters = _messages.StringField(3, repeated=True)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#targetHttpProxy')
+  name = _messages.StringField(6)
+  proxyBind = _messages.BooleanField(7)
+  region = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  selfLinkWithId = _messages.StringField(10)
+  urlMap = _messages.StringField(11)
 
 
 class TargetHttpProxyAggregatedList(_messages.Message):
@@ -53702,7 +53744,9 @@ class TestPermissionsResponse(_messages.Message):
 
 
 class TlsCertificateContext(_messages.Message):
-  r"""Defines the mechanism to obtain the client or server certificate.
+  r"""[Deprecated] Defines the mechanism to obtain the client or server
+  certificate. Defines the mechanism to obtain the client or server
+  certificate.
 
   Enums:
     CertificateSourceValueValuesEnum: Defines how TLS certificates are
@@ -53734,7 +53778,8 @@ class TlsCertificateContext(_messages.Message):
 
 
 class TlsCertificatePaths(_messages.Message):
-  r"""The paths to the mounted TLS Certificates and private key.
+  r"""[Deprecated] The paths to the mounted TLS Certificates and private key.
+  The paths to the mounted TLS Certificates and private key.
 
   Fields:
     certificatePath: The path to the file holding the client or server TLS
@@ -53748,7 +53793,8 @@ class TlsCertificatePaths(_messages.Message):
 
 
 class TlsContext(_messages.Message):
-  r"""The TLS settings for the client or server.
+  r"""[Deprecated] The TLS settings for the client or server. The TLS settings
+  for the client or server.
 
   Fields:
     certificateContext: Defines the mechanism to obtain the client or server
@@ -53763,8 +53809,9 @@ class TlsContext(_messages.Message):
 
 
 class TlsValidationContext(_messages.Message):
-  r"""Defines the mechanism to obtain the Certificate Authority certificate to
-  validate the client/server certificate.
+  r"""[Deprecated] Defines the mechanism to obtain the Certificate Authority
+  certificate to validate the client/server certificate. validate the
+  client/server certificate.
 
   Enums:
     ValidationSourceValueValuesEnum: Defines how TLS certificates are

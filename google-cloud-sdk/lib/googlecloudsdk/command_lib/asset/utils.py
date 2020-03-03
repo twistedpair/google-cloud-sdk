@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import properties
@@ -38,11 +40,22 @@ def SetDefaultScopeIfEmpty(unused_ref, args, request):
   Returns:
     The modified request.
   """
-  if not args.IsSpecified('scope'):
+  if args.IsSpecified('scope'):
+    VerifyScopeForSearch(request.scope)
+  else:
     project_id = properties.VALUES.core.project.GetOrFail()
     request.scope = 'projects/{0}'.format(
         project_util.GetProjectNumber(project_id))
   return request
+
+
+def VerifyScopeForSearch(scope):
+  """Verify the scope is a project number, folder number or org number."""
+  if not re.match('^(projects|folders|organizations)/[1-9][0-9]{0,18}$', scope):
+    raise gcloud_exceptions.InvalidArgumentException(
+        '--scope',
+        'A valid scope should be: projects/<number>, organizations/<number> or '
+        'folders/<number>.')
 
 
 def VerifyParentForExport(organization,

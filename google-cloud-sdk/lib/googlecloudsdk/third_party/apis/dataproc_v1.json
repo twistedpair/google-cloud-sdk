@@ -642,6 +642,7 @@
             "The Solr service.",
             "HBase.",
             "The Ranger service.",
+            "Docker",
             "Docker"
           ],
           "type": "array",
@@ -660,7 +661,8 @@
               "SOLR",
               "HBASE",
               "RANGER",
-              "DOCKER"
+              "DOCKER",
+              "FLINK"
             ]
           }
         }
@@ -2575,7 +2577,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty."
+                  "description": "Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#workflowmetadata). Also see Using WorkflowMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/workflows\/debugging#using_workflowmetadata).On successful completion, Operation.response will be Empty."
                 },
                 "instantiateInline": {
                   "id": "dataproc.projects.locations.workflowTemplates.instantiateInline",
@@ -2608,7 +2610,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty."
+                  "description": "Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#workflowmetadata). Also see Using WorkflowMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/workflows\/debugging#using_workflowmetadata).On successful completion, Operation.response will be Empty."
                 },
                 "update": {
                   "id": "dataproc.projects.locations.workflowTemplates.update",
@@ -3268,7 +3270,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a cluster in a project. The returned Operation.metadata will be ClusterOperationMetadata."
+                  "description": "Creates a cluster in a project. The returned Operation.metadata will be ClusterOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#clusteroperationmetadata)."
                 },
                 "patch": {
                   "id": "dataproc.projects.regions.clusters.patch",
@@ -3326,7 +3328,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates a cluster in a project. The returned Operation.metadata will be ClusterOperationMetadata."
+                  "description": "Updates a cluster in a project. The returned Operation.metadata will be ClusterOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#clusteroperationmetadata)."
                 },
                 "delete": {
                   "id": "dataproc.projects.regions.clusters.delete",
@@ -3374,7 +3376,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a cluster in a project. The returned Operation.metadata will be ClusterOperationMetadata."
+                  "description": "Deletes a cluster in a project. The returned Operation.metadata will be ClusterOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#clusteroperationmetadata)."
                 },
                 "get": {
                   "id": "dataproc.projects.regions.clusters.get",
@@ -3500,7 +3502,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets cluster diagnostic information. The returned Operation.metadata will be ClusterOperationMetadata. After the operation completes, Operation.response contains DiagnoseClusterResults."
+                  "description": "Gets cluster diagnostic information. The returned Operation.metadata will be ClusterOperationMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#clusteroperationmetadata). After the operation completes, Operation.response contains DiagnoseClusterResults (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#diagnoseclusterresults)."
                 },
                 "setIamPolicy": {
                   "id": "dataproc.projects.regions.clusters.setIamPolicy",
@@ -3810,7 +3812,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Starts a job cancellation request. To access the job resource after cancellation, call regions\/{region}\/jobs.list or regions\/{region}\/jobs.get."
+                  "description": "Starts a job cancellation request. To access the job resource after cancellation, call regions\/{region}\/jobs.list (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rest\/v1\/projects.regions.jobs\/list) or regions\/{region}\/jobs.get (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rest\/v1\/projects.regions.jobs\/get)."
                 },
                 "delete": {
                   "id": "dataproc.projects.regions.jobs.delete",
@@ -4023,7 +4025,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty."
+                  "description": "Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#workflowmetadata). Also see Using WorkflowMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/workflows\/debugging#using_workflowmetadata).On successful completion, Operation.response will be Empty."
                 },
                 "instantiateInline": {
                   "id": "dataproc.projects.regions.workflowTemplates.instantiateInline",
@@ -4056,7 +4058,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty."
+                  "description": "Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#workflowmetadata). Also see Using WorkflowMetadata (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/workflows\/debugging#using_workflowmetadata).On successful completion, Operation.response will be Empty."
                 },
                 "update": {
                   "id": "dataproc.projects.regions.workflowTemplates.update",

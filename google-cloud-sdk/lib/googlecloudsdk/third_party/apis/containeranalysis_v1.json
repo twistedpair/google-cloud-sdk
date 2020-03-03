@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/container-analysis/api/reference/rest/",
   "protocol": "rest",
   "rootUrl": "https://containeranalysis.googleapis.com/",
+  "mtlsRootUrl": "https://containeranalysis.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://containeranalysis.googleapis.com/",
   "batchPath": "batch",
@@ -2683,7 +2684,7 @@
               "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.+$",
+              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -2708,7 +2709,7 @@
               "description": "The name of the operation resource to be deleted.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.+$",
+              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -2733,7 +2734,7 @@
               "description": "The name of the operation resource to be cancelled.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.+$",
+              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },

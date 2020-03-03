@@ -9,7 +9,7 @@ class SpannerV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://spanner.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://spanner.mtls.googleapis.com/'
 
   _PACKAGE = u'spanner'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/spanner.admin', u'https://www.googleapis.com/auth/spanner.data']

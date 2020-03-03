@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
 
+import six.moves.urllib.parse
+
 
 def GetClientInstance():
   return apis.GetClientInstance('privateca', 'v1alpha1')
@@ -27,3 +29,9 @@ def GetClientInstance():
 
 def GetMessagesModule():
   return apis.GetMessagesModule('privateca', 'v1alpha1')
+
+
+def GetServiceName():
+  """Gets the service name based on the configured API endpoint."""
+  endpoint = apis.GetEffectiveApiEndpoint('privateca', 'v1alpha1')
+  return six.moves.urllib.parse.urlparse(endpoint).hostname

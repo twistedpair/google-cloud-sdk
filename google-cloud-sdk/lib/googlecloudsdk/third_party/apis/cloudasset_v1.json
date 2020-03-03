@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/asset-inventory/docs/quickstart",
   "protocol": "rest",
   "rootUrl": "https://cloudasset.googleapis.com/",
+  "mtlsRootUrl": "https://cloudasset.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudasset.googleapis.com/",
   "batchPath": "batch",
@@ -277,7 +278,7 @@
     },
     "TemporalAsset": {
       "id": "TemporalAsset",
-      "description": "Temporal asset. In addition to the asset, the temporal asset includes the\nstatus of the asset and valid from and to time of it.",
+      "description": "An asset in Google Cloud and its temporal metadata, including the time window\nwhen it was observed and its status during that window.",
       "type": "object",
       "properties": {
         "window": {
@@ -285,18 +286,18 @@
           "$ref": "TimeWindow"
         },
         "deleted": {
-          "description": "If the asset is deleted or not.",
+          "description": "Whether the asset has been deleted or not.",
           "type": "boolean"
         },
         "asset": {
-          "description": "Asset.",
+          "description": "An asset in Google Cloud.",
           "$ref": "Asset"
         }
       }
     },
     "TimeWindow": {
       "id": "TimeWindow",
-      "description": "A time window of (start_time, end_time].",
+      "description": "A time window specified by its \"start_time\" and \"end_time\".",
       "type": "object",
       "properties": {
         "startTime": {
@@ -305,7 +306,7 @@
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "End time of the time window (inclusive).\nCurrent timestamp if not specified.",
+          "description": "End time of the time window (inclusive). If not specified, the current\ntimestamp is used instead.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -313,27 +314,27 @@
     },
     "Asset": {
       "id": "Asset",
-      "description": "Cloud asset. This includes all Google Cloud Platform resources,\nCloud IAM policies, and other non-GCP assets.",
+      "description": "An asset in Google Cloud. An asset can be any resource in the Google Cloud\n[resource\nhierarchy](https:\/\/cloud.google.com\/resource-manager\/docs\/cloud-platform-resource-hierarchy),\na resource outside the Google Cloud resource hierarchy (such as Google\nKubernetes Engine clusters and objects), or a Cloud IAM policy.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The full name of the asset. For example:\n`\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1`.\nSee [Resource\nNames](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more information.",
+          "description": "The full name of the asset. For example:\n\"\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1\"\n\nSee [Resource\nnames](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more information.",
           "type": "string"
         },
         "assetType": {
-          "description": "Type of the asset. Example: \"compute.googleapis.com\/Disk\".",
+          "description": "The type of the asset. For example: \"compute.googleapis.com\/Disk\"\n\nSee [Supported asset\ntypes](https:\/\/cloud.google.com\/asset-inventory\/docs\/supported-asset-types)\nfor more information.",
           "type": "string"
         },
         "resource": {
-          "description": "Representation of the resource.",
+          "description": "A representation of the resource.",
           "$ref": "Resource"
         },
         "iamPolicy": {
-          "description": "Representation of the actual Cloud IAM policy set on a cloud resource. For\neach resource, there must be at most one Cloud IAM policy set on it.",
+          "description": "A representation of the Cloud IAM policy set on a Google Cloud resource.\nThere can be a maximum of one Cloud IAM policy set on any given resource.\nIn addition, Cloud IAM policies inherit their granted access scope from any\npolicies set on parent resources in the resource hierarchy. Therefore, the\neffectively policy is the union of both the policy set on this resource\nand each policy set on all of the resource's ancestry resource levels in\nthe hierarchy. See\n[this topic](https:\/\/cloud.google.com\/iam\/docs\/policies#inheritance) for\nmore information.",
           "$ref": "Policy"
         },
         "orgPolicy": {
-          "description": "Representation of the Cloud Organization Policy set on an asset. For each\nasset, there could be multiple Organization policies with different\nconstraints.",
+          "description": "A representation of an [organization\npolicy](https:\/\/cloud.google.com\/resource-manager\/docs\/organization-policy\/overview#organization_policy).\nThere can be more than one organization policy with different constraints\nset on a given resource.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudOrgpolicyV1Policy"
@@ -349,7 +350,7 @@
           "$ref": "GoogleIdentityAccesscontextmanagerV1ServicePerimeter"
         },
         "ancestors": {
-          "description": "Asset's ancestry path in Cloud Resource Manager (CRM) hierarchy,\nrepresented as a list of relative resource names. Ancestry path starts with\nthe closest CRM ancestor and ends at root. If the asset is a CRM\nproject\/folder\/organization, this starts from the asset itself.\n\nExample: [\"projects\/123456789\", \"folders\/5432\", \"organizations\/1234\"]",
+          "description": "The ancestry path of an asset in Google Cloud [resource\nhierarchy](https:\/\/cloud.google.com\/resource-manager\/docs\/cloud-platform-resource-hierarchy),\nrepresented as a list of relative resource names. An ancestry path starts\nwith the closest ancestor in the hierarchy and ends at root. If the asset\nis a project, folder, or organization, the ancestry path starts from the\nasset itself.\n\nFor example: `[\"projects\/123456789\", \"folders\/5432\", \"organizations\/1234\"]`",
           "type": "array",
           "items": {
             "type": "string"
@@ -359,31 +360,31 @@
     },
     "Resource": {
       "id": "Resource",
-      "description": "Representation of a cloud resource.",
+      "description": "A representation of a Google Cloud resource.",
       "type": "object",
       "properties": {
         "version": {
-          "description": "The API version. Example: \"v1\".",
+          "description": "The API version. For example: \"v1\"",
           "type": "string"
         },
         "discoveryDocumentUri": {
-          "description": "The URL of the discovery document containing the resource's JSON schema.\nFor example:\n`\"https:\/\/www.googleapis.com\/discovery\/v1\/apis\/compute\/v1\/rest\"`.\nIt will be left unspecified for resources without a discovery-based API,\nsuch as Cloud Bigtable.",
+          "description": "The URL of the discovery document containing the resource's JSON schema.\nFor example:\n\"https:\/\/www.googleapis.com\/discovery\/v1\/apis\/compute\/v1\/rest\"\n\nThis value is unspecified for resources that do not have an API based on a\ndiscovery document, such as Cloud Bigtable.",
           "type": "string"
         },
         "discoveryName": {
-          "description": "The JSON schema name listed in the discovery document.\nExample: \"Project\". It will be left unspecified for resources (such as\nCloud Bigtable) without a discovery-based API.",
+          "description": "The JSON schema name listed in the discovery document. For example:\n\"Project\"\n\nThis value is unspecified for resources that do not have an API based on a\ndiscovery document, such as Cloud Bigtable.",
           "type": "string"
         },
         "resourceUrl": {
-          "description": "The REST URL for accessing the resource. An HTTP GET operation using this\nURL returns the resource itself.\nExample:\n`https:\/\/cloudresourcemanager.googleapis.com\/v1\/projects\/my-project-123`.\nIt will be left unspecified for resources without a REST API.",
+          "description": "The REST URL for accessing the resource. An HTTP `GET` request using this\nURL returns the resource itself. For example:\n\"https:\/\/cloudresourcemanager.googleapis.com\/v1\/projects\/my-project-123\"\n\nThis value is unspecified for resources without a REST API.",
           "type": "string"
         },
         "parent": {
-          "description": "The full name of the immediate parent of this resource. See\n[Resource\nNames](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more information.\n\nFor GCP assets, it is the parent resource defined in the [Cloud IAM policy\nhierarchy](https:\/\/cloud.google.com\/iam\/docs\/overview#policy_hierarchy).\nFor example:\n`\"\/\/cloudresourcemanager.googleapis.com\/projects\/my_project_123\"`.\n\nFor third-party assets, it is up to the users to define.",
+          "description": "The full name of the immediate parent of this resource. See\n[Resource\nNames](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more information.\n\nFor Google Cloud assets, this value is the parent resource defined in the\n[Cloud IAM policy\nhierarchy](https:\/\/cloud.google.com\/iam\/docs\/overview#policy_hierarchy).\nFor example:\n\"\/\/cloudresourcemanager.googleapis.com\/projects\/my_project_123\"\n\nFor third-party assets, this field may be set differently.",
           "type": "string"
         },
         "data": {
-          "description": "The content of the resource, in which some sensitive fields are scrubbed\naway and may not be present.",
+          "description": "The content of the resource, in which some sensitive fields are removed\nand may not be present.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -641,6 +642,10 @@
           "description": "Output only. Time the `AccessPolicy` was updated in UTC.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "etag": {
+          "description": "Output only. An opaque identifier for the current version of the\n`AccessPolicy`. This will always be a strongly validated etag, meaning that\ntwo Access Polices will be identical if and only if their etags are\nidentical. Clients should not expect this to be in any specific format.",
+          "type": "string"
         }
       }
     },
@@ -650,7 +655,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Resource name for the Access Level. The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessLevels\/{short_name}`",
+          "description": "Required. Resource name for the Access Level. The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessLevels\/{short_name}`. The maximum length\nof the `short_name` component is 50 characters.",
           "type": "string"
         },
         "title": {
@@ -904,6 +909,14 @@
         "status": {
           "description": "Current ServicePerimeter configuration. Specifies sets of resources,\nrestricted services and access levels that determine perimeter\ncontent and boundaries.",
           "$ref": "GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig"
+        },
+        "spec": {
+          "description": "Proposed (or dry run) ServicePerimeter configuration. This configuration\nallows to specify and test ServicePerimeter configuration without enforcing\nactual access restrictions. Only allowed to be set when the\n\"use_explicit_dry_run_spec\" flag is set.",
+          "$ref": "GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig"
+        },
+        "useExplicitDryRunSpec": {
+          "description": "Use explicit dry run spec flag. Ordinarily, a dry-run spec implicitly\nexists  for all Service Perimeters, and that spec is identical to the\nstatus for those Service Perimeters. When this flag is set, it inhibits the\ngeneration of the implicit spec, thereby allowing the user to explicitly\nprovide a configuration (\"spec\") to use in a dry-run version of the Service\nPerimeter. This allows the user to test changes to the enforced config\n(\"status\") without actually enforcing them. This testing is done through\nanalyzing the differences between currently enforced and suggested\nrestrictions. use_explicit_dry_run_spec must bet set to True if any of the\nfields in the spec are set to non-default values.",
+          "type": "boolean"
         }
       }
     },
@@ -928,6 +941,28 @@
         },
         "restrictedServices": {
           "description": "Google Cloud services that are subject to the Service Perimeter\nrestrictions. For example, if `storage.googleapis.com` is specified, access\nto the storage buckets inside the perimeter must meet the perimeter's\naccess restrictions.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vpcAccessibleServices": {
+          "description": "Configuration for APIs allowed within Perimeter.",
+          "$ref": "GoogleIdentityAccesscontextmanagerV1VpcAccessibleServices"
+        }
+      }
+    },
+    "GoogleIdentityAccesscontextmanagerV1VpcAccessibleServices": {
+      "id": "GoogleIdentityAccesscontextmanagerV1VpcAccessibleServices",
+      "description": "Specifies how APIs are allowed to communicate within the Service\nPerimeter.",
+      "type": "object",
+      "properties": {
+        "enableRestriction": {
+          "description": "Whether to restrict API calls within the Service Perimeter to the list of\nAPIs specified in 'allowed_services'.",
+          "type": "boolean"
+        },
+        "allowedServices": {
+          "description": "The list of APIs usable within the Service Perimeter. Must be empty\nunless 'enable_restriction' is True.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1069,7 +1104,7 @@
               "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
-              "pattern": "^[^\/]+\/[^\/]+\/operations\/[^\/]+\/.+$",
+              "pattern": "^[^\/]+\/[^\/]+\/operations\/[^\/]+\/.*$",
               "type": "string"
             }
           },
@@ -1154,7 +1189,7 @@
               "format": "google-datetime"
             },
             "readTimeWindow.endTime": {
-              "description": "End time of the time window (inclusive).\nCurrent timestamp if not specified.",
+              "description": "End time of the time window (inclusive). If not specified, the current\ntimestamp is used instead.",
               "location": "query",
               "type": "string",
               "format": "google-datetime"

@@ -424,7 +424,8 @@ and memory limits to be specified.""",
 Path of the JSON/YAML file which contains information about the
 cluster's node autoprovisioning configuration. Currently it contains
 a list of resource limits, identity defaults for autoprovisioning, node upgrade
-settings, node management settings and node locations for autoprovisioning.
+settings, node management settings, minimum cpu platform, and node locations for
+autoprovisioning.
 
 Resource limits are specified in the field 'resourceLimits'.
 Each resource limits definition contains three fields:
@@ -459,6 +460,10 @@ enableAutoUpgrade: A boolean field that indicates if node
 autoupgrade is enabled for autoprovisioned node pools.
 enableAutoRepair: A boolean field that indicates if node
 autorepair is enabled for autoprovisioned node pools.
+
+minCpuPlatform: If specified, new autoprovisioned nodes will be
+scheduled on host with specified CPU architecture or a newer one.
+Note: Min CPU platform can only be specified in Beta and Alpha.
 
 Autoprovisioning locations is a set of zones where new node pools
 can be created by Autoprovisioning. Autoprovisioning locations are
@@ -634,6 +639,14 @@ Use --no-enable-autoprovisioning-autoupgrade to disable
       help="""\
 Enable node autorepair for autoprovisioned node pools.
 Use --no-enable-autoprovisioning-autorepair to disable
+""")
+  from_flags_group.add_argument(
+      '--autoprovisioning-min-cpu-platform',
+      hidden=True,
+      metavar='PLATFORM',
+      help="""\
+If specified, new autoprovisioned nodes will be scheduled on host with
+specified CPU architecture or a newer one.
 """)
 
 
@@ -993,7 +1006,7 @@ def AddNetworkPolicyFlags(parser, hidden=False):
       '--update-addons=NetworkPolicy=ENABLED flag.')
 
 
-def AddPrivateClusterFlags(parser, with_deprecated=False, with_alpha=False):
+def AddPrivateClusterFlags(parser, with_deprecated=False):
   """Adds flags related to private clusters to parser."""
   group = parser.add_argument_group('Private Clusters')
   if with_deprecated:
@@ -1019,25 +1032,12 @@ def AddPrivateClusterFlags(parser, with_deprecated=False, with_alpha=False):
             'API endpoint.'),
       default=None,
       action='store_true')
-  if with_alpha:
-    AddPeeringRouteSharingFlag(group)
   group.add_argument(
       '--master-ipv4-cidr',
       help=('IPv4 CIDR range to use for the master network.  This should have '
             'a netmask of size /28 and should be used in conjunction with the '
             '--enable-private-nodes flag.'),
       default=None)
-
-
-def AddPeeringRouteSharingFlag(group):
-  group.add_argument(
-      '--enable-peering-route-sharing',
-      help=(
-          'Enable custom route sharing between the master and node VPCs, which '
-          'ensures clients running in networks connected via a Cloud Router, '
-          'VPN, or Interconnect can reach the API server.'),
-      default=None,
-      action='store_true')
 
 
 def AddEnableLegacyAuthorizationFlag(parser, hidden=False):

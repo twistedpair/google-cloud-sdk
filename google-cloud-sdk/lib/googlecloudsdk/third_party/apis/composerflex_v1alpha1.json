@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/composer/",
   "protocol": "rest",
   "rootUrl": "https://composerflex.googleapis.com/",
+  "mtlsRootUrl": "https://composerflex.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://composerflex.googleapis.com/",
   "batchPath": "batch",

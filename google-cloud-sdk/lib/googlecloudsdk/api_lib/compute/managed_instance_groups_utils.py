@@ -285,8 +285,20 @@ def GetModeFlag():
       """)
 
 
-def AddScaleInControlFlag(parser):
-  parser.add_argument(
+def AddScaleInControlFlag(parser, include_clear=False):
+  """Adds scale-in-control flags to the given parser."""
+  arg_group = parser
+  # Convert to arg group if --clear-scale-in-control flag is included.
+  if include_clear:
+    arg_group = parser.add_group(mutex=True)
+    arg_group.add_argument(
+        '--clear-scale-in-control',
+        action='store_true',
+        help="""\
+          If specified, the scale-in-control field will be cleared. Using this
+          flag will remove any configuration set by `--scale-in-control` flag.
+        """)
+  arg_group.add_argument(
       '--scale-in-control',
       type=arg_parsers.ArgDict(
           spec={
@@ -928,7 +940,7 @@ def BuildScaleDown(args, messages):
 
     return messages.AutoscalingPolicyScaleDownControl(
         maxScaledDownReplicas=max_replicas,
-        timeWindow='%ds' % args.scale_in_control.get('time-window'))
+        timeWindowSec=args.scale_in_control.get('time-window'))
   Raises:
     InvalidArgumentError:  if both max-scaled-in-replicas and
       max-scaled-in-replicas-percent are specified.
@@ -948,8 +960,7 @@ def BuildScaleDown(args, messages):
 
     return messages.AutoscalingPolicyScaleDownControl(
         maxScaledDownReplicas=max_replicas,
-        timeWindow=messages.GoogleDuration(
-            seconds=args.scale_in_control.get('time-window')))
+        timeWindowSec=args.scale_in_control.get('time-window'))
 
 
 def _BuildAutoscalerPolicy(args, messages, original, scale_in=False):

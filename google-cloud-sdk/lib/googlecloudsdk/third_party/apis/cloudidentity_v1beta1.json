@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/identity/",
   "protocol": "rest",
   "rootUrl": "https://cloudidentity.googleapis.com/",
+  "mtlsRootUrl": "https://cloudidentity.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudidentity.googleapis.com/",
   "batchPath": "batch",
@@ -163,6 +164,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "dynamicGroupMetadata": {
+          "description": "Dynamic group metadata like queries and status.",
+          "$ref": "DynamicGroupMetadata"
         }
       }
     },
@@ -178,6 +183,72 @@
         "namespace": {
           "description": "The namespace in which the entity exists.\n\nIf not specified, the `EntityKey` represents a Google-managed entity such\nas a Google user or a Google Group.\n\nIf specified, the `EntityKey` represents an external-identity-mapped group.\nThe namespace must correspond to an identity source created in Admin\nConsole. Must be of the form `identitysources\/{identity_source_id}.",
           "type": "string"
+        }
+      }
+    },
+    "DynamicGroupMetadata": {
+      "id": "DynamicGroupMetadata",
+      "description": "Dynamic group metadata like queries and status.",
+      "type": "object",
+      "properties": {
+        "queries": {
+          "description": "Only one entry is supported for now. Memberships will be the union of all\nqueries.",
+          "type": "array",
+          "items": {
+            "$ref": "DynamicGroupQuery"
+          }
+        },
+        "status": {
+          "description": "Status of the dynamic group.\nOutput only.",
+          "$ref": "DynamicGroupStatus"
+        }
+      }
+    },
+    "DynamicGroupQuery": {
+      "id": "DynamicGroupQuery",
+      "description": "Defines a query on a resource.",
+      "type": "object",
+      "properties": {
+        "resourceType": {
+          "enumDescriptions": [
+            "",
+            ""
+          ],
+          "type": "string",
+          "enum": [
+            "RESOURCE_TYPE_UNSPECIFIED",
+            "USER"
+          ]
+        },
+        "query": {
+          "description": "Query that determines the memberships of the dynamic group.",
+          "type": "string"
+        }
+      }
+    },
+    "DynamicGroupStatus": {
+      "id": "DynamicGroupStatus",
+      "description": "The current status of a dynamic group along with timestamp.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "Status of the dynamic group.",
+          "enumDescriptions": [
+            "Default.",
+            "The dynamic group is up-to-date.",
+            "The dynamic group has just been created and memberships are being\nupdated."
+          ],
+          "type": "string",
+          "enum": [
+            "STATUS_UNSPECIFIED",
+            "UP_TO_DATE",
+            "UPDATING_MEMBERSHIPS"
+          ]
+        },
+        "statusTime": {
+          "description": "The latest time at which the dynamic group is guaranteed to be in the given\nstatus. For example, if status is: UP_TO_DATE - The latest time at which\nthis dynamic group was confirmed to be up to date. UPDATING_MEMBERSHIPS -\nThe time at which dynamic group was created.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

@@ -9,7 +9,7 @@ class OrgpolicyV2alpha1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://orgpolicy.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://orgpolicy.mtls.googleapis.com/'
 
   _PACKAGE = u'orgpolicy'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

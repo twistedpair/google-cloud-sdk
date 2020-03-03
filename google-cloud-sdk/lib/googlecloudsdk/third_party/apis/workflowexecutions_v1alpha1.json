@@ -17,6 +17,7 @@
   "documentationLink": "https://sites.google.com/corp/google.com/cloudworkflows",
   "protocol": "rest",
   "rootUrl": "https://workflowexecutions.googleapis.com/",
+  "mtlsRootUrl": "https://workflowexecutions.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://workflowexecutions.googleapis.com/",
   "batchPath": "batch",

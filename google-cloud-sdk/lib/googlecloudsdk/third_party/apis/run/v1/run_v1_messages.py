@@ -988,6 +988,53 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class Namespace(_messages.Message):
+  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  Namespace provides a scope for Names. Use of multiple namespaces is
+  optional.
+
+  Fields:
+    metadata: Standard object's metadata. More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#metadata
+    spec: Spec defines the behavior of the Namespace. More info:
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#spec-and-status
+    status: Status describes the current status of a Namespace. More info:
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#spec-and-status
+  """
+
+  metadata = _messages.MessageField('ObjectMeta', 1)
+  spec = _messages.MessageField('NamespaceSpec', 2)
+  status = _messages.MessageField('NamespaceStatus', 3)
+
+
+class NamespaceSpec(_messages.Message):
+  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  NamespaceSpec describes the attributes on a Namespace.
+
+  Fields:
+    finalizers: Finalizers is an opaque list of values that must be empty to
+      permanently remove object from storage. More info:
+      https://kubernetes.io/docs/tasks/administer-cluster/namespaces/
+  """
+
+  finalizers = _messages.StringField(1, repeated=True)
+
+
+class NamespaceStatus(_messages.Message):
+  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  NamespaceStatus is information about the current status of a Namespace.
+
+  Fields:
+    phase: Phase is the current lifecycle phase of the namespace. More info:
+      https://kubernetes.io/docs/tasks/administer-cluster/namespaces/
+  """
+
+  phase = _messages.StringField(1)
+
+
 class ObjectMeta(_messages.Message):
   r"""k8s.io.apimachinery.pkg.apis.meta.v1.ObjectMeta is metadata that all
   persisted resources must have, which includes all objects users must create.
@@ -1639,6 +1686,33 @@ class RouteStatus(_messages.Message):
   url = _messages.StringField(5)
 
 
+class RunApiV1NamespacesGetRequest(_messages.Message):
+  r"""A RunApiV1NamespacesGetRequest object.
+
+  Fields:
+    name: Required. The name of the namespace being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunApiV1NamespacesPatchRequest(_messages.Message):
+  r"""A RunApiV1NamespacesPatchRequest object.
+
+  Fields:
+    name: Required. The name of the namespace being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+    namespace: A Namespace resource to be passed as the request body.
+    updateMask: Required. Indicates which fields in the provided namespace to
+      update. This field is currently unused.
+  """
+
+  name = _messages.StringField(1, required=True)
+  namespace = _messages.MessageField('Namespace', 2)
+  updateMask = _messages.StringField(3)
+
+
 class RunApiV1NamespacesSecretsCreateRequest(_messages.Message):
   r"""A RunApiV1NamespacesSecretsCreateRequest object.
 
@@ -2147,6 +2221,33 @@ class RunProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class RunProjectsLocationsNamespacesGetRequest(_messages.Message):
+  r"""A RunProjectsLocationsNamespacesGetRequest object.
+
+  Fields:
+    name: Required. The name of the namespace being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunProjectsLocationsNamespacesPatchRequest(_messages.Message):
+  r"""A RunProjectsLocationsNamespacesPatchRequest object.
+
+  Fields:
+    name: Required. The name of the namespace being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+    namespace: A Namespace resource to be passed as the request body.
+    updateMask: Required. Indicates which fields in the provided namespace to
+      update. This field is currently unused.
+  """
+
+  name = _messages.StringField(1, required=True)
+  namespace = _messages.MessageField('Namespace', 2)
+  updateMask = _messages.StringField(3)
 
 
 class RunProjectsLocationsRevisionsDeleteRequest(_messages.Message):

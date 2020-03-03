@@ -9,7 +9,7 @@ class AppengineV1alpha(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://appengine.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://appengine.mtls.googleapis.com/'
 
   _PACKAGE = u'appengine'
   _SCOPES = [u'https://www.googleapis.com/auth/appengine.admin', u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only']

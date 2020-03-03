@@ -3234,9 +3234,14 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
     createTime: Timestamp when finding was detected.
     infoType: The type of content that might have been found. Provided if
       `excluded_types` is false.
+    jobCreateTime: Time the job started that produced this finding.
+    jobName: The job that stored the finding.
     likelihood: Confidence of how likely it is that the `info_type` is
       correct.
     location: Where the content was found.
+    name: Resource name in format
+      projects/{id}/locations/{id}/inspectFindings/{id} Populated only when
+      viewing persisted findings.
     quote: The content that was found. Even if the content is not textual, it
       may be converted to a textual representation here. Provided if
       `include_quote` is true and the finding is less than or equal to 4096
@@ -3245,6 +3250,8 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
     quoteInfo: Contains data parsed from quotes. Only populated if
       include_quote was set to true and a supported infoType was requested.
       Currently supported infoTypes: DATE, DATE_OF_BIRTH and TIME.
+    resourceName: The job that stored the finding.
+    triggerName: Job trigger name, if applicable, for this finding.
   """
 
   class LikelihoodValueValuesEnum(_messages.Enum):
@@ -3267,10 +3274,15 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
 
   createTime = _messages.StringField(1)
   infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 2)
-  likelihood = _messages.EnumField('LikelihoodValueValuesEnum', 3)
-  location = _messages.MessageField('GooglePrivacyDlpV2Location', 4)
-  quote = _messages.StringField(5)
-  quoteInfo = _messages.MessageField('GooglePrivacyDlpV2QuoteInfo', 6)
+  jobCreateTime = _messages.StringField(3)
+  jobName = _messages.StringField(4)
+  likelihood = _messages.EnumField('LikelihoodValueValuesEnum', 5)
+  location = _messages.MessageField('GooglePrivacyDlpV2Location', 6)
+  name = _messages.StringField(7)
+  quote = _messages.StringField(8)
+  quoteInfo = _messages.MessageField('GooglePrivacyDlpV2QuoteInfo', 9)
+  resourceName = _messages.StringField(10)
+  triggerName = _messages.StringField(11)
 
 
 class GooglePrivacyDlpV2FindingLimits(_messages.Message):
@@ -4245,7 +4257,7 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
       existing table will be deleted.  If unspecified, then all available
       columns will be used for a new table or an (existing) table with no
       schema, and no changes will be made to an existing table that has a
-      schema.
+      schema. Only for use with external storage.
 
   Fields:
     outputSchema: Schema used for writing the findings for Inspect jobs. This
@@ -4255,7 +4267,7 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
       will be added. No columns in the existing table will be deleted.  If
       unspecified, then all available columns will be used for a new table or
       an (existing) table with no schema, and no changes will be made to an
-      existing table that has a schema.
+      existing table that has a schema. Only for use with external storage.
     table: Store findings in an existing table or a new table in an existing
       dataset. If table_id is not set a new one will be generated for you with
       the following format: dlp_googleapis_yyyy_mm_dd_[dlp_job_id]. Pacific
@@ -4277,7 +4289,7 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
     columns in the existing table will be deleted.  If unspecified, then all
     available columns will be used for a new table or an (existing) table with
     no schema, and no changes will be made to an existing table that has a
-    schema.
+    schema. Only for use with external storage.
 
     Values:
       OUTPUT_SCHEMA_UNSPECIFIED: Unused.
@@ -4864,14 +4876,18 @@ class GooglePrivacyDlpV2StoredInfoTypeConfig(_messages.Message):
 
   Fields:
     description: Description of the StoredInfoType (max 256 characters).
+    dictionary: Store dictionary-based CustomInfoType.
     displayName: Display name of the StoredInfoType (max 256 characters).
     largeCustomDictionary: StoredInfoType where findings are defined by a
       dictionary of phrases.
+    regex: Store regular expression-based StoredInfoType.
   """
 
   description = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  largeCustomDictionary = _messages.MessageField('GooglePrivacyDlpV2LargeCustomDictionaryConfig', 3)
+  dictionary = _messages.MessageField('GooglePrivacyDlpV2Dictionary', 2)
+  displayName = _messages.StringField(3)
+  largeCustomDictionary = _messages.MessageField('GooglePrivacyDlpV2LargeCustomDictionaryConfig', 4)
+  regex = _messages.MessageField('GooglePrivacyDlpV2Regex', 5)
 
 
 class GooglePrivacyDlpV2StoredInfoTypeStats(_messages.Message):

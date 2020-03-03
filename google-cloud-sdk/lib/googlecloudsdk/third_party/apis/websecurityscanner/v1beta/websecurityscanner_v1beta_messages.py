@@ -72,6 +72,9 @@ class Finding(_messages.Message):
   r"""A Finding resource represents a vulnerability instance identified during
   a ScanRun.
 
+  Enums:
+    SeverityValueValuesEnum: The severity level of the reported vulnerability.
+
   Fields:
     body: The body of the request that triggered the vulnerability.
     description: The description of the vulnerability.
@@ -94,6 +97,7 @@ class Finding(_messages.Message):
     outdatedLibrary: An addon containing information about outdated libraries.
     reproductionUrl: The URL containing human-readable payload that user can
       leverage to reproduce the vulnerability.
+    severity: The severity level of the reported vulnerability.
     trackingId: The tracking ID uniquely identifies a vulnerability instance
       across multiple ScanRuns.
     violatingResource: An addon containing detailed information regarding any
@@ -106,6 +110,22 @@ class Finding(_messages.Message):
     xss: An addon containing information reported for an XSS, if any.
   """
 
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""The severity level of the reported vulnerability.
+
+    Values:
+      SEVERITY_UNSPECIFIED: No severity specified. The default value.
+      CRITICAL: Critical severity.
+      HIGH: High severity.
+      MEDIUM: Medium severity.
+      LOW: Low severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
+
   body = _messages.StringField(1)
   description = _messages.StringField(2)
   finalUrl = _messages.StringField(3)
@@ -117,11 +137,12 @@ class Finding(_messages.Message):
   name = _messages.StringField(9)
   outdatedLibrary = _messages.MessageField('OutdatedLibrary', 10)
   reproductionUrl = _messages.StringField(11)
-  trackingId = _messages.StringField(12)
-  violatingResource = _messages.MessageField('ViolatingResource', 13)
-  vulnerableHeaders = _messages.MessageField('VulnerableHeaders', 14)
-  vulnerableParameters = _messages.MessageField('VulnerableParameters', 15)
-  xss = _messages.MessageField('Xss', 16)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 12)
+  trackingId = _messages.StringField(13)
+  violatingResource = _messages.MessageField('ViolatingResource', 14)
+  vulnerableHeaders = _messages.MessageField('VulnerableHeaders', 15)
+  vulnerableParameters = _messages.MessageField('VulnerableParameters', 16)
+  xss = _messages.MessageField('Xss', 17)
 
 
 class FindingTypeStats(_messages.Message):

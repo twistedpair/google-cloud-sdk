@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/vision/",
   "protocol": "rest",
   "rootUrl": "https://vision.googleapis.com/",
+  "mtlsRootUrl": "https://vision.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://vision.googleapis.com/",
   "batchPath": "batch",
@@ -8235,7 +8236,7 @@
               "description": "The name of the operation resource to be deleted.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.+$",
+              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -8261,7 +8262,7 @@
               "description": "The name of the operation resource to be cancelled.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.+$",
+              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },

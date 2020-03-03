@@ -891,6 +891,75 @@ class Device(_messages.Message):
   wifiMacAddresses = _messages.StringField(22, repeated=True)
 
 
+class DynamicGroupMetadata(_messages.Message):
+  r"""Dynamic group metadata like queries and status.
+
+  Fields:
+    queries: Only one entry is supported for now. Memberships will be the
+      union of all queries.
+    status: Status of the dynamic group. Output only.
+  """
+
+  queries = _messages.MessageField('DynamicGroupQuery', 1, repeated=True)
+  status = _messages.MessageField('DynamicGroupStatus', 2)
+
+
+class DynamicGroupQuery(_messages.Message):
+  r"""Defines a query on a resource.
+
+  Enums:
+    ResourceTypeValueValuesEnum:
+
+  Fields:
+    query: Query that determines the memberships of the dynamic group.
+    resourceType: A ResourceTypeValueValuesEnum attribute.
+  """
+
+  class ResourceTypeValueValuesEnum(_messages.Enum):
+    r"""ResourceTypeValueValuesEnum enum type.
+
+    Values:
+      RESOURCE_TYPE_UNSPECIFIED: <no description>
+      USER: <no description>
+    """
+    RESOURCE_TYPE_UNSPECIFIED = 0
+    USER = 1
+
+  query = _messages.StringField(1)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
+
+
+class DynamicGroupStatus(_messages.Message):
+  r"""The current status of a dynamic group along with timestamp.
+
+  Enums:
+    StatusValueValuesEnum: Status of the dynamic group.
+
+  Fields:
+    status: Status of the dynamic group.
+    statusTime: The latest time at which the dynamic group is guaranteed to be
+      in the given status. For example, if status is: UP_TO_DATE - The latest
+      time at which this dynamic group was confirmed to be up to date.
+      UPDATING_MEMBERSHIPS - The time at which dynamic group was created.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Status of the dynamic group.
+
+    Values:
+      STATUS_UNSPECIFIED: Default.
+      UP_TO_DATE: The dynamic group is up-to-date.
+      UPDATING_MEMBERSHIPS: The dynamic group has just been created and
+        memberships are being updated.
+    """
+    STATUS_UNSPECIFIED = 0
+    UP_TO_DATE = 1
+    UPDATING_MEMBERSHIPS = 2
+
+  status = _messages.EnumField('StatusValueValuesEnum', 1)
+  statusTime = _messages.StringField(2)
+
+
 class EffectiveSetting(_messages.Message):
   r"""A EffectiveSetting object.
 
@@ -973,6 +1042,7 @@ class Group(_messages.Message):
     description: An extended description to help users determine the purpose
       of a `Group`.  Must not be longer than 4,096 characters.
     displayName: The display name of the `Group`.
+    dynamicGroupMetadata: Dynamic group metadata like queries and status.
     groupKey: Required. Immutable. The `EntityKey` of the `Group`.
     labels: Required. The labels that apply to the `Group`.  Must not contain
       more than one entry. Must contain the entry
@@ -1021,11 +1091,12 @@ class Group(_messages.Message):
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  groupKey = _messages.MessageField('EntityKey', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  parent = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  dynamicGroupMetadata = _messages.MessageField('DynamicGroupMetadata', 5)
+  groupKey = _messages.MessageField('EntityKey', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  parent = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class ListDevicesResponse(_messages.Message):

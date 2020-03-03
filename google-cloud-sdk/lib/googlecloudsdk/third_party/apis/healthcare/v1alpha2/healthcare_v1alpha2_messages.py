@@ -1256,6 +1256,43 @@ class HealthcareProjectsLocationsDatasetsCreateRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsDataProtectionStoresGetIamPolicyRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsDataProtectionStoresGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.  Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDataProtectionStoresSetIamPolicyRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsDataProtectionStoresSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
 class HealthcareProjectsLocationsDatasetsDeidentifyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsDeidentifyRequest object.
 
@@ -2090,9 +2127,9 @@ class InfoTypeTransformation(_messages.Message):
     characterMaskConfig: Config for character mask.
     cryptoHashConfig: Config for crypto hash.
     dateShiftConfig: Config for date shift.
-    infoTypes: InfoTypes to apply this transformation to. If this is not
+    infoTypes: `InfoTypes` to apply this transformation to. If this is not
       specified, this transformation becomes the default transformation, and
-      is used for any info_type that is not specified in another
+      is used for any `info_type` that is not specified in another
       transformation.
     redactConfig: Config for text redaction.
     replaceWithInfoTypeConfig: Config for replace with InfoType.
@@ -2297,6 +2334,10 @@ class NotificationConfig(_messages.Message):
       scoped to a project. cloud-healthcare@system.gserviceaccount.com must
       have publisher permissions on the given Cloud Pub/Sub topic. Not having
       adequate permissions causes the calls that send notifications to fail.
+      If a notification can't be published to Cloud Pub/Sub, errors are logged
+      to Stackdriver (see [Viewing logs](/healthcare/docs/how-tos/stackdriver-
+      logging)). If the number of errors exceeds a certain rate, some aren't
+      submitted.
   """
 
   pubsubTopic = _messages.StringField(1)

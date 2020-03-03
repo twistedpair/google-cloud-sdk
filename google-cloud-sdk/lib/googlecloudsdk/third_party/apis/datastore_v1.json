@@ -16,6 +16,7 @@
   "documentationLink": "https://cloud.google.com/datastore/",
   "protocol": "rest",
   "rootUrl": "https://datastore.googleapis.com/",
+  "mtlsRootUrl": "https://datastore.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://datastore.googleapis.com/",
   "batchPath": "batch",

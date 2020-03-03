@@ -581,7 +581,7 @@ class Device(_messages.Message):
 
 
 class DeviceUser(_messages.Message):
-  r"""Resource representing a user's use of a Device
+  r"""A DeviceUser is a resource representing a user's use of a Device
 
   Enums:
     CompromisedStateValueValuesEnum: Compromised State of the DeviceUser
@@ -734,7 +734,8 @@ class DynamicGroupStatus(_messages.Message):
 
 
 class EndpointApp(_messages.Message):
-  r"""Next ID to use: 7
+  r"""An EndpointApp represents an app that is installed on a device Next ID
+  to use: 7
 
   Fields:
     displayName: Output only. Name of the app displayed to the user

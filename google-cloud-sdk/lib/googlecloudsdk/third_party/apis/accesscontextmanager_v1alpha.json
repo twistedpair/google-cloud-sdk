@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/access-context-manager/docs/reference/rest/",
   "protocol": "rest",
   "rootUrl": "https://accesscontextmanager.googleapis.com/",
+  "mtlsRootUrl": "https://accesscontextmanager.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://accesscontextmanager.googleapis.com/",
   "batchPath": "batch",
@@ -246,7 +247,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Resource name for the Access Level. The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessLevels\/{short_name}`",
+          "description": "Required. Resource name for the Access Level. The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessLevels\/{short_name}`. The maximum length\n \/\/ of the `short_name` component is 50 characters.",
           "type": "string"
         },
         "title": {
@@ -579,7 +580,7 @@
           }
         },
         "vpcAccessibleServices": {
-          "description": "Configuration for within Perimeter allowed APIs.",
+          "description": "Configuration for APIs allowed within Perimeter.",
           "$ref": "VpcAccessibleServices"
         }
       }
@@ -604,7 +605,7 @@
     },
     "ReplaceAccessLevelsRequest": {
       "id": "ReplaceAccessLevelsRequest",
-      "description": "A request to replace all existing Access Levels in an Access Policy with\nthe Access Levels provided. This is done within one transaction.",
+      "description": "A request to replace all existing Access Levels in an Access Policy with\nthe Access Levels provided. This is done atomically.",
       "type": "object",
       "properties": {
         "accessLevels": {
@@ -622,7 +623,7 @@
     },
     "ReplaceServicePerimetersRequest": {
       "id": "ReplaceServicePerimetersRequest",
-      "description": "A request to replace all existing Service Perimeters in an Access Policy\nwith the Service Perimeters provided. This is done within one transaction.",
+      "description": "A request to replace all existing Service Perimeters in an Access Policy\nwith the Service Perimeters provided. This is done atomically.",
       "type": "object",
       "properties": {
         "servicePerimeters": {
@@ -705,7 +706,7 @@
               "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.+$",
+              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -982,7 +983,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "Required. Resource name for the Access Level. The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessLevels\/{short_name}`",
+                  "description": "Required. Resource name for the Access Level. The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessLevels\/{short_name}`. The maximum length\n \/\/ of the `short_name` component is 50 characters.",
                   "location": "path",
                   "required": true,
                   "pattern": "^accessPolicies\/[^\/]+\/accessLevels\/[^\/]+$",
@@ -1060,7 +1061,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Replace all existing Access Levels in an Access\nPolicy with\nthe Access Levels provided. This\nis done within one transaction. The longrunning operation from this RPC\nwill have a successful status once all replacements have propagated to\nlong-lasting storage. Replacements containing errors will result in an\nerror response for the first error encountered and the transaction will be\ncancelled. Operation.response field will contain\nReplaceAccessLevelsResponse. Removing Access Levels contained in\nexisting Service Perimeters will result\nin error."
+              "description": "Replace all existing Access Levels in an Access\nPolicy with\nthe Access Levels provided. This\nis done atomically. The longrunning operation from this RPC will have a\nsuccessful status once all replacements have propagated to long-lasting\nstorage. Replacements containing errors will result in an error response\nfor the first error encountered. Replacement will be cancelled on error\nexisting Access Levels will not\naffected. Operation.response field will contain\nReplaceAccessLevelsResponse. Removing Access Levels contained in\nexisting Service Perimeters will result\nin error."
             }
           }
         },
@@ -1240,7 +1241,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Replace all existing Service Perimeters in an\nAccess Policy\nwith the Service Perimeters provided.\nThis is done within one transaction. The longrunning operation from this\nRPC will have a successful status once all replacements have propagated to\nlong-lasting storage. Replacements containing errors will result in an\nerror response for the first error encountered and the transaction will be\ncancelled. Operation.response field will contain\nReplaceServicePerimetersResponse."
+              "description": "Replace all existing Service Perimeters in an\nAccess Policy\nwith the Service Perimeters provided.\nThis is done atomically. The longrunning operation from this RPC will have\na successful status once all replacements have propagated to long-lasting\nstorage. Replacements containing errors will result in an error response\nfor the first error encountered. Replacement will be cancelled on error,\nexisting Service Perimeters will not be\naffected. Operation.response field will contain\nReplaceServicePerimetersResponse."
             },
             "commit": {
               "id": "accesscontextmanager.accessPolicies.servicePerimeters.commit",

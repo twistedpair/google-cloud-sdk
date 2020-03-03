@@ -116,23 +116,23 @@ class Backup(_messages.Message):
   Fields:
     endTime: Output only. `end_time` is the time that the backup was finished.
       The row data in the backup will be no newer than this timestamp.
-    expireTime: Required for the CreateBackup operation. The expiration time
-      of the backup, with microseconds granularity that must be at least 6
-      hours and at most 30 days from the time the request is received. Once
-      the `expire_time` has passed, Cloud Bigtable will delete the backup and
-      free the resources used by the backup.
+    expireTime: Required. The expiration time of the backup, with microseconds
+      granularity that must be at least 6 hours and at most 30 days from the
+      time the request is received. Once the `expire_time` has passed, Cloud
+      Bigtable will delete the backup and free the resources used by the
+      backup.
     name: Output only. A globally unique identifier for the backup which
       cannot be changed. Values are of the form
-      `projects/<project>/instances/<instance>/clusters/<cluster>/    backups
+      `projects/{project}/instances/{instance}/clusters/{cluster}/    backups
       /_a-zA-Z0-9*` The final segment of the name must be between 1 and 50
       characters in length.  The backup is stored in the cluster identified by
       the prefix of the backup name of the form
-      `projects/<project>/instances/<instance>/clusters/<cluster>`.
+      `projects/{project}/instances/{instance}/clusters/{cluster}`.
     sizeBytes: Output only. Size of the backup in bytes.
-    sourceTable: Immutable. Required for the CreateBackup operation. Name of
-      the table from which this backup was created. This needs to be in the
-      same instance as the backup. Values are of the form
-      `projects/<project>/instances/<instance>/tables/<source_table>`.
+    sourceTable: Required. Immutable. Name of the table from which this backup
+      was created. This needs to be in the same instance as the backup. Values
+      are of the form
+      `projects/{project}/instances/{instance}/tables/{source_table}`.
     startTime: Output only. `start_time` is the time that the backup was
       started (i.e. approximately the time the CreateBackup request is
       received).  The row data in this backup will be no older than this
@@ -324,14 +324,14 @@ class BigtableadminProjectsInstancesClustersBackupsCreateRequest(_messages.Messa
     backup: A Backup resource to be passed as the request body.
     backupId: Required. The id of the backup to be created. The `backup_id`
       along with the parent `parent` are combined as
-      <parent>/backups/<backup_id> to create the full backup name, of the
-      form: `projects/<project>/instances/<instance>/clusters/<cluster>/backup
-      s/<backup_id>`. This string must be between 1 and 50 characters in
+      {parent}/backups/{backup_id} to create the full backup name, of the
+      form: `projects/{project}/instances/{instance}/clusters/{cluster}/backup
+      s/{backup_id}`. This string must be between 1 and 50 characters in
       length and match the regex _a-zA-Z0-9*.
     parent: Required. This must be one of the clusters in the instance in
       which this table is located. The backup will be stored in this cluster.
       Values are of the form
-      `projects/<project>/instances/<instance>/clusters/<cluster>`.
+      `projects/{project}/instances/{instance}/clusters/{cluster}`.
   """
 
   backup = _messages.MessageField('Backup', 1)
@@ -344,7 +344,7 @@ class BigtableadminProjectsInstancesClustersBackupsDeleteRequest(_messages.Messa
 
   Fields:
     name: Required. Name of the backup to delete. Values are of the form `proj
-      ects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`
+      ects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}`
       .
   """
 
@@ -371,8 +371,8 @@ class BigtableadminProjectsInstancesClustersBackupsGetRequest(_messages.Message)
   r"""A BigtableadminProjectsInstancesClustersBackupsGetRequest object.
 
   Fields:
-    name: Required. Name of the backup. Values are of the form `projects/<proj
-      ect>/instances/<instance>/clusters/<cluster>/backups/<backup>`.
+    name: Required. Name of the backup. Values are of the form `projects/{proj
+      ect}/instances/{instance}/clusters/{cluster}/backups/{backup}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -422,9 +422,9 @@ class BigtableadminProjectsInstancesClustersBackupsListRequest(_messages.Message
       from a previous ListBackupsResponse to the same `parent` and with the
       same `filter`.
     parent: Required. The cluster to list backups from.  Values are of the
-      form `projects/<project>/instances/<instance>/clusters/<cluster>`. Use
-      `<cluster> = '-'` to list backups for all clusters in an instance, e.g.,
-      `projects/<project>/instances/<instance>/clusters/-`.
+      form `projects/{project}/instances/{instance}/clusters/{cluster}`. Use
+      `{cluster} = '-'` to list backups for all clusters in an instance, e.g.,
+      `projects/{project}/instances/{instance}/clusters/-`.
   """
 
   filter = _messages.StringField(1)
@@ -441,11 +441,11 @@ class BigtableadminProjectsInstancesClustersBackupsPatchRequest(_messages.Messag
     backup: A Backup resource to be passed as the request body.
     name: Output only. A globally unique identifier for the backup which
       cannot be changed. Values are of the form
-      `projects/<project>/instances/<instance>/clusters/<cluster>/    backups
+      `projects/{project}/instances/{instance}/clusters/{cluster}/    backups
       /_a-zA-Z0-9*` The final segment of the name must be between 1 and 50
       characters in length.  The backup is stored in the cluster identified by
       the prefix of the backup name of the form
-      `projects/<project>/instances/<instance>/clusters/<cluster>`.
+      `projects/{project}/instances/{instance}/clusters/{cluster}`.
     updateMask: Required. A mask specifying which fields (e.g. `expire_time`)
       in the Backup resource should be updated. This mask is relative to the
       Backup resource, not to the request message. The field mask must always

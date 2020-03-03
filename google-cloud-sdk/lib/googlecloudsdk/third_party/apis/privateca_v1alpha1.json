@@ -391,7 +391,7 @@
       "type": "object",
       "properties": {
         "subjectConfig": {
-          "description": "Required. Specifies some of the values in a certificate that are related to the\nsubject and lifetime.",
+          "description": "Required. Specifies some of the values in a certificate that are related to the\nsubject.",
           "$ref": "SubjectConfig"
         },
         "reusableConfig": {
@@ -406,7 +406,7 @@
     },
     "SubjectConfig": {
       "id": "SubjectConfig",
-      "description": "These values are used to create the distinguished name, validity time, and\nsubject alternative name fields in an X.509 certificate.",
+      "description": "These values are used to create the distinguished name and subject\nalternative name fields in an X.509 certificate.",
       "type": "object",
       "properties": {
         "subject": {
@@ -560,7 +560,7 @@
           "$ref": "KeyUsage"
         },
         "caOptions": {
-          "description": "Optional. Describes options in this ReusableConfigValues that are\nrelevant in a CA certificate.",
+          "description": "Required. Describes options in this ReusableConfigValues that are\nrelevant in a CA certificate.",
           "$ref": "CaOptions"
         },
         "policyIds": {
@@ -692,11 +692,11 @@
       "type": "object",
       "properties": {
         "isCa": {
-          "description": "Optional. Refers to the \"CA\" X.509 extension, which is a boolean value.",
+          "description": "Optional. Refers to the \"CA\" X.509 extension, which is a boolean value. When this\nvalue is missing, the extension will be omitted from the CA certificate.",
           "type": "boolean"
         },
         "maxIssuerPathLength": {
-          "description": "Optional. Refers to the path length restriction X.509 extension. For a CA\ncertificate, this value describes the depth of subordinate CA\ncertificates that are allowed.\nIf this value is less than 0, the request will fail.\nIf this values is missing, the max path length will be omitted from\nthe CA certificate.",
+          "description": "Optional. Refers to the path length restriction X.509 extension. For a CA\ncertificate, this value describes the depth of subordinate CA\ncertificates that are allowed.\nIf this value is less than 0, the request will fail.\nIf this value is missing, the max path length will be omitted from the\nCA certificate.",
           "type": "integer",
           "format": "int32"
         }
@@ -714,7 +714,7 @@
             "type": "string"
           }
         },
-        "oscpServers": {
+        "ocspServers": {
           "description": "Optional. Used when revocation information for the\ncertificate containing this extension is available using the Online\nCertificate Status Protocol (OCSP)",
           "type": "array",
           "items": {
@@ -755,14 +755,14 @@
       "type": "object",
       "properties": {
         "allowedConfigValues": {
-          "description": "Optional. If any ReusableConfigWrapper is specified here, then all\nCertificates issued by the CertificateAuthority must\nmatch at least one listed element. If a ReusableConfigWrapper element\nhas an empty field, it is assumed that any value is allowed for that\nfield.",
+          "description": "Optional. If any ReusableConfigWrapper is specified here, then all\nCertificates issued by the CertificateAuthority must\nmatch at least one listed ReusableConfigWrapper. If a\nReusableConfigWrapper has an empty field,  any value will be allowed\nfor that field.",
           "type": "array",
           "items": {
             "$ref": "ReusableConfigWrapper"
           }
         },
         "allowedLocationsAndOrganizations": {
-          "description": "Optional. If any Subject is specified here, then all\nCertificates issued by the CertificateAuthority must\nmatch at least one listed element. If a Subject element has an\nempty field, it is assumed that any value is allowed for that field.",
+          "description": "Optional. If any Subject is specified here, then all\nCertificates issued by the CertificateAuthority must\nmatch at least one listed Subject. If a Subject has an empty\nfield, any value will be allowed for that field.",
           "type": "array",
           "items": {
             "$ref": "Subject"

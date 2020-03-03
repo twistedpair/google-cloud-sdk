@@ -25,7 +25,8 @@ class AccessLevel(_messages.Message):
       behavior.
     name: Required. Resource name for the Access Level. The `short_name`
       component must begin with a letter and only include alphanumeric and
-      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`
+      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`. The
+      maximum length  // of the `short_name` component is 50 characters.
     title: Human readable title. Must be unique within the Policy.
     updateTime: Output only. Time the `AccessLevel` was updated in UTC.
   """
@@ -178,7 +179,8 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest(_messages.Messa
     accessLevel: A AccessLevel resource to be passed as the request body.
     name: Required. Resource name for the Access Level. The `short_name`
       component must begin with a letter and only include alphanumeric and
-      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`
+      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`. The
+      maximum length  // of the `short_name` component is 50 characters.
     updateMask: Required. Mask to control which fields get updated. Must be
       non-empty.
   """
@@ -744,7 +746,7 @@ class OsConstraint(_messages.Message):
 
 class ReplaceAccessLevelsRequest(_messages.Message):
   r"""A request to replace all existing Access Levels in an Access Policy with
-  the Access Levels provided. This is done within one transaction.
+  the Access Levels provided. This is done atomically.
 
   Fields:
     accessLevels: Required. The desired Access Levels that should replace all
@@ -767,7 +769,7 @@ class ReplaceAccessLevelsResponse(_messages.Message):
 
 class ReplaceServicePerimetersRequest(_messages.Message):
   r"""A request to replace all existing Service Perimeters in an Access Policy
-  with the Service Perimeters provided. This is done within one transaction.
+  with the Service Perimeters provided. This is done atomically.
 
   Fields:
     servicePerimeters: Required. The desired Service Perimeters that should
@@ -889,8 +891,8 @@ class ServicePerimeterConfig(_messages.Message):
       Service Perimeter restrictions. Deprecated. Must be set to a single
       wildcard "*".  The wildcard means that unless explicitly specified by
       "restricted_services" list, any service is treated as unrestricted.
-    vpcAccessibleServices: Beta. Configuration for within Perimeter allowed
-      APIs.
+    vpcAccessibleServices: Beta. Configuration for APIs allowed within
+      Perimeter.
   """
 
   accessLevels = _messages.StringField(1, repeated=True)

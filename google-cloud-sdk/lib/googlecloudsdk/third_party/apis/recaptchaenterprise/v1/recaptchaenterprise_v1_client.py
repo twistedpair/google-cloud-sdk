@@ -9,7 +9,7 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://recaptchaenterprise.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://recaptchaenterprise.mtls.googleapis.com/'
 
   _PACKAGE = u'recaptchaenterprise'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

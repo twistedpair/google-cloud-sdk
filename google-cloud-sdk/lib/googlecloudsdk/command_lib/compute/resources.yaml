@@ -140,3 +140,13 @@ machine_image:
   - parameter_name: machineImage
     attribute_name: machine_image
     help: The name of the Google Compute Engine machine image.
+
+resource_policy:
+  name: resource policy
+  collection: compute.resourcePolicies
+  attributes:
+  - *project
+  - *region
+  - parameter_name: resourcePolicy
+    attribute_name: resource_policy
+    help: The name of the Google Compute Engine resource policy.

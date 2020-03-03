@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/life-sciences",
   "protocol": "rest",
   "rootUrl": "https://lifesciences.googleapis.com/",
+  "mtlsRootUrl": "https://lifesciences.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://lifesciences.googleapis.com/",
   "batchPath": "batch",

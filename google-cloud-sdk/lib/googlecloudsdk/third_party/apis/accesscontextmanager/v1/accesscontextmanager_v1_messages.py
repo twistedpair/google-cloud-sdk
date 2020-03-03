@@ -25,7 +25,8 @@ class AccessLevel(_messages.Message):
       behavior.
     name: Required. Resource name for the Access Level. The `short_name`
       component must begin with a letter and only include alphanumeric and
-      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`
+      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`. The
+      maximum length of the `short_name` component is 50 characters.
     title: Human readable title. Must be unique within the Policy.
     updateTime: Output only. Time the `AccessLevel` was updated in UTC.
   """
@@ -48,6 +49,10 @@ class AccessPolicy(_messages.Message):
 
   Fields:
     createTime: Output only. Time the `AccessPolicy` was created in UTC.
+    etag: Output only. An opaque identifier for the current version of the
+      `AccessPolicy`. This will always be a strongly validated etag, meaning
+      that two Access Polices will be identical if and only if their etags are
+      identical. Clients should not expect this to be in any specific format.
     name: Output only. Resource name of the `AccessPolicy`. Format:
       `accessPolicies/{policy_id}`
     parent: Required. The parent of this `AccessPolicy` in the Cloud Resource
@@ -58,10 +63,11 @@ class AccessPolicy(_messages.Message):
   """
 
   createTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  parent = _messages.StringField(3)
-  title = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  title = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest(_messages.Message):
@@ -178,7 +184,8 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest(_messages.Messa
     accessLevel: A AccessLevel resource to be passed as the request body.
     name: Required. Resource name for the Access Level. The `short_name`
       component must begin with a letter and only include alphanumeric and
-      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`
+      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`. The
+      maximum length of the `short_name` component is 50 characters.
     updateMask: Required. Mask to control which fields get updated. Must be
       non-empty.
   """
@@ -855,7 +862,7 @@ class OsConstraint(_messages.Message):
 
 class ReplaceAccessLevelsRequest(_messages.Message):
   r"""A request to replace all existing Access Levels in an Access Policy with
-  the Access Levels provided. This is done within one transaction.
+  the Access Levels provided. This is done atomically.
 
   Fields:
     accessLevels: Required. The desired Access Levels that should replace all
@@ -886,7 +893,7 @@ class ReplaceAccessLevelsResponse(_messages.Message):
 
 class ReplaceServicePerimetersRequest(_messages.Message):
   r"""A request to replace all existing Service Perimeters in an Access Policy
-  with the Service Perimeters provided. This is done within one transaction.
+  with the Service Perimeters provided. This is done atomically.
 
   Fields:
     etag: Optional. The etag for the version of the Access Policy that this
@@ -1015,7 +1022,7 @@ class ServicePerimeterConfig(_messages.Message):
       Perimeter restrictions. For example, if `storage.googleapis.com` is
       specified, access to the storage buckets inside the perimeter must meet
       the perimeter's access restrictions.
-    vpcAccessibleServices: Configuration for within Perimeter allowed APIs.
+    vpcAccessibleServices: Configuration for APIs allowed within Perimeter.
   """
 
   accessLevels = _messages.StringField(1, repeated=True)

@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/remote-build-execution/docs/",
   "protocol": "rest",
   "rootUrl": "https://admin-remotebuildexecution.googleapis.com/",
+  "mtlsRootUrl": "https://admin-remotebuildexecution.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://admin-remotebuildexecution.googleapis.com/",
   "batchPath": "batch",
@@ -1027,7 +1028,10 @@
             "The bot couldn't start the container.",
             "The docker ulimit is not valid.",
             "The docker runtime is unknown.",
-            "The docker capability is unknown."
+            "The docker capability is unknown.",
+            "The command failed with unknown docker errors.",
+            "Docker failed to run containers with CreateComputeSystem error.",
+            "Docker failed to run containers with hcsshim::PrepareLayer error."
           ],
           "type": "string",
           "enum": [
@@ -1058,7 +1062,10 @@
             "DOCKER_CREATE_CONTAINER_ERROR",
             "DOCKER_INVALID_ULIMIT",
             "DOCKER_UNKNOWN_RUNTIME",
-            "DOCKER_UNKNOWN_CAPABILITY"
+            "DOCKER_UNKNOWN_CAPABILITY",
+            "DOCKER_UNKNOWN_ERROR",
+            "DOCKER_CREATE_COMPUTE_SYSTEM_ERROR",
+            "DOCKER_PREPARELAYER_ERROR"
           ]
         },
         "message": {

@@ -3,11 +3,11 @@
   "discoveryVersion": "v1",
   "id": "datamigration:v1alpha2",
   "name": "datamigration",
-  "canonicalName": "Cloud Data Migration",
+  "canonicalName": "Cloud Database Migration Service",
   "version": "v1alpha2",
   "revision": "0",
-  "title": "Data Migration API (prod)",
-  "description": "Cloud Data Migration API.",
+  "title": "Data Migration API",
+  "description": "Manage Cloud Database Migration Service resources on Google Cloud Platform.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -231,7 +231,7 @@
     },
     "MigrationJob": {
       "id": "MigrationJob",
-      "description": "Represents a Database Migration Service migration job object.\n-- NEXT_TAG = 17 --",
+      "description": "Represents a Database Migration Service migration job object.",
       "type": "object",
       "properties": {
         "name": {
@@ -397,10 +397,6 @@
         },
         "vpc": {
           "description": "The name of the VPC to peer with the Cloud SQL private network.",
-          "type": "string"
-        },
-        "vmZone": {
-          "description": "Required. The Google Cloud Platform zone where the VM is located.",
           "type": "string"
         }
       }
@@ -588,7 +584,7 @@
     },
     "ConnectionProfile": {
       "id": "ConnectionProfile",
-      "description": "A connection profile definition.\n-- NEXT_TAG = 10 --",
+      "description": "A connection profile definition.",
       "type": "object",
       "properties": {
         "name": {
@@ -742,10 +738,6 @@
       "description": "Specifies connection parameters required specifically for PostgreSQL\ndatabases.",
       "type": "object",
       "properties": {
-        "database": {
-          "description": "Required. The database name.",
-          "type": "string"
-        },
         "host": {
           "description": "Required. The IP or hostname of the source PostgreSQL database.",
           "type": "string"
@@ -798,7 +790,7 @@
     },
     "CloudSqlSettings": {
       "id": "CloudSqlSettings",
-      "description": "Settings for creating a Cloud SQL database instance.\n-- NEXT_TAG = 13 --",
+      "description": "Settings for creating a Cloud SQL database instance.",
       "type": "object",
       "properties": {
         "databaseVersion": {
@@ -911,7 +903,7 @@
           "type": "boolean"
         },
         "authorizedNetworks": {
-          "description": "The list of external networks that are allowed to connect to the instance\nusing the IP. see http:\/\/en.wikipedia.org\/wiki\/CIDR_notation#CIDR_notation,\nalso known as 'slash' notation (e.g. `192.168.100.0\/24`).",
+          "description": "The list of external networks that are allowed to connect to the instance\nusing the IP. See\nhttps:\/\/en.wikipedia.org\/wiki\/CIDR_notation#CIDR_notation, also known as\n'slash' notation (e.g. `192.168.100.0\/24`).",
           "type": "array",
           "items": {
             "$ref": "SqlAclEntry"
@@ -1028,8 +1020,9 @@
         }
       }
     },
-    "MigrationJobError": {
-      "id": "MigrationJobError",
+    "MigrationJobVerificationError": {
+      "id": "MigrationJobVerificationError",
+      "description": "Error message of a verification Migration job.",
       "type": "object",
       "properties": {
         "errorCode": {
@@ -1055,19 +1048,6 @@
         "errorMessage": {
           "description": "A formatted message with further details about the error and a CTA,",
           "type": "string"
-        }
-      }
-    },
-    "VerifyMigrationJobResponse": {
-      "id": "VerifyMigrationJobResponse",
-      "type": "object",
-      "properties": {
-        "errors": {
-          "description": "A list of any errors that were found during the verification.",
-          "type": "array",
-          "items": {
-            "$ref": "MigrationJobError"
-          }
         }
       }
     }
@@ -1301,12 +1281,12 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "A filter expression that filters migration jobs listed in the response.\nThe expression must specify the field name, a comparison operator, and the\nvalue that you want to use for filtering. The value must be a string,\na number, or a boolean. The comparison operator must be\neither =, !=, >, or <. For example, list migration jobs created this year\nby specifying <b>createTime %gt; 2020-01-01T00:00:00.000000000Z.<\/b>\nYou can also filter nested fields. For example, you could specify\n<b>reverseSshConnectivity.vmIp = \u201C1.2.3.4\u201D<\/b> to select all migration\njobs connecting through the specific SSH tunnel bastion.",
+                      "description": "A filter expression that filters migration jobs listed in the response.\nThe expression must specify the field name, a comparison operator, and the\nvalue that you want to use for filtering. The value must be a string,\na number, or a boolean. The comparison operator must be\neither =, !=, >, or <. For example, list migration jobs created this year\nby specifying <b>createTime %gt; 2020-01-01T00:00:00.000000000Z.<\/b>\nYou can also filter nested fields. For example, you could specify\n<b>reverseSshConnectivity.vmIp = \"1.2.3.4\"<\/b> to select all migration\njobs connecting through the specific SSH tunnel bastion.",
                       "location": "query",
                       "type": "string"
                     },
                     "orderBy": {
-                      "description": "Sort the results based on the migration job name.\nValid values are: \u201Cname\u201D, \u201Cname asc\u201D, and \u201Cname desc\u201D.",
+                      "description": "Sort the results based on the migration job name.\nValid values are: \"name\", \"name asc\", and \"name desc\".",
                       "location": "query",
                       "type": "string"
                     }

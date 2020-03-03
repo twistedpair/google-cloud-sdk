@@ -9,7 +9,7 @@ class ComposerV1alpha2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://composer.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://composer.mtls.googleapis.com/'
 
   _PACKAGE = u'composer'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

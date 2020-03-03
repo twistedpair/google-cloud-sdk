@@ -211,6 +211,7 @@ class AndroidModel(_messages.Message):
     supportedVersionIds: The set of Android versions this device supports.
     tags: Tags for this dimension. Examples: "default", "preview",
       "deprecated".
+    thumbnailUrl: URL of a thumbnail image of the device.
   """
 
   class FormFactorValueValuesEnum(_messages.Enum):
@@ -253,6 +254,7 @@ class AndroidModel(_messages.Message):
   supportedAbis = _messages.StringField(12, repeated=True)
   supportedVersionIds = _messages.StringField(13, repeated=True)
   tags = _messages.StringField(14, repeated=True)
+  thumbnailUrl = _messages.StringField(15)
 
 
 class AndroidRoboTest(_messages.Message):
@@ -703,7 +705,7 @@ class IosDeviceList(_messages.Message):
 
 
 class IosModel(_messages.Message):
-  r"""A description of an iOS device tests may be run on. Next tag: 11
+  r"""A description of an iOS device tests may be run on. Next tag: 12
 
   Enums:
     FormFactorValueValuesEnum: Whether this device is a phone, tablet,

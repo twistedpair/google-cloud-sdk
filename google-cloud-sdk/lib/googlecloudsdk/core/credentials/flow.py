@@ -21,33 +21,47 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
+import socket
+import webbrowser
+import wsgiref
+from google_auth_oauthlib import flow as google_auth_flow
+
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import pkg_resources
 
 from oauth2client import client
 from oauth2client import tools
 from six.moves import input  # pylint: disable=redefined-builtin
 from six.moves.http_client import ResponseNotReady
+from six.moves.urllib import parse
 
+_PORT_SEARCH_ERROR_MSG = (
+    'Failed to start a local webserver listening on any port '
+    'between {start_port} and {end_port}. Please check your '
+    'firewall settings or locally running programs that may be '
+    'blocking or using those ports.')
 
-try:
-  # pylint:disable=g-import-not-at-top
-  from six.moves.urllib.parse import parse_qsl
-except ImportError:
-  # pylint:disable=g-import-not-at-top
-  from cgi import parse_qsl
+_PORT_SEARCH_START = 8085
+_PORT_SEARCH_END = _PORT_SEARCH_START + 100
 
 
 class Error(Exception):
   """Exceptions for the flow module."""
 
 
-class AuthRequestRejectedException(Error):
+class AuthRequestRejectedError(Error):
   """Exception for when the authentication request was rejected."""
 
 
-class AuthRequestFailedException(Error):
+class AuthRequestFailedError(Error):
   """Exception for when the authentication request was rejected."""
+
+
+class LocalServerCreationError(Error):
+  """Exception for when a local server cannot be created."""
 
 
 class ClientRedirectHandler(tools.ClientRedirectHandler):
@@ -69,7 +83,7 @@ class ClientRedirectHandler(tools.ClientRedirectHandler):
     self.send_header('Content-type', 'text/html')
     self.end_headers()
     query = self.path.split('?', 1)[-1]
-    query = dict(parse_qsl(query))
+    query = dict(parse.parse_qsl(query))
     self.server.query_params = query
 
     if 'code' in query:
@@ -100,15 +114,11 @@ def Run(flow, launch_browser=True, http=None,
     put in the storage.
 
   Raises:
-    AuthRequestRejectedException: If the request was rejected.
-    AuthRequestFailedException: If the request fails.
+    AuthRequestRejectedError: If the request was rejected.
+    AuthRequestFailedError: If the request fails.
   """
 
   if launch_browser:
-    # pylint:disable=g-import-not-at-top, Import when needed for performance.
-    import socket
-    import webbrowser
-
     success = False
     port_number = auth_host_port_start
 
@@ -137,11 +147,11 @@ def Run(flow, launch_browser=True, http=None,
 
       httpd.handle_request()
       if 'error' in httpd.query_params:
-        raise AuthRequestRejectedException('Unable to authenticate.')
+        raise AuthRequestRejectedError('Unable to authenticate.')
       if 'code' in httpd.query_params:
         code = httpd.query_params['code']
       else:
-        raise AuthRequestFailedException(
+        raise AuthRequestFailedError(
             'Failed to find "code" in the query parameters of the redirect.')
     else:
       message = ('Failed to start a local webserver listening on any port '
@@ -167,14 +177,14 @@ def Run(flow, launch_browser=True, http=None,
     try:
       code = input('Enter verification code: ').strip()
     except EOFError as e:
-      raise AuthRequestRejectedException(e)
+      raise AuthRequestRejectedError(e)
 
   try:
     credential = flow.step2_exchange(code, http=http)
   except client.FlowExchangeError as e:
-    raise AuthRequestFailedException(e)
+    raise AuthRequestFailedError(e)
   except ResponseNotReady:
-    raise AuthRequestFailedException(
+    raise AuthRequestFailedError(
         'Could not reach the login server. A potential cause of this could be '
         'because you are behind a proxy. Please set the environment variables '
         'HTTPS_PROXY and HTTP_PROXY to the address of the proxy in the format '
@@ -182,3 +192,194 @@ def Run(flow, launch_browser=True, http=None,
         'Example: HTTPS_PROXY=https://192.168.0.1:8080')
 
   return credential
+
+
+def CreateGoogleAuthFlow(scopes, client_id_file=None):
+  """Creates a Google auth oauthlib browser flow."""
+  client_config = _CreateGoogleAuthClientConfig(client_id_file)
+  return InstalledAppFlow.from_client_config(
+      client_config, scopes, autogenerate_code_verifier=True)
+
+
+def _CreateGoogleAuthClientConfig(client_id_file=None):
+  """Creates a client config from a client id file or gcloud's properties."""
+  if client_id_file:
+    with files.FileReader(client_id_file) as f:
+      return json.load(f)
+  return _CreateGoogleAuthClientConfigFromProperties()
+
+
+def _CreateGoogleAuthClientConfigFromProperties():
+  auth_uri = properties.VALUES.auth.auth_host.Get(required=True)
+  token_uri = properties.VALUES.auth.token_host.Get(required=True)
+  client_id = properties.VALUES.auth.client_id.Get(required=True)
+  client_secret = properties.VALUES.auth.client_secret.Get(required=True)
+  return {
+      'installed': {
+          'client_id': client_id,
+          'client_secret': client_secret,
+          'auth_uri': auth_uri,
+          'token_uri': token_uri
+      }
+  }
+
+
+def RunGoogleAuthFlow(flow, launch_browser=False):
+  """Runs a Google auth oauthlib web flow.
+
+  Args:
+    flow: InstalledAppFlow, A web flow to run.
+    launch_browser: bool, True to launch the web browser automatically and and
+      use local server to handle the redirect. False to ask users to paste the
+      url in a browser.
+
+  Returns:
+    google.auth.credentials.Credentials, The credentials obtained from the flow.
+  """
+  authorization_prompt_msg_launch_browser = (
+      'Your browser has been opened to visit:\n\n    {url}\n')
+  authorization_prompt_msg_no_launch_browser = (
+      'Go to the following link in your browser:\n\n    {url}\n')
+  if launch_browser:
+    try:
+      return flow.run_local_server(
+          authorization_prompt_message=authorization_prompt_msg_launch_browser)
+    # If anything unexpected happens, we fall back to manual mode where users
+    # need to copy/paste url to browser and copy the auth code back.
+    except Exception as e:  # pylint: disable=broad-except
+      log.warning(e)
+      log.warning('Defaulting to URL copy/paste mode.')
+  return flow.run_console(
+      authorization_prompt_message=authorization_prompt_msg_no_launch_browser)
+
+
+class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
+  """Installed app flow.
+
+  This class overrides base class's run_local_server() method to provide
+  customized behaviors for gcloud auth login:
+
+  1. Try to find an available port for the local server which handles the
+     redirect.
+  2. A WSGI app on the local server which can direct browser to
+     Google's confirmation pages for authentication.
+  """
+
+  def run_local_server(self,
+                       host='localhost',
+                       authorization_prompt_message=google_auth_flow
+                       .InstalledAppFlow._DEFAULT_AUTH_PROMPT_MESSAGE,
+                       open_browser=True,
+                       **kwargs):
+    """Run the flow using the server strategy.
+
+    The server strategy instructs the user to open the authorization URL in
+    their browser and will attempt to automatically open the URL for them.
+    It will start a local web server to listen for the authorization
+    response. Once authorization is complete the authorization server will
+    redirect the user's browser to the local web server. The web server
+    will get the authorization code from the response and shutdown. The
+    code is then exchanged for a token.
+
+    Args:
+        host: str, The hostname for the local redirect server. This will
+          be served over http, not https.
+        authorization_prompt_message: str, The message to display to tell
+          the user to navigate to the authorization URL.
+        open_browser: bool, Whether or not to open the authorization URL
+          in the user's browser.
+        **kwargs: Additional keyword arguments passed through to
+          authorization_url`.
+
+    Returns:
+        google.oauth2.credentials.Credentials: The OAuth 2.0 credentials
+            for the user.
+    """
+
+    wsgi_app = _RedirectWSGIApp()
+    local_server = CreateLocalServer(wsgi_app, _PORT_SEARCH_START,
+                                     _PORT_SEARCH_END)
+
+    self.redirect_uri = 'http://{}:{}/'.format(host, local_server.server_port)
+    auth_url, _ = self.authorization_url(**kwargs)
+
+    if open_browser:
+      webbrowser.open(auth_url, new=1, autoraise=True)
+
+    log.err.Print(authorization_prompt_message.format(url=auth_url))
+
+    local_server.handle_request()
+
+    # Note: using https here because oauthlib requires that
+    # OAuth 2.0 should only occur over https.
+    authorization_response = wsgi_app.last_request_uri.replace(
+        'http:', 'https:')
+    self.fetch_token(authorization_response=authorization_response)
+
+    return self.credentials
+
+
+def CreateLocalServer(wsgi_app, search_start_port, search_end_port):
+  """Creates a local wsgi server.
+
+  Finds an available port in the range of [search_start_port, search_end_point)
+  for the local server.
+
+  Args:
+    wsgi_app: A wsgi app running on the local server.
+    search_start_port: int, the port where the search starts.
+    search_end_port: int, the port where the search ends.
+
+  Raises:
+    LocalServerCreationError: If it cannot find an available port for
+      the local server.
+
+  Returns:
+    wsgiref.simple_server.WSGISever, a wsgi server.
+  """
+  port = search_start_port
+  local_server = None
+  while not local_server and port < search_end_port:
+    try:
+      local_server = wsgiref.simple_server.make_server(
+          'localhost',
+          port,
+          wsgi_app,
+          handler_class=google_auth_flow._WSGIRequestHandler)  # pylint:disable=protected-access
+    except (socket.error, OSError):
+      port += 1
+  if local_server:
+    return local_server
+  raise LocalServerCreationError(
+      _PORT_SEARCH_ERROR_MSG.format(
+          start_port=search_start_port, end_port=search_end_port - 1))
+
+
+class _RedirectWSGIApp(object):
+  """WSGI app to handle the authorization redirect.
+
+  Stores the request URI and responds with a confirmation page.
+  """
+
+  def __init__(self):
+    self.last_request_uri = None
+
+  def __call__(self, environ, start_response):
+    """WSGI Callable.
+
+    Args:
+        environ (Mapping[str, Any]): The WSGI environment.
+        start_response (Callable[str, list]): The WSGI start_response callable.
+
+    Returns:
+        Iterable[bytes]: The response body.
+    """
+    start_response('200 OK', [('Content-type', 'text/html')])
+    self.last_request_uri = wsgiref.util.request_uri(environ)
+    query = self.last_request_uri.split('?', 1)[-1]
+    query = dict(parse.parse_qsl(query))
+    if 'code' in query:
+      page = 'oauth2_landing.html'
+    else:
+      page = 'oauth2_landing_error.html'
+    return [pkg_resources.GetResource(__name__, page)]

@@ -111,7 +111,7 @@ def _GetShellExecutable():
   """
   shells = ['/bin/bash', '/bin/sh']
 
-  user_shell = os.getenv('SHELL')
+  user_shell = encoding.GetEncodedValue(os.environ, 'SHELL')
   if user_shell and os.path.basename(user_shell) in _BORNE_COMPATIBLE_SHELLS:
     shells.insert(0, user_shell)
 

@@ -317,7 +317,8 @@
             "CREATING indicates the cluster is being registered.",
             "READY indicates the cluster is registered.",
             "DELETING indicates that the cluster is being unregistered.",
-            "UPDATING indicates that the cluster registration is being updated."
+            "UPDATING indicates the Membership is being updated.",
+            "SERVICE_UPDATING indicates the Membership is being updated by\nthe Hub Service."
           ],
           "type": "string",
           "enum": [
@@ -325,17 +326,9 @@
             "CREATING",
             "READY",
             "DELETING",
-            "UPDATING"
+            "UPDATING",
+            "SERVICE_UPDATING"
           ]
-        },
-        "description": {
-          "description": "Human readable description of the issue.",
-          "type": "string"
-        },
-        "updateTime": {
-          "description": "The last update time of this state by the controllers",
-          "type": "string",
-          "format": "google-datetime"
         }
       }
     },

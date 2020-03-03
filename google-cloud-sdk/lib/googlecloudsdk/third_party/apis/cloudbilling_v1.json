@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/billing/",
   "protocol": "rest",
   "rootUrl": "https://cloudbilling.googleapis.com/",
+  "mtlsRootUrl": "https://cloudbilling.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudbilling.googleapis.com/",
   "batchPath": "batch",

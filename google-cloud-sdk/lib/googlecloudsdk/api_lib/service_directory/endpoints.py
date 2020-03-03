@@ -71,11 +71,11 @@ class EndpointsClient(object):
   def Update(self, endpoint_ref, address=None, port=None, metadata=None):
     """Endpoints update request."""
     mask_parts = []
-    if address:
+    if address is not None:
       mask_parts.append('address')
-    if port:
+    if port is not None:
       mask_parts.append('port')
-    if metadata:
+    if metadata is not None:
       mask_parts.append('metadata')
 
     endpoint = self.msgs.Endpoint(address=address, port=port, metadata=metadata)

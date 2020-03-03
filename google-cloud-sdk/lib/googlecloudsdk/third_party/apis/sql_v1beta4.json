@@ -17,6 +17,7 @@
   "documentationLink": "https://developers.google.com/cloud-sql/",
   "protocol": "rest",
   "rootUrl": "https://sqladmin.googleapis.com/",
+  "mtlsRootUrl": "https://sqladmin.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://sqladmin.googleapis.com/",
   "batchPath": "batch",
@@ -1259,7 +1260,7 @@
           }
         },
         "availabilityType": {
-          "description": "Availability type (PostgreSQL instances only). Potential values:\n<br><code>ZONAL<\/code>: The instance serves data from only one zone.\nOutages in that zone affect data accessibility. <br><code>REGIONAL<\/code>:\nThe instance can serve data from more than one zone in a region (it is\nhighly available). <br>For more information, see <a\nhref=\"https:\/\/cloud.google.com\/sql\/docs\/postgres\/high-availability\">Overview\nof the High Availability Configuration<\/a>.",
+          "description": "Availability type (PostgreSQL and MySQL instances only). Potential values:\n<br><code>ZONAL<\/code>: The instance serves data from only one zone.\nOutages in that zone affect data accessibility. <br><code>REGIONAL<\/code>:\nThe instance can serve data from more than one zone in a region (it is\nhighly available). <br>For more information, see <a\nhref=\"https:\/\/cloud.google.com\/sql\/docs\/postgres\/high-availability\">Overview\nof the High Availability Configuration<\/a>.",
           "enumDescriptions": [
             "This is an unknown Availability type.",
             "Zonal available instance.",
@@ -1516,7 +1517,7 @@
           "type": "string"
         },
         "binaryLogEnabled": {
-          "description": "Whether binary log is enabled. If backup configuration is disabled, binary\nlog must be disabled as well.",
+          "description": "(MySQL only) Whether binary log is enabled. If backup configuration is\ndisabled, binarylog must be disabled as well.",
           "type": "boolean"
         },
         "replicationLogArchivingEnabled": {
@@ -1997,7 +1998,10 @@
             "",
             "",
             "",
-            ""
+            "",
+            "Unsupported migration type.",
+            "No pglogical extension installed on databases, applicable for postgres.",
+            "pglogical node already exists on databases, applicable for postgres."
           ],
           "type": "string",
           "enum": [
@@ -2006,7 +2010,10 @@
             "BINLOG_NOT_ENABLED",
             "INCOMPATIBLE_DATABASE_VERSION",
             "REPLICA_ALREADY_SETUP",
-            "INSUFFICIENT_PRIVILEGE"
+            "INSUFFICIENT_PRIVILEGE",
+            "UNSUPPORTED_MIGRATION_TYPE",
+            "NO_PGLOGICAL_INSTALLED",
+            "PGLOGICAL_NODE_ALREADY_EXISTS"
           ]
         },
         "detail": {

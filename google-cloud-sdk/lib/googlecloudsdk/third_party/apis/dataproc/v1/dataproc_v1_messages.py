@@ -3383,6 +3383,7 @@ class SoftwareConfig(_messages.Message):
       HBASE: <no description>
       RANGER: <no description>
       DOCKER: <no description>
+      FLINK: <no description>
     """
     COMPONENT_UNSPECIFIED = 0
     ANACONDA = 1
@@ -3397,6 +3398,7 @@ class SoftwareConfig(_messages.Message):
     HBASE = 10
     RANGER = 11
     DOCKER = 12
+    FLINK = 13
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):

@@ -16,6 +16,7 @@
   "documentationLink": "https://cloud.google.com/genomics",
   "protocol": "rest",
   "rootUrl": "https://genomics.googleapis.com/",
+  "mtlsRootUrl": "https://genomics.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://genomics.googleapis.com/",
   "batchPath": "batch",

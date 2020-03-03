@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/speech-to-text/docs/quickstart-protocol",
   "protocol": "rest",
   "rootUrl": "https://speech.googleapis.com/",
+  "mtlsRootUrl": "https://speech.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://speech.googleapis.com/",
   "batchPath": "batch",
@@ -1020,7 +1021,7 @@
               "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
-              "pattern": "^.+$",
+              "pattern": "^.*$",
               "type": "string"
             }
           },

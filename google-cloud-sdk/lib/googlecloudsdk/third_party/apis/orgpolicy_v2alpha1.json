@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/resource-manager/docs/organization-policy/understanding-constraints",
   "protocol": "rest",
   "rootUrl": "https://orgpolicy.googleapis.com/",
+  "mtlsRootUrl": "https://orgpolicy.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://orgpolicy.googleapis.com/",
   "batchPath": "batch",

@@ -24,6 +24,7 @@ from apitools.base.py import extra_types
 
 from googlecloudsdk.api_lib.resource_manager import folders
 from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.resource_manager import completers
 from googlecloudsdk.command_lib.util.args import common_args
 from googlecloudsdk.core import exceptions
@@ -121,8 +122,13 @@ def AddBucketLocationArg(parser, required, help_string):
     required: whether the arguments is required.
     help_string: the help string.
   """
+  # We validate that the location is non-empty since otherwise the
+  # error message from the API can be confusing. We leave the rest of the
+  # validation to the API.
   parser.add_argument(
-      '--location', required=required, metavar='LOCATION', help=help_string)
+      '--location', required=required, metavar='LOCATION',
+      type=arg_parsers.RegexpValidator(r'.+', 'must be non-empty'),
+      help=help_string)
 
 
 def GetProjectResource(project):

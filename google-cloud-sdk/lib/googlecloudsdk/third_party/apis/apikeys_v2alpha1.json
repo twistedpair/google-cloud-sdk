@@ -17,6 +17,7 @@
   "documentationLink": "",
   "protocol": "rest",
   "rootUrl": "https://apikeys.googleapis.com/",
+  "mtlsRootUrl": "https://apikeys.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://apikeys.googleapis.com/",
   "batchPath": "batch",

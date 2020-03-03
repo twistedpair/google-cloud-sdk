@@ -322,16 +322,17 @@ def ValidateIpSanFlag(san):
                                               'Invalid IP address value.')
 
 
-def AddLocationFlag(parser, resource_name):
+def AddLocationFlag(parser, resource_name, flag_name='--location'):
   """Add location flag to parser.
 
   Args:
     parser: The argparse parser to add the flag to.
     resource_name: The name of resource that the location refers to e.g.
       'certificate authority'
+    flag_name: The name of the flag.
   """
   base.Argument(
-      '--location'.format(),
+      flag_name,
       help='Location of the {}.'.format(resource_name)).AddToParser(parser)
 
 

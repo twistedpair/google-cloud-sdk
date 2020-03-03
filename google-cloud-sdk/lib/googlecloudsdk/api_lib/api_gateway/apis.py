@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.api_gateway import base
 
@@ -86,3 +87,30 @@ class ApiClient(base.BaseClient):
         parent=api_ref.Parent().RelativeName())
 
     return self.client.projects_locations_apis.Create(req)
+
+  def List(self, parent_name, filters=None, limit=None, page_size=None,
+           sort_by=None):
+    """Lists the gateway objects under a given parent.
+
+    Args:
+      parent_name: Resource name of the parent to list under
+      filters: Filters to be applied to results (optional)
+      limit: Limit to the number of results per page (optional)
+      page_size: the number of results per page (optional)
+      sort_by: Instructions about how to sort the results (optional)
+
+    Returns:
+      List Pager
+    """
+    req = self.messages.ApigatewayProjectsLocationsApisListRequest(
+        filter=filters,
+        orderBy=sort_by,
+        parent=parent_name)
+
+    return list_pager.YieldFromList(
+        self.client.projects_locations_apis,
+        req,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='apis')

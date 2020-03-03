@@ -24,11 +24,11 @@ import json
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.credentials import flow as c_flow
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.util import files
 
 from oauth2client import client
-from oauth2client import clientsecrets
 
 
 # Client ID from project "usable-auth-library", configured for
@@ -45,6 +45,8 @@ DEFAULT_SCOPES = [
     CLOUD_PLATFORM_SCOPE
 ]
 
+CLIENT_SECRET_INSTALLED_TYPE = 'installed'
+
 
 class Error(exceptions.Error):
   """A base exception for this class."""
@@ -54,6 +56,27 @@ class Error(exceptions.Error):
 class InvalidClientSecretsError(Error):
   """An error for when we fail to load the client secrets file."""
   pass
+
+
+def DoInstalledAppBrowserFlowGoogleAuth(launch_browser,
+                                        scopes,
+                                        client_id_file=None):
+  """Launches a 3LO oauth2 flow to get google-auth credentials.
+
+  Args:
+    launch_browser: bool, True to launch the browser, false to ask users to copy
+      the auth url to a browser.
+    scopes: [str], The list of scopes to authorize.
+    client_id_file: str, The path to a file containing the client id and secret
+      to use for the flow.  If None, the default client id for the Cloud SDK is
+      used.
+  Returns:
+    google.auth.credentials.Credentials, The credentials obtained from the flow.
+  """
+  if client_id_file:
+    AssertClientSecretIsInstalledType(client_id_file)
+  google_auth_flow = c_flow.CreateGoogleAuthFlow(scopes, client_id_file)
+  return c_flow.RunGoogleAuthFlow(google_auth_flow, launch_browser)
 
 
 def DoInstalledAppBrowserFlow(launch_browser, scopes, client_id_file=None,
@@ -77,11 +100,7 @@ def DoInstalledAppBrowserFlow(launch_browser, scopes, client_id_file=None,
   """
   try:
     if client_id_file:
-      client_type = GetClientSecretsType(client_id_file)
-      if client_type != clientsecrets.TYPE_INSTALLED:
-        raise InvalidClientSecretsError(
-            'Only client IDs of type \'%s\' are allowed, but encountered '
-            'type \'%s\'' % (clientsecrets.TYPE_INSTALLED, client_type))
+      AssertClientSecretIsInstalledType(client_id_file)
       webflow = client.flow_from_clientsecrets(
           filename=client_id_file,
           scope=scopes)
@@ -100,15 +119,12 @@ def DoInstalledAppBrowserFlow(launch_browser, scopes, client_id_file=None,
     raise
 
 
-# TODO(b/29157057) make this information accessible through oauth2client
-# instead of duplicating internal code from clientsecrets
 def GetClientSecretsType(client_id_file):
   """Get the type of the client secrets file (web or installed)."""
   invalid_file_format_msg = (
       'Invalid file format. See '
       'https://developers.google.com/api-client-library/'
       'python/guide/aaa_client_secrets')
-
   try:
     obj = json.loads(files.ReadFileContents(client_id_file))
   except files.Error:
@@ -122,3 +138,11 @@ def GetClientSecretsType(client_id_file):
         'Expected a JSON object with a single property for a "web" or '
         '"installed" application')
   return tuple(obj)[0]
+
+
+def AssertClientSecretIsInstalledType(client_id_file):
+  client_type = GetClientSecretsType(client_id_file)
+  if client_type != CLIENT_SECRET_INSTALLED_TYPE:
+    raise InvalidClientSecretsError(
+        'Only client IDs of type \'%s\' are allowed, but encountered '
+        'type \'%s\'' % (CLIENT_SECRET_INSTALLED_TYPE, client_type))

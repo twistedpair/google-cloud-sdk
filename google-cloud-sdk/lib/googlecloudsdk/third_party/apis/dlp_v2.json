@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/dlp/docs/",
   "protocol": "rest",
   "rootUrl": "https://dlp.googleapis.com/",
+  "mtlsRootUrl": "https://dlp.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://dlp.googleapis.com/",
   "batchPath": "batch",
@@ -818,6 +819,10 @@
       "description": "Represents a piece of potentially sensitive content.",
       "type": "object",
       "properties": {
+        "name": {
+          "description": "Resource name in format projects\/{id}\/locations\/{id}\/inspectFindings\/{id}\nPopulated only when viewing persisted findings.",
+          "type": "string"
+        },
         "quote": {
           "description": "The content that was found. Even if the content is not textual, it\nmay be converted to a textual representation here.\nProvided if `include_quote` is true and the finding is\nless than or equal to 4096 bytes long. If the finding exceeds 4096 bytes\nin length, the quote may be omitted.",
           "type": "string"
@@ -858,6 +863,23 @@
         "quoteInfo": {
           "description": "Contains data parsed from quotes. Only populated if include_quote was set\nto true and a supported infoType was requested. Currently supported\ninfoTypes: DATE, DATE_OF_BIRTH and TIME.",
           "$ref": "GooglePrivacyDlpV2QuoteInfo"
+        },
+        "resourceName": {
+          "description": "The job that stored the finding.",
+          "type": "string"
+        },
+        "triggerName": {
+          "description": "Job trigger name, if applicable, for this finding.",
+          "type": "string"
+        },
+        "jobCreateTime": {
+          "description": "Time the job started that produced this finding.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "jobName": {
+          "description": "The job that stored the finding.",
+          "type": "string"
         }
       }
     },
@@ -2690,7 +2712,7 @@
           "$ref": "GooglePrivacyDlpV2BigQueryTable"
         },
         "outputSchema": {
-          "description": "Schema used for writing the findings for Inspect jobs. This field is only\nused for Inspect and must be unspecified for Risk jobs. Columns are derived\nfrom the `Finding` object. If appending to an existing table, any columns\nfrom the predefined schema that are missing will be added. No columns in\nthe existing table will be deleted.\n\nIf unspecified, then all available columns will be used for a new table or\nan (existing) table with no schema, and no changes will be made to an\nexisting table that has a schema.",
+          "description": "Schema used for writing the findings for Inspect jobs. This field is only\nused for Inspect and must be unspecified for Risk jobs. Columns are derived\nfrom the `Finding` object. If appending to an existing table, any columns\nfrom the predefined schema that are missing will be added. No columns in\nthe existing table will be deleted.\n\nIf unspecified, then all available columns will be used for a new table or\nan (existing) table with no schema, and no changes will be made to an\nexisting table that has a schema.\nOnly for use with external storage.",
           "enumDescriptions": [
             "Unused.",
             "Basic schema including only `info_type`, `quote`, `certainty`, and\n`timestamp`.",
@@ -3789,6 +3811,14 @@
         "largeCustomDictionary": {
           "description": "StoredInfoType where findings are defined by a dictionary of phrases.",
           "$ref": "GooglePrivacyDlpV2LargeCustomDictionaryConfig"
+        },
+        "dictionary": {
+          "description": "Store dictionary-based CustomInfoType.",
+          "$ref": "GooglePrivacyDlpV2Dictionary"
+        },
+        "regex": {
+          "description": "Store regular expression-based StoredInfoType.",
+          "$ref": "GooglePrivacyDlpV2Regex"
         }
       }
     },

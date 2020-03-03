@@ -190,24 +190,6 @@ class CloudAuditOptions(_messages.Message):
   logName = _messages.EnumField('LogNameValueValuesEnum', 2)
 
 
-class CloudDnsZone(_messages.Message):
-  r"""Information on the Cloud DNS Managed Zone whose complete and
-  authoritative source of information is a Service Directory Namespace. This
-  is an optional association; some Namespaces may not have an associated
-  CloudDnsZone.
-  https://cloud.google.com/dns/docs/reference/v1/managedZones#resource
-
-  Fields:
-    dnsName: Output only. The Cloud DNS zone name. Example: `example.com.`
-    managedZoneUri: Output only. The resource URI of the Cloud DNS Managed
-      Zone. Example: `https://www.googleapis.com/dns/v1/projects/myproject/man
-      agedZones/myzone`
-  """
-
-  dnsName = _messages.StringField(1)
-  managedZoneUri = _messages.StringField(2)
-
-
 class Condition(_messages.Message):
   r"""A condition to be met.
 
@@ -365,17 +347,22 @@ class DataAccessOptions(_messages.Message):
 
   Enums:
     LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
-      manner at the caller. This is relevant only in the LocalIAM
-      implementation, for now.
+      manner at the caller. This is currently supported in the LocalIAM
+      implementation, Stubby C++, and Stubby Java. For Apps Framework, see go
+      /af-audit-logging#failclosed.
 
   Fields:
     logMode: Whether Gin logging should happen in a fail-closed manner at the
-      caller. This is relevant only in the LocalIAM implementation, for now.
+      caller. This is currently supported in the LocalIAM implementation,
+      Stubby C++, and Stubby Java. For Apps Framework, see go/af-audit-
+      logging#failclosed.
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
     r"""Whether Gin logging should happen in a fail-closed manner at the
-    caller. This is relevant only in the LocalIAM implementation, for now.
+    caller. This is currently supported in the LocalIAM implementation, Stubby
+    C++, and Stubby Java. For Apps Framework, see go/af-audit-
+    logging#failclosed.
 
     Values:
       LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
@@ -426,7 +413,7 @@ class Endpoint(_messages.Message):
       by service clients.  The entire metadata dictionary may contain up to
       512 characters, spread accoss all key-value pairs. Metadata that goes
       beyond any these limits will be rejected.
-    name: Output only. The resource name for the endpoint in the format
+    name: Immutable. The resource name for the endpoint in the format
       'projects/*/locations/*/namespaces/*/services/*/endpoints/*'.
     port: Optional. Service Directory will reject values outside of [0,
       65535].
@@ -682,12 +669,10 @@ class Namespace(_messages.Message):
       keys and values can be no longer than 63 characters.
 
   Fields:
-    cloudDnsZones: Output only. Cloud DNS Zone information associated with
-      this Namespace.
     labels: Optional. Resource labels associated with this Namespace. No more
       than 64 user labels can be associated with a given resource.  Label keys
       and values can be no longer than 63 characters.
-    name: Output only. The resource name for the namespace in the format
+    name: Immutable. The resource name for the namespace in the format
       'projects/*/locations/*/namespaces/*'.
   """
 
@@ -717,9 +702,8 @@ class Namespace(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  cloudDnsZones = _messages.MessageField('CloudDnsZone', 1, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 1)
+  name = _messages.StringField(2)
 
 
 class Policy(_messages.Message):
@@ -890,7 +874,7 @@ class Service(_messages.Message):
       service clients.  The entire metadata dictionary may contain up to 2000
       characters, spread across all key-value pairs. Metadata that goes beyond
       any these limits will be rejected.
-    name: Output only. The resource name for the service in the format
+    name: Immutable. The resource name for the service in the format
       'projects/*/locations/*/namespaces/*/services/*'.
     serviceIdentities: Optional. Authorized Service Identities. If provided,
       the consumer may use this information to determine whether the service
@@ -1081,7 +1065,7 @@ class ServicedirectoryProjectsLocationsNamespacesPatchRequest(_messages.Message)
   r"""A ServicedirectoryProjectsLocationsNamespacesPatchRequest object.
 
   Fields:
-    name: Output only. The resource name for the namespace in the format
+    name: Immutable. The resource name for the namespace in the format
       'projects/*/locations/*/namespaces/*'.
     namespace: A Namespace resource to be passed as the request body.
     updateMask: Required. List of fields to be updated in this request.
@@ -1221,7 +1205,7 @@ class ServicedirectoryProjectsLocationsNamespacesServicesEndpointsPatchRequest(_
 
   Fields:
     endpoint: A Endpoint resource to be passed as the request body.
-    name: Output only. The resource name for the endpoint in the format
+    name: Immutable. The resource name for the endpoint in the format
       'projects/*/locations/*/namespaces/*/services/*/endpoints/*'.
     updateMask: Required. List of fields to be updated in this request.
   """
@@ -1298,7 +1282,7 @@ class ServicedirectoryProjectsLocationsNamespacesServicesPatchRequest(_messages.
   object.
 
   Fields:
-    name: Output only. The resource name for the service in the format
+    name: Immutable. The resource name for the service in the format
       'projects/*/locations/*/namespaces/*/services/*'.
     service: A Service resource to be passed as the request body.
     updateMask: Required. List of fields to be updated in this request.
@@ -1314,6 +1298,18 @@ class ServicedirectoryProjectsLocationsNamespacesServicesResolveRequest(_message
   object.
 
   Fields:
+    endpointFilter: Optional. The filter applied to the endpoints of the
+      resolved service.  General filter string syntax: <field> <operator>
+      <value> (<logical connector>) <field> can be "name" or "metadata.<key>"
+      for map field. <operator> can be "<, >, <=, >=, !=, =, :". Of which ":"
+      means HAS and is roughly the same as "=". <value> must be the same data
+      type as the field. <logical connector> can be "AND, OR, NOT".  Examples
+      of valid filters: * "metadata.owner" returns Endpoints that have a label
+      with the   key "owner", this is the same as "metadata:owner" *
+      "metadata.protocol=gRPC" returns Endpoints that have key/value
+      "protocol=gRPC" * "metadata.owner!=sd AND metadata.foo=bar" returns
+      Endpoints that have "owner" field in metadata with a value that is not
+      "sd" AND have the key/value foo=bar.
     maxEndpoints: Optional. The maximum number of endpoints to return.
       Defaults to 25. Maximum is 100. If a value less than one is specified,
       the Default is used. If a value greater than the Maximum is specified,
@@ -1321,8 +1317,9 @@ class ServicedirectoryProjectsLocationsNamespacesServicesResolveRequest(_message
     name: Required. The name of the service to resolve.
   """
 
-  maxEndpoints = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  name = _messages.StringField(2, required=True)
+  endpointFilter = _messages.StringField(1)
+  maxEndpoints = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  name = _messages.StringField(3, required=True)
 
 
 class ServicedirectoryProjectsLocationsNamespacesServicesSetIamPolicyRequest(_messages.Message):

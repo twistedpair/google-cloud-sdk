@@ -49,6 +49,7 @@ import threading  # Knowing full well that this is a usually a dummy.
 import traceback
 from xml.sax import saxutils
 
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.third_party.appengine.api import apiproxy_stub_map
 from googlecloudsdk.third_party.appengine.api import capabilities
 from googlecloudsdk.third_party.appengine.api import datastore_errors
@@ -378,7 +379,8 @@ def __InitConnection():
   # environment at the start of each request.
   # NOTE: In VMs and tests the env is shared by all threads, so _ENV_KEY alone
   # is not a reliable way to check if the state has been initialized.
-  if os.getenv(_ENV_KEY) and hasattr(_thread_local, 'connection_stack'):
+  if encoding.GetEncodedValue(os.environ, _ENV_KEY) and\
+      hasattr(_thread_local, 'connection_stack'):
     return
 
   # pylint: disable=invalid-name,protected-access

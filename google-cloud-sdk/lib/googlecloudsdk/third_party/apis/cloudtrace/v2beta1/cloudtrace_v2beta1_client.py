@@ -9,7 +9,7 @@ class CloudtraceV2beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://cloudtrace.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://cloudtrace.mtls.googleapis.com/'
 
   _PACKAGE = u'cloudtrace'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/trace.append', u'https://www.googleapis.com/auth/trace.readonly']

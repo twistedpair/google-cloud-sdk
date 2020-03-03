@@ -9,7 +9,7 @@ class DlpV2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://dlp.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://dlp.mtls.googleapis.com/'
 
   _PACKAGE = u'dlp'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

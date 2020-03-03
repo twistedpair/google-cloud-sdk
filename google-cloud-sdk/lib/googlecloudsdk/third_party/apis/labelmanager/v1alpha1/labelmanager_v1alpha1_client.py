@@ -9,7 +9,7 @@ class LabelmanagerV1alpha1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://labelmanager.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://labelmanager.mtls.googleapis.com/'
 
   _PACKAGE = u'labelmanager'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/cloud-build/docs/",
   "protocol": "rest",
   "rootUrl": "https://cloudbuild.googleapis.com/",
+  "mtlsRootUrl": "https://cloudbuild.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudbuild.googleapis.com/",
   "batchPath": "batch",
@@ -1114,7 +1115,7 @@
               "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.+$",
+              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -1139,7 +1140,7 @@
               "description": "The name of the operation resource to be cancelled.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.+$",
+              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },

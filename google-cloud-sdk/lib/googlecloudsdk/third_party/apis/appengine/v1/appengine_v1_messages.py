@@ -1724,9 +1724,10 @@ class ManagedCertificate(_messages.Message):
       FAILED_PERMANENT: All renewal attempts have been exhausted, likely due
         to an invalid DNS setup.
       FAILED_RETRYING_CAA_FORBIDDEN: Most recent renewal failed due to an
-        explicit CAA record that does not include the in-use CA, Let's
-        Encrypt. Renewals will continue to fail until the CAA is reconfigured.
-        The last successfully provisioned certificate may still be serving.
+        explicit CAA record that does not include one of the in-use CAs
+        (Google CA and Let's Encrypt). Renewals will continue to fail until
+        the CAA is reconfigured. The last successfully provisioned certificate
+        may still be serving.
       FAILED_RETRYING_CAA_CHECKING: Most recent renewal failed due to a CAA
         retrieval failure. This means that the domain's DNS provider does not
         properly handle CAA records, failing requests for CAA records when no

@@ -117,13 +117,13 @@ class AuthorityInformationAccess(_messages.Message):
     issuingCertificateUrls: Optional. The referenced CA issuers description is
       intended to aid certificate users in the selection of a certification
       path that terminates at a point trusted by the certificate user.
-    oscpServers: Optional. Used when revocation information for the
+    ocspServers: Optional. Used when revocation information for the
       certificate containing this extension is available using the Online
       Certificate Status Protocol (OCSP)
   """
 
   issuingCertificateUrls = _messages.StringField(1, repeated=True)
-  oscpServers = _messages.StringField(2, repeated=True)
+  ocspServers = _messages.StringField(2, repeated=True)
 
 
 class Binding(_messages.Message):
@@ -178,11 +178,12 @@ class CaOptions(_messages.Message):
 
   Fields:
     isCa: Optional. Refers to the "CA" X.509 extension, which is a boolean
-      value.
+      value. When this value is missing, the extension will be omitted from
+      the CA certificate.
     maxIssuerPathLength: Optional. Refers to the path length restriction X.509
       extension. For a CA certificate, this value describes the depth of
       subordinate CA certificates that are allowed. If this value is less than
-      0, the request will fail. If this values is missing, the max path length
+      0, the request will fail. If this value is missing, the max path length
       will be omitted from the CA certificate.
   """
 
@@ -397,13 +398,13 @@ class CertificateAuthorityPolicy(_messages.Message):
   Fields:
     allowedConfigValues: Optional. If any ReusableConfigWrapper is specified
       here, then all Certificates issued by the CertificateAuthority must
-      match at least one listed element. If a ReusableConfigWrapper element
-      has an empty field, it is assumed that any value is allowed for that
-      field.
+      match at least one listed ReusableConfigWrapper. If a
+      ReusableConfigWrapper has an empty field,  any value will be allowed for
+      that field.
     allowedLocationsAndOrganizations: Optional. If any Subject is specified
       here, then all Certificates issued by the CertificateAuthority must
-      match at least one listed element. If a Subject element has an empty
-      field, it is assumed that any value is allowed for that field.
+      match at least one listed Subject. If a Subject has an empty field, any
+      value will be allowed for that field.
     maximumLifetime: Optional. The maximum lifetime allowed by the
       CertificateAuthority. Note that if the any part if the issuing chain
       expires before a Certificate's requested maximum_lifetime, the effective
@@ -426,7 +427,7 @@ class CertificateConfig(_messages.Message):
     reusableConfig: Required. Describes how some of the technical fields in a
       certificate should be populated.
     subjectConfig: Required. Specifies some of the values in a certificate
-      that are related to the subject and lifetime.
+      that are related to the subject.
   """
 
   publicKey = _messages.MessageField('PublicKey', 1)
@@ -1896,7 +1897,7 @@ class ReusableConfigValues(_messages.Message):
     additionalExtensions: Optional. Describes custom X.509 extensions.
     authorityInformationAccess: Optional. Describes how to access information
       and services for the issuer of the  certificate.
-    caOptions: Optional. Describes options in this ReusableConfigValues that
+    caOptions: Required. Describes options in this ReusableConfigValues that
       are relevant in a CA certificate.
     crlDistributionPoints: Optional. Describes a list of locations to obtain
       CRL information, i.e. the DistributionPoint.fullName described by
@@ -2250,8 +2251,8 @@ class SubjectAltNames(_messages.Message):
 
 
 class SubjectConfig(_messages.Message):
-  r"""These values are used to create the distinguished name, validity time,
-  and subject alternative name fields in an X.509 certificate.
+  r"""These values are used to create the distinguished name and subject
+  alternative name fields in an X.509 certificate.
 
   Fields:
     commonName: Optional. The "common name" of the distinguished name.

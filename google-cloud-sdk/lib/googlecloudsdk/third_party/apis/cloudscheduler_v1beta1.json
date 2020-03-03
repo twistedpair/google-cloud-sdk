@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/scheduler/",
   "protocol": "rest",
   "rootUrl": "https://cloudscheduler.googleapis.com/",
+  "mtlsRootUrl": "https://cloudscheduler.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudscheduler.googleapis.com/",
   "batchPath": "batch",

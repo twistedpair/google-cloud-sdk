@@ -9,7 +9,7 @@ class CloudschedulerV1alpha1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://cloudscheduler.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://cloudscheduler.mtls.googleapis.com/'
 
   _PACKAGE = u'cloudscheduler'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

@@ -19,7 +19,20 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
+from googlecloudsdk.calliope import actions
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
+from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.core import properties
+import six
+
+_machine_type_flag_map = arg_utils.ChoiceEnumMapper(
+    '--machine-type', (cloudbuild_util.GetMessagesModule()
+                      ).BuildOptions.MachineTypeValueValuesEnum,
+    include_filter=lambda s: six.text_type(s) != 'UNSPECIFIED',
+    help_str='Machine type used to run the build.')
 
 
 class BuildsCompleter(completers.ListCommandCompleter):
@@ -48,3 +61,127 @@ def AddBuildArg(parser, intro=None):
       'build',
       completer=BuildsCompleter,
       help=help_text)
+
+
+def AddNoCacheFlag(parser):
+  """Add a flag to disable layer caching."""
+  parser.add_argument(
+      '--no-cache',
+      action='store_true',
+      help='If set, disable layer caching when building with Kaniko.\n'
+      '\n'
+      'This has the same effect as setting the builds/kaniko_cache_ttl '
+      'property to 0 for this build.  This can be useful in cases where '
+      'Dockerfile builds are non-deterministic and a non-deterministic '
+      'result should not be cached.')
+
+
+def AddDiskSizeFlag(parser):
+  """Add a disk size flag."""
+  parser.add_argument(
+      '--disk-size',
+      type=arg_parsers.BinarySize(lower_bound='100GB', upper_bound='1TB'),
+      help='Machine disk size (GB) to run the build.')
+
+
+def AddGcsLogDirFlag(parser):
+  """Add a GCS directory flag to hold build logs."""
+  parser.add_argument(
+      '--gcs-log-dir',
+      help='A directory in Google Cloud Storage to hold build logs. If this '
+      'field is not set, '
+      '```gs://[PROJECT_NUMBER].cloudbuild-logs.googleusercontent.com/``` '
+      'will be created and used.')
+
+
+def AddGcsSourceStagingDirFlag(parser):
+  """Add a GCS directory flag for staging the build."""
+  parser.add_argument(
+      '--gcs-source-staging-dir',
+      help='A directory in Google Cloud Storage to copy the source used for '
+      'staging the build. If the specified bucket does not exist, Cloud '
+      'Build will create one. If you don\'t set this field, '
+      '```gs://[PROJECT_ID]_cloudbuild/source``` is used.')
+
+
+def AddIgnoreFileFlag(parser):
+  """Add a ignore file flag."""
+  parser.add_argument(
+      '--ignore-file',
+      help='Override the `.gcloudignore` file and use the specified file '
+      'instead.')
+
+
+def AddMachineTypeFlag(parser):
+  """Add a machine type flag."""
+  _machine_type_flag_map.choice_arg.AddToParser(parser)
+
+
+def AddSubstitutionsFlag(parser):
+  """Add a substitutions flag."""
+  parser.add_argument(
+      '--substitutions',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help="""\
+Parameters to be substituted in the build specification.
+
+For example (using some nonsensical substitution keys; all keys must begin with
+an underscore):
+
+    $ gcloud builds submit . --config config.yaml \\
+        --substitutions _FAVORITE_COLOR=blue,_NUM_CANDIES=10
+
+This will result in a build where every occurrence of ```${_FAVORITE_COLOR}```
+in certain fields is replaced by "blue", and similarly for ```${_NUM_CANDIES}```
+and "10".
+
+Only the following built-in variables can be specified with the
+`--substitutions` flag: REPO_NAME, BRANCH_NAME, TAG_NAME, REVISION_ID,
+COMMIT_SHA, SHORT_SHA.
+
+For more details, see:
+https://cloud.google.com/cloud-build/docs/api/build-requests#substitutions
+""")
+
+
+def AddTimeoutFlag(parser):
+  """Add a timeout flag."""
+  parser.add_argument(
+      '--timeout',
+      help='Maximum time a build is run before it is failed as `TIMEOUT`. It '
+      'is specified as a duration; for example, "2h15m5s" is two hours, '
+      'fifteen minutes, and five seconds. If you don\'t specify a unit, '
+      'seconds is assumed. For example, "10" is 10 seconds.',
+      action=actions.StoreProperty(properties.VALUES.builds.timeout))
+
+
+def AddAsyncFlag(parser):
+  """Add an async flag."""
+  base.ASYNC_FLAG.AddToParser(parser)
+
+
+def AddConfigFlags(parser):
+  """Add config flags."""
+  build_config = parser.add_mutually_exclusive_group()
+  build_config.add_argument(
+      '--tag',
+      '-t',
+      help='The tag to use with a "docker build" image creation. '
+      'Cloud Build will run a remote "docker build -t '
+      '$TAG .", where $TAG is the tag provided by this flag. The tag '
+      'must be in the gcr.io/* or *.gcr.io/* namespaces. Specify a tag '
+      'if you want Cloud Build to build using a Dockerfile '
+      'instead of a build config file. If you specify a tag in this '
+      'command, your source must include a Dockerfile. For instructions '
+      'on building using a Dockerfile see '
+      'https://cloud.google.com/cloud-build/docs/quickstart-docker.')
+  build_config.add_argument(
+      '--config',
+      default='cloudbuild.yaml',  # By default, find this in the current dir
+      help='The YAML or JSON file to use as the build configuration file.')
+
+
+def GetMachineType(machine_type_flag):
+  """Return a machine type."""
+  return _machine_type_flag_map.GetEnumForChoice(machine_type_flag)

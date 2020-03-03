@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/identity/",
   "protocol": "rest",
   "rootUrl": "https://cloudidentity.googleapis.com/",
+  "mtlsRootUrl": "https://cloudidentity.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudidentity.googleapis.com/",
   "batchPath": "batch",
@@ -844,7 +845,7 @@
     },
     "DeviceUser": {
       "id": "DeviceUser",
-      "description": "Resource representing a user's use of a Device",
+      "description": "A DeviceUser is a resource representing a user's use of a Device",
       "type": "object",
       "properties": {
         "name": {
@@ -945,7 +946,7 @@
     },
     "EndpointApp": {
       "id": "EndpointApp",
-      "description": "Next ID to use: 7",
+      "description": "An EndpointApp represents an app that is installed on a device\nNext ID to use: 7",
       "type": "object",
       "properties": {
         "name": {

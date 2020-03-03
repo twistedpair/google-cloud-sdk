@@ -9,7 +9,7 @@ class SecuritycenterV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://securitycenter.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://securitycenter.mtls.googleapis.com/'
 
   _PACKAGE = u'securitycenter'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
@@ -146,7 +146,7 @@ error.
         request: (SecuritycenterOrganizationsAssetsUpdateSecurityMarksRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (SecurityMarks) The response message.
+        (GoogleCloudSecuritycenterV1beta1SecurityMarks) The response message.
       """
       config = self.GetMethodConfig('UpdateSecurityMarks')
       return self._RunMethod(
@@ -160,9 +160,9 @@ error.
         path_params=[u'name'],
         query_params=[u'startTime', u'updateMask'],
         relative_path=u'v1beta1/{+name}',
-        request_field=u'securityMarks',
+        request_field=u'googleCloudSecuritycenterV1beta1SecurityMarks',
         request_type_name=u'SecuritycenterOrganizationsAssetsUpdateSecurityMarksRequest',
-        response_type_name=u'SecurityMarks',
+        response_type_name=u'GoogleCloudSecuritycenterV1beta1SecurityMarks',
         supports_download=False,
     )
 
@@ -325,7 +325,7 @@ to succeed.
         request: (SecuritycenterOrganizationsSourcesFindingsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Finding) The response message.
+        (GoogleCloudSecuritycenterV1beta1Finding) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -339,9 +339,9 @@ to succeed.
         path_params=[u'parent'],
         query_params=[u'findingId'],
         relative_path=u'v1beta1/{+parent}/findings',
-        request_field=u'finding',
+        request_field=u'googleCloudSecuritycenterV1beta1Finding',
         request_type_name=u'SecuritycenterOrganizationsSourcesFindingsCreateRequest',
-        response_type_name=u'Finding',
+        response_type_name=u'GoogleCloudSecuritycenterV1beta1Finding',
         supports_download=False,
     )
 
@@ -414,7 +414,7 @@ finding creation to succeed.
         request: (SecuritycenterOrganizationsSourcesFindingsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Finding) The response message.
+        (GoogleCloudSecuritycenterV1beta1Finding) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -428,9 +428,9 @@ finding creation to succeed.
         path_params=[u'name'],
         query_params=[u'updateMask'],
         relative_path=u'v1beta1/{+name}',
-        request_field=u'finding',
+        request_field=u'googleCloudSecuritycenterV1beta1Finding',
         request_type_name=u'SecuritycenterOrganizationsSourcesFindingsPatchRequest',
-        response_type_name=u'Finding',
+        response_type_name=u'GoogleCloudSecuritycenterV1beta1Finding',
         supports_download=False,
     )
 
@@ -441,7 +441,7 @@ finding creation to succeed.
         request: (SecuritycenterOrganizationsSourcesFindingsSetStateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Finding) The response message.
+        (GoogleCloudSecuritycenterV1beta1Finding) The response message.
       """
       config = self.GetMethodConfig('SetState')
       return self._RunMethod(
@@ -457,7 +457,7 @@ finding creation to succeed.
         relative_path=u'v1beta1/{+name}:setState',
         request_field=u'setFindingStateRequest',
         request_type_name=u'SecuritycenterOrganizationsSourcesFindingsSetStateRequest',
-        response_type_name=u'Finding',
+        response_type_name=u'GoogleCloudSecuritycenterV1beta1Finding',
         supports_download=False,
     )
 
@@ -468,7 +468,7 @@ finding creation to succeed.
         request: (SecuritycenterOrganizationsSourcesFindingsUpdateSecurityMarksRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (SecurityMarks) The response message.
+        (GoogleCloudSecuritycenterV1beta1SecurityMarks) The response message.
       """
       config = self.GetMethodConfig('UpdateSecurityMarks')
       return self._RunMethod(
@@ -482,9 +482,9 @@ finding creation to succeed.
         path_params=[u'name'],
         query_params=[u'startTime', u'updateMask'],
         relative_path=u'v1beta1/{+name}',
-        request_field=u'securityMarks',
+        request_field=u'googleCloudSecuritycenterV1beta1SecurityMarks',
         request_type_name=u'SecuritycenterOrganizationsSourcesFindingsUpdateSecurityMarksRequest',
-        response_type_name=u'SecurityMarks',
+        response_type_name=u'GoogleCloudSecuritycenterV1beta1SecurityMarks',
         supports_download=False,
     )
 

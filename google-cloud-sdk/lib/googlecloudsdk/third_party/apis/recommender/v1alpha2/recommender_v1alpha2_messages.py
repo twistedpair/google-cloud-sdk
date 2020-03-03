@@ -842,7 +842,7 @@ class RecommenderBillingAccountsLocationsInsightTypesInsightsGetRequest(_message
   object.
 
   Fields:
-    name: Name of the insight.
+    name: Required. Name of the insight.
   """
 
   name = _messages.StringField(1, required=True)
@@ -928,7 +928,7 @@ class RecommenderBillingAccountsLocationsRecommendersRecommendationsGetRequest(_
   object.
 
   Fields:
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1041,7 +1041,7 @@ class RecommenderProjectsLocationsInsightTypesInsightsGetRequest(_messages.Messa
   r"""A RecommenderProjectsLocationsInsightTypesInsightsGetRequest object.
 
   Fields:
-    name: Name of the insight.
+    name: Required. Name of the insight.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1122,7 +1122,7 @@ class RecommenderProjectsLocationsRecommendersRecommendationsGetRequest(_message
   object.
 
   Fields:
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   name = _messages.StringField(1, required=True)

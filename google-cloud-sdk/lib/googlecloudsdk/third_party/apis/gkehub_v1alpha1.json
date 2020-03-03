@@ -319,7 +319,8 @@
             "",
             "",
             "",
-            ""
+            "",
+            "SERVICE_UPDATING indicates the Feature is being updated by the Hub\nService."
           ],
           "type": "string",
           "enum": [
@@ -327,7 +328,8 @@
             "ENABLING",
             "ENABLED",
             "DISABLING",
-            "UPDATING"
+            "UPDATING",
+            "SERVICE_UPDATING"
           ]
         },
         "details": {

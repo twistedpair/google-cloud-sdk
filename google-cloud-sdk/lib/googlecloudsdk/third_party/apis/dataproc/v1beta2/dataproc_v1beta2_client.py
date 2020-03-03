@@ -392,7 +392,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Instantiate(self, request, global_params=None):
-      r"""Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#workflowmetadata). Also see Using WorkflowMetadata (https://cloud.google.com/dataproc/docs/concepts/workflows/debugging#using_workflowmetadata).On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesInstantiateRequest) input message
@@ -419,7 +419,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def InstantiateInline(self, request, global_params=None):
-      r"""Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#workflowmetadata). Also see Using WorkflowMetadata (https://cloud.google.com/dataproc/docs/concepts/workflows/debugging#using_workflowmetadata).On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesInstantiateInlineRequest) input message
@@ -800,7 +800,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a cluster in a project. The returned Operation.metadata will be ClusterOperationMetadata.
+      r"""Creates a cluster in a project. The returned Operation.metadata will be ClusterOperationMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
 
       Args:
         request: (DataprocProjectsRegionsClustersCreateRequest) input message
@@ -826,7 +826,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a cluster in a project. The returned Operation.metadata will be ClusterOperationMetadata.
+      r"""Deletes a cluster in a project. The returned Operation.metadata will be ClusterOperationMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
 
       Args:
         request: (DataprocProjectsRegionsClustersDeleteRequest) input message
@@ -852,7 +852,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Diagnose(self, request, global_params=None):
-      r"""Gets cluster diagnostic information. The returned Operation.metadata will be ClusterOperationMetadata. After the operation completes, Operation.response contains Empty.
+      r"""Gets cluster diagnostic information. The returned Operation.metadata will be ClusterOperationMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata). After the operation completes, Operation.response contains Empty.
 
       Args:
         request: (DataprocProjectsRegionsClustersDiagnoseRequest) input message
@@ -957,7 +957,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a cluster in a project. The returned Operation.metadata will be ClusterOperationMetadata.
+      r"""Updates a cluster in a project. The returned Operation.metadata will be ClusterOperationMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
 
       Args:
         request: (DataprocProjectsRegionsClustersPatchRequest) input message
@@ -1099,7 +1099,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts a job cancellation request. To access the job resource after cancellation, call regions/{region}/jobs.list or regions/{region}/jobs.get.
+      r"""Starts a job cancellation request. To access the job resource after cancellation, call regions/{region}/jobs.list (https://cloud.google.com/dataproc/docs/reference/rest/v1beta2/projects.regions.jobs/list) or regions/{region}/jobs.get (https://cloud.google.com/dataproc/docs/reference/rest/v1beta2/projects.regions.jobs/get).
 
       Args:
         request: (DataprocProjectsRegionsJobsCancelRequest) input message
@@ -1305,6 +1305,32 @@ class DataprocV1beta2(base_api.BaseApiClient):
         request_field=u'submitJobRequest',
         request_type_name=u'DataprocProjectsRegionsJobsSubmitRequest',
         response_type_name=u'Job',
+        supports_download=False,
+    )
+
+    def SubmitAsOperation(self, request, global_params=None):
+      r"""Submits job to a cluster.
+
+      Args:
+        request: (DataprocProjectsRegionsJobsSubmitAsOperationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SubmitAsOperation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SubmitAsOperation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dataproc.projects.regions.jobs.submitAsOperation',
+        ordered_params=[u'projectId', u'region'],
+        path_params=[u'projectId', u'region'],
+        query_params=[],
+        relative_path=u'v1beta2/projects/{projectId}/regions/{region}/jobs:submitAsOperation',
+        request_field=u'submitJobRequest',
+        request_type_name=u'DataprocProjectsRegionsJobsSubmitAsOperationRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -1653,7 +1679,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Instantiate(self, request, global_params=None):
-      r"""Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#workflowmetadata). Also see Using WorkflowMetadata (https://cloud.google.com/dataproc/docs/concepts/workflows/debugging#using_workflowmetadata).On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesInstantiateRequest) input message
@@ -1680,7 +1706,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def InstantiateInline(self, request, global_params=None):
-      r"""Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata. Also see Using WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#workflowmetadata). Also see Using WorkflowMetadata (https://cloud.google.com/dataproc/docs/concepts/workflows/debugging#using_workflowmetadata).On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesInstantiateInlineRequest) input message

@@ -16,6 +16,7 @@
   "documentationLink": "https://cloud.google.com/genomics",
   "protocol": "rest",
   "rootUrl": "https://genomics.googleapis.com/",
+  "mtlsRootUrl": "https://genomics.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://genomics.googleapis.com/",
   "batchPath": "batch",
@@ -1066,7 +1067,7 @@
               "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.+$",
+              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },
@@ -1092,7 +1093,7 @@
               "description": "The name of the operation resource to be cancelled.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/.+$",
+              "pattern": "^operations\/.*$",
               "type": "string"
             }
           },

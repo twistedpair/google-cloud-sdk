@@ -9,7 +9,7 @@ class LoggingV2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://logging.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://logging.mtls.googleapis.com/'
 
   _PACKAGE = u'logging'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/cloud-platform.read-only', u'https://www.googleapis.com/auth/logging.admin', u'https://www.googleapis.com/auth/logging.read', u'https://www.googleapis.com/auth/logging.write']

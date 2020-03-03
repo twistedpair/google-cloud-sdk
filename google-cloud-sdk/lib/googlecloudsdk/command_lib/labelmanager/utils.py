@@ -108,11 +108,11 @@ def GetLabelBindingNameFromLabelValueAndResource(label_value, resource):
 
   list_request = (
       labelmanager_messages.LabelmanagerLabelBindingsListRequest(
-          filter='labelValue:'+label_value))
+          filter='resource:'+resource))
   response = labelbindings_service.List(list_request)
 
   for binding in response.bindings:
-    if (binding.labelValue == label_value and binding.resource == resource):
+    if binding.labelValue == label_value:
       return binding.name
 
   raise InvalidInputError(

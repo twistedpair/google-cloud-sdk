@@ -33,8 +33,10 @@ import httplib2
 from oauth2client import client
 from oauth2client import file as oauth2client_file
 from oauth2client import tools
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.third_party.appengine.tools.value_mixin import ValueMixin
 from googlecloudsdk.third_party.appengine._internal import six_subset
+
 
 # pylint:disable=g-import-not-at-top
 # pylint:disable=invalid-name
@@ -416,7 +418,9 @@ class HttpRpcServerOAuth2(HttpRpcServerHttpLib2):
               oauth2_parameters.token_uri)):
       token_uri = (oauth2_parameters.token_uri or
                    ('https://%s/o/oauth2/token' %
-                    os.getenv('APPENGINE_AUTH_SERVER', 'accounts.google.com')))
+                    encoding.GetEncodedValue(
+                        os.environ, 'APPENGINE_AUTH_SERVER',
+                        'accounts.google.com')))
       self.credentials = client.OAuth2Credentials(
           oauth2_parameters.access_token,
           oauth2_parameters.client_id,

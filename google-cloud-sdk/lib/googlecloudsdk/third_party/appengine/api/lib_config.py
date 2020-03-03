@@ -82,6 +82,8 @@ import os
 import sys
 import threading
 
+from googlecloudsdk.core.util import encoding
+
 
 DEFAULT_MODNAME = 'appengine_config'
 
@@ -395,12 +397,14 @@ def main():
       Unless you are using the SDK, you must be an administrator to use this
       function.
   """
-  if not os.getenv('SERVER_SOFTWARE', '').startswith('Dev'):
+  if not encoding.GetEncodedValue(os.environ,
+                                  'SERVER_SOFTWARE', '').startswith('Dev'):
     from googlecloudsdk.third_party.appengine.api import users
     if not users.is_current_user_admin():
       if users.get_current_user() is None:
         print('Status: 302')
-        print('Location:', users.create_login_url(os.getenv('PATH_INFO', '')))
+        print('Location:', users.create_login_url(encoding.GetEncodedValue(
+            os.environ, 'PATH_INFO', '')))
       else:
         print('Status: 403')
         print()

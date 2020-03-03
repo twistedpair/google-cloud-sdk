@@ -276,12 +276,15 @@ class FeatureState(_messages.Message):
       ENABLED: <no description>
       DISABLING: <no description>
       UPDATING: <no description>
+      SERVICE_UPDATING: SERVICE_UPDATING indicates the Feature is being
+        updated by the Hub Service.
     """
     LIFECYCLE_STATE_UNSPECIFIED = 0
     ENABLING = 1
     ENABLED = 2
     DISABLING = 3
     UPDATING = 4
+    SERVICE_UPDATING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsByMembershipValue(_messages.Message):

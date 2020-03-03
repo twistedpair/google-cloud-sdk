@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/iam/",
   "protocol": "rest",
   "rootUrl": "https://iamassist.googleapis.com/",
+  "mtlsRootUrl": "https://iamassist.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://iamassist.googleapis.com/",
   "batchPath": "batch",

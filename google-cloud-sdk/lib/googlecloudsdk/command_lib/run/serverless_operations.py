@@ -804,9 +804,17 @@ class ServerlessOperations(object):
       base_revision_nonce = template.labels.get(revision.NONCE_LABEL, None)
       if base_revision_nonce:
         try:
-          namespace_ref = self._registry.Parse(
-              metadata.namespace,
-              collection='run.namespaces')
+          # TODO(b/150322097): Remove this when the api has been split.
+          # This try/except block is needed because the v1alpha1 and v1 run apis
+          # have different collection names for the namespaces.
+          try:
+            namespace_ref = self._registry.Parse(
+                metadata.namespace,
+                collection='run.namespaces')
+          except resources.InvalidCollectionException:
+            namespace_ref = self._registry.Parse(
+                metadata.namespace,
+                collection='run.api.v1.namespaces')
           poller = NonceBasedRevisionPoller(self, namespace_ref)
           base_revision = poller.GetResult(waiter.PollUntilDone(
               poller, base_revision_nonce,

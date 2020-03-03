@@ -13,30 +13,45 @@ package = 'cloudasset'
 
 
 class Asset(_messages.Message):
-  r"""Cloud asset. This includes all Google Cloud Platform resources, Cloud
-  IAM policies, and other non-GCP assets.
+  r"""An asset in Google Cloud. An asset can be any resource in the Google
+  Cloud [resource hierarchy](https://cloud.google.com/resource-manager/docs
+  /cloud-platform-resource-hierarchy), a resource outside the Google Cloud
+  resource hierarchy (such as Google Kubernetes Engine clusters and objects),
+  or a Cloud IAM policy.
 
   Fields:
     accessLevel: A GoogleIdentityAccesscontextmanagerV1AccessLevel attribute.
     accessPolicy: A GoogleIdentityAccesscontextmanagerV1AccessPolicy
       attribute.
-    ancestors: Asset's ancestry path in Cloud Resource Manager (CRM)
-      hierarchy, represented as a list of relative resource names. Ancestry
-      path starts with the closest CRM ancestor and ends at root. If the asset
-      is a CRM project/folder/organization, this starts from the asset itself.
-      Example: ["projects/123456789", "folders/5432", "organizations/1234"]
-    assetType: Type of the asset. Example: "compute.googleapis.com/Disk".
-    iamPolicy: Representation of the actual Cloud IAM policy set on a cloud
-      resource. For each resource, there must be at most one Cloud IAM policy
-      set on it.
-    name: The full name of the asset. For example: `//compute.googleapis.com/p
-      rojects/my_project_123/zones/zone1/instances/instance1`. See [Resource N
+    ancestors: The ancestry path of an asset in Google Cloud [resource
+      hierarchy](https://cloud.google.com/resource-manager/docs/cloud-
+      platform-resource-hierarchy), represented as a list of relative resource
+      names. An ancestry path starts with the closest ancestor in the
+      hierarchy and ends at root. If the asset is a project, folder, or
+      organization, the ancestry path starts from the asset itself.  For
+      example: `["projects/123456789", "folders/5432", "organizations/1234"]`
+    assetType: The type of the asset. For example:
+      "compute.googleapis.com/Disk"  See [Supported asset
+      types](https://cloud.google.com/asset-inventory/docs/supported-asset-
+      types) for more information.
+    iamPolicy: A representation of the Cloud IAM policy set on a Google Cloud
+      resource. There can be a maximum of one Cloud IAM policy set on any
+      given resource. In addition, Cloud IAM policies inherit their granted
+      access scope from any policies set on parent resources in the resource
+      hierarchy. Therefore, the effectively policy is the union of both the
+      policy set on this resource and each policy set on all of the resource's
+      ancestry resource levels in the hierarchy. See [this
+      topic](https://cloud.google.com/iam/docs/policies#inheritance) for more
+      information.
+    name: The full name of the asset. For example: "//compute.googleapis.com/p
+      rojects/my_project_123/zones/zone1/instances/instance1"  See [Resource n
       ames](https://cloud.google.com/apis/design/resource_names#full_resource_
       name) for more information.
-    orgPolicy: Representation of the Cloud Organization Policy set on an
-      asset. For each asset, there could be multiple Organization policies
-      with different constraints.
-    resource: Representation of the resource.
+    orgPolicy: A representation of an [organization
+      policy](https://cloud.google.com/resource-manager/docs/organization-
+      policy/overview#organization_policy). There can be more than one
+      organization policy with different constraints set on a given resource.
+    resource: A representation of the resource.
     servicePerimeter: A GoogleIdentityAccesscontextmanagerV1ServicePerimeter
       attribute.
   """
@@ -219,8 +234,8 @@ class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
       organization number (such as "organizations/123"), a project ID (such as
       "projects/my-project-id")", or a project number (such as
       "projects/12345").
-    readTimeWindow_endTime: End time of the time window (inclusive). Current
-      timestamp if not specified.
+    readTimeWindow_endTime: End time of the time window (inclusive). If not
+      specified, the current timestamp is used instead.
     readTimeWindow_startTime: Start time of the time window (exclusive).
   """
 
@@ -772,7 +787,8 @@ class GoogleIdentityAccesscontextmanagerV1AccessLevel(_messages.Message):
       behavior.
     name: Required. Resource name for the Access Level. The `short_name`
       component must begin with a letter and only include alphanumeric and
-      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`
+      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`. The
+      maximum length of the `short_name` component is 50 characters.
     title: Human readable title. Must be unique within the Policy.
     updateTime: Output only. Time the `AccessLevel` was updated in UTC.
   """
@@ -795,6 +811,10 @@ class GoogleIdentityAccesscontextmanagerV1AccessPolicy(_messages.Message):
 
   Fields:
     createTime: Output only. Time the `AccessPolicy` was created in UTC.
+    etag: Output only. An opaque identifier for the current version of the
+      `AccessPolicy`. This will always be a strongly validated etag, meaning
+      that two Access Polices will be identical if and only if their etags are
+      identical. Clients should not expect this to be in any specific format.
     name: Output only. Resource name of the `AccessPolicy`. Format:
       `accessPolicies/{policy_id}`
     parent: Required. The parent of this `AccessPolicy` in the Cloud Resource
@@ -805,10 +825,11 @@ class GoogleIdentityAccesscontextmanagerV1AccessPolicy(_messages.Message):
   """
 
   createTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  parent = _messages.StringField(3)
-  title = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  title = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class GoogleIdentityAccesscontextmanagerV1BasicLevel(_messages.Message):
@@ -1045,11 +1066,26 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
       bridges. A project cannot be a included in a perimeter bridge without
       being included in regular perimeter. For perimeter bridges, the
       restricted service list as well as access level lists must be empty.
+    spec: Proposed (or dry run) ServicePerimeter configuration. This
+      configuration allows to specify and test ServicePerimeter configuration
+      without enforcing actual access restrictions. Only allowed to be set
+      when the "use_explicit_dry_run_spec" flag is set.
     status: Current ServicePerimeter configuration. Specifies sets of
       resources, restricted services and access levels that determine
       perimeter content and boundaries.
     title: Human readable title. Must be unique within the Policy.
     updateTime: Output only. Time the `ServicePerimeter` was updated in UTC.
+    useExplicitDryRunSpec: Use explicit dry run spec flag. Ordinarily, a dry-
+      run spec implicitly exists  for all Service Perimeters, and that spec is
+      identical to the status for those Service Perimeters. When this flag is
+      set, it inhibits the generation of the implicit spec, thereby allowing
+      the user to explicitly provide a configuration ("spec") to use in a dry-
+      run version of the Service Perimeter. This allows the user to test
+      changes to the enforced config ("status") without actually enforcing
+      them. This testing is done through analyzing the differences between
+      currently enforced and suggested restrictions. use_explicit_dry_run_spec
+      must bet set to True if any of the fields in the spec are set to non-
+      default values.
   """
 
   class PerimeterTypeValueValuesEnum(_messages.Enum):
@@ -1070,9 +1106,11 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
   description = _messages.StringField(2)
   name = _messages.StringField(3)
   perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 4)
-  status = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 5)
-  title = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  spec = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 5)
+  status = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig', 6)
+  title = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  useExplicitDryRunSpec = _messages.BooleanField(9)
 
 
 class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig(_messages.Message):
@@ -1096,11 +1134,28 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfig(_messages.Messa
       Perimeter restrictions. For example, if `storage.googleapis.com` is
       specified, access to the storage buckets inside the perimeter must meet
       the perimeter's access restrictions.
+    vpcAccessibleServices: Configuration for APIs allowed within Perimeter.
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
   resources = _messages.StringField(2, repeated=True)
   restrictedServices = _messages.StringField(3, repeated=True)
+  vpcAccessibleServices = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1VpcAccessibleServices', 4)
+
+
+class GoogleIdentityAccesscontextmanagerV1VpcAccessibleServices(_messages.Message):
+  r"""Specifies how APIs are allowed to communicate within the Service
+  Perimeter.
+
+  Fields:
+    allowedServices: The list of APIs usable within the Service Perimeter.
+      Must be empty unless 'enable_restriction' is True.
+    enableRestriction: Whether to restrict API calls within the Service
+      Perimeter to the list of APIs specified in 'allowed_services'.
+  """
+
+  allowedServices = _messages.StringField(1, repeated=True)
+  enableRestriction = _messages.BooleanField(2)
 
 
 class ListFeedsResponse(_messages.Message):
@@ -1318,43 +1373,42 @@ class PubsubDestination(_messages.Message):
 
 
 class Resource(_messages.Message):
-  r"""Representation of a cloud resource.
+  r"""A representation of a Google Cloud resource.
 
   Messages:
     DataValue: The content of the resource, in which some sensitive fields are
-      scrubbed away and may not be present.
+      removed and may not be present.
 
   Fields:
     data: The content of the resource, in which some sensitive fields are
-      scrubbed away and may not be present.
+      removed and may not be present.
     discoveryDocumentUri: The URL of the discovery document containing the
       resource's JSON schema. For example:
-      `"https://www.googleapis.com/discovery/v1/apis/compute/v1/rest"`. It
-      will be left unspecified for resources without a discovery-based API,
-      such as Cloud Bigtable.
-    discoveryName: The JSON schema name listed in the discovery document.
-      Example: "Project". It will be left unspecified for resources (such as
-      Cloud Bigtable) without a discovery-based API.
+      "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest"  This
+      value is unspecified for resources that do not have an API based on a
+      discovery document, such as Cloud Bigtable.
+    discoveryName: The JSON schema name listed in the discovery document. For
+      example: "Project"  This value is unspecified for resources that do not
+      have an API based on a discovery document, such as Cloud Bigtable.
     parent: The full name of the immediate parent of this resource. See
       [Resource Names](https://cloud.google.com/apis/design/resource_names#ful
-      l_resource_name) for more information.  For GCP assets, it is the parent
-      resource defined in the [Cloud IAM policy
+      l_resource_name) for more information.  For Google Cloud assets, this
+      value is the parent resource defined in the [Cloud IAM policy
       hierarchy](https://cloud.google.com/iam/docs/overview#policy_hierarchy).
       For example:
-      `"//cloudresourcemanager.googleapis.com/projects/my_project_123"`.  For
-      third-party assets, it is up to the users to define.
-    resourceUrl: The REST URL for accessing the resource. An HTTP GET
-      operation using this URL returns the resource itself. Example:
-      `https://cloudresourcemanager.googleapis.com/v1/projects/my-
-      project-123`. It will be left unspecified for resources without a REST
-      API.
-    version: The API version. Example: "v1".
+      "//cloudresourcemanager.googleapis.com/projects/my_project_123"  For
+      third-party assets, this field may be set differently.
+    resourceUrl: The REST URL for accessing the resource. An HTTP `GET`
+      request using this URL returns the resource itself. For example:
+      "https://cloudresourcemanager.googleapis.com/v1/projects/my-project-123"
+      This value is unspecified for resources without a REST API.
+    version: The API version. For example: "v1"
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DataValue(_messages.Message):
     r"""The content of the resource, in which some sensitive fields are
-    scrubbed away and may not be present.
+    removed and may not be present.
 
     Messages:
       AdditionalProperty: An additional property for a DataValue object.
@@ -1499,12 +1553,12 @@ class Status(_messages.Message):
 
 
 class TemporalAsset(_messages.Message):
-  r"""Temporal asset. In addition to the asset, the temporal asset includes
-  the status of the asset and valid from and to time of it.
+  r"""An asset in Google Cloud and its temporal metadata, including the time
+  window when it was observed and its status during that window.
 
   Fields:
-    asset: Asset.
-    deleted: If the asset is deleted or not.
+    asset: An asset in Google Cloud.
+    deleted: Whether the asset has been deleted or not.
     window: The time window when the asset data and state was observed.
   """
 
@@ -1514,11 +1568,11 @@ class TemporalAsset(_messages.Message):
 
 
 class TimeWindow(_messages.Message):
-  r"""A time window of (start_time, end_time].
+  r"""A time window specified by its "start_time" and "end_time".
 
   Fields:
-    endTime: End time of the time window (inclusive). Current timestamp if not
-      specified.
+    endTime: End time of the time window (inclusive). If not specified, the
+      current timestamp is used instead.
     startTime: Start time of the time window (exclusive).
   """
 

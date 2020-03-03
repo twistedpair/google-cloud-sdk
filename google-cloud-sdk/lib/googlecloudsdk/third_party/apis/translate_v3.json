@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/translate/docs/quickstarts",
   "protocol": "rest",
   "rootUrl": "https://translation.googleapis.com/",
+  "mtlsRootUrl": "https://translation.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://translation.googleapis.com/",
   "batchPath": "batch",

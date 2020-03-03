@@ -9,7 +9,7 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://clouderrorreporting.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://clouderrorreporting.mtls.googleapis.com/'
 
   _PACKAGE = u'clouderrorreporting'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

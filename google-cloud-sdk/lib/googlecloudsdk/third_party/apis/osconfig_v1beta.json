@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/",
   "protocol": "rest",
   "rootUrl": "https://osconfig.googleapis.com/",
+  "mtlsRootUrl": "https://osconfig.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://osconfig.googleapis.com/",
   "batchPath": "batch",

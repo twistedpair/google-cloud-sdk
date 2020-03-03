@@ -9,7 +9,7 @@ class HealthcareV1beta1(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = u'https://healthcare.googleapis.com/'
-  MTLS_BASE_URL = u''
+  MTLS_BASE_URL = u'https://healthcare.mtls.googleapis.com/'
 
   _PACKAGE = u'healthcare'
   _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']

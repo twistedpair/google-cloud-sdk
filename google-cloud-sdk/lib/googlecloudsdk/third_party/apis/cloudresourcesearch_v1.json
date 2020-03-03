@@ -17,6 +17,7 @@
   "documentationLink": "https://groups.google.com/forum/#!forum/resource-search-api-alpha",
   "protocol": "rest",
   "rootUrl": "https://cloudresourcesearch.googleapis.com/",
+  "mtlsRootUrl": "https://cloudresourcesearch.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudresourcesearch.googleapis.com/",
   "batchPath": "batch",

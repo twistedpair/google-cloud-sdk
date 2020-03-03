@@ -16,6 +16,7 @@
   "documentationLink": "https://developers.google.com/cloud-test-lab/",
   "protocol": "rest",
   "rootUrl": "https://testing.googleapis.com/",
+  "mtlsRootUrl": "https://testing.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://testing.googleapis.com/",
   "batchPath": "batch",
@@ -1478,6 +1479,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "thumbnailUrl": {
+          "description": "URL of a thumbnail image of the device.",
+          "type": "string"
         }
       }
     },
@@ -1662,7 +1667,7 @@
     },
     "IosModel": {
       "id": "IosModel",
-      "description": "A description of an iOS device tests may be run on.\nNext tag: 11",
+      "description": "A description of an iOS device tests may be run on.\nNext tag: 12",
       "type": "object",
       "properties": {
         "id": {

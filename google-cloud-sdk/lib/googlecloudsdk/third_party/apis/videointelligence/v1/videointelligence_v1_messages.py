@@ -37,7 +37,7 @@ class GoogleCloudVideointelligenceV1AnnotateVideoRequest(_messages.Message):
     features: Required. Requested video annotation features.
     inputContent: The video data bytes. If unset, the input video(s) should be
       specified via `input_uri`. If set, `input_uri` should be unset.
-    inputUri: Input video location. Currently, only [Google Cloud
+    inputUri: Input video location. Currently, only [Cloud
       Storage](https://cloud.google.com/storage/) URIs are supported, which
       must be specified in the following format: `gs://bucket-id/object-id`
       (other URI formats return google.rpc.Code.INVALID_ARGUMENT). For more
@@ -51,7 +51,7 @@ class GoogleCloudVideointelligenceV1AnnotateVideoRequest(_messages.Message):
       east1`. If no region is specified, a region will be determined based on
       video file location.
     outputUri: Optional. Location where the output (in JSON format) should be
-      stored. Currently, only [Google Cloud
+      stored. Currently, only [Cloud
       Storage](https://cloud.google.com/storage/) URIs are supported, which
       must be specified in the following format: `gs://bucket-id/object-id`
       (other URI formats return google.rpc.Code.INVALID_ARGUMENT). For more
@@ -561,7 +561,7 @@ class GoogleCloudVideointelligenceV1VideoAnnotationProgress(_messages.Message):
   Fields:
     feature: Specifies which feature is being tracked if the request contains
       more than one features.
-    inputUri: Video file location in [Google Cloud
+    inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
     progressPercent: Approximate percentage processed thus far. Guaranteed to
       be 100 when fully processed.
@@ -609,7 +609,7 @@ class GoogleCloudVideointelligenceV1VideoAnnotationResults(_messages.Message):
     explicitAnnotation: Explicit content annotation.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
-    inputUri: Video file location in [Google Cloud
+    inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
@@ -1039,7 +1039,7 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationProgress(_messages.Messa
   Fields:
     feature: Specifies which feature is being tracked if the request contains
       more than one features.
-    inputUri: Video file location in [Google Cloud
+    inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
     progressPercent: Approximate percentage processed thus far. Guaranteed to
       be 100 when fully processed.
@@ -1087,7 +1087,7 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationResults(_messages.Messag
     explicitAnnotation: Explicit content annotation.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
-    inputUri: Video file location in [Google Cloud
+    inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
@@ -1493,7 +1493,7 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationProgress(_messages.Mes
   Fields:
     feature: Specifies which feature is being tracked if the request contains
       more than one features.
-    inputUri: Video file location in [Google Cloud
+    inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
     progressPercent: Approximate percentage processed thus far. Guaranteed to
       be 100 when fully processed.
@@ -1541,7 +1541,7 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Mess
     explicitAnnotation: Explicit content annotation.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
-    inputUri: Video file location in [Google Cloud
+    inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
@@ -1947,7 +1947,7 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationProgress(_messages.Mes
   Fields:
     feature: Specifies which feature is being tracked if the request contains
       more than one features.
-    inputUri: Video file location in [Google Cloud
+    inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
     progressPercent: Approximate percentage processed thus far. Guaranteed to
       be 100 when fully processed.
@@ -1995,7 +1995,7 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationResults(_messages.Mess
     explicitAnnotation: Explicit content annotation.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
-    inputUri: Video file location in [Google Cloud
+    inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
@@ -2485,8 +2485,8 @@ class GoogleCloudVideointelligenceV1p3beta1StreamingAnnotateVideoResponse(_messa
 
   Fields:
     annotationResults: Streaming annotation results.
-    annotationResultsUri: GCS URI that stores annotation results of one
-      streaming session. It is a directory that can hold multiple files in
+    annotationResultsUri: Cloud Storage URI that stores annotation results of
+      one streaming session. It is a directory that can hold multiple files in
       JSON format. Example uri format: gs://bucket_id/object_id
       /cloud_project_name-session_id
     error: If set, returns a google.rpc.Status message that specifies the
@@ -2605,7 +2605,7 @@ class GoogleCloudVideointelligenceV1p3beta1VideoAnnotationProgress(_messages.Mes
   Fields:
     feature: Specifies which feature is being tracked if the request contains
       more than one features.
-    inputUri: Video file location in [Google Cloud
+    inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
     progressPercent: Approximate percentage processed thus far. Guaranteed to
       be 100 when fully processed.
@@ -2663,7 +2663,7 @@ class GoogleCloudVideointelligenceV1p3beta1VideoAnnotationResults(_messages.Mess
     faceDetectionAnnotations: Face detection annotations.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
-    inputUri: Video file location in [Google Cloud
+    inputUri: Video file location in [Cloud
       Storage](https://cloud.google.com/storage/).
     logoRecognitionAnnotations: Annotations for list of logos detected,
       tracked and recognized in video.

@@ -17,6 +17,7 @@
   "documentationLink": "https://cloud.google.com/iot",
   "protocol": "rest",
   "rootUrl": "https://cloudiot.googleapis.com/",
+  "mtlsRootUrl": "https://cloudiot.mtls.googleapis.com/",
   "servicePath": "",
   "baseUrl": "https://cloudiot.googleapis.com/",
   "batchPath": "batch",

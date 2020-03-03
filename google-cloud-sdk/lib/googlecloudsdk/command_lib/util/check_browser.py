@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import os
 
 from googlecloudsdk.core.credentials import gce
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
 
 
@@ -57,7 +58,8 @@ def ShouldLaunchBrowser(attempt_launch_browser):
       launch_browser = False
     current_os = platforms.OperatingSystem.Current()
     if (current_os is platforms.OperatingSystem.LINUX and
-        not any(os.getenv(var) for var in _DISPLAY_VARIABLES)):
+        not any(encoding.GetEncodedValue(os.environ, var) for var
+                in _DISPLAY_VARIABLES)):
       launch_browser = False
     try:
       browser = webbrowser.get()

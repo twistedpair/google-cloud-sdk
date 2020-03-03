@@ -2164,7 +2164,7 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
     filter: Restricts messages returned to those matching a filter. Syntax: ht
       tps://cloud.google.com/appengine/docs/standard/python/search/query_strin
       gs  Fields/functions available for filtering are:  *  `message_type`,
-      from the MSH-9 segment. For example, `NOT message_type = "ADT"`. *
+      from the MSH-9.1 field. For example, `NOT message_type = "ADT"`. *
       `send_date` or `sendDate`, the YYYY-MM-DD date the message was sent in
       the dataset's time_zone, from the MSH-7 segment. For example, `send_date
       < "2017-01-02"`. *  `send_time`, the timestamp when the message was
@@ -2776,15 +2776,12 @@ class ListMessagesResponse(_messages.Message):
   Fields:
     hl7V2Messages: The returned Messages. Won't be more Messages than the
       value of page_size in the request. See view for populated fields.
-    messages: Deprecated. Use `hl7_v2_messages` instead. The returned message
-      names. Won't be more values than the value of page_size in the request.
     nextPageToken: Token to retrieve the next page of results or empty if
       there are no more results in the list.
   """
 
   hl7V2Messages = _messages.MessageField('Message', 1, repeated=True)
-  messages = _messages.StringField(2, repeated=True)
-  nextPageToken = _messages.StringField(3)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -2907,7 +2904,7 @@ class Message(_messages.Message):
       128 bytes, and must conform to the following PCRE regular expression:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63}  No more than 64 labels can be associated
       with a given store.
-    messageType: The message type and trigger event for this message. MSH-9.
+    messageType: The message type for this message. MSH-9.1.
     name: Resource name of the Message, of the form `projects/{project_id}/dat
       asets/{dataset_id}/hl7V2Stores/{hl7_v2_store_id}/messages/{message_id}`.
       Assigned by the server.
@@ -2975,6 +2972,10 @@ class NotificationConfig(_messages.Message):
       scoped to a project. cloud-healthcare@system.gserviceaccount.com must
       have publisher permissions on the given Cloud Pub/Sub topic. Not having
       adequate permissions causes the calls that send notifications to fail.
+      If a notification can't be published to Cloud Pub/Sub, errors are logged
+      to Stackdriver (see [Viewing logs](/healthcare/docs/how-tos/stackdriver-
+      logging)). If the number of errors exceeds a certain rate, some aren't
+      submitted.
   """
 
   pubsubTopic = _messages.StringField(1)
